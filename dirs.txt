@@ -1,0 +1,9 @@
+~/.cache/pikaur/
+	aur_repos/  # keep there aur repos; show diff when updating
+	pkg/  # keep built packages; like /var/cache/pacman/pkg/ (optional?)
+	db.lck  # transaction lock
+~/.config/pikaur.conf  # like /etc/pacman.conf
+/tmp/pikaur-$(id -u)/
+	aur_repos/  # keep there aur repos during transaction; copy to ~/.cache/pikaur/aur_repos/ after transaction
+	build/  # build directory; remove after build (or after whole transaction?)
+?	install/  # copy there before installing; remove after transaction

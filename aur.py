@@ -101,3 +101,7 @@ class AurTaskWorker_Info(AurTaskWorker):
         for package in packages:
             params += '&arg[]=' + package
         self.uri = f'/rpc/?{params}'
+
+
+def get_repo_url(package_name):
+    return f'https://aur.archlinux.org/{package_name}.git'

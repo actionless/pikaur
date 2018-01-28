@@ -1,12 +1,34 @@
 #!/usr/bin/env python3
 
-# import os
+import os
 import sys
 import asyncio
 import argparse
 import subprocess
+import readline
+import shutil
+import glob
 
-from aur import AurTaskWorker_Search, AurTaskWorker_Info
+from aur import (
+    AurTaskWorker_Search, AurTaskWorker_Info,
+    get_repo_url,
+)
+
+
+CACHE_ROOT = os.path.expanduser('~/.cache/pikaur/')
+AUR_REPOS_CACHE = os.path.join(CACHE_ROOT, 'aur_repos')
+PKG_CACHE = os.path.join(CACHE_ROOT, 'pkg')
+BUILD_CACHE = os.path.join(CACHE_ROOT, 'build')
+LOCK_FILE_PATH = os.path.join(CACHE_ROOT, 'db.lck')
+
+
+# follow GNU readline config in prompts:
+system_inputrc_path = '/etc/inputrc'
+if os.path.exists(system_inputrc_path):
+    readline.read_init_file(system_inputrc_path)
+user_inputrc_path = os.path.expanduser('~/.inputrc')
+if os.path.exists(user_inputrc_path):
+    readline.read_init_file(user_inputrc_path)
 
 
 class CmdTaskResult():
@@ -172,13 +194,13 @@ def cli_search_packages(args):
         # print(aur_pkg)
 
 
-def find_repo_packages(packages, local=False):
+def find_pacman_packages(packages, local=False):
     results = MultipleTasksExecutor({
         0: PacmanTaskWorker(['-Ssq', ] if not local else ['-Qsq', ])
     }).execute()
+    all_repo_packages = results[0].stdout.splitlines()
     pacman_packages = []
     not_found_packages = []
-    all_repo_packages = results[0].stdout.splitlines()
     for package_name in packages:
         if package_name not in all_repo_packages:
             not_found_packages.append(package_name)
@@ -187,12 +209,21 @@ def find_repo_packages(packages, local=False):
     return pacman_packages, not_found_packages
 
 
+def find_repo_packages(packages):
+    return find_pacman_packages(packages, local=False)
+
+
+def find_local_packages(packages):
+    return find_pacman_packages(packages, local=True)
+
+
 def find_aur_packages(package_names):
     results = MultipleTasksExecutor({
         0: AurTaskWorker_Info(packages=package_names),
     }).execute()
+    json_results = results[0].json['results']
     found_aur_packages = [
-        result['Name'] for result in results[0].json['results']
+        result['Name'] for result in json_results
     ]
     if len(package_names) != len(found_aur_packages):
         print("Not found in AUR:")
@@ -200,7 +231,7 @@ def find_aur_packages(package_names):
             if package not in found_aur_packages:
                 print(package)
         sys.exit(1)
-    return results[0].json['results']
+    return json_results
 
 
 def find_aur_deps(package_names):
@@ -209,9 +240,10 @@ def find_aur_deps(package_names):
 
         all_deps_for_aur_packages = []
         for result in find_aur_packages(package_names):
-            all_deps_for_aur_packages += (
+            all_deps_for_aur_packages += [
+                dep.split('=')[0].split('<')[0].split('>')[0] for dep in
                 result.get('Depends', []) + result.get('MakeDepends', [])
-            )
+            ]
         all_deps_for_aur_packages = list(set(all_deps_for_aur_packages))
 
         aur_deps_for_aur_packages = []
@@ -220,21 +252,98 @@ def find_aur_deps(package_names):
                 all_deps_for_aur_packages
             )
             if not_found_deps:
-                _, aur_deps_for_aur_packages = find_repo_packages(
-                    not_found_deps, local=True
+                _, aur_deps_for_aur_packages = find_local_packages(
+                    not_found_deps
                 )
+                find_aur_packages(aur_deps_for_aur_packages)
         new_aur_deps += aur_deps_for_aur_packages
         package_names = aur_deps_for_aur_packages
 
     return new_aur_deps
 
 
+def ask_to_continue(text='Do you want to proceed?', default_yes=True):
+    answer = input(text + (' [Y/n] ' if default_yes else ' [y/N] '))
+    if default_yes:
+        if answer and answer.lower()[0] != 'y':
+            return False
+    else:
+        if not answer or answer.lower()[0] != 'y':
+            return False
+    return True
+
+
+class GitRepoStatus():
+    repo_path = None
+    clone = False
+    pull = False
+
+    package_name = None
+
+    def __init__(self, package_name):
+        self.package_name = package_name
+        repo_path = os.path.join(AUR_REPOS_CACHE, package_name)
+        if os.path.exists(repo_path):
+            if os.path.exists(os.path.join(repo_path, '.git')):
+                self.pull = True
+            else:
+                self.clone = True
+        else:
+            os.makedirs(repo_path)
+            self.clone = True
+        self.repo_path = repo_path
+
+    def create_clone_task(self):
+        return CmdTaskWorker([
+            'git',
+            'clone',
+            get_repo_url(self.package_name),
+            self.repo_path,
+        ])
+
+    def create_pull_task(self):
+        return CmdTaskWorker([
+            'git',
+            '-C',
+            self.repo_path,
+            'pull',
+            'origin',
+            'master'
+        ])
+
+    def create_task(self):
+        if self.pull:
+            return self.create_pull_task()
+        elif self.clone:
+            return self.create_clone_task()
+
+
+def clone_git_repos(package_names):
+    repos_statuses = {
+        package_name: GitRepoStatus(package_name)
+        for package_name in package_names
+    }
+    results = MultipleTasksExecutor({
+        repo_status.package_name: repo_status.create_task()
+        for repo_status in repos_statuses.values()
+    }).execute()
+    for package_name, result in results.items():
+        if result.return_code > 0:
+            print(color_line(f"Can't clone '{package_name}' from AUR:", 9))
+            print(result)
+            if not ask_to_continue():
+                sys.exit(1)
+    return repos_statuses
+
+
 def cli_install_packages(args):
     pacman_packages, aur_packages = find_repo_packages(args.positional)
     new_aur_deps = find_aur_deps(aur_packages)
 
+    # confirm package install/upgrade
     print()
-    print(color_line("Package", 15))
+    # print(color_line("Package", 15))
+    print(color_line("Packages:", 12))
     for pkg in pacman_packages:
         print(pkg)
     for pkg in aur_packages:
@@ -248,14 +357,81 @@ def cli_install_packages(args):
         color_line('::', 12),
         color_line('Proceed with installation? [Y/n]', 15)
     ))
+    print('{} {}'.format(
+        color_line('::', 12),
+        color_line('[V]iew package detail   [M]anually select packages', 15)
+    ))
+    answer = input()
+    if answer and answer.lower()[0] != 'y':
+        return
 
-    # confirm package install/upgrade
-    # git clone
+    all_aur_package_names = aur_packages + new_aur_deps
+    repos_statuses = clone_git_repos(all_aur_package_names)
+
     # review PKGBUILD and install files
-    # sudo echo
-    # makepkg aur_deps_for_aur + aur_packages
-    # sudo pacman -S pacman_packages + pacman_deps_for_aur
-    # sudo pacman -U aur_deps_for_aur + aur_packages
+    for pkg_name in reversed(all_aur_package_names):
+        if ask_to_continue(
+            "Do you want to edit PKGBUILD for {} package?".format(
+                color_line(pkg_name, 15)
+            ),
+            default_yes=False
+        ):
+            interactive_spawn([
+                os.environ.get('EDITOR', 'vim'),
+                os.path.join(
+                    repos_statuses[pkg_name].repo_path,
+                    'PKGBUILD'
+                )
+            ])
+
+    built_packages_paths = {}
+    interactive_spawn([
+        'sudo', 'echo'
+    ])
+    for pkg_name in reversed(all_aur_package_names):
+        build_dir = os.path.join(BUILD_CACHE, pkg_name)
+        if os.path.exists(build_dir):
+            shutil.rmtree(build_dir)
+        shutil.copytree(repos_statuses[pkg_name].repo_path, build_dir)
+        interactive_spawn(
+            [
+                'makepkg',
+                '-rf',
+                '--nodeps'
+            ],
+            cwd=build_dir
+        )
+        built_packages_paths[pkg_name] = glob.glob(
+            os.path.join(build_dir, '*.pkg.tar.xz')
+        )[0]
+        print(built_packages_paths[pkg_name])
+
+    if pacman_packages:
+        interactive_spawn(
+            [
+                'echo',
+                'sudo',
+                'pacman',
+                '-S',
+                '--noconfirm',
+            ] + pacman_packages,
+        )
+    if new_aur_deps:
+        interactive_spawn(
+            [
+                'echo',
+                'sudo',
+                'pacman',
+                '-U',
+                '--asdeps',
+                '--noconfirm',
+            ] + [
+                built_packages_paths[pkg_name]
+                for pkg_name in new_aur_deps
+            ],
+        )
+    # sudo pacman -U --asdeps aur_deps_for_aur
+    # sudo pacman -U aur_packages
     # write last_installed.txt
 
 
@@ -297,8 +473,8 @@ def parse_args(args):
     return parsed_args
 
 
-def interactive_spawn(cmd):
-    subprocess.Popen(cmd).communicate()
+def interactive_spawn(cmd, **kwargs):
+    subprocess.Popen(cmd, **kwargs).communicate()
 
 
 def main():

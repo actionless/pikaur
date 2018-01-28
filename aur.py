@@ -5,8 +5,13 @@ import json
 from urllib.parse import urlencode
 
 
-async def https_client(loop, host, uri, result_container=None, port=443):
-    result_container = result_container or {}
+class NetworkTaskResult():
+    return_code = None
+    headers = None
+    json = None
+
+
+async def https_client_task(loop, host, uri, port=443):
     # open SSL connection:
     ssl_context = ssl.create_default_context(
         ssl.Purpose.SERVER_AUTH,
@@ -35,8 +40,8 @@ async def https_client(loop, host, uri, result_container=None, port=443):
     # read response:
     data = await reader.read()
     # prepare response for parsing:
-    result, the_rest = data.split(b'\r\n', 1)
-    result = result.decode()
+    request_result, the_rest = data.split(b'\r\n', 1)
+    request_result = request_result.decode()
     # parse reponse:
     parsed_response = email.message_from_bytes(the_rest)
     # from email.policy import EmailPolicy
@@ -46,61 +51,53 @@ async def https_client(loop, host, uri, result_container=None, port=443):
     payload = ''
     if headers.get('Transfer-Encoding') == 'chunked':
         all_lines = parsed_response._payload.split('\r\n')
-        while True:
+        while all_lines:
             length = int('0x' + all_lines.pop(0), 16)
-            payload += all_lines.pop(0)
             if length == 0:
                 break
+            payload += all_lines.pop(0)
     else:
         payload = parsed_response._payload
 
-    # write result:
-    result_container['code'] = result.split()[1]
-    result_container['headers'] = headers
-    result_container['json'] = json.loads(payload)
-
     # close the socket:
     writer.close()
-    return result_container
+
+    # save result:
+    result = NetworkTaskResult()
+    result.code = request_result.split()[1]
+    result.headers = headers
+    result.json = json.loads(payload)
+    return result
 
 
-def search_packages(loop, search_query):
+class AurTaskWorker():
+
     host = 'aur.archlinux.org'
-    params = urlencode({
-        'v': 5,
-        'type': 'search',
-        'arg': search_query,
-        'by': 'name-desc'
-    })
-    uri = f'/rpc/?{params}'
-    return https_client(loop, host, uri)
+    uri = None
+
+    def get_task(self, loop):
+        return https_client_task(loop, self.host, self.uri)
 
 
-if __name__ == '__main__':
-    host = 'aur.archlinux.org'
-    params = urlencode({
-        'v': 5,
-        'type': 'search',
-        'arg': 'oomox',
-        # 'arg': 'oomox-git',
-        # 'arg': 'linux',
-        'by': 'name-desc'
-    })
-    uri = f'/rpc/?{params}'
+class AurTaskWorker_Search(AurTaskWorker):
 
-    # host = 'transfer.sh'
-    # uri = '/Namit/test.txt'
+    def __init__(self, search_query):
+        params = urlencode({
+            'v': 5,
+            'type': 'search',
+            'arg': search_query,
+            'by': 'name-desc'
+        })
+        self.uri = f'/rpc/?{params}'
 
-    loop = asyncio.get_event_loop()
-    result = {}
-    loop.run_until_complete(
-        https_client(loop, host, uri, result_container=result)
-    )
-    loop.close()
 
-    # from pprint import pprint
-    # print('=' * 30)
-    # pprint(result)
-    print(
-        [r['Name'] for r in result['json']['results']]
-    )
+class AurTaskWorker_Info(AurTaskWorker):
+
+    def __init__(self, packages):
+        params = urlencode({
+            'v': 5,
+            'type': 'info',
+        })
+        for package in packages:
+            params += '&arg[]=' + package
+        self.uri = f'/rpc/?{params}'

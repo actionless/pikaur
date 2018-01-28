@@ -1,9 +1,15 @@
 ~/.cache/pikaur/
 	aur_repos/  # keep there aur repos; show diff when updating
+		last_installed.txt  # aur repo hash of last successfully installed package
 	pkg/  # keep built packages; like /var/cache/pacman/pkg/ (optional?)
 	db.lck  # transaction lock
 ~/.config/pikaur.conf  # like /etc/pacman.conf
 /tmp/pikaur-$(id -u)/
-	aur_repos/  # keep there aur repos during transaction; copy to ~/.cache/pikaur/aur_repos/ after transaction
 	build/  # build directory; remove after build (or after whole transaction?)
 ?	install/  # copy there before installing; remove after transaction
+
+
+deps resolvment:
+2) p -Ssq
+1) p -Qsq
+3) search aur

@@ -513,24 +513,32 @@ def cli_install_packages(args):
         repos_statuses = clone_git_repos(all_aur_package_names)
 
     # review PKGBUILD and install files @TODO:
+    local_packages_found, _ = find_local_packages(
+        all_aur_package_names
+    )
     for pkg_name in reversed(all_aur_package_names):
         repo_status = repos_statuses[pkg_name]
         repo_path = repo_status.repo_path
 
-        last_installed_file = os.path.join(
+        last_installed_file_path = os.path.join(
             repo_path,
             'last_installed.txt'
         )
         already_installed = False
-        if os.path.exists(last_installed_file):
-            with open(last_installed_file) as f:
-                last_installed_hash = f.readlines()
-                with open(last_installed_file) as f2:
+        if (
+                pkg_name in local_packages_found
+        ) and (
+                os.path.exists(last_installed_file_path)
+        ):
+            with open(last_installed_file_path) as last_installed_file:
+                last_installed_hash = last_installed_file.readlines()
+                with open(
                     os.path.join(
                         repo_path,
                         '.git/refs/heads/master'
                     )
-                    current_hash = f2.readlines()
+                ) as current_hash_file:
+                    current_hash = current_hash_file.readlines()
                     if last_installed_hash == current_hash:
                         already_installed = True
         repo_status.already_installed = already_installed

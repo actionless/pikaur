@@ -465,12 +465,12 @@ def clone_git_repos(package_names):
 
 
 def get_editor():
-    # editor = os.environ.get('EDITOR')
-    # if editor:
-        # return editor
+    editor = os.environ.get('EDITOR')
+    if editor:
+        return editor
     for editor in ('vim', 'nano', 'mcedit', 'edit'):
         result = SingleTaskExecutor(
-            PacmanTaskWorker(['which', 'vim'])
+            CmdTaskWorker(['which', editor])
         ).execute()
         if result.return_code == 0:
             return editor

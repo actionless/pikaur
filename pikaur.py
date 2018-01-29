@@ -170,6 +170,33 @@ def color_line(line, color_number):
     return result
 
 
+def format_paragraph(line):
+    PADDING = 4
+    term_width = shutil.get_terminal_size((80, 80)).columns
+    max_line_width = term_width - PADDING * 2
+
+    result = []
+    current_line = []
+    line_length = 0
+    for word in line.split():
+        if len(word) + line_length > max_line_width:
+            result.append(current_line)
+            current_line = []
+            line_length = 0
+        current_line.append(word)
+        line_length += len(word) + 1
+    result.append(current_line)
+
+    return '\n'.join([
+        ' '.join(
+            [(PADDING-1)*' ', ] +
+            words +
+            [(PADDING-1)*' ', ],
+        )
+        for words in result
+    ])
+
+
 def cli_search_packages(args):
     PKGS = 'pkgs'
     AUR = 'aur'
@@ -190,7 +217,7 @@ def cli_search_packages(args):
                 color_line(aur_pkg["Version"], 10),
                 '',  # [installed]
             ))
-            print(f'    {aur_pkg["Description"]}')
+            print(format_paragraph(f'{aur_pkg["Description"]}'))
         # print(aur_pkg)
 
 
@@ -280,6 +307,8 @@ class GitRepoStatus():
 
     package_name = None
 
+    built_package_path = None
+
     def __init__(self, package_name):
         self.package_name = package_name
         repo_path = os.path.join(AUR_REPOS_CACHE, package_name)
@@ -343,26 +372,24 @@ def cli_install_packages(args):
     # confirm package install/upgrade
     print()
     # print(color_line("Package", 15))
-    print(color_line("Packages:", 12))
-    for pkg in pacman_packages:
-        print(pkg)
-    for pkg in aur_packages:
-        print(pkg)
+    if pacman_packages:
+        print(color_line("New packages will be installed:", 12))
+        print(format_paragraph(' '.join(pacman_packages)))
+    if aur_packages:
+        print(color_line("New packages will be installed from AUR:", 14))
+        print(format_paragraph(' '.join(aur_packages)))
     if new_aur_deps:
         print(color_line("New dependencies will be installed from AUR:", 11))
-        for dep in new_aur_deps:
-            print(dep)
+        print(format_paragraph(' '.join(new_aur_deps)))
     print()
-    print('{} {}'.format(
-        color_line('::', 12),
-        color_line('Proceed with installation? [Y/n]', 15)
-    ))
     print('{} {}'.format(
         color_line('::', 12),
         color_line('[V]iew package detail   [M]anually select packages', 15)
     ))
-    answer = input()
-    if answer and answer.lower()[0] != 'y':
+    if not ask_to_continue('{} {}'.format(
+        color_line('::', 12),
+        color_line('Proceed with installation?', 15)
+    )):
         return
 
     all_aur_package_names = aur_packages + new_aur_deps
@@ -389,13 +416,6 @@ def cli_install_packages(args):
                     current_hash = f2.readlines()
                     if last_installed_hash == current_hash:
                         already_installed = True
-                        print(
-                            '{} {} {}'.format(
-                                color_line('warning:', 11),
-                                pkg_name,
-                                'is up to date -- skipping'
-                            )
-                        )
         repo_status.already_installed = already_installed
 
         if not ('--needed' in args.raw and already_installed):
@@ -412,6 +432,14 @@ def cli_install_packages(args):
                         'PKGBUILD'
                     )
                 ])
+        else:
+            print(
+                '{} {} {}'.format(
+                    color_line('warning:', 11),
+                    pkg_name,
+                    'is up to date -- skipping'
+                )
+            )
 
     # get sudo for further questions
     interactive_spawn([
@@ -419,7 +447,6 @@ def cli_install_packages(args):
     ])
 
     # build packages
-    built_packages_paths = {}
     for pkg_name in reversed(all_aur_package_names):
         repo_status = repos_statuses[pkg_name]
         repo_path = repo_status.repo_path
@@ -428,7 +455,7 @@ def cli_install_packages(args):
             shutil.rmtree(build_dir)
         shutil.copytree(repo_path, build_dir)
 
-        if not ('--needed' in args.raw and already_installed):
+        if not ('--needed' in args.raw and repo_status.already_installed):
             interactive_spawn(
                 [
                     'makepkg',
@@ -437,7 +464,7 @@ def cli_install_packages(args):
                 ],
                 cwd=build_dir
             )
-            built_packages_paths[pkg_name] = glob.glob(
+            repo_status.built_package_path = glob.glob(
                 os.path.join(build_dir, '*.pkg.tar.xz')
             )[0]
 
@@ -453,9 +480,9 @@ def cli_install_packages(args):
         )
 
     new_aur_deps_to_install = [
-        built_packages_paths[pkg_name]
+        repos_statuses[pkg_name].built_package_path
         for pkg_name in new_aur_deps
-        if pkg_name in built_packages_paths
+        if repos_statuses[pkg_name].built_package_path
     ]
     if new_aur_deps_to_install:
         interactive_spawn(
@@ -470,9 +497,9 @@ def cli_install_packages(args):
         )
 
     aur_packages_to_install = [
-        built_packages_paths[pkg_name]
+        repos_statuses[pkg_name].built_package_path
         for pkg_name in aur_packages
-        if pkg_name in built_packages_paths
+        if repos_statuses[pkg_name].built_package_path
     ]
     if aur_packages_to_install:
         interactive_spawn(

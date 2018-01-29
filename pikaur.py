@@ -63,7 +63,6 @@ class CmdTaskWorker(object):
     stderr = None
     stdout = None
     enable_logging = None
-    # enable_logging = True
 
     async def _read_stream(self, stream, callback):
         while True:
@@ -87,15 +86,12 @@ class CmdTaskWorker(object):
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE
         )
-        # print(f"== STARTED {self.cmd}")
         await asyncio.wait([
             self._read_stream(process.stdout, self.save_out),
             self._read_stream(process.stderr, self.save_err)
         ])
-        # print(f"== DEBUG {self.cmd}")
         result = CmdTaskResult()
         result.return_code = await process.wait()
-        # print(f"== DONE with {result.return_code}")
         result.stderr = self.stderr.decode('utf-8')
         result.stdout = self.stdout.decode('utf-8')
         return result
@@ -242,10 +238,10 @@ class NetworkTaskResult():
     @classmethod
     def from_bytes(cls, bytes_response):
         # prepare response for parsing:
-        request_result, the_rest = bytes_response.split(b'\r\n', 1)
-        request_result = request_result.decode()
+        bytes_response = bytes_response.decode('utf-8')
+        request_result, the_rest = bytes_response.split('\r\n', 1)
         # parse reponse:
-        parsed_response = email.message_from_bytes(the_rest)
+        parsed_response = email.message_from_string(the_rest)
         # from email.policy import EmailPolicy
         # parsed_response = email.message_from_bytes(
         #    headers, policy=EmailPolicy
@@ -254,14 +250,14 @@ class NetworkTaskResult():
         # join chunked response parts into one:
         payload = ''
         if headers.get('Transfer-Encoding') == 'chunked':
-            all_lines = parsed_response._payload.split('\r\n')
+            all_lines = parsed_response.get_payload().split('\r\n')
             while all_lines:
                 length = int('0x' + all_lines.pop(0), 16)
                 if length == 0:
                     break
                 payload += all_lines.pop(0)
         else:
-            payload = parsed_response._payload
+            payload = parsed_response.get_payload()
 
         # save result:
         self = cls()
@@ -680,7 +676,9 @@ def cli_search_packages(args):
     AUR = 'aur'
     result = MultipleTasksExecutor({
         PKGS: PacmanColorTaskWorker(args.raw),
-        AUR: AurTaskWorker_Search(search_query=' '.join(args.positional or [])),
+        AUR: AurTaskWorker_Search(
+            search_query=' '.join(args.positional or [])
+        ),
     }).execute()
 
     print(result[PKGS].stdout, end='')

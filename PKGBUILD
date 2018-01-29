@@ -33,5 +33,5 @@ package() {
 	cd "${srcdir}/${pkgbase}"
 	nuitka ./pikaur.py
 	mkdir -p ${pkgdir}/usr/sbin/
-	cp ./pikaur.exe ${pkgdir}/usr/sbin/pikaur
+	install -D -m755 ./pikaur.exe ${pkgdir}/usr/sbin/pikaur
 }

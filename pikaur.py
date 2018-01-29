@@ -692,6 +692,7 @@ def cli_install_packages(args):
 
 
 def cli_upgrade_package(_args):
+    # @TODO:
     raise NotImplementedError()
 
 

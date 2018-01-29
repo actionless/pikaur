@@ -692,25 +692,7 @@ def cli_install_packages(args):
 
 
 def cli_upgrade_package(_args):
-    result = MultipleTasksExecutor({
-        'proc1': CmdTaskWorker([
-            "bash", "-c",
-            "echo stdout"
-            " && sleep 1"
-            " && echo stderr 1>&2"
-            " && sleep 1"
-            " && echo done"
-        ]),
-        'proc2': CmdTaskWorker([
-            "bash", "-c",
-            "echo stdout2"
-            " && sleep 1"
-            " && echo stderr2 1>&2"
-            " && sleep 1"
-            " && echo done2"
-        ]),
-    }).execute()
-    print(result)
+    raise NotImplementedError()
 
 
 def cli_search_packages(args):

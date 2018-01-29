@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -21,13 +22,17 @@ BUILD_CACHE = os.path.join(CACHE_ROOT, 'build')
 LOCK_FILE_PATH = os.path.join(CACHE_ROOT, 'db.lck')
 
 
-# follow GNU readline config in prompts:
-system_inputrc_path = '/etc/inputrc'
-if os.path.exists(system_inputrc_path):
-    readline.read_init_file(system_inputrc_path)
-user_inputrc_path = os.path.expanduser('~/.inputrc')
-if os.path.exists(user_inputrc_path):
-    readline.read_init_file(user_inputrc_path)
+def init_readline():
+    # follow GNU readline config in prompts:
+    system_inputrc_path = '/etc/inputrc'
+    if os.path.exists(system_inputrc_path):
+        readline.read_init_file(system_inputrc_path)
+    user_inputrc_path = os.path.expanduser('~/.inputrc')
+    if os.path.exists(user_inputrc_path):
+        readline.read_init_file(user_inputrc_path)
+
+
+init_readline()
 
 
 class CmdTaskResult():
@@ -451,6 +456,18 @@ def clone_git_repos(package_names):
     return repos_statuses
 
 
+def get_editor():
+    # editor = os.environ.get('EDITOR')
+    # if editor:
+        # return editor
+    for editor in ('vim', 'nano', 'mcedit', 'edit'):
+        result = SingleTaskExecutor(
+            PacmanTaskWorker(['which', 'vim'])
+        ).execute()
+        if result.return_code == 0:
+            return editor
+
+
 def cli_install_packages(args):
     pacman_packages, aur_packages = find_repo_packages(args.positional)
     new_aur_deps = find_aur_deps(aur_packages)
@@ -508,10 +525,10 @@ def cli_install_packages(args):
 
         if not ('--needed' in args.raw and already_installed):
             if ask_to_continue(
-                "Do you want to edit PKGBUILD for {} package?".format(
-                    color_line(pkg_name, 15)
-                ),
-                default_yes=False
+                    "Do you want to edit PKGBUILD for {} package?".format(
+                        color_line(pkg_name, 15)
+                    ),
+                    default_yes=False
             ):
                 interactive_spawn([
                     os.environ.get('EDITOR', 'vim'),
@@ -698,10 +715,7 @@ def main():
 
 
 if __name__ == '__main__':
-    result = SingleTaskExecutor(
-        CmdTaskWorker(["id", "-u"])
-    ).execute()
-    if int(result.stdout.strip()) == 0:
+    if os.getuid() == 0:
         print("{} {}".format(
             color_line('::', 9),
             "Don't run me as root."

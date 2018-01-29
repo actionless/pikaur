@@ -570,24 +570,29 @@ def cli_install_packages(args):
     # build packages
     for pkg_name in reversed(all_aur_package_names):
         repo_status = repos_statuses[pkg_name]
+
+        if '--needed' in args.raw and repo_status.already_installed:
+            continue
         repo_path = repo_status.repo_path
         build_dir = os.path.join(BUILD_CACHE, pkg_name)
         if os.path.exists(build_dir):
-            shutil.rmtree(build_dir)
+            try:
+                shutil.rmtree(build_dir)
+            except PermissionError:
+                interactive_spawn(['rm', '-rf', build_dir])
         shutil.copytree(repo_path, build_dir)
 
-        if not ('--needed' in args.raw and repo_status.already_installed):
-            interactive_spawn(
-                [
-                    'makepkg',
-                    '-rf',
-                    '--nodeps'
-                ],
-                cwd=build_dir
-            )
-            repo_status.built_package_path = glob.glob(
-                os.path.join(build_dir, '*.pkg.tar.xz')
-            )[0]
+        interactive_spawn(
+            [
+                'makepkg',
+                '-rf',
+                '--nodeps'
+            ],
+            cwd=build_dir
+        )
+        repo_status.built_package_path = glob.glob(
+            os.path.join(build_dir, '*.pkg.tar.xz')
+        )[0]
 
     if pacman_packages:
         interactive_spawn(

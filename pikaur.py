@@ -703,7 +703,7 @@ def parse_args(args):
     parser = argparse.ArgumentParser(prog=sys.argv[0])
     for letter in ('S', 's', 'q', 'u', 'y'):
         parser.add_argument('-'+letter, action='store_true')
-    parser.add_argument('positional', nargs='?')
+    parser.add_argument('positional', nargs='*')
     parsed_args, unknown_args = parser.parse_known_args(args)
     parsed_args.unknown_args = unknown_args
     parsed_args.raw = args

@@ -65,13 +65,13 @@ class CmdTaskWorker(object):
     enable_logging = None
     # enable_logging = True
 
-    async def _read_stream(self, stream, cb):
+    async def _read_stream(self, stream, callback):
         while True:
             line = await stream.readline()
             if line:
                 if self.enable_logging:
                     print('>> {}'.format(line.decode('ascii')), end='')
-                cb(line)
+                callback(line)
             else:
                 break
 
@@ -130,6 +130,7 @@ class PacmanColorTaskWorker(PacmanTaskWorker):
 
 
 class MultipleTasksExecutor(object):
+    loop = None
 
     def __init__(self, cmds):
         self.cmds = cmds
@@ -238,6 +239,37 @@ class NetworkTaskResult():
     headers = None
     json = None
 
+    @classmethod
+    def from_bytes(cls, bytes_response):
+        # prepare response for parsing:
+        request_result, the_rest = bytes_response.split(b'\r\n', 1)
+        request_result = request_result.decode()
+        # parse reponse:
+        parsed_response = email.message_from_bytes(the_rest)
+        # from email.policy import EmailPolicy
+        # parsed_response = email.message_from_bytes(
+        #    headers, policy=EmailPolicy
+        # )
+        headers = dict(parsed_response.items())
+        # join chunked response parts into one:
+        payload = ''
+        if headers.get('Transfer-Encoding') == 'chunked':
+            all_lines = parsed_response._payload.split('\r\n')
+            while all_lines:
+                length = int('0x' + all_lines.pop(0), 16)
+                if length == 0:
+                    break
+                payload += all_lines.pop(0)
+        else:
+            payload = parsed_response._payload
+
+        # save result:
+        self = cls()
+        self.return_code = request_result.split()[1]
+        self.headers = headers
+        self.json = json.loads(payload)
+        return self
+
 
 async def https_client_task(loop, host, uri, port=443):
     # open SSL connection:
@@ -267,35 +299,9 @@ async def https_client_task(loop, host, uri, port=443):
 
     # read response:
     data = await reader.read()
-    # prepare response for parsing:
-    request_result, the_rest = data.split(b'\r\n', 1)
-    request_result = request_result.decode()
-    # parse reponse:
-    parsed_response = email.message_from_bytes(the_rest)
-    # from email.policy import EmailPolicy
-    # parsed_response = email.message_from_bytes(headers, policy=EmailPolicy)
-    headers = dict(parsed_response.items())
-    # join chunked response parts into one:
-    payload = ''
-    if headers.get('Transfer-Encoding') == 'chunked':
-        all_lines = parsed_response._payload.split('\r\n')
-        while all_lines:
-            length = int('0x' + all_lines.pop(0), 16)
-            if length == 0:
-                break
-            payload += all_lines.pop(0)
-    else:
-        payload = parsed_response._payload
-
     # close the socket:
     writer.close()
-
-    # save result:
-    result = NetworkTaskResult()
-    result.code = request_result.split()[1]
-    result.headers = headers
-    result.json = json.loads(payload)
-    return result
+    return NetworkTaskResult.from_bytes(data)
 
 
 class AurTaskWorker():
@@ -404,6 +410,7 @@ class GitRepoStatus():
         self.package_name = package_name
         repo_path = os.path.join(AUR_REPOS_CACHE, package_name)
         if os.path.exists(repo_path):
+            # pylint: disable=simplifiable-if-statement
             if os.path.exists(os.path.join(repo_path, '.git')):
                 self.pull = True
             else:
@@ -436,6 +443,7 @@ class GitRepoStatus():
             return self.create_pull_task()
         elif self.clone:
             return self.create_clone_task()
+        return NotImplemented
 
 
 def clone_git_repos(package_names):
@@ -466,6 +474,14 @@ def get_editor():
         ).execute()
         if result.return_code == 0:
             return editor
+    print(
+        '{} {}'.format(
+            color_line('error:', 9),
+            'no editor found. Try setting $EDITOR.'
+        )
+    )
+    if not ask_to_continue('Do you want to proceed without editing?'):
+        sys.exit(2)
 
 
 def cli_install_packages(args):
@@ -529,9 +545,9 @@ def cli_install_packages(args):
                         color_line(pkg_name, 15)
                     ),
                     default_yes=False
-            ):
+            ) and get_editor():
                 interactive_spawn([
-                    os.environ.get('EDITOR', 'vim'),
+                    get_editor(),
                     os.path.join(
                         repo_path,
                         'PKGBUILD'
@@ -632,7 +648,7 @@ def cli_install_packages(args):
             )
 
 
-def cli_upgrade_package(args):
+def cli_upgrade_package(_args):
     result = MultipleTasksExecutor({
         'proc1': CmdTaskWorker([
             "bash", "-c",

@@ -3,7 +3,7 @@
 Minimalistic AUR helper.
 
 
-### @TODO: Installation
+### Installation
 
 ```sh
 git clone https://github.com/actionless/pikaur.git

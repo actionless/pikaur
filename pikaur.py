@@ -243,7 +243,7 @@ class NetworkTaskResult():
         # parse reponse:
         parsed_response = email.message_from_string(the_rest)
         # from email.policy import EmailPolicy
-        # parsed_response = email.message_from_bytes(
+        # parsed_response = email.message_from_string(
         #    headers, policy=EmailPolicy
         # )
         headers = dict(parsed_response.items())
@@ -643,6 +643,9 @@ def cli_install_packages(args):
             pacman_packages,
         )
 
+    if args.downloadonly:
+        return
+
     new_aur_deps_to_install = [
         repos_statuses[pkg_name].built_package_path
         for pkg_name in new_aur_deps
@@ -696,6 +699,16 @@ def cli_upgrade_package(_args):
     raise NotImplementedError()
 
 
+def cli_info_packages(_Args):
+    # @TODO:
+    raise NotImplementedError()
+
+
+def cli_clean_packages_cache(_Args):
+    # @TODO:
+    raise NotImplementedError()
+
+
 def cli_search_packages(args):
     pkgs = 'pkgs'
     aur = 'aur'
@@ -708,7 +721,7 @@ def cli_search_packages(args):
 
     print(result[pkgs].stdout, end='')
     for aur_pkg in result[aur].json['results']:
-        if args.q:
+        if args.quiet:
             print(aur_pkg['Name'])
         else:
             print("{}{} {} {}".format(
@@ -723,9 +736,18 @@ def cli_search_packages(args):
 
 
 def parse_args(args):
-    parser = argparse.ArgumentParser(prog=sys.argv[0])
-    for letter in ('S', 's', 'q', 'u', 'y'):
+    parser = argparse.ArgumentParser(prog=sys.argv[0], add_help=False)
+    for letter in (
+        'b', 'c', 'd', 'g', 'i', 'l', 'p', 'r', 's', 'u', 'v', 'y',
+    ):
         parser.add_argument('-'+letter, action='store_true')
+    for letter, opt in (
+        ('S', 'sync'),
+        ('w', 'downloadonly'),
+        ('q', 'quiet'),
+        ('h', 'help'),
+    ):
+        parser.add_argument('-'+letter, '--'+opt, action='store_true')
     parser.add_argument('positional', nargs='*')
     parsed_args, unknown_args = parser.parse_known_args(args)
     parsed_args.unknown_args = unknown_args
@@ -740,22 +762,30 @@ def parse_args(args):
 
 
 def interactive_spawn(cmd, **kwargs):
-    subprocess.Popen(cmd, **kwargs).communicate()
+    process = subprocess.Popen(cmd, **kwargs)
+    process.communicate()
+    return process
 
 
 def main():
     args = sys.argv[1:]
     parsed_args = parse_args(args)
 
-    if parsed_args.S:
+    if parsed_args.help:
+        return interactive_spawn(['pacman', ] + args)
+    elif parsed_args.sync:
         if parsed_args.u:
             return cli_upgrade_package(parsed_args)
         elif parsed_args.s:
             return cli_search_packages(parsed_args)
+        elif parsed_args.i:
+            return cli_info_packages(parsed_args)
+        elif parsed_args.c:
+            return cli_clean_packages_cache(parsed_args)
         elif '-S' in args:
             return cli_install_packages(parsed_args)
 
-    return interactive_spawn(['pacman', ] + args)
+    return interactive_spawn(['sudo', 'pacman', ] + args)
 
 
 if __name__ == '__main__':

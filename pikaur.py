@@ -8,11 +8,10 @@ import subprocess
 import readline
 import shutil
 import glob
-
-from aur import (
-    AurTaskWorker_Search, AurTaskWorker_Info,
-    get_repo_url,
-)
+import ssl
+import email
+import json
+from urllib.parse import urlencode
 
 
 CACHE_ROOT = os.path.expanduser('~/.cache/pikaur/')
@@ -159,6 +158,15 @@ class MultipleTasksExecutor(object):
         return self.results
 
 
+class SingleTaskExecutor(MultipleTasksExecutor):
+
+    def __init__(self, cmd):
+        super().__init__({0: cmd})
+
+    def execute(self):
+        return super().execute()[0]
+
+
 def color_line(line, color_number):
     result = ''
     if color_number >= 8:
@@ -197,35 +205,11 @@ def format_paragraph(line):
     ])
 
 
-def cli_search_packages(args):
-    PKGS = 'pkgs'
-    AUR = 'aur'
-    result = MultipleTasksExecutor({
-        PKGS: PacmanColorTaskWorker(args.raw),
-        AUR: AurTaskWorker_Search(search_query=' '.join(args.positional)),
-    }).execute()
-
-    print(result[PKGS].stdout, end='')
-    for aur_pkg in result[AUR].json['results']:
-        if args.q:
-            print(aur_pkg['Name'])
-        else:
-            print("{}{} {} {}".format(
-                # color_line('aur/', 13),
-                color_line('aur/', 9),
-                color_line(aur_pkg['Name'], 15),
-                color_line(aur_pkg["Version"], 10),
-                '',  # [installed]
-            ))
-            print(format_paragraph(f'{aur_pkg["Description"]}'))
-        # print(aur_pkg)
-
-
 def find_pacman_packages(packages, local=False):
-    results = MultipleTasksExecutor({
-        0: PacmanTaskWorker(['-Ssq', ] if not local else ['-Qsq', ])
-    }).execute()
-    all_repo_packages = results[0].stdout.splitlines()
+    result = SingleTaskExecutor(
+        PacmanTaskWorker(['-Ssq', ] if not local else ['-Qsq', ])
+    ).execute()
+    all_repo_packages = result.stdout.splitlines()
     pacman_packages = []
     not_found_packages = []
     for package_name in packages:
@@ -244,11 +228,113 @@ def find_local_packages(packages):
     return find_pacman_packages(packages, local=True)
 
 
+class NetworkTaskResult():
+    return_code = None
+    headers = None
+    json = None
+
+
+async def https_client_task(loop, host, uri, port=443):
+    # open SSL connection:
+    ssl_context = ssl.create_default_context(
+        ssl.Purpose.SERVER_AUTH,
+    )
+    reader, writer = await asyncio.open_connection(
+        host, port,
+        ssl=ssl_context, loop=loop
+    )
+
+    # prepare request data:
+    action = f'GET {uri} HTTP/1.1\r\n'
+    headers = '\r\n'.join([
+        f'{key}: {value}' for key, value in {
+            "Host": host,
+            "Content-type": "application/json",
+            "User-Agent": "pikaur/0.1",
+            "Accept": "*/*"
+        }.items()
+    ]) + '\r\n'
+    body = '\r\n' + '\r\n'
+    request = f'{action}{headers}{body}\x00'
+    # send request:
+    writer.write(request.encode())
+    await writer.drain()
+
+    # read response:
+    data = await reader.read()
+    # prepare response for parsing:
+    request_result, the_rest = data.split(b'\r\n', 1)
+    request_result = request_result.decode()
+    # parse reponse:
+    parsed_response = email.message_from_bytes(the_rest)
+    # from email.policy import EmailPolicy
+    # parsed_response = email.message_from_bytes(headers, policy=EmailPolicy)
+    headers = dict(parsed_response.items())
+    # join chunked response parts into one:
+    payload = ''
+    if headers.get('Transfer-Encoding') == 'chunked':
+        all_lines = parsed_response._payload.split('\r\n')
+        while all_lines:
+            length = int('0x' + all_lines.pop(0), 16)
+            if length == 0:
+                break
+            payload += all_lines.pop(0)
+    else:
+        payload = parsed_response._payload
+
+    # close the socket:
+    writer.close()
+
+    # save result:
+    result = NetworkTaskResult()
+    result.code = request_result.split()[1]
+    result.headers = headers
+    result.json = json.loads(payload)
+    return result
+
+
+class AurTaskWorker():
+
+    host = 'aur.archlinux.org'
+    uri = None
+
+    def get_task(self, loop):
+        return https_client_task(loop, self.host, self.uri)
+
+
+class AurTaskWorker_Search(AurTaskWorker):
+
+    def __init__(self, search_query):
+        params = urlencode({
+            'v': 5,
+            'type': 'search',
+            'arg': search_query,
+            'by': 'name-desc'
+        })
+        self.uri = f'/rpc/?{params}'
+
+
+class AurTaskWorker_Info(AurTaskWorker):
+
+    def __init__(self, packages):
+        params = urlencode({
+            'v': 5,
+            'type': 'info',
+        })
+        for package in packages:
+            params += '&arg[]=' + package
+        self.uri = f'/rpc/?{params}'
+
+
+def get_repo_url(package_name):
+    return f'https://aur.archlinux.org/{package_name}.git'
+
+
 def find_aur_packages(package_names):
-    results = MultipleTasksExecutor({
-        0: AurTaskWorker_Info(packages=package_names),
-    }).execute()
-    json_results = results[0].json['results']
+    result = SingleTaskExecutor(
+        AurTaskWorker_Info(packages=package_names)
+    ).execute()
+    json_results = result.json['results']
     found_aur_packages = [
         result['Name'] for result in json_results
     ]
@@ -382,18 +468,20 @@ def cli_install_packages(args):
         print(color_line("New dependencies will be installed from AUR:", 11))
         print(format_paragraph(' '.join(new_aur_deps)))
     print()
-    print('{} {}'.format(
+
+    answer = input('{} {}\n{} {}\n'.format(
+        color_line('::', 12),
+        color_line('Proceed with installation? [Y/n] ', 15),
         color_line('::', 12),
         color_line('[V]iew package detail   [M]anually select packages', 15)
     ))
-    if not ask_to_continue('{} {}'.format(
-        color_line('::', 12),
-        color_line('Proceed with installation?', 15)
-    )):
-        return
+    if answer and answer.lower()[0] != 'y':
+        sys.exit(1)
 
     all_aur_package_names = aur_packages + new_aur_deps
-    repos_statuses = clone_git_repos(all_aur_package_names)
+    repos_statuses = None
+    if all_aur_package_names:
+        repos_statuses = clone_git_repos(all_aur_package_names)
 
     # review PKGBUILD and install files @TODO:
     for pkg_name in reversed(all_aur_package_names):
@@ -513,17 +601,18 @@ def cli_install_packages(args):
         )
 
     # save git hash of last sucessfully installed package
-    for pkg_name, repo_status in repos_statuses.items():
-        shutil.copy2(
-            os.path.join(
-                repo_status.repo_path,
-                '.git/refs/heads/master'
-            ),
-            os.path.join(
-                repo_status.repo_path,
-                'last_installed.txt'
+    if repos_statuses:
+        for pkg_name, repo_status in repos_statuses.items():
+            shutil.copy2(
+                os.path.join(
+                    repo_status.repo_path,
+                    '.git/refs/heads/master'
+                ),
+                os.path.join(
+                    repo_status.repo_path,
+                    'last_installed.txt'
+                )
             )
-        )
 
 
 def cli_upgrade_package(args):
@@ -546,6 +635,30 @@ def cli_upgrade_package(args):
         ]),
     }).execute()
     print(result)
+
+
+def cli_search_packages(args):
+    PKGS = 'pkgs'
+    AUR = 'aur'
+    result = MultipleTasksExecutor({
+        PKGS: PacmanColorTaskWorker(args.raw),
+        AUR: AurTaskWorker_Search(search_query=' '.join(args.positional)),
+    }).execute()
+
+    print(result[PKGS].stdout, end='')
+    for aur_pkg in result[AUR].json['results']:
+        if args.q:
+            print(aur_pkg['Name'])
+        else:
+            print("{}{} {} {}".format(
+                # color_line('aur/', 13),
+                color_line('aur/', 9),
+                color_line(aur_pkg['Name'], 15),
+                color_line(aur_pkg["Version"], 10),
+                '',  # [installed]
+            ))
+            print(format_paragraph(f'{aur_pkg["Description"]}'))
+        # print(aur_pkg)
 
 
 def parse_args(args):
@@ -585,4 +698,16 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    result = SingleTaskExecutor(
+        CmdTaskWorker(["id", "-u"])
+    ).execute()
+    if int(result.stdout.strip()) == 0:
+        print("{} {}".format(
+            color_line('::', 9),
+            "Don't run me as root."
+        ))
+        sys.exit(1)
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(130)

@@ -181,9 +181,9 @@ def color_line(line, color_number):
 
 
 def format_paragraph(line):
-    PADDING = 4
+    padding = 4
     term_width = shutil.get_terminal_size((80, 80)).columns
-    max_line_width = term_width - PADDING * 2
+    max_line_width = term_width - padding * 2
 
     result = []
     current_line = []
@@ -199,9 +199,9 @@ def format_paragraph(line):
 
     return '\n'.join([
         ' '.join(
-            [(PADDING-1)*' ', ] +
+            [(padding-1)*' ', ] +
             words +
-            [(PADDING-1)*' ', ],
+            [(padding-1)*' ', ],
         )
         for words in result
     ])
@@ -309,7 +309,7 @@ class AurTaskWorker():
         return https_client_task(loop, self.host, self.uri)
 
 
-class AurTaskWorker_Search(AurTaskWorker):
+class AurTaskWorkerSearch(AurTaskWorker):
 
     def __init__(self, search_query):
         params = urlencode({
@@ -321,7 +321,7 @@ class AurTaskWorker_Search(AurTaskWorker):
         self.uri = f'/rpc/?{params}'
 
 
-class AurTaskWorker_Info(AurTaskWorker):
+class AurTaskWorkerInfo(AurTaskWorker):
 
     def __init__(self, packages):
         params = urlencode({
@@ -339,7 +339,7 @@ def get_repo_url(package_name):
 
 def find_aur_packages(package_names):
     result = SingleTaskExecutor(
-        AurTaskWorker_Info(packages=package_names)
+        AurTaskWorkerInfo(packages=package_names)
     ).execute()
     json_results = result.json['results']
     found_aur_packages = [
@@ -478,9 +478,11 @@ def get_editor():
     )
     if not ask_to_continue('Do you want to proceed without editing?'):
         sys.exit(2)
+    return None
 
 
 def cli_install_packages(args):
+    # @TODO: split into smaller routines
     pacman_packages, aur_packages = find_repo_packages(args.positional)
     new_aur_deps = find_aur_deps(aur_packages)
 
@@ -512,7 +514,7 @@ def cli_install_packages(args):
     if all_aur_package_names:
         repos_statuses = clone_git_repos(all_aur_package_names)
 
-    # review PKGBUILD and install files @TODO:
+    # review PKGBUILD and install files
     local_packages_found, _ = find_local_packages(
         all_aur_package_names
     )
@@ -528,7 +530,7 @@ def cli_install_packages(args):
         if (
                 pkg_name in local_packages_found
         ) and (
-                os.path.exists(last_installed_file_path)
+            os.path.exists(last_installed_file_path)
         ):
             with open(last_installed_file_path) as last_installed_file:
                 last_installed_hash = last_installed_file.readlines()
@@ -544,19 +546,51 @@ def cli_install_packages(args):
         repo_status.already_installed = already_installed
 
         if not ('--needed' in args.raw and already_installed):
-            if ask_to_continue(
-                    "Do you want to edit PKGBUILD for {} package?".format(
-                        color_line(pkg_name, 15)
-                    ),
-                    default_yes=False
-            ) and get_editor():
-                interactive_spawn([
-                    get_editor(),
+            editor = get_editor()
+            if editor:
+                if ask_to_continue(
+                        "Do you want to edit PKGBUILD for {} package?".format(
+                            color_line(pkg_name, 15)
+                        ),
+                        default_yes=False
+                ):
+                    interactive_spawn([
+                        get_editor(),
+                        os.path.join(
+                            repo_path,
+                            'PKGBUILD'
+                        )
+                    ])
+
+                install_file_name = None
+                install_prefix = 'install = '
+                with open(
                     os.path.join(
                         repo_path,
-                        'PKGBUILD'
+                        '.SRCINFO'
                     )
-                ])
+                ) as srcinfo_file:
+                    for line in srcinfo_file.readlines():
+                        if line.strip().startswith(install_prefix):
+                            install_file_name = line.strip().lstrip(
+                                install_prefix
+                            )
+                if install_file_name:
+                    if ask_to_continue(
+                            "Do you want to edit {} for {} package?".format(
+                                install_file_name,
+                                color_line(pkg_name, 15)
+                            ),
+                            default_yes=False
+                    ):
+                        interactive_spawn([
+                            get_editor(),
+                            os.path.join(
+                                repo_path,
+                                install_file_name
+                            )
+                        ])
+
         else:
             print(
                 '{} {} {}'.format(
@@ -680,17 +714,17 @@ def cli_upgrade_package(_args):
 
 
 def cli_search_packages(args):
-    PKGS = 'pkgs'
-    AUR = 'aur'
+    pkgs = 'pkgs'
+    aur = 'aur'
     result = MultipleTasksExecutor({
-        PKGS: PacmanColorTaskWorker(args.raw),
-        AUR: AurTaskWorker_Search(
+        pkgs: PacmanColorTaskWorker(args.raw),
+        aur: AurTaskWorkerSearch(
             search_query=' '.join(args.positional or [])
         ),
     }).execute()
 
-    print(result[PKGS].stdout, end='')
-    for aur_pkg in result[AUR].json['results']:
+    print(result[pkgs].stdout, end='')
+    for aur_pkg in result[aur].json['results']:
         if args.q:
             print(aur_pkg['Name'])
         else:
@@ -738,7 +772,7 @@ def main():
         elif '-S' in args:
             return cli_install_packages(parsed_args)
 
-    interactive_spawn(['pacman', ] + args)
+    return interactive_spawn(['pacman', ] + args)
 
 
 if __name__ == '__main__':

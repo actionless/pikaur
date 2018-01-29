@@ -368,71 +368,135 @@ def cli_install_packages(args):
     all_aur_package_names = aur_packages + new_aur_deps
     repos_statuses = clone_git_repos(all_aur_package_names)
 
-    # review PKGBUILD and install files
+    # review PKGBUILD and install files @TODO:
     for pkg_name in reversed(all_aur_package_names):
-        if ask_to_continue(
-            "Do you want to edit PKGBUILD for {} package?".format(
-                color_line(pkg_name, 15)
-            ),
-            default_yes=False
-        ):
-            interactive_spawn([
-                os.environ.get('EDITOR', 'vim'),
-                os.path.join(
-                    repos_statuses[pkg_name].repo_path,
-                    'PKGBUILD'
-                )
-            ])
+        repo_status = repos_statuses[pkg_name]
+        repo_path = repo_status.repo_path
 
-    built_packages_paths = {}
+        last_installed_file = os.path.join(
+            repo_path,
+            'last_installed.txt'
+        )
+        already_installed = False
+        if os.path.exists(last_installed_file):
+            with open(last_installed_file) as f:
+                last_installed_hash = f.readlines()
+                with open(last_installed_file) as f2:
+                    os.path.join(
+                        repo_path,
+                        '.git/refs/heads/master'
+                    )
+                    current_hash = f2.readlines()
+                    if last_installed_hash == current_hash:
+                        already_installed = True
+                        print(
+                            '{} {} {}'.format(
+                                color_line('warning:', 11),
+                                pkg_name,
+                                'is up to date -- skipping'
+                            )
+                        )
+        repo_status.already_installed = already_installed
+
+        if not ('--needed' in args.raw and already_installed):
+            if ask_to_continue(
+                "Do you want to edit PKGBUILD for {} package?".format(
+                    color_line(pkg_name, 15)
+                ),
+                default_yes=False
+            ):
+                interactive_spawn([
+                    os.environ.get('EDITOR', 'vim'),
+                    os.path.join(
+                        repo_path,
+                        'PKGBUILD'
+                    )
+                ])
+
+    # get sudo for further questions
     interactive_spawn([
-        'sudo', 'echo'
+        'sudo', 'true'
     ])
+
+    # build packages
+    built_packages_paths = {}
     for pkg_name in reversed(all_aur_package_names):
+        repo_status = repos_statuses[pkg_name]
+        repo_path = repo_status.repo_path
         build_dir = os.path.join(BUILD_CACHE, pkg_name)
         if os.path.exists(build_dir):
             shutil.rmtree(build_dir)
-        shutil.copytree(repos_statuses[pkg_name].repo_path, build_dir)
-        interactive_spawn(
-            [
-                'makepkg',
-                '-rf',
-                '--nodeps'
-            ],
-            cwd=build_dir
-        )
-        built_packages_paths[pkg_name] = glob.glob(
-            os.path.join(build_dir, '*.pkg.tar.xz')
-        )[0]
-        print(built_packages_paths[pkg_name])
+        shutil.copytree(repo_path, build_dir)
+
+        if not ('--needed' in args.raw and already_installed):
+            interactive_spawn(
+                [
+                    'makepkg',
+                    '-rf',
+                    '--nodeps'
+                ],
+                cwd=build_dir
+            )
+            built_packages_paths[pkg_name] = glob.glob(
+                os.path.join(build_dir, '*.pkg.tar.xz')
+            )[0]
 
     if pacman_packages:
         interactive_spawn(
             [
-                'echo',
                 'sudo',
                 'pacman',
                 '-S',
                 '--noconfirm',
-            ] + pacman_packages,
+            ] + args.unknown_args +
+            pacman_packages,
         )
-    if new_aur_deps:
+
+    new_aur_deps_to_install = [
+        built_packages_paths[pkg_name]
+        for pkg_name in new_aur_deps
+        if pkg_name in built_packages_paths
+    ]
+    if new_aur_deps_to_install:
         interactive_spawn(
             [
-                'echo',
                 'sudo',
                 'pacman',
                 '-U',
                 '--asdeps',
                 '--noconfirm',
-            ] + [
-                built_packages_paths[pkg_name]
-                for pkg_name in new_aur_deps
-            ],
+            ] + args.unknown_args +
+            new_aur_deps_to_install,
         )
-    # sudo pacman -U --asdeps aur_deps_for_aur
-    # sudo pacman -U aur_packages
-    # write last_installed.txt
+
+    aur_packages_to_install = [
+        built_packages_paths[pkg_name]
+        for pkg_name in aur_packages
+        if pkg_name in built_packages_paths
+    ]
+    if aur_packages_to_install:
+        interactive_spawn(
+            [
+                'sudo',
+                'pacman',
+                '-U',
+                '--noconfirm',
+            ] + args.unknown_args +
+            aur_packages_to_install,
+        )
+
+    # save git hash of last sucessfully installed package
+    for pkg_name, repo_status in repos_statuses.items():
+        shutil.copy2(
+            os.path.join(
+                repo_status.repo_path,
+                '.git/refs/heads/master'
+            ),
+            os.path.join(
+                repo_status.repo_path,
+                'last_installed.txt'
+            )
+        )
 
 
 def cli_upgrade_package(args):
@@ -463,6 +527,7 @@ def parse_args(args):
         parser.add_argument('-'+letter, action='store_true')
     parser.add_argument('positional', nargs='+')
     parsed_args, unknown_args = parser.parse_known_args(args)
+    parsed_args.unknown_args = unknown_args
     parsed_args.raw = args
 
     # print(f'args = {args}')

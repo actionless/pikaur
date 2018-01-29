@@ -70,7 +70,7 @@ class CmdTaskWorker(object):
             line = await stream.readline()
             if line:
                 if self.enable_logging:
-                    print('>> {}'.format(line.decode('ascii')), end='')
+                    print('>> {}'.format(line.decode('utf-8')), end='')
                 callback(line)
             else:
                 break
@@ -96,8 +96,8 @@ class CmdTaskWorker(object):
         result = CmdTaskResult()
         result.return_code = await process.wait()
         # print(f"== DONE with {result.return_code}")
-        result.stderr = self.stderr.decode('ascii')
-        result.stdout = self.stdout.decode('ascii')
+        result.stderr = self.stderr.decode('utf-8')
+        result.stdout = self.stdout.decode('utf-8')
         return result
 
     def __init__(self, cmd):

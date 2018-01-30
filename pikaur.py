@@ -256,6 +256,24 @@ def find_packages_not_from_repo():
     return not_found_packages_versions
 
 
+def find_repo_updates():
+    result = SingleTaskExecutor(
+        PacmanTaskWorker(['-Qu', ])
+    ).execute()
+    packages_updates_lines = result.stdout.splitlines()
+    repo_packages_updates = []
+    for update in packages_updates_lines:
+        pkg_name, current_version, _, new_version, *_ = update.split()
+        repo_packages_updates.append(
+            AurUpdate(
+                pkg_name=pkg_name,
+                aur_version=new_version,
+                current_version=current_version,
+            )
+        )
+    return repo_packages_updates
+
+
 class NetworkTaskResult():
     return_code = None
     headers = None
@@ -872,6 +890,30 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             )
 
 
+def pretty_print_upgradeable(packages_updates):
+    print('\n'.join([
+        format_paragraph(pkg_update.pretty_format())
+        for pkg_update in packages_updates
+    ]))
+
+
+def print_upgradeable(packages_updates):
+    print('\n'.join([
+        pkg_update.pkg_name
+        for pkg_update in packages_updates
+    ]))
+
+
+def cli_print_upgradeable(args):
+    updates = find_repo_updates()
+    updates += find_aur_updates(find_packages_not_from_repo())
+    updates = sorted(updates, key=lambda u: u.pkg_name)
+    if args.quiet:
+        print_upgradeable(updates)
+    else:
+        pretty_print_upgradeable(updates)
+
+
 def cli_upgrade_packages(args):
     if args.refresh:
         interactive_spawn(['sudo', 'pacman', '-Sy'])
@@ -880,41 +922,20 @@ def cli_upgrade_packages(args):
         color_line('::', 12),
         color_line('Starting full system upgrade...', 15)
     ))
-    result = SingleTaskExecutor(
-        PacmanTaskWorker(['-Qu', ])
-    ).execute()
-    packages_updates_lines = result.stdout.splitlines()
-    repo_packages_updates = []
-    for update in packages_updates_lines:
-        pkg_name, current_version, _, new_version, *_ = update.split()
-        repo_packages_updates.append(
-            AurUpdate(
-                pkg_name=pkg_name,
-                aur_version=new_version,
-                current_version=current_version,
-            )
-        )
-
-    print('\n'.join([
-        format_paragraph(pkg_update.pretty_format())
-        for pkg_update in repo_packages_updates
-    ]))
+    repo_packages_updates = find_repo_updates()
+    pretty_print_upgradeable(repo_packages_updates)
 
     print('\n{} {}'.format(
         color_line('::', 12),
         color_line('Starting full AUR upgrade...', 15)
     ))
-    aur_packages_versions = find_packages_not_from_repo()
-    aur_updates = find_aur_updates(aur_packages_versions)
+    aur_updates = find_aur_updates(find_packages_not_from_repo())
 
     print('\n{} {}'.format(
         color_line('::', 12),
         color_line('AUR packages updates:', 15)
     ))
-    print('\n'.join([
-        format_paragraph(pkg_update.pretty_format())
-        for pkg_update in aur_updates
-    ]))
+    pretty_print_upgradeable(aur_updates)
 
     print()
     answer = input('{} {}\n{} {}\n> '.format(
@@ -996,6 +1017,7 @@ def parse_args(args):
         ('u', 'sysupgrade'),
         ('y', 'refresh'),
         #
+        ('Q', 'query'),
         ('V', 'version'),
     ):
         parser.add_argument('-'+letter, '--'+opt, action='store_true')
@@ -1038,6 +1060,9 @@ def main():
             return cli_clean_packages_cache(args)
         elif '-S' in raw_args:
             return cli_install_packages(args)
+    elif args.query:
+        if args.sysupgrade:
+            return cli_print_upgradeable(args)
     elif args.version:
         return cli_version()
 

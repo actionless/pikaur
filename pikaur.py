@@ -669,20 +669,20 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     new_aur_deps = find_aur_deps(aur_packages)
 
     # confirm package install/upgrade
-    print()
-    # print(color_line("Package", 15))
-    if pacman_packages:
-        print(color_line("New packages will be installed:", 12))
-        print(format_paragraph(' '.join(pacman_packages)))
-    if aur_packages:
-        print(color_line("New packages will be installed from AUR:", 14))
-        print(format_paragraph(' '.join(aur_packages)))
-    if new_aur_deps:
-        print(color_line("New dependencies will be installed from AUR:", 11))
-        print(format_paragraph(' '.join(new_aur_deps)))
-    print()
-
     if not noconfirm:
+        print()
+        # print(color_line("Package", 15))
+        if pacman_packages:
+            print(color_line("New packages will be installed:", 12))
+            print(format_paragraph(' '.join(pacman_packages)))
+        if aur_packages:
+            print(color_line("New packages will be installed from AUR:", 14))
+            print(format_paragraph(' '.join(aur_packages)))
+        if new_aur_deps:
+            print(color_line("New dependencies will be installed from AUR:", 11))
+            print(format_paragraph(' '.join(new_aur_deps)))
+        print()
+
         answer = input('{} {}'.format(
             color_line('::', 12),
             color_line('Proceed with installation? [Y/n] ', 15),
@@ -953,7 +953,8 @@ def cli_upgrade_packages(args):
     return cli_install_packages(
         args=args,
         packages=[u.pkg_name for u in repo_packages_updates] +
-        [u.pkg_name for u in aur_updates]
+        [u.pkg_name for u in aur_updates],
+        noconfirm=True
     )
 
 
@@ -1042,9 +1043,10 @@ def parse_args(args):
     # print(f'args = {args}')
     # print("ARGPARSE:")
     reconstructed_args = {
-        key: value
+        f'--{key}' if len(key) > 1 else f'-{key}': value
         for key, value in parsed_args.__dict__.items()
         if not key.startswith('_')
+        if value
     }
     print(reconstructed_args)
     # print(unknown_args)

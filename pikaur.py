@@ -661,7 +661,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         noconfirm = args.noconfirm
     # @TODO: split into smaller routines
     print("resolving dependencies...")
-    packages = packages or args.positional
+    packages = packages or args._positional
     pacman_packages, aur_packages = find_repo_packages(packages)
     new_aur_deps = find_aur_deps(aur_packages)
 
@@ -725,7 +725,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                         already_installed = True
         repo_status.already_installed = already_installed
 
-        if not ('--needed' in args.raw and already_installed):
+        if not ('--needed' in args._raw and already_installed):
             editor = get_editor()
             if editor:
                 if ask_to_continue(
@@ -777,7 +777,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     for pkg_name in reversed(all_aur_package_names):
         repo_status = repos_statuses[pkg_name]
 
-        if '--needed' in args.raw and repo_status.already_installed:
+        if '--needed' in args._raw and repo_status.already_installed:
             continue
         repo_path = repo_status.repo_path
         build_dir = os.path.join(BUILD_CACHE, pkg_name)
@@ -788,7 +788,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 interactive_spawn(['rm', '-rf', build_dir])
         shutil.copytree(repo_path, build_dir)
 
-        # @TODO: args.unknown_args
+        # @TODO: args._unknown_args
         make_deps = SrcInfo(repo_path).get_makedepends()
         _, new_make_deps_to_install = find_local_packages(make_deps)
         if new_make_deps_to_install:
@@ -799,7 +799,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                     '-S',
                     '--asdeps',
                     '--noconfirm',
-                ] + args.unknown_args +
+                ] + args._unknown_args +
                 new_make_deps_to_install,
             )
         build_result = interactive_spawn(
@@ -835,7 +835,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 'pacman',
                 '-S',
                 '--noconfirm',
-            ] + args.unknown_args +
+            ] + args._unknown_args +
             pacman_packages,
         )
 
@@ -855,7 +855,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 '-U',
                 '--asdeps',
                 '--noconfirm',
-            ] + args.unknown_args +
+            ] + args._unknown_args +
             new_aur_deps_to_install,
         )
 
@@ -871,7 +871,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 'pacman',
                 '-U',
                 '--noconfirm',
-            ] + args.unknown_args +
+            ] + args._unknown_args +
             aur_packages_to_install,
         )
 
@@ -969,9 +969,9 @@ def cli_search_packages(args):
     pkgs = 'pkgs'
     aur = 'aur'
     result = MultipleTasksExecutor({
-        pkgs: PacmanColorTaskWorker(args.raw),
+        pkgs: PacmanColorTaskWorker(args._raw),
         aur: AurTaskWorkerSearch(
-            search_query=' '.join(args.positional or [])
+            search_query=' '.join(args._positional or [])
         ),
     }).execute()
 
@@ -1029,16 +1029,23 @@ def parse_args(args):
         'b', 'c', 'd', 'g', 'i', 'l', 'p', 'r', 's', 'v',
     ):
         parser.add_argument('-'+letter, action='store_true')
-    parser.add_argument('positional', nargs='*')
-    parser.add_argument('--ignore', nargs='*')
+    parser.add_argument('_positional', nargs='*')
+    parser.add_argument('--ignore', action='append')
+
     parsed_args, unknown_args = parser.parse_known_args(args)
-    parsed_args.unknown_args = unknown_args
-    parsed_args.raw = args
+    parsed_args._unknown_args = unknown_args
+    parsed_args._raw = args
 
     # print(f'args = {args}')
     # print("ARGPARSE:")
-    print(parsed_args)
+    reconstructed_args = {
+        key: value
+        for key, value in parsed_args.__dict__.items()
+        if not key.startswith('_')
+    }
+    print(reconstructed_args)
     # print(unknown_args)
+    # sys.exit(0)
 
     return parsed_args
 

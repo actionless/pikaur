@@ -537,8 +537,9 @@ def cli_install_packages(args):
         # color_line('::', 12),
         # color_line('[V]iew package detail   [M]anually select packages', 15)
     ))
-    if answer and answer.lower()[0] != 'y':
-        sys.exit(1)
+    if answer:
+        if answer.lower()[0] != 'y':
+            sys.exit(1)
 
     all_aur_package_names = aur_packages + new_aur_deps
     repos_statuses = None
@@ -743,6 +744,13 @@ def cli_install_packages(args):
 
 
 def cli_upgrade_package(_args):
+    interactive_spawn(['sudo', 'pacman', '-Sy'])
+    result = SingleTaskExecutor(
+        PacmanColorTaskWorker(['-Qu', ])
+    ).execute()
+    packages_updates = result.stdout.splitlines()
+    for update in packages_updates:
+        print(format_paragraph(update))
     # @TODO:
     raise NotImplementedError()
 

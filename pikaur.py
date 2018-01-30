@@ -530,11 +530,12 @@ def cli_install_packages(args):
         print(format_paragraph(' '.join(new_aur_deps)))
     print()
 
-    answer = input('{} {}\n{} {}\n'.format(
+    # answer = input('{} {}\n{} {}\n'.format(
+    answer = input('{} {}'.format(
         color_line('::', 12),
         color_line('Proceed with installation? [Y/n] ', 15),
-        color_line('::', 12),
-        color_line('[V]iew package detail   [M]anually select packages', 15)
+        # color_line('::', 12),
+        # color_line('[V]iew package detail   [M]anually select packages', 15)
     ))
     if answer and answer.lower()[0] != 'y':
         sys.exit(1)
@@ -545,7 +546,7 @@ def cli_install_packages(args):
         repos_statuses = clone_git_repos(all_aur_package_names)
 
     # review PKGBUILD and install files
-    # @TODO: ask about package conflicts
+    # @TODO: ask about package conflicts/provides
     local_packages_found, _ = find_local_packages(
         all_aur_package_names
     )

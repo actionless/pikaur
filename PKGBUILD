@@ -16,6 +16,7 @@ md5sums=(
 	"SKIP"
 )
 depends=(
+	'python3'
 	'pacman'
 	'git'
 	'sudo'

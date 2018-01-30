@@ -13,6 +13,7 @@ import ssl
 import email
 import json
 from urllib.parse import urlencode
+from distutils.version import LooseVersion
 
 
 CACHE_ROOT = os.path.expanduser('~/.cache/pikaur/')
@@ -33,6 +34,12 @@ def init_readline():
 
 
 init_readline()
+
+
+def interactive_spawn(cmd, **kwargs):
+    process = subprocess.Popen(cmd, **kwargs)
+    process.communicate()
+    return process
 
 
 class CmdTaskResult():
@@ -139,24 +146,21 @@ class MultipleTasksExecutor(object):
             result = future.result()
             self.results[cmd_id] = result
             if len(self.results) == len(self.futures):
-                # print('== LOOP STOP')
                 self.loop.stop()
 
         return _process_done_callback
 
     def execute(self):
         self.loop = asyncio.get_event_loop()
-        # if self.loop.is_closed():
-        #     self.loop = asyncio.new_event_loop()
         for cmd_id, task_class in self.cmds.items():
             future = self.loop.create_task(
                 task_class.get_task(self.loop)
             )
             future.add_done_callback(self.create_process_done_callback(cmd_id))
             self.futures[cmd_id] = future
+        if self.loop.is_running():
+            print("DEBUG989817")
         self.loop.run_forever()
-        # print('== LOOP CLOSE')
-        # self.loop.close()
         return self.results
 
 
@@ -228,6 +232,28 @@ def find_repo_packages(packages):
 
 def find_local_packages(packages):
     return find_pacman_packages(packages, local=True)
+
+
+def find_packages_not_from_repo():
+    local_prefix = 'local/'
+    result = SingleTaskExecutor(
+        PacmanTaskWorker(['-Qs', ])
+    ).execute()
+    all_local_packages_versions = {}
+    for line in result.stdout.splitlines():
+        if line.startswith(local_prefix):
+            pkg_name, version = line.split()[:2]
+            pkg_name = pkg_name.split(local_prefix)[1]
+            all_local_packages_versions[pkg_name] = version
+
+    repo_packages, not_found_packages = find_repo_packages(
+        all_local_packages_versions.keys()
+    )
+    not_found_packages_versions = {
+        pkg_name: all_local_packages_versions[pkg_name]
+        for pkg_name in not_found_packages
+    }
+    return not_found_packages_versions
 
 
 class NetworkTaskResult():
@@ -345,25 +371,38 @@ def find_aur_packages(package_names):
     found_aur_packages = [
         result['Name'] for result in json_results
     ]
+    not_found_packages = []
     if len(package_names) != len(found_aur_packages):
-        print("Not found in AUR:")
-        for package in package_names:
-            if package not in found_aur_packages:
-                print(package)
-        sys.exit(1)
-    return json_results
+        not_found_packages = [
+            package for package in package_names
+            if package not in found_aur_packages
+        ]
+        print("{} {}".format(
+            color_line(':: warning:', 11),
+            color_line('Following packages can not be found in AUR:', 15),
+        ))
+        for package in not_found_packages:
+            print(format_paragraph(package))
+    return json_results, not_found_packages
 
 
 def find_aur_deps(package_names):
+
+    def _get_deps(result):
+        return [
+            dep.split('=')[0].split('<')[0].split('>')[0] for dep in
+            result.get('Depends', []) + result.get('MakeDepends', [])
+        ]
+
     new_aur_deps = []
     while package_names:
 
         all_deps_for_aur_packages = []
-        for result in find_aur_packages(package_names):
-            all_deps_for_aur_packages += [
-                dep.split('=')[0].split('<')[0].split('>')[0] for dep in
-                result.get('Depends', []) + result.get('MakeDepends', [])
-            ]
+        aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
+        if not_found_aur_pkgs:
+            sys.exit(1)
+        for result in aur_pkgs_info:
+            all_deps_for_aur_packages += _get_deps(result)
         all_deps_for_aur_packages = list(set(all_deps_for_aur_packages))
 
         aur_deps_for_aur_packages = []
@@ -375,11 +414,99 @@ def find_aur_deps(package_names):
                 _, aur_deps_for_aur_packages = find_local_packages(
                     not_found_deps
                 )
-                find_aur_packages(aur_deps_for_aur_packages)
+                aur_deps_info, not_found_aur_deps = find_aur_packages(
+                    aur_deps_for_aur_packages
+                )
+                if not_found_aur_deps:
+                    problem_package_names = []
+                    for result in aur_pkgs_info:
+                        deps = _get_deps(result)
+                        for not_found_pkg in not_found_aur_deps:
+                            if not_found_pkg in deps:
+                                problem_package_names.append(result['Name'])
+                                break
+                    print("{} {}".format(
+                        color_line(':: error:', 9),
+                        color_line(
+                            'Dependencies missing for '
+                            f'{problem_package_names}',
+                            15
+                        ),
+                    ))
+                    sys.exit(1)
         new_aur_deps += aur_deps_for_aur_packages
         package_names = aur_deps_for_aur_packages
 
     return new_aur_deps
+
+
+class TypeContainer():
+
+    def __init__(self, **kwargs):
+        not_found_atom = object()
+        for key, value in kwargs.items():
+            if getattr(self, key, not_found_atom) is not_found_atom:
+                raise TypeError(
+                    f"'{self.__class__.__name__}' does "
+                    f"not have attribute '{key}'"
+                )
+            setattr(self, key, value)
+
+
+class AurUpdate(TypeContainer):
+    pkg_name = None
+    current_version = None
+    aur_version = None
+
+    def pretty_format(self):
+        return '{} {} -> {}'.format(
+            color_line(self.pkg_name, 15),
+            color_line(self.current_version, 10),
+            color_line(self.aur_version, 10)
+        )
+
+
+def compare_versions(current_version, new_version):
+    if current_version != new_version:
+        current_base_version = new_base_version = None
+        if ':' in current_version:
+            current_base_version, current_version = current_version.split(':')
+        if ':' in new_version:
+            new_base_version, new_version = new_version.split(':')
+        if (
+            current_base_version and new_base_version
+        ) and (
+            current_base_version != new_base_version
+        ):
+            current_version = current_base_version
+            new_version = new_base_version
+
+        versions = [current_version, new_version]
+        try:
+            versions.sort(key=LooseVersion)
+        except TypeError:
+            return False
+        return versions[1] == new_version
+    return False
+
+
+def find_aur_updates(package_versions):
+    aur_pkgs_info, _not_found_aur_pkgs = find_aur_packages(
+        package_versions.keys()
+    )
+    aur_updates = []
+    for result in aur_pkgs_info:
+        pkg_name = result['Name']
+        aur_version = result['Version']
+        current_version = package_versions[pkg_name]
+        if compare_versions(current_version, aur_version):
+            aur_update = AurUpdate(
+                pkg_name=pkg_name,
+                aur_version=aur_version,
+                current_version=current_version,
+            )
+            aur_updates.append(aur_update)
+    return aur_updates
 
 
 def ask_to_continue(text='Do you want to proceed?', default_yes=True):
@@ -511,9 +638,13 @@ class SrcInfo():
         return self.get_values('makedepends')
 
 
-def cli_install_packages(args):
+def cli_install_packages(args, noconfirm=None, packages=None):
+    if noconfirm is None:
+        noconfirm = args.noconfirm
     # @TODO: split into smaller routines
-    pacman_packages, aur_packages = find_repo_packages(args.positional)
+    print("resolving dependencies...")
+    packages = packages or args.positional
+    pacman_packages, aur_packages = find_repo_packages(packages)
     new_aur_deps = find_aur_deps(aur_packages)
 
     # confirm package install/upgrade
@@ -530,16 +661,14 @@ def cli_install_packages(args):
         print(format_paragraph(' '.join(new_aur_deps)))
     print()
 
-    # answer = input('{} {}\n{} {}\n'.format(
-    answer = input('{} {}'.format(
-        color_line('::', 12),
-        color_line('Proceed with installation? [Y/n] ', 15),
-        # color_line('::', 12),
-        # color_line('[V]iew package detail   [M]anually select packages', 15)
-    ))
-    if answer:
-        if answer.lower()[0] != 'y':
-            sys.exit(1)
+    if not noconfirm:
+        answer = input('{} {}'.format(
+            color_line('::', 12),
+            color_line('Proceed with installation? [Y/n] ', 15),
+        ))
+        if answer:
+            if answer.lower()[0] != 'y':
+                sys.exit(1)
 
     all_aur_package_names = aur_packages + new_aur_deps
     repos_statuses = None
@@ -743,25 +872,75 @@ def cli_install_packages(args):
             )
 
 
-def cli_upgrade_package(_args):
-    interactive_spawn(['sudo', 'pacman', '-Sy'])
+def cli_upgrade_packages(args):
+    if args.refresh:
+        interactive_spawn(['sudo', 'pacman', '-Sy'])
+
+    print('{} {}'.format(
+        color_line('::', 12),
+        color_line('Starting full system upgrade...', 15)
+    ))
     result = SingleTaskExecutor(
-        PacmanColorTaskWorker(['-Qu', ])
+        PacmanTaskWorker(['-Qu', ])
     ).execute()
-    packages_updates = result.stdout.splitlines()
-    for update in packages_updates:
-        print(format_paragraph(update))
+    packages_updates_lines = result.stdout.splitlines()
+    repo_packages_updates = []
+    for update in packages_updates_lines:
+        pkg_name, current_version, _, new_version, *_ = update.split()
+        repo_packages_updates.append(
+            AurUpdate(
+                pkg_name=pkg_name,
+                aur_version=new_version,
+                current_version=current_version,
+            )
+        )
+
+    print('\n'.join([
+        format_paragraph(pkg_update.pretty_format())
+        for pkg_update in repo_packages_updates
+    ]))
+
+    print('\n{} {}'.format(
+        color_line('::', 12),
+        color_line('Starting full AUR upgrade...', 15)
+    ))
+    aur_packages_versions = find_packages_not_from_repo()
+    aur_updates = find_aur_updates(aur_packages_versions)
+
+    print('\n{} {}'.format(
+        color_line('::', 12),
+        color_line('AUR packages updates:', 15)
+    ))
+    print('\n'.join([
+        format_paragraph(pkg_update.pretty_format())
+        for pkg_update in aur_updates
+    ]))
+
+    print()
+    answer = input('{} {}\n{} {}\n> '.format(
+        color_line('::', 12),
+        color_line('Proceed with installation? [Y/n] ', 15),
+        color_line('::', 12),
+        color_line('[V]iew package detail   [M]anually select packages', 15)
+    ))
+    if answer:
+        if answer.lower()[0] != 'y':
+            sys.exit(1)
+    return cli_install_packages(
+        args=args,
+        packages=[u.pkg_name for u in repo_packages_updates] +
+        [u.pkg_name for u in aur_updates]
+    )
+
+
+def cli_info_packages(_args):
     # @TODO:
     raise NotImplementedError()
 
 
-def cli_info_packages(_Args):
+def cli_clean_packages_cache(_args):
     # @TODO:
-    raise NotImplementedError()
-
-
-def cli_clean_packages_cache(_Args):
-    # @TODO:
+    print(_args)
     raise NotImplementedError()
 
 
@@ -791,56 +970,7 @@ def cli_search_packages(args):
         # print(aur_pkg)
 
 
-def parse_args(args):
-    parser = argparse.ArgumentParser(prog=sys.argv[0], add_help=False)
-    for letter in (
-        'b', 'c', 'd', 'g', 'i', 'l', 'p', 'r', 's', 'u', 'v', 'y',
-    ):
-        parser.add_argument('-'+letter, action='store_true')
-    for letter, opt in (
-        ('S', 'sync'),
-        ('w', 'downloadonly'),
-        ('q', 'quiet'),
-        ('h', 'help'),
-    ):
-        parser.add_argument('-'+letter, '--'+opt, action='store_true')
-    parser.add_argument('positional', nargs='*')
-    parsed_args, unknown_args = parser.parse_known_args(args)
-    parsed_args.unknown_args = unknown_args
-    parsed_args.raw = args
-
-    # print(f'args = {args}')
-    # print("ARGPARSE:")
-    # print(parsed_args)
-    # print(unknown_args)
-
-    return parsed_args
-
-
-def interactive_spawn(cmd, **kwargs):
-    process = subprocess.Popen(cmd, **kwargs)
-    process.communicate()
-    return process
-
-
-def main():
-    args = sys.argv[1:]
-    parsed_args = parse_args(args)
-
-    if parsed_args.help:
-        return interactive_spawn(['pacman', ] + args)
-    elif parsed_args.sync:
-        if parsed_args.u:
-            return cli_upgrade_package(parsed_args)
-        elif parsed_args.s:
-            return cli_search_packages(parsed_args)
-        elif parsed_args.i:
-            return cli_info_packages(parsed_args)
-        elif parsed_args.c:
-            return cli_clean_packages_cache(parsed_args)
-        elif '-S' in args:
-            return cli_install_packages(parsed_args)
-    elif '-V' in args:
+def cli_version():
         sys.stdout.buffer.write("""
       /:}               _
      /--1             / :}
@@ -854,9 +984,64 @@ def main():
   У    \  _/     ._/   \\
 
 """.encode())
-        return
 
-    return interactive_spawn(['sudo', 'pacman', ] + args)
+
+def parse_args(args):
+    parser = argparse.ArgumentParser(prog=sys.argv[0], add_help=False)
+    for letter, opt in (
+        ('S', 'sync'),
+        ('w', 'downloadonly'),
+        ('q', 'quiet'),
+        ('h', 'help'),
+        ('u', 'sysupgrade'),
+        ('y', 'refresh'),
+        #
+        ('V', 'version'),
+    ):
+        parser.add_argument('-'+letter, '--'+opt, action='store_true')
+    for opt in (
+        'noconfirm',
+    ):
+        parser.add_argument('--'+opt, action='store_true')
+    for letter in (
+        'b', 'c', 'd', 'g', 'i', 'l', 'p', 'r', 's', 'v',
+    ):
+        parser.add_argument('-'+letter, action='store_true')
+    parser.add_argument('positional', nargs='*')
+    parser.add_argument('--ignore', nargs='*')
+    parsed_args, unknown_args = parser.parse_known_args(args)
+    parsed_args.unknown_args = unknown_args
+    parsed_args.raw = args
+
+    # print(f'args = {args}')
+    # print("ARGPARSE:")
+    print(parsed_args)
+    # print(unknown_args)
+
+    return parsed_args
+
+
+def main():
+    raw_args = sys.argv[1:]
+    args = parse_args(raw_args)
+
+    if args.help:
+        return interactive_spawn(['pacman', ] + raw_args)
+    elif args.sync:
+        if args.sysupgrade:
+            return cli_upgrade_packages(args)
+        elif args.s:
+            return cli_search_packages(args)
+        elif args.i:
+            return cli_info_packages(args)
+        elif args.c:
+            return cli_clean_packages_cache(args)
+        elif '-S' in raw_args:
+            return cli_install_packages(args)
+    elif args.version:
+        return cli_version()
+
+    return interactive_spawn(['sudo', 'pacman', ] + raw_args)
 
 
 if __name__ == '__main__':

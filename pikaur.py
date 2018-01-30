@@ -832,18 +832,19 @@ def main():
         elif '-S' in args:
             return cli_install_packages(parsed_args)
     elif '-V' in args:
-        print("""
- 　　 /:}　 　  　 　 　 _
-  　 /--１　　  　 　 ／:}
- 　/　　|　　　　　 ／`‐/
- 　|　,　-――-----  ／  /
- 　|'　　　 　 　 　  Y
-  /　　　　　　　　　 l     Pikaur v0.1
-  l  /　　　 \　  　　l     Copyright (C) 2018 Pikaur development team
-  j  ●   ．  ● 　 　  l     Licensed under GPLv3
- ｛） ､_,､__,　 , -､  {
-  У    \　_/     ._/   ＼
-        """)
+        sys.stdout.buffer.write("""
+      /:}               _
+     /--1             / :}
+    /   |           / `-/
+   |  ,  --------  /   /
+   |'                 Y
+  /                   l     Pikaur v0.1
+  l  /       \        l     (C) 2018 Pikaur development team
+  j  ●   .   ●        l     Licensed under GPLv3
+ { )  ._,.__,   , -.  {
+  У    \  _/     ._/   \\
+
+""".encode())
         return
 
     return interactive_spawn(['sudo', 'pacman', ] + args)

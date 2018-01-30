@@ -33,6 +33,6 @@ pkgver() {
 package() {
 	cd "${srcdir}/${pkgbase}"
 	nuitka ./pikaur.py
-	mkdir -p ${pkgdir}/usr/sbin/
-	install -D -m755 ./pikaur.exe ${pkgdir}/usr/sbin/pikaur
+	mkdir -p ${pkgdir}/usr/bin/
+	install -D -m755 ./pikaur.exe ${pkgdir}/usr/bin/pikaur
 }

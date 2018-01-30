@@ -481,6 +481,36 @@ def get_editor():
     return None
 
 
+class SrcInfo():
+
+    lines = None
+
+    def __init__(self, repo_path):
+        with open(
+            os.path.join(
+                repo_path,
+                '.SRCINFO'
+            )
+        ) as srcinfo_file:
+            self.lines = srcinfo_file.readlines()
+
+    def get_values(self, field):
+        prefix = field + ' = '
+        values = []
+        for line in self.lines:
+            if line.strip().startswith(prefix):
+                values.append(line.strip().split(prefix)[1])
+        return values
+
+    def get_install_script(self):
+        values = self.get_values('install')
+        if values:
+            return values[0]
+
+    def get_makedepends(self):
+        return self.get_values('makedepends')
+
+
 def cli_install_packages(args):
     # @TODO: split into smaller routines
     pacman_packages, aur_packages = find_repo_packages(args.positional)
@@ -562,19 +592,7 @@ def cli_install_packages(args):
                         )
                     ])
 
-                install_file_name = None
-                install_prefix = 'install = '
-                with open(
-                    os.path.join(
-                        repo_path,
-                        '.SRCINFO'
-                    )
-                ) as srcinfo_file:
-                    for line in srcinfo_file.readlines():
-                        if line.strip().startswith(install_prefix):
-                            install_file_name = line.strip().lstrip(
-                                install_prefix
-                            )
+                install_file_name = SrcInfo(repo_path).get_install_script()
                 if install_file_name:
                     if ask_to_continue(
                             "Do you want to edit {} for {} package?".format(
@@ -620,17 +638,45 @@ def cli_install_packages(args):
                 interactive_spawn(['rm', '-rf', build_dir])
         shutil.copytree(repo_path, build_dir)
 
-        interactive_spawn(
+        # @TODO: args.unknown_args
+        make_deps = SrcInfo(repo_path).get_makedepends()
+        _, new_make_deps_to_install = find_local_packages(make_deps)
+        if new_make_deps_to_install:
+            interactive_spawn(
+                [
+                    'sudo',
+                    'pacman',
+                    '-S',
+                    '--asdeps',
+                    '--noconfirm',
+                ] + args.unknown_args +
+                new_make_deps_to_install,
+            )
+        build_result = interactive_spawn(
             [
                 'makepkg',
-                '-rf',
-                '--nodeps'
+                # '-rsf', '--noconfirm',
+                '--nodeps',
             ],
             cwd=build_dir
         )
-        repo_status.built_package_path = glob.glob(
-            os.path.join(build_dir, '*.pkg.tar.xz')
-        )[0]
+        if new_make_deps_to_install:
+            interactive_spawn(
+                [
+                    'sudo',
+                    'pacman',
+                    '-Rs',
+                    '--noconfirm',
+                ] + new_make_deps_to_install,
+            )
+        if build_result.returncode > 0:
+            print(color_line(f"Can't build '{pkg_name}'.", 9))
+            if not ask_to_continue():
+                sys.exit(1)
+        else:
+            repo_status.built_package_path = glob.glob(
+                os.path.join(build_dir, '*.pkg.tar.xz')
+            )[0]
 
     if pacman_packages:
         interactive_spawn(

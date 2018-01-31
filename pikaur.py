@@ -246,7 +246,7 @@ def find_packages_not_from_repo():
             pkg_name = pkg_name.split(local_prefix)[1]
             all_local_packages_versions[pkg_name] = version
 
-    repo_packages, not_found_packages = find_repo_packages(
+    _repo_packages, not_found_packages = find_repo_packages(
         all_local_packages_versions.keys()
     )
     not_found_packages_versions = {
@@ -429,10 +429,11 @@ def find_aur_deps(package_names):
                 all_deps_for_aur_packages
             )
             if not_found_deps:
-                _, aur_deps_for_aur_packages = find_local_packages(
-                    not_found_deps
-                )
-                aur_deps_info, not_found_aur_deps = find_aur_packages(
+                _local_pkgs_info, aur_deps_for_aur_packages = \
+                    find_local_packages(
+                        not_found_deps
+                    )
+                _aur_deps_info, not_found_aur_deps = find_aur_packages(
                     aur_deps_for_aur_packages
                 )
                 if not_found_aur_deps:
@@ -492,7 +493,7 @@ def compare_versions(current_version, new_version):
         if ':' in new_version:
             new_base_version, new_version = new_version.split(':')
         if (
-            current_base_version and new_base_version
+                current_base_version and new_base_version
         ) and (
             current_base_version != new_base_version
         ):
@@ -651,6 +652,7 @@ class SrcInfo():
         values = self.get_values('install')
         if values:
             return values[0]
+        return None
 
     def get_makedepends(self):
         return self.get_values('makedepends')
@@ -679,7 +681,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             print(color_line("New packages will be installed from AUR:", 14))
             print(format_paragraph(' '.join(aur_packages)))
         if new_aur_deps:
-            print(color_line("New dependencies will be installed from AUR:", 11))
+            print(color_line(
+                "New dependencies will be installed from AUR:", 11
+            ))
             print(format_paragraph(' '.join(new_aur_deps)))
         print()
 
@@ -996,7 +1000,7 @@ def cli_search_packages(args):
 
 
 def cli_version():
-        sys.stdout.buffer.write("""
+    sys.stdout.buffer.write(r"""
       /:}               _
      /--1             / :}
     /   |           / `-/
@@ -1006,7 +1010,7 @@ def cli_version():
   l  /       \        l     (C) 2018 Pikaur development team
   j  ●   .   ●        l     Licensed under GPLv3
  { )  ._,.__,   , -.  {
-  У    \  _/     ._/   \\
+  У    \  _/     ._/   \
 
 """.encode())
 
@@ -1014,23 +1018,24 @@ def cli_version():
 def parse_args(args):
     parser = argparse.ArgumentParser(prog=sys.argv[0], add_help=False)
     for letter, opt in (
-        ('S', 'sync'),
-        ('w', 'downloadonly'),
-        ('q', 'quiet'),
-        ('h', 'help'),
-        ('u', 'sysupgrade'),
-        ('y', 'refresh'),
-        #
-        ('Q', 'query'),
-        ('V', 'version'),
+            ('S', 'sync'),
+            ('w', 'downloadonly'),
+            ('q', 'quiet'),
+            ('h', 'help'),
+            ('s', 'search'),
+            ('u', 'sysupgrade'),
+            ('y', 'refresh'),
+            #
+            ('Q', 'query'),
+            ('V', 'version'),
     ):
         parser.add_argument('-'+letter, '--'+opt, action='store_true')
     for opt in (
-        'noconfirm',
+            'noconfirm',
     ):
         parser.add_argument('--'+opt, action='store_true')
     for letter in (
-        'b', 'c', 'd', 'g', 'i', 'l', 'p', 'r', 's', 'v',
+            'b', 'c', 'd', 'g', 'i', 'l', 'p', 'r', 'v',
     ):
         parser.add_argument('-'+letter, action='store_true')
     parser.add_argument('_positional', nargs='*')
@@ -1042,13 +1047,13 @@ def parse_args(args):
 
     # print(f'args = {args}')
     # print("ARGPARSE:")
-    reconstructed_args = {
-        f'--{key}' if len(key) > 1 else f'-{key}': value
-        for key, value in parsed_args.__dict__.items()
-        if not key.startswith('_')
-        if value
-    }
-    print(reconstructed_args)
+    # reconstructed_args = {
+    #    f'--{key}' if len(key) > 1 else f'-{key}': value
+    #    for key, value in parsed_args.__dict__.items()
+    #    if not key.startswith('_')
+    #    if value
+    # }
+    # print(reconstructed_args)
     # print(unknown_args)
     # sys.exit(0)
 
@@ -1059,22 +1064,32 @@ def main():
     raw_args = sys.argv[1:]
     args = parse_args(raw_args)
 
+    something_else = False
+
     if args.help:
         return interactive_spawn(['pacman', ] + raw_args)
     elif args.sync:
         if args.sysupgrade:
-            return cli_upgrade_packages(args)
-        elif args.s:
-            return cli_search_packages(args)
+            cli_upgrade_packages(args)
+        elif args.search:
+            cli_search_packages(args)
         elif args.i:
-            return cli_info_packages(args)
+            cli_info_packages(args)
         elif args.c:
-            return cli_clean_packages_cache(args)
+            cli_clean_packages_cache(args)
         elif '-S' in raw_args:
-            return cli_install_packages(args)
+            cli_install_packages(args)
+        else:
+            something_else = True
+        if not something_else:
+            return
     elif args.query:
         if args.sysupgrade:
-            return cli_print_upgradeable(args)
+            cli_print_upgradeable(args)
+        else:
+            something_else = True
+        if not something_else:
+            return
     elif args.version:
         return cli_version()
 

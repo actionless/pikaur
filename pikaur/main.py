@@ -338,13 +338,17 @@ def cli_print_upgradeable(args):
 def cli_upgrade_packages(args):
     if args.refresh:
         interactive_spawn(['sudo', 'pacman', '-Sy'])
+    ignore = args.ignore or []
 
     print('{} {}'.format(
         color_line('::', 12),
         color_line('Starting full system upgrade...', 15)
     ))
-    repo_packages_updates = find_repo_updates()
-    pretty_print_upgradeable(repo_packages_updates, ignore=args.ignore)
+    repo_packages_updates = [
+        pkg for pkg in find_repo_updates()
+        if pkg.pkg_name not in ignore
+    ]
+    pretty_print_upgradeable(repo_packages_updates)
 
     print('\n{} {}'.format(
         color_line('::', 12),
@@ -353,12 +357,28 @@ def cli_upgrade_packages(args):
     aur_updates, not_found_aur_pkgs = \
         find_aur_updates(find_packages_not_from_repo())
     print_not_found_packages(not_found_aur_pkgs)
+    aur_updates = [
+        pkg for pkg in aur_updates
+        if pkg.pkg_name not in ignore
+    ]
 
     print('\n{} {}'.format(
         color_line('::', 12),
         color_line('AUR packages updates:', 15)
     ))
-    pretty_print_upgradeable(aur_updates, ignore=args.ignore)
+    pretty_print_upgradeable(aur_updates)
+
+    all_upgradeable_package_names = [
+        u.pkg_name for u in repo_packages_updates
+    ] + [
+        u.pkg_name for u in aur_updates
+    ]
+    if not all_upgradeable_package_names:
+        print('\n{} {}'.format(
+            color_line('::', 10),
+            color_line('Already up-to-date.', 15)
+        ))
+        return
 
     print()
     answer = input('{} {}\n{} {}\n> '.format(
@@ -372,8 +392,7 @@ def cli_upgrade_packages(args):
             sys.exit(1)
     return cli_install_packages(
         args=args,
-        packages=[u.pkg_name for u in repo_packages_updates] +
-        [u.pkg_name for u in aur_updates],
+        packages=all_upgradeable_package_names,
         noconfirm=True
     )
 

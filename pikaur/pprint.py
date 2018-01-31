@@ -49,8 +49,7 @@ def print_not_found_packages(not_found_packages):
         print(format_paragraph(package))
 
 
-def pretty_print_upgradeable(packages_updates, ignore=None):
-    ignore = ignore or []
+def pretty_print_upgradeable(packages_updates):
 
     def pretty_format(self):
         return '{} {} -> {}'.format(
@@ -62,7 +61,6 @@ def pretty_print_upgradeable(packages_updates, ignore=None):
     print('\n'.join([
         format_paragraph(pretty_format(pkg_update))
         for pkg_update in packages_updates
-        if pkg_update.pkg_name not in ignore
     ]))
 
 

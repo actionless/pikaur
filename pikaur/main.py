@@ -902,10 +902,12 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             )
 
 
-def pretty_print_upgradeable(packages_updates):
+def pretty_print_upgradeable(packages_updates, ignore=None):
+    ignore = ignore or []
     print('\n'.join([
         format_paragraph(pkg_update.pretty_format())
         for pkg_update in packages_updates
+        if pkg_update.pkg_name not in ignore
     ]))
 
 
@@ -935,7 +937,7 @@ def cli_upgrade_packages(args):
         color_line('Starting full system upgrade...', 15)
     ))
     repo_packages_updates = find_repo_updates()
-    pretty_print_upgradeable(repo_packages_updates)
+    pretty_print_upgradeable(repo_packages_updates, ignore=args.ignore)
 
     print('\n{} {}'.format(
         color_line('::', 12),
@@ -947,7 +949,7 @@ def cli_upgrade_packages(args):
         color_line('::', 12),
         color_line('AUR packages updates:', 15)
     ))
-    pretty_print_upgradeable(aur_updates)
+    pretty_print_upgradeable(aur_updates, ignore=args.ignore)
 
     print()
     answer = input('{} {}\n{} {}\n> '.format(

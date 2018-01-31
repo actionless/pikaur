@@ -3,8 +3,8 @@
 
 _pkgbase=pikaur
 pkgname=pikaur-git
-pkgver=0.0.1
-pkgrel=2
+pkgver=0.1
+pkgrel=1
 pkgdesc="Minimalistic AUR helper."
 arch=('any')
 url="https://github.com/actionless/pikaur"

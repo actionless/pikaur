@@ -142,7 +142,8 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     packages = packages or args._positional
     if args.ignore:
         for ignored_pkg in args.ignore:
-            packages.remove(ignored_pkg)
+            if ignored_pkg in packages:
+                packages.remove(ignored_pkg)
     pacman_packages, aur_packages = find_repo_packages(packages)
     new_aur_deps = find_aur_deps(aur_packages)
 

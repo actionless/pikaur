@@ -154,22 +154,26 @@ class PackageUpdate(DataType):
 def compare_versions(current_version, new_version):
     if current_version != new_version:
         current_base_version = new_base_version = None
-        if ':' in current_version:
-            current_base_version, current_version = current_version.split(':')
-        if ':' in new_version:
-            new_base_version, new_version = new_version.split(':')
-        if (
-                current_base_version and new_base_version
-        ) and (
-            current_base_version != new_base_version
-        ):
-            current_version = current_base_version
-            new_version = new_base_version
+        for separator in (':', '+'):
+            if separator in current_version:
+                current_base_version, current_version = \
+                    current_version.split(separator)[:2]
+            if separator in new_version:
+                new_base_version, new_version = \
+                    new_version.split(separator)[:2]
+            if (
+                    current_base_version and new_base_version
+            ) and (
+                current_base_version != new_base_version
+            ):
+                current_version = current_base_version
+                new_version = new_base_version
 
         versions = [current_version, new_version]
         try:
             versions.sort(key=LooseVersion)
         except TypeError:
+            # print(versions)
             return False
         return versions[1] == new_version
     return False

@@ -6,12 +6,10 @@ import sys
 import argparse
 import readline
 import shutil
-import glob
 
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
     CmdTaskWorker, interactive_spawn,
-    BUILD_CACHE,
 )
 from .pprint import (
     color_line, format_paragraph,
@@ -28,7 +26,7 @@ from .pacman import (
     find_repo_packages, find_local_packages,
     find_packages_not_from_repo, find_repo_updates,
 )
-from .build import SrcInfo, PackageBuild
+from .build import SrcInfo, BuildError, CloneError, clone_pkgbuilds_git_repos
 
 
 def init_readline():
@@ -53,24 +51,6 @@ def ask_to_continue(text='Do you want to proceed?', default_yes=True):
         if not answer or answer.lower()[0] != 'y':
             return False
     return True
-
-
-def clone_git_repos(package_names):
-    repos_statuses = {
-        package_name: PackageBuild(package_name)
-        for package_name in package_names
-    }
-    results = MultipleTasksExecutor({
-        repo_status.package_name: repo_status.create_task()
-        for repo_status in repos_statuses.values()
-    }).execute()
-    for package_name, result in results.items():
-        if result.return_code > 0:
-            print(color_line(f"Can't clone '{package_name}' from AUR:", 9))
-            print(result)
-            if not ask_to_continue():
-                sys.exit(1)
-    return repos_statuses
 
 
 def get_editor():
@@ -191,9 +171,22 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 sys.exit(1)
 
     all_aur_package_names = aur_packages + new_aur_deps
-    repos_statuses = None
+    package_builds = None
     if all_aur_package_names:
-        repos_statuses = clone_git_repos(all_aur_package_names)
+        try:
+            package_builds = clone_pkgbuilds_git_repos(all_aur_package_names)
+        except CloneError as err:
+            package_build = err.build
+            print(color_line(
+                "Can't {} '{}' in '{}' from AUR:".format(
+                    'clone' if package_build.clone else 'pull',
+                    package_build.package_name,
+                    package_build.repo_path
+                ), 9
+            ))
+            print(err.result)
+            if not ask_to_continue():
+                sys.exit(1)
 
     # review PKGBUILD and install files
     # @TODO: ask about package conflicts/provides
@@ -201,7 +194,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         all_aur_package_names
     )
     for pkg_name in reversed(all_aur_package_names):
-        repo_status = repos_statuses[pkg_name]
+        repo_status = package_builds[pkg_name]
         repo_path = repo_status.repo_path
         already_installed = repo_status.check_installed_status(
             local_packages_found
@@ -250,65 +243,24 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 )
             )
 
-    # get sudo for further questions
+    # get sudo for further questions:
     interactive_spawn([
         'sudo', 'true'
     ])
 
-    # build packages
+    # build packages:
     for pkg_name in reversed(all_aur_package_names):
-        repo_status = repos_statuses[pkg_name]
-
+        repo_status = package_builds[pkg_name]
         if '--needed' in args._raw and repo_status.already_installed:
             continue
-        repo_path = repo_status.repo_path
-        build_dir = os.path.join(BUILD_CACHE, pkg_name)
-        if os.path.exists(build_dir):
-            try:
-                shutil.rmtree(build_dir)
-            except PermissionError:
-                interactive_spawn(['rm', '-rf', build_dir])
-        shutil.copytree(repo_path, build_dir)
-
-        # @TODO: args._unknown_args
-        make_deps = SrcInfo(repo_path).get_makedepends()
-        _, new_make_deps_to_install = find_local_packages(make_deps)
-        if new_make_deps_to_install:
-            interactive_spawn(
-                [
-                    'sudo',
-                    'pacman',
-                    '-S',
-                    '--asdeps',
-                    '--noconfirm',
-                ] + args._unknown_args +
-                new_make_deps_to_install,
-            )
-        build_result = interactive_spawn(
-            [
-                'makepkg',
-                # '-rsf', '--noconfirm',
-                '--nodeps',
-            ],
-            cwd=build_dir
-        )
-        if new_make_deps_to_install:
-            interactive_spawn(
-                [
-                    'sudo',
-                    'pacman',
-                    '-Rs',
-                    '--noconfirm',
-                ] + new_make_deps_to_install,
-            )
-        if build_result.returncode > 0:
+        try:
+            repo_status.build(args)
+        except BuildError:
             print(color_line(f"Can't build '{pkg_name}'.", 9))
             if not ask_to_continue():
                 sys.exit(1)
-        else:
-            repo_status.built_package_path = glob.glob(
-                os.path.join(build_dir, '*.pkg.tar.xz')
-            )[0]
+
+    # install packages:
 
     if pacman_packages:
         interactive_spawn(
@@ -325,9 +277,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         return
 
     new_aur_deps_to_install = [
-        repos_statuses[pkg_name].built_package_path
+        package_builds[pkg_name].built_package_path
         for pkg_name in new_aur_deps
-        if repos_statuses[pkg_name].built_package_path
+        if package_builds[pkg_name].built_package_path
     ]
     if new_aur_deps_to_install:
         interactive_spawn(
@@ -342,9 +294,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         )
 
     aur_packages_to_install = [
-        repos_statuses[pkg_name].built_package_path
+        package_builds[pkg_name].built_package_path
         for pkg_name in aur_packages
-        if repos_statuses[pkg_name].built_package_path
+        if package_builds[pkg_name].built_package_path
     ]
     if aur_packages_to_install:
         interactive_spawn(
@@ -358,8 +310,8 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         )
 
     # save git hash of last sucessfully installed package
-    if repos_statuses:
-        for pkg_name, repo_status in repos_statuses.items():
+    if package_builds:
+        for pkg_name, repo_status in package_builds.items():
             shutil.copy2(
                 os.path.join(
                     repo_status.repo_path,
@@ -508,6 +460,7 @@ def parse_args(args):
 
 
 def main():
+    # pylint: disable=too-many-branches
     raw_args = sys.argv[1:]
     args = parse_args(raw_args)
 

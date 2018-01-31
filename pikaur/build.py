@@ -1,7 +1,23 @@
 import os
+import glob
+import shutil
 
-from .core import CmdTaskWorker, AUR_REPOS_CACHE, TypeContainer
+from .core import (
+    TypeContainer, CmdTaskWorker, MultipleTasksExecutor,
+    AUR_REPOS_CACHE, BUILD_CACHE,
+    interactive_spawn,
+)
 from .aur import get_repo_url
+from .pacman import find_local_packages
+
+
+class BuildError(Exception):
+    pass
+
+
+class CloneError(TypeContainer, Exception):
+    build = None
+    result = None
 
 
 class SrcInfo():
@@ -46,7 +62,7 @@ class PackageBuild(TypeContainer):
 
     already_installed = None
 
-    def __init__(self, package_name):
+    def __init__(self, package_name):  # pylint: disable=super-init-not-called
         self.package_name = package_name
         repo_path = os.path.join(AUR_REPOS_CACHE, package_name)
         if os.path.exists(repo_path):
@@ -109,3 +125,70 @@ class PackageBuild(TypeContainer):
                         already_installed = True
         self.already_installed = already_installed
         return already_installed
+
+    def build(self, args):
+
+        repo_path = self.repo_path
+        build_dir = os.path.join(BUILD_CACHE, self.package_name)
+        if os.path.exists(build_dir):
+            try:
+                shutil.rmtree(build_dir)
+            except PermissionError:
+                interactive_spawn(['rm', '-rf', build_dir])
+        shutil.copytree(repo_path, build_dir)
+
+        # @TODO: args._unknown_args
+        make_deps = SrcInfo(repo_path).get_makedepends()
+        _, new_make_deps_to_install = find_local_packages(make_deps)
+        if new_make_deps_to_install:
+            interactive_spawn(
+                [
+                    'sudo',
+                    'pacman',
+                    '-S',
+                    '--asdeps',
+                    '--noconfirm',
+                ] + args._unknown_args +
+                new_make_deps_to_install,
+            )
+        build_result = interactive_spawn(
+            [
+                'makepkg',
+                # '-rsf', '--noconfirm',
+                '--nodeps',
+            ],
+            cwd=build_dir
+        )
+        if new_make_deps_to_install:
+            interactive_spawn(
+                [
+                    'sudo',
+                    'pacman',
+                    '-Rs',
+                    '--noconfirm',
+                ] + new_make_deps_to_install,
+            )
+        if build_result.returncode > 0:
+            raise BuildError()
+        else:
+            self.built_package_path = glob.glob(
+                os.path.join(build_dir, '*.pkg.tar.xz')
+            )[0]
+
+
+def clone_pkgbuilds_git_repos(package_names):
+    package_builds = {
+        package_name: PackageBuild(package_name)
+        for package_name in package_names
+    }
+    results = MultipleTasksExecutor({
+        repo_status.package_name: repo_status.create_task()
+        for repo_status in package_builds.values()
+    }).execute()
+    for package_name, result in results.items():
+        if result.return_code > 0:
+            raise CloneError(
+                build=package_builds[package_name],
+                result=result
+            )
+    return package_builds

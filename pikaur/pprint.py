@@ -2,6 +2,9 @@ import sys
 import shutil
 
 
+PADDING = 4
+
+
 def color_line(line, color_number):
     result = ''
     if color_number >= 8:
@@ -14,9 +17,8 @@ def color_line(line, color_number):
 
 
 def format_paragraph(line):
-    padding = 4
     term_width = shutil.get_terminal_size((80, 80)).columns
-    max_line_width = term_width - padding * 2
+    max_line_width = term_width - PADDING * 2
 
     result = []
     current_line = []
@@ -32,9 +34,9 @@ def format_paragraph(line):
 
     return '\n'.join([
         ' '.join(
-            [(padding-1)*' ', ] +
+            [(PADDING-1)*' ', ] +
             words +
-            [(padding-1)*' ', ],
+            [(PADDING-1)*' ', ],
         )
         for words in result
     ])
@@ -51,15 +53,35 @@ def print_not_found_packages(not_found_packages):
 
 def pretty_print_upgradeable(packages_updates):
 
+    def get_common_string(str1, str2):
+        result = ''
+        counter = 0
+        while str1[counter] == str2[counter]:
+            result += str1[counter]
+            counter += 1
+        return result
+
     def pretty_format(self):
-        return '{} {} -> {}'.format(
+        common_version = get_common_string(
+            self.current_version, self.aur_version
+        )
+        version_color = 10
+        old_color = 11
+        new_color = 9
+        return '{}{} {}{} -> {}{}'.format(
+            ' ' * PADDING,
             color_line(self.pkg_name, 15),
-            color_line(self.current_version, 10),
-            color_line(self.aur_version, 10)
+            color_line(common_version, version_color),
+            color_line(
+                self.current_version.split(common_version)[1], old_color
+            ),
+            color_line(common_version, version_color),
+            color_line(self.aur_version.split(common_version)[1], new_color),
         )
 
     print('\n'.join([
-        format_paragraph(pretty_format(pkg_update))
+        # format_paragraph(pretty_format(pkg_update))
+        pretty_format(pkg_update)
         for pkg_update in packages_updates
     ]))
 

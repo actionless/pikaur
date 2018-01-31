@@ -349,7 +349,9 @@ def cli_upgrade_packages(args):
         pkg for pkg in find_repo_updates()
         if pkg.pkg_name not in ignore
     ]
-    pretty_print_upgradeable(repo_packages_updates)
+    if repo_packages_updates:
+        print()
+        pretty_print_upgradeable(repo_packages_updates)
 
     print('\n{} {}'.format(
         color_line('::', 12),
@@ -362,12 +364,12 @@ def cli_upgrade_packages(args):
         pkg for pkg in aur_updates
         if pkg.pkg_name not in ignore
     ]
-
-    print('\n{} {}'.format(
-        color_line('::', 12),
-        color_line('AUR packages updates:', 15)
-    ))
-    pretty_print_upgradeable(aur_updates)
+    if aur_updates:
+        print('\n{} {}'.format(
+            color_line('::', 12),
+            color_line('AUR packages updates:', 15)
+        ))
+        pretty_print_upgradeable(aur_updates)
 
     all_upgradeable_package_names = [
         u.pkg_name for u in repo_packages_updates

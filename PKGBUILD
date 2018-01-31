@@ -4,7 +4,7 @@
 _pkgbase=pikaur
 pkgname=pikaur-git
 pkgver=0.0.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Minimalistic AUR helper."
 arch=('any')
 url="https://github.com/actionless/pikaur"
@@ -16,7 +16,7 @@ md5sums=(
 	"SKIP"
 )
 depends=(
-	'python3'
+	'python'
 	'pacman'
 	'git'
 	'sudo'

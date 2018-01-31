@@ -1,3 +1,4 @@
+import sys
 import shutil
 
 
@@ -70,3 +71,19 @@ def print_upgradeable(packages_updates):
         pkg_update.pkg_name
         for pkg_update in packages_updates
     ]))
+
+
+def print_version():
+    sys.stdout.buffer.write(r"""
+      /:}               _
+     /--1             / :}
+    /   |           / `-/
+   |  ,  --------  /   /
+   |'                 Y
+  /                   l     Pikaur v0.1
+  l  /       \        l     (C) 2018 Pikaur development team
+  j  ●   .   ●        l     Licensed under GPLv3
+ { )  ._,.__,   , -.  {
+  У    \  _/     ._/   \
+
+""".encode())

@@ -1,6 +1,6 @@
 import os
 
-from .core import CmdTaskWorker, AUR_REPOS_CACHE
+from .core import CmdTaskWorker, AUR_REPOS_CACHE, TypeContainer
 from .aur import get_repo_url
 
 
@@ -35,14 +35,16 @@ class SrcInfo():
         return self.get_values('makedepends')
 
 
-class PackageBuild():
-    repo_path = None
+class PackageBuild(TypeContainer):
     clone = False
     pull = False
 
     package_name = None
 
+    repo_path = None
     built_package_path = None
+
+    already_installed = None
 
     def __init__(self, package_name):
         self.package_name = package_name
@@ -82,3 +84,28 @@ class PackageBuild():
         elif self.clone:
             return self.create_clone_task()
         return NotImplemented
+
+    def check_installed_status(self, local_packages_found):
+        already_installed = False
+        last_installed_file_path = os.path.join(
+            self.repo_path,
+            'last_installed.txt'
+        )
+        if (
+                self.package_name in local_packages_found
+        ) and (
+            os.path.exists(last_installed_file_path)
+        ):
+            with open(last_installed_file_path) as last_installed_file:
+                last_installed_hash = last_installed_file.readlines()
+                with open(
+                    os.path.join(
+                        self.repo_path,
+                        '.git/refs/heads/master'
+                    )
+                ) as current_hash_file:
+                    current_hash = current_hash_file.readlines()
+                    if last_installed_hash == current_hash:
+                        already_installed = True
+        self.already_installed = already_installed
+        return already_installed

@@ -17,6 +17,7 @@ from .pprint import (
     color_line, format_paragraph,
     print_not_found_packages,
     print_upgradeable, pretty_print_upgradeable,
+    print_version,
 )
 from .aur import (
     AurTaskWorkerSearch,
@@ -202,29 +203,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     for pkg_name in reversed(all_aur_package_names):
         repo_status = repos_statuses[pkg_name]
         repo_path = repo_status.repo_path
-
-        last_installed_file_path = os.path.join(
-            repo_path,
-            'last_installed.txt'
+        already_installed = repo_status.check_installed_status(
+            local_packages_found
         )
-        already_installed = False
-        if (
-                pkg_name in local_packages_found
-        ) and (
-            os.path.exists(last_installed_file_path)
-        ):
-            with open(last_installed_file_path) as last_installed_file:
-                last_installed_hash = last_installed_file.readlines()
-                with open(
-                    os.path.join(
-                        repo_path,
-                        '.git/refs/heads/master'
-                    )
-                ) as current_hash_file:
-                    current_hash = current_hash_file.readlines()
-                    if last_installed_hash == current_hash:
-                        already_installed = True
-        repo_status.already_installed = already_installed
 
         if not ('--needed' in args._raw and already_installed):
             editor = get_editor()
@@ -481,22 +462,6 @@ def cli_search_packages(args):
         # print(aur_pkg)
 
 
-def cli_version():
-    sys.stdout.buffer.write(r"""
-      /:}               _
-     /--1             / :}
-    /   |           / `-/
-   |  ,  --------  /   /
-   |'                 Y
-  /                   l     Pikaur v0.1
-  l  /       \        l     (C) 2018 Pikaur development team
-  j  ●   .   ●        l     Licensed under GPLv3
- { )  ._,.__,   , -.  {
-  У    \  _/     ._/   \
-
-""".encode())
-
-
 def parse_args(args):
     parser = argparse.ArgumentParser(prog=sys.argv[0], add_help=False)
     for letter, opt in (
@@ -571,7 +536,7 @@ def main():
     elif args.help:
         interactive_spawn(['pacman', ] + raw_args)
     elif args.version:
-        cli_version()
+        print_version()
     else:
         not_implemented_in_pikaur = True
 

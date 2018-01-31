@@ -3,9 +3,9 @@ import glob
 import shutil
 
 from .core import (
-    TypeContainer, CmdTaskWorker, MultipleTasksExecutor,
+    DataType, CmdTaskWorker, MultipleTasksExecutor,
     AUR_REPOS_CACHE, BUILD_CACHE,
-    interactive_spawn,
+    interactive_spawn, get_package_name_from_depend_line,
 )
 from .aur import get_repo_url
 from .pacman import find_local_packages
@@ -15,7 +15,7 @@ class BuildError(Exception):
     pass
 
 
-class CloneError(TypeContainer, Exception):
+class CloneError(DataType, Exception):
     build = None
     result = None
 
@@ -48,10 +48,13 @@ class SrcInfo():
         return None
 
     def get_makedepends(self):
-        return self.get_values('makedepends')
+        return [
+            get_package_name_from_depend_line(dep)
+            for dep in self.get_values('makedepends')
+        ]
 
 
-class PackageBuild(TypeContainer):
+class PackageBuild(DataType):
     clone = False
     pull = False
 

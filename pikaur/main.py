@@ -10,6 +10,7 @@ import shutil
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
     CmdTaskWorker, interactive_spawn,
+    get_package_name_from_depend_line,
 )
 from .pprint import (
     color_line, format_paragraph,
@@ -80,7 +81,7 @@ def find_aur_deps(package_names):
 
     def _get_deps(result):
         return [
-            dep.split('=')[0].split('<')[0].split('>')[0] for dep in
+            get_package_name_from_depend_line(dep) for dep in
             result.get('Depends', []) + result.get('MakeDepends', [])
         ]
 

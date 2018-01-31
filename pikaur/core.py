@@ -130,7 +130,7 @@ class CmdTaskWorker(object):
         return self._stream_subprocess()
 
 
-class TypeContainer():
+class DataType():
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -145,7 +145,7 @@ class TypeContainer():
         super().__setattr__(key, value)
 
 
-class PackageUpdate(TypeContainer):
+class PackageUpdate(DataType):
     pkg_name = None
     current_version = None
     aur_version = None
@@ -173,3 +173,7 @@ def compare_versions(current_version, new_version):
             return False
         return versions[1] == new_version
     return False
+
+
+def get_package_name_from_depend_line(depend_line):
+    return depend_line.split('=')[0].split('<')[0].split('>')[0]

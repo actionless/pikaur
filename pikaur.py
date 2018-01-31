@@ -1064,11 +1064,9 @@ def main():
     raw_args = sys.argv[1:]
     args = parse_args(raw_args)
 
-    something_else = False
+    not_implemented_in_pikaur = False
 
-    if args.help:
-        return interactive_spawn(['pacman', ] + raw_args)
-    elif args.sync:
+    if args.sync:
         if args.sysupgrade:
             cli_upgrade_packages(args)
         elif args.search:
@@ -1080,20 +1078,23 @@ def main():
         elif '-S' in raw_args:
             cli_install_packages(args)
         else:
-            something_else = True
-        if not something_else:
-            return
+            not_implemented_in_pikaur = True
+
     elif args.query:
         if args.sysupgrade:
             cli_print_upgradeable(args)
         else:
-            something_else = True
-        if not something_else:
-            return
-    elif args.version:
-        return cli_version()
+            not_implemented_in_pikaur = True
 
-    return interactive_spawn(['sudo', 'pacman', ] + raw_args)
+    elif args.help:
+        interactive_spawn(['pacman', ] + raw_args)
+    elif args.version:
+        cli_version()
+    else:
+        not_implemented_in_pikaur = True
+
+    if not_implemented_in_pikaur:
+        interactive_spawn(['sudo', 'pacman', ] + raw_args)
 
 
 if __name__ == '__main__':

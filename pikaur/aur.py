@@ -81,33 +81,33 @@ class AurTaskWorker():
 
     host = 'aur.archlinux.org'
     uri = None
+    params = None
 
     def get_task(self, loop):
+        self.uri = f'/rpc/?{self.params}'
         return https_client_task(loop, self.host, self.uri)
 
 
 class AurTaskWorkerSearch(AurTaskWorker):
 
     def __init__(self, search_query):
-        params = urlencode({
+        self.params = urlencode({
             'v': 5,
             'type': 'search',
             'arg': search_query,
             'by': 'name-desc'
         })
-        self.uri = f'/rpc/?{params}'
 
 
 class AurTaskWorkerInfo(AurTaskWorker):
 
     def __init__(self, packages):
-        params = urlencode({
+        self.params = urlencode({
             'v': 5,
             'type': 'info',
         })
         for package in packages:
-            params += '&arg[]=' + package
-        self.uri = f'/rpc/?{params}'
+            self.params += '&arg[]=' + package
 
 
 def get_repo_url(package_name):

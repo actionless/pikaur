@@ -73,10 +73,18 @@ def pretty_print_upgradeable(packages_updates):
             color_line(self.pkg_name, 15),
             color_line(common_version, version_color),
             color_line(
-                self.current_version.split(common_version)[1], old_color
+                self.current_version.split(common_version)[1]
+                if common_version != ''
+                else self.current_version,
+                old_color
             ),
             color_line(common_version, version_color),
-            color_line(self.aur_version.split(common_version)[1], new_color),
+            color_line(
+                self.aur_version.split(common_version)[1]
+                if common_version != ''
+                else self.aur_version,
+                new_color
+            ),
         )
 
     print('\n'.join([

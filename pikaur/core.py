@@ -85,9 +85,23 @@ class CmdTaskResult():
 
 class CmdTaskWorker(object):
     cmd = None
-    stderr = None
-    stdout = None
     enable_logging = None
+    stderrs = None
+    stdouts = None
+    _stderr = None
+    _stdout = None
+
+    @property
+    def stderr(self):
+        if not self._stderr:
+            self._stderr = '\n'.join(self.stderrs)
+        return self._stderr
+
+    @property
+    def stdout(self):
+        if not self._stdout:
+            self._stdout = '\n'.join(self.stdouts)
+        return self._stdout
 
     async def _read_stream(self, stream, callback):
         while True:
@@ -100,10 +114,10 @@ class CmdTaskWorker(object):
                 break
 
     def save_err(self, line):
-        self.stderr += line
+        self.stderrs.append(line.rstrip(b'\n').decode('utf-8'))
 
     def save_out(self, line):
-        self.stdout += line
+        self.stdouts.append(line.rstrip(b'\n').decode('utf-8'))
 
     async def _stream_subprocess(self):
         process = await asyncio.create_subprocess_exec(
@@ -117,14 +131,14 @@ class CmdTaskWorker(object):
         ])
         result = CmdTaskResult()
         result.return_code = await process.wait()
-        result.stderr = self.stderr.decode('utf-8')
-        result.stdout = self.stdout.decode('utf-8')
+        result.stderrs = self.stderrs
+        result.stdouts = self.stdouts
         return result
 
     def __init__(self, cmd):
         self.cmd = cmd
-        self.stderr = b''
-        self.stdout = b''
+        self.stderrs = []
+        self.stdouts = []
 
     def get_task(self, _loop):
         return self._stream_subprocess()

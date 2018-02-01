@@ -4,7 +4,9 @@ import email
 import json
 from urllib.parse import urlencode
 
-from .core import SingleTaskExecutor, PackageUpdate, compare_versions
+from .core import (
+    MultipleTasksExecutor, PackageUpdate, compare_versions
+)
 
 
 class NetworkTaskResult():
@@ -40,7 +42,11 @@ class NetworkTaskResult():
         self = cls()
         self.return_code = request_result.split()[1]
         self.headers = headers
-        self.json = json.loads(payload)
+        try:
+            self.json = json.loads(payload)
+        except Exception as e:
+            print(f'PAYLOAD: {payload}')
+            raise(e)
         return self
 
 
@@ -114,11 +120,33 @@ def get_repo_url(package_name):
     return f'https://aur.archlinux.org/{package_name}.git'
 
 
+def get_chunks(iterable, chunk_size):
+    result = []
+    index = 0
+    for item in iterable:
+        result.append(item)
+        index += 1
+        if index == chunk_size:
+            yield result
+            result = []
+            index = 0
+    if result:
+        yield result
+
+
 def find_aur_packages(package_names):
-    result = SingleTaskExecutor(
-        AurTaskWorkerInfo(packages=package_names)
-    ).execute()
-    json_results = result.json['results']
+    chunk_size = 100
+    results = MultipleTasksExecutor({
+        _id: AurTaskWorkerInfo(packages=packages_chunk)
+        for _id, packages_chunk in enumerate(
+            get_chunks(package_names, chunk_size)
+        )
+    }).execute()
+
+    json_results = []
+    for result in results.values():
+        json_results += result.json['results']
+
     found_aur_packages = [
         result['Name'] for result in json_results
     ]

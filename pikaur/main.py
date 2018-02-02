@@ -387,7 +387,7 @@ def cli_upgrade_packages(args):
             color_line('::', 12),
             color_line('AUR packages updates:', 15)
         ))
-        pretty_print_upgradeable(aur_updates)
+        pretty_print_upgradeable(sorted(aur_updates, key=lambda x: x.pkg_name))
 
     all_upgradeable_package_names = [
         u.pkg_name for u in repo_packages_updates

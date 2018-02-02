@@ -65,39 +65,49 @@ def pretty_print_upgradeable(packages_updates):
             counter += 1
         return result
 
-    def pretty_format(self):
+    def pretty_format(pkg_update):
         common_version = get_common_string(
-            self.current_version, self.aur_version
+            pkg_update.current_version, pkg_update.aur_version
         )
+        new_version_postfix = pkg_update.aur_version
+        if common_version != '':
+            new_version_postfix = pkg_update.aur_version.split(common_version)[1]
         version_color = 10
         old_color = 11
         new_color = 9
         column_width = min(int(get_term_width() / 2), 45)
+        sort_by = '{:03d}{}'.format(
+            len(common_version)*10+len(pkg_update.aur_version),
+            pkg_update.pkg_name
+        )
         return ' {:<{width}} {:<{width2}} -> {}{}'.format(
-            color_line(self.pkg_name, 15),
+            color_line(pkg_update.pkg_name, 15),
             color_line(common_version, version_color) +
             color_line(
-                self.current_version.split(common_version)[1]
+                pkg_update.current_version.split(common_version)[1]
                 if common_version != ''
-                else self.current_version,
+                else pkg_update.current_version,
                 old_color
             ),
             color_line(common_version, version_color),
-            color_line(
-                self.aur_version.split(common_version)[1]
-                if common_version != ''
-                else self.aur_version,
-                new_color
-            ),
+            color_line(new_version_postfix, new_color),
             width=column_width,
             width2=column_width - 3
-        )
+        ), sort_by
 
-    print('\n'.join([
-        # format_paragraph(pretty_format(pkg_update))
-        pretty_format(pkg_update)
-        for pkg_update in packages_updates
-    ]))
+    print(
+        '\n'.join([
+            f'{line}' for line, _ in sorted(
+                [
+                    # format_paragraph(pretty_format(pkg_update))
+                    pretty_format(pkg_update)
+                    for pkg_update in packages_updates
+                ],
+                key=lambda x: x[1],
+                # reverse=True
+            )
+        ])
+    )
 
 
 def print_upgradeable(packages_updates):

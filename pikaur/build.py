@@ -47,11 +47,17 @@ class SrcInfo():
             return values[0]
         return None
 
-    def get_makedepends(self):
+    def _get_depends(self, field):
         return [
             get_package_name_from_depend_line(dep)
-            for dep in self.get_values('makedepends')
+            for dep in self.get_values(field)
         ]
+
+    def get_makedepends(self):
+        return self._get_depends('makedepends')
+
+    def get_depends(self):
+        return self._get_depends('depends')
 
 
 class PackageBuild(DataType):
@@ -143,6 +149,8 @@ class PackageBuild(DataType):
         # @TODO: args._unknown_args
         make_deps = SrcInfo(repo_path).get_makedepends()
         _, new_make_deps_to_install = find_local_packages(make_deps)
+        new_deps = SrcInfo(repo_path).get_depends()
+        _, new_deps_to_install = find_local_packages(new_deps)
         if new_make_deps_to_install:
             interactive_spawn(
                 [
@@ -152,7 +160,7 @@ class PackageBuild(DataType):
                     '--asdeps',
                     '--noconfirm',
                 ] + args._unknown_args +
-                new_make_deps_to_install,
+                new_make_deps_to_install + new_deps_to_install,
             )
         build_result = interactive_spawn(
             [
@@ -172,6 +180,13 @@ class PackageBuild(DataType):
                 ] + new_make_deps_to_install,
             )
         if build_result.returncode > 0:
+            interactive_spawn(
+                [
+                    'sudo',
+                    'pacman',
+                    '-Rs',
+                ] + new_deps_to_install,
+            )
             raise BuildError()
         else:
             self.built_package_path = glob.glob(

@@ -16,6 +16,10 @@ def color_line(line, color_number):
     return result
 
 
+def bold_line(line):
+    return f'\033[1m{line}\033[0m'
+
+
 def get_term_width():
     return shutil.get_terminal_size((80, 80)).columns
 
@@ -49,7 +53,7 @@ def format_paragraph(line):
 def print_not_found_packages(not_found_packages):
     print("{} {}".format(
         color_line(':: warning:', 11),
-        color_line('Following packages can not be found in AUR:', 15),
+        bold_line('Following packages can not be found in AUR:'),
     ))
     for package in not_found_packages:
         print(format_paragraph(package))
@@ -71,7 +75,9 @@ def pretty_print_upgradeable(packages_updates):
         )
         new_version_postfix = pkg_update.aur_version
         if common_version != '':
-            new_version_postfix = pkg_update.aur_version.split(common_version)[1]
+            new_version_postfix = pkg_update.aur_version.split(
+                common_version
+            )[1]
         version_color = 10
         old_color = 11
         new_color = 9
@@ -81,7 +87,7 @@ def pretty_print_upgradeable(packages_updates):
             pkg_update.pkg_name
         )
         return ' {:<{width}} {:<{width2}} -> {}{}'.format(
-            color_line(pkg_update.pkg_name, 15),
+            bold_line(pkg_update.pkg_name),
             color_line(common_version, version_color) +
             color_line(
                 pkg_update.current_version.split(common_version)[1]

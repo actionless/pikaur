@@ -13,7 +13,7 @@ from .core import (
     get_package_name_from_depend_line,
 )
 from .pprint import (
-    color_line, format_paragraph,
+    color_line, bold_line, format_paragraph,
     print_not_found_packages,
     print_upgradeable, pretty_print_upgradeable,
     print_version,
@@ -137,10 +137,9 @@ def find_aur_deps(package_names):
                                 break
                     print("{} {}".format(
                         color_line(':: error:', 9),
-                        color_line(
+                        bold_line(
                             'Dependencies missing for '
-                            f'{problem_package_names}',
-                            15
+                            f'{problem_package_names}'
                         ),
                     ))
                     print_not_found_packages(not_found_aur_deps)
@@ -169,7 +168,6 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     # confirm package install/upgrade
     if not noconfirm:
         print()
-        # print(color_line("Package", 15))
         if pacman_packages:
             print(color_line("New packages will be installed:", 12))
             print(format_paragraph(' '.join(pacman_packages)))
@@ -185,7 +183,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
 
         answer = input('{} {}'.format(
             color_line('::', 12),
-            color_line('Proceed with installation? [Y/n] ', 15),
+            bold_line('Proceed with installation? [Y/n] '),
         ))
         if answer:
             if answer.lower()[0] != 'y':
@@ -226,7 +224,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             if editor:
                 if ask_to_continue(
                         "Do you want to edit PKGBUILD for {} package?".format(
-                            color_line(pkg_name, 15)
+                            bold_line(pkg_name)
                         ),
                         default_yes=False
                 ):
@@ -244,7 +242,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                     if ask_to_continue(
                             "Do you want to edit {} for {} package?".format(
                                 install_file_name,
-                                color_line(pkg_name, 15)
+                                bold_line(pkg_name)
                             ),
                             default_yes=False
                     ):
@@ -286,6 +284,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     # install packages:
 
     if pacman_packages:
+        print(pacman_packages)
         interactive_spawn(
             [
                 'sudo',
@@ -369,7 +368,7 @@ def cli_upgrade_packages(args):
 
     print('{} {}'.format(
         color_line('::', 12),
-        color_line('Starting full system upgrade...', 15)
+        bold_line('Starting full system upgrade...')
     ))
     repo_packages_updates = [
         pkg for pkg in find_repo_updates()
@@ -381,7 +380,7 @@ def cli_upgrade_packages(args):
 
     print('\n{} {}'.format(
         color_line('::', 12),
-        color_line('Starting full AUR upgrade...', 15)
+        bold_line('Starting full AUR upgrade...')
     ))
     aur_updates, not_found_aur_pkgs = \
         find_aur_updates(find_packages_not_from_repo())
@@ -393,7 +392,7 @@ def cli_upgrade_packages(args):
     if aur_updates:
         print('\n{} {}'.format(
             color_line('::', 12),
-            color_line('AUR packages updates:', 15)
+            bold_line('AUR packages updates:')
         ))
         pretty_print_upgradeable(sorted(aur_updates, key=lambda x: x.pkg_name))
 
@@ -405,19 +404,24 @@ def cli_upgrade_packages(args):
     if not all_upgradeable_package_names:
         print('\n{} {}'.format(
             color_line('::', 10),
-            color_line('Already up-to-date.', 15)
+            bold_line('Already up-to-date.')
         ))
         return
 
     print()
     answer = input('{} {}\n{} {}\n> '.format(
         color_line('::', 12),
-        color_line('Proceed with installation? [Y/n] ', 15),
+        bold_line('Proceed with installation? [Y/n] '),
         color_line('::', 12),
-        color_line('[V]iew package detail   [M]anually select packages', 15)
+        bold_line('[v]iew package detail   [m]anually select packages')
     ))
     if answer:
-        if answer.lower()[0] != 'y':
+        letter = answer.lower()[0]
+        if letter == 'v':
+            raise NotImplementedError()
+        elif letter == 'm':
+            raise NotImplementedError()
+        elif letter != 'y':
             sys.exit(1)
     return cli_install_packages(
         args=args,
@@ -443,7 +447,7 @@ def cli_info_packages(args):
         print(
             '\n'.join([
                 '{key:30}: {value}'.format(
-                    key=color_line(key, 15),
+                    key=bold_line(key),
                     value=value
                 )
                 for key, value in result.items()
@@ -475,7 +479,7 @@ def cli_search_packages(args):
             print("{}{} {} {}".format(
                 # color_line('aur/', 13),
                 color_line('aur/', 9),
-                color_line(aur_pkg['Name'], 15),
+                bold_line(aur_pkg['Name']),
                 color_line(aur_pkg["Version"], 10),
                 '',  # [installed]
             ))

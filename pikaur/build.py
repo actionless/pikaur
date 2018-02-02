@@ -170,6 +170,7 @@ class PackageBuild(DataType):
                     'pacman',
                     '-S',
                     '--asdeps',
+                    '--needed',
                     '--noconfirm',
                 ] + args._unknown_args +
                 new_make_deps_to_install + new_deps_to_install,

@@ -2,6 +2,7 @@
 
 Minimalistic AUR helper.
 
+![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshot.png "Screenshot")
 
 ### Installation
 

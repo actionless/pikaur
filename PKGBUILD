@@ -30,9 +30,12 @@ pkgver() {
 	git describe | sed 's/^v//;s/-/+/g'
 }
 
-package() {
+build() {
 	cd "${srcdir}/${_pkgbase}"
 	nuitka --plugin-enable=pylint-warnings --recurse-directory=pikaur --recurse-all ./pikaur.py
-	mkdir -p ${pkgdir}/usr/bin/
-	install -D -m755 ./pikaur.exe ${pkgdir}/usr/bin/pikaur
+}
+
+package() {
+	mkdir -p "${pkgdir}/usr/bin/"
+	install -D -m755 "${srcdir}/${_pkgbase}/pikaur.exe" "${pkgdir}/usr/bin/pikaur"
 }

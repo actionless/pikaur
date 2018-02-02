@@ -194,13 +194,14 @@ class PackageBuild(DataType):
                 ] + new_make_deps_to_install,
             )
         if build_result.returncode > 0:
-            interactive_spawn(
-                [
-                    'sudo',
-                    'pacman',
-                    '-Rs',
-                ] + new_deps_to_install,
-            )
+            if new_deps_to_install:
+                interactive_spawn(
+                    [
+                        'sudo',
+                        'pacman',
+                        '-Rs',
+                    ] + new_deps_to_install,
+                )
             raise BuildError()
         else:
             self.built_package_path = glob.glob(

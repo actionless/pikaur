@@ -164,6 +164,8 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     pacman_packages, aur_packages = find_repo_packages(packages)
     new_aur_deps = find_aur_deps(aur_packages)
 
+    failed_to_build = []
+
     # confirm package install/upgrade
     if not noconfirm:
         print()
@@ -277,8 +279,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             repo_status.build(args)
         except BuildError:
             print(color_line(f"Can't build '{pkg_name}'.", 9))
-            if not ask_to_continue():
-                sys.exit(1)
+            failed_to_build.append(pkg_name)
+            # if not ask_to_continue():
+            #     sys.exit(1)
 
     # install packages:
 
@@ -342,6 +345,11 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                     'last_installed.txt'
                 )
             )
+    if failed_to_build:
+        print('\n'.join(
+            [color_line(f"Failed to build following packages:'.", 9), ] +
+            failed_to_build
+        ))
 
 
 def cli_print_upgradeable(args):

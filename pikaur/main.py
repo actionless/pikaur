@@ -19,7 +19,7 @@ from .pprint import (
     print_version,
 )
 from .aur import (
-    AurTaskWorkerSearch,
+    AurTaskWorkerSearch, AurTaskWorkerInfo,
     find_aur_packages, find_aur_updates
 )
 from .pacman import (
@@ -426,9 +426,29 @@ def cli_upgrade_packages(args):
     )
 
 
-def cli_info_packages(_args):
-    # @TODO:
-    raise NotImplementedError()
+def cli_info_packages(args):
+    pkgs = 'pkgs'
+    aur = 'aur'
+    result = MultipleTasksExecutor({
+        pkgs: PacmanColorTaskWorker(args._raw),
+        aur: AurTaskWorkerInfo(
+            packages=args._positional or []
+        ),
+    }).execute()
+    json_results = result[aur].json['results']
+    num_found = len(json_results)
+    if result[pkgs].stdout:
+        print(result[pkgs].stdout, end='\n' if json_results else '')
+    for i, result in enumerate(json_results):
+        print(
+            '\n'.join([
+                '{key:30}: {value}'.format(
+                    key=color_line(key, 15),
+                    value=value
+                )
+                for key, value in result.items()
+            ]) + ('\n' if i+1 < num_found else '')
+        )
 
 
 def cli_clean_packages_cache(_args):

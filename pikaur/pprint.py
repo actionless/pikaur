@@ -16,8 +16,12 @@ def color_line(line, color_number):
     return result
 
 
+def get_term_width():
+    return shutil.get_terminal_size((80, 80)).columns
+
+
 def format_paragraph(line):
-    term_width = shutil.get_terminal_size((80, 80)).columns
+    term_width = get_term_width()
     max_line_width = term_width - PADDING * 2
 
     result = []
@@ -68,10 +72,10 @@ def pretty_print_upgradeable(packages_updates):
         version_color = 10
         old_color = 11
         new_color = 9
-        return '{}{} {}{} -> {}{}'.format(
-            ' ' * PADDING,
+        column_width = min(int(get_term_width() / 2), 45)
+        return ' {:<{width}} {:<{width2}} -> {}{}'.format(
             color_line(self.pkg_name, 15),
-            color_line(common_version, version_color),
+            color_line(common_version, version_color) +
             color_line(
                 self.current_version.split(common_version)[1]
                 if common_version != ''
@@ -85,6 +89,8 @@ def pretty_print_upgradeable(packages_updates):
                 else self.aur_version,
                 new_color
             ),
+            width=column_width,
+            width2=column_width - 3
         )
 
     print('\n'.join([

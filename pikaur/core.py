@@ -60,10 +60,40 @@ class SingleTaskExecutor(MultipleTasksExecutor):
         return super().execute()[0]
 
 
-class CmdTaskResult():
-    stderr = None
-    stdout = None
+class DataType():
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def __setattr__(self, key, value):
+        if getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM:
+            raise TypeError(
+                f"'{self.__class__.__name__}' does "
+                f"not have attribute '{key}'"
+            )
+        super().__setattr__(key, value)
+
+
+class CmdTaskResult(DataType):
+    stderrs = None
+    stdouts = None
     return_code = None
+
+    _stderr = None
+    _stdout = None
+
+    @property
+    def stderr(self):
+        if not self._stderr:
+            self._stderr = '\n'.join(self.stderrs)
+        return self._stderr
+
+    @property
+    def stdout(self):
+        if not self._stdout:
+            self._stdout = '\n'.join(self.stdouts)
+        return self._stdout
 
     def __repr__(self):
         result = f"[rc: {self.return_code}]\n"
@@ -85,23 +115,10 @@ class CmdTaskResult():
 
 class CmdTaskWorker(object):
     cmd = None
+    kwargs = None
     enable_logging = None
     stderrs = None
     stdouts = None
-    _stderr = None
-    _stdout = None
-
-    @property
-    def stderr(self):
-        if not self._stderr:
-            self._stderr = '\n'.join(self.stderrs)
-        return self._stderr
-
-    @property
-    def stdout(self):
-        if not self._stdout:
-            self._stdout = '\n'.join(self.stdouts)
-        return self._stdout
 
     async def _read_stream(self, stream, callback):
         while True:
@@ -123,7 +140,8 @@ class CmdTaskWorker(object):
         process = await asyncio.create_subprocess_exec(
             *self.cmd,
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE,
+            **self.kwargs
         )
         await asyncio.wait([
             self._read_stream(process.stdout, self.save_out),
@@ -135,28 +153,14 @@ class CmdTaskWorker(object):
         result.stdouts = self.stdouts
         return result
 
-    def __init__(self, cmd):
+    def __init__(self, cmd, **kwargs):
         self.cmd = cmd
         self.stderrs = []
         self.stdouts = []
+        self.kwargs = kwargs
 
     def get_task(self, _loop):
         return self._stream_subprocess()
-
-
-class DataType():
-
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def __setattr__(self, key, value):
-        if getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM:
-            raise TypeError(
-                f"'{self.__class__.__name__}' does "
-                f"not have attribute '{key}'"
-            )
-        super().__setattr__(key, value)
 
 
 class PackageUpdate(DataType):

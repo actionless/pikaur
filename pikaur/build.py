@@ -3,7 +3,8 @@ import glob
 import shutil
 
 from .core import (
-    DataType, CmdTaskWorker, MultipleTasksExecutor,
+    DataType, CmdTaskWorker,
+    MultipleTasksExecutor, SingleTaskExecutor,
     AUR_REPOS_CACHE, BUILD_CACHE,
     interactive_spawn, get_package_name_from_depend_line,
 )
@@ -23,14 +24,16 @@ class CloneError(DataType, Exception):
 class SrcInfo():
 
     lines = None
+    path = None
+    repo_path = None
 
     def __init__(self, repo_path):
-        with open(
-            os.path.join(
-                repo_path,
-                '.SRCINFO'
-            )
-        ) as srcinfo_file:
+        self.path = os.path.join(
+            repo_path,
+            '.SRCINFO'
+        )
+        self.repo_path = repo_path
+        with open(self.path) as srcinfo_file:
             self.lines = srcinfo_file.readlines()
 
     def get_values(self, field):
@@ -58,6 +61,15 @@ class SrcInfo():
 
     def get_depends(self):
         return self._get_depends('depends')
+
+    def regenerate(self):
+        with open(self.path, 'w') as srcinfo_file:
+            result = SingleTaskExecutor(
+                CmdTaskWorker([
+                    'makepkg', '--printsrcinfo',
+                ], cwd=self.repo_path)
+            ).execute()
+            srcinfo_file.write(result.stdout)
 
 
 class PackageBuild(DataType):
@@ -151,8 +163,8 @@ class PackageBuild(DataType):
         _, new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = SrcInfo(repo_path).get_depends()
         _, new_deps_to_install = find_local_packages(new_deps)
-        if new_make_deps_to_install:
-            interactive_spawn(
+        if new_make_deps_to_install or new_deps_to_install:
+            deps_result = interactive_spawn(
                 [
                     'sudo',
                     'pacman',
@@ -162,6 +174,8 @@ class PackageBuild(DataType):
                 ] + args._unknown_args +
                 new_make_deps_to_install + new_deps_to_install,
             )
+            if deps_result.returncode > 0:
+                raise BuildError()
         build_result = interactive_spawn(
             [
                 'makepkg',

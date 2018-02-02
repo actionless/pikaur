@@ -235,6 +235,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                             'PKGBUILD'
                         )
                     ])
+                    SrcInfo(repo_path).regenerate()
 
                 install_file_name = SrcInfo(repo_path).get_install_script()
                 if install_file_name:

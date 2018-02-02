@@ -23,7 +23,7 @@ from .aur import (
     find_aur_packages, find_aur_updates
 )
 from .pacman import (
-    PacmanColorTaskWorker,
+    PacmanColorTaskWorker, PackageDB,
     find_repo_packages, find_local_packages,
     find_packages_not_from_repo, find_repo_updates,
 )
@@ -97,18 +97,35 @@ def find_aur_deps(package_names):
             all_deps_for_aur_packages += _get_deps(result)
         all_deps_for_aur_packages = list(set(all_deps_for_aur_packages))
 
-        aur_deps_for_aur_packages = []
+        not_found_local_pkgs = []
         if all_deps_for_aur_packages:
             _, not_found_deps = find_repo_packages(
                 all_deps_for_aur_packages
             )
+
+            # pkgs provided by repo pkgs
             if not_found_deps:
-                _local_pkgs_info, aur_deps_for_aur_packages = \
+                repo_provided = PackageDB.get_repo_provided()
+                for dep_name in not_found_deps[:]:
+                    if dep_name in repo_provided:
+                        not_found_deps.remove(dep_name)
+
+            if not_found_deps:
+                _local_pkgs_info, not_found_local_pkgs = \
                     find_local_packages(
                         not_found_deps
                     )
+
+                # pkgs provided by repo pkgs
+                if not_found_local_pkgs:
+                    local_provided = PackageDB.get_local_provided()
+                    for dep_name in not_found_local_pkgs[:]:
+                        if dep_name in local_provided:
+                            not_found_local_pkgs.remove(dep_name)
+
+                # try finding those packages in AUR
                 _aur_deps_info, not_found_aur_deps = find_aur_packages(
-                    aur_deps_for_aur_packages
+                    not_found_local_pkgs
                 )
                 if not_found_aur_deps:
                     problem_package_names = []
@@ -128,8 +145,8 @@ def find_aur_deps(package_names):
                     ))
                     print_not_found_packages(not_found_aur_deps)
                     sys.exit(1)
-        new_aur_deps += aur_deps_for_aur_packages
-        package_names = aur_deps_for_aur_packages
+        new_aur_deps += not_found_local_pkgs
+        package_names = not_found_local_pkgs
 
     return new_aur_deps
 

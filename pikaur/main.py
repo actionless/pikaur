@@ -346,7 +346,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             )
     if failed_to_build:
         print('\n'.join(
-            [color_line(f"Failed to build following packages:'.", 9), ] +
+            [color_line(f"Failed to build following packages:", 9), ] +
             failed_to_build
         ))
 

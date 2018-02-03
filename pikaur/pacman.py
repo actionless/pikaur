@@ -44,6 +44,13 @@ PACMAN_DICT_FIELDS = (
 )
 
 
+DB_INFO_TRANSLATION = {
+    '%NAME%': 'Name',
+    '%VERSION%': 'Version',
+    '%PROVIDES%': 'Provides',
+}
+
+
 class PacmanPackageInfo(DataType):
     Name = None
     Version = None
@@ -150,6 +157,9 @@ class PacmanPackageInfo(DataType):
                     else:
                         value = ''
                 else:
+                    if field not in DB_INFO_TRANSLATION:
+                        continue
+
                     _value = line.strip()
                     if real_field in PACMAN_LIST_FIELDS:
                         value.append(_value)
@@ -168,13 +178,6 @@ class PacmanPackageInfo(DataType):
     @classmethod
     def parse_pacman_db_info(cls, file_name):
         return cls._parse_pacman_db_info(file_name, lambda x: open(x, 'rb'))
-
-
-DB_INFO_TRANSLATION = {
-    '%NAME%': 'Name',
-    '%VERSION%': 'Version',
-    '%PROVIDES%': 'Provides',
-}
 
 
 class RepoPackageInfo(PacmanPackageInfo):

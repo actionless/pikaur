@@ -1,6 +1,8 @@
 import sys
 import shutil
 
+from .config import VERSION
+
 
 PADDING = 4
 
@@ -124,16 +126,16 @@ def print_upgradeable(packages_updates):
 
 
 def print_version():
-    sys.stdout.buffer.write(r"""
+    sys.stdout.buffer.write((r"""
       /:}               _
      /--1             / :}
     /   |           / `-/
    |  ,  --------  /   /
    |'                 Y
-  /                   l     Pikaur v0.1
+  /                   l     Pikaur """+VERSION+"""
   l  /       \        l     (C) 2018 Pikaur development team
   j  ●   .   ●        l     Licensed under GPLv3
  { )  ._,.__,   , -.  {
   У    \  _/     ._/   \
 
-""".encode())
+""").encode())

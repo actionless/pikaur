@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 from .core import (
     MultipleTasksExecutor, PackageUpdate, compare_versions
 )
+from .config import VERSION
 
 
 class NetworkTaskResult():
@@ -66,7 +67,7 @@ async def https_client_task(loop, host, uri, port=443):
         f'{key}: {value}' for key, value in {
             "Host": host,
             "Content-type": "application/json",
-            "User-Agent": "pikaur/0.1",
+            "User-Agent": f"pikaur/{VERSION}",
             "Accept": "*/*"
         }.items()
     ]) + '\r\n'

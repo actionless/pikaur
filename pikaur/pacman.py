@@ -265,12 +265,12 @@ class PackageDB_ALPM9(PackageDBCommon):
         if not cls._repo_dict_cache:
             result = {}
             sync_dir = '/var/lib/pacman/sync/'
-            for repo_dir_name in os.listdir(sync_dir):
-                if not repo_dir_name.endswith('.db'):
+            for repo_name in os.listdir(sync_dir):
+                if not repo_name.endswith('.db'):
                     continue
-                print(f"Reading {repo_dir_name} repository...")
+                print(f"Reading {repo_name} repository data...")
                 for pkg in RepoPackageInfo.parse_pacman_db_gzip_info(
-                        os.path.join(sync_dir, repo_dir_name)
+                        os.path.join(sync_dir, repo_name)
                 ):
                     result[pkg.Name] = pkg
             cls._repo_dict_cache = result

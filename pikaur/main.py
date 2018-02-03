@@ -515,7 +515,7 @@ def parse_args(args):
     ):
         parser.add_argument('--'+opt, action='store_true')
     for letter in (
-            'b', 'c', 'd', 'g', 'i', 'l', 'p', 'r', 'v',
+            'b', 'c', 'd', 'g', 'i', 'l', 'o', 'p', 'r', 'v',
     ):
         parser.add_argument('-'+letter, action='store_true')
     parser.add_argument('_positional', nargs='*')
@@ -565,7 +565,7 @@ def main():
         if args.sysupgrade:
             cli_print_upgradeable(args)
         else:
-            not_implemented_in_pikaur = True
+            interactive_spawn(['pacman', ] + raw_args)
 
     elif args.help:
         interactive_spawn(['pacman', ] + raw_args)

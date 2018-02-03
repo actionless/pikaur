@@ -3,9 +3,11 @@
 
 import os
 import sys
-import argparse
+# import argparse
 import readline
 import shutil
+
+from . import argparse as argparse
 
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
@@ -495,8 +497,17 @@ def cli_search_packages(args):
         # print(aur_pkg)
 
 
+class SafeArgumentParser(argparse.ArgumentParser):
+
+    def error(self, message):
+        exc = sys.exc_info()[1]
+        if exc:
+            raise exc
+        super().error(message)
+
+
 def parse_args(args):
-    parser = argparse.ArgumentParser(prog=sys.argv[0], add_help=False)
+    parser = SafeArgumentParser(prog=sys.argv[0], add_help=False)
     for letter, opt in (
             ('S', 'sync'),
             ('w', 'downloadonly'),
@@ -514,10 +525,6 @@ def parse_args(args):
             'noconfirm',
     ):
         parser.add_argument('--'+opt, action='store_true')
-    for letter in (
-            'b', 'c', 'd', 'g', 'i', 'l', 'o', 'p', 'r', 'v',
-    ):
-        parser.add_argument('-'+letter, action='store_true')
     parser.add_argument('_positional', nargs='*')
     parser.add_argument('--ignore', action='append')
 
@@ -525,8 +532,9 @@ def parse_args(args):
     parsed_args._unknown_args = unknown_args
     parsed_args._raw = args
 
-    # print(f'args = {args}')
     # print("ARGPARSE:")
+    # print(parsed_args)
+    # print(f'args = {args}')
     # reconstructed_args = {
     #    f'--{key}' if len(key) > 1 else f'-{key}': value
     #    for key, value in parsed_args.__dict__.items()

@@ -128,8 +128,7 @@ class PacmanPackageInfo(DataType):
     def _parse_pacman_db_info(cls, file_name, open_method):
         with open_method(file_name) as f:
             pkg = cls()
-            line = field = real_field = None
-            value = ''
+            line = field = real_field = value = None
             while line != '':
                 line = f.readline().decode('utf-8')
                 if line.startswith('%'):
@@ -243,6 +242,7 @@ class PackageDB():
         if not cls._local_dict_cache:
             result = {}
             local_dir = '/var/lib/pacman/local/'
+            print("Reading local package database...")
             for pkg_dir_name in os.listdir(local_dir):
                 if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
                     continue

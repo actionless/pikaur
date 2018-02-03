@@ -13,6 +13,7 @@ from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
     CmdTaskWorker, interactive_spawn,
     get_package_name_from_depend_line,
+    ask_to_continue, retry_interactive_command,
 )
 from .pprint import (
     color_line, bold_line, format_paragraph,
@@ -43,17 +44,6 @@ def init_readline():
 
 
 init_readline()
-
-
-def ask_to_continue(text='Do you want to proceed?', default_yes=True):
-    answer = input(text + (' [Y/n] ' if default_yes else ' [y/N] '))
-    if default_yes:
-        if answer and answer.lower()[0] != 'y':
-            return False
-    else:
-        if not answer or answer.lower()[0] != 'y':
-            return False
-    return True
 
 
 def get_editor():
@@ -286,7 +276,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     # install packages:
 
     if pacman_packages:
-        interactive_spawn(
+        if not retry_interactive_command(
             [
                 'sudo',
                 'pacman',
@@ -294,7 +284,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 '--noconfirm',
             ] + args._unknown_args +
             pacman_packages,
-        )
+        ):
+            if not ask_to_continue(default_yes=False):
+                sys.exit(1)
 
     if args.downloadonly:
         return
@@ -305,7 +297,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         if package_builds[pkg_name].built_package_path
     ]
     if new_aur_deps_to_install:
-        interactive_spawn(
+        if not retry_interactive_command(
             [
                 'sudo',
                 'pacman',
@@ -314,7 +306,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 '--noconfirm',
             ] + args._unknown_args +
             new_aur_deps_to_install,
-        )
+        ):
+            if not ask_to_continue(default_yes=False):
+                sys.exit(1)
 
     aur_packages_to_install = [
         package_builds[pkg_name].built_package_path
@@ -322,7 +316,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         if package_builds[pkg_name].built_package_path
     ]
     if aur_packages_to_install:
-        interactive_spawn(
+        if not retry_interactive_command(
             [
                 'sudo',
                 'pacman',
@@ -330,7 +324,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 '--noconfirm',
             ] + args._unknown_args +
             aur_packages_to_install,
-        )
+        ):
+            if not ask_to_continue(default_yes=False):
+                sys.exit(1)
 
     # save git hash of last sucessfully installed package
     if package_builds:
@@ -345,6 +341,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                     'last_installed.txt'
                 )
             )
+
     if failed_to_build:
         print('\n'.join(
             [color_line(f"Failed to build following packages:", 9), ] +
@@ -391,7 +388,7 @@ def cli_upgrade_packages(args):
     if repo_packages_updates:
         print('\n{} {}'.format(
             color_line('::', 12),
-            bold_line('System package{plural} update{plural}:'.format(
+            bold_line('System package{plural} update{plural} available:'.format(
                 plural='s' if len(repo_packages_updates) > 1 else ''
             ))
         ))
@@ -399,7 +396,7 @@ def cli_upgrade_packages(args):
     if aur_updates:
         print('\n{} {}'.format(
             color_line('::', 12),
-            bold_line('AUR package{plural} update{plural}:'.format(
+            bold_line('AUR package{plural} update{plural} available:'.format(
                 plural='s' if len(aur_updates) > 1 else ''
             ))
         ))

@@ -211,7 +211,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             local_packages_found
         )
 
-        if not ('--needed' in args._raw and already_installed):
+        if not (args.needed and already_installed):
             editor = get_editor()
             if editor:
                 if ask_to_continue(
@@ -263,7 +263,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     # build packages:
     for pkg_name in reversed(all_aur_package_names):
         repo_status = package_builds[pkg_name]
-        if '--needed' in args._raw and repo_status.already_installed:
+        if args.needed and repo_status.already_installed:
             continue
         try:
             repo_status.build(args)
@@ -504,8 +504,11 @@ class SafeArgumentParser(argparse.ArgumentParser):
 
 def parse_args(args):
     parser = SafeArgumentParser(prog=sys.argv[0], add_help=False)
+
     for letter, opt in (
             ('S', 'sync'),
+            ('c', 'clean'),
+            ('i', 'info'),
             ('w', 'downloadonly'),
             ('q', 'quiet'),
             ('h', 'help'),
@@ -517,12 +520,15 @@ def parse_args(args):
             ('V', 'version'),
     ):
         parser.add_argument('-'+letter, '--'+opt, action='store_true')
+
     for opt in (
             'noconfirm',
+            'needed',
     ):
         parser.add_argument('--'+opt, action='store_true')
-    parser.add_argument('_positional', nargs='*')
+
     parser.add_argument('--ignore', action='append')
+    parser.add_argument('_positional', nargs='*')
 
     parsed_args, unknown_args = parser.parse_known_args(args)
     parsed_args._unknown_args = unknown_args
@@ -556,9 +562,9 @@ def main():
             cli_upgrade_packages(args)
         elif args.search:
             cli_search_packages(args)
-        elif args.i:
+        elif args.info:
             cli_info_packages(args)
-        elif args.c:
+        elif args.clean:
             cli_clean_packages_cache(args)
         elif '-S' in raw_args or '--sync' in raw_args:
             cli_install_packages(args)

@@ -71,15 +71,19 @@ def pretty_print_upgradeable(packages_updates):
             counter += 1
         return result
 
+    def get_version_diff(version, common_version):
+        new_version_postfix = version
+        if common_version != '':
+            _new_version_postfix = version.split(
+                common_version
+            )[1:]
+            new_version_postfix = common_version.join(_new_version_postfix)
+        return new_version_postfix
+
     def pretty_format(pkg_update):
         common_version = get_common_string(
             pkg_update.current_version, pkg_update.aur_version
         )
-        new_version_postfix = pkg_update.aur_version
-        if common_version != '':
-            new_version_postfix = pkg_update.aur_version.split(
-                common_version
-            )[1]
         version_color = 10
         old_color = 11
         new_color = 9
@@ -92,13 +96,14 @@ def pretty_print_upgradeable(packages_updates):
             bold_line(pkg_update.pkg_name),
             color_line(common_version, version_color) +
             color_line(
-                pkg_update.current_version.split(common_version)[1]
-                if common_version != ''
-                else pkg_update.current_version,
+                get_version_diff(pkg_update.current_version, common_version),
                 old_color
             ),
             color_line(common_version, version_color),
-            color_line(new_version_postfix, new_color),
+            color_line(
+                get_version_diff(pkg_update.aur_version, common_version),
+                new_color
+            ),
             width=column_width,
             width2=column_width - 3
         ), sort_by

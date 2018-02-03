@@ -374,21 +374,25 @@ def cli_upgrade_packages(args):
         pkg for pkg in find_repo_updates()
         if pkg.pkg_name not in ignore
     ]
-    if repo_packages_updates:
-        print()
-        pretty_print_upgradeable(repo_packages_updates)
 
-    print('\n{} {}'.format(
+    print('{} {}'.format(
         color_line('::', 12),
         bold_line('Starting full AUR upgrade...')
     ))
     aur_updates, not_found_aur_pkgs = \
         find_aur_updates(find_packages_not_from_repo())
-    print_not_found_packages(not_found_aur_pkgs)
+    print_not_found_packages(sorted(not_found_aur_pkgs))
     aur_updates = [
         pkg for pkg in aur_updates
         if pkg.pkg_name not in ignore
     ]
+
+    if repo_packages_updates:
+        print('\n{} {}'.format(
+            color_line('::', 12),
+            bold_line('System packages updates:')
+        ))
+        pretty_print_upgradeable(repo_packages_updates)
     if aur_updates:
         print('\n{} {}'.format(
             color_line('::', 12),

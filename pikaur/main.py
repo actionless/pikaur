@@ -390,13 +390,17 @@ def cli_upgrade_packages(args):
     if repo_packages_updates:
         print('\n{} {}'.format(
             color_line('::', 12),
-            bold_line('System packages updates:')
+            bold_line('System package{plural} update{plural}:'.format(
+                plural='s' if len(repo_packages_updates) > 1 else ''
+            ))
         ))
         pretty_print_upgradeable(repo_packages_updates)
     if aur_updates:
         print('\n{} {}'.format(
             color_line('::', 12),
-            bold_line('AUR packages updates:')
+            bold_line('AUR package{plural} update{plural}:'.format(
+                plural='s' if len(aur_updates) > 1 else ''
+            ))
         ))
         pretty_print_upgradeable(sorted(aur_updates, key=lambda x: x.pkg_name))
 

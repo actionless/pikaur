@@ -286,7 +286,6 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     # install packages:
 
     if pacman_packages:
-        print(pacman_packages)
         interactive_spawn(
             [
                 'sudo',

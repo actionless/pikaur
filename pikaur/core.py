@@ -1,14 +1,7 @@
 import asyncio
 import subprocess
-import os
 from distutils.version import LooseVersion
 
-
-CACHE_ROOT = os.path.expanduser('~/.cache/pikaur/')
-AUR_REPOS_CACHE = os.path.join(CACHE_ROOT, 'aur_repos')
-PKG_CACHE = os.path.join(CACHE_ROOT, 'pkg')
-BUILD_CACHE = os.path.join(CACHE_ROOT, 'build')
-LOCK_FILE_PATH = os.path.join(CACHE_ROOT, 'db.lck')
 
 NOT_FOUND_ATOM = object()
 

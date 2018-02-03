@@ -5,9 +5,9 @@ import shutil
 from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
-    AUR_REPOS_CACHE, BUILD_CACHE,
     interactive_spawn, get_package_name_from_depend_line,
 )
+from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
 from .pacman import find_local_packages
 

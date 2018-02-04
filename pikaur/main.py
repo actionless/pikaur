@@ -19,7 +19,7 @@ from .pprint import (
     color_line, bold_line, format_paragraph,
     print_not_found_packages,
     print_upgradeable, pretty_print_upgradeable,
-    print_version,
+    print_version, print_sysupgrade,
 )
 from .aur import (
     AurTaskWorkerSearch, AurTaskWorkerInfo,
@@ -385,23 +385,6 @@ def cli_upgrade_packages(args):
         if pkg.pkg_name not in ignore
     ]
 
-    if repo_packages_updates:
-        print('\n{} {}'.format(
-            color_line('::', 12),
-            bold_line('System package{plural} update{plural} available:'.format(
-                plural='s' if len(repo_packages_updates) > 1 else ''
-            ))
-        ))
-        pretty_print_upgradeable(repo_packages_updates)
-    if aur_updates:
-        print('\n{} {}'.format(
-            color_line('::', 12),
-            bold_line('AUR package{plural} update{plural} available:'.format(
-                plural='s' if len(aur_updates) > 1 else ''
-            ))
-        ))
-        pretty_print_upgradeable(sorted(aur_updates, key=lambda x: x.pkg_name))
-
     all_upgradeable_package_names = [
         u.pkg_name for u in repo_packages_updates
     ] + [
@@ -414,21 +397,25 @@ def cli_upgrade_packages(args):
         ))
         return
 
-    print()
-    answer = input('{} {}\n{} {}\n> '.format(
-        color_line('::', 12),
-        bold_line('Proceed with installation? [Y/n] '),
-        color_line('::', 12),
-        bold_line('[v]iew package detail   [m]anually select packages')
-    ))
-    if answer:
-        letter = answer.lower()[0]
-        if letter == 'v':
-            raise NotImplementedError()
-        elif letter == 'm':
-            raise NotImplementedError()
-        elif letter != 'y':
-            sys.exit(1)
+    answer = None
+    while True:
+        if answer is None:
+            answer = print_sysupgrade(repo_packages_updates, aur_updates)
+        if answer:
+            letter = answer.lower()[0]
+            if letter == 'y':
+                break
+            elif letter == 'v':
+                answer = print_sysupgrade(
+                    repo_packages_updates, aur_updates, verbose=True
+                )
+            elif letter == 'm':
+                raise NotImplementedError()
+            else:
+                sys.exit(1)
+        else:
+            break
+
     return cli_install_packages(
         args=args,
         packages=all_upgradeable_package_names,

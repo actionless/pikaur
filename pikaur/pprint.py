@@ -61,7 +61,7 @@ def print_not_found_packages(not_found_packages):
         print(format_paragraph(package))
 
 
-def pretty_print_upgradeable(packages_updates):
+def pretty_print_upgradeable(packages_updates, verbose=False):
 
     def get_common_string(str1, str2):
         result = ''
@@ -92,7 +92,7 @@ def pretty_print_upgradeable(packages_updates):
             len(common_version)*10+len(pkg_update.aur_version),
             pkg_update.pkg_name
         )
-        return ' {:<{width}} {:<{width2}} -> {}{}'.format(
+        return ' {:<{width}} {:<{width2}} -> {}{}{verbose}'.format(
             bold_line(pkg_update.pkg_name),
             color_line(common_version, version_color) +
             color_line(
@@ -105,7 +105,11 @@ def pretty_print_upgradeable(packages_updates):
                 new_color
             ),
             width=column_width,
-            width2=column_width - 3
+            width2=column_width - 3,
+            verbose=(
+                '' if not (verbose and pkg_update.description)
+                else f'\n{format_paragraph(pkg_update.description)}'
+            )
         ), sort_by
 
     print(
@@ -128,6 +132,38 @@ def print_upgradeable(packages_updates):
         pkg_update.pkg_name
         for pkg_update in packages_updates
     ]))
+
+
+def print_sysupgrade(repo_packages_updates, aur_updates, verbose=False):
+    if repo_packages_updates:
+        print('\n{} {}'.format(
+            color_line('::', 12),
+            bold_line('System package{plural} update{plural} available:'.format(
+                plural='s' if len(repo_packages_updates) > 1 else ''
+            ))
+        ))
+        pretty_print_upgradeable(
+            repo_packages_updates, verbose=verbose
+        )
+    if aur_updates:
+        print('\n{} {}'.format(
+            color_line('::', 12),
+            bold_line('AUR package{plural} update{plural} available:'.format(
+                plural='s' if len(aur_updates) > 1 else ''
+            ))
+        ))
+        pretty_print_upgradeable(
+            aur_updates, verbose=verbose
+        )
+
+    print()
+    answer = input('{} {}\n{} {}\n> '.format(
+        color_line('::', 12),
+        bold_line('Proceed with installation? [Y/n] '),
+        color_line('::', 12),
+        bold_line('[v]iew package detail   [m]anually select packages')
+    ))
+    return answer
 
 
 def print_version():

@@ -48,6 +48,7 @@ DB_INFO_TRANSLATION = {
     '%NAME%': 'Name',
     '%VERSION%': 'Version',
     '%PROVIDES%': 'Provides',
+    '%DESC%': 'Description',
 }
 
 
@@ -372,6 +373,7 @@ def find_repo_updates():
     ).execute()
     packages_updates_lines = result.stdouts
     repo_packages_updates = []
+    repo_pkgs_info = PackageDB.get_repo_dict()
     for update in packages_updates_lines:
         pkg_name, current_version, _, new_version, *_ = update.split()
         repo_packages_updates.append(
@@ -379,6 +381,7 @@ def find_repo_updates():
                 pkg_name=pkg_name,
                 aur_version=new_version,
                 current_version=current_version,
+                description=repo_pkgs_info[pkg_name].Description,
             )
         )
     return repo_packages_updates

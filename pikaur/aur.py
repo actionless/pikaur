@@ -174,6 +174,7 @@ def find_aur_updates(package_versions):
                 pkg_name=pkg_name,
                 aur_version=aur_version,
                 current_version=current_version,
+                description=result['Description']
             )
             aur_updates.append(aur_update)
     return aur_updates, not_found_aur_pkgs

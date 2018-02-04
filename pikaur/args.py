@@ -65,4 +65,6 @@ def reconstruct_args(parsed_args, ignore_args=None):
         if value
         if key not in ignore_args + ['raw', 'unknown_args', 'positional']
     }
-    return list(reconstructed_args.keys())
+    return list(set(
+        list(reconstructed_args.keys()) + parsed_args.unknown_args
+    ))

@@ -45,9 +45,9 @@ class NetworkTaskResult():
         self.headers = headers
         try:
             self.json = json.loads(payload)
-        except Exception as e:
+        except Exception as exc:
             print(f'PAYLOAD: {payload}')
-            raise(e)
+            raise exc
         return self
 
 

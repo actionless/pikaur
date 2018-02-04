@@ -91,10 +91,10 @@ class PacmanPackageInfo(DataType):
             if not line.startswith(' '):
                 try:
                     _field, _value, *_args = line.split(': ')
-                except ValueError:
+                except ValueError as exc:
                     print(line)
                     print(field, value)
-                    raise()
+                    raise exc
                 field = _field.rstrip()
                 if _value == 'None':
                     value = None
@@ -115,6 +115,7 @@ class PacmanPackageInfo(DataType):
             else:
                 if field in PACMAN_DICT_FIELDS:
                     _value, *_args = line.split(': ')
+                    # pylint: disable=unsupported-assignment-operation
                     value[_value] = _args[0] if _args else None
                 elif field in PACMAN_LIST_FIELDS:
                     value += line.split()
@@ -123,25 +124,25 @@ class PacmanPackageInfo(DataType):
 
             try:
                 setattr(pkg, field.replace(' ', '_'), value)
-            except TypeError:
+            except TypeError as exc:
                 print(line)
-                raise()
+                raise exc
 
     @classmethod
-    def _parse_pacman_db_info(cls, file_name, open_method):
-        with open_method(file_name) as f:
+    def _parse_pacman_db_info(cls, db_file_name, open_method):
+        with open_method(db_file_name) as db_file:
             pkg = cls()
             line = field = real_field = value = None
             while line != '':
-                line = f.readline().decode('utf-8')
+                line = db_file.readline().decode('utf-8')
                 if line.startswith('%'):
 
                     if field in DB_INFO_TRANSLATION:
                         try:
                             setattr(pkg, real_field, value)
-                        except TypeError:
+                        except TypeError as exc:
                             print(line)
-                            raise()
+                            raise exc
 
                     field = line.strip()
                     real_field = DB_INFO_TRANSLATION.get(field)
@@ -166,9 +167,10 @@ class PacmanPackageInfo(DataType):
                     if real_field in PACMAN_LIST_FIELDS:
                         value.append(_value)
                     elif real_field in PACMAN_DICT_FIELDS:
-                        k, *v = _value.split(': ')
-                        v = ': '.join(*v)
-                        value[k] = v
+                        subkey, *subvalue = _value.split(': ')
+                        subvalue = ': '.join(*subvalue)
+                        # pylint: disable=unsupported-assignment-operation
+                        value[subkey] = subvalue
                     else:
                         value += _value
             yield pkg
@@ -203,6 +205,9 @@ class PackageDBCommon():
     _local_dict_cache = None
     _repo_provided_cache = None
     _local_provided_cache = None
+
+    repo = 'repo'
+    local = 'local'
 
     @classmethod
     def get_repo_list(cls):
@@ -314,7 +319,7 @@ class PackageDB_ALPM9(PackageDBCommon):
                 if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
                     continue
                 for pkg in LocalPackageInfo.parse_pacman_db_info(
-                    os.path.join(local_dir, pkg_dir_name, 'desc')
+                        os.path.join(local_dir, pkg_dir_name, 'desc')
                 ):
                     result[pkg.Name] = pkg
             cls._local_dict_cache = result
@@ -346,9 +351,6 @@ class PackageDbCli(PackageDBCommon):
 
     # ~4.7 seconds
 
-    repo = 'repo'
-    local = 'local'
-
     @classmethod
     def _get_dbs(cls):
         if not cls._repo_cache:
@@ -377,9 +379,9 @@ class PackageDbCli(PackageDBCommon):
         return cls._get_dbs()[cls.local]
 
 
-with open('/var/lib/pacman/local/ALPM_DB_VERSION') as f:
-    alpm_db_ver = f.read().strip()
-    if alpm_db_ver == '9':
+with open('/var/lib/pacman/local/ALPM_DB_VERSION') as version_file:
+    ALPM_DB_VER = version_file.read().strip()
+    if ALPM_DB_VER == '9':
         if os.path.exists('/usr/bin/gunzip'):
             PackageDB = PackageDB_ALPM9
         else:

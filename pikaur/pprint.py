@@ -173,7 +173,7 @@ def print_version():
     /   |           / `-/
    |  ,  --------  /   /
    |'                 Y
-  /                   l     Pikaur """+VERSION+"""
+  /                   l     Pikaur """+VERSION+r"""
   l  /       \        l     (C) 2018 Pikaur development team
   j  ●   .   ●        l     Licensed under GPLv3
  { )  ._,.__,   , -.  {

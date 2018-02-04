@@ -277,13 +277,13 @@ def cli_install_packages(args, noconfirm=None, packages=None):
 
     if pacman_packages:
         if not retry_interactive_command(
-            [
-                'sudo',
-                'pacman',
-                '-S',
-                '--noconfirm',
-            ] + args._unknown_args +
-            pacman_packages,
+                [
+                    'sudo',
+                    'pacman',
+                    '-S',
+                    '--noconfirm',
+                ] + args._unknown_args +
+                pacman_packages,
         ):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
@@ -298,14 +298,14 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     ]
     if new_aur_deps_to_install:
         if not retry_interactive_command(
-            [
-                'sudo',
-                'pacman',
-                '-U',
-                '--asdeps',
-                '--noconfirm',
-            ] + args._unknown_args +
-            new_aur_deps_to_install,
+                [
+                    'sudo',
+                    'pacman',
+                    '-U',
+                    '--asdeps',
+                    '--noconfirm',
+                ] + args._unknown_args +
+                new_aur_deps_to_install,
         ):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
@@ -317,13 +317,13 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     ]
     if aur_packages_to_install:
         if not retry_interactive_command(
-            [
-                'sudo',
-                'pacman',
-                '-U',
-                '--noconfirm',
-            ] + args._unknown_args +
-            aur_packages_to_install,
+                [
+                    'sudo',
+                    'pacman',
+                    '-U',
+                    '--noconfirm',
+                ] + args._unknown_args +
+                aur_packages_to_install,
         ):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)

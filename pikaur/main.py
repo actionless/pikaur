@@ -8,8 +8,7 @@ import readline
 import shutil
 from functools import reduce
 
-from . import argparse as argparse
-
+from .args import parse_args, reconstruct_args
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
     CmdTaskWorker, interactive_spawn,
@@ -254,10 +253,14 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 [
                     'sudo',
                     'pacman',
-                    '-S',
+                    '--sync',
                     '--noconfirm',
-                ] + args._unknown_args +
-                repo_packages_names,
+                ] + reconstruct_args(args, ignore_args=[
+                    'sync',
+                    'noconfirm',
+                    'sysupgrade',
+                    'refresh',
+                ]) + repo_packages_names,
         ):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
@@ -275,11 +278,16 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 [
                     'sudo',
                     'pacman',
-                    '-U',
+                    '--upgrade',
                     '--asdeps',
                     '--noconfirm',
-                ] + args._unknown_args +
-                new_aur_deps_to_install,
+                ] + reconstruct_args(args, ignore_args=[
+                    'upgrade',
+                    'asdeps',
+                    'noconfirm',
+                    'sysupgrade',
+                    'refresh',
+                ]) + new_aur_deps_to_install,
         ):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
@@ -294,10 +302,14 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 [
                     'sudo',
                     'pacman',
-                    '-U',
+                    '--upgrade',
                     '--noconfirm',
-                ] + args._unknown_args +
-                aur_packages_to_install,
+                ] + reconstruct_args(args, ignore_args=[
+                    'upgrade',
+                    'noconfirm',
+                    'sysupgrade',
+                    'refresh',
+                ]) + aur_packages_to_install,
         ):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
@@ -335,7 +347,7 @@ def cli_print_upgradeable(args):
 
 def cli_upgrade_packages(args):
     if args.refresh:
-        interactive_spawn(['sudo', 'pacman', '-Sy'])
+        interactive_spawn(['sudo', 'pacman', '--sync', '--refresh'])
     ignore = args.ignore or []
 
     print('{} {}'.format(
@@ -455,63 +467,6 @@ def cli_search_packages(args):
         # print(aur_pkg)
 
 
-class SafeArgumentParser(argparse.ArgumentParser):
-
-    def error(self, message):
-        exc = sys.exc_info()[1]
-        if exc:
-            raise exc
-        super().error(message)
-
-
-def parse_args(args):
-    parser = SafeArgumentParser(prog=sys.argv[0], add_help=False)
-
-    for letter, opt in (
-            ('S', 'sync'),
-            ('c', 'clean'),
-            ('i', 'info'),
-            ('w', 'downloadonly'),
-            ('q', 'quiet'),
-            ('h', 'help'),
-            ('s', 'search'),
-            ('u', 'sysupgrade'),
-            ('y', 'refresh'),
-            #
-            ('Q', 'query'),
-            ('V', 'version'),
-    ):
-        parser.add_argument('-'+letter, '--'+opt, action='store_true')
-
-    for opt in (
-            'noconfirm',
-            'needed',
-    ):
-        parser.add_argument('--'+opt, action='store_true')
-
-    parser.add_argument('--ignore', action='append')
-    parser.add_argument('_positional', nargs='*')
-
-    parsed_args, unknown_args = parser.parse_known_args(args)
-    parsed_args._unknown_args = unknown_args
-    parsed_args._raw = args
-
-    # print("ARGPARSE:")
-    # print(parsed_args)
-    # print(f'args = {args}')
-    # reconstructed_args = {
-    #    f'--{key}' if len(key) > 1 else f'-{key}': value
-    #    for key, value in parsed_args.__dict__.items()
-    #    if not key.startswith('_')
-    #    if value
-    # }
-    # print(reconstructed_args)
-    # print(unknown_args)
-    # sys.exit(0)
-
-    return parsed_args
-
-
 def main():
     # pylint: disable=too-many-branches
     raw_args = sys.argv[1:]
@@ -537,17 +492,23 @@ def main():
         if args.sysupgrade:
             cli_print_upgradeable(args)
         else:
-            interactive_spawn(['pacman', ] + raw_args)
+            sys.exit(
+                interactive_spawn(['pacman', ] + raw_args).returncode
+            )
 
     elif args.help:
-        interactive_spawn(['pacman', ] + raw_args)
+        sys.exit(
+            interactive_spawn(['pacman', ] + raw_args).returncode
+        )
     elif args.version:
         print_version()
     else:
         not_implemented_in_pikaur = True
 
     if not_implemented_in_pikaur:
-        interactive_spawn(['sudo', 'pacman', ] + raw_args)
+        sys.exit(
+            interactive_spawn(['sudo', 'pacman', ] + raw_args).returncode
+        )
 
 
 if __name__ == '__main__':

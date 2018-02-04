@@ -10,6 +10,7 @@ from .core import (
 from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
 from .pacman import find_local_packages
+from .args import reconstruct_args
 
 
 class BuildError(Exception):
@@ -158,7 +159,6 @@ class PackageBuild(DataType):
                 interactive_spawn(['rm', '-rf', build_dir])
         shutil.copytree(repo_path, build_dir)
 
-        # @TODO: args._unknown_args
         make_deps = SrcInfo(repo_path).get_makedepends()
         _, new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = SrcInfo(repo_path).get_depends()
@@ -168,12 +168,18 @@ class PackageBuild(DataType):
                 [
                     'sudo',
                     'pacman',
-                    '-S',
+                    '--sync',
                     '--asdeps',
                     '--needed',
                     '--noconfirm',
-                ] + args._unknown_args +
-                new_make_deps_to_install + new_deps_to_install,
+                ] + reconstruct_args(args, ignore_args=[
+                    'sync',
+                    'asdeps',
+                    'needed',
+                    'noconfirm',
+                    'sysupgrade',
+                    'refresh',
+                ]) + new_make_deps_to_install + new_deps_to_install,
             )
             if deps_result.returncode > 0:
                 raise BuildError()

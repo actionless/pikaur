@@ -133,18 +133,31 @@ def get_chunks(iterable, chunk_size):
         yield result
 
 
-def find_aur_packages(package_names):
-    chunk_size = 100
-    results = MultipleTasksExecutor({
-        _id: AurTaskWorkerInfo(packages=packages_chunk)
-        for _id, packages_chunk in enumerate(
-            get_chunks(package_names, chunk_size)
-        )
-    }).execute()
+_AUR_PKGS_FIND_CACHE = {}
 
+
+def find_aur_packages(package_names):
+    package_names = list(package_names)[:]
     json_results = []
-    for result in results.values():
-        json_results += result.json['results']
+    for package_name in package_names[:]:
+        json_result = _AUR_PKGS_FIND_CACHE.get(package_name)
+        if json_result:
+            json_results.append(json_result)
+            package_names.remove(package_name)
+
+    if package_names:
+        chunk_size = 100
+        results = MultipleTasksExecutor({
+            _id: AurTaskWorkerInfo(packages=packages_chunk)
+            for _id, packages_chunk in enumerate(
+                get_chunks(package_names, chunk_size)
+            )
+        }).execute()
+
+        for result in results.values():
+            for json_result in result.json['results']:
+                _AUR_PKGS_FIND_CACHE[json_result['Name']] = json_result
+                json_results.append(json_result)
 
     found_aur_packages = [
         result['Name'] for result in json_results
@@ -155,4 +168,5 @@ def find_aur_packages(package_names):
             package for package in package_names
             if package not in found_aur_packages
         ]
+
     return json_results, not_found_packages

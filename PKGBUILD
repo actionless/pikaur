@@ -24,6 +24,9 @@ depends=(
 makedepends=(
 	'nuitka'
 )
+optional=(
+	'gzip: faster db extraction'
+)
 
 pkgver() {
 	cd "${srcdir}/${_pkgbase}"

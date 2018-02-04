@@ -1,5 +1,7 @@
 import os
 import gzip
+import tempfile
+import shutil
 from pprint import pformat
 
 from .core import (
@@ -261,6 +263,68 @@ class PackageDBCommon():
 
 class PackageDB_ALPM9(PackageDBCommon):
 
+    # ~2.2 seconds
+
+    @classmethod
+    def get_repo_dict(cls):
+        if not cls._repo_dict_cache:
+            print("Reading repositories packages databases...")
+            result = {}
+            temp_dir = tempfile.mkdtemp()
+            sync_dir = '/var/lib/pacman/sync/'
+
+            # copy repos dbs to temp location
+            temp_repos = {}
+            for repo_name in os.listdir(sync_dir):
+                if not repo_name.endswith('.db'):
+                    continue
+                temp_repo_path = os.path.join(temp_dir, repo_name+'.gz')
+                shutil.copy2(
+                    os.path.join(sync_dir, repo_name),
+                    temp_repo_path,
+                )
+                temp_repos[repo_name] = temp_repo_path
+
+            # uncompress databases
+            MultipleTasksExecutor({
+                repo_name: CmdTaskWorker([
+                    'gunzip', temp_repo_path
+                ])
+                for repo_name, temp_repo_path
+                in temp_repos.items()
+            }).execute()
+
+            # parse package databases
+            for repo_name in temp_repos:
+                for pkg in RepoPackageInfo.parse_pacman_db_info(
+                        os.path.join(temp_dir, repo_name)
+                ):
+                    result[pkg.Name] = pkg
+            shutil.rmtree(temp_dir)
+            cls._repo_dict_cache = result
+        return cls._repo_dict_cache
+
+    @classmethod
+    def get_local_dict(cls):
+        if not cls._local_dict_cache:
+            print("Reading local package database...")
+            result = {}
+            local_dir = '/var/lib/pacman/local/'
+            for pkg_dir_name in os.listdir(local_dir):
+                if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
+                    continue
+                for pkg in LocalPackageInfo.parse_pacman_db_info(
+                    os.path.join(local_dir, pkg_dir_name, 'desc')
+                ):
+                    result[pkg.Name] = pkg
+            cls._local_dict_cache = result
+        return cls._local_dict_cache
+
+
+class PackageDB_ALPM9_PurePython(PackageDB_ALPM9):
+
+    # ~3.7 seconds
+
     @classmethod
     def get_repo_dict(cls):
         if not cls._repo_dict_cache:
@@ -277,24 +341,10 @@ class PackageDB_ALPM9(PackageDBCommon):
             cls._repo_dict_cache = result
         return cls._repo_dict_cache
 
-    @classmethod
-    def get_local_dict(cls):
-        if not cls._local_dict_cache:
-            result = {}
-            local_dir = '/var/lib/pacman/local/'
-            print("Reading local package database...")
-            for pkg_dir_name in os.listdir(local_dir):
-                if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
-                    continue
-                for pkg in LocalPackageInfo.parse_pacman_db_info(
-                    os.path.join(local_dir, pkg_dir_name, 'desc')
-                ):
-                    result[pkg.Name] = pkg
-            cls._local_dict_cache = result
-        return cls._local_dict_cache
-
 
 class PackageDbCli(PackageDBCommon):
+
+    # ~4.7 seconds
 
     repo = 'repo'
     local = 'local'
@@ -330,7 +380,10 @@ class PackageDbCli(PackageDBCommon):
 with open('/var/lib/pacman/local/ALPM_DB_VERSION') as f:
     alpm_db_ver = f.read().strip()
     if alpm_db_ver == '9':
-        PackageDB = PackageDB_ALPM9
+        if os.path.exists('/usr/bin/gunzip'):
+            PackageDB = PackageDB_ALPM9
+        else:
+            PackageDB = PackageDB_ALPM9_PurePython
     else:
         PackageDB = PackageDbCli
 

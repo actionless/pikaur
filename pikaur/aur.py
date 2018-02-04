@@ -146,11 +146,10 @@ def find_aur_packages(package_names):
             package_names.remove(package_name)
 
     if package_names:
-        chunk_size = 100
         results = MultipleTasksExecutor({
             _id: AurTaskWorkerInfo(packages=packages_chunk)
             for _id, packages_chunk in enumerate(
-                get_chunks(package_names, chunk_size)
+                get_chunks(package_names, chunk_size=100)
             )
         }).execute()
 

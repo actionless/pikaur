@@ -6,13 +6,13 @@ import sys
 # import argparse
 import readline
 import shutil
+from functools import reduce
 
 from . import argparse as argparse
 
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
     CmdTaskWorker, interactive_spawn,
-    get_package_name_from_depend_line,
     ask_to_continue, retry_interactive_command,
 )
 from .pprint import (
@@ -23,15 +23,14 @@ from .pprint import (
 )
 from .aur import (
     AurTaskWorkerSearch, AurTaskWorkerInfo,
-    find_aur_packages,
 )
 from .pacman import (
-    PacmanColorTaskWorker, PackageDB,
+    PacmanColorTaskWorker,
     find_repo_packages, find_local_packages,
     find_packages_not_from_repo,
 )
 from .meta_package import (
-    find_repo_updates, find_aur_updates,
+    find_repo_updates, find_aur_updates, find_aur_deps, check_conflicts,
 )
 from .build import SrcInfo, BuildError, CloneError, clone_pkgbuilds_git_repos
 
@@ -70,81 +69,6 @@ def get_editor():
     return None
 
 
-def find_aur_deps(package_names):
-
-    # @TODO: split to smaller routines
-
-    def _get_deps(result):
-        return [
-            get_package_name_from_depend_line(dep) for dep in
-            result.get('Depends', []) + result.get('MakeDepends', [])
-        ]
-
-    new_aur_deps = []
-    while package_names:
-
-        all_deps_for_aur_packages = []
-        aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
-        if not_found_aur_pkgs:
-            print_not_found_packages(not_found_aur_pkgs)
-            sys.exit(1)
-        for result in aur_pkgs_info:
-            all_deps_for_aur_packages += _get_deps(result)
-        all_deps_for_aur_packages = list(set(all_deps_for_aur_packages))
-
-        not_found_local_pkgs = []
-        if all_deps_for_aur_packages:
-            _, not_found_deps = find_repo_packages(
-                all_deps_for_aur_packages
-            )
-
-            # pkgs provided by repo pkgs
-            if not_found_deps:
-                repo_provided = PackageDB.get_repo_provided()
-                for dep_name in not_found_deps[:]:
-                    if dep_name in repo_provided:
-                        not_found_deps.remove(dep_name)
-
-            if not_found_deps:
-                _local_pkgs_info, not_found_local_pkgs = \
-                    find_local_packages(
-                        not_found_deps
-                    )
-
-                # pkgs provided by repo pkgs
-                if not_found_local_pkgs:
-                    local_provided = PackageDB.get_local_provided()
-                    for dep_name in not_found_local_pkgs[:]:
-                        if dep_name in local_provided:
-                            not_found_local_pkgs.remove(dep_name)
-
-                # try finding those packages in AUR
-                _aur_deps_info, not_found_aur_deps = find_aur_packages(
-                    not_found_local_pkgs
-                )
-                if not_found_aur_deps:
-                    problem_package_names = []
-                    for result in aur_pkgs_info:
-                        deps = _get_deps(result)
-                        for not_found_pkg in not_found_aur_deps:
-                            if not_found_pkg in deps:
-                                problem_package_names.append(result['Name'])
-                                break
-                    print("{} {}".format(
-                        color_line(':: error:', 9),
-                        bold_line(
-                            'Dependencies missing for '
-                            f'{problem_package_names}'
-                        ),
-                    ))
-                    print_not_found_packages(not_found_aur_deps)
-                    sys.exit(1)
-        new_aur_deps += not_found_local_pkgs
-        package_names = not_found_local_pkgs
-
-    return new_aur_deps
-
-
 def cli_install_packages(args, noconfirm=None, packages=None):
     # @TODO: split into smaller routines
     if noconfirm is None:
@@ -155,25 +79,25 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         for ignored_pkg in args.ignore:
             if ignored_pkg in packages:
                 packages.remove(ignored_pkg)
-    pacman_packages, aur_packages = find_repo_packages(packages)
-    new_aur_deps = find_aur_deps(aur_packages)
+    repo_packages_names, aur_packages_names = find_repo_packages(packages)
+    aur_deps_names = find_aur_deps(aur_packages_names)
 
     failed_to_build = []
 
     # confirm package install/upgrade
     if not noconfirm:
         print()
-        if pacman_packages:
+        if repo_packages_names:
             print(color_line("New packages will be installed:", 12))
-            print(format_paragraph(' '.join(pacman_packages)))
-        if aur_packages:
+            print(format_paragraph(' '.join(repo_packages_names)))
+        if aur_packages_names:
             print(color_line("New packages will be installed from AUR:", 14))
-            print(format_paragraph(' '.join(aur_packages)))
-        if new_aur_deps:
+            print(format_paragraph(' '.join(aur_packages_names)))
+        if aur_deps_names:
             print(color_line(
                 "New dependencies will be installed from AUR:", 11
             ))
-            print(format_paragraph(' '.join(new_aur_deps)))
+            print(format_paragraph(' '.join(aur_deps_names)))
         print()
 
         answer = input('{} {}'.format(
@@ -184,11 +108,11 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             if answer.lower()[0] != 'y':
                 sys.exit(1)
 
-    all_aur_package_names = aur_packages + new_aur_deps
+    all_aur_packages_names = aur_packages_names + aur_deps_names
     package_builds = None
-    if all_aur_package_names:
+    if all_aur_packages_names:
         try:
-            package_builds = clone_pkgbuilds_git_repos(all_aur_package_names)
+            package_builds = clone_pkgbuilds_git_repos(all_aur_packages_names)
         except CloneError as err:
             package_build = err.build
             print(color_line(
@@ -202,14 +126,46 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             if not ask_to_continue():
                 sys.exit(1)
 
+    # @TODO: ask to install optdepends (?)
+
+    # ask about package conflicts
+    packages_to_be_removed = []
+    conflict_result = check_conflicts(repo_packages_names, aur_packages_names)
+    if conflict_result:
+        all_new_packages_names = repo_packages_names + aur_packages_names
+        for new_pkg_name, new_pkg_conflicts in conflict_result.items():
+            for pkg_conflict in new_pkg_conflicts:
+                if pkg_conflict in all_new_packages_names:
+                    print(color_line(
+                        f"New packages '{new_pkg_name}' and '{pkg_conflict}' "
+                        "are in conflict.",
+                        9
+                    ))
+                    sys.exit(1)
+        for new_pkg_name, new_pkg_conflicts in conflict_result.items():
+            for pkg_conflict in new_pkg_conflicts:
+                print('{} {}'.format(
+                    color_line('warning:', 11),
+                    f"New package '{new_pkg_name}' conflicts with installed '{pkg_conflict}'.",
+                ))
+                answer = ask_to_continue('{} {}'.format(
+                    color_line('::', 11),
+                    f"Do you want to remove '{pkg_conflict}'?"
+                ), default_yes=False)
+                if not answer:
+                    sys.exit(1)
+                # packages_to_be_removed.append
+        packages_to_be_removed = list(set(reduce(
+            lambda x, y: x+y,
+            conflict_result.values(),
+            []
+        )))
+
     # review PKGBUILD and install files
-    # @TODO: ask about package conflicts/provides
-    # 1) check if new_pkgs.{conflicts,provides} not in local_pkg.name
-    # 2) check if new_pkgs.name not local_pkgs.{conflicsts,provides}
     local_packages_found, _ = find_local_packages(
-        all_aur_package_names
+        all_aur_packages_names
     )
-    for pkg_name in reversed(all_aur_package_names):
+    for pkg_name in reversed(all_aur_packages_names):
         repo_status = package_builds[pkg_name]
         repo_path = repo_status.repo_path
         already_installed = repo_status.check_installed_status(
@@ -266,7 +222,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     ])
 
     # build packages:
-    for pkg_name in reversed(all_aur_package_names):
+    for pkg_name in reversed(all_aur_packages_names):
         repo_status = package_builds[pkg_name]
         if args.needed and repo_status.already_installed:
             continue
@@ -278,9 +234,22 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             # if not ask_to_continue():
             #     sys.exit(1)
 
+    # remove conflicting packages:
+    if packages_to_be_removed:
+        if not retry_interactive_command(
+                [
+                    'sudo',
+                    'pacman',
+                    '-Rs',
+                    '--noconfirm',
+                ] + packages_to_be_removed,
+        ):
+            if not ask_to_continue(default_yes=False):
+                sys.exit(1)
+
     # install packages:
 
-    if pacman_packages:
+    if repo_packages_names:
         if not retry_interactive_command(
                 [
                     'sudo',
@@ -288,7 +257,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                     '-S',
                     '--noconfirm',
                 ] + args._unknown_args +
-                pacman_packages,
+                repo_packages_names,
         ):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
@@ -298,7 +267,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
 
     new_aur_deps_to_install = [
         package_builds[pkg_name].built_package_path
-        for pkg_name in new_aur_deps
+        for pkg_name in aur_deps_names
         if package_builds[pkg_name].built_package_path
     ]
     if new_aur_deps_to_install:
@@ -317,7 +286,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
 
     aur_packages_to_install = [
         package_builds[pkg_name].built_package_path
-        for pkg_name in aur_packages
+        for pkg_name in aur_packages_names
         if package_builds[pkg_name].built_package_path
     ]
     if aur_packages_to_install:

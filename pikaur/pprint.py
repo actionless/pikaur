@@ -116,12 +116,10 @@ def pretty_print_upgradeable(packages_updates, verbose=False):
         '\n'.join([
             f'{line}' for line, _ in sorted(
                 [
-                    # format_paragraph(pretty_format(pkg_update))
                     pretty_format(pkg_update)
                     for pkg_update in packages_updates
                 ],
                 key=lambda x: x[1],
-                # reverse=True
             )
         ])
     )

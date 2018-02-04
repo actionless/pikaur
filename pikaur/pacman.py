@@ -169,6 +169,8 @@ class PacmanPackageInfo(DataType):
                         continue
 
                     _value = line.strip()
+                    if _value == '':
+                        continue
                     if real_field in PACMAN_LIST_FIELDS:
                         value.append(_value)
                     elif real_field in PACMAN_DICT_FIELDS:

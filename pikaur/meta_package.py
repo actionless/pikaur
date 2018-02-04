@@ -138,6 +138,8 @@ def find_aur_deps(package_names):
 
 def check_conflicts(repo_packages_names, aur_packages_names):
 
+    # @TODO: split to smaller routines (?)
+
     def clean_conflicts_list(conflicts):
         return list(set([
             get_package_name_from_depend_line(pkg_name)

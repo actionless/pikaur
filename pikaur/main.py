@@ -410,6 +410,7 @@ def cli_upgrade_packages(args):
                     repo_packages_updates, aur_updates, verbose=True
                 )
             elif letter == 'm':
+                # @TODO: implement [m]anual package selection
                 raise NotImplementedError()
             else:
                 sys.exit(1)
@@ -449,8 +450,8 @@ def cli_info_packages(args):
 
 
 def cli_clean_packages_cache(_args):
-    # @TODO:
     print(_args)
+    # @TODO: implement -Sc and -Scc
     raise NotImplementedError()
 
 

@@ -32,17 +32,17 @@ class PacmanColorTaskWorker(PacmanTaskWorker):
 
 
 PACMAN_LIST_FIELDS = (
-    'Conflicts With',
+    'Conflicts_With',
     'Replaces',
-    'Depends On',
+    'Depends_On',
     'Provides',
-    'Required By',
-    'Optional For',
+    'Required_By',
+    'Optional_For',
 )
 
 
 PACMAN_DICT_FIELDS = (
-    'Optional Deps',
+    'Optional_Deps',
 )
 
 
@@ -51,6 +51,7 @@ DB_INFO_TRANSLATION = {
     '%VERSION%': 'Version',
     '%PROVIDES%': 'Provides',
     '%DESC%': 'Description',
+    '%CONFLICTS%': 'Conflicts_With',
 }
 
 
@@ -95,7 +96,7 @@ class PacmanPackageInfo(DataType):
                     print(line)
                     print(field, value)
                     raise exc
-                field = _field.rstrip()
+                field = _field.rstrip().replace(' ', '_')
                 if _value == 'None':
                     value = None
                 else:
@@ -123,13 +124,21 @@ class PacmanPackageInfo(DataType):
                     value += line
 
             try:
-                setattr(pkg, field.replace(' ', '_'), value)
+                setattr(pkg, field, value)
             except TypeError as exc:
                 print(line)
                 raise exc
 
     @classmethod
     def _parse_pacman_db_info(cls, db_file_name, open_method):
+
+        def verbose_setattr(pkg, real_field, value):
+            try:
+                setattr(pkg, real_field, value)
+            except TypeError as exc:
+                print(line)
+                raise exc
+
         with open_method(db_file_name) as db_file:
             pkg = cls()
             line = field = real_field = value = None
@@ -138,11 +147,7 @@ class PacmanPackageInfo(DataType):
                 if line.startswith('%'):
 
                     if field in DB_INFO_TRANSLATION:
-                        try:
-                            setattr(pkg, real_field, value)
-                        except TypeError as exc:
-                            print(line)
-                            raise exc
+                        verbose_setattr(pkg, real_field, value)
 
                     field = line.strip()
                     real_field = DB_INFO_TRANSLATION.get(field)
@@ -173,6 +178,9 @@ class PacmanPackageInfo(DataType):
                         value[subkey] = subvalue
                     else:
                         value += _value
+
+            if field in DB_INFO_TRANSLATION:
+                verbose_setattr(pkg, real_field, value)
             yield pkg
 
     @classmethod
@@ -273,7 +281,7 @@ class PackageDB_ALPM9(PackageDBCommon):
     @classmethod
     def get_repo_dict(cls):
         if not cls._repo_dict_cache:
-            print("Reading repositories packages databases...")
+            print("Reading repository package databases...")
             result = {}
             temp_dir = tempfile.mkdtemp()
             sync_dir = '/var/lib/pacman/sync/'

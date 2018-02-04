@@ -403,7 +403,7 @@ def cli_upgrade_packages(args):
         else:
             break
 
-    return cli_install_packages(
+    cli_install_packages(
         args=args,
         packages=all_upgradeable_package_names,
         noconfirm=True

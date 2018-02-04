@@ -186,7 +186,7 @@ def compare_versions(current_version, new_version):
     return False
 
 
-def get_package_name_from_depend_line(depend_line):
+def get_package_name_from_depend_line(depend_line):  # pylint: disable=invalid-name
     return depend_line.split('=')[0].split('<')[0].split('>')[0]
 
 

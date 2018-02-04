@@ -81,55 +81,6 @@ class PacmanPackageInfo(DataType):
         return pformat(self.__dict__)
 
     @classmethod
-    def parse_pacman_cli_info(cls, lines):
-        pkg = cls()
-        field = value = None
-        for line in lines:
-            if line == '':
-                yield pkg
-                pkg = cls()
-                continue
-            if not line.startswith(' '):
-                try:
-                    _field, _value, *_args = line.split(': ')
-                except ValueError as exc:
-                    print(line)
-                    print(field, value)
-                    raise exc
-                field = _field.rstrip().replace(' ', '_')
-                if _value == 'None':
-                    value = None
-                else:
-                    if field in PACMAN_DICT_FIELDS:
-                        value = {_value: None}
-                    elif field in PACMAN_LIST_FIELDS:
-                        value = _value.split()
-                    else:
-                        value = _value
-                    if _args:
-                        if field in PACMAN_DICT_FIELDS:
-                            value = {_value: _args[0]}
-                        else:
-                            value = ': '.join([_value] + _args)
-                            if field in PACMAN_LIST_FIELDS:
-                                value = value.split()
-            else:
-                if field in PACMAN_DICT_FIELDS:
-                    _value, *_args = line.split(': ')
-                    # pylint: disable=unsupported-assignment-operation
-                    value[_value] = _args[0] if _args else None
-                elif field in PACMAN_LIST_FIELDS:
-                    value += line.split()
-                else:
-                    value += line
-
-            try:
-                setattr(pkg, field, value)
-            except TypeError as exc:
-                print(line)
-                raise exc
-
-    @classmethod
     def _parse_pacman_db_info(cls, db_file_name, open_method):
 
         def verbose_setattr(pkg, real_field, value):
@@ -276,7 +227,7 @@ class PackageDBCommon():
         return cls._local_provided_cache
 
 
-class PackageDB_ALPM9(PackageDBCommon):
+class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
 
     # ~2.2 seconds
 
@@ -336,68 +287,27 @@ class PackageDB_ALPM9(PackageDBCommon):
         return cls._local_dict_cache
 
 
-class PackageDB_ALPM9_PurePython(PackageDB_ALPM9):
-
-    # ~3.7 seconds
-
-    @classmethod
-    def get_repo_dict(cls):
-        if not cls._repo_dict_cache:
-            result = {}
-            sync_dir = '/var/lib/pacman/sync/'
-            for repo_name in os.listdir(sync_dir):
-                if not repo_name.endswith('.db'):
-                    continue
-                print(f"Reading {repo_name} repository data...")
-                for pkg in RepoPackageInfo.parse_pacman_db_gzip_info(
-                        os.path.join(sync_dir, repo_name)
-                ):
-                    result[pkg.Name] = pkg
-            cls._repo_dict_cache = result
-        return cls._repo_dict_cache
-
-
-class PackageDbCli(PackageDBCommon):
-
-    # ~4.7 seconds
-
-    @classmethod
-    def _get_dbs(cls):
-        if not cls._repo_cache:
-            print("Retrieving local pacman database...")
-            results = MultipleTasksExecutor({
-                cls.repo: PacmanTaskWorker(['-Si', ]),
-                cls.local: PacmanTaskWorker(['-Qi', ]),
-            }).execute()
-            cls._repo_cache = list(RepoPackageInfo.parse_pacman_cli_info(
-                results[cls.repo].stdouts
-            ))
-            cls._local_cache = list(LocalPackageInfo.parse_pacman_cli_info(
-                results[cls.local].stdouts
-            ))
-        return {
-            cls.repo: cls._repo_cache,
-            cls.local: cls._local_cache
-        }
-
-    @classmethod
-    def get_repo_list(cls):
-        return cls._get_dbs()[cls.repo]
-
-    @classmethod
-    def get_local_list(cls):
-        return cls._get_dbs()[cls.local]
-
-
 with open('/var/lib/pacman/local/ALPM_DB_VERSION') as version_file:
     ALPM_DB_VER = version_file.read().strip()
     if ALPM_DB_VER == '9':
         if os.path.exists('/usr/bin/gunzip'):
             PackageDB = PackageDB_ALPM9
         else:
-            PackageDB = PackageDB_ALPM9_PurePython
+            from .pacman_fallback import get_pure_python_package_db
+            PackageDB = get_pure_python_package_db(
+                PackageDB_ALPM9=PackageDB_ALPM9,
+                RepoPackageInfo=RepoPackageInfo
+            )
     else:
-        PackageDB = PackageDbCli
+        from .pacman_fallback import get_pacman_cli_package_db
+        PackageDB = get_pacman_cli_package_db(
+            PackageDBCommon=PackageDBCommon,
+            RepoPackageInfo=RepoPackageInfo,
+            LocalPackageInfo=LocalPackageInfo,
+            PacmanTaskWorker=PacmanTaskWorker,
+            PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
+            PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS
+        )
 
 
 def find_pacman_packages(packages, local=False):

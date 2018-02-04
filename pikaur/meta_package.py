@@ -193,7 +193,8 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                 new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
 
         for local_pkg_name, local_pkg_conflicts_list in (
-                list(all_local_pgks_conflicts_lists.items()) + list(new_pkgs_conflicts_lists.items())
+                list(all_local_pgks_conflicts_lists.items()) +
+                list(new_pkgs_conflicts_lists.items())
         ):
             if new_pkg_name == local_pkg_name:
                 continue

@@ -285,6 +285,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                     'upgrade',
                     'asdeps',
                     'noconfirm',
+                    'sync',
                     'sysupgrade',
                     'refresh',
                 ]) + new_aur_deps_to_install,
@@ -307,6 +308,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 ] + reconstruct_args(args, ignore_args=[
                     'upgrade',
                     'noconfirm',
+                    'sync',
                     'sysupgrade',
                     'refresh',
                 ]) + aur_packages_to_install,

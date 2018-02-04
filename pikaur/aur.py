@@ -4,9 +4,7 @@ import email
 import json
 from urllib.parse import urlencode
 
-from .core import (
-    MultipleTasksExecutor, PackageUpdate, compare_versions
-)
+from .core import MultipleTasksExecutor
 from .config import VERSION
 
 
@@ -158,23 +156,3 @@ def find_aur_packages(package_names):
             if package not in found_aur_packages
         ]
     return json_results, not_found_packages
-
-
-def find_aur_updates(package_versions):
-    aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(
-        package_versions.keys()
-    )
-    aur_updates = []
-    for result in aur_pkgs_info:
-        pkg_name = result['Name']
-        aur_version = result['Version']
-        current_version = package_versions[pkg_name]
-        if compare_versions(current_version, aur_version):
-            aur_update = PackageUpdate(
-                pkg_name=pkg_name,
-                aur_version=aur_version,
-                current_version=current_version,
-                description=result['Description']
-            )
-            aur_updates.append(aur_update)
-    return aur_updates, not_found_aur_pkgs

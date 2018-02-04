@@ -5,8 +5,8 @@ import shutil
 from pprint import pformat
 
 from .core import (
-    CmdTaskWorker, SingleTaskExecutor, PackageUpdate,
-    DataType, MultipleTasksExecutor,
+    DataType,
+    CmdTaskWorker, MultipleTasksExecutor,
     get_package_name_from_depend_line,
 )
 
@@ -420,23 +420,3 @@ def find_packages_not_from_repo():
         pkg_name: PackageDB.get_local_dict()[pkg_name].Version
         for pkg_name in not_found_packages
     }
-
-
-def find_repo_updates():
-    result = SingleTaskExecutor(
-        PacmanTaskWorker(['-Qu', ])
-    ).execute()
-    packages_updates_lines = result.stdouts
-    repo_packages_updates = []
-    repo_pkgs_info = PackageDB.get_repo_dict()
-    for update in packages_updates_lines:
-        pkg_name, current_version, _, new_version, *_ = update.split()
-        repo_packages_updates.append(
-            PackageUpdate(
-                pkg_name=pkg_name,
-                aur_version=new_version,
-                current_version=current_version,
-                description=repo_pkgs_info[pkg_name].Description,
-            )
-        )
-    return repo_packages_updates

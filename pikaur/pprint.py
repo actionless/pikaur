@@ -82,33 +82,33 @@ def pretty_print_upgradeable(packages_updates, verbose=False):
 
     def pretty_format(pkg_update):
         common_version = get_common_string(
-            pkg_update.current_version, pkg_update.aur_version
+            pkg_update.Current_Version, pkg_update.New_Version
         )
         version_color = 10
         old_color = 11
         new_color = 9
         column_width = min(int(get_term_width() / 2), 45)
         sort_by = '{:03d}{}'.format(
-            len(common_version)*10+len(pkg_update.aur_version),
-            pkg_update.pkg_name
+            len(common_version)*10+len(pkg_update.New_Version),
+            pkg_update.Name
         )
         return ' {:<{width}} {:<{width2}} -> {}{}{verbose}'.format(
-            bold_line(pkg_update.pkg_name),
+            bold_line(pkg_update.Name),
             color_line(common_version, version_color) +
             color_line(
-                get_version_diff(pkg_update.current_version, common_version),
+                get_version_diff(pkg_update.Current_Version, common_version),
                 old_color
             ),
             color_line(common_version, version_color),
             color_line(
-                get_version_diff(pkg_update.aur_version, common_version),
+                get_version_diff(pkg_update.New_Version, common_version),
                 new_color
             ),
             width=column_width,
             width2=column_width - 3,
             verbose=(
-                '' if not (verbose and pkg_update.description)
-                else f'\n{format_paragraph(pkg_update.description)}'
+                '' if not (verbose and pkg_update.Description)
+                else f'\n{format_paragraph(pkg_update.Description)}'
             )
         ), sort_by
 
@@ -129,7 +129,7 @@ def pretty_print_upgradeable(packages_updates, verbose=False):
 
 def print_upgradeable(packages_updates):
     print('\n'.join([
-        pkg_update.pkg_name
+        pkg_update.Name
         for pkg_update in packages_updates
     ]))
 

@@ -23,12 +23,15 @@ from .pprint import (
 )
 from .aur import (
     AurTaskWorkerSearch, AurTaskWorkerInfo,
-    find_aur_packages, find_aur_updates
+    find_aur_packages,
 )
 from .pacman import (
     PacmanColorTaskWorker, PackageDB,
     find_repo_packages, find_local_packages,
-    find_packages_not_from_repo, find_repo_updates,
+    find_packages_not_from_repo,
+)
+from .meta_package import (
+    find_repo_updates, find_aur_updates,
 )
 from .build import SrcInfo, BuildError, CloneError, clone_pkgbuilds_git_repos
 
@@ -201,6 +204,8 @@ def cli_install_packages(args, noconfirm=None, packages=None):
 
     # review PKGBUILD and install files
     # @TODO: ask about package conflicts/provides
+    # 1) check if new_pkgs.{conflicts,provides} not in local_pkg.name
+    # 2) check if new_pkgs.name not local_pkgs.{conflicsts,provides}
     local_packages_found, _ = find_local_packages(
         all_aur_package_names
     )
@@ -352,7 +357,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
 def cli_print_upgradeable(args):
     updates, _ = find_aur_updates(find_packages_not_from_repo())
     updates += find_repo_updates()
-    updates = sorted(updates, key=lambda u: u.pkg_name)
+    updates = sorted(updates, key=lambda u: u.Name)
     if args.quiet:
         print_upgradeable(updates)
     else:
@@ -370,7 +375,7 @@ def cli_upgrade_packages(args):
     ))
     repo_packages_updates = [
         pkg for pkg in find_repo_updates()
-        if pkg.pkg_name not in ignore
+        if pkg.Name not in ignore
     ]
 
     print('{} {}'.format(
@@ -382,13 +387,13 @@ def cli_upgrade_packages(args):
     print_not_found_packages(sorted(not_found_aur_pkgs))
     aur_updates = [
         pkg for pkg in aur_updates
-        if pkg.pkg_name not in ignore
+        if pkg.Name not in ignore
     ]
 
     all_upgradeable_package_names = [
-        u.pkg_name for u in repo_packages_updates
+        u.Name for u in repo_packages_updates
     ] + [
-        u.pkg_name for u in aur_updates
+        u.Name for u in aur_updates
     ]
     if not all_upgradeable_package_names:
         print('\n{} {}'.format(

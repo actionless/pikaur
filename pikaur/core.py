@@ -158,13 +158,6 @@ class CmdTaskWorker(object):
         return self._stream_subprocess()
 
 
-class PackageUpdate(DataType):
-    pkg_name = None
-    current_version = None
-    aur_version = None
-    description = None
-
-
 def compare_versions(current_version, new_version):
     if current_version != new_version:
         current_base_version = new_base_version = None

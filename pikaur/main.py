@@ -73,7 +73,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     if noconfirm is None:
         noconfirm = args.noconfirm
     print("resolving dependencies...")
-    packages = packages or args._positional
+    packages = packages or args.positional
     if args.ignore:
         for ignored_pkg in args.ignore:
             if ignored_pkg in packages:
@@ -414,9 +414,9 @@ def cli_info_packages(args):
     pkgs = 'pkgs'
     aur = 'aur'
     result = MultipleTasksExecutor({
-        pkgs: PacmanColorTaskWorker(args._raw),
+        pkgs: PacmanColorTaskWorker(args.raw),
         aur: AurTaskWorkerInfo(
-            packages=args._positional or []
+            packages=args.positional or []
         ),
     }).execute()
     json_results = result[aur].json['results']
@@ -445,9 +445,9 @@ def cli_search_packages(args):
     pkgs = 'pkgs'
     aur = 'aur'
     result = MultipleTasksExecutor({
-        pkgs: PacmanColorTaskWorker(args._raw),
+        pkgs: PacmanColorTaskWorker(args.raw),
         aur: AurTaskWorkerSearch(
-            search_query=' '.join(args._positional or [])
+            search_query=' '.join(args.positional or [])
         ),
     }).execute()
 

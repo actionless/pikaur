@@ -171,14 +171,22 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             local_packages_found
         )
 
-        if not (args.needed and already_installed):
+        if args.needed and already_installed:
+            print(
+                '{} {} {}'.format(
+                    color_line('warning:', 11),
+                    pkg_name,
+                    'is up to date -- skipping'
+                )
+            )
+        else:
             editor = get_editor()
             if editor:
                 if ask_to_continue(
                         "Do you want to edit PKGBUILD for {} package?".format(
                             bold_line(pkg_name)
                         ),
-                        default_yes=False
+                        default_yes=not already_installed
                 ):
                     interactive_spawn([
                         get_editor(),
@@ -205,15 +213,6 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                                 install_file_name
                             )
                         ])
-
-        else:
-            print(
-                '{} {} {}'.format(
-                    color_line('warning:', 11),
-                    pkg_name,
-                    'is up to date -- skipping'
-                )
-            )
 
     # get sudo for further questions:
     interactive_spawn([

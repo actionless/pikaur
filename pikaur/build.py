@@ -9,7 +9,7 @@ from .core import (
 )
 from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
-from .pacman import find_local_packages
+from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args
 
 
@@ -123,28 +123,52 @@ class PackageBuild(DataType):
             return self.create_clone_task()
         return NotImplemented
 
-    def check_installed_status(self, local_packages_found):
-        already_installed = False
-        last_installed_file_path = os.path.join(
+    @property
+    def last_installed_file_path(self):
+        return os.path.join(
             self.repo_path,
             'last_installed.txt'
         )
+
+    @property
+    def is_installed(self):
+        return os.path.exists(self.last_installed_file_path)
+
+    @property
+    def last_installed_hash(self):
+        if self.is_installed:
+            with open(self.last_installed_file_path) as last_installed_file:
+                return last_installed_file.readlines()[0].strip()
+
+    @property
+    def build_files_updated(self):
         if (
-                self.package_name in local_packages_found
+                self.is_installed
         ) and (
-            os.path.exists(last_installed_file_path)
+                self.last_installed_hash != self.current_hash
         ):
-            with open(last_installed_file_path) as last_installed_file:
-                last_installed_hash = last_installed_file.readlines()
-                with open(
-                    os.path.join(
-                        self.repo_path,
-                        '.git/refs/heads/master'
-                    )
-                ) as current_hash_file:
-                    current_hash = current_hash_file.readlines()
-                    if last_installed_hash == current_hash:
-                        already_installed = True
+            return True
+        return False
+
+    @property
+    def current_hash(self):
+        with open(
+            os.path.join(
+                self.repo_path,
+                '.git/refs/heads/master'
+            )
+        ) as current_hash_file:
+            return current_hash_file.readlines()[0].strip()
+
+    @property
+    def version_already_installed(self):
+        already_installed = False
+        if (
+                self.package_name in PackageDB.get_local_dict().keys()
+        ) and (
+                self.last_installed_hash == self.current_hash
+        ):
+                already_installed = True
         self.already_installed = already_installed
         return already_installed
 

@@ -25,8 +25,7 @@ from .aur import (
 )
 from .pacman import (
     PacmanColorTaskWorker,
-    find_repo_packages, find_local_packages,
-    find_packages_not_from_repo,
+    find_repo_packages, find_packages_not_from_repo,
 )
 from .meta_package import (
     find_repo_updates, find_aur_updates, find_aur_deps, check_conflicts,
@@ -66,6 +65,24 @@ def get_editor():
     if not ask_to_continue('Do you want to proceed without editing?'):
         sys.exit(2)
     return None
+
+
+def ask_to_edit_file(filename, package_build):
+    if ask_to_continue(
+            "Do you want to {} {} for {} package?".format(
+                bold_line('edit'),
+                filename,
+                bold_line(package_build.package_name)
+            ),
+            default_yes=not package_build.is_installed
+    ):
+        interactive_spawn([
+            get_editor(),
+            os.path.join(
+                package_build.repo_path,
+                filename
+            )
+        ])
 
 
 def cli_install_packages(args, noconfirm=None, packages=None):
@@ -161,17 +178,10 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         )))
 
     # review PKGBUILD and install files
-    local_packages_found, _ = find_local_packages(
-        all_aur_packages_names
-    )
     for pkg_name in reversed(all_aur_packages_names):
         repo_status = package_builds[pkg_name]
         repo_path = repo_status.repo_path
-        already_installed = repo_status.check_installed_status(
-            local_packages_found
-        )
-
-        if args.needed and already_installed:
+        if args.needed and repo_status.version_already_installed:
             print(
                 '{} {} {}'.format(
                     color_line('warning:', 11),
@@ -180,39 +190,26 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 )
             )
         else:
-            editor = get_editor()
-            if editor:
+            if repo_status.build_files_updated:
                 if ask_to_continue(
-                        "Do you want to edit PKGBUILD for {} package?".format(
+                        "Do you want to see build files {} for {} package?".format(
+                            bold_line('diff'),
                             bold_line(pkg_name)
-                        ),
-                        default_yes=not already_installed
+                        )
                 ):
                     interactive_spawn([
-                        get_editor(),
-                        os.path.join(
-                            repo_path,
-                            'PKGBUILD'
-                        )
+                        'git',
+                        '-C',
+                        repo_status.repo_path,
+                        'diff',
+                        repo_status.last_installed_hash,
+                        repo_status.current_hash,
                     ])
-                    SrcInfo(repo_path).regenerate()
-
+            if get_editor():
+                ask_to_edit_file('PKGBUILD', repo_status)
                 install_file_name = SrcInfo(repo_path).get_install_script()
                 if install_file_name:
-                    if ask_to_continue(
-                            "Do you want to edit {} for {} package?".format(
-                                install_file_name,
-                                bold_line(pkg_name)
-                            ),
-                            default_yes=False
-                    ):
-                        interactive_spawn([
-                            get_editor(),
-                            os.path.join(
-                                repo_path,
-                                install_file_name
-                            )
-                        ])
+                    ask_to_edit_file(install_file_name, repo_status)
 
     # get sudo for further questions:
     interactive_spawn([
@@ -318,16 +315,14 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     # save git hash of last sucessfully installed package
     if package_builds:
         for pkg_name, repo_status in package_builds.items():
-            shutil.copy2(
-                os.path.join(
-                    repo_status.repo_path,
-                    '.git/refs/heads/master'
-                ),
-                os.path.join(
-                    repo_status.repo_path,
-                    'last_installed.txt'
+            if repo_status.built_package_path:
+                shutil.copy2(
+                    os.path.join(
+                        repo_status.repo_path,
+                        '.git/refs/heads/master'
+                    ),
+                    repo_status.last_installed_file_path
                 )
-            )
 
     if failed_to_build:
         print('\n'.join(

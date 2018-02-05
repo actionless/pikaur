@@ -424,7 +424,8 @@ def cli_info_packages(args):
             '\n'.join([
                 '{key:24}: {value}'.format(
                     key=bold_line(key),
-                    value=value
+                    value=value if not isinstance(value, list)
+                    else ', '.join(value)
                 )
                 for key, value in result.items()
             ]) + ('\n' if i+1 < num_found else '')

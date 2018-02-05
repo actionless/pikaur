@@ -422,7 +422,7 @@ def cli_info_packages(args):
     for i, result in enumerate(json_results):
         print(
             '\n'.join([
-                '{key:30}: {value}'.format(
+                '{key:24}: {value}'.format(
                     key=bold_line(key),
                     value=value
                 )

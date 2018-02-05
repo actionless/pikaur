@@ -24,7 +24,7 @@ from .aur import (
     AurTaskWorkerSearch, AurTaskWorkerInfo,
 )
 from .pacman import (
-    PacmanColorTaskWorker,
+    PacmanColorTaskWorker, PackageDB,
     find_repo_packages, find_packages_not_from_repo,
 )
 from .meta_package import (
@@ -439,29 +439,38 @@ def cli_clean_packages_cache(_args):
 
 
 def cli_search_packages(args):
+
+    class GetLocalPkgsTask():
+        async def get_task(self):
+            return list(PackageDB.get_local_dict().keys())
+
     pkgs = 'pkgs'
     aur = 'aur'
+    local = 'local'
     result = MultipleTasksExecutor({
         pkgs: PacmanColorTaskWorker(args.raw),
         aur: AurTaskWorkerSearch(
             search_query=' '.join(args.positional or [])
         ),
+        local: GetLocalPkgsTask,
     }).execute()
+    local_pkgs_names = result[local]
 
-    print(result[pkgs].stdout, end='')
+    if result[pkgs].stdout != '':
+        print(result[pkgs].stdout)
     for aur_pkg in result[aur].json['results']:
+        pkg_name = aur_pkg['Name']
         if args.quiet:
-            print(aur_pkg['Name'])
+            print(pkg_name)
         else:
             print("{}{} {} {}".format(
                 # color_line('aur/', 13),
                 color_line('aur/', 9),
-                bold_line(aur_pkg['Name']),
+                bold_line(pkg_name),
                 color_line(aur_pkg["Version"], 10),
-                '',  # [installed]
+                color_line('[installed]', 14) if pkg_name in local_pkgs_names else ''
             ))
             print(format_paragraph(f'{aur_pkg["Description"]}'))
-        # print(aur_pkg)
 
 
 def main():

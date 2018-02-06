@@ -9,6 +9,7 @@ from .core import (
     CmdTaskWorker, MultipleTasksExecutor,
     get_package_name_from_depend_line,
 )
+from .pprint import color_line
 
 
 class PacmanTaskWorker(CmdTaskWorker):
@@ -229,7 +230,7 @@ class PackageDBCommon():
 
 class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
 
-    # ~2.2 seconds
+    # ~2.7 seconds (was ~2.2 seconds with gzip)
 
     @classmethod
     def get_repo_dict(cls):
@@ -244,7 +245,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
             for repo_name in os.listdir(sync_dir):
                 if not repo_name.endswith('.db'):
                     continue
-                temp_repo_path = os.path.join(temp_dir, repo_name+'.gz')
+                temp_repo_path = os.path.join(temp_dir, repo_name)
                 shutil.copy2(
                     os.path.join(sync_dir, repo_name),
                     temp_repo_path,
@@ -252,21 +253,31 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                 temp_repos[repo_name] = temp_repo_path
 
             # uncompress databases
-            MultipleTasksExecutor({
+            untar_results = MultipleTasksExecutor({
                 repo_name: CmdTaskWorker([
-                    'gunzip', temp_repo_path
+                    'bsdtar', '-x', '-f', temp_repo_path, '-C', temp_dir
                 ])
                 for repo_name, temp_repo_path
                 in temp_repos.items()
             }).execute()
+            for db_name, untar_result in untar_results.items():
+                if untar_result.return_code != 0:
+                    print('{} Can not extract {}, skipping'.format(
+                        color_line(':: error', 9),
+                        db_name
+                    ))
+                    print(untar_result)
+            for temp_repo_path in temp_repos.values():
+                os.remove(temp_repo_path)
 
             # parse package databases
-            for repo_name in temp_repos:
-                for pkg in RepoPackageInfo.parse_pacman_db_info(
-                        os.path.join(temp_dir, repo_name)
+            for pkg_dir_name in os.listdir(temp_dir):
+                if not os.path.isdir(os.path.join(temp_dir, pkg_dir_name)):
+                    continue
+                for pkg in LocalPackageInfo.parse_pacman_db_info(
+                        os.path.join(temp_dir, pkg_dir_name, 'desc')
                 ):
                     result[pkg.Name] = pkg
-            shutil.rmtree(temp_dir)
             cls._repo_dict_cache = result
         return cls._repo_dict_cache
 

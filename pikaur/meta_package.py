@@ -133,7 +133,7 @@ def find_aur_deps(package_names):
         new_aur_deps += not_found_local_pkgs
         package_names = not_found_local_pkgs
 
-    return new_aur_deps
+    return list(set(new_aur_deps))
 
 
 def check_conflicts(repo_packages_names, aur_packages_names):

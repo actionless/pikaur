@@ -18,6 +18,7 @@ def parse_args(args):
     for letter, opt in (
             ('S', 'sync'),
             ('c', 'clean'),
+            ('g', 'groups'),
             ('i', 'info'),
             ('w', 'downloadonly'),
             ('q', 'quiet'),

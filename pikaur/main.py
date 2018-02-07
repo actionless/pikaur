@@ -488,6 +488,7 @@ def main():
     args = parse_args(raw_args)
 
     not_implemented_in_pikaur = False
+    require_sudo = True
 
     if args.sync:
         if args.sysupgrade:
@@ -500,6 +501,9 @@ def main():
             cli_clean_packages_cache(args)
         elif '-S' in raw_args or '--sync' in raw_args:
             cli_install_packages(args)
+        elif args.groups:
+            not_implemented_in_pikaur = True
+            require_sudo = False
         else:
             not_implemented_in_pikaur = True
 
@@ -507,22 +511,24 @@ def main():
         if args.sysupgrade:
             cli_print_upgradeable(args)
         else:
-            sys.exit(
-                interactive_spawn(['pacman', ] + raw_args).returncode
-            )
+            not_implemented_in_pikaur = True
+            require_sudo = False
 
-    elif args.help:
-        sys.exit(
-            interactive_spawn(['pacman', ] + raw_args).returncode
-        )
     elif args.version:
         print_version()
     else:
         not_implemented_in_pikaur = True
 
+    if args.help:
+        require_sudo = False
+
     if not_implemented_in_pikaur:
+        if require_sudo:
+            sys.exit(
+                interactive_spawn(['sudo', 'pacman', ] + raw_args).returncode
+            )
         sys.exit(
-            interactive_spawn(['sudo', 'pacman', ] + raw_args).returncode
+            interactive_spawn(['pacman', ] + raw_args).returncode
         )
 
 

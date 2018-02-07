@@ -301,14 +301,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
 with open('/var/lib/pacman/local/ALPM_DB_VERSION') as version_file:
     ALPM_DB_VER = version_file.read().strip()
     if ALPM_DB_VER == '9':
-        if os.path.exists('/usr/bin/gunzip'):
-            PackageDB = PackageDB_ALPM9
-        else:
-            from .pacman_fallback import get_pure_python_package_db
-            PackageDB = get_pure_python_package_db(
-                PackageDB_ALPM9=PackageDB_ALPM9,
-                RepoPackageInfo=RepoPackageInfo
-            )
+        PackageDB = PackageDB_ALPM9
     else:
         from .pacman_fallback import get_pacman_cli_package_db
         PackageDB = get_pacman_cli_package_db(

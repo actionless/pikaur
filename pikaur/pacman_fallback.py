@@ -1,31 +1,4 @@
-import os
-
 from .core import MultipleTasksExecutor
-
-
-def get_pure_python_package_db(PackageDB_ALPM9, RepoPackageInfo):  # pylint: disable=invalid-name
-
-    class PackageDB_ALPM9_PurePython(PackageDB_ALPM9):  # pylint: disable=invalid-name
-
-        # ~3.7 seconds
-
-        @classmethod
-        def get_repo_dict(cls):
-            if not cls._repo_dict_cache:
-                result = {}
-                sync_dir = '/var/lib/pacman/sync/'
-                for repo_name in os.listdir(sync_dir):
-                    if not repo_name.endswith('.db'):
-                        continue
-                    print(f"Reading {repo_name} repository data...")
-                    for pkg in RepoPackageInfo.parse_pacman_db_gzip_info(
-                            os.path.join(sync_dir, repo_name)
-                    ):
-                        result[pkg.Name] = pkg
-                cls._repo_dict_cache = result
-            return cls._repo_dict_cache
-
-    return PackageDB_ALPM9_PurePython
 
 
 def get_pacman_cli_package_db(

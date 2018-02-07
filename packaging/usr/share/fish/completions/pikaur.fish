@@ -20,7 +20,7 @@ function __fish_pikaur_print_packages
     end
 	mkdir -m 700 -p $XDG_CACHE_HOME
 
-	set cache_file $XDG_CACHE_HOME/.pac-cache.$USER
+	set cache_file $XDG_CACHE_HOME/.pikaur-cache.$USER
 	if test -f $cache_file
 		cat $cache_file
 		set age (math (date +%s) - (stat -c '%Y' $cache_file))

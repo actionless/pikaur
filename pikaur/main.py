@@ -447,11 +447,11 @@ def cli_search_packages(args):
                 for pkg_name, pkg in PackageDB.get_local_dict().items()
             }
 
-    pkgs = 'pkgs'
+    repo = 'repo'
     aur = 'aur'
     local = 'local'
     result = MultipleTasksExecutor({
-        pkgs: PacmanColorTaskWorker(args.raw),
+        repo: PacmanColorTaskWorker(args.raw),
         aur: AurTaskWorkerSearch(
             search_query=' '.join(args.positional or [])
         ),
@@ -460,8 +460,8 @@ def cli_search_packages(args):
     local_pkgs_versions = result[local]
     local_pkgs_names = local_pkgs_versions.keys()
 
-    if result[pkgs].stdout != '':
-        print(result[pkgs].stdout)
+    if result[repo].stdout != '':
+        print(result[repo].stdout)
     for aur_pkg in result[aur].json['results']:
         pkg_name = aur_pkg['Name']
         if args.quiet:

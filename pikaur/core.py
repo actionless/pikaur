@@ -27,7 +27,7 @@ class MultipleTasksExecutor(object):
         def _process_done_callback(future):
             result = future.result()
             self.results[cmd_id] = result
-            if len(self.results) == len(self.futures):
+            if len(self.results) == len(self.cmds):
                 self.loop.stop()
 
         return _process_done_callback

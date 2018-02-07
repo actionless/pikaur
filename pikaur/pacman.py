@@ -271,6 +271,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                 os.remove(temp_repo_path)
 
             # parse package databases
+            # @TODO: try multiprocess pool here
             for pkg_dir_name in os.listdir(temp_dir):
                 if not os.path.isdir(os.path.join(temp_dir, pkg_dir_name)):
                     continue
@@ -278,6 +279,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                         os.path.join(temp_dir, pkg_dir_name, 'desc')
                 ):
                     result[pkg.Name] = pkg
+
             cls._repo_dict_cache = result
         return cls._repo_dict_cache
 

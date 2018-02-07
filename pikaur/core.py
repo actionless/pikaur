@@ -160,8 +160,11 @@ class CmdTaskWorker(object):
 
 def compare_versions(current_version, new_version):
     if current_version != new_version:
+        for separator in ('+',):
+            current_version = current_version.replace(separator, '.')
+            new_version = new_version.replace(separator, '.')
         current_base_version = new_base_version = None
-        for separator in (':', '+'):
+        for separator in (':',):
             if separator in current_version:
                 current_base_version, _current_version = \
                     current_version.split(separator)[:2]

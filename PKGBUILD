@@ -1,7 +1,7 @@
 # Maintainer: Yauhen Kirylau <yawghen AT gmail.com>
 # Upstream URL: https://github.com/actionless/oomox
 
-_pkgbase=pikaur
+app_name=pikaur
 pkgname=pikaur-git
 pkgver=0.3
 pkgrel=1
@@ -26,16 +26,17 @@ makedepends=(
 )
 
 pkgver() {
-	cd "${srcdir}/${_pkgbase}"
+	cd "${srcdir}/${app_name}"
 	git describe | sed 's/^v//;s/-/+/g'
 }
 
 build() {
-	cd "${srcdir}/${_pkgbase}"
+	cd "${srcdir}/${app_name}"
 	nuitka --plugin-enable=pylint-warnings --recurse-directory=pikaur --recurse-all ./pikaur.py
 }
 
 package() {
+	cp -r ${srcdir}/${app_name}/packaging/* ${pkgdir}
 	mkdir -p "${pkgdir}/usr/bin/"
-	install -D -m755 "${srcdir}/${_pkgbase}/pikaur.exe" "${pkgdir}/usr/bin/pikaur"
+	install -D -m755 "${srcdir}/${app_name}/pikaur.exe" "${pkgdir}/usr/bin/pikaur"
 }

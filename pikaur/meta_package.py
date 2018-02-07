@@ -22,7 +22,7 @@ class PackageUpdate(DataType):
     Description = None
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} {self.Name} {self.Current_Version}->{self.New_Version}>'
+        return f'<{self.__class__.__name__} "{self.Name}" {self.Current_Version} -> {self.New_Version}>'
 
 
 def find_repo_updates():

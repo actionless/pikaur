@@ -3,7 +3,9 @@ import sys
 from .core import (
     DataType,
     SingleTaskExecutor,
-    compare_versions, get_package_name_from_depend_line,
+    compare_versions,
+    get_package_name_from_depend_line,
+    get_package_name_and_version_matcher_from_depend_line,
 )
 from .pacman import (
     PacmanTaskWorker, PackageDB, find_local_packages, find_repo_packages,
@@ -140,11 +142,14 @@ def check_conflicts(repo_packages_names, aur_packages_names):
 
     # @TODO: split to smaller routines (?)
 
-    def clean_conflicts_list(conflicts):
-        return list(set([
-            get_package_name_from_depend_line(pkg_name)
-            for pkg_name in conflicts
-        ]))
+    def get_version(new_pkg_name):
+        repo_info = PackageDB.get_repo_dict().get(new_pkg_name)
+        if repo_info:
+            return repo_info.Version
+        aur_packages, _not_found = find_aur_packages([new_pkg_name])
+        if aur_packages:
+            return aur_packages[0]['Version']
+        return None
 
     new_pkgs_conflicts_lists = {}
     #
@@ -156,18 +161,14 @@ def check_conflicts(repo_packages_names, aur_packages_names):
             conflicts += repo_pkg_info.Conflicts_With
         if repo_pkg_info.Replaces:
             conflicts += repo_pkg_info.Replaces
-        new_pkgs_conflicts_lists[repo_package_name] = clean_conflicts_list(
-            conflicts
-        )
+        new_pkgs_conflicts_lists[repo_package_name] = list(set(conflicts))
     #
     aur_pkgs_info, _not_founds_pkgs = find_aur_packages(aur_packages_names)
     for aur_json in aur_pkgs_info:
         conflicts = []
         conflicts += aur_json.get('Conflicts', [])
         conflicts += aur_json.get('Replaces', [])
-        new_pkgs_conflicts_lists[aur_json['Name']] = clean_conflicts_list(
-            conflicts
-        )
+        new_pkgs_conflicts_lists[aur_json['Name']] = list(set(conflicts))
     # print(new_pkgs_conflicts_lists)
 
     all_local_pkgs_info = PackageDB.get_local_dict()
@@ -180,19 +181,27 @@ def check_conflicts(repo_packages_names, aur_packages_names):
         if local_pkg_info.Replaces:
             conflicts += local_pkg_info.Replaces
         if conflicts:
-            all_local_pgks_conflicts_lists[local_pkg_info.Name] = clean_conflicts_list(
-                conflicts
-            )
+            all_local_pgks_conflicts_lists[local_pkg_info.Name] = list(set(conflicts))
     # print(all_local_pgks_conflicts_lists)
 
     new_pkgs_conflicts = {}
     for new_pkg_name, new_pkg_conflicts_list in new_pkgs_conflicts_lists.items():
 
-        for conflict_pkg_name in new_pkg_conflicts_list:
-            if new_pkg_name != conflict_pkg_name and conflict_pkg_name in (
-                    list(all_local_pkgs_names) + list(new_pkgs_conflicts_lists.keys())
-            ):
-                new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
+        for conflict_line in new_pkg_conflicts_list:
+            conflict_pkg_name, conflict_version_matcher = \
+                get_package_name_and_version_matcher_from_depend_line(
+                    conflict_line
+                )
+            if new_pkg_name != conflict_pkg_name:
+                for installed_pkg_name in (
+                        list(all_local_pkgs_names) + list(new_pkgs_conflicts_lists.keys())
+                ):
+                    if (
+                            conflict_pkg_name == installed_pkg_name
+                    ) and (
+                        conflict_version_matcher(get_version(installed_pkg_name))
+                    ):
+                        new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
 
         for local_pkg_name, local_pkg_conflicts_list in (
                 list(all_local_pgks_conflicts_lists.items()) +
@@ -201,8 +210,17 @@ def check_conflicts(repo_packages_names, aur_packages_names):
             if new_pkg_name == local_pkg_name:
                 continue
             for conflict_pkg_name in new_pkg_conflicts_list + [new_pkg_name]:
-                if conflict_pkg_name in local_pkg_conflicts_list:
-                    new_pkgs_conflicts.setdefault(new_pkg_name, []).append(local_pkg_name)
+                for conflict_line in local_pkg_conflicts_list:
+                    conflicting_pkg_name, conflicting_version_matcher = \
+                        get_package_name_and_version_matcher_from_depend_line(
+                            conflict_line
+                        )
+                    if (
+                            conflicting_pkg_name == conflict_pkg_name
+                    ) and (
+                        conflicting_version_matcher(get_version(new_pkg_name))
+                    ):
+                        new_pkgs_conflicts.setdefault(new_pkg_name, []).append(local_pkg_name)
     # print(new_pkgs_conflicts)
 
     return new_pkgs_conflicts

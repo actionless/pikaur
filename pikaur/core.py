@@ -187,7 +187,36 @@ def compare_versions(current_version, new_version):
 
 
 def get_package_name_from_depend_line(depend_line):  # pylint: disable=invalid-name
+    # @TODO: remove this one and use next function instead
     return depend_line.split('=')[0].split('<')[0].split('>')[0]
+
+
+# pylint: disable=invalid-name
+def get_package_name_and_version_matcher_from_depend_line(depend_line):
+    version = None
+
+    def get_version():
+        return version
+
+    cond = None
+    version_matcher = lambda v: True  # noqa
+    for test_cond, matcher in {
+        '>=': lambda v: v >= get_version(),
+        '<=': lambda v: v <= get_version(),
+        '=': lambda v: v == get_version(),
+        '>': lambda v: v > get_version(),
+        '<': lambda v: v < get_version(),
+    }.items():
+        if test_cond in depend_line:
+            cond = test_cond
+            version_matcher = matcher
+            break
+
+    if cond:
+        pkg_name, version = depend_line.split(cond)[:2]
+    else:
+        pkg_name = depend_line
+    return pkg_name, version_matcher
 
 
 def ask_to_continue(text='Do you want to proceed?', default_yes=True):

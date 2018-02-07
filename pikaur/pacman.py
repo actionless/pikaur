@@ -275,10 +275,12 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
             for pkg_dir_name in os.listdir(temp_dir):
                 if not os.path.isdir(os.path.join(temp_dir, pkg_dir_name)):
                     continue
+                db_dir = os.path.join(temp_dir, pkg_dir_name)
                 for pkg in LocalPackageInfo.parse_pacman_db_info(
-                        os.path.join(temp_dir, pkg_dir_name, 'desc')
+                    os.path.join(db_dir, 'desc')
                 ):
                     result[pkg.Name] = pkg
+                shutil.rmtree(db_dir)
 
             cls._repo_dict_cache = result
         return cls._repo_dict_cache

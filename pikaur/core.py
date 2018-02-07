@@ -190,6 +190,10 @@ def compare_versions(current_version, new_version):
     return False
 
 
+def compare_versions_test():
+    assert compare_versions('0.2+9+123abc-1', '0.3-1')
+
+
 def get_package_name_from_depend_line(depend_line):  # pylint: disable=invalid-name
     # @TODO: remove this one and use next function instead
     return depend_line.split('=')[0].split('<')[0].split('>')[0]

@@ -440,9 +440,12 @@ def cli_clean_packages_cache(_args):
 
 def cli_search_packages(args):
 
-    class GetLocalPkgsTask():
+    class GetLocalPkgsVersionsTask():
         async def get_task(self):
-            return list(PackageDB.get_local_dict().keys())
+            return {
+                pkg_name: pkg.Version
+                for pkg_name, pkg in PackageDB.get_local_dict().items()
+            }
 
     pkgs = 'pkgs'
     aur = 'aur'
@@ -452,9 +455,10 @@ def cli_search_packages(args):
         aur: AurTaskWorkerSearch(
             search_query=' '.join(args.positional or [])
         ),
-        local: GetLocalPkgsTask,
+        local: GetLocalPkgsVersionsTask,
     }).execute()
-    local_pkgs_names = result[local]
+    local_pkgs_versions = result[local]
+    local_pkgs_names = local_pkgs_versions.keys()
 
     if result[pkgs].stdout != '':
         print(result[pkgs].stdout)
@@ -468,7 +472,12 @@ def cli_search_packages(args):
                 color_line('aur/', 9),
                 bold_line(pkg_name),
                 color_line(aur_pkg["Version"], 10),
-                color_line('[installed]', 14) if pkg_name in local_pkgs_names else ''
+                color_line('[installed{}]'.format(
+                    f': {local_pkgs_versions[pkg_name]}'
+                    if aur_pkg['Version'] != local_pkgs_versions[pkg_name]
+                    else ''
+                ), 14)
+                if pkg_name in local_pkgs_names else '',
             ))
             print(format_paragraph(f'{aur_pkg["Description"]}'))
 

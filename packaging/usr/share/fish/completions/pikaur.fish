@@ -31,7 +31,7 @@ function __fish_pikaur_print_packages
 	end
 
 	# prints: <package name>	Package
-	pikaur -Ssq | sed -e 's/$/\t'$package'/' >$cache_file &
+	pikaur -Ssq | tail -n +2 | sed -e 's/$/\t'$package'/' >$cache_file &
 	return
 end
 

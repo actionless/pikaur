@@ -1,16 +1,19 @@
 import os
 import glob
 import shutil
+import sys
 
 from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
     interactive_spawn, get_package_name_from_depend_line,
+    retry_interactive_command, ask_to_continue,
 )
 from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
 from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args
+from .pprint import color_line, bold_line
 
 
 class BuildError(Exception):
@@ -172,8 +175,7 @@ class PackageBuild(DataType):
         self.already_installed = already_installed
         return already_installed
 
-    def build(self, args):
-
+    def build(self, args, all_package_builds):
         repo_path = self.repo_path
         build_dir = os.path.join(BUILD_CACHE, self.package_name)
         if os.path.exists(build_dir):
@@ -187,7 +189,47 @@ class PackageBuild(DataType):
         _, new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = SrcInfo(repo_path).get_depends()
         _, new_deps_to_install = find_local_packages(new_deps)
-        if new_make_deps_to_install or new_deps_to_install:
+        all_deps_to_install = new_make_deps_to_install + new_deps_to_install
+
+        built_deps_to_install = []
+        for dep in all_deps_to_install[:]:
+            if dep in all_package_builds:
+                built_deps_to_install.append(
+                    all_package_builds[dep].built_package_path
+                )
+                all_deps_to_install.remove(dep)
+
+        if built_deps_to_install:
+            print('{} {} {}:'.format(
+                color_line('::', 13),
+                "Installing already built dependencies for",
+                bold_line(self.package_name)
+            ))
+            if not retry_interactive_command(
+                    [
+                        'sudo',
+                        'pacman',
+                        '--upgrade',
+                        '--asdeps',
+                        '--noconfirm',
+                    ] + reconstruct_args(args, ignore_args=[
+                        'upgrade',
+                        'asdeps',
+                        'noconfirm',
+                        'sync',
+                        'sysupgrade',
+                        'refresh',
+                    ]) + built_deps_to_install,
+            ):
+                if not ask_to_continue(default_yes=False):
+                    sys.exit(1)
+
+        if all_deps_to_install:
+            print('{} {} {}:'.format(
+                color_line('::', 13),
+                "Installing repository dependencies for",
+                bold_line(self.package_name)
+            ))
             deps_result = interactive_spawn(
                 [
                     'sudo',
@@ -203,13 +245,14 @@ class PackageBuild(DataType):
                     'noconfirm',
                     'sysupgrade',
                     'refresh',
-                ]) + new_make_deps_to_install + new_deps_to_install,
+                ]) + all_deps_to_install,
             )
             if deps_result.returncode > 0:
                 raise BuildError()
         makepkg_args = [
             '--nodeps',
         ]
+
         if not args.needed:
             makepkg_args.append('--force')
         build_result = interactive_spawn(
@@ -218,7 +261,13 @@ class PackageBuild(DataType):
             ] + makepkg_args,
             cwd=build_dir
         )
+
         if new_make_deps_to_install:
+            print('{} {} {}:'.format(
+                color_line('::', 13),
+                "Removing make dependencies for",
+                bold_line(self.package_name)
+            ))
             # @TODO: resolve makedeps in case if it was specified by Provides, not real name
             interactive_spawn(
                 [
@@ -228,8 +277,14 @@ class PackageBuild(DataType):
                     '--noconfirm',
                 ] + new_make_deps_to_install,
             )
+
         if build_result.returncode > 0:
             if new_deps_to_install:
+                print('{} {} {}:'.format(
+                    color_line('::', 13),
+                    "Removing already installed dependencies for",
+                    bold_line(self.package_name)
+                ))
                 interactive_spawn(
                     [
                         'sudo',

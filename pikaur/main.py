@@ -222,7 +222,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
         if args.needed and repo_status.already_installed:
             continue
         try:
-            repo_status.build(args)
+            repo_status.build(args, package_builds)
         except BuildError:
             print(color_line(f"Can't build '{pkg_name}'.", 9))
             failed_to_build.append(pkg_name)

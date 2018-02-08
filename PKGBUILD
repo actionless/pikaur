@@ -19,6 +19,7 @@ depends=(
 	'pacman'
 	'git'
 	'sudo'
+	'fakeroot'
 )
 makedepends=(
 	'nuitka'

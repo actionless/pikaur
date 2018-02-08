@@ -465,6 +465,7 @@ def cli_search_packages(args):
     if result[repo].stdout != '':
         print(result[repo].stdout)
     for aur_pkg in result[aur].json['results']:
+        # @TODO: return only packages for the current architecture
         pkg_name = aur_pkg['Name']
         if args.quiet:
             print(pkg_name)

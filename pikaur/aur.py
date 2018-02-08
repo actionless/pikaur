@@ -137,6 +137,7 @@ _AUR_PKGS_FIND_CACHE = {}
 
 
 def find_aur_packages(package_names):
+    # @TODO: return only packages for the current architecture
     package_names = list(package_names)[:]
     json_results = []
     for package_name in package_names[:]:

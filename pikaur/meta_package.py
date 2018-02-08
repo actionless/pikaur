@@ -206,17 +206,23 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                     if (
                             conflict_pkg_name == installed_pkg_name
                     ) and (
+                            new_pkg_name != conflict_pkg_name
+                    ) and (
                         conflict_version_matcher(get_version(installed_pkg_name))
                     ):
                         new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
-                # for installed_pkg_name, provides in local_provided.items():
-                    # for provided_pkg_name in provides:
-                        # if (
-                                # conflict_pkg_name == provided_pkg_name
-                        # ) and (
-                            # conflict_version_matcher(get_version(installed_pkg_name))
-                        # ):
-                            # new_pkgs_conflicts.setdefault(new_pkg_name, []).append(installed_pkg_name)
+                for installed_pkg_name, provides in local_provided.items():
+                    for provided_pkg_name in provides:
+                        if (
+                                conflict_pkg_name == provided_pkg_name
+                        ) and (
+                                new_pkg_name != installed_pkg_name
+                        ) and (
+                            conflict_version_matcher(get_version(installed_pkg_name))
+                        ):
+                            print((conflict_pkg_name, provided_pkg_name))
+                            print((new_pkg_name, installed_pkg_name))
+                            new_pkgs_conflicts.setdefault(new_pkg_name, []).append(installed_pkg_name)
 
         # find if any of already installed packages have Conflicts with the new ones:
         for local_pkg_name, local_pkg_conflicts_list in all_local_pgks_conflicts_lists.items():
@@ -229,6 +235,8 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                     )
                 if (
                         conflict_pkg_name == new_pkg_name
+                ) and (
+                    local_pkg_name != new_pkg_name
                 ) and (
                     conflict_version_matcher(get_version(new_pkg_name))
                 ):

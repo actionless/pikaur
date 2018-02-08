@@ -197,6 +197,7 @@ class PackageBuild(DataType):
                 built_deps_to_install.append(
                     all_package_builds[dep].built_package_path
                 )
+                all_package_builds[dep].built_package_path = None
                 all_deps_to_install.remove(dep)
 
         if built_deps_to_install:

@@ -208,9 +208,10 @@ class PackageBuild(DataType):
                 interactive_spawn(['rm', '-rf', build_dir])
         shutil.copytree(repo_path, build_dir)
 
-        make_deps = SrcInfo(repo_path).get_makedepends()
+        src_info = SrcInfo(repo_path)
+        make_deps = src_info.get_makedepends()
         _, new_make_deps_to_install = find_local_packages(make_deps)
-        new_deps = SrcInfo(repo_path).get_depends()
+        new_deps = src_info.get_depends()
         _, new_deps_to_install = find_local_packages(new_deps)
         all_deps_to_install = new_make_deps_to_install + new_deps_to_install
 

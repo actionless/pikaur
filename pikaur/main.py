@@ -6,6 +6,7 @@ import sys
 # import argparse
 import readline
 import shutil
+import platform
 from functools import reduce
 
 from .args import parse_args, reconstruct_args
@@ -83,6 +84,7 @@ def ask_to_edit_file(filename, package_build):
                 filename
             )
         ])
+        return True
 
 
 def cli_install_packages(args, noconfirm=None, packages=None):
@@ -180,7 +182,6 @@ def cli_install_packages(args, noconfirm=None, packages=None):
     # review PKGBUILD and install files
     for pkg_name in reversed(all_aur_packages_names):
         repo_status = package_builds[pkg_name]
-        repo_path = repo_status.repo_path
         if args.needed and repo_status.version_already_installed:
             print(
                 '{} {} {}'.format(
@@ -190,6 +191,7 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 )
             )
         else:
+
             if repo_status.build_files_updated:
                 if ask_to_continue(
                         "Do you want to see build files {} for {} package?".format(
@@ -205,11 +207,25 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
                     ])
+            src_info = SrcInfo(repo_status.repo_path)
+
             if get_editor():
-                ask_to_edit_file('PKGBUILD', repo_status)
-                install_file_name = SrcInfo(repo_path).get_install_script()
+                if ask_to_edit_file('PKGBUILD', repo_status):
+                    src_info.regenerate()
+                install_file_name = src_info.get_install_script()
                 if install_file_name:
                     ask_to_edit_file(install_file_name, repo_status)
+
+            arch = platform.machine()
+            supported_archs = src_info.get_values('arch')
+            if ('any' not in supported_archs) and (arch not in supported_archs):
+                print("{} {} can't be built on the current arch ({}). Supported: {}".format(
+                    color_line(':: error:', 9),
+                    bold_line(pkg_name),
+                    arch,
+                    ', '.join(supported_archs)
+                ))
+                sys.exit(1)
 
     # get sudo for further questions:
     interactive_spawn([

@@ -216,6 +216,7 @@ class PackageBuild(DataType):
             cwd=build_dir
         )
         if new_make_deps_to_install:
+            # @TODO: resolve makedeps in case if it was specified by Provides, not real name
             interactive_spawn(
                 [
                     'sudo',

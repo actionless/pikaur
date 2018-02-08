@@ -226,6 +226,11 @@ class PackageBuild(DataType):
                     sys.exit(1)
 
         if all_deps_to_install:
+            local_provided = PackageDB.get_local_provided()
+            for dep_name in all_deps_to_install[:]:
+                if dep_name in local_provided:
+                    all_deps_to_install.remove(dep_name)
+        if all_deps_to_install:
             print('{} {} {}:'.format(
                 color_line('::', 13),
                 "Installing repository dependencies for",

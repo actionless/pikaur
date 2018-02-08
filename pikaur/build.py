@@ -1,7 +1,7 @@
 import os
-import glob
 import shutil
 import sys
+import configparser
 
 from .core import (
     DataType, CmdTaskWorker,
@@ -74,6 +74,28 @@ class SrcInfo():
                 ], cwd=self.repo_path)
             ).execute()
             srcinfo_file.write(result.stdout)
+
+
+class MakepkgConfig():
+
+    _cached_config = None
+
+    @classmethod
+    def get_config(cls):
+        if not cls._cached_config:
+            config = configparser.ConfigParser(allow_no_value=True)
+            with open('/etc/makepkg.conf') as f:
+                config_string = '[all]\n' + f.read()
+            config.read_string(config_string)
+            cls._cached_config = config['all']
+        return cls._cached_config
+
+    @classmethod
+    def get(cls, key, fallback=None):
+        value = cls.get_config().get(key, fallback)
+        if value:
+            value = value.strip('"').strip("'")
+        return value
 
 
 class PackageBuild(DataType):
@@ -300,11 +322,13 @@ class PackageBuild(DataType):
                 )
             raise BuildError()
         else:
-            # @TODO: read PKGDEST and PKGEXT from /etc/makepkg.conf
-            # @TODO: use `makepkg --packagelist` instead of glob
-            self.built_package_path = glob.glob(
-                os.path.join(build_dir, '*.pkg.tar.xz')
-            )[0]
+            pkg_ext = MakepkgConfig.get('PKGEXT', '.pkg.tar.xz')
+            dest_dir = MakepkgConfig.get('PKGDEST', build_dir)
+            full_pkg_name = SingleTaskExecutor(CmdTaskWorker(
+                ['makepkg', '--packagelist', ],
+                cwd=build_dir
+            )).execute().stdout
+            self.built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
 
 
 def clone_pkgbuilds_git_repos(package_names):

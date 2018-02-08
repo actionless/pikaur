@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 import configparser
+import platform
 
 from .core import (
     DataType, CmdTaskWorker,
@@ -324,10 +325,16 @@ class PackageBuild(DataType):
         else:
             pkg_ext = MakepkgConfig.get('PKGEXT', '.pkg.tar.xz')
             dest_dir = MakepkgConfig.get('PKGDEST', build_dir)
-            full_pkg_name = SingleTaskExecutor(CmdTaskWorker(
+            full_pkg_names = SingleTaskExecutor(CmdTaskWorker(
                 ['makepkg', '--packagelist', ],
                 cwd=build_dir
-            )).execute().stdout
+            )).execute().stdout.splitlines()
+            full_pkg_name = full_pkg_names[0]
+            if len(full_pkg_names) > 1:
+                arch = platform.machine()
+                for pkg_name in full_pkg_names:
+                    if arch in pkg_name:
+                        full_pkg_name = pkg_name
             self.built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
 
 

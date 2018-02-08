@@ -167,6 +167,8 @@ class PackageDBCommon():
     _local_dict_cache = None
     _repo_provided_cache = None
     _local_provided_cache = None
+    _repo_provided_dict_cache = None
+    _local_provided_dict_cache = None
 
     repo = 'repo'
     local = 'local'
@@ -243,15 +245,15 @@ class PackageDBCommon():
 
     @classmethod
     def get_repo_provided_dict(cls):
-        if not cls._repo_provided_cache:
-            cls._repo_provided_cache = cls._get_provided_dict(cls.repo)
-        return cls._repo_provided_cache
+        if not cls._repo_provided_dict_cache:
+            cls._repo_provided_dict_cache = cls._get_provided_dict(cls.repo)
+        return cls._repo_provided_dict_cache
 
     @classmethod
     def get_local_provided_dict(cls):
-        if not cls._local_provided_cache:
-            cls._local_provided_cache = cls._get_provided_dict(cls.local)
-        return cls._local_provided_cache
+        if not cls._local_provided_dict_cache:
+            cls._local_provided_dict_cache = cls._get_provided_dict(cls.local)
+        return cls._local_provided_dict_cache
 
 
 class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name

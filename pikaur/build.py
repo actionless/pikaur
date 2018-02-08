@@ -300,6 +300,7 @@ class PackageBuild(DataType):
                 )
             raise BuildError()
         else:
+            # @TODO: read PKGDEST and PKGEXT from /etc/makepkg.conf
             self.built_package_path = glob.glob(
                 os.path.join(build_dir, '*.pkg.tar.xz')
             )[0]

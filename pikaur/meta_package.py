@@ -175,7 +175,7 @@ def check_conflicts(repo_packages_names, aur_packages_names):
     # print(new_pkgs_conflicts_lists)
 
     all_local_pkgs_info = PackageDB.get_local_dict()
-    all_local_pkgs_names = all_local_pkgs_info.keys()
+    all_local_pkgs_names = list(all_local_pkgs_info.keys())
     all_local_pgks_conflicts_lists = {}
     for local_pkg_info in all_local_pkgs_info.values():
         conflicts = []
@@ -188,8 +188,12 @@ def check_conflicts(repo_packages_names, aur_packages_names):
     # print(all_local_pgks_conflicts_lists)
 
     new_pkgs_conflicts = {}
+    local_provided = PackageDB.get_local_provided_dict()
+    all_new_pkgs_names = repo_packages_names + aur_packages_names
     for new_pkg_name, new_pkg_conflicts_list in new_pkgs_conflicts_lists.items():
 
+        # find if any of new packages have Conflicts with
+        # already installed ones or with each other:
         for conflict_line in new_pkg_conflicts_list:
             conflict_pkg_name, conflict_version_matcher = \
                 get_package_name_and_version_matcher_from_depend_line(
@@ -197,7 +201,7 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                 )
             if new_pkg_name != conflict_pkg_name:
                 for installed_pkg_name in (
-                        list(all_local_pkgs_names) + list(new_pkgs_conflicts_lists.keys())
+                        all_local_pkgs_names + all_new_pkgs_names
                 ):
                     if (
                             conflict_pkg_name == installed_pkg_name
@@ -205,25 +209,30 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                         conflict_version_matcher(get_version(installed_pkg_name))
                     ):
                         new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
+                for installed_pkg_name, provides in local_provided.items():
+                    for provided_pkg_name in provides:
+                        if (
+                                conflict_pkg_name == provided_pkg_name
+                        ) and (
+                            conflict_version_matcher(get_version(installed_pkg_name))
+                        ):
+                            new_pkgs_conflicts.setdefault(new_pkg_name, []).append(installed_pkg_name)
 
-        for local_pkg_name, local_pkg_conflicts_list in (
-                list(all_local_pgks_conflicts_lists.items()) +
-                list(new_pkgs_conflicts_lists.items())
-        ):
+        # find if any of already installed packages have Conflicts with the new ones:
+        for local_pkg_name, local_pkg_conflicts_list in all_local_pgks_conflicts_lists.items():
             if new_pkg_name == local_pkg_name:
                 continue
-            for conflict_pkg_name in new_pkg_conflicts_list + [new_pkg_name]:
-                for conflict_line in local_pkg_conflicts_list:
-                    conflicting_pkg_name, conflicting_version_matcher = \
-                        get_package_name_and_version_matcher_from_depend_line(
-                            conflict_line
-                        )
-                    if (
-                            conflicting_pkg_name == conflict_pkg_name
-                    ) and (
-                        conflicting_version_matcher(get_version(new_pkg_name))
-                    ):
-                        new_pkgs_conflicts.setdefault(new_pkg_name, []).append(local_pkg_name)
+            for conflict_line in local_pkg_conflicts_list:
+                conflict_pkg_name, conflict_version_matcher = \
+                    get_package_name_and_version_matcher_from_depend_line(
+                        conflict_line
+                    )
+                if (
+                        conflict_pkg_name == new_pkg_name
+                ) and (
+                    conflict_version_matcher(get_version(new_pkg_name))
+                ):
+                    new_pkgs_conflicts.setdefault(new_pkg_name, []).append(local_pkg_name)
     # print(new_pkgs_conflicts)
 
     return new_pkgs_conflicts

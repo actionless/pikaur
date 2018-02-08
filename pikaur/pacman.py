@@ -216,6 +216,20 @@ class PackageDBCommon():
         return provided_pkg_names
 
     @classmethod
+    def _get_provided_dict(cls, local):
+        provided_pkg_names = {}
+        for pkg in (
+                cls.get_local_list() if local == cls.local
+                else cls.get_repo_list()
+        ):
+            if pkg.Provides:
+                for provided_pkg in pkg.Provides:
+                    provided_pkg_names.setdefault(pkg.Name, []).append(
+                        get_package_name_from_depend_line(provided_pkg)
+                    )
+        return provided_pkg_names
+
+    @classmethod
     def get_repo_provided(cls):
         if not cls._repo_provided_cache:
             cls._repo_provided_cache = cls._get_provided(cls.repo)
@@ -225,6 +239,18 @@ class PackageDBCommon():
     def get_local_provided(cls):
         if not cls._local_provided_cache:
             cls._local_provided_cache = cls._get_provided(cls.local)
+        return cls._local_provided_cache
+
+    @classmethod
+    def get_repo_provided_dict(cls):
+        if not cls._repo_provided_cache:
+            cls._repo_provided_cache = cls._get_provided_dict(cls.repo)
+        return cls._repo_provided_cache
+
+    @classmethod
+    def get_local_provided_dict(cls):
+        if not cls._local_provided_cache:
+            cls._local_provided_cache = cls._get_provided_dict(cls.local)
         return cls._local_provided_cache
 
 

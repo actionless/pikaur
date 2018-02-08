@@ -161,99 +161,91 @@ class LocalPackageInfo(PacmanPackageInfo):
 
 class PackageDBCommon():
 
-    _repo_cache = None
-    _local_cache = None
-    _repo_dict_cache = None
-    _local_dict_cache = None
-    _repo_provided_cache = None
-    _local_provided_cache = None
-    _repo_provided_dict_cache = None
-    _local_provided_dict_cache = None
+    _packages_list_cache = {}
+    _packages_dict_cache = {}
+    _provided_list_cache = {}
+    _provided_dict_cache = {}
 
     repo = 'repo'
     local = 'local'
 
     @classmethod
     def get_repo_list(cls):
-        if not cls._repo_cache:
-            cls._repo_cache = cls.get_repo_dict().values()
-        return cls._repo_cache
+        if not cls._packages_list_cache.get(cls.repo):
+            cls._packages_list_cache[cls.repo] = cls.get_repo_dict().values()
+        return cls._packages_list_cache[cls.repo]
 
     @classmethod
     def get_local_list(cls):
-        if not cls._local_cache:
-            cls._local_cache = cls.get_local_dict().values()
-        return cls._local_cache
+        if not cls._packages_list_cache.get(cls.local):
+            cls._packages_list_cache[cls.local] = cls.get_local_dict().values()
+        return cls._packages_list_cache[cls.local]
 
     @classmethod
     def get_repo_dict(cls):
-        if not cls._repo_dict_cache:
-            cls._repo_dict_cache = {
+        if not cls._packages_dict_cache.get(cls.repo):
+            cls._packages_dict_cache[cls.repo] = {
                 pkg.Name: pkg
                 for pkg in cls.get_repo_list()
             }
-        return cls._repo_dict_cache
+        return cls._packages_dict_cache[cls.repo]
 
     @classmethod
     def get_local_dict(cls):
-        if not cls._local_dict_cache:
-            cls._local_dict_cache = {
+        if not cls._packages_dict_cache.get(cls.local):
+            cls._packages_dict_cache[cls.local] = {
                 pkg.Name: pkg
                 for pkg in cls.get_local_list()
             }
-        return cls._local_dict_cache
+        return cls._packages_dict_cache[cls.local]
 
     @classmethod
     def _get_provided(cls, local):
-        provided_pkg_names = []
-        for pkg in (
-                cls.get_local_list() if local == cls.local
-                else cls.get_repo_list()
-        ):
-            if pkg.Provides:
-                for provided_pkg in pkg.Provides:
-                    provided_pkg_names.append(
-                        get_package_name_from_depend_line(provided_pkg)
-                    )
-        return provided_pkg_names
-
-    @classmethod
-    def _get_provided_dict(cls, local):
-        provided_pkg_names = {}
-        for pkg in (
-                cls.get_local_list() if local == cls.local
-                else cls.get_repo_list()
-        ):
-            if pkg.Provides:
-                for provided_pkg in pkg.Provides:
-                    provided_pkg_names.setdefault(pkg.Name, []).append(
-                        get_package_name_from_depend_line(provided_pkg)
-                    )
-        return provided_pkg_names
+        if not cls._provided_list_cache.get(local):
+            provided_pkg_names = []
+            for pkg in (
+                    cls.get_local_list() if local == cls.local
+                    else cls.get_repo_list()
+            ):
+                if pkg.Provides:
+                    for provided_pkg in pkg.Provides:
+                        provided_pkg_names.append(
+                            get_package_name_from_depend_line(provided_pkg)
+                        )
+            cls._provided_list_cache[local] = provided_pkg_names
+        return cls._provided_list_cache[local]
 
     @classmethod
     def get_repo_provided(cls):
-        if not cls._repo_provided_cache:
-            cls._repo_provided_cache = cls._get_provided(cls.repo)
-        return cls._repo_provided_cache
+        return cls._get_provided(cls.repo)
 
     @classmethod
     def get_local_provided(cls):
-        if not cls._local_provided_cache:
-            cls._local_provided_cache = cls._get_provided(cls.local)
-        return cls._local_provided_cache
+        return cls._get_provided(cls.local)
+
+    @classmethod
+    def _get_provided_dict(cls, local):
+        if not cls._provided_dict_cache.get(local):
+            provided_pkg_names = {}
+            for pkg in (
+                    cls.get_local_list() if local == cls.local
+                    else cls.get_repo_list()
+            ):
+                if pkg.Provides:
+                    for provided_pkg in pkg.Provides:
+                        provided_pkg_names.setdefault(pkg.Name, []).append(
+                            get_package_name_from_depend_line(provided_pkg)
+                        )
+            cls._provided_dict_cache[local] = provided_pkg_names
+        return cls._provided_dict_cache[local]
 
     @classmethod
     def get_repo_provided_dict(cls):
-        if not cls._repo_provided_dict_cache:
-            cls._repo_provided_dict_cache = cls._get_provided_dict(cls.repo)
-        return cls._repo_provided_dict_cache
+        return cls._get_provided_dict(cls.repo)
 
     @classmethod
     def get_local_provided_dict(cls):
-        if not cls._local_provided_dict_cache:
-            cls._local_provided_dict_cache = cls._get_provided_dict(cls.local)
-        return cls._local_provided_dict_cache
+        return cls._get_provided_dict(cls.local)
 
 
 class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
@@ -262,7 +254,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
 
     @classmethod
     def get_repo_dict(cls):
-        if not cls._repo_dict_cache:
+        if not cls._packages_dict_cache.get(cls.repo):
             print("Reading repository package databases...")
             result = {}
             temp_dir = tempfile.mkdtemp()
@@ -310,12 +302,12 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                     result[pkg.Name] = pkg
                 shutil.rmtree(db_dir)
 
-            cls._repo_dict_cache = result
-        return cls._repo_dict_cache
+            cls._packages_dict_cache[cls.repo] = result
+        return cls._packages_dict_cache[cls.repo]
 
     @classmethod
     def get_local_dict(cls):
-        if not cls._local_dict_cache:
+        if not cls._packages_dict_cache.get(cls.local):
             print("Reading local package database...")
             result = {}
             local_dir = '/var/lib/pacman/local/'
@@ -326,8 +318,8 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                         os.path.join(local_dir, pkg_dir_name, 'desc')
                 ):
                     result[pkg.Name] = pkg
-            cls._local_dict_cache = result
-        return cls._local_dict_cache
+            cls._packages_dict_cache[cls.local] = result
+        return cls._packages_dict_cache[cls.local]
 
 
 with open('/var/lib/pacman/local/ALPM_DB_VERSION') as version_file:

@@ -69,22 +69,23 @@ def get_pacman_cli_package_db(
 
         @classmethod
         def _get_dbs(cls):
-            if not cls._repo_cache:
+            if not cls._packages_list_cache:
                 print("Retrieving local pacman database...")
                 results = MultipleTasksExecutor({
                     cls.repo: PacmanTaskWorker(['-Si', ]),
                     cls.local: PacmanTaskWorker(['-Qi', ]),
                 }).execute()
-                cls._repo_cache = list(CliRepoPackageInfo.parse_pacman_cli_info(
+                repo_cache = list(CliRepoPackageInfo.parse_pacman_cli_info(
                     results[cls.repo].stdouts
                 ))
-                cls._local_cache = list(CliLocalPackageInfo.parse_pacman_cli_info(
+                local_cache = list(CliLocalPackageInfo.parse_pacman_cli_info(
                     results[cls.local].stdouts
                 ))
-            return {
-                cls.repo: cls._repo_cache,
-                cls.local: cls._local_cache
-            }
+                cls._packages_list_cache = {
+                    cls.repo: repo_cache,
+                    cls.local: local_cache
+                }
+            return cls._packages_list_cache
 
         @classmethod
         def get_repo_list(cls):

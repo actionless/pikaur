@@ -235,7 +235,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 [
                     'sudo',
                     'pacman',
-                    '-Rs',
+                    # '-Rs',  # @TODO: manually remove dependencies of conflicting packages,
+                    # but excluding already built AUR packages from that list.
+                    '-R',
                     '--noconfirm',
                 ] + packages_to_be_removed,
         ):

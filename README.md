@@ -1,6 +1,8 @@
 # pikaur
 
-Minimalistic AUR helper.
+AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction.
+
+Inspired by `pacaur`, `yaourt` and `yay`.
 
 ![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshot.png "Screenshot")
 

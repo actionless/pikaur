@@ -207,12 +207,15 @@ class PackageBuild(DataType):
             )
             if deps_result.returncode > 0:
                 raise BuildError()
+        makepkg_args = [
+            '--nodeps',
+        ]
+        if not args.needed:
+            makepkg_args.append('--force')
         build_result = interactive_spawn(
             [
                 'makepkg',
-                # '-rsf', '--noconfirm',
-                '--nodeps',
-            ],
+            ] + makepkg_args,
             cwd=build_dir
         )
         if new_make_deps_to_install:

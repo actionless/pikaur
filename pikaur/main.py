@@ -379,7 +379,8 @@ def cli_upgrade_packages(args):
     ))
     aur_updates, not_found_aur_pkgs = \
         find_aur_updates(find_packages_not_from_repo())
-    print_not_found_packages(sorted(not_found_aur_pkgs))
+    if not_found_aur_pkgs:
+        print_not_found_packages(sorted(not_found_aur_pkgs))
     aur_updates = [
         pkg for pkg in aur_updates
         if pkg.Name not in ignore

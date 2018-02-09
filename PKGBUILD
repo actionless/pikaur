@@ -2,8 +2,8 @@
 # Upstream URL: https://github.com/actionless/oomox
 
 pkgname=pikaur-git
-pkgver=0.3
-pkgrel=3
+pkgver=0.4
+pkgrel=1
 pkgdesc="AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction."
 arch=('x86_64' 'i686' 'arm' 'armv6h' 'armv7h' 'aarch64')
 url="https://github.com/actionless/pikaur"

@@ -33,7 +33,6 @@ python3 ./pikaur.py -Syu
 	aur_repos/  # keep there aur repos; show diff when updating
 		last_installed.txt  # aur repo hash of last successfully installed package
 	build/  # build directory; (remove after build?)
-	pkg/  # keep built packages; like /var/cache/pacman/pkg/ (optional?) (not implemented yet)
 	db.lck  # transaction lock (not implemented yet, not sure if needed)
 ~/.config/pikaur.conf  # like /etc/pacman.conf (not implemented yet)
 ```

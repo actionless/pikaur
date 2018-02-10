@@ -82,7 +82,7 @@ class PacmanPackageInfo(DataType):
         return pformat(self.__dict__)
 
     @classmethod
-    def _parse_pacman_db_info(cls, db_file_name, open_method):
+    def _parse_pacman_db_info(cls, db_file_name, open_method):  # pylint: disable=too-many-branches
 
         def verbose_setattr(pkg, real_field, value):
             try:

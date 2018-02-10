@@ -219,6 +219,7 @@ class PackageBuild(DataType):
         return already_installed
 
     def build(self, args, all_package_builds):
+        # @TODO: split into smaller routines
         repo_path = self.repo_path
         build_dir = os.path.join(BUILD_CACHE, self.package_name)
         if os.path.exists(build_dir):

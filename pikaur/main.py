@@ -26,7 +26,7 @@ from .pacman import (
 from .meta_package import (
     find_repo_updates, find_aur_updates,
 )
-from .install_cli import cli_install_packages
+from .install_cli import InstallPackagesCLI
 
 
 def init_readline():
@@ -50,6 +50,10 @@ def cli_print_upgradeable(args):
         print_upgradeable(updates)
     else:
         pretty_print_upgradeable(updates)
+
+
+def cli_install_packages(args, packages=None):
+    InstallPackagesCLI(args=args, packages=packages)
 
 
 def cli_upgrade_packages(args):

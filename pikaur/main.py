@@ -158,7 +158,7 @@ def cli_search_packages(args):
         print(result[repo].stdout)
     for aur_pkg in sorted(
             result[aur].json['results'],
-            key=lambda pkg: (pkg['NumVotes'] + 1) * (pkg['Popularity'] + 1),
+            key=lambda pkg: (pkg['NumVotes'] + 0.1) * (pkg['Popularity'] + 0.1),
             reverse=True
     ):
         # @TODO: return only packages for the current architecture

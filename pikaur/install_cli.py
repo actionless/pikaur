@@ -1,4 +1,3 @@
-import shutil
 import platform
 import sys
 import os
@@ -127,81 +126,60 @@ def install_prompt(repo_packages_names, aur_packages_names, aur_deps_names):
     return answer
 
 
-def cli_install_packages(args, noconfirm=None, packages=None):
-    # @TODO: split into smaller routines
-    if noconfirm is None:
-        noconfirm = args.noconfirm
-    print("resolving dependencies...")
-    packages = packages or args.positional
-    if args.ignore:
-        for ignored_pkg in args.ignore:
-            if ignored_pkg in packages:
-                packages.remove(ignored_pkg)
-    repo_packages_names, aur_packages_names = find_repo_packages(packages)
-    aur_deps_names = find_aur_deps(aur_packages_names)
+def get_package_builds(all_aur_packages_names):
+    if not all_aur_packages_names:
+        return []
+    try:
+        return clone_pkgbuilds_git_repos(all_aur_packages_names)
+    except CloneError as err:
+        package_build = err.build
+        print(color_line(
+            "Can't {} '{}' in '{}' from AUR:".format(
+                'clone' if package_build.clone else 'pull',
+                package_build.package_name,
+                package_build.repo_path
+            ), 9
+        ))
+        print(err.result)
+        if not ask_to_continue():
+            sys.exit(1)
 
-    failed_to_build = []
 
-    # confirm package install/upgrade
-    if not noconfirm:
-        install_prompt(
-            repo_packages_names, aur_packages_names, aur_deps_names
-        )
-
-    all_aur_packages_names = aur_packages_names + aur_deps_names
-    package_builds = None
-    if all_aur_packages_names:
-        try:
-            package_builds = clone_pkgbuilds_git_repos(all_aur_packages_names)
-        except CloneError as err:
-            package_build = err.build
-            print(color_line(
-                "Can't {} '{}' in '{}' from AUR:".format(
-                    'clone' if package_build.clone else 'pull',
-                    package_build.package_name,
-                    package_build.repo_path
-                ), 9
-            ))
-            print(err.result)
-            if not ask_to_continue():
-                sys.exit(1)
-
-    # @TODO: ask to install optdepends (?)
-
-    # ask about package conflicts
-    packages_to_be_removed = []
+def ask_about_package_conflicts(repo_packages_names, aur_packages_names):
     conflict_result = check_conflicts(repo_packages_names, aur_packages_names)
-    if conflict_result:
-        all_new_packages_names = repo_packages_names + aur_packages_names
-        for new_pkg_name, new_pkg_conflicts in conflict_result.items():
-            for pkg_conflict in new_pkg_conflicts:
-                if pkg_conflict in all_new_packages_names:
-                    print(color_line(
-                        f"New packages '{new_pkg_name}' and '{pkg_conflict}' "
-                        "are in conflict.",
-                        9
-                    ))
-                    sys.exit(1)
-        for new_pkg_name, new_pkg_conflicts in conflict_result.items():
-            for pkg_conflict in new_pkg_conflicts:
-                print('{} {}'.format(
-                    color_line('warning:', 11),
-                    f"New package '{new_pkg_name}' conflicts with installed '{pkg_conflict}'.",
+    if not conflict_result:
+        return []
+    all_new_packages_names = repo_packages_names + aur_packages_names
+    for new_pkg_name, new_pkg_conflicts in conflict_result.items():
+        for pkg_conflict in new_pkg_conflicts:
+            if pkg_conflict in all_new_packages_names:
+                print(color_line(
+                    f"New packages '{new_pkg_name}' and '{pkg_conflict}' "
+                    "are in conflict.",
+                    9
                 ))
-                answer = ask_to_continue('{} {}'.format(
-                    color_line('::', 11),
-                    f"Do you want to remove '{pkg_conflict}'?"
-                ), default_yes=False)
-                if not answer:
-                    sys.exit(1)
-                # packages_to_be_removed.append
-        packages_to_be_removed = list(set(reduce(
-            lambda x, y: x+y,
-            conflict_result.values(),
-            []
-        )))
+                sys.exit(1)
+    for new_pkg_name, new_pkg_conflicts in conflict_result.items():
+        for pkg_conflict in new_pkg_conflicts:
+            print('{} {}'.format(
+                color_line('warning:', 11),
+                f"New package '{new_pkg_name}' conflicts with installed '{pkg_conflict}'.",
+            ))
+            answer = ask_to_continue('{} {}'.format(
+                color_line('::', 11),
+                f"Do you want to remove '{pkg_conflict}'?"
+            ), default_yes=False)
+            if not answer:
+                sys.exit(1)
+            # packages_to_be_removed.append
+    return list(set(reduce(
+        lambda x, y: x+y,
+        conflict_result.values(),
+        []
+    )))
 
-    # review PKGBUILD and install files
+
+def review_build_files(all_aur_packages_names, package_builds, args):
     for pkg_name in reversed(all_aur_packages_names):
         repo_status = package_builds[pkg_name]
         if args.needed and repo_status.version_already_installed:
@@ -249,12 +227,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
                 ))
                 sys.exit(1)
 
-    # get sudo for further questions:
-    interactive_spawn([
-        'sudo', 'true'
-    ])
 
-    # build packages:
+def build_packages(all_aur_packages_names, package_builds, args):
+    failed_to_build = []
     for pkg_name in reversed(all_aur_packages_names):
         repo_status = package_builds[pkg_name]
         if args.needed and repo_status.already_installed:
@@ -266,8 +241,10 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             failed_to_build.append(pkg_name)
             # if not ask_to_continue():
             #     sys.exit(1)
+    return failed_to_build
 
-    # remove conflicting packages:
+
+def remove_conflicting_packages(packages_to_be_removed):
     if packages_to_be_removed:
         if not retry_interactive_command(
                 [
@@ -282,8 +259,8 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
 
-    # install packages:
 
+def install_repo_packages(repo_packages_names, args):
     if repo_packages_names:
         if not retry_interactive_command(
                 [
@@ -301,9 +278,8 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
 
-    if args.downloadonly:
-        return
 
+def install_new_aur_deps(aur_deps_names, package_builds, args):
     new_aur_deps_to_install = [
         package_builds[pkg_name].built_package_path
         for pkg_name in aur_deps_names
@@ -329,6 +305,8 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
 
+
+def install_aur_packages(aur_packages_names, package_builds, args):
     aur_packages_to_install = [
         package_builds[pkg_name].built_package_path
         for pkg_name in aur_packages_names
@@ -352,17 +330,56 @@ def cli_install_packages(args, noconfirm=None, packages=None):
             if not ask_to_continue(default_yes=False):
                 sys.exit(1)
 
+
+def cli_install_packages(args, packages=None):
+    packages = packages or args.positional
+    if args.ignore:
+        for ignored_pkg in args.ignore:
+            if ignored_pkg in packages:
+                packages.remove(ignored_pkg)
+
+    print("resolving dependencies...")
+    repo_packages_names, aur_packages_names = find_repo_packages(packages)
+    aur_deps_names = find_aur_deps(aur_packages_names)
+
+    if not args.noconfirm:
+        install_prompt(
+            repo_packages_names, aur_packages_names, aur_deps_names
+        )
+
+    all_aur_packages_names = aur_packages_names + aur_deps_names
+    package_builds = get_package_builds(all_aur_packages_names)
+    # @TODO: ask to install optdepends (?)
+    packages_to_be_removed = ask_about_package_conflicts(
+        repo_packages_names, all_aur_packages_names
+    )
+    review_build_files(
+        all_aur_packages_names, package_builds, args
+    )
+
+    # get sudo for further questions:
+    interactive_spawn(['sudo', 'true'])
+
+    failed_to_build = build_packages(
+        all_aur_packages_names, package_builds, args
+    )
+
+    remove_conflicting_packages(packages_to_be_removed)
+    install_repo_packages(repo_packages_names, args)
+    if args.downloadonly:
+        return
+    install_new_aur_deps(
+        aur_deps_names, package_builds, args
+    )
+    install_aur_packages(
+        aur_packages_names, package_builds, args
+    )
+
     # save git hash of last sucessfully installed package
     if package_builds:
-        for pkg_name, repo_status in package_builds.items():
+        for repo_status in package_builds.values():
             if repo_status.built_package_path:
-                shutil.copy2(
-                    os.path.join(
-                        repo_status.repo_path,
-                        '.git/refs/heads/master'
-                    ),
-                    repo_status.last_installed_file_path
-                )
+                repo_status.update_last_installed_file()
 
     if failed_to_build:
         print('\n'.join(

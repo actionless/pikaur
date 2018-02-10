@@ -177,6 +177,15 @@ class PackageBuild(DataType):
                 return last_installed_file.readlines()[0].strip()
         return None
 
+    def update_last_installed_file(self):
+        shutil.copy2(
+            os.path.join(
+                self.repo_path,
+                '.git/refs/heads/master'
+            ),
+            self.last_installed_file_path
+        )
+
     @property
     def build_files_updated(self):
         if (

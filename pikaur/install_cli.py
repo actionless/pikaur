@@ -61,6 +61,7 @@ def ask_to_edit_file(filename, package_build):
             )
         ])
         return True
+    return False
 
 
 def install_prompt(repo_packages_names, aur_packages_names, aur_deps_names):

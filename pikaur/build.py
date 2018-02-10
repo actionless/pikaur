@@ -95,8 +95,8 @@ class MakepkgConfig():
     def get_config(cls):
         if not cls._cached_config:
             config = configparser.ConfigParser(allow_no_value=True)
-            with open('/etc/makepkg.conf') as f:
-                config_string = '[all]\n' + f.read()
+            with open('/etc/makepkg.conf') as config_file:
+                config_string = '[all]\n' + config_file.read()
             config.read_string(config_string)
             cls._cached_config = config['all']
         return cls._cached_config
@@ -175,6 +175,7 @@ class PackageBuild(DataType):
         if self.is_installed:
             with open(self.last_installed_file_path) as last_installed_file:
                 return last_installed_file.readlines()[0].strip()
+        return None
 
     @property
     def build_files_updated(self):
@@ -204,7 +205,7 @@ class PackageBuild(DataType):
         ) and (
             self.last_installed_hash == self.current_hash
         ):
-                already_installed = True
+            already_installed = True
         self.already_installed = already_installed
         return already_installed
 

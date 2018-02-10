@@ -65,8 +65,16 @@ def pretty_print_upgradeable(packages_updates, verbose=False):
 
     def get_common_string(str1, str2):
         result = ''
+        if '' in (str1, str2):
+            return result
         counter = 0
-        while str1[counter] == str2[counter]:
+        while (
+            counter < len(str1)
+        ) and (
+            counter < len(str2)
+        ) and (
+            str1[counter] == str2[counter]
+        ):
             result += str1[counter]
             counter += 1
         return result

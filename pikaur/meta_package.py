@@ -206,7 +206,7 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                     if (
                             conflict_pkg_name == installed_pkg_name
                     ) and (
-                            new_pkg_name != conflict_pkg_name
+                        new_pkg_name != conflict_pkg_name
                     ) and (
                         conflict_version_matcher(get_version(installed_pkg_name))
                     ):
@@ -216,7 +216,7 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                         if (
                                 conflict_pkg_name == provided_pkg_name
                         ) and (
-                                new_pkg_name != installed_pkg_name
+                            new_pkg_name != installed_pkg_name
                         ) and (
                             conflict_version_matcher(get_version(installed_pkg_name))
                         ):

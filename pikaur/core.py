@@ -207,11 +207,11 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
     cond = None
     version_matcher = lambda v: True  # noqa
     for test_cond, matcher in {
-        '>=': lambda v: v >= get_version(),
-        '<=': lambda v: v <= get_version(),
-        '=': lambda v: v == get_version(),
-        '>': lambda v: v > get_version(),
-        '<': lambda v: v < get_version(),
+            '>=': lambda v: v >= get_version(),
+            '<=': lambda v: v <= get_version(),
+            '=': lambda v: v == get_version(),
+            '>': lambda v: v > get_version(),
+            '<': lambda v: v < get_version(),
     }.items():
         if test_cond in depend_line:
             cond = test_cond

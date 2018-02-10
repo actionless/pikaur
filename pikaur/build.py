@@ -181,7 +181,7 @@ class PackageBuild(DataType):
         if (
                 self.is_installed
         ) and (
-                self.last_installed_hash != self.current_hash
+            self.last_installed_hash != self.current_hash
         ):
             return True
         return False
@@ -202,7 +202,7 @@ class PackageBuild(DataType):
         if (
                 self.package_name in PackageDB.get_local_dict().keys()
         ) and (
-                self.last_installed_hash == self.current_hash
+            self.last_installed_hash == self.current_hash
         ):
                 already_installed = True
         self.already_installed = already_installed

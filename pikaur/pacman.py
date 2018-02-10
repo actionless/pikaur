@@ -297,7 +297,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                     continue
                 db_dir = os.path.join(temp_dir, pkg_dir_name)
                 for pkg in LocalPackageInfo.parse_pacman_db_info(
-                    os.path.join(db_dir, 'desc')
+                        os.path.join(db_dir, 'desc')
                 ):
                     result[pkg.Name] = pkg
                 shutil.rmtree(db_dir)

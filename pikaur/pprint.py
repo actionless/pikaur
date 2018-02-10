@@ -70,7 +70,7 @@ def pretty_print_upgradeable(packages_updates, verbose=False):
             return result
         counter = 0
         while (
-            counter < len(str1)
+                counter < len(str1)
         ) and (
             counter < len(str2)
         ) and (

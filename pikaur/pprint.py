@@ -2,6 +2,7 @@ import sys
 import shutil
 
 from .config import VERSION
+from .core import SingleTaskExecutor, CmdTaskWorker
 
 
 PADDING = 4
@@ -173,16 +174,19 @@ def print_sysupgrade(repo_packages_updates, aur_updates, verbose=False):
 
 
 def print_version():
+    pacman_version = SingleTaskExecutor(CmdTaskWorker(
+        ['pacman', '--version', ],
+    )).execute().stdout.splitlines()[1].strip(' .-')
     sys.stdout.buffer.write((r"""
       /:}               _
      /--1             / :}
     /   |           / `-/
    |  ,  --------  /   /
-   |'                 Y
-  /                   l     Pikaur """+VERSION+r"""
-  l  /       \        l     (C) 2018 Pikaur development team
-  j  ●   .   ●        l     Licensed under GPLv3
- { )  ._,.__,   , -.  {
+   |'                 Y      Pikaur """+VERSION+r"""
+  /                   l      (C) 2018 Pikaur development team
+  l  /       \        l      Licensed under GPLv3
+  j  ●   .   ●        l
+ { )  ._,.__,   , -.  {      """+pacman_version+r"""
   У    \  _/     ._/   \
 
 """).encode())

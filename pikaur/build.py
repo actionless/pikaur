@@ -8,13 +8,23 @@ from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
     interactive_spawn, get_package_name_from_depend_line,
-    retry_interactive_command, ask_to_continue,
+    ask_to_retry_decorator, ask_to_continue,
 )
 from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
 from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args
 from .pprint import color_line, bold_line
+
+
+@ask_to_retry_decorator
+def retry_interactive_command(cmd_args):
+    good = interactive_spawn(cmd_args).returncode == 0
+    if not good:
+        print(color_line('Command "{}" failed to execute.'.format(
+            ' '.join(cmd_args)
+        ), 9))
+    return good
 
 
 class BuildError(Exception):

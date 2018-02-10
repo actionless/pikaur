@@ -13,7 +13,7 @@ from .args import parse_args, reconstruct_args
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
     CmdTaskWorker, interactive_spawn,
-    ask_to_continue, retry_interactive_command,
+    ask_to_continue, ask_to_retry_decorator,
 )
 from .pprint import (
     color_line, bold_line, format_paragraph,
@@ -45,6 +45,16 @@ def init_readline():
 
 
 init_readline()
+
+
+@ask_to_retry_decorator
+def retry_interactive_command(cmd_args):
+    good = interactive_spawn(cmd_args).returncode == 0
+    if not good:
+        print(color_line('Command "{}" failed to execute.'.format(
+            ' '.join(cmd_args)
+        ), 9))
+    return good
 
 
 def get_editor():

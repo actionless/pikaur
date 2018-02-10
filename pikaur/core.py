@@ -2,8 +2,6 @@ import asyncio
 import subprocess
 from distutils.version import LooseVersion
 
-from .pprint import color_line
-
 
 NOT_FOUND_ATOM = object()
 
@@ -249,13 +247,3 @@ def ask_to_retry_decorator(fun):
                 return None
 
     return decorated
-
-
-@ask_to_retry_decorator
-def retry_interactive_command(cmd_args):
-    good = interactive_spawn(cmd_args).returncode == 0
-    if not good:
-        print(color_line('Command "{}" failed to execute.'.format(
-            ' '.join(cmd_args)
-        ), 9))
-    return good

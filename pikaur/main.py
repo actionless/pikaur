@@ -156,23 +156,28 @@ def cli_search_packages(args):
 
     if result[repo].stdout != '':
         print(result[repo].stdout)
-    for aur_pkg in result[aur].json['results']:
+    for aur_pkg in sorted(
+            result[aur].json['results'],
+            key=lambda pkg: (pkg['NumVotes'] + 1) * (pkg['Popularity'] + 1),
+            reverse=True
+    ):
         # @TODO: return only packages for the current architecture
         pkg_name = aur_pkg['Name']
         if args.quiet:
             print(pkg_name)
         else:
-            print("{}{} {} {}".format(
+            print("{}{} {} {}({}, {:.2f})".format(
                 # color_line('aur/', 13),
                 color_line('aur/', 9),
                 bold_line(pkg_name),
                 color_line(aur_pkg["Version"], 10),
-                color_line('[installed{}]'.format(
+                color_line('[installed{}] '.format(
                     f': {local_pkgs_versions[pkg_name]}'
                     if aur_pkg['Version'] != local_pkgs_versions[pkg_name]
                     else ''
-                ), 14)
-                if pkg_name in local_pkgs_names else '',
+                ), 14) if pkg_name in local_pkgs_names else '',
+                aur_pkg['NumVotes'],
+                aur_pkg['Popularity']
             ))
             print(format_paragraph(f'{aur_pkg["Description"]}'))
 

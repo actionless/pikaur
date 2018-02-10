@@ -22,7 +22,10 @@ class PackageUpdate(DataType):
     Description = None
 
     def __repr__(self):
-        return f'<{self.__class__.__name__} "{self.Name}" {self.Current_Version} -> {self.New_Version}>'
+        return (
+            f'<{self.__class__.__name__} "{self.Name}" '
+            f'{self.Current_Version} -> {self.New_Version}>'
+        )
 
 
 def find_repo_updates():
@@ -220,9 +223,9 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                         ) and (
                             conflict_version_matcher(get_version(installed_pkg_name))
                         ):
-                            print((conflict_pkg_name, provided_pkg_name))
-                            print((new_pkg_name, installed_pkg_name))
-                            new_pkgs_conflicts.setdefault(new_pkg_name, []).append(installed_pkg_name)
+                            new_pkgs_conflicts.setdefault(new_pkg_name, []).append(
+                                installed_pkg_name
+                            )
 
         # find if any of already installed packages have Conflicts with the new ones:
         for local_pkg_name, local_pkg_conflicts_list in all_local_pgks_conflicts_lists.items():

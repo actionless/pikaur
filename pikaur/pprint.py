@@ -141,11 +141,13 @@ def print_upgradeable(packages_updates):
     ]))
 
 
-def print_sysupgrade(repo_packages_updates, aur_updates, verbose=False):
+def print_sysupgrade(
+        repo_packages_updates=None, aur_updates=None, new_aur_deps=None, verbose=False
+):
     if repo_packages_updates:
         print('\n{} {}'.format(
             color_line('::', 12),
-            bold_line('System package{plural} update{plural} available:'.format(
+            bold_line('Repository package{plural} will be installed:'.format(
                 plural='s' if len(repo_packages_updates) > 1 else ''
             ))
         ))
@@ -154,13 +156,23 @@ def print_sysupgrade(repo_packages_updates, aur_updates, verbose=False):
         )
     if aur_updates:
         print('\n{} {}'.format(
-            color_line('::', 12),
-            bold_line('AUR package{plural} update{plural} available:'.format(
+            color_line('::', 14),
+            bold_line('AUR package{plural} will be installed:'.format(
                 plural='s' if len(aur_updates) > 1 else ''
             ))
         ))
         pretty_print_upgradeable(
             aur_updates, verbose=verbose
+        )
+    if new_aur_deps:
+        print('\n{} {}'.format(
+            color_line('::', 11),
+            bold_line('New dependenc{plural} will be installed from AUR:'.format(
+                plural='ies' if len(new_aur_deps) > 1 else 'y'
+            ))
+        ))
+        pretty_print_upgradeable(
+            new_aur_deps, verbose=verbose
         )
 
     print()

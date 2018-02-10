@@ -22,7 +22,7 @@ from .pprint import (
     print_version, print_sysupgrade,
 )
 from .aur import (
-    AurTaskWorkerSearch, AurTaskWorkerInfo,
+    AurTaskWorkerSearch, AurTaskWorkerInfo, find_aur_packages,
 )
 from .pacman import (
     PacmanColorTaskWorker, PackageDB,
@@ -30,6 +30,7 @@ from .pacman import (
 )
 from .meta_package import (
     find_repo_updates, find_aur_updates, find_aur_deps, check_conflicts,
+    PackageUpdate,
 )
 from .build import SrcInfo, BuildError, CloneError, clone_pkgbuilds_git_repos
 
@@ -114,27 +115,9 @@ def cli_install_packages(args, noconfirm=None, packages=None):
 
     # confirm package install/upgrade
     if not noconfirm:
-        print()
-        if repo_packages_names:
-            print(color_line("New packages will be installed:", 12))
-            print(format_paragraph(' '.join(repo_packages_names)))
-        if aur_packages_names:
-            print(color_line("New packages will be installed from AUR:", 14))
-            print(format_paragraph(' '.join(aur_packages_names)))
-        if aur_deps_names:
-            print(color_line(
-                "New dependencies will be installed from AUR:", 11
-            ))
-            print(format_paragraph(' '.join(aur_deps_names)))
-        print()
-
-        answer = input('{} {}'.format(
-            color_line('::', 12),
-            bold_line('Proceed with installation? [Y/n] '),
-        ))
-        if answer:
-            if answer.lower()[0] != 'y':
-                sys.exit(1)
+        install_prompt(
+            repo_packages_names, aur_packages_names, aur_deps_names
+        )
 
     all_aur_packages_names = aur_packages_names + aur_deps_names
     package_builds = None
@@ -401,24 +384,70 @@ def cli_upgrade_packages(args):
     ] + [
         u.Name for u in aur_updates
     ]
-    if not all_upgradeable_package_names:
+    if all_upgradeable_package_names:
+        cli_install_packages(
+            args=args,
+            packages=all_upgradeable_package_names,
+        )
+    else:
         print('\n{} {}'.format(
             color_line('::', 10),
             bold_line('Already up-to-date.')
         ))
-        return
+
+
+def install_prompt(repo_packages_names, aur_packages_names, aur_deps_names):
+    repo_pkgs = PackageDB.get_repo_dict()
+    local_pkgs = PackageDB.get_local_dict()
+    aur_pkgs = {
+        aur_pkg['Name']: aur_pkg
+        for aur_pkg in find_aur_packages(aur_packages_names+aur_deps_names)[0]
+    }
+
+    repo_packages_updates = []
+    for pkg_name in repo_packages_names:
+        repo_pkg = repo_pkgs[pkg_name]
+        local_pkg = local_pkgs.get(pkg_name)
+        repo_packages_updates.append(PackageUpdate(
+            Name=pkg_name,
+            Current_Version=local_pkg.Version if local_pkg else ' ',
+            New_Version=repo_pkg.Version,
+            Description=repo_pkg.Description
+        ))
+
+    aur_updates = []
+    for pkg_name in aur_packages_names:
+        aur_pkg = aur_pkgs[pkg_name]
+        local_pkg = local_pkgs.get(pkg_name)
+        aur_updates.append(PackageUpdate(
+            Name=pkg_name,
+            Current_Version=local_pkg.Version if local_pkg else ' ',
+            New_Version=aur_pkg['Version'],
+            Description=aur_pkg['Description']
+        ))
+
+    aur_deps = []
+    for pkg_name in aur_deps_names:
+        aur_pkg = aur_pkgs[pkg_name]
+        local_pkg = local_pkgs.get(pkg_name)
+        aur_deps.append(PackageUpdate(
+            Name=pkg_name,
+            Current_Version=local_pkg.Version if local_pkg else ' ',
+            New_Version=aur_pkg['Version'],
+            Description=aur_pkg['Description']
+        ))
 
     answer = None
     while True:
         if answer is None:
-            answer = print_sysupgrade(repo_packages_updates, aur_updates)
+            answer = print_sysupgrade(repo_packages_updates, aur_updates, aur_deps)
         if answer:
             letter = answer.lower()[0]
             if letter == 'y':
                 break
             elif letter == 'v':
                 answer = print_sysupgrade(
-                    repo_packages_updates, aur_updates, verbose=True
+                    repo_packages_updates, aur_updates, aur_deps, verbose=True
                 )
             elif letter == 'm':
                 # @TODO: implement [m]anual package selection
@@ -427,12 +456,7 @@ def cli_upgrade_packages(args):
                 sys.exit(1)
         else:
             break
-
-    cli_install_packages(
-        args=args,
-        packages=all_upgradeable_package_names,
-        noconfirm=True
-    )
+    return answer
 
 
 def cli_info_packages(args):

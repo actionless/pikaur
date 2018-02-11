@@ -71,8 +71,12 @@ class InstallPackagesCLI():
     aur_deps_names = None
     all_aur_packages_names = None
     package_builds = None
-    packages_to_be_removed = None
+    aur_packages_conflicts = None
+    repo_packages_conflicts = None
     failed_to_build = None
+    transactions = None
+    REPO = 'repo'
+    AUR = 'aur'
 
     def __init__(self, args, packages=None):
         self.args = args
@@ -104,10 +108,12 @@ class InstallPackagesCLI():
 
         self.build_packages()
 
-        self.remove_conflicting_packages()
+        self.remove_repo_packages_conflicts()
         self.install_repo_packages()
         if args.downloadonly:
             return
+
+        self.remove_aur_packages_conflicts()
         self.install_new_aur_deps()
         self.install_aur_packages()
 
@@ -206,11 +212,13 @@ class InstallPackagesCLI():
                 sys.exit(1)
 
     def ask_about_package_conflicts(self):
+        print('checking package conflicts...')
         conflict_result = check_conflicts(
             self.repo_packages_names, self.aur_packages_names
         )
         if not conflict_result:
-            self.packages_to_be_removed = []
+            self.aur_packages_conflicts = []
+            self.repo_packages_conflicts = []
             return
         all_new_packages_names = self.repo_packages_names + self.aur_packages_names
         for new_pkg_name, new_pkg_conflicts in conflict_result.items():
@@ -234,9 +242,22 @@ class InstallPackagesCLI():
                 ), default_yes=False)
                 if not answer:
                     sys.exit(1)
-        self.packages_to_be_removed = list(set(reduce(
+        self.aur_packages_conflicts = list(set(reduce(
             lambda x, y: x+y,
-            conflict_result.values(),
+            [
+                conflicts
+                for pkg_name, conflicts in conflict_result.items()
+                if pkg_name in self.aur_packages_names
+            ],
+            []
+        )))
+        self.repo_packages_conflicts = list(set(reduce(
+            lambda x, y: x+y,
+            [
+                conflicts
+                for pkg_name, conflicts in conflict_result.items()
+                if pkg_name in self.repo_packages_names
+            ],
             []
         )))
 
@@ -303,8 +324,8 @@ class InstallPackagesCLI():
                 #     sys.exit(1)
         self.failed_to_build = failed_to_build
 
-    def remove_conflicting_packages(self):
-        if self.packages_to_be_removed:
+    def _remove_packages(self, packages_to_be_removed):
+        if packages_to_be_removed:
             if not retry_interactive_command(
                     [
                         'sudo',
@@ -313,12 +334,12 @@ class InstallPackagesCLI():
                         # but excluding already built AUR packages from that list.
                         '-R',
                         '--noconfirm',
-                    ] + self.packages_to_be_removed,
+                    ] + packages_to_be_removed,
             ):
                 if not ask_to_continue(default_yes=False):
                     sys.exit(1)
 
-    def install_repo_packages(self):
+    def _install_repo_packages(self, packages_to_be_installed):
         if self.repo_packages_names:
             if not retry_interactive_command(
                     [
@@ -331,10 +352,84 @@ class InstallPackagesCLI():
                         'noconfirm',
                         'sysupgrade',
                         'refresh',
-                    ]) + self.repo_packages_names,
+                    ]) + packages_to_be_installed,
+            ):
+                if not ask_to_continue(default_yes=False):
+                    self.revert_repo_transaction()
+                    sys.exit(1)
+
+    def _save_transaction(self, target, removed=None, installed=None):
+        if not self.transactions:
+            self.transactions = {}
+        target_transaction = self.transactions.setdefault(target, {})
+        if removed:
+            for pkg_name in removed:
+                target_transaction.setdefault('removed', []).append(pkg_name)
+        if installed:
+            for pkg_name in installed:
+                target_transaction.setdefault('installed', []).append(pkg_name)
+
+    def save_repo_transaction(self, removed=None, installed=None):
+        return self._save_transaction(
+            self.REPO, removed=removed, installed=installed
+        )
+
+    def save_aur_transaction(self, removed=None, installed=None):
+        return self._save_transaction(
+            self.AUR, removed=removed, installed=installed
+        )
+
+    def _revert_transaction(self, target):
+        if not self.transactions:
+            return
+        target_transaction = self.transactions.get(target)
+        if not target_transaction:
+            return
+        print('{} Reverting {} transaction...'.format(
+            color_line('::', 9),
+            target
+        ))
+        removed = target_transaction.get('removed')
+        installed = target_transaction.get('installed')
+        if removed:
+            pass  # install back
+        if installed:
+            self._remove_packages(installed)
+
+    def revert_repo_transaction(self):
+        self._revert_transaction(self.REPO)
+
+    def revert_aur_transaction(self):
+        self._revert_transaction(self.AUR)
+
+    def _remove_conflicting_packages(self, packages_to_be_removed):
+        if packages_to_be_removed:
+            if not retry_interactive_command(
+                    [
+                        'sudo',
+                        'pacman',
+                        # '-Rs',  # @TODO: manually remove dependencies of conflicting packages,
+                        # but excluding already built AUR packages from that list.
+                        '-R',
+                        '--noconfirm',
+                        '--nodeps',
+                        '--nodeps',
+                    ] + packages_to_be_removed,
             ):
                 if not ask_to_continue(default_yes=False):
                     sys.exit(1)
+
+    def remove_repo_packages_conflicts(self):
+        self._remove_conflicting_packages(self.repo_packages_conflicts)
+        self.save_repo_transaction(removed=self.repo_packages_conflicts)
+
+    def remove_aur_packages_conflicts(self):
+        self._remove_conflicting_packages(self.aur_packages_conflicts)
+        self.save_aur_transaction(removed=self.aur_packages_conflicts)
+
+    def install_repo_packages(self):
+        self._install_repo_packages(self.repo_packages_names)
+        self.save_repo_transaction(self.repo_packages_names)
 
     def install_new_aur_deps(self):
         new_aur_deps_to_install = [
@@ -360,7 +455,9 @@ class InstallPackagesCLI():
                     ]) + new_aur_deps_to_install,
             ):
                 if not ask_to_continue(default_yes=False):
+                    self.revert_aur_transaction()
                     sys.exit(1)
+            self.save_aur_transaction(new_aur_deps_to_install)
 
     def install_aur_packages(self):
         aur_packages_to_install = [
@@ -384,4 +481,6 @@ class InstallPackagesCLI():
                     ]) + aur_packages_to_install,
             ):
                 if not ask_to_continue(default_yes=False):
+                    self.revert_aur_transaction()
                     sys.exit(1)
+            self.save_aur_transaction(aur_packages_to_install)

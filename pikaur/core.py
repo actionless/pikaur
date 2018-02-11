@@ -241,7 +241,7 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
 
             def __call__(self, version):
                 result = f(version)
-                print(f"dep:{self.line} found:{version} result:{result}")
+                # print(f"dep:{self.line} found:{version} result:{result}")
                 return result
 
         return VersionMatcher()

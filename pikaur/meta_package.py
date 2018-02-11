@@ -4,7 +4,6 @@ from .core import (
     DataType,
     SingleTaskExecutor,
     compare_versions,
-    get_package_name_from_depend_line,
     get_package_name_and_version_matcher_from_depend_line,
 )
 from .pacman import (
@@ -73,36 +72,47 @@ def find_aur_deps(package_names):
 
     # @TODO: split to smaller routines
 
-    def _get_deps(result):
-        return [
-            get_package_name_from_depend_line(dep) for dep in
-            result.get('Depends', []) + result.get('MakeDepends', [])
-        ]
+    def _get_deps_and_version_matchers(result):
+        deps = {}
+        for dep in result.get('Depends', []) + result.get('MakeDepends', []):
+            name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
+            deps[name] = version_matcher
+        return deps
 
+    all_repo_pkgs_info = PackageDB.get_repo_dict()
+    all_local_pkgs_info = PackageDB.get_local_dict()
     new_aur_deps = []
     while package_names:
 
-        all_deps_for_aur_packages = []
+        all_deps_for_aur_packages = {}
         aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
         if not_found_aur_pkgs:
             print_not_found_packages(not_found_aur_pkgs)
             sys.exit(1)
         for result in aur_pkgs_info:
-            all_deps_for_aur_packages += _get_deps(result)
-        all_deps_for_aur_packages = list(set(all_deps_for_aur_packages))
+            all_deps_for_aur_packages.update(_get_deps_and_version_matchers(result))
+        # all_deps_for_aur_packages.update(_get_deps_and_version_matchers({'Depends':['attr>=2.4.46']}))
 
         not_found_local_pkgs = []
         if all_deps_for_aur_packages:
-            _, not_found_deps = find_repo_packages(
-                all_deps_for_aur_packages
-            )
 
+            repo_deps_names, not_found_deps = find_repo_packages(
+                all_deps_for_aur_packages.keys()
+            )
             # pkgs provided by repo pkgs
             if not_found_deps:
                 repo_provided = PackageDB.get_repo_provided()
                 for dep_name in not_found_deps[:]:
                     if dep_name in repo_provided:
                         not_found_deps.remove(dep_name)
+                        repo_deps_names.append(dep_name)
+            # check versions of repo packages:
+            for repo_dep_name in repo_deps_names:
+                version_matcher = all_deps_for_aur_packages[repo_dep_name]
+                # print(all_repo_pkgs_info[repo_dep_name])
+                if not version_matcher(all_repo_pkgs_info[repo_dep_name].Version):
+                    print_not_found_packages([f'{repo_dep_name} {all_repo_pkgs_info[repo_dep_name].Version}'])
+                    sys.exit(1)
 
             if not_found_deps:
                 _local_pkgs_info, not_found_local_pkgs = \
@@ -110,21 +120,39 @@ def find_aur_deps(package_names):
                         not_found_deps
                     )
 
-                # pkgs provided by repo pkgs
+                # pkgs provided by local pkgs
+                local_deps_names = []
                 if not_found_local_pkgs:
                     local_provided = PackageDB.get_local_provided()
                     for dep_name in not_found_local_pkgs[:]:
                         if dep_name in local_provided:
                             not_found_local_pkgs.remove(dep_name)
+                            local_deps_names.append(dep_name)
+                # check versions of local packages:
+                for local_dep_name in local_deps_names:
+                    version_matcher = all_deps_for_aur_packages[local_dep_name]
+                    # print(all_local_pkgs_info[local_dep_name])
+                    if not version_matcher(all_local_pkgs_info[local_dep_name].Version):
+                        print_not_found_packages([f'{local_dep_name} {all_local_pkgs_info[local_dep_name].Version}'])
+                        sys.exit(1)
 
                 # try finding those packages in AUR
-                _aur_deps_info, not_found_aur_deps = find_aur_packages(
+                aur_deps_info, not_found_aur_deps = find_aur_packages(
                     not_found_local_pkgs
                 )
+                # check versions of found AUR packages:
+                for aur_dep_info in aur_deps_info:
+                    aur_dep_name = aur_dep_info['Name']
+                    version_matcher = all_deps_for_aur_packages[aur_dep_name]
+                    # print(aur_dep_info)
+                    if not version_matcher(aur_dep_info['Version']):
+                        print_not_found_packages([f"{aur_dep_name} {aur_dep_info['Version']}"])
+                        sys.exit(1)
+
                 if not_found_aur_deps:
                     problem_package_names = []
                     for result in aur_pkgs_info:
-                        deps = _get_deps(result)
+                        deps = _get_deps_and_version_matchers(result).keys()
                         for not_found_pkg in not_found_aur_deps:
                             if not_found_pkg in deps:
                                 problem_package_names.append(result['Name'])

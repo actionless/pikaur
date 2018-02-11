@@ -95,7 +95,8 @@ class InstallPackagesCLI():
 
         self.get_package_builds()
         # @TODO: ask to install optdepends (?)
-        self.ask_about_package_conflicts()
+        if not args.downloadonly:
+            self.ask_about_package_conflicts()
         self.review_build_files()
 
         # get sudo for further questions:

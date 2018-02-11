@@ -95,18 +95,24 @@ class MakepkgConfig():
     _cached_config = None
 
     @classmethod
-    def get_config(cls):
+    def get_config(cls, config_path=None):
+        config_path = config_path or "/etc/makepkg.conf"
         if not cls._cached_config:
+            cls._cached_config = {}
+        if not cls._cached_config.get(config_path):
             config = configparser.ConfigParser(allow_no_value=True)
-            with open('/etc/makepkg.conf') as config_file:
-                config_string = '[all]\n' + config_file.read()
+            with open(config_path) as config_file:
+                config_string = '\n'.join(['[all]'] + [
+                    line for line in config_file.readlines()
+                    if '=' in line
+                ])
             config.read_string(config_string)
-            cls._cached_config = config['all']
-        return cls._cached_config
+            cls._cached_config[config_path] = config['all']
+        return cls._cached_config[config_path]
 
     @classmethod
-    def get(cls, key, fallback=None):
-        value = cls.get_config().get(key, fallback)
+    def get(cls, key, fallback=None, config_path=None):
+        value = cls.get_config(config_path=config_path).get(key, fallback)
         if value:
             value = value.strip('"').strip("'")
         return value
@@ -346,8 +352,12 @@ class PackageBuild(DataType):
                 )
             raise BuildError()
         else:
-            pkg_ext = MakepkgConfig.get('PKGEXT', '.pkg.tar.xz')
             dest_dir = MakepkgConfig.get('PKGDEST', build_dir)
+            pkg_ext = MakepkgConfig.get('PKGEXT', '.pkg.tar.xz')
+            pkg_ext = MakepkgConfig.get(
+                'PKGEXT', pkg_ext,
+                config_path=os.path.join(dest_dir, 'PKGBUILD')
+            )
             full_pkg_names = SingleTaskExecutor(CmdTaskWorker(
                 ['makepkg', '--packagelist', ],
                 cwd=build_dir

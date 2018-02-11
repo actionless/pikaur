@@ -100,14 +100,14 @@ class InstallPackagesCLI():
         )
         try:
             self.aur_deps_names = find_aur_deps(self.aur_packages_names)
-        except PackagesNotFoundInAUR as e:
-            print_not_found_packages(e.packages)
+        except PackagesNotFoundInAUR as exc:
+            print_not_found_packages(exc.packages)
             sys.exit(1)
-        except DependencyVersionMismatch as e:
+        except DependencyVersionMismatch as exc:
             print("{} dependency: '{}' found: '{}'".format(
                 print(color_line("Version mismatch:", 11)),
-                e.dependency_line,
-                e.version_found
+                exc.dependency_line,
+                exc.version_found
             ))
             sys.exit(1)
         self.all_aur_packages_names = self.aur_packages_names + self.aur_deps_names
@@ -335,8 +335,8 @@ class InstallPackagesCLI():
                 continue
             try:
                 repo_status.build(self.args, self.package_builds)
-            except (BuildError, DependencyError) as e:
-                print(e)
+            except (BuildError, DependencyError) as exc:
+                print(exc)
                 print(color_line(f"Can't build '{pkg_name}'.", 9))
                 failed_to_build.append(pkg_name)
                 # if not ask_to_continue():
@@ -344,6 +344,7 @@ class InstallPackagesCLI():
         self.failed_to_build = failed_to_build
 
     def _remove_packages(self, packages_to_be_removed):
+        # pylint: disable=no-self-use
         if packages_to_be_removed:
             if not retry_interactive_command(
                     [
@@ -422,6 +423,7 @@ class InstallPackagesCLI():
         self._revert_transaction(self.AUR)
 
     def _remove_conflicting_packages(self, packages_to_be_removed):
+        # pylint: disable=no-self-use
         if packages_to_be_removed:
             if not retry_interactive_command(
                     [

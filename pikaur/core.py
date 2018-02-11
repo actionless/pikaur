@@ -204,22 +204,48 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
     def get_version():
         return version
 
+    def cmp_eq(v):
+        return v == get_version()
+
+    def cmp_lt(v):
+        return compare_versions(v, get_version())
+
+    def cmp_le(v):
+        return cmp_eq(v) or cmp_lt(v)
+
+    def cmp_gt(v):
+        return compare_versions(get_version(), v)
+
+    def cmp_ge(v):
+        return cmp_eq(v) or cmp_gt(v)
+
     cond = None
     version_matcher = lambda v: True  # noqa
     for test_cond, matcher in {
-            '>=': lambda v: v >= get_version(),
-            '<=': lambda v: v <= get_version(),
-            '=': lambda v: v == get_version(),
-            '>': lambda v: v > get_version(),
-            '<': lambda v: v < get_version(),
+            '>=': cmp_ge,
+            '<=': cmp_le,
+            '=': cmp_eq,
+            '>': cmp_gt,
+            '<': cmp_lt,
     }.items():
         if test_cond in depend_line:
             cond = test_cond
             version_matcher = matcher
             break
 
+    # def debug_decorator(f):
+
+        # def fun(v):
+            # print((v, get_version()))
+            # return f(v)
+
+        # return fun
+
+    # version_matcher = debug_decorator(version_matcher)
+
     if cond:
         pkg_name, version = depend_line.split(cond)[:2]
+        # print((pkg_name, version))
     else:
         pkg_name = depend_line
     return pkg_name, version_matcher

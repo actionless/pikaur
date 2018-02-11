@@ -1,17 +1,16 @@
-import sys
-
 from .core import (
     DataType,
     SingleTaskExecutor,
     compare_versions,
     get_package_name_and_version_matcher_from_depend_line,
+    DependencyVersionMismatch,
 )
 from .pacman import (
     PacmanTaskWorker, PackageDB, find_local_packages, find_repo_packages,
 )
 from .aur import find_aur_packages
 
-from .pprint import print_not_found_packages, color_line, bold_line
+from .pprint import color_line, bold_line
 
 
 class PackageUpdate(DataType):
@@ -68,6 +67,10 @@ def find_aur_updates(package_versions):
     return aur_updates, not_found_aur_pkgs
 
 
+class PackagesNotFoundInAUR(DataType, Exception):
+    packages = None
+
+
 def find_aur_deps(package_names):
 
     # @TODO: split to smaller routines
@@ -87,8 +90,7 @@ def find_aur_deps(package_names):
         all_deps_for_aur_packages = {}
         aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
         if not_found_aur_pkgs:
-            print_not_found_packages(not_found_aur_pkgs)
-            sys.exit(1)
+            raise PackagesNotFoundInAUR(packages=not_found_aur_pkgs)
         for result in aur_pkgs_info:
             all_deps_for_aur_packages.update(_get_deps_and_version_matchers(result))
         # all_deps_for_aur_packages.update(_get_deps_and_version_matchers({'Depends':['attr>=2.4.46']}))
@@ -109,10 +111,11 @@ def find_aur_deps(package_names):
             # check versions of repo packages:
             for repo_dep_name in repo_deps_names:
                 version_matcher = all_deps_for_aur_packages[repo_dep_name]
-                # print(all_repo_pkgs_info[repo_dep_name])
                 if not version_matcher(all_repo_pkgs_info[repo_dep_name].Version):
-                    print_not_found_packages([f'{repo_dep_name} {all_repo_pkgs_info[repo_dep_name].Version}'])
-                    sys.exit(1)
+                    raise DependencyVersionMismatch(
+                        version_found=all_repo_pkgs_info[repo_dep_name].Version,
+                        dependency_line=version_matcher.line
+                    )
 
             if not_found_deps:
                 _local_pkgs_info, not_found_local_pkgs = \
@@ -133,8 +136,10 @@ def find_aur_deps(package_names):
                     version_matcher = all_deps_for_aur_packages[local_dep_name]
                     # print(all_local_pkgs_info[local_dep_name])
                     if not version_matcher(all_local_pkgs_info[local_dep_name].Version):
-                        print_not_found_packages([f'{local_dep_name} {all_local_pkgs_info[local_dep_name].Version}'])
-                        sys.exit(1)
+                        raise DependencyVersionMismatch(
+                            version_found=all_local_pkgs_info[local_dep_name].Version,
+                            dependency_line=version_matcher.line
+                        )
 
                 # try finding those packages in AUR
                 aur_deps_info, not_found_aur_deps = find_aur_packages(
@@ -146,8 +151,10 @@ def find_aur_deps(package_names):
                     version_matcher = all_deps_for_aur_packages[aur_dep_name]
                     # print(aur_dep_info)
                     if not version_matcher(aur_dep_info['Version']):
-                        print_not_found_packages([f"{aur_dep_name} {aur_dep_info['Version']}"])
-                        sys.exit(1)
+                        raise DependencyVersionMismatch(
+                            version_found=aur_dep_info['Version'],
+                            dependency_line=version_matcher.line
+                        )
 
                 if not_found_aur_deps:
                     problem_package_names = []
@@ -164,8 +171,7 @@ def find_aur_deps(package_names):
                             f'{problem_package_names}'
                         ),
                     ))
-                    print_not_found_packages(not_found_aur_deps)
-                    sys.exit(1)
+                    raise PackagesNotFoundInAUR(packages=not_found_aur_deps)
         new_aur_deps += not_found_local_pkgs
         package_names = not_found_local_pkgs
 

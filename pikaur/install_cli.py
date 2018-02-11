@@ -9,17 +9,23 @@ from .pacman import (
     find_repo_packages, PackageDB,
 )
 from .meta_package import (
-    find_aur_deps, check_conflicts, PackageUpdate,
+    PackageUpdate,
+    check_conflicts,
+    find_aur_deps, PackagesNotFoundInAUR,
 )
 from .build import (
     SrcInfo, BuildError, CloneError, DependencyError,
     clone_pkgbuilds_git_repos,
     retry_interactive_command,
 )
-from .pprint import color_line, bold_line, print_sysupgrade
+from .pprint import (
+    color_line, bold_line,
+    print_sysupgrade, print_not_found_packages,
+)
 from .core import (
     ask_to_continue, interactive_spawn,
     SingleTaskExecutor, CmdTaskWorker,
+    DependencyVersionMismatch,
 )
 
 
@@ -92,7 +98,18 @@ class InstallPackagesCLI():
         self.repo_packages_names, self.aur_packages_names = find_repo_packages(
             packages
         )
-        self.aur_deps_names = find_aur_deps(self.aur_packages_names)
+        try:
+            self.aur_deps_names = find_aur_deps(self.aur_packages_names)
+        except PackagesNotFoundInAUR as e:
+            print_not_found_packages(e.packages)
+            sys.exit(1)
+        except DependencyVersionMismatch as e:
+            print("{} dependency: '{}' found: '{}'".format(
+                print(color_line("Version mismatch:", 11)),
+                e.dependency_line,
+                e.version_found
+            ))
+            sys.exit(1)
         self.all_aur_packages_names = self.aur_packages_names + self.aur_deps_names
 
         if not args.noconfirm:

@@ -204,17 +204,17 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
     def get_version():
         return version
 
-    def cmp_eq(v):
-        return v == get_version()
-
     def cmp_lt(v):
         return compare_versions(v, get_version())
 
-    def cmp_le(v):
-        return cmp_eq(v) or cmp_lt(v)
-
     def cmp_gt(v):
         return compare_versions(get_version(), v)
+
+    def cmp_eq(v):
+        return v == get_version()
+
+    def cmp_le(v):
+        return cmp_eq(v) or cmp_lt(v)
 
     def cmp_ge(v):
         return cmp_eq(v) or cmp_gt(v)
@@ -233,15 +233,20 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
             version_matcher = matcher
             break
 
-    # def debug_decorator(f):
+    def class_decorator(f):
 
-        # def fun(v):
-            # print((v, get_version()))
-            # return f(v)
+        class VersionMatcher():
+            version = get_version()
+            line = depend_line
 
-        # return fun
+            def __call__(self, version):
+                result = f(version)
+                print(f"dep:{self.line} found:{version} result:{result}")
+                return result
 
-    # version_matcher = debug_decorator(version_matcher)
+        return VersionMatcher()
+
+    version_matcher = class_decorator(version_matcher)
 
     if cond:
         pkg_name, version = depend_line.split(cond)[:2]
@@ -249,6 +254,18 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
     else:
         pkg_name = depend_line
     return pkg_name, version_matcher
+
+
+class DependencyVersionMismatch(DataType, Exception):
+    version_found = None
+    dependency_line = None
+
+    version_matcher = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.version_matcher:
+            self.dependency_line = self.version_matcher.line
 
 
 def ask_to_continue(text='Do you want to proceed?', default_yes=True):

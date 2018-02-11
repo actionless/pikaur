@@ -226,7 +226,7 @@ class PackageBuild(DataType):
             try:
                 shutil.rmtree(build_dir)
             except PermissionError:
-                interactive_spawn(['rm', '-rf', build_dir])
+                interactive_spawn(['sudo', 'rm', '-rf', build_dir])
         shutil.copytree(repo_path, build_dir)
 
         src_info = SrcInfo(repo_path)

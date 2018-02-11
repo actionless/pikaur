@@ -230,7 +230,7 @@ class InstallPackagesCLI():
                 sys.exit(1)
 
     def ask_about_package_conflicts(self):
-        print('checking package conflicts...')
+        print('looking for conflicting packages...')
         conflict_result = check_conflicts(
             self.repo_packages_names, self.aur_packages_names
         )

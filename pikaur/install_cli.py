@@ -12,7 +12,8 @@ from .meta_package import (
     find_aur_deps, check_conflicts, PackageUpdate,
 )
 from .build import (
-    SrcInfo, BuildError, CloneError, clone_pkgbuilds_git_repos,
+    SrcInfo, BuildError, CloneError, DependencyError,
+    clone_pkgbuilds_git_repos,
     retry_interactive_command,
 )
 from .pprint import color_line, bold_line, print_sysupgrade
@@ -317,7 +318,8 @@ class InstallPackagesCLI():
                 continue
             try:
                 repo_status.build(self.args, self.package_builds)
-            except BuildError:
+            except (BuildError, DependencyError) as e:
+                print(e)
                 print(color_line(f"Can't build '{pkg_name}'.", 9))
                 failed_to_build.append(pkg_name)
                 # if not ask_to_continue():

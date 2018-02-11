@@ -1,6 +1,5 @@
 import os
 import shutil
-import sys
 import configparser
 import platform
 
@@ -8,7 +7,7 @@ from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
     interactive_spawn, get_package_name_from_depend_line,
-    ask_to_retry_decorator, ask_to_continue,
+    ask_to_retry_decorator,
 )
 from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
@@ -34,6 +33,10 @@ class BuildError(Exception):
 class CloneError(DataType, Exception):
     build = None
     result = None
+
+
+class DependencyError(Exception):
+    pass
 
 
 class SrcInfo():
@@ -266,8 +269,7 @@ class PackageBuild(DataType):
                         'refresh',
                     ]) + built_deps_to_install,
             ):
-                if not ask_to_continue(default_yes=False):
-                    sys.exit(1)
+                raise DependencyError()
 
         if all_deps_to_install:
             local_provided = PackageDB.get_local_provided()

@@ -93,7 +93,42 @@ class InstallPackagesCLI():
             for ignored_pkg in args.ignore:
                 if ignored_pkg in packages:
                     packages.remove(ignored_pkg)
+        self.find_packages(packages)
 
+        if not args.noconfirm:
+            self.install_prompt()
+
+        self.get_package_builds()
+        # @TODO: ask to install optdepends (?)
+        if not args.downloadonly:
+            self.ask_about_package_conflicts()
+        self.review_build_files()
+
+        # get sudo for further questions:
+        interactive_spawn(['sudo', 'true'])
+
+        self.build_packages()
+
+        self.remove_repo_packages_conflicts()
+        self.install_repo_packages()
+        if not args.downloadonly:
+            self.remove_aur_packages_conflicts()
+            self.install_new_aur_deps()
+            self.install_aur_packages()
+
+        # save git hash of last sucessfully installed package
+        if self.package_builds:
+            for package_build in self.package_builds.values():
+                if package_build.built_package_path:
+                    package_build.update_last_installed_file()
+
+        if self.failed_to_build:
+            print('\n'.join(
+                [color_line(f"Failed to build following packages:", 9), ] +
+                self.failed_to_build
+            ))
+
+    def find_packages(self, packages):
         print("resolving dependencies...")
         self.repo_packages_names, self.aur_packages_names = find_repo_packages(
             packages
@@ -119,41 +154,6 @@ class InstallPackagesCLI():
             ))
             sys.exit(1)
         self.all_aur_packages_names = self.aur_packages_names + self.aur_deps_names
-
-        if not args.noconfirm:
-            self.install_prompt()
-
-        self.get_package_builds()
-        # @TODO: ask to install optdepends (?)
-        if not args.downloadonly:
-            self.ask_about_package_conflicts()
-        self.review_build_files()
-
-        # get sudo for further questions:
-        interactive_spawn(['sudo', 'true'])
-
-        self.build_packages()
-
-        self.remove_repo_packages_conflicts()
-        self.install_repo_packages()
-        if args.downloadonly:
-            return
-
-        self.remove_aur_packages_conflicts()
-        self.install_new_aur_deps()
-        self.install_aur_packages()
-
-        # save git hash of last sucessfully installed package
-        if self.package_builds:
-            for package_build in self.package_builds.values():
-                if package_build.built_package_path:
-                    package_build.update_last_installed_file()
-
-        if self.failed_to_build:
-            print('\n'.join(
-                [color_line(f"Failed to build following packages:", 9), ] +
-                self.failed_to_build
-            ))
 
     def install_prompt(self):
         repo_pkgs = PackageDB.get_repo_dict()

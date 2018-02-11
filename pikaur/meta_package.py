@@ -92,7 +92,6 @@ def find_aur_deps(package_names):
             raise PackagesNotFoundInAUR(packages=not_found_aur_pkgs)
         for result in aur_pkgs_info:
             all_deps_for_aur_packages.update(_get_deps_and_version_matchers(result))
-        # all_deps_for_aur_packages.update(_get_deps_and_version_matchers({'Depends':['attr>=2.4.46']}))
 
         not_found_local_pkgs = []
         if all_deps_for_aur_packages:

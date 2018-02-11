@@ -10,6 +10,7 @@ def get_pacman_cli_package_db(
 
         @classmethod
         def parse_pacman_cli_info(cls, lines):
+            # pylint: disable=too-many-nested-blocks,too-many-branches
             pkg = cls()
             field = value = None
             for line in lines:

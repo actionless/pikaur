@@ -101,6 +101,14 @@ class InstallPackagesCLI():
         try:
             self.aur_deps_names = find_aur_deps(self.aur_packages_names)
         except PackagesNotFoundInAUR as exc:
+            if exc.wanted_by:
+                print("{} {}".format(
+                    color_line(':: error:', 9),
+                    bold_line(
+                        'Dependencies missing for '
+                        f'{exc.wanted_by}'
+                    ),
+                ))
             print_not_found_packages(exc.packages)
             sys.exit(1)
         except DependencyVersionMismatch as exc:

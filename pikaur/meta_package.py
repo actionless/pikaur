@@ -10,8 +10,6 @@ from .pacman import (
 )
 from .aur import find_aur_packages
 
-from .pprint import color_line, bold_line
-
 
 class PackageUpdate(DataType):
     Name = None
@@ -69,6 +67,7 @@ def find_aur_updates(package_versions):
 
 class PackagesNotFoundInAUR(DataType, Exception):
     packages = None
+    wanted_by = None
 
 
 def find_aur_deps(package_names):
@@ -157,21 +156,17 @@ def find_aur_deps(package_names):
                         )
 
                 if not_found_aur_deps:
-                    problem_package_names = []
+                    problem_packages_names = []
                     for result in aur_pkgs_info:
                         deps = _get_deps_and_version_matchers(result).keys()
                         for not_found_pkg in not_found_aur_deps:
                             if not_found_pkg in deps:
-                                problem_package_names.append(result['Name'])
+                                problem_packages_names.append(result['Name'])
                                 break
-                    print("{} {}".format(
-                        color_line(':: error:', 9),
-                        bold_line(
-                            'Dependencies missing for '
-                            f'{problem_package_names}'
-                        ),
-                    ))
-                    raise PackagesNotFoundInAUR(packages=not_found_aur_deps)
+                    raise PackagesNotFoundInAUR(
+                        packages=not_found_aur_deps,
+                        wanted_by=problem_packages_names
+                    )
         new_aur_deps += not_found_local_pkgs
         package_names = not_found_local_pkgs
 

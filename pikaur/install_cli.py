@@ -10,7 +10,7 @@ from .pacman import (
 )
 from .meta_package import (
     PackageUpdate,
-    check_conflicts,
+    check_conflicts, check_replacements,
     find_aur_deps, PackagesNotFoundInAUR,
 )
 from .build import (
@@ -102,6 +102,7 @@ class InstallPackagesCLI():
         # @TODO: ask to install optdepends (?)
         if not args.downloadonly:
             self.ask_about_package_conflicts()
+            self.ask_about_package_replacements()
         self.review_build_files()
 
         # get sudo for further questions:
@@ -286,6 +287,18 @@ class InstallPackagesCLI():
             ],
             []
         )))
+
+    def ask_about_package_replacements(self):
+        package_replacements = check_replacements()
+        for repo_pkg_name, installed_pkgs_names in package_replacements.items():
+            for installed_pkg_name in installed_pkgs_names:
+                if ask_to_continue("{} New package '{}' replaces installed '{}'. Proceed?".format(
+                    color_line('::', 11),
+                    bold_line(repo_pkg_name),
+                    bold_line(installed_pkg_name)
+                )):
+                    self.repo_packages_names.append(repo_pkg_name)
+                    self.repo_packages_conflicts.append(installed_pkg_name)
 
     def review_build_files(self):
         for pkg_name in reversed(self.all_aur_packages_names):

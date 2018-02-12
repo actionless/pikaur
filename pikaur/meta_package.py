@@ -219,18 +219,18 @@ def check_conflicts(repo_packages_names, aur_packages_names):
             conflicts += repo_pkg_info.Conflicts_With
         if repo_pkg_info.Replaces:
             conflicts += repo_pkg_info.Replaces
-        new_pkgs_conflicts_lists[repo_package_name] = list(set(conflicts))
+        if conflicts:
+            new_pkgs_conflicts_lists[repo_package_name] = list(set(conflicts))
     #
+    # print(conflicts)
     aur_pkgs_info, _not_founds_pkgs = find_aur_packages(aur_packages_names)
     for aur_json in aur_pkgs_info:
         conflicts = []
         conflicts += aur_json.get('Conflicts', [])
         conflicts += aur_json.get('Replaces', [])
         new_pkgs_conflicts_lists[aur_json['Name']] = list(set(conflicts))
-    # print(new_pkgs_conflicts_lists)
 
     all_local_pkgs_info = PackageDB.get_local_dict()
-    all_local_pkgs_names = list(all_local_pkgs_info.keys())
     all_local_pgks_conflicts_lists = {}
     for local_pkg_info in all_local_pkgs_info.values():
         conflicts = []
@@ -245,11 +245,14 @@ def check_conflicts(repo_packages_names, aur_packages_names):
     new_pkgs_conflicts = {}
     local_provided = PackageDB.get_local_provided_dict()
     all_new_pkgs_names = repo_packages_names + aur_packages_names
+    all_local_pkgs_names = list(all_local_pkgs_info.keys())
     for new_pkg_name, new_pkg_conflicts_list in new_pkgs_conflicts_lists.items():
+        # print(new_pkg_name)
 
         # find if any of new packages have Conflicts with
         # already installed ones or with each other:
         for conflict_line in new_pkg_conflicts_list:
+            # print(conflict_line)
             conflict_pkg_name, conflict_version_matcher = \
                 get_package_name_and_version_matcher_from_depend_line(
                     conflict_line
@@ -299,3 +302,23 @@ def check_conflicts(repo_packages_names, aur_packages_names):
     # print(new_pkgs_conflicts)
 
     return new_pkgs_conflicts
+
+
+def check_replacements():
+    all_repo_pkgs_info = PackageDB.get_repo_dict()
+    all_local_pkgs_info = PackageDB.get_local_dict()
+    all_local_pkgs_names = all_local_pkgs_info.keys()
+
+    replaces_lists = {}
+    for repo_pkg_name, repo_pkg_info in all_repo_pkgs_info.items():
+        if repo_pkg_info.Replaces:
+            for dep_name in repo_pkg_info.Replaces:
+                if dep_name != repo_pkg_name:
+                    replaces_lists.setdefault(repo_pkg_name, []).append(dep_name)
+    #
+    new_pkgs_replaces = {}
+    for pkg_name, replace_list in replaces_lists.items():
+        for replace_pkg_name in replace_list:
+            if replace_pkg_name in all_local_pkgs_names:
+                new_pkgs_replaces.setdefault(pkg_name, []).append(replace_pkg_name)
+    return new_pkgs_replaces

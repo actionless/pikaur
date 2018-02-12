@@ -53,6 +53,7 @@ DB_INFO_TRANSLATION = {
     '%PROVIDES%': 'Provides',
     '%DESC%': 'Description',
     '%CONFLICTS%': 'Conflicts_With',
+    '%REPLACES%': 'Replaces',
 }
 
 

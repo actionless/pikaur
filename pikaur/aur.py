@@ -4,7 +4,7 @@ import email
 import json
 from urllib.parse import urlencode
 
-from .core import MultipleTasksExecutor
+from .core import MultipleTasksExecutor, DataType
 from .config import VERSION
 
 
@@ -82,15 +82,52 @@ async def https_client_task(loop, host, uri, port=443):
     return NetworkTaskResult.from_bytes(data)
 
 
+class AURPackageInfo(DataType):
+    Name = None
+    Version = None
+    Description = None
+    NumVotes = None
+    Popularity = None
+    Depends = None
+    MakeDepends = None
+    Conflicts = None
+    Replaces = None
+
+    ID = None
+    PackageBaseID = None
+    PackageBase = None
+    URL = None
+    OutOfDate = None
+    Maintainer = None
+    FirstSubmitted = None
+    LastModified = None
+    URLPath = None
+    OptDepends = None
+    Provides = None
+    License = None
+    Keywords = None
+    Groups = None
+    CheckDepends = None
+
+
 class AurTaskWorker():
 
     host = 'aur.archlinux.org'
     uri = None
     params = None
 
+    async def aur_client_task(self, loop):
+        raw_result = await https_client_task(
+            loop, self.host, self.uri, port=443
+        )
+        return [
+            AURPackageInfo(**aur_json)
+            for aur_json in raw_result.json.get('results', [])
+        ]
+
     def get_task(self, loop):
         self.uri = f'/rpc/?{self.params}'
-        return https_client_task(loop, self.host, self.uri)
+        return self.aur_client_task(loop)
 
 
 class AurTaskWorkerSearch(AurTaskWorker):
@@ -141,9 +178,9 @@ def find_aur_packages(package_names):
     package_names = list(package_names)[:]
     json_results = []
     for package_name in package_names[:]:
-        json_result = _AUR_PKGS_FIND_CACHE.get(package_name)
-        if json_result:
-            json_results.append(json_result)
+        aur_pkg = _AUR_PKGS_FIND_CACHE.get(package_name)
+        if aur_pkg:
+            json_results.append(aur_pkg)
             package_names.remove(package_name)
 
     if package_names:
@@ -155,12 +192,12 @@ def find_aur_packages(package_names):
         }).execute()
 
         for result in results.values():
-            for json_result in result.json['results']:
-                _AUR_PKGS_FIND_CACHE[json_result['Name']] = json_result
-                json_results.append(json_result)
+            for aur_pkg in result:
+                _AUR_PKGS_FIND_CACHE[aur_pkg.Name] = aur_pkg
+                json_results.append(aur_pkg)
 
     found_aur_packages = [
-        result['Name'] for result in json_results
+        result.Name for result in json_results
     ]
     not_found_packages = []
     if len(package_names) != len(found_aur_packages):

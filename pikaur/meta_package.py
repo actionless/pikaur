@@ -51,15 +51,15 @@ def find_aur_updates(package_versions):
     )
     aur_updates = []
     for result in aur_pkgs_info:
-        pkg_name = result['Name']
-        aur_version = result['Version']
+        pkg_name = result.Name
+        aur_version = result.Version
         current_version = package_versions[pkg_name]
         if compare_versions(current_version, aur_version):
             aur_update = PackageUpdate(
                 Name=pkg_name,
                 New_Version=aur_version,
                 Current_Version=current_version,
-                Description=result['Description']
+                Description=result.Description
             )
             aur_updates.append(aur_update)
     return aur_updates, not_found_aur_pkgs
@@ -76,7 +76,7 @@ def find_aur_deps(package_names):
 
     def _get_deps_and_version_matchers(result):
         deps = {}
-        for dep in result.get('Depends', []) + result.get('MakeDepends', []):
+        for dep in (result.Depends or []) + (result.MakeDepends or []):
             name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
             deps[name] = version_matcher
         return deps
@@ -117,7 +117,7 @@ def find_aur_deps(package_names):
                 repo_pkg_infos = [
                     rpkgi for rpkgi in [
                         all_repo_pkgs_info.get(repo_dep_name)
-                    ] + provided_by_repo_backreferences.get(repo_pkg_name, [])
+                    ] + provided_by_repo_backreferences.get(repo_dep_name, [])
                     if rpkgi is not None
                 ]
                 for repo_pkg_info in repo_pkg_infos:
@@ -153,7 +153,7 @@ def find_aur_deps(package_names):
                     local_pkg_infos = [
                         lpkgi for lpkgi in [
                             all_local_pkgs_info.get(local_dep_name)
-                        ] + provided_by_local_backreferences.get(local_pkg_name, [])
+                        ] + provided_by_local_backreferences.get(local_dep_name, [])
                         if lpkgi is not None
                     ]
                     for local_pkg_info in local_pkg_infos:
@@ -169,12 +169,12 @@ def find_aur_deps(package_names):
                 )
                 # check versions of found AUR packages:
                 for aur_dep_info in aur_deps_info:
-                    aur_dep_name = aur_dep_info['Name']
+                    aur_dep_name = aur_dep_info.Name
                     version_matcher = all_deps_for_aur_packages[aur_dep_name]
                     # print(aur_dep_info)
-                    if not version_matcher(aur_dep_info['Version']):
+                    if not version_matcher(aur_dep_info.Version):
                         raise DependencyVersionMismatch(
-                            version_found=aur_dep_info['Version'],
+                            version_found=aur_dep_info.Version,
                             dependency_line=version_matcher.line
                         )
 
@@ -184,7 +184,7 @@ def find_aur_deps(package_names):
                         deps = _get_deps_and_version_matchers(result).keys()
                         for not_found_pkg in not_found_aur_deps:
                             if not_found_pkg in deps:
-                                problem_packages_names.append(result['Name'])
+                                problem_packages_names.append(result.Name)
                                 break
                     raise PackagesNotFoundInAUR(
                         packages=not_found_aur_deps,
@@ -206,7 +206,7 @@ def check_conflicts(repo_packages_names, aur_packages_names):
             return repo_info.Version
         aur_packages, _not_found = find_aur_packages([new_pkg_name])
         if aur_packages:
-            return aur_packages[0]['Version']
+            return aur_packages[0].Version
         return None
 
     new_pkgs_conflicts_lists = {}
@@ -226,9 +226,9 @@ def check_conflicts(repo_packages_names, aur_packages_names):
     aur_pkgs_info, _not_founds_pkgs = find_aur_packages(aur_packages_names)
     for aur_json in aur_pkgs_info:
         conflicts = []
-        conflicts += aur_json.get('Conflicts', [])
-        conflicts += aur_json.get('Replaces', [])
-        new_pkgs_conflicts_lists[aur_json['Name']] = list(set(conflicts))
+        conflicts += aur_json.Conflicts or []
+        conflicts += aur_json.Replaces or []
+        new_pkgs_conflicts_lists[aur_json.Name] = list(set(conflicts))
 
     all_local_pkgs_info = PackageDB.get_local_dict()
     all_local_pgks_conflicts_lists = {}

@@ -160,7 +160,7 @@ class InstallPackagesCLI():
         repo_pkgs = PackageDB.get_repo_dict()
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
-            aur_pkg['Name']: aur_pkg
+            aur_pkg.Name: aur_pkg
             for aur_pkg in find_aur_packages(
                 self.aur_packages_names+self.aur_deps_names
             )[0]
@@ -184,8 +184,8 @@ class InstallPackagesCLI():
             aur_updates.append(PackageUpdate(
                 Name=pkg_name,
                 Current_Version=local_pkg.Version if local_pkg else ' ',
-                New_Version=aur_pkg['Version'],
-                Description=aur_pkg['Description']
+                New_Version=aur_pkg.Version,
+                Description=aur_pkg.Description
             ))
 
         aur_deps = []
@@ -195,8 +195,8 @@ class InstallPackagesCLI():
             aur_deps.append(PackageUpdate(
                 Name=pkg_name,
                 Current_Version=local_pkg.Version if local_pkg else ' ',
-                New_Version=aur_pkg['Version'],
-                Description=aur_pkg['Description']
+                New_Version=aur_pkg.Version,
+                Description=aur_pkg.Description
             ))
 
         answer = None

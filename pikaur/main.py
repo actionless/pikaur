@@ -109,11 +109,11 @@ def cli_info_packages(args):
             packages=args.positional or []
         ),
     }).execute()
-    json_results = result[aur].json['results']
-    num_found = len(json_results)
+    aur_pkgs = result[aur]
+    num_found = len(aur_pkgs)
     if result[pkgs].stdout:
-        print(result[pkgs].stdout, end='\n' if json_results else '')
-    for i, result in enumerate(json_results):
+        print(result[pkgs].stdout, end='\n' if aur_pkgs else '')
+    for i, aur_pkg in enumerate(aur_pkgs):
         print(
             '\n'.join([
                 '{key:24}: {value}'.format(
@@ -121,7 +121,7 @@ def cli_info_packages(args):
                     value=value if not isinstance(value, list)
                     else ', '.join(value)
                 )
-                for key, value in result.items()
+                for key, value in aur_pkg.__dict__.items()
             ]) + ('\n' if i+1 < num_found else '')
         )
 
@@ -157,12 +157,12 @@ def cli_search_packages(args):
     if result[repo].stdout != '':
         print(result[repo].stdout)
     for aur_pkg in sorted(
-            result[aur].json['results'],
-            key=lambda pkg: (pkg['NumVotes'] + 0.1) * (pkg['Popularity'] + 0.1),
+            result[aur],
+            key=lambda pkg: (pkg.NumVotes + 0.1) * (pkg.Popularity + 0.1),
             reverse=True
     ):
         # @TODO: return only packages for the current architecture
-        pkg_name = aur_pkg['Name']
+        pkg_name = aur_pkg.Name
         if args.quiet:
             print(pkg_name)
         else:
@@ -170,16 +170,16 @@ def cli_search_packages(args):
                 # color_line('aur/', 13),
                 color_line('aur/', 9),
                 bold_line(pkg_name),
-                color_line(aur_pkg["Version"], 10),
+                color_line(aur_pkg.Version, 10),
                 color_line('[installed{}] '.format(
                     f': {local_pkgs_versions[pkg_name]}'
-                    if aur_pkg['Version'] != local_pkgs_versions[pkg_name]
+                    if aur_pkg.Version != local_pkgs_versions[pkg_name]
                     else ''
                 ), 14) if pkg_name in local_pkgs_names else '',
-                aur_pkg['NumVotes'],
-                aur_pkg['Popularity']
+                aur_pkg.NumVotes,
+                aur_pkg.Popularity
             ))
-            print(format_paragraph(f'{aur_pkg["Description"]}'))
+            print(format_paragraph(f'{aur_pkg.Description}'))
 
 
 def main():

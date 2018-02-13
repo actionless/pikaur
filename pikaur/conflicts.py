@@ -144,7 +144,7 @@ def check_replacements():
             for dep_name in repo_pkg_info.Replaces:
                 if dep_name != repo_pkg_name:
                     replaces_lists.setdefault(repo_pkg_name, []).append(dep_name)
-    #
+
     new_pkgs_replaces = {}
     for pkg_name, replace_list in replaces_lists.items():
         for replace_pkg_name in replace_list:

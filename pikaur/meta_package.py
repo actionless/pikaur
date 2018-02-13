@@ -100,7 +100,7 @@ def find_aur_deps(package_names):
                 all_deps_for_aur_packages.keys()
             )
             # pkgs provided by repo pkgs
-            provided_by_repo_backreferences = {}
+            provided_by_repo_backrefs = {}
             if not_found_deps:
                 repo_provided_dict = PackageDB.get_repo_provided_dict()
                 for repo_pkg_name, repo_provided in repo_provided_dict.items():
@@ -108,7 +108,7 @@ def find_aur_deps(package_names):
                         if dep_name in repo_provided:
                             not_found_deps.remove(dep_name)
                             repo_deps_names.append(dep_name)
-                            provided_by_repo_backreferences.setdefault(
+                            provided_by_repo_backrefs.setdefault(
                                 dep_name, []
                             ).append(repo_pkg_name)
             # check versions of repo packages:
@@ -117,7 +117,7 @@ def find_aur_deps(package_names):
                 repo_pkg_infos = [
                     rpkgi for rpkgi in [
                         all_repo_pkgs_info.get(repo_dep_name)
-                    ] + provided_by_repo_backreferences.get(repo_dep_name, [])
+                    ] + provided_by_repo_backrefs.get(repo_dep_name, [])
                     if rpkgi is not None
                 ]
                 for repo_pkg_info in repo_pkg_infos:
@@ -135,7 +135,7 @@ def find_aur_deps(package_names):
 
                 # pkgs provided by local pkgs
                 local_deps_names = []
-                provided_by_local_backreferences = {}
+                provided_by_local_backrefs = {}
                 if not_found_local_pkgs:
                     local_provided_dict = PackageDB.get_local_provided_dict()
                     for local_pkg_name, local_provided in local_provided_dict.items():
@@ -143,7 +143,7 @@ def find_aur_deps(package_names):
                             if dep_name in local_provided:
                                 not_found_local_pkgs.remove(dep_name)
                                 local_deps_names.append(dep_name)
-                                provided_by_local_backreferences.setdefault(
+                                provided_by_local_backrefs.setdefault(
                                     dep_name, []
                                 ).append(local_pkg_name)
                 # check versions of local packages:
@@ -153,7 +153,7 @@ def find_aur_deps(package_names):
                     local_pkg_infos = [
                         lpkgi for lpkgi in [
                             all_local_pkgs_info.get(local_dep_name)
-                        ] + provided_by_local_backreferences.get(local_dep_name, [])
+                        ] + provided_by_local_backrefs.get(local_dep_name, [])
                         if lpkgi is not None
                     ]
                     for local_pkg_info in local_pkg_infos:

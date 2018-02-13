@@ -4,19 +4,8 @@
 import os
 import sys
 
-from pikaur.main import main, color_line
+from pikaur.main import main
 
 
 if __name__ == '__main__':
-    if os.getuid() == 0:
-        print("{} {}".format(
-            color_line('::', 9),
-            "Don't run me as root."
-        ))
-        sys.exit(1)
-    try:
-        main()
-    except KeyboardInterrupt:
-        sys.exit(130)
-    except BrokenPipeError:
-        sys.exit(0)
+    main()

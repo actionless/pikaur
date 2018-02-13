@@ -182,7 +182,7 @@ def cli_search_packages(args):
             print(format_paragraph(f'{aur_pkg.Description}'))
 
 
-def main():
+def cli_entry_point():
     # pylint: disable=too-many-branches
     raw_args = sys.argv[1:]
     args = parse_args(raw_args)
@@ -232,7 +232,7 @@ def main():
         )
 
 
-if __name__ == '__main__':
+def main():
     if os.getuid() == 0:
         print("{} {}".format(
             color_line('::', 9),
@@ -240,6 +240,12 @@ if __name__ == '__main__':
         ))
         sys.exit(1)
     try:
-        main()
+        cli_entry_point()
     except KeyboardInterrupt:
         sys.exit(130)
+    except BrokenPipeError:
+        sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()

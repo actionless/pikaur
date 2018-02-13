@@ -295,7 +295,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
             pkg_desc_dirs = os.listdir(temp_dir)
             with ProgressBar(message=message, length=len(pkg_desc_dirs)) as progress_bar:
                 # @TODO: try multiprocess pool here
-                for index, pkg_dir_name in enumerate(pkg_desc_dirs):
+                for pkg_dir_name in pkg_desc_dirs:
                     if not os.path.isdir(os.path.join(temp_dir, pkg_dir_name)):
                         continue
                     db_dir = os.path.join(temp_dir, pkg_dir_name)
@@ -311,16 +311,19 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
     @classmethod
     def get_local_dict(cls):
         if not cls._packages_dict_cache.get(cls.local):
-            print("Reading local package database...")
+            message = "Reading local package database..."
             result = {}
             local_dir = '/var/lib/pacman/local/'
-            for pkg_dir_name in os.listdir(local_dir):
-                if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
-                    continue
-                for pkg in LocalPackageInfo.parse_pacman_db_info(
-                        os.path.join(local_dir, pkg_dir_name, 'desc')
-                ):
-                    result[pkg.Name] = pkg
+            pkg_desc_dirs = os.listdir(local_dir)
+            with ProgressBar(message=message, length=len(pkg_desc_dirs)) as progress_bar:
+                for pkg_dir_name in os.listdir(local_dir):
+                    if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
+                        continue
+                    for pkg in LocalPackageInfo.parse_pacman_db_info(
+                            os.path.join(local_dir, pkg_dir_name, 'desc')
+                    ):
+                        result[pkg.Name] = pkg
+                    progress_bar()
             cls._packages_dict_cache[cls.local] = result
         return cls._packages_dict_cache[cls.local]
 

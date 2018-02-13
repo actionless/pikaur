@@ -9,7 +9,7 @@ from .core import (
     CmdTaskWorker, MultipleTasksExecutor,
     get_package_name_from_depend_line,
 )
-from .pprint import color_line
+from .pprint import color_line, ProgressBar
 
 
 class PacmanTaskWorker(CmdTaskWorker):
@@ -256,7 +256,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
     @classmethod
     def get_repo_dict(cls):
         if not cls._packages_dict_cache.get(cls.repo):
-            print("Reading repository package databases...")
+            message = "Reading repository package databases..."
             result = {}
             temp_dir = tempfile.mkdtemp()
             sync_dir = '/var/lib/pacman/sync/'
@@ -292,17 +292,19 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                 os.remove(temp_repo_path)
 
             # parse package databases
-            # @TODO: try multiprocess pool here
-            for pkg_dir_name in os.listdir(temp_dir):
-                if not os.path.isdir(os.path.join(temp_dir, pkg_dir_name)):
-                    continue
-                db_dir = os.path.join(temp_dir, pkg_dir_name)
-                for pkg in LocalPackageInfo.parse_pacman_db_info(
-                        os.path.join(db_dir, 'desc')
-                ):
-                    result[pkg.Name] = pkg
-                shutil.rmtree(db_dir)
-
+            pkg_desc_dirs = os.listdir(temp_dir)
+            with ProgressBar(message=message, length=len(pkg_desc_dirs)) as progress_bar:
+                # @TODO: try multiprocess pool here
+                for index, pkg_dir_name in enumerate(pkg_desc_dirs):
+                    if not os.path.isdir(os.path.join(temp_dir, pkg_dir_name)):
+                        continue
+                    db_dir = os.path.join(temp_dir, pkg_dir_name)
+                    for pkg in LocalPackageInfo.parse_pacman_db_info(
+                            os.path.join(db_dir, 'desc')
+                    ):
+                        result[pkg.Name] = pkg
+                    shutil.rmtree(db_dir)
+                    progress_bar()
             cls._packages_dict_cache[cls.repo] = result
         return cls._packages_dict_cache[cls.repo]
 

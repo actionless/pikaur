@@ -202,3 +202,29 @@ def print_version():
   У    \  _/     ._/   \
 
 """).encode())
+
+
+class ProgressBar(object):
+
+    message = None
+    index = 0
+    progress = 0
+
+    def __init__(self, message, length):
+        self.message = message
+        width = get_term_width() - len(message)
+        self.print_ratio = length / width
+        print(message, end='')
+
+    def update(self):
+        self.index += 1
+        if self.index / self.print_ratio > self.progress:
+            self.progress += 1
+            print('.', end='')
+            sys.stdout.flush()
+
+    def __enter__(self):
+        return self.update
+
+    def __exit__(self, type, value, traceback):
+        print()

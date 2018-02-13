@@ -112,7 +112,10 @@ def find_aur_deps(package_names):
                 repo_pkg_infos = [
                     rpkgi for rpkgi in [
                         all_repo_pkgs_info.get(repo_dep_name)
-                    ] + provided_by_repo_backrefs.get(repo_dep_name, [])
+                    ] + [
+                        all_repo_pkgs_info.get(dn) for dn in
+                        provided_by_repo_backrefs.get(repo_dep_name, [])
+                    ]
                     if rpkgi is not None
                 ]
                 for repo_pkg_info in repo_pkg_infos:
@@ -148,7 +151,10 @@ def find_aur_deps(package_names):
                     local_pkg_infos = [
                         lpkgi for lpkgi in [
                             all_local_pkgs_info.get(local_dep_name)
-                        ] + provided_by_local_backrefs.get(local_dep_name, [])
+                        ] + [
+                            all_local_pkgs_info.get(dn) for dn in
+                            provided_by_local_backrefs.get(local_dep_name, [])
+                        ]
                         if lpkgi is not None
                     ]
                     for local_pkg_info in local_pkg_infos:

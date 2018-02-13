@@ -131,6 +131,7 @@ class PackageBuild(DataType):
 
     def __init__(self, package_name):  # pylint: disable=super-init-not-called
         self.package_name = package_name
+        self.build_dir = os.path.join(BUILD_CACHE, self.package_name)
         repo_path = os.path.join(AUR_REPOS_CACHE, package_name)
         if os.path.exists(repo_path):
             # pylint: disable=simplifiable-if-statement
@@ -227,24 +228,7 @@ class PackageBuild(DataType):
         self.already_installed = already_installed
         return already_installed
 
-    def build(self, args, all_package_builds):
-        # @TODO: split into smaller routines
-        repo_path = self.repo_path
-        build_dir = os.path.join(BUILD_CACHE, self.package_name)
-        if os.path.exists(build_dir):
-            try:
-                shutil.rmtree(build_dir)
-            except PermissionError:
-                interactive_spawn(['sudo', 'rm', '-rf', build_dir])
-        shutil.copytree(repo_path, build_dir)
-
-        src_info = SrcInfo(repo_path)
-        make_deps = src_info.get_makedepends()
-        _, new_make_deps_to_install = find_local_packages(make_deps)
-        new_deps = src_info.get_depends()
-        _, new_deps_to_install = find_local_packages(new_deps)
-        all_deps_to_install = new_make_deps_to_install + new_deps_to_install
-
+    def _install_built_deps(self, args, all_package_builds, all_deps_to_install):
         built_deps_to_install = []
         for dep in all_deps_to_install[:]:
             if dep in all_package_builds:
@@ -277,6 +261,7 @@ class PackageBuild(DataType):
             ):
                 raise DependencyError()
 
+    def _install_repo_deps(self, args, all_deps_to_install):
         if all_deps_to_install:
             local_provided = PackageDB.get_local_provided()
             for dep_name in all_deps_to_install[:]:
@@ -307,19 +292,8 @@ class PackageBuild(DataType):
             )
             if deps_result.returncode > 0:
                 raise BuildError()
-        makepkg_args = [
-            '--nodeps',
-        ]
 
-        if not args.needed:
-            makepkg_args.append('--force')
-        build_result = interactive_spawn(
-            [
-                'makepkg',
-            ] + makepkg_args,
-            cwd=build_dir
-        )
-
+    def _remove_make_deps(self, new_make_deps_to_install):
         if new_make_deps_to_install:
             print('{} {} {}:'.format(
                 color_line('::', 13),
@@ -335,6 +309,59 @@ class PackageBuild(DataType):
                     '--noconfirm',
                 ] + new_make_deps_to_install,
             )
+
+    def _set_built_package_path(self):
+        dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)
+        pkg_ext = MakepkgConfig.get('PKGEXT', '.pkg.tar.xz')
+        pkg_ext = MakepkgConfig.get(
+            'PKGEXT', pkg_ext,
+            config_path=os.path.join(dest_dir, 'PKGBUILD')
+        )
+        full_pkg_names = SingleTaskExecutor(CmdTaskWorker(
+            ['makepkg', '--packagelist', ],
+            cwd=self.build_dir
+        )).execute().stdout.splitlines()
+        full_pkg_name = full_pkg_names[0]
+        if len(full_pkg_names) > 1:
+            arch = platform.machine()
+            for pkg_name in full_pkg_names:
+                if arch in pkg_name:
+                    full_pkg_name = pkg_name
+        self.built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
+
+    def build(self, args, all_package_builds):
+        repo_path = self.repo_path
+        if os.path.exists(self.build_dir):
+            try:
+                shutil.rmtree(self.build_dir)
+            except PermissionError:
+                interactive_spawn(['sudo', 'rm', '-rf', self.build_dir])
+        shutil.copytree(repo_path, self.build_dir)
+
+        src_info = SrcInfo(repo_path)
+        make_deps = src_info.get_makedepends()
+        _, new_make_deps_to_install = find_local_packages(make_deps)
+        new_deps = src_info.get_depends()
+        _, new_deps_to_install = find_local_packages(new_deps)
+        all_deps_to_install = new_make_deps_to_install + new_deps_to_install
+
+        self._install_built_deps(args, all_package_builds, all_deps_to_install)
+        self._install_repo_deps(args, all_deps_to_install)
+
+        makepkg_args = [
+            '--nodeps',
+        ]
+        if not args.needed:
+            makepkg_args.append('--force')
+
+        build_result = interactive_spawn(
+            [
+                'makepkg',
+            ] + makepkg_args,
+            cwd=self.build_dir
+        )
+
+        self._remove_make_deps(new_make_deps_to_install)
 
         if build_result.returncode > 0:
             if new_deps_to_install:
@@ -352,23 +379,7 @@ class PackageBuild(DataType):
                 )
             raise BuildError()
         else:
-            dest_dir = MakepkgConfig.get('PKGDEST', build_dir)
-            pkg_ext = MakepkgConfig.get('PKGEXT', '.pkg.tar.xz')
-            pkg_ext = MakepkgConfig.get(
-                'PKGEXT', pkg_ext,
-                config_path=os.path.join(dest_dir, 'PKGBUILD')
-            )
-            full_pkg_names = SingleTaskExecutor(CmdTaskWorker(
-                ['makepkg', '--packagelist', ],
-                cwd=build_dir
-            )).execute().stdout.splitlines()
-            full_pkg_name = full_pkg_names[0]
-            if len(full_pkg_names) > 1:
-                arch = platform.machine()
-                for pkg_name in full_pkg_names:
-                    if arch in pkg_name:
-                        full_pkg_name = pkg_name
-            self.built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
+            self._set_built_package_path()
 
 
 def clone_pkgbuilds_git_repos(package_names):

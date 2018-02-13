@@ -207,6 +207,7 @@ def print_version():
 class ProgressBar(object):
 
     message = None
+    print_ratio = None
     index = 0
     progress = 0
 
@@ -226,5 +227,5 @@ class ProgressBar(object):
     def __enter__(self):
         return self.update
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, *exc_details):
         print()

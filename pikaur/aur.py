@@ -93,7 +93,7 @@ class AURPackageInfo(DataType):
     Conflicts = None
     Replaces = None
 
-    ID = None
+    ID = None  # pylint: disable=invalid-name
     PackageBaseID = None
     PackageBase = None
     URL = None

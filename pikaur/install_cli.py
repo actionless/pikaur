@@ -10,7 +10,6 @@ from .pacman import (
 )
 from .meta_package import (
     PackageUpdate,
-    check_conflicts, check_replacements,
     find_aur_deps, PackagesNotFoundInAUR,
 )
 from .build import (
@@ -26,6 +25,9 @@ from .core import (
     ask_to_continue, interactive_spawn,
     SingleTaskExecutor, CmdTaskWorker,
     DependencyVersionMismatch,
+)
+from .conflicts import (
+    check_conflicts, check_replacements,
 )
 
 

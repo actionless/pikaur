@@ -14,7 +14,9 @@ from .aur import get_repo_url
 from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args
 from .pprint import color_line, bold_line
-from .exceptions import CloneError, DependencyError, BuildError
+from .exceptions import (
+    CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
+)
 
 
 @ask_to_retry_decorator
@@ -117,6 +119,7 @@ class PackageBuild(DataType):
     built_package_path = None
 
     already_installed = None
+    failed = None
 
     def __init__(self, package_name):  # pylint: disable=super-init-not-called
         self.package_name = package_name
@@ -221,9 +224,13 @@ class PackageBuild(DataType):
         built_deps_to_install = []
         for dep in all_deps_to_install[:]:
             if dep in all_package_builds:
-                built_deps_to_install.append(
-                    all_package_builds[dep].built_package_path
-                )
+                if all_package_builds[dep].failed:
+                    self.failed = True
+                    raise DependencyError()
+                built_package_path = all_package_builds[dep].built_package_path
+                if not built_package_path:
+                    raise DependencyNotBuiltYet()
+                built_deps_to_install.append(built_package_path)
                 all_deps_to_install.remove(dep)
 
         if built_deps_to_install:
@@ -248,6 +255,7 @@ class PackageBuild(DataType):
                         'refresh',
                     ]) + built_deps_to_install,
             ):
+                self.failed = True
                 raise DependencyError()
 
     def _install_repo_deps(self, args, all_deps_to_install):
@@ -280,6 +288,7 @@ class PackageBuild(DataType):
                 ]) + all_deps_to_install,
             )
             if deps_result.returncode > 0:
+                self.failed = True
                 raise BuildError()
 
     def _remove_make_deps(self, new_make_deps_to_install):
@@ -366,6 +375,7 @@ class PackageBuild(DataType):
                         '-Rs',
                     ] + new_deps_to_install,
                 )
+            self.failed = True
             raise BuildError()
         else:
             self._set_built_package_path()

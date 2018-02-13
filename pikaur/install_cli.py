@@ -11,7 +11,7 @@ from .pacman import (
 from .meta_package import PackageUpdate, find_aur_deps
 from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
-    BuildError, CloneError, DependencyError,
+    BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
 )
 from .build import (
     SrcInfo,
@@ -352,10 +352,18 @@ class InstallPackagesCLI():
 
     def build_packages(self):
         failed_to_build = []
-        for pkg_name in reversed(self.all_aur_packages_names):
+        packages_to_be_built = self.all_aur_packages_names[:]
+        index = 0
+        while packages_to_be_built:
+            if index >= len(packages_to_be_built):
+                index = 0
+
+            pkg_name = packages_to_be_built[index]
             repo_status = self.package_builds[pkg_name]
             if self.args.needed and repo_status.already_installed:
+                packages_to_be_built.remove(pkg_name)
                 continue
+
             try:
                 repo_status.build(self.args, self.package_builds)
             except (BuildError, DependencyError) as exc:
@@ -364,6 +372,12 @@ class InstallPackagesCLI():
                 failed_to_build.append(pkg_name)
                 # if not ask_to_continue():
                 #     sys.exit(1)
+                packages_to_be_built.remove(pkg_name)
+            except DependencyNotBuiltYet:
+                index += 1
+            else:
+                packages_to_be_built.remove(pkg_name)
+
         self.failed_to_build = failed_to_build
 
     def _remove_packages(self, packages_to_be_removed):

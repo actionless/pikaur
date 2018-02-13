@@ -29,3 +29,7 @@ class DependencyVersionMismatch(DataType, Exception):
         super().__init__(*args, **kwargs)
         if self.version_matcher:
             self.dependency_line = self.version_matcher.line
+
+
+class DependencyNotBuiltYet(Exception):
+    pass

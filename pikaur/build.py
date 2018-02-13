@@ -14,6 +14,7 @@ from .aur import get_repo_url
 from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args
 from .pprint import color_line, bold_line
+from .exceptions import CloneError, DependencyError, BuildError
 
 
 @ask_to_retry_decorator
@@ -24,19 +25,6 @@ def retry_interactive_command(cmd_args):
             ' '.join(cmd_args)
         ), 9))
     return good
-
-
-class BuildError(Exception):
-    pass
-
-
-class CloneError(DataType, Exception):
-    build = None
-    result = None
-
-
-class DependencyError(Exception):
-    pass
 
 
 class SrcInfo():

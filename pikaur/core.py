@@ -256,18 +256,6 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
     return pkg_name, version_matcher
 
 
-class DependencyVersionMismatch(DataType, Exception):
-    version_found = None
-    dependency_line = None
-
-    version_matcher = None
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.version_matcher:
-            self.dependency_line = self.version_matcher.line
-
-
 def ask_to_continue(text='Do you want to proceed?', default_yes=True):
     answer = input(text + (' [Y/n] ' if default_yes else ' [y/N] '))
     if default_yes:

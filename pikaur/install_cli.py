@@ -8,12 +8,13 @@ from .aur import find_aur_packages
 from .pacman import (
     find_repo_packages, PackageDB,
 )
-from .meta_package import (
-    PackageUpdate,
-    find_aur_deps, PackagesNotFoundInAUR,
+from .meta_package import PackageUpdate, find_aur_deps
+from .exceptions import (
+    PackagesNotFoundInAUR, DependencyVersionMismatch,
+    BuildError, CloneError, DependencyError,
 )
 from .build import (
-    SrcInfo, BuildError, CloneError, DependencyError,
+    SrcInfo,
     clone_pkgbuilds_git_repos,
     retry_interactive_command,
 )
@@ -24,7 +25,6 @@ from .pprint import (
 from .core import (
     ask_to_continue, interactive_spawn,
     SingleTaskExecutor, CmdTaskWorker,
-    DependencyVersionMismatch,
 )
 from .conflicts import (
     check_conflicts, check_replacements,

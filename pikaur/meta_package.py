@@ -3,12 +3,12 @@ from .core import (
     SingleTaskExecutor,
     compare_versions,
     get_package_name_and_version_matcher_from_depend_line,
-    DependencyVersionMismatch,
 )
 from .pacman import (
     PacmanTaskWorker, PackageDB, find_local_packages, find_repo_packages,
 )
 from .aur import find_aur_packages
+from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch
 
 
 class PackageUpdate(DataType):
@@ -63,11 +63,6 @@ def find_aur_updates(package_versions):
             )
             aur_updates.append(aur_update)
     return aur_updates, not_found_aur_pkgs
-
-
-class PackagesNotFoundInAUR(DataType, Exception):
-    packages = None
-    wanted_by = None
 
 
 def find_aur_deps(package_names):

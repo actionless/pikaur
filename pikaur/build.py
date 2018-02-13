@@ -125,6 +125,7 @@ class PackageBuild(DataType):
     package_name = None
 
     repo_path = None
+    build_dir = None
     built_package_path = None
 
     already_installed = None

@@ -318,9 +318,11 @@ class ConfigReader():
 
     @classmethod
     def get(cls, key, fallback=None, config_path=None):
-        value = cls.get_config(config_path=config_path).get(key, fallback)
+        value = cls.get_config(config_path=config_path).get(key)
         if value:
             value = value.strip('"').strip("'")
+        else:
+            return fallback
         if key in cls.list_fields:
             value = value.split()
         return value

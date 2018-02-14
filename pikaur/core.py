@@ -1,5 +1,6 @@
 import asyncio
 import subprocess
+import configparser
 from distutils.version import LooseVersion
 
 
@@ -278,3 +279,41 @@ def ask_to_retry_decorator(fun):
                 return None
 
     return decorated
+
+
+class ConfigReader():
+
+    _cached_config = None
+    default_config_path = None
+    list_fields = []
+
+    @classmethod
+    def get_config(cls, config_path=None):
+        config_path = config_path or cls.default_config_path
+        if not cls._cached_config:
+            cls._cached_config = {}
+        if not cls._cached_config.get(config_path):
+            config = configparser.ConfigParser(allow_no_value=True)
+            with open(config_path) as config_file:
+                config_string = '\n'.join(['[all]'] + [
+                    line for line in config_file.readlines()
+                    if (
+                        '=' in line
+                    ) and (
+                        'Include' not in line
+                    ) and (
+                        'SigLevel' not in line
+                    )
+                ])
+            config.read_string(config_string)
+            cls._cached_config[config_path] = config['all']
+        return cls._cached_config[config_path]
+
+    @classmethod
+    def get(cls, key, fallback=None, config_path=None):
+        value = cls.get_config(config_path=config_path).get(key, fallback)
+        if value:
+            value = value.strip('"').strip("'")
+        if key in cls.list_fields:
+            value = value.split()
+        return value

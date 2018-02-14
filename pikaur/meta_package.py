@@ -6,6 +6,7 @@ from .core import (
 )
 from .pacman import (
     PacmanTaskWorker, PackageDB, find_local_packages, find_repo_packages,
+    PacmanConfig,
 )
 from .aur import find_aur_packages
 from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch
@@ -205,3 +206,9 @@ def get_package_version(new_pkg_name):
     if aur_packages:
         return aur_packages[0].Version
     return None
+
+
+def exclude_ignored_packages(package_names, args):
+    for ignored_pkg in (args.ignore or []) + PacmanConfig.get('IgnorePkg', []):
+        if ignored_pkg in package_names:
+            package_names.remove(ignored_pkg)

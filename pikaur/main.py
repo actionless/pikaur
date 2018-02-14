@@ -24,7 +24,7 @@ from .pacman import (
     find_packages_not_from_repo,
 )
 from .meta_package import (
-    find_repo_updates, find_aur_updates,
+    find_repo_updates, find_aur_updates, exclude_ignored_packages,
 )
 from .install_cli import InstallPackagesCLI
 
@@ -76,6 +76,7 @@ def cli_upgrade_packages(args):
     ))
     aur_updates, not_found_aur_pkgs = \
         find_aur_updates(find_packages_not_from_repo())
+    exclude_ignored_packages(not_found_aur_pkgs, args)
     if not_found_aur_pkgs:
         print_not_found_packages(sorted(not_found_aur_pkgs))
     aur_updates = [

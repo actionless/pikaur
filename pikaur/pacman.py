@@ -5,11 +5,16 @@ import shutil
 from pprint import pformat
 
 from .core import (
-    DataType,
+    DataType, ConfigReader,
     CmdTaskWorker, MultipleTasksExecutor,
     get_package_name_from_depend_line,
 )
 from .pprint import color_line, ProgressBar
+
+
+class PacmanConfig(ConfigReader):
+    default_config_path = "/etc/pacman.conf"
+    list_fields = ["IgnorePkg", ]
 
 
 class PacmanTaskWorker(CmdTaskWorker):

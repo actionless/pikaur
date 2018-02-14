@@ -8,7 +8,7 @@ from .aur import find_aur_packages
 from .pacman import (
     find_repo_packages, PackageDB,
 )
-from .meta_package import PackageUpdate, find_aur_deps
+from .meta_package import PackageUpdate, find_aur_deps, exclude_ignored_packages
 from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
@@ -91,10 +91,7 @@ class InstallPackagesCLI():
         self.args = args
 
         packages = packages or args.positional
-        if args.ignore:
-            for ignored_pkg in args.ignore:
-                if ignored_pkg in packages:
-                    packages.remove(ignored_pkg)
+        exclude_ignored_packages(packages, args)
         self.find_packages(packages)
 
         if not args.noconfirm:

@@ -286,6 +286,19 @@ class ConfigReader():
     _cached_config = None
     default_config_path = None
     list_fields = []
+    ignored_fields = []
+
+    @classmethod
+    def _approve_line_for_parsing(cls, line):
+        if '=' not in line:
+            return False
+        if not cls.ignored_fields:
+            return True
+        field_area = line.split('=')[0]
+        for field in cls.ignored_fields:
+            if field in field_area:
+                return False
+        return True
 
     @classmethod
     def get_config(cls, config_path=None):
@@ -297,13 +310,7 @@ class ConfigReader():
             with open(config_path) as config_file:
                 config_string = '\n'.join(['[all]'] + [
                     line for line in config_file.readlines()
-                    if (
-                        '=' in line
-                    ) and (
-                        'Include' not in line
-                    ) and (
-                        'SigLevel' not in line
-                    )
+                    if cls._approve_line_for_parsing(line)
                 ])
             config.read_string(config_string)
             cls._cached_config[config_path] = config['all']

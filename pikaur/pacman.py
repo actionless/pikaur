@@ -15,6 +15,7 @@ from .pprint import color_line, ProgressBar
 class PacmanConfig(ConfigReader):
     default_config_path = "/etc/pacman.conf"
     list_fields = ["IgnorePkg", ]
+    ignored_fields = ["Include", "SigLevel", "Server", ]
 
 
 class PacmanTaskWorker(CmdTaskWorker):

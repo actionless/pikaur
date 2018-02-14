@@ -2,7 +2,7 @@ import asyncio
 import ssl
 import email
 import json
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 
 from .core import MultipleTasksExecutor, DataType
 from .config import VERSION
@@ -149,7 +149,7 @@ class AurTaskWorkerInfo(AurTaskWorker):
             'type': 'info',
         })
         for package in packages:
-            self.params += '&arg[]=' + package
+            self.params += '&arg[]=' + quote(package)
 
 
 def get_repo_url(package_name):

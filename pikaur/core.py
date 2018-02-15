@@ -306,7 +306,7 @@ class ConfigReader():
         if not cls._cached_config:
             cls._cached_config = {}
         if not cls._cached_config.get(config_path):
-            config = configparser.ConfigParser(allow_no_value=True)
+            config = configparser.ConfigParser(allow_no_value=True, strict=False)
             with open(config_path) as config_file:
                 config_string = '\n'.join(['[all]'] + [
                     line for line in config_file.readlines()

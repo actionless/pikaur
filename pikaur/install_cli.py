@@ -406,6 +406,7 @@ class InstallPackagesCLI():
                         'noconfirm',
                         'sysupgrade',
                         'refresh',
+                        'ignore',
                     ]) + packages_to_be_installed,
             ):
                 if not ask_to_continue(default_yes=False):
@@ -507,6 +508,7 @@ class InstallPackagesCLI():
                         'sync',
                         'sysupgrade',
                         'refresh',
+                        'ignore',
                     ]) + new_aur_deps_to_install,
             ):
                 if not ask_to_continue(default_yes=False):
@@ -533,6 +535,7 @@ class InstallPackagesCLI():
                         'sync',
                         'sysupgrade',
                         'refresh',
+                        'ignore',
                     ]) + aur_packages_to_install,
             ):
                 if not ask_to_continue(default_yes=False):

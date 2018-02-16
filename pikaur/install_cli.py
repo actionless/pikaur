@@ -23,7 +23,7 @@ from .pprint import (
     print_sysupgrade, print_not_found_packages,
 )
 from .core import (
-    ask_to_continue, interactive_spawn,
+    ask_to_continue, interactive_spawn, remove_dir,
     SingleTaskExecutor, CmdTaskWorker,
 )
 from .conflicts import (
@@ -78,7 +78,6 @@ class InstallPackagesCLI():
     repo_packages_names = None
     aur_packages_names = None
     aur_deps_names = None
-    all_aur_packages_names = None
     package_builds = None
     aur_packages_conflicts = None
     repo_packages_conflicts = None
@@ -128,6 +127,10 @@ class InstallPackagesCLI():
                 self.failed_to_build
             ))
 
+    @property
+    def all_aur_packages_names(self):
+        return self.aur_packages_names + self.aur_deps_names
+
     def find_packages(self, packages):
         print("resolving dependencies...")
         self.repo_packages_names, self.aur_packages_names = find_repo_packages(
@@ -153,7 +156,6 @@ class InstallPackagesCLI():
                 exc.version_found
             ))
             sys.exit(1)
-        self.all_aur_packages_names = self.aur_packages_names + self.aur_deps_names
 
     def install_prompt(self):
         repo_pkgs = PackageDB.get_repo_dict()
@@ -222,20 +224,41 @@ class InstallPackagesCLI():
         if not self.all_aur_packages_names:
             self.package_builds = []
             return
-        try:
-            self.package_builds = clone_pkgbuilds_git_repos(self.all_aur_packages_names)
-        except CloneError as err:
-            package_build = err.build
-            print(color_line(
-                "Can't {} '{}' in '{}' from AUR:".format(
-                    'clone' if package_build.clone else 'pull',
-                    package_build.package_name,
-                    package_build.repo_path
-                ), 9
-            ))
-            print(err.result)
-            if not ask_to_continue():
-                sys.exit(1)
+        while self.all_aur_packages_names:
+            try:
+                self.package_builds = clone_pkgbuilds_git_repos(self.all_aur_packages_names)
+                break
+            except CloneError as err:
+                package_build = err.build
+                print(color_line(
+                    "Can't {} '{}' in '{}' from AUR:".format(
+                        'clone' if package_build.clone else 'pull',
+                        package_build.package_name,
+                        package_build.repo_path
+                    ), 9
+                ))
+                print(err.result)
+                answer = input('{} {}\n{}\n{}\n{}\n{}\n> '.format(
+                    color_line('::', 11),
+                    'Try recovering?',
+                    "[c] git checkout -- '*'",
+                    # "[c] git checkout -- '*' ; git clean -f -d -x",
+                    '[r] remove dir and clone again',
+                    '[s] skip this package',
+                    '[a] abort',
+                ))
+                answer = answer.lower()[0]
+                if answer == 'c':
+                    package_build.git_reset_changed()
+                elif answer == 'r':
+                    remove_dir(package_build.repo_path)
+                elif answer == 's':
+                    if package_build.package_name in self.aur_packages_names:
+                        self.aur_packages_names.remove(package_build.package_name)
+                    else:
+                        self.aur_deps_names.remove(package_build.package_name)
+                else:
+                    sys.exit(1)
 
     def ask_about_package_conflicts(self):
         print('looking for conflicting packages...')
@@ -300,7 +323,7 @@ class InstallPackagesCLI():
                     self.repo_packages_conflicts.append(installed_pkg_name)
 
     def review_build_files(self):
-        for pkg_name in reversed(self.all_aur_packages_names):
+        for pkg_name in self.all_aur_packages_names:
             repo_status = self.package_builds[pkg_name]
             if self.args.needed and repo_status.version_already_installed:
                 print(

@@ -7,6 +7,7 @@ from .core import (
     MultipleTasksExecutor, SingleTaskExecutor,
     interactive_spawn, get_package_name_from_depend_line,
     ask_to_retry_decorator, ConfigReader,
+    remove_dir,
 )
 from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
@@ -128,6 +129,27 @@ class PackageBuild(DataType):
             'origin',
             'master'
         ])
+
+    def git_reset_changed(self):
+        return SingleTaskExecutor(CmdTaskWorker([
+            'git',
+            '-C',
+            self.repo_path,
+            'checkout',
+            '--',
+            "*"
+        ])).execute()
+
+    def git_clean(self):
+        return SingleTaskExecutor(CmdTaskWorker([
+            'git',
+            '-C',
+            self.repo_path,
+            'clean',
+            '-f',
+            '-d',
+            '-x'
+        ])).execute()
 
     def create_task(self):
         if self.pull:
@@ -305,10 +327,7 @@ class PackageBuild(DataType):
     def build(self, args, all_package_builds):
         repo_path = self.repo_path
         if os.path.exists(self.build_dir):
-            try:
-                shutil.rmtree(self.build_dir)
-            except PermissionError:
-                interactive_spawn(['sudo', 'rm', '-rf', self.build_dir])
+            remove_dir(self.build_dir)
         shutil.copytree(repo_path, self.build_dir)
 
         src_info = SrcInfo(repo_path)

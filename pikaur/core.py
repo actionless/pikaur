@@ -1,6 +1,7 @@
 import asyncio
 import subprocess
 import configparser
+import shutil
 from distutils.version import LooseVersion
 
 
@@ -326,3 +327,10 @@ class ConfigReader():
         if key in cls.list_fields:
             value = value.split()
         return value
+
+
+def remove_dir(dir_path):
+    try:
+        shutil.rmtree(dir_path)
+    except PermissionError:
+        interactive_spawn(['sudo', 'rm', '-rf', dir_path])

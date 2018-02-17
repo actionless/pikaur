@@ -291,6 +291,8 @@ class ConfigReader():
 
     @classmethod
     def _approve_line_for_parsing(cls, line):
+        if line.startswith(' '):
+            return False
         if '=' not in line:
             return False
         if not cls.ignored_fields:

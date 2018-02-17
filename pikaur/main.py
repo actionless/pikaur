@@ -145,20 +145,41 @@ def cli_search_packages(args):
     repo = 'repo'
     aur = 'aur'
     local = 'local'
-    result = MultipleTasksExecutor({
+    tasks = {
         repo: PacmanColorTaskWorker(args.raw),
-        aur: AurTaskWorkerSearch(
-            search_query=' '.join(args.positional or [])
-        ),
         local: GetLocalPkgsVersionsTask,
-    }).execute()
+    }
+    tasks.update({
+        aur+package: AurTaskWorkerSearch(search_query=package)
+        for package in (args.positional or [])
+    })
+    result = MultipleTasksExecutor(tasks).execute()
     local_pkgs_versions = result[local]
     local_pkgs_names = local_pkgs_versions.keys()
+
+    all_aur_results = {
+        key: search_results for key, search_results in result.items()
+        if key.startswith(aur)
+    }
+    aur_result = []
+    aur_pkgs_nameset = None
+    for key, search_results in all_aur_results.items():
+        new_aur_pkgs_nameset = set([result.Name for result in search_results])
+        if aur_pkgs_nameset:
+            aur_pkgs_nameset = aur_pkgs_nameset.intersection(new_aur_pkgs_nameset)
+        else:
+            aur_pkgs_nameset = new_aur_pkgs_nameset
+    aur_result = [
+        result
+        for key, search_results in all_aur_results.items()
+        for result in search_results
+        if result.Name in aur_pkgs_nameset
+    ]
 
     if result[repo].stdout != '':
         print(result[repo].stdout)
     for aur_pkg in sorted(
-            result[aur],
+            aur_result,
             key=lambda pkg: (pkg.NumVotes + 0.1) * (pkg.Popularity + 0.1),
             reverse=True
     ):

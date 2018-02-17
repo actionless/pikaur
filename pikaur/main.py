@@ -150,8 +150,8 @@ def cli_search_packages(args):
         local: GetLocalPkgsVersionsTask,
     }
     tasks.update({
-        aur+package: AurTaskWorkerSearch(search_query=package)
-        for package in (args.positional or [])
+        aur+search_word: AurTaskWorkerSearch(search_query=search_word)
+        for search_word in (args.positional or [])
     })
     result = MultipleTasksExecutor(tasks).execute()
     local_pkgs_versions = result[local]
@@ -161,7 +161,6 @@ def cli_search_packages(args):
         key: search_results for key, search_results in result.items()
         if key.startswith(aur)
     }
-    aur_result = []
     aur_pkgs_nameset = None
     for key, search_results in all_aur_results.items():
         new_aur_pkgs_nameset = set([result.Name for result in search_results])
@@ -169,12 +168,12 @@ def cli_search_packages(args):
             aur_pkgs_nameset = aur_pkgs_nameset.intersection(new_aur_pkgs_nameset)
         else:
             aur_pkgs_nameset = new_aur_pkgs_nameset
-    aur_result = [
-        result
+    aur_result = {
+        result.Name: result
         for key, search_results in all_aur_results.items()
         for result in search_results
         if result.Name in aur_pkgs_nameset
-    ]
+    }.values()
 
     if result[repo].stdout != '':
         print(result[repo].stdout)

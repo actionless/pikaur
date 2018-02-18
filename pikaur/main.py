@@ -89,10 +89,11 @@ def cli_upgrade_packages(args):
     ] + [
         u.Name for u in aur_updates
     ]
-    if all_upgradeable_package_names:
+    all_package_names = list(set(all_upgradeable_package_names + args.positional))
+    if all_package_names:
         cli_install_packages(
             args=args,
-            packages=all_upgradeable_package_names,
+            packages=all_package_names,
         )
     else:
         print('\n{} {}'.format(

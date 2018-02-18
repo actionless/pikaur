@@ -209,6 +209,9 @@ def get_package_version(new_pkg_name):
 
 
 def exclude_ignored_packages(package_names, args):
+    excluded_pkgs = []
     for ignored_pkg in (args.ignore or []) + PacmanConfig.get('IgnorePkg', []):
         if ignored_pkg in package_names:
             package_names.remove(ignored_pkg)
+            excluded_pkgs.append(ignored_pkg)
+    return excluded_pkgs

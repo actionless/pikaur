@@ -90,7 +90,7 @@ class InstallPackagesCLI():
         self.args = args
 
         packages = packages or args.positional
-        exclude_ignored_packages(packages, args)
+        self.exclude_ignored_packages(packages)
         if not packages:
             print('{} {}'.format(
                 color_line('::', 10),
@@ -137,6 +137,15 @@ class InstallPackagesCLI():
     @property
     def all_aur_packages_names(self):
         return self.aur_packages_names + self.aur_deps_names
+
+    def exclude_ignored_packages(self, packages):
+        excluded_packages = exclude_ignored_packages(packages, self.args)
+        for package_name in excluded_packages:
+            print('{} {} {}'.format(
+                color_line('::', 11),
+                "Ignoring package",
+                bold_line(package_name)
+            ))
 
     def find_packages(self, packages):
         print("resolving dependencies...")

@@ -22,6 +22,9 @@ class DependencyError(Exception):
 class DependencyVersionMismatch(DataType, Exception):
     version_found = None
     dependency_line = None
+    who_depends = None
+    depends_on = None
+    location = None
 
     version_matcher = None
 

@@ -87,13 +87,15 @@ def find_aur_deps(package_names):
         if not_found_aur_pkgs:
             raise PackagesNotFoundInAUR(packages=not_found_aur_pkgs)
         for result in aur_pkgs_info:
-            all_deps_for_aur_packages.update(_get_deps_and_version_matchers(result))
+            aur_pkg_deps = _get_deps_and_version_matchers(result)
+            if aur_pkg_deps:
+                all_deps_for_aur_packages[result.Name] = aur_pkg_deps
 
         not_found_local_pkgs = []
-        if all_deps_for_aur_packages:
+        for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():
 
             repo_deps_names, not_found_deps = find_repo_packages(
-                all_deps_for_aur_packages.keys()
+                deps_for_aur_package.keys()
             )
             # pkgs provided by repo pkgs
             provided_by_repo_backrefs = {}
@@ -109,7 +111,7 @@ def find_aur_deps(package_names):
                             ).append(repo_pkg_name)
             # check versions of repo packages:
             for repo_dep_name in repo_deps_names:
-                version_matcher = all_deps_for_aur_packages[repo_dep_name]
+                version_matcher = deps_for_aur_package[repo_dep_name]
                 repo_pkg_infos = [
                     rpkgi for rpkgi in [
                         all_repo_pkgs_info.get(repo_dep_name)
@@ -123,7 +125,10 @@ def find_aur_deps(package_names):
                     if not version_matcher(repo_pkg_info.Version):
                         raise DependencyVersionMismatch(
                             version_found=repo_pkg_info.Version,
-                            dependency_line=version_matcher.line
+                            dependency_line=version_matcher.line,
+                            who_depends=aur_pkg_name,
+                            depends_on=repo_dep_name,
+                            location='repo',
                         )
 
             if not_found_deps:
@@ -147,7 +152,7 @@ def find_aur_deps(package_names):
                                 ).append(local_pkg_name)
                 # check versions of local packages:
                 for local_dep_name in local_deps_names:
-                    version_matcher = all_deps_for_aur_packages[local_dep_name]
+                    version_matcher = deps_for_aur_package[local_dep_name]
                     # print(all_local_pkgs_info[local_dep_name])
                     local_pkg_infos = [
                         lpkgi for lpkgi in [
@@ -162,7 +167,10 @@ def find_aur_deps(package_names):
                         if not version_matcher(local_pkg_info.Version):
                             raise DependencyVersionMismatch(
                                 version_found=local_pkg_info.Version,
-                                dependency_line=version_matcher.line
+                                dependency_line=version_matcher.line,
+                                who_depends=aur_pkg_name,
+                                depends_on=local_dep_name,
+                                location='local'
                             )
 
                 # try finding those packages in AUR
@@ -172,12 +180,15 @@ def find_aur_deps(package_names):
                 # check versions of found AUR packages:
                 for aur_dep_info in aur_deps_info:
                     aur_dep_name = aur_dep_info.Name
-                    version_matcher = all_deps_for_aur_packages[aur_dep_name]
+                    version_matcher = deps_for_aur_package[aur_dep_name]
                     # print(aur_dep_info)
                     if not version_matcher(aur_dep_info.Version):
                         raise DependencyVersionMismatch(
                             version_found=aur_dep_info.Version,
-                            dependency_line=version_matcher.line
+                            dependency_line=version_matcher.line,
+                            who_depends=aur_pkg_name,
+                            depends_on=aur_dep_name,
+                            location='aur'
                         )
 
                 if not_found_aur_deps:

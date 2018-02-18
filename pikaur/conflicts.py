@@ -126,6 +126,7 @@ def check_conflicts(repo_packages_names, aur_packages_names):
                 new_pkg_conflicts_list
             )
         )
+    for new_pkg_name in all_new_pkgs_names:
         conflicts_result.update(
             find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_lists)
         )

@@ -91,6 +91,12 @@ class InstallPackagesCLI():
 
         packages = packages or args.positional
         exclude_ignored_packages(packages, args)
+        if not packages:
+            print('{} {}'.format(
+                color_line('::', 10),
+                "Nothing to do."
+            ))
+            return
         self.find_packages(packages)
 
         if not args.noconfirm:

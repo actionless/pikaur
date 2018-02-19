@@ -8,6 +8,7 @@ from .core import (
     DataType, ConfigReader,
     CmdTaskWorker, MultipleTasksExecutor,
     get_package_name_from_depend_line,
+    get_package_name_and_version_matcher_from_depend_line,
 )
 from .pprint import color_line, ProgressBar
 
@@ -241,7 +242,7 @@ class PackageDBCommon():
                 if pkg.Provides:
                     for provided_pkg in pkg.Provides:
                         provided_pkg_names.setdefault(pkg.Name, []).append(
-                            get_package_name_from_depend_line(provided_pkg)
+                            get_package_name_and_version_matcher_from_depend_line(provided_pkg)
                         )
             cls._provided_dict_cache[local] = provided_pkg_names
         return cls._provided_dict_cache[local]

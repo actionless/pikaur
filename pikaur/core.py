@@ -194,6 +194,19 @@ def compare_versions_test():
     assert compare_versions('0.2+9+123abc-1', '0.3-1')
 
 
+class VersionMatcher():
+
+    def __call__(self, version):
+        result = self.version_matcher(version)
+        # print(f"dep:{self.line} found:{version} result:{result}")
+        return result
+
+    def __init__(self, matcher_func, version, depend_line):
+        self.version_matcher = matcher_func
+        self.version = version
+        self.line = depend_line
+
+
 def get_package_name_from_depend_line(depend_line):  # pylint: disable=invalid-name
     # @TODO: remove this one and use next function instead
     return depend_line.split('=')[0].split('<')[0].split('>')[0]
@@ -235,27 +248,13 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
             version_matcher = matcher
             break
 
-    def class_decorator(f):
-
-        class VersionMatcher():
-            version = get_version()
-            line = depend_line
-
-            def __call__(self, version):
-                result = f(version)
-                # print(f"dep:{self.line} found:{version} result:{result}")
-                return result
-
-        return VersionMatcher()
-
-    version_matcher = class_decorator(version_matcher)
-
     if cond:
         pkg_name, version = depend_line.split(cond)[:2]
         # print((pkg_name, version))
     else:
         pkg_name = depend_line
-    return pkg_name, version_matcher
+
+    return pkg_name, VersionMatcher(version_matcher, version, depend_line)
 
 
 def ask_to_continue(text='Do you want to proceed?', default_yes=True):

@@ -94,6 +94,8 @@ def find_aur_deps(package_names):
         not_found_local_pkgs = []
         for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():
 
+            # @TODO: dedup this and next blocks
+            # repo pkgs
             repo_deps_names, not_found_deps = find_repo_packages(
                 deps_for_aur_package.keys()
             )
@@ -102,26 +104,21 @@ def find_aur_deps(package_names):
             if not_found_deps:
                 repo_provided_dict = PackageDB.get_repo_provided_dict()
                 for repo_pkg_name, repo_provided in repo_provided_dict.items():
-                    for dep_name in not_found_deps[:]:
-                        if dep_name in repo_provided:
-                            not_found_deps.remove(dep_name)
-                            repo_deps_names.append(dep_name)
-                            provided_by_repo_backrefs.setdefault(
-                                dep_name, []
-                            ).append(repo_pkg_name)
+                    for repo_provided_name, repo_provided_version_matcher in repo_provided:
+                        for dep_name in not_found_deps[:]:
+                            if dep_name == repo_provided_name:
+                                repo_deps_names.append(dep_name)
+                                provided_by_repo_backrefs.setdefault(
+                                    dep_name, []
+                                ).append((repo_pkg_name, repo_provided_version_matcher.version))
+                for dep_name in provided_by_repo_backrefs.keys():
+                    not_found_deps.remove(dep_name)
             # check versions of repo packages:
-            for repo_dep_name in repo_deps_names:
+            for repo_dep_name in set(repo_deps_names):
                 version_matcher = deps_for_aur_package[repo_dep_name]
-                repo_pkg_infos = [
-                    rpkgi for rpkgi in [
-                        all_repo_pkgs_info.get(repo_dep_name)
-                    ] + [
-                        all_repo_pkgs_info.get(dn) for dn in
-                        provided_by_repo_backrefs.get(repo_dep_name, [])
-                    ]
-                    if rpkgi is not None
-                ]
-                for repo_pkg_info in repo_pkg_infos:
+                # exlicit dep:
+                repo_pkg_info = all_repo_pkgs_info.get(repo_dep_name)
+                if repo_pkg_info:
                     if not version_matcher(repo_pkg_info.Version):
                         raise DependencyVersionMismatch(
                             version_found=repo_pkg_info.Version,
@@ -130,47 +127,74 @@ def find_aur_deps(package_names):
                             depends_on=repo_dep_name,
                             location='repo',
                         )
+                # dep via provided pkg:
+                provided_by_pkgs = provided_by_repo_backrefs.get(repo_dep_name)
+                if provided_by_pkgs:
+                    fallback_version = None
+                    if repo_pkg_info:
+                        fallback_version = repo_pkg_info.Version
+                    if not sum([
+                        version_matcher(repo_dep_version or fallback_version)
+                        for repo_dep_name, repo_dep_version in provided_by_pkgs
+                    ]):
+                        raise DependencyVersionMismatch(
+                            version_found=provided_by_pkgs,
+                            dependency_line=version_matcher.line,
+                            who_depends=aur_pkg_name,
+                            depends_on=repo_dep_name,
+                            location='repo',
+                        )
 
             if not_found_deps:
+                # local pkgs
                 _local_pkgs_info, not_found_local_pkgs = \
                     find_local_packages(
                         not_found_deps
                     )
-
                 # pkgs provided by local pkgs
                 local_deps_names = []
                 provided_by_local_backrefs = {}
                 if not_found_local_pkgs:
                     local_provided_dict = PackageDB.get_local_provided_dict()
                     for local_pkg_name, local_provided in local_provided_dict.items():
-                        for dep_name in not_found_local_pkgs[:]:
-                            if dep_name in local_provided:
-                                not_found_local_pkgs.remove(dep_name)
-                                local_deps_names.append(dep_name)
-                                provided_by_local_backrefs.setdefault(
-                                    dep_name, []
-                                ).append(local_pkg_name)
+                        for local_provided_name, local_provided_version_matcher in local_provided:
+                            for dep_name in not_found_deps[:]:
+                                if dep_name == local_provided_name:
+                                    local_deps_names.append(dep_name)
+                                    provided_by_local_backrefs.setdefault(
+                                        dep_name, []
+                                    ).append((local_pkg_name, local_provided_version_matcher.version))
+                for dep_name in provided_by_local_backrefs.keys():
+                    not_found_deps.remove(dep_name)
                 # check versions of local packages:
                 for local_dep_name in local_deps_names:
                     version_matcher = deps_for_aur_package[local_dep_name]
-                    # print(all_local_pkgs_info[local_dep_name])
-                    local_pkg_infos = [
-                        lpkgi for lpkgi in [
-                            all_local_pkgs_info.get(local_dep_name)
-                        ] + [
-                            all_local_pkgs_info.get(dn) for dn in
-                            provided_by_local_backrefs.get(local_dep_name, [])
-                        ]
-                        if lpkgi is not None
-                    ]
-                    for local_pkg_info in local_pkg_infos:
+                    local_pkg_info = all_local_pkgs_info.get(local_dep_name)
+                    if local_pkg_info:
                         if not version_matcher(local_pkg_info.Version):
                             raise DependencyVersionMismatch(
                                 version_found=local_pkg_info.Version,
                                 dependency_line=version_matcher.line,
                                 who_depends=aur_pkg_name,
                                 depends_on=local_dep_name,
-                                location='local'
+                                location='local',
+                            )
+                    # dep via provided pkg:
+                    provided_by_pkgs = provided_by_local_backrefs.get(local_dep_name)
+                    if provided_by_pkgs:
+                        fallback_version = None
+                        if local_pkg_info:
+                            fallback_version = local_pkg_info.Version
+                        if not sum([
+                            version_matcher(local_dep_version or fallback_version)
+                            for local_dep_name, local_dep_version in provided_by_pkgs
+                        ]):
+                            raise DependencyVersionMismatch(
+                                version_found=provided_by_pkgs,
+                                dependency_line=version_matcher.line,
+                                who_depends=aur_pkg_name,
+                                depends_on=local_dep_name,
+                                location='local',
                             )
 
                 # try finding those packages in AUR
@@ -207,16 +231,6 @@ def find_aur_deps(package_names):
         package_names = not_found_local_pkgs
 
     return list(set(new_aur_deps))
-
-
-def get_package_version(new_pkg_name):
-    repo_info = PackageDB.get_repo_dict().get(new_pkg_name)
-    if repo_info:
-        return repo_info.Version
-    aur_packages, _not_found = find_aur_packages([new_pkg_name])
-    if aur_packages:
-        return aur_packages[0].Version
-    return None
 
 
 def exclude_ignored_packages(package_names, args):

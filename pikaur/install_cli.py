@@ -166,10 +166,9 @@ class InstallPackagesCLI():
             print_not_found_packages(exc.packages)
             sys.exit(1)
         except DependencyVersionMismatch as exc:
-            print("{}\n {} depends on: '{}{}'\nfound in '{}': '{}'".format(
+            print("{}\n {} depends on: '{}'\n found in '{}': '{}'".format(
                 color_line("Version mismatch:", 11),
-                exc.who_depends,
-                exc.depends_on,
+                bold_line(exc.who_depends),
                 exc.dependency_line,
                 exc.location,
                 exc.version_found

@@ -4,7 +4,7 @@ import email
 import json
 from urllib.parse import urlencode, quote
 
-from .core import MultipleTasksExecutor, DataType
+from .core import MultipleTasksExecutor, DataType, get_chunks
 from .config import VERSION
 
 
@@ -154,20 +154,6 @@ class AurTaskWorkerInfo(AurTaskWorker):
 
 def get_repo_url(package_name):
     return f'https://aur.archlinux.org/{package_name}.git'
-
-
-def get_chunks(iterable, chunk_size):
-    result = []
-    index = 0
-    for item in iterable:
-        result.append(item)
-        index += 1
-        if index == chunk_size:
-            yield result
-            result = []
-            index = 0
-    if result:
-        yield result
 
 
 _AUR_PKGS_FIND_CACHE = {}

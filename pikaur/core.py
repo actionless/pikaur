@@ -339,3 +339,17 @@ def remove_dir(dir_path):
         shutil.rmtree(dir_path)
     except PermissionError:
         interactive_spawn(['sudo', 'rm', '-rf', dir_path])
+
+
+def get_chunks(iterable, chunk_size):
+    result = []
+    index = 0
+    for item in iterable:
+        result.append(item)
+        index += 1
+        if index == chunk_size:
+            yield result
+            result = []
+            index = 0
+    if result:
+        yield result

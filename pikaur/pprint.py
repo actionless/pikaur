@@ -123,13 +123,11 @@ def pretty_print_upgradeable(packages_updates, verbose=False):
 
     print(
         '\n'.join([
-            f'{line}' for line, _ in sorted(
+            f'{line}' for line, _ in
                 [
                     pretty_format(pkg_update)
-                    for pkg_update in packages_updates
-                ],
-                key=lambda x: x[1],
-            )
+                    for pkg_update in sorted(packages_updates, key=lambda x: x.Name)
+                ]
         ])
     )
 

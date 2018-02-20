@@ -3,6 +3,7 @@ import gzip
 import tempfile
 import shutil
 from pprint import pformat
+from multiprocessing import Pool, cpu_count
 
 from .core import (
     DataType, ConfigReader,
@@ -10,7 +11,7 @@ from .core import (
     get_package_name_from_depend_line,
     get_package_name_and_version_matcher_from_depend_line,
 )
-from .pprint import color_line, ProgressBar
+from .pprint import color_line
 
 
 class PacmanConfig(ConfigReader):
@@ -256,6 +257,29 @@ class PackageDBCommon():
         return cls._get_provided_dict(cls.local)
 
 
+def alpm9_worker_local(pkg_dir_name):
+    result = {}
+    if not os.path.isdir(pkg_dir_name):
+        return result
+    for pkg in LocalPackageInfo.parse_pacman_db_info(
+        os.path.join(pkg_dir_name, 'desc')
+    ):
+        result[pkg.Name] = pkg
+    return result
+
+
+def alpm9_worker_repo(pkg_dir_name):
+    result = {}
+    if not os.path.isdir(pkg_dir_name):
+        return result
+    for pkg in RepoPackageInfo.parse_pacman_db_info(
+        os.path.join(pkg_dir_name, 'desc')
+    ):
+        result[pkg.Name] = pkg
+    shutil.rmtree(pkg_dir_name)
+    return result
+
+
 class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
 
     # ~2.7 seconds (was ~2.2 seconds with gzip)
@@ -264,7 +288,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
     def get_repo_dict(cls):
         # pylint: disable=too-many-locals
         if not cls._packages_dict_cache.get(cls.repo):
-            result = {}
+            print("Reading repository package databases...")
             temp_dir = tempfile.mkdtemp()
             sync_dir = '/var/lib/pacman/sync/'
 
@@ -299,43 +323,37 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                 os.remove(temp_repo_path)
 
             # parse package databases
-            pkg_desc_dirs = os.listdir(temp_dir)
-            with ProgressBar(
-                message="Reading repository package databases...",
-                length=len(pkg_desc_dirs)
-            ) as progress_bar:
-                # @TODO: try multiprocess pool here
-                for pkg_dir_name in pkg_desc_dirs:
-                    if not os.path.isdir(os.path.join(temp_dir, pkg_dir_name)):
-                        continue
-                    db_dir = os.path.join(temp_dir, pkg_dir_name)
-                    for pkg in LocalPackageInfo.parse_pacman_db_info(
-                            os.path.join(db_dir, 'desc')
-                    ):
-                        result[pkg.Name] = pkg
-                    shutil.rmtree(db_dir)
-                    progress_bar()
+            pkg_desc_dirs = [
+                os.path.join(temp_dir, pkg_dir_name)
+                for pkg_dir_name in os.listdir(temp_dir)
+            ]
+            result = {}
+            with Pool(cpu_count()) as p:
+                for result_chunk in p.map(
+                        alpm9_worker_repo,
+                        pkg_desc_dirs,
+                ):
+                    result.update(result_chunk)
+
             cls._packages_dict_cache[cls.repo] = result
         return cls._packages_dict_cache[cls.repo]
 
     @classmethod
     def get_local_dict(cls):
         if not cls._packages_dict_cache.get(cls.local):
-            result = {}
+            print("Reading local package database...")
             local_dir = '/var/lib/pacman/local/'
-            pkg_desc_dirs = os.listdir(local_dir)
-            with ProgressBar(
-                message="Reading local package database...",
-                length=len(pkg_desc_dirs)
-            ) as progress_bar:
-                for pkg_dir_name in os.listdir(local_dir):
-                    if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
-                        continue
-                    for pkg in LocalPackageInfo.parse_pacman_db_info(
-                            os.path.join(local_dir, pkg_dir_name, 'desc')
-                    ):
-                        result[pkg.Name] = pkg
-                    progress_bar()
+            pkg_desc_dirs = [
+                os.path.join(local_dir, pkg_dir_name)
+                for pkg_dir_name in os.listdir(local_dir)
+            ]
+            result = {}
+            with Pool(cpu_count()) as p:
+                for result_chunk in p.map(
+                        alpm9_worker_local,
+                        pkg_desc_dirs,
+                ):
+                    result.update(result_chunk)
             cls._packages_dict_cache[cls.local] = result
         return cls._packages_dict_cache[cls.local]
 

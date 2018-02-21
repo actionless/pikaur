@@ -79,13 +79,13 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
 
     cond = None
     version_matcher = lambda v: True  # noqa
-    for test_cond, matcher in {
-            '>=': cmp_ge,
-            '<=': cmp_le,
-            '=': cmp_eq,
-            '>': cmp_gt,
-            '<': cmp_lt,
-    }.items():
+    for test_cond, matcher in (
+            ('>=', cmp_ge),
+            ('<=', cmp_le),
+            ('=', cmp_eq),
+            ('>', cmp_gt),
+            ('<', cmp_lt),
+    ):
         if test_cond in depend_line:
             cond = test_cond
             version_matcher = matcher

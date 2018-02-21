@@ -33,6 +33,7 @@ pkgver() {
 
 build() {
 	cd "${srcdir}/${pkgname}"
+	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
 	nuitka --plugin-enable=pylint-warnings --recurse-directory=pikaur --recurse-all ./pikaur.py
 }
 

@@ -14,6 +14,17 @@ from .core import (
 from .pprint import color_line
 
 
+OFFICIAL_REPOS = (
+    'testing',
+    'core',
+    'extra',
+    'community-testing',
+    'community',
+    'multilib-testing',
+    'multilib',
+)
+
+
 class PacmanConfig(ConfigReader):
     default_config_path = "/etc/pacman.conf"
     list_fields = ["IgnorePkg", ]

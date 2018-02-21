@@ -62,7 +62,7 @@ def print_not_found_packages(not_found_packages):
         print(format_paragraph(package))
 
 
-def pretty_print_upgradeable(packages_updates, verbose=False):
+def pretty_print_upgradeable(packages_updates, verbose=False, print_repo=False):
 
     def get_common_string(str1, str2):
         result = ''
@@ -101,14 +101,20 @@ def pretty_print_upgradeable(packages_updates, verbose=False):
             len(common_version)*10+len(pkg_update.New_Version),
             pkg_update.Name
         )
-        return ' {:<{width}} {:<{width2}} -> {}{}{verbose}'.format(
-            bold_line(pkg_update.Name),
-            color_line(common_version, version_color) +
+        pkg_name = bold_line(pkg_update.Name)
+        if print_repo:
+            pkg_name = '{}{}'.format(
+                color_line(pkg_update.Repository + '/', 13),
+                pkg_name
+            )
+        return ' {pkg_name:<{width}} {current_version:<{width2}} -> {new_version}{verbose}'.format(
+            pkg_name=pkg_name,
+            current_version=color_line(common_version, version_color) +
             color_line(
                 get_version_diff(pkg_update.Current_Version, common_version),
                 old_color
             ),
-            color_line(common_version, version_color),
+            new_version=color_line(common_version, version_color) +
             color_line(
                 get_version_diff(pkg_update.New_Version, common_version),
                 new_color
@@ -142,7 +148,9 @@ def print_upgradeable(packages_updates):
 
 
 def print_sysupgrade(
-        repo_packages_updates=None, aur_updates=None, new_aur_deps=None, verbose=False
+        repo_packages_updates=None, thirdparty_repo_packages_updates=None,
+        aur_updates=None, new_aur_deps=None,
+        verbose=False
 ):
     if repo_packages_updates:
         print('\n{} {}'.format(
@@ -153,6 +161,16 @@ def print_sysupgrade(
         ))
         pretty_print_upgradeable(
             repo_packages_updates, verbose=verbose
+        )
+    if thirdparty_repo_packages_updates:
+        print('\n{} {}'.format(
+            color_line('::', 12),
+            bold_line('Third-party repository package{plural} will be installed:'.format(
+                plural='s' if len(thirdparty_repo_packages_updates) > 1 else ''
+            ))
+        ))
+        pretty_print_upgradeable(
+            thirdparty_repo_packages_updates, verbose=verbose, print_repo=True
         )
     if aur_updates:
         print('\n{} {}'.format(

@@ -17,6 +17,7 @@ class PackageUpdate(DataType):
     Current_Version = None
     New_Version = None
     Description = None
+    Repository = None
 
     def __repr__(self):
         return (
@@ -68,7 +69,7 @@ def find_aur_updates(package_versions):
 
 def find_aur_deps(package_names):
 
-    # @TODO: split to smaller routines
+    # @TODO: refactor: split to smaller routines
 
     def _get_deps_and_version_matchers(result):
         deps = {}
@@ -94,7 +95,7 @@ def find_aur_deps(package_names):
         not_found_local_pkgs = []
         for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():
 
-            # @TODO: dedup this and next blocks
+            # @TODO: refactor: dedup this and next blocks
             # repo pkgs
             repo_deps_names, not_found_deps = find_repo_packages(
                 deps_for_aur_package.keys()

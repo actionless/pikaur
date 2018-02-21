@@ -6,7 +6,7 @@ from functools import reduce
 from .args import reconstruct_args
 from .aur import find_aur_packages
 from .pacman import (
-    find_repo_packages, PackageDB,
+    find_repo_packages, PackageDB, OFFICIAL_REPOS,
 )
 from .meta_package import PackageUpdate, find_aur_deps, exclude_ignored_packages
 from .exceptions import (
@@ -186,15 +186,21 @@ class InstallPackagesCLI():
         }
 
         repo_packages_updates = []
+        thirdparty_repo_packages_updates = []
         for pkg_name in self.repo_packages_names:
             repo_pkg = repo_pkgs[pkg_name]
             local_pkg = local_pkgs.get(pkg_name)
-            repo_packages_updates.append(PackageUpdate(
+            pkg = PackageUpdate(
                 Name=pkg_name,
                 Current_Version=local_pkg.Version if local_pkg else ' ',
                 New_Version=repo_pkg.Version,
-                Description=repo_pkg.Description
-            ))
+                Description=repo_pkg.Description,
+                Repository=repo_pkg.Repository
+            )
+            if repo_pkg.Repository in OFFICIAL_REPOS:
+                repo_packages_updates.append(pkg)
+            else:
+                thirdparty_repo_packages_updates.append(pkg)
 
         aur_updates = []
         for pkg_name in self.aur_packages_names:
@@ -221,14 +227,18 @@ class InstallPackagesCLI():
         answer = None
         while True:
             if answer is None:
-                answer = print_sysupgrade(repo_packages_updates, aur_updates, aur_deps)
+                answer = print_sysupgrade(
+                    repo_packages_updates, thirdparty_repo_packages_updates,
+                    aur_updates, aur_deps
+                )
             if answer:
                 letter = answer.lower()[0]
                 if letter == 'y':
                     break
                 elif letter == 'v':
                     answer = print_sysupgrade(
-                        repo_packages_updates, aur_updates, aur_deps, verbose=True
+                        repo_packages_updates, thirdparty_repo_packages_updates,
+                        aur_updates, aur_deps, verbose=True
                     )
                 elif letter == 'm':
                     # @TODO: implement [m]anual package selection

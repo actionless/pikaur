@@ -1,6 +1,6 @@
 from .pacman import PackageDB
 from .aur import find_aur_packages
-from .core import get_package_name_and_version_matcher_from_depend_line
+from .version import get_package_name_and_version_matcher_from_depend_line
 
 
 def get_new_repo_pkgs_conflicts(repo_packages_names):

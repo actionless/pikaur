@@ -1,12 +1,12 @@
-from .core import (
-    DataType,
-    SingleTaskExecutor,
+from .core import DataType, SingleTaskExecutor
+from .pacman import (
+    PacmanTaskWorker,
+    PackageDB, PacmanConfig,
+    find_local_packages, find_repo_packages,
+)
+from .version import (
     compare_versions,
     get_package_name_and_version_matcher_from_depend_line,
-)
-from .pacman import (
-    PacmanTaskWorker, PackageDB, find_local_packages, find_repo_packages,
-    PacmanConfig,
 )
 from .aur import find_aur_packages
 from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch

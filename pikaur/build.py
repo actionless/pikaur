@@ -5,10 +5,11 @@ import platform
 from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
-    interactive_spawn, get_package_name_from_depend_line,
+    interactive_spawn,
     ask_to_retry_decorator, ConfigReader,
     remove_dir,
 )
+from .version import get_package_name_from_depend_line
 from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
 from .pacman import find_local_packages, PackageDB

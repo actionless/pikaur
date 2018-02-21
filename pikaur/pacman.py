@@ -8,8 +8,8 @@ from multiprocessing import Pool, cpu_count
 from .core import (
     DataType, ConfigReader,
     CmdTaskWorker, MultipleTasksExecutor,
-    get_package_name_and_version_matcher_from_depend_line,
 )
+from .version import get_package_name_and_version_matcher_from_depend_line
 from .pprint import color_line
 
 

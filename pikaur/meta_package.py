@@ -148,12 +148,11 @@ def find_aur_deps(package_names):
 
             if not_found_deps:
                 # local pkgs
-                _local_pkgs_info, not_found_local_pkgs = \
+                local_deps_names, not_found_local_pkgs = \
                     find_local_packages(
                         not_found_deps
                     )
                 # pkgs provided by local pkgs
-                local_deps_names = []
                 provided_by_local_backrefs = {}
                 if not_found_local_pkgs:
                     local_provided_dict = PackageDB.get_local_provided_dict()
@@ -165,8 +164,8 @@ def find_aur_deps(package_names):
                                     provided_by_local_backrefs.setdefault(
                                         dep_name, []
                                     ).append((local_pkg_name, provided_pkg.version_matcher.version))
-                for dep_name in provided_by_local_backrefs.keys():
-                    not_found_deps.remove(dep_name)
+                    for dep_name in provided_by_local_backrefs.keys():
+                        not_found_deps.remove(dep_name)
                 # check versions of local packages:
                 for local_dep_name in local_deps_names:
                     version_matcher = deps_for_aur_package[local_dep_name]

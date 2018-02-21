@@ -8,7 +8,6 @@ from multiprocessing import Pool, cpu_count
 from .core import (
     DataType, ConfigReader,
     CmdTaskWorker, MultipleTasksExecutor,
-    get_package_name_from_depend_line,
     get_package_name_and_version_matcher_from_depend_line,
 )
 from .pprint import color_line
@@ -179,6 +178,11 @@ class LocalPackageInfo(PacmanPackageInfo):
     Install_Script = None
 
 
+class ProvidedDependency(DataType):
+    name = None
+    version_matcher = None
+
+
 class PackageDBCommon():
 
     _packages_list_cache = {}
@@ -222,17 +226,11 @@ class PackageDBCommon():
     @classmethod
     def _get_provided(cls, local):
         if not cls._provided_list_cache.get(local):
-            provided_pkg_names = []
-            for pkg in (
-                    cls.get_local_list() if local == cls.local
-                    else cls.get_repo_list()
-            ):
-                if pkg.Provides:
-                    for provided_pkg in pkg.Provides:
-                        provided_pkg_names.append(
-                            get_package_name_from_depend_line(provided_pkg)
-                        )
-            cls._provided_list_cache[local] = provided_pkg_names
+            cls._provided_list_cache[local] = [
+                provided_pkg.name
+                for provided_pkgs in cls._get_provided_dict(local).values()
+                for provided_pkg in provided_pkgs
+            ]
         return cls._provided_list_cache[local]
 
     @classmethod
@@ -253,8 +251,14 @@ class PackageDBCommon():
             ):
                 if pkg.Provides:
                     for provided_pkg in pkg.Provides:
+                        provided_name, version_matcher = \
+                            get_package_name_and_version_matcher_from_depend_line(
+                                provided_pkg
+                            )
                         provided_pkg_names.setdefault(pkg.Name, []).append(
-                            get_package_name_and_version_matcher_from_depend_line(provided_pkg)
+                            ProvidedDependency(
+                                name=provided_name, version_matcher=version_matcher
+                            )
                         )
             cls._provided_dict_cache[local] = provided_pkg_names
         return cls._provided_dict_cache[local]

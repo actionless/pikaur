@@ -73,14 +73,14 @@ def find_conflicting_with_new_pkgs(new_pkg_name, all_pkgs_names, new_pkg_conflic
                 ):
                     new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
             for installed_pkg_name, provides in local_provided.items():
-                for provided_pkg_name, provided_pkg_version_matcher in provides:
+                for provided_pkg in provides:
                     if (
-                            conflict_pkg_name == provided_pkg_name
+                            conflict_pkg_name == provided_pkg.name
                     ) and (
                         new_pkg_name != installed_pkg_name
                     ) and (
                         conflict_version_matcher(
-                            provided_pkg_version_matcher.version or _get_package_version(installed_pkg_name)
+                            provided_pkg.version_matcher.version or _get_package_version(installed_pkg_name)
                         )
                     ):
                         new_pkgs_conflicts.setdefault(new_pkg_name, []).append(

@@ -105,13 +105,13 @@ def find_aur_deps(package_names):
             if not_found_deps:
                 repo_provided_dict = PackageDB.get_repo_provided_dict()
                 for repo_pkg_name, repo_provided in repo_provided_dict.items():
-                    for repo_provided_name, repo_provided_version_matcher in repo_provided:
+                    for provided_pkg in repo_provided:
                         for dep_name in not_found_deps[:]:
-                            if dep_name == repo_provided_name:
+                            if dep_name == provided_pkg.name:
                                 repo_deps_names.append(dep_name)
                                 provided_by_repo_backrefs.setdefault(
                                     dep_name, []
-                                ).append((repo_pkg_name, repo_provided_version_matcher.version))
+                                ).append((repo_pkg_name, provided_pkg.version_matcher.version))
                 for dep_name in provided_by_repo_backrefs.keys():
                     not_found_deps.remove(dep_name)
             # check versions of repo packages:
@@ -158,13 +158,13 @@ def find_aur_deps(package_names):
                 if not_found_local_pkgs:
                     local_provided_dict = PackageDB.get_local_provided_dict()
                     for local_pkg_name, local_provided in local_provided_dict.items():
-                        for local_provided_name, local_provided_version_matcher in local_provided:
+                        for provided_pkg in local_provided:
                             for dep_name in not_found_deps[:]:
-                                if dep_name == local_provided_name:
+                                if dep_name == provided_pkg.name:
                                     local_deps_names.append(dep_name)
                                     provided_by_local_backrefs.setdefault(
                                         dep_name, []
-                                    ).append((local_pkg_name, local_provided_version_matcher.version))
+                                    ).append((local_pkg_name, provided_pkg.version_matcher.version))
                 for dep_name in provided_by_local_backrefs.keys():
                     not_found_deps.remove(dep_name)
                 # check versions of local packages:

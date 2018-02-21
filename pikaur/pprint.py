@@ -102,7 +102,7 @@ def pretty_print_upgradeable(packages_updates, verbose=False, print_repo=False):
             pkg_update.Name
         )
         pkg_name = bold_line(pkg_update.Name)
-        if print_repo:
+        if (print_repo or verbose) and pkg_update.Repository:
             pkg_name = '{}{}'.format(
                 color_line(pkg_update.Repository + '/', 13),
                 pkg_name

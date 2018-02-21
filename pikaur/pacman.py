@@ -272,9 +272,11 @@ def alpm9_worker_repo(pkg_dir_name):
     result = {}
     if not os.path.isdir(pkg_dir_name):
         return result
+    repo_name = pkg_dir_name.split('/')[-2]
     for pkg in RepoPackageInfo.parse_pacman_db_info(
         os.path.join(pkg_dir_name, 'desc')
     ):
+        pkg.Repository = repo_name
         result[pkg.Name] = pkg
     shutil.rmtree(pkg_dir_name)
     return result
@@ -294,12 +296,15 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
 
             # copy repos dbs to temp location
             temp_repos = {}
-            for repo_name in os.listdir(sync_dir):
-                if not repo_name.endswith('.db'):
+            for repo_filename in os.listdir(sync_dir):
+                if not repo_filename.endswith('.db'):
                     continue
-                temp_repo_path = os.path.join(temp_dir, repo_name)
+                repo_name = repo_filename.split('.db')[0]
+                temp_repo_dir = os.path.join(temp_dir, repo_name)
+                os.makedirs(temp_repo_dir)
+                temp_repo_path = os.path.join(temp_repo_dir, repo_filename)
                 shutil.copy2(
-                    os.path.join(sync_dir, repo_name),
+                    os.path.join(sync_dir, repo_filename),
                     temp_repo_path,
                 )
                 temp_repos[repo_name] = temp_repo_path
@@ -307,7 +312,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
             # uncompress databases
             untar_results = MultipleTasksExecutor({
                 repo_name: CmdTaskWorker([
-                    'bsdtar', '-x', '-f', temp_repo_path, '-C', temp_dir
+                    'bsdtar', '-x', '-f', temp_repo_path, '-C', os.path.join(temp_dir, repo_name)
                 ])
                 for repo_name, temp_repo_path
                 in temp_repos.items()
@@ -324,8 +329,11 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
 
             # parse package databases
             pkg_desc_dirs = [
-                os.path.join(temp_dir, pkg_dir_name)
-                for pkg_dir_name in os.listdir(temp_dir)
+                os.path.join(temp_dir, repo_name, pkg_dir_name)
+                for repo_name in os.listdir(temp_dir)
+                for pkg_dir_name in os.listdir(
+                    os.path.join(temp_dir, repo_name)
+                )
             ]
             result = {}
             with Pool(cpu_count()) as p:

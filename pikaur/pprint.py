@@ -96,18 +96,20 @@ def pretty_print_upgradeable(packages_updates, verbose=False, print_repo=False):
         version_color = 10
         old_color = 11
         new_color = 9
-        column_width = min(int(get_term_width() / 2), 45)
+        column_width = min(int(get_term_width() / 2.5), 37)
         sort_by = '{:03d}{}'.format(
             len(common_version)*10+len(pkg_update.New_Version),
             pkg_update.Name
         )
         pkg_name = bold_line(pkg_update.Name)
+        pkg_len = len(pkg_update.Name)
         if (print_repo or verbose) and pkg_update.Repository:
             pkg_name = '{}{}'.format(
                 color_line(pkg_update.Repository + '/', 13),
                 pkg_name
             )
-        return ' {pkg_name:<{width}} {current_version:<{width2}} -> {new_version}{verbose}'.format(
+            pkg_len += len(pkg_update.Repository) + 1
+        return ' {pkg_name}{spacing} {current_version}{spacing2} -> {new_version}{verbose}'.format(
             pkg_name=pkg_name,
             current_version=color_line(common_version, version_color) +
             color_line(
@@ -119,8 +121,8 @@ def pretty_print_upgradeable(packages_updates, verbose=False, print_repo=False):
                 get_version_diff(pkg_update.New_Version, common_version),
                 new_color
             ),
-            width=column_width,
-            width2=column_width - 3,
+            spacing=' ' * (column_width - pkg_len),
+            spacing2=' ' * (column_width - len(pkg_update.Current_Version or '') - 18),
             verbose=(
                 '' if not (verbose and pkg_update.Description)
                 else f'\n{format_paragraph(pkg_update.Description)}'

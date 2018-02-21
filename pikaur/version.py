@@ -50,11 +50,6 @@ class VersionMatcher():
         self.line = depend_line
 
 
-def get_package_name_from_depend_line(depend_line):  # pylint: disable=invalid-name
-    # @TODO: remove this one and use next function instead
-    return depend_line.split('=')[0].split('<')[0].split('>')[0]
-
-
 # pylint: disable=invalid-name
 def get_package_name_and_version_matcher_from_depend_line(depend_line):
     version = None

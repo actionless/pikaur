@@ -8,7 +8,7 @@ from .core import (
     interactive_spawn,
     ConfigReader, remove_dir,
 )
-from .version import get_package_name_from_depend_line
+from .version import get_package_name_and_version_matcher_from_depend_line
 from .config import AUR_REPOS_CACHE, BUILD_CACHE
 from .aur import get_repo_url
 from .pacman import find_local_packages, PackageDB
@@ -51,7 +51,7 @@ class SrcInfo():
 
     def _get_depends(self, field):
         return [
-            get_package_name_from_depend_line(dep)
+            get_package_name_and_version_matcher_from_depend_line(dep)[0]
             for dep in self.get_values(field)
         ]
 

@@ -16,19 +16,19 @@ from .exceptions import (
 from .build import (
     SrcInfo,
     clone_pkgbuilds_git_repos,
-    retry_interactive_command,
 )
 from .pprint import (
     color_line, bold_line,
     print_sysupgrade, print_not_found_packages,
 )
 from .core import (
-    ask_to_continue, interactive_spawn, remove_dir,
     SingleTaskExecutor, CmdTaskWorker,
+    interactive_spawn, remove_dir,
 )
 from .conflicts import (
     check_conflicts, check_replacements,
 )
+from .prompt import ask_to_continue, retry_interactive_command
 
 
 def get_editor():

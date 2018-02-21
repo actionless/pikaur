@@ -157,30 +157,6 @@ class CmdTaskWorker(object):
         return self._stream_subprocess()
 
 
-def ask_to_continue(text='Do you want to proceed?', default_yes=True):
-    answer = input(text + (' [Y/n] ' if default_yes else ' [y/N] '))
-    if default_yes:
-        if answer and answer.lower()[0] != 'y':
-            return False
-    else:
-        if not answer or answer.lower()[0] != 'y':
-            return False
-    return True
-
-
-def ask_to_retry_decorator(fun):
-
-    def decorated(*args, **kwargs):
-        while True:
-            result = fun(*args, **kwargs)
-            if result:
-                return result
-            if not ask_to_continue('Do you want to retry?'):
-                return None
-
-    return decorated
-
-
 class ConfigReader():
 
     _cached_config = None

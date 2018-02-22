@@ -1,6 +1,7 @@
 import platform
 import sys
 import os
+from tempfile import NamedTemporaryFile
 from functools import reduce
 
 from .args import reconstruct_args
@@ -20,7 +21,7 @@ from .build import (
 )
 from .pprint import (
     color_line, bold_line,
-    print_sysupgrade, print_not_found_packages,
+    pretty_format_sysupgrade, print_not_found_packages,
 )
 from .core import (
     SingleTaskExecutor, CmdTaskWorker,
@@ -80,6 +81,28 @@ def exclude_ignored_packages(package_names, args):
             package_names.remove(ignored_pkg)
             excluded_pkgs.append(ignored_pkg)
     return excluded_pkgs
+
+
+def manual_package_selection(text):
+    selected_packages = []
+    with NamedTemporaryFile() as tmp_file:
+        with open(tmp_file.name, 'w') as write_file:
+            write_file.write(text)
+        interactive_spawn([
+            get_editor(),
+            tmp_file.name
+        ])
+        with open(tmp_file.name, 'r') as read_file:
+            for line in read_file.readlines():
+                line = line.lstrip()
+                if not line:
+                    continue
+                if not line.startswith('::') and not line.startswith('#'):
+                    pkg_name = line.split()[0]
+                    if '/' in pkg_name:
+                        pkg_name = pkg_name.split('/')[1]
+                    selected_packages.append(pkg_name)
+    return selected_packages
 
 
 class InstallPackagesCLI():
@@ -254,11 +277,18 @@ class InstallPackagesCLI():
         aur_deps = self._get_aur_deps()
 
         def _print_sysupgrade(verbose=False):
-            return print_sysupgrade(
+            print(pretty_format_sysupgrade(
                 repo_packages_updates, thirdparty_repo_packages_updates,
                 aur_updates, aur_deps,
                 verbose=verbose
-            )
+            ))
+            answer = input('{} {}\n{} {}\n> '.format(
+                color_line('::', 12),
+                bold_line('Proceed with installation? [Y/n] '),
+                color_line('::', 12),
+                bold_line('[v]iew package detail   [m]anually select packages')
+            ))
+            return answer
 
         answer = None
         while True:
@@ -271,8 +301,17 @@ class InstallPackagesCLI():
                 elif letter == 'v':
                     answer = _print_sysupgrade(verbose=True)
                 elif letter == 'm':
-                    # @TODO: implement [m]anual package selection
-                    raise NotImplementedError()
+                    print()
+                    packages = manual_package_selection(
+                        text=pretty_format_sysupgrade(
+                            repo_packages_updates, thirdparty_repo_packages_updates,
+                            aur_updates,
+                            color=False
+                        )
+                    )
+                    self.find_packages(packages)
+                    self.install_prompt()
+                    break
                 else:
                     sys.exit(1)
             else:

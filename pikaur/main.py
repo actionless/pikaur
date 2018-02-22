@@ -13,7 +13,7 @@ from .core import (
 )
 from .pprint import (
     color_line, bold_line,
-    print_upgradeable, pretty_print_upgradeable,
+    print_upgradeable, pretty_format_upgradeable,
     print_not_found_packages, print_aur_search_results,
     print_version,
 )
@@ -52,7 +52,7 @@ def cli_print_upgradeable(args):
     if args.quiet:
         print_upgradeable(updates)
     else:
-        pretty_print_upgradeable(updates)
+        print(pretty_format_upgradeable(updates))
 
 
 def cli_install_packages(args, packages=None):

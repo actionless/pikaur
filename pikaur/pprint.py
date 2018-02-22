@@ -61,7 +61,12 @@ def print_not_found_packages(not_found_packages):
         print(format_paragraph(package))
 
 
-def pretty_print_upgradeable(packages_updates, verbose=False, print_repo=False):
+def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False, color=True):
+
+    _color_line = color_line
+    _bold_line = bold_line
+    if not color:
+        _color_line = _bold_line = lambda x, *args: x
 
     def get_common_string(str1, str2):
         result = ''
@@ -100,23 +105,23 @@ def pretty_print_upgradeable(packages_updates, verbose=False, print_repo=False):
             len(common_version)*10+len(pkg_update.New_Version),
             pkg_update.Name
         )
-        pkg_name = bold_line(pkg_update.Name)
+        pkg_name = _bold_line(pkg_update.Name)
         pkg_len = len(pkg_update.Name)
         if (print_repo or verbose) and pkg_update.Repository:
             pkg_name = '{}{}'.format(
-                color_line(pkg_update.Repository + '/', 13),
+                _color_line(pkg_update.Repository + '/', 13),
                 pkg_name
             )
             pkg_len += len(pkg_update.Repository) + 1
         return ' {pkg_name}{spacing} {current_version}{spacing2} -> {new_version}{verbose}'.format(
             pkg_name=pkg_name,
-            current_version=color_line(common_version, version_color) +
-            color_line(
+            current_version=_color_line(common_version, version_color) +
+            _color_line(
                 get_version_diff(pkg_update.Current_Version, common_version),
                 old_color
             ),
-            new_version=color_line(common_version, version_color) +
-            color_line(
+            new_version=_color_line(common_version, version_color) +
+            _color_line(
                 get_version_diff(pkg_update.New_Version, common_version),
                 new_color
             ),
@@ -128,17 +133,15 @@ def pretty_print_upgradeable(packages_updates, verbose=False, print_repo=False):
             )
         ), sort_by
 
-    print(
-        '\n'.join([
-            f'{line}' for line, _ in sorted(
-                [
-                    pretty_format(pkg_update)
-                    for pkg_update in packages_updates
-                ],
-                key=lambda x: x[1],
-            )
-        ])
-    )
+    return '\n'.join([
+        f'{line}' for line, _ in sorted(
+            [
+                pretty_format(pkg_update)
+                for pkg_update in packages_updates
+            ],
+            key=lambda x: x[1],
+        )
+    ])
 
 
 def print_upgradeable(packages_updates):
@@ -148,60 +151,60 @@ def print_upgradeable(packages_updates):
     ]))
 
 
-def print_sysupgrade(  # pylint: disable=invalid-name
+def pretty_format_sysupgrade(  # pylint: disable=invalid-name,too-many-arguments
         repo_packages_updates=None, thirdparty_repo_packages_updates=None,
         aur_updates=None, new_aur_deps=None,
-        verbose=False
+        verbose=False, color=True
 ):
+
+    _color_line = color_line
+    _bold_line = bold_line
+    if not color:
+        _color_line = _bold_line = lambda x, *args: x
+
+    result = []
     if repo_packages_updates:
-        print('\n{} {}'.format(
-            color_line('::', 12),
-            bold_line('Repository package{plural} will be installed:'.format(
+        result.append('\n{} {}'.format(
+            _color_line('::', 12),
+            _bold_line('Repository package{plural} will be installed:'.format(
                 plural='s' if len(repo_packages_updates) > 1 else ''
             ))
         ))
-        pretty_print_upgradeable(
-            repo_packages_updates, verbose=verbose
-        )
+        result.append(pretty_format_upgradeable(
+            repo_packages_updates, verbose=verbose, color=color
+        ))
     if thirdparty_repo_packages_updates:
-        print('\n{} {}'.format(
-            color_line('::', 12),
-            bold_line('Third-party repository package{plural} will be installed:'.format(
+        result.append('\n{} {}'.format(
+            _color_line('::', 12),
+            _bold_line('Third-party repository package{plural} will be installed:'.format(
                 plural='s' if len(thirdparty_repo_packages_updates) > 1 else ''
             ))
         ))
-        pretty_print_upgradeable(
-            thirdparty_repo_packages_updates, verbose=verbose, print_repo=True
-        )
+        result.append(pretty_format_upgradeable(
+            thirdparty_repo_packages_updates, verbose=verbose, print_repo=True, color=color
+        ))
     if aur_updates:
-        print('\n{} {}'.format(
-            color_line('::', 14),
-            bold_line('AUR package{plural} will be installed:'.format(
+        result.append('\n{} {}'.format(
+            _color_line('::', 14),
+            _bold_line('AUR package{plural} will be installed:'.format(
                 plural='s' if len(aur_updates) > 1 else ''
             ))
         ))
-        pretty_print_upgradeable(
-            aur_updates, verbose=verbose
-        )
+        result.append(pretty_format_upgradeable(
+            aur_updates, verbose=verbose, color=color
+        ))
     if new_aur_deps:
-        print('\n{} {}'.format(
-            color_line('::', 11),
-            bold_line('New dependenc{plural} will be installed from AUR:'.format(
+        result.append('\n{} {}'.format(
+            _color_line('::', 11),
+            _bold_line('New dependenc{plural} will be installed from AUR:'.format(
                 plural='ies' if len(new_aur_deps) > 1 else 'y'
             ))
         ))
-        pretty_print_upgradeable(
-            new_aur_deps, verbose=verbose
-        )
-
-    print()
-    answer = input('{} {}\n{} {}\n> '.format(
-        color_line('::', 12),
-        bold_line('Proceed with installation? [Y/n] '),
-        color_line('::', 12),
-        bold_line('[v]iew package detail   [m]anually select packages')
-    ))
-    return answer
+        result.append(pretty_format_upgradeable(
+            new_aur_deps, verbose=verbose, color=color
+        ))
+    result += ['\n']
+    return '\n'.join(result)
 
 
 def print_aur_search_results(aur_results, local_pkgs_versions, args):

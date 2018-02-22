@@ -185,18 +185,11 @@ class InstallPackagesCLI():
             ))
             sys.exit(1)
 
-    def install_prompt(self):
+    def _get_repo_pkgs_updates(self):
         repo_pkgs = PackageDB.get_repo_dict()
         local_pkgs = PackageDB.get_local_dict()
-        aur_pkgs = {
-            aur_pkg.Name: aur_pkg
-            for aur_pkg in find_aur_packages(
-                self.aur_packages_names+self.aur_deps_names
-            )[0]
-        }
-
         repo_packages_updates = []
-        thirdparty_repo_packages_updates = []
+        thirdparty_repo_packages_updates = []  # pylint: disable=invalid-name
         for pkg_name in self.repo_packages_names:
             repo_pkg = repo_pkgs[pkg_name]
             local_pkg = local_pkgs.get(pkg_name)
@@ -211,7 +204,16 @@ class InstallPackagesCLI():
                 repo_packages_updates.append(pkg)
             else:
                 thirdparty_repo_packages_updates.append(pkg)
+        return repo_packages_updates, thirdparty_repo_packages_updates
 
+    def _get_aur_updates(self):
+        local_pkgs = PackageDB.get_local_dict()
+        aur_pkgs = {
+            aur_pkg.Name: aur_pkg
+            for aur_pkg in find_aur_packages(
+                self.aur_packages_names
+            )[0]
+        }
         aur_updates = []
         for pkg_name in self.aur_packages_names:
             aur_pkg = aur_pkgs[pkg_name]
@@ -222,7 +224,16 @@ class InstallPackagesCLI():
                 New_Version=aur_pkg.Version,
                 Description=aur_pkg.Description
             ))
+        return aur_updates
 
+    def _get_aur_deps(self):
+        local_pkgs = PackageDB.get_local_dict()
+        aur_pkgs = {
+            aur_pkg.Name: aur_pkg
+            for aur_pkg in find_aur_packages(
+                self.aur_deps_names
+            )[0]
+        }
         aur_deps = []
         for pkg_name in self.aur_deps_names:
             aur_pkg = aur_pkgs[pkg_name]
@@ -233,23 +244,32 @@ class InstallPackagesCLI():
                 New_Version=aur_pkg.Version,
                 Description=aur_pkg.Description
             ))
+        return aur_deps
+
+    def install_prompt(self):
+        # pylint: disable=invalid-name
+        repo_packages_updates, thirdparty_repo_packages_updates = \
+            self._get_repo_pkgs_updates()
+        aur_updates = self._get_aur_updates()
+        aur_deps = self._get_aur_deps()
+
+        def _print_sysupgrade(verbose=False):
+            return print_sysupgrade(
+                repo_packages_updates, thirdparty_repo_packages_updates,
+                aur_updates, aur_deps,
+                verbose=verbose
+            )
 
         answer = None
         while True:
             if answer is None:
-                answer = print_sysupgrade(
-                    repo_packages_updates, thirdparty_repo_packages_updates,
-                    aur_updates, aur_deps
-                )
+                answer = _print_sysupgrade()
             if answer:
                 letter = answer.lower()[0]
                 if letter == 'y':
                     break
                 elif letter == 'v':
-                    answer = print_sysupgrade(
-                        repo_packages_updates, thirdparty_repo_packages_updates,
-                        aur_updates, aur_deps, verbose=True
-                    )
+                    answer = _print_sysupgrade(verbose=True)
                 elif letter == 'm':
                     # @TODO: implement [m]anual package selection
                     raise NotImplementedError()

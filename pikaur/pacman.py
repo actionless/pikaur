@@ -277,7 +277,7 @@ def alpm9_worker_local(pkg_dir_name):
     if not os.path.isdir(pkg_dir_name):
         return result
     for pkg in LocalPackageInfo.parse_pacman_db_info(
-        os.path.join(pkg_dir_name, 'desc')
+            os.path.join(pkg_dir_name, 'desc')
     ):
         result[pkg.Name] = pkg
     return result
@@ -289,7 +289,7 @@ def alpm9_worker_repo(pkg_dir_name):
         return result
     repo_name = pkg_dir_name.split('/')[-2]
     for pkg in RepoPackageInfo.parse_pacman_db_info(
-        os.path.join(pkg_dir_name, 'desc')
+            os.path.join(pkg_dir_name, 'desc')
     ):
         pkg.Repository = repo_name
         result[pkg.Name] = pkg
@@ -351,8 +351,8 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                 )
             ]
             result = {}
-            with Pool(cpu_count()) as p:
-                for result_chunk in p.map(
+            with Pool(cpu_count()) as pool:
+                for result_chunk in pool.map(
                         alpm9_worker_repo,
                         pkg_desc_dirs,
                 ):
@@ -371,8 +371,8 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name
                 for pkg_dir_name in os.listdir(local_dir)
             ]
             result = {}
-            with Pool(cpu_count()) as p:
-                for result_chunk in p.map(
+            with Pool(cpu_count()) as pool:
+                for result_chunk in pool.map(
                         alpm9_worker_local,
                         pkg_desc_dirs,
                 ):

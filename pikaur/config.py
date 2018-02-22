@@ -1,6 +1,6 @@
 import os
 
-VERSION = '0.5'
+VERSION = '0.6-dev'
 
 CACHE_ROOT = os.path.expanduser('~/.cache/pikaur/')
 AUR_REPOS_CACHE = os.path.join(CACHE_ROOT, 'aur_repos')

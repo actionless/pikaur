@@ -1,5 +1,125 @@
 from distutils.version import LooseVersion
 import ctypes
+import re
+from itertools import zip_longest
+import operator
+import functools
+
+
+class PackageVersion:
+    VERSION_RE = re.compile(r'''
+        ((?P<epoch>\d*):)? # epoch?
+        (?P<pkgver>[^-]+)  # pkgver
+        (-(?P<pkgrel>.*))?   # pkgrel?
+        $
+    ''', re.VERBOSE)
+
+    PKGVER_PART_RE = re.compile(r'(\d+)|([a-zA-Z]+)')
+
+    def __init__(self, version_string):
+        self.version_string = version_string
+
+        m = self.VERSION_RE.match(version_string)
+        epoch = m.group('epoch')
+        if not epoch:
+            epoch = 0
+        else:
+            epoch = int(epoch)
+
+        self.epoch = epoch
+        self.pkgver = m.group('pkgver')
+        self.pkgrel = m.group('pkgrel')
+
+        if self.pkgrel == '':
+            self.pkgrel = None
+
+        self.pkgver_span = m.span('pkgver')
+
+        self.pkgver_parts = self._get_pkgver_parts(self.pkgver, offset=self.pkgver_span[0])
+
+
+    def _get_pkgver_parts(self, pkgver, offset):
+        parts = []
+        for m in self.PKGVER_PART_RE.finditer(pkgver):
+            if m[1] != None:
+                p = int(m[1])
+            else:
+                p = m[2]
+
+            s = m.span()
+            parts.append((p, (offset + s[0], offset + s[1])))
+
+        return parts
+
+    '''
+    Returns a pair consisting of:
+    - Either -1, 0 or 1 indicating self < / = / > other.
+    - The first index of self's version string where the two fail to match.
+      If the two compare equal this is the length of the string.
+    '''
+    def compare(self, other):
+        def unequal_res(v1, v2, pos):
+            return (-1 if v1 < v2 else 1, pos)
+
+        prefix = 0
+        if self.epoch != other.epoch:
+            return unequal_res(self.epoch, other.epoch, prefix)
+
+        prefix = self.pkgver_span[0]
+
+        # Remove :
+        if prefix != 0:
+            prefix -= 1
+
+        for x1, x2 in zip_longest(self.pkgver_parts, other.pkgver_parts):
+            if x1 == None:
+                return (-1, self.pkgver_span[1])
+
+            p1, s1 = x1
+
+            if x2 == None:
+                return (1, prefix)
+
+            p2, s2 = x2
+
+            if p1 == p2:
+                prefix = s1[1]
+                continue
+
+            int1 = isinstance(p1, int)
+            int2 = isinstance(p2, int)
+            if int1 and int2:
+                return unequal_res(p1, p2, prefix)
+            elif int1:
+                return (1, prefix)
+            elif int2:
+                return (-1, prefix)
+            else:
+                return unequal_res(p1, p2, prefix)
+
+        if self.pkgrel == other.pkgrel or None in (self.pkgrel, other.pkgrel):
+            return (0, len(self.version_string))
+
+        return unequal_res(self.pkgrel, other.pkgrel, self.pkgver_span[1])
+
+
+    def __eq__(self, other):
+        return self.compare(other)[0] == 0
+
+    def __lt__(self, other):
+        return self.compare(other)[0] == -1
+
+    def __gt__(self, other):
+        return self.compare(other)[0] == 1
+
+    def __le__(self, other):
+        return self.compare(other)[0] <= 0
+
+    def __ge__(self, other):
+        return self.compare(other)[0] >= 0
+
+    def __str__(self):
+        return self.version_string
 
 
 def compare_versions_bak(current_version, new_version):
@@ -58,21 +178,49 @@ def compare_versions(current_version, new_version):
 
 
 def compare_versions_test():
-    import traceback
-
-    for expected_result, old_version, new_version in (
-            (-1, '0.2+9+123abc-1', '0.3-1'),
-            (-1, '0.50.12', '0.50.13'),
-            (-1, '0.50.19', '0.50.20'),
-            (-1, '0.50.2-1', '0.50.2+6+123131-1'),
-            (-1, '0.50.2+1', '0.50.2+6+123131-1'),
+    for expected_result, old_version, new_version, *prefixes in (
+            (-1, '0.2+9+123abc-1', '0.3-1', '0', '0'),
+            (-1, '0.50.12', '0.50.13', '0.50', '0.50'),
+            (-1, '0.50.19', '0.50.20', '0.50', '0.50'),
+            (-1, '0.50.2-1', '0.50.2+6+123131-1', '0.50.2', '0.50.2'),
+            (-1, '0.50.2+1', '0.50.2+6+123131-1', '0.50.2', '0.50.2'),
             (0, '0.50.1', '0.50.1'),
+            (0, '0:1.2.3', '1.2.3'),
+            (0, ':1.2.3', '1.2.3'),
+            (0, '1.2.3', '1.2.3-1'),
+            (0, '1.2.3', '1.2.3-7'),
+            (0, '1.2.3', '1.2.3-'),
+            (-1, '1.2.3-1', '1.2.3-7', '1.2.3', '1.2.3'),
+            (-1, '11.2.3', '1:1.2.3', '', ''),
+            (0, '1.2.3', '1.02.0003'),
+            (-1, '1.2.3', '1.02.004', '1.2', '1.02'),
+            (0, '1+2', '1.2'),
     ):
-        print((old_version, new_version))
-        try:
-            assert compare_versions_bak(old_version, new_version) == (expected_result < 0)
-        except AssertionError:
-            traceback.print_exc()
+        res = compare_versions_bak(old_version, new_version)
+        if res != (expected_result < 0):
+            print(f'compare_versions_bak failed: cmp({old_version}, {new_version}) should be {expected_result}, not {-1 if res else 0}')
+
+        res1, prefix1 = PackageVersion(old_version).compare(PackageVersion(new_version))
+        res2, prefix2 = PackageVersion(new_version).compare(PackageVersion(old_version))
+
+        if res1 != -res2:
+            print(f'PackageVersion compare arguments are not swappable: {old_version}, {new_version}')
+
+        if expected_result != 0:
+            expected1 = prefixes[0]
+            expected2 = prefixes[1]
+        else:
+            expected1 = old_version
+            expected2 = new_version
+
+        if old_version[:prefix1] != expected1:
+            print(f'PackageVersion prefix is wrong ({old_version}, {new_version}): got {old_version[:prefix1]}, expected {expected1}')
+
+        if new_version[:prefix2] != expected2:
+            print(f'PackageVersion prefix is wrong ({new_version}, {old_version}): got {new_version[:prefix2]}, expected {expected2}')
+
+        if res1 != expected_result:
+            print(f'PackageVersion compare failed: cmp({old_version}, {new_version}) should be {expected_result}, not {res1}')
         assert compare_versions(old_version, new_version) == expected_result
 
     print("Tests passed!")
@@ -98,20 +246,23 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
     def get_version():
         return version
 
+    def _cmp(v):
+        return compare_versions(v, get_version())
+
     def cmp_lt(v):
-        return compare_versions(v, get_version()) < 0
+        return _cmp(v) < 0
 
     def cmp_gt(v):
-        return compare_versions(v, get_version()) > 0
+        return _cmp(v) > 0
 
     def cmp_eq(v):
-        return compare_versions(v, get_version()) == 0
+        return _cmp(v) == 0
 
     def cmp_le(v):
-        return cmp_eq(v) or cmp_lt(v)
+        return _cmp(v) <= 0
 
     def cmp_ge(v):
-        return cmp_eq(v) or cmp_gt(v)
+        return _cmp(v) >= 0
 
     cond = None
     version_matcher = lambda v: True  # noqa

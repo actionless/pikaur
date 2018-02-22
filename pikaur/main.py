@@ -12,9 +12,9 @@ from .core import (
     CmdTaskWorker, interactive_spawn,
 )
 from .pprint import (
-    color_line, bold_line, format_paragraph,
-    print_not_found_packages,
+    color_line, bold_line,
     print_upgradeable, pretty_print_upgradeable,
+    print_not_found_packages, print_aur_search_results,
     print_version,
 )
 from .aur import (
@@ -25,6 +25,11 @@ from .pacman import (
 )
 from .package_update import find_repo_updates, find_aur_updates
 from .install_cli import InstallPackagesCLI, exclude_ignored_packages
+
+
+REPO = 'repo'
+AUR = 'aur'
+LOCAL = 'local'
 
 
 def init_readline():
@@ -101,18 +106,16 @@ def cli_upgrade_packages(args):
 
 
 def cli_info_packages(args):
-    pkgs = 'pkgs'
-    aur = 'aur'
     result = MultipleTasksExecutor({
-        pkgs: PacmanColorTaskWorker(args.raw),
-        aur: AurTaskWorkerInfo(
+        REPO: PacmanColorTaskWorker(args.raw),
+        AUR: AurTaskWorkerInfo(
             packages=args.positional or []
         ),
     }).execute()
-    aur_pkgs = result[aur]
+    aur_pkgs = result[AUR]
     num_found = len(aur_pkgs)
-    if result[pkgs].stdout:
-        print(result[pkgs].stdout, end='\n' if aur_pkgs else '')
+    if result[REPO].stdout:
+        print(result[REPO].stdout, end='\n' if aur_pkgs else '')
     for i, aur_pkg in enumerate(aur_pkgs):
         print(
             '\n'.join([
@@ -134,8 +137,6 @@ def cli_clean_packages_cache(_args):
 
 def cli_search_packages(args):
 
-    # @TODO: refactor: split to smaller routines
-
     class GetLocalPkgsVersionsTask():
         async def get_task(self):
             return {
@@ -143,24 +144,20 @@ def cli_search_packages(args):
                 for pkg_name, pkg in PackageDB.get_local_dict().items()
             }
 
-    repo = 'repo'
-    aur = 'aur'
-    local = 'local'
     tasks = {
-        repo: PacmanColorTaskWorker(args.raw),
-        local: GetLocalPkgsVersionsTask,
+        REPO: PacmanColorTaskWorker(args.raw),
+        LOCAL: GetLocalPkgsVersionsTask,
     }
     tasks.update({
-        aur+search_word: AurTaskWorkerSearch(search_query=search_word)
+        AUR+search_word: AurTaskWorkerSearch(search_query=search_word)
         for search_word in (args.positional or [])
     })
     result = MultipleTasksExecutor(tasks).execute()
-    local_pkgs_versions = result[local]
-    local_pkgs_names = local_pkgs_versions.keys()
+    local_pkgs_versions = result[LOCAL]
 
     all_aur_results = {
         key: search_results for key, search_results in result.items()
-        if key.startswith(aur)
+        if key.startswith(AUR)
     }
     aur_pkgs_nameset = None
     for key, search_results in all_aur_results.items():
@@ -176,32 +173,13 @@ def cli_search_packages(args):
         if result.Name in aur_pkgs_nameset
     }.values()
 
-    if result[repo].stdout != '':
-        print(result[repo].stdout)
-    for aur_pkg in sorted(
-            aur_result,
-            key=lambda pkg: (pkg.NumVotes + 0.1) * (pkg.Popularity + 0.1),
-            reverse=True
-    ):
-        # @TODO: return only packages for the current architecture
-        pkg_name = aur_pkg.Name
-        if args.quiet:
-            print(pkg_name)
-        else:
-            print("{}{} {} {}({}, {:.2f})".format(
-                # color_line('aur/', 13),
-                color_line('aur/', 9),
-                bold_line(pkg_name),
-                color_line(aur_pkg.Version, 10),
-                color_line('[installed{}] '.format(
-                    f': {local_pkgs_versions[pkg_name]}'
-                    if aur_pkg.Version != local_pkgs_versions[pkg_name]
-                    else ''
-                ), 14) if pkg_name in local_pkgs_names else '',
-                aur_pkg.NumVotes,
-                aur_pkg.Popularity
-            ))
-            print(format_paragraph(f'{aur_pkg.Description}'))
+    if result[REPO].stdout != '':
+        print(result[REPO].stdout)
+    print_aur_search_results(
+        aur_results=aur_result,
+        local_pkgs_versions=local_pkgs_versions,
+        args=args
+    )
 
 
 def cli_print_version():

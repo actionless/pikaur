@@ -8,7 +8,8 @@ import readline
 
 from .args import parse_args
 from .core import (
-    MultipleTasksExecutor, interactive_spawn,
+    SingleTaskExecutor, MultipleTasksExecutor,
+    CmdTaskWorker, interactive_spawn,
 )
 from .pprint import (
     color_line, bold_line, format_paragraph,
@@ -201,6 +202,13 @@ def cli_search_packages(args):
             print(format_paragraph(f'{aur_pkg.Description}'))
 
 
+def cli_print_version():
+    pacman_version = SingleTaskExecutor(CmdTaskWorker(
+        ['pacman', '--version', ],
+    )).execute().stdout.splitlines()[1].strip(' .-')
+    print_version(pacman_version)
+
+
 def cli_entry_point():
     # pylint: disable=too-many-branches
     raw_args = sys.argv[1:]
@@ -234,7 +242,7 @@ def cli_entry_point():
             require_sudo = False
 
     elif args.version:
-        print_version()
+        cli_print_version()
     else:
         not_implemented_in_pikaur = True
 

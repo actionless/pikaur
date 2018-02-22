@@ -2,7 +2,6 @@ import sys
 import shutil
 
 from .config import VERSION
-from .core import SingleTaskExecutor, CmdTaskWorker
 
 
 PADDING = 4
@@ -149,7 +148,7 @@ def print_upgradeable(packages_updates):
     ]))
 
 
-def print_sysupgrade(
+def print_sysupgrade(  # pylint: disable=invalid-name
         repo_packages_updates=None, thirdparty_repo_packages_updates=None,
         aur_updates=None, new_aur_deps=None,
         verbose=False
@@ -205,10 +204,7 @@ def print_sysupgrade(
     return answer
 
 
-def print_version():
-    pacman_version = SingleTaskExecutor(CmdTaskWorker(
-        ['pacman', '--version', ],
-    )).execute().stdout.splitlines()[1].strip(' .-')
+def print_version(pacman_version):
     sys.stdout.buffer.write((r"""
       /:}               _
      /--1             / :}

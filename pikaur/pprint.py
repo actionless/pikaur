@@ -68,20 +68,16 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
     if not color:
         _color_line = _bold_line = lambda x, *args: x
 
-    def get_common_string(str1, str2):
-        result = ''
-        if '' in (str1, str2):
-            return result
-        counter = 0
-        while (
-                counter < len(str1)
-        ) and (
-            counter < len(str2)
-        ) and (
-            str1[counter] == str2[counter]
-        ):
-            result += str1[counter]
-            counter += 1
+    def get_common_version(str1, str2):
+        version_delimiters = ':.-+'
+
+        result = str2
+        while not str1.startswith(result):
+            result = result[:-1]
+
+        while len(result) > 0 and result[-1] not in version_delimeters:
+            result = result[:-1]
+
         return result
 
     def get_version_diff(version, common_version):
@@ -94,7 +90,7 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
         return new_version_postfix
 
     def pretty_format(pkg_update):
-        common_version = get_common_string(
+        common_version = get_common_version(
             pkg_update.Current_Version, pkg_update.New_Version
         )
         version_color = 10

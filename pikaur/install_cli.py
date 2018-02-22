@@ -5,10 +5,11 @@ from functools import reduce
 
 from .args import reconstruct_args
 from .aur import find_aur_packages
+from .aur_deps import find_aur_deps
 from .pacman import (
-    find_repo_packages, PackageDB, OFFICIAL_REPOS,
+    find_repo_packages, PackageDB, OFFICIAL_REPOS, PacmanConfig,
 )
-from .meta_package import PackageUpdate, find_aur_deps, exclude_ignored_packages
+from .package_update import PackageUpdate
 from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
@@ -70,6 +71,15 @@ def ask_to_edit_file(filename, package_build):
         ])
         return True
     return False
+
+
+def exclude_ignored_packages(package_names, args):
+    excluded_pkgs = []
+    for ignored_pkg in (args.ignore or []) + PacmanConfig.get('IgnorePkg', []):
+        if ignored_pkg in package_names:
+            package_names.remove(ignored_pkg)
+            excluded_pkgs.append(ignored_pkg)
+    return excluded_pkgs
 
 
 class InstallPackagesCLI():

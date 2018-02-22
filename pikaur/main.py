@@ -20,13 +20,10 @@ from .aur import (
     AurTaskWorkerSearch, AurTaskWorkerInfo,
 )
 from .pacman import (
-    PacmanColorTaskWorker, PackageDB,
-    find_packages_not_from_repo,
+    PacmanColorTaskWorker, PackageDB, find_packages_not_from_repo,
 )
-from .meta_package import (
-    find_repo_updates, find_aur_updates, exclude_ignored_packages,
-)
-from .install_cli import InstallPackagesCLI
+from .package_update import find_repo_updates, find_aur_updates
+from .install_cli import InstallPackagesCLI, exclude_ignored_packages
 
 
 def init_readline():

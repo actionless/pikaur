@@ -203,7 +203,7 @@ def pretty_format_sysupgrade(  # pylint: disable=invalid-name,too-many-arguments
         result.append(pretty_format_upgradeable(
             new_aur_deps, verbose=verbose, color=color
         ))
-    result += ['\n']
+    result += ['']
     return '\n'.join(result)
 
 

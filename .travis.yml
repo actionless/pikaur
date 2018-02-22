@@ -1,0 +1,6 @@
+language: python
+services:
+  - docker
+script:
+  - mv ./maintenance_scripts/Dockerfile ./
+  - docker build . -f Dockerfile

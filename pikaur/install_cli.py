@@ -30,7 +30,10 @@ from .core import (
 from .conflicts import (
     check_conflicts, check_replacements,
 )
-from .prompt import ask_to_continue, retry_interactive_command
+from .prompt import (
+    ask_to_continue, retry_interactive_command,
+    retry_interactive_command_or_exit,
+)
 
 
 def get_editor():
@@ -500,7 +503,7 @@ class InstallPackagesCLI():
     def _remove_packages(self, packages_to_be_removed):
         # pylint: disable=no-self-use
         if packages_to_be_removed:
-            if not retry_interactive_command(
+            retry_interactive_command_or_exit(
                     [
                         'sudo',
                         'pacman',
@@ -509,9 +512,7 @@ class InstallPackagesCLI():
                         '-R',
                         '--noconfirm',
                     ] + packages_to_be_removed,
-            ):
-                if not ask_to_continue(default_yes=False):
-                    sys.exit(1)
+            )
 
     def _install_repo_packages(self, packages_to_be_installed):
         if self.repo_packages_names:
@@ -580,7 +581,7 @@ class InstallPackagesCLI():
     def _remove_conflicting_packages(self, packages_to_be_removed):
         # pylint: disable=no-self-use
         if packages_to_be_removed:
-            if not retry_interactive_command(
+            retry_interactive_command_or_exit(
                     [
                         'sudo',
                         'pacman',
@@ -591,9 +592,7 @@ class InstallPackagesCLI():
                         '--nodeps',
                         '--nodeps',
                     ] + packages_to_be_removed,
-            ):
-                if not ask_to_continue(default_yes=False):
-                    sys.exit(1)
+            )
 
     def remove_repo_packages_conflicts(self):
         self._remove_conflicting_packages(self.repo_packages_conflicts)

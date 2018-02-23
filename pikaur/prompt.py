@@ -1,3 +1,5 @@
+import sys
+
 from .core import interactive_spawn
 from .pprint import color_line
 
@@ -27,10 +29,16 @@ def ask_to_retry_decorator(fun):
 
 
 @ask_to_retry_decorator
-def retry_interactive_command(cmd_args):
-    good = interactive_spawn(cmd_args).returncode == 0
+def retry_interactive_command(cmd_args, **kwargs):
+    good = interactive_spawn(cmd_args, **kwargs).returncode == 0
     if not good:
         print(color_line('Command "{}" failed to execute.'.format(
             ' '.join(cmd_args)
         ), 9))
     return good
+
+
+def retry_interactive_command_or_exit(cmd_args, **kwargs):
+    if not retry_interactive_command(cmd_args, **kwargs):
+        if not ask_to_continue(default_yes=False):
+            sys.exit(1)

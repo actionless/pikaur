@@ -5,7 +5,6 @@ import platform
 from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
-    interactive_spawn,
     ConfigReader, remove_dir,
 )
 from .version import get_package_name_and_version_matcher_from_depend_line
@@ -258,7 +257,7 @@ class PackageBuild(DataType):
                 "Installing repository dependencies for",
                 bold_line(self.package_name)
             ))
-            deps_result = interactive_spawn(
+            if not retry_interactive_command(
                 [
                     'sudo',
                     'pacman',
@@ -274,8 +273,7 @@ class PackageBuild(DataType):
                     'sysupgrade',
                     'refresh',
                 ]) + all_deps_to_install,
-            )
-            if deps_result.returncode > 0:
+            ):
                 self.failed = True
                 raise BuildError()
 
@@ -287,7 +285,7 @@ class PackageBuild(DataType):
                 bold_line(self.package_name)
             ))
             # @TODO: resolve makedeps in case if it was specified by Provides, not real name
-            interactive_spawn(
+            retry_interactive_command(
                 [
                     'sudo',
                     'pacman',
@@ -337,7 +335,7 @@ class PackageBuild(DataType):
         if not args.needed:
             makepkg_args.append('--force')
 
-        build_result = interactive_spawn(
+        build_succeeded = retry_interactive_command(
             [
                 'makepkg',
             ] + makepkg_args,
@@ -346,14 +344,14 @@ class PackageBuild(DataType):
 
         self._remove_make_deps(new_make_deps_to_install)
 
-        if build_result.returncode > 0:
+        if not build_succeeded:
             if new_deps_to_install:
                 print('{} {} {}:'.format(
                     color_line('::', 13),
                     "Removing already installed dependencies for",
                     bold_line(self.package_name)
                 ))
-                interactive_spawn(
+                retry_interactive_command(
                     [
                         'sudo',
                         'pacman',

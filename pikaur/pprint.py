@@ -151,7 +151,7 @@ def print_upgradeable(packages_updates):
     ]))
 
 
-def pretty_format_sysupgrade(  # pylint: disable=invalid-name,too-many-arguments
+def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
         repo_packages_updates=None, thirdparty_repo_packages_updates=None,
         aur_updates=None, new_aur_deps=None,
         verbose=False, color=True

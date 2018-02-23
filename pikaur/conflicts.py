@@ -91,7 +91,6 @@ def find_conflicting_with_new_pkgs(new_pkg_name, all_pkgs_names, new_pkg_conflic
 
 
 def find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_lists):
-    # pylint: disable=invalid-name
     # find if any of already installed packages have Conflicts with the new ones:
     new_pkgs_conflicts = {}
     for local_pkg_name, local_pkg_conflicts_list in all_local_pgks_conflicts_lists.items():

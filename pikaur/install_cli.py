@@ -215,7 +215,7 @@ class InstallPackagesCLI():
         repo_pkgs = PackageDB.get_repo_dict()
         local_pkgs = PackageDB.get_local_dict()
         repo_packages_updates = []
-        thirdparty_repo_packages_updates = []  # pylint: disable=invalid-name
+        thirdparty_repo_packages_updates = []
         for pkg_name in self.repo_packages_names:
             repo_pkg = repo_pkgs[pkg_name]
             local_pkg = local_pkgs.get(pkg_name)
@@ -273,7 +273,6 @@ class InstallPackagesCLI():
         return aur_deps
 
     def install_prompt(self):
-        # pylint: disable=invalid-name
         repo_packages_updates, thirdparty_repo_packages_updates = \
             self._get_repo_pkgs_updates()
         aur_updates = self._get_aur_updates()
@@ -504,14 +503,14 @@ class InstallPackagesCLI():
         # pylint: disable=no-self-use
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
-                    [
-                        'sudo',
-                        'pacman',
-                        # '-Rs',  # @TODO: manually remove dependencies of conflicting packages,
-                        # but excluding already built AUR packages from that list.
-                        '-R',
-                        '--noconfirm',
-                    ] + packages_to_be_removed,
+                [
+                    'sudo',
+                    'pacman',
+                    # '-Rs',  # @TODO: manually remove dependencies of conflicting packages,
+                    # but excluding already built AUR packages from that list.
+                    '-R',
+                    '--noconfirm',
+                ] + packages_to_be_removed,
             )
 
     def _install_repo_packages(self, packages_to_be_installed):
@@ -582,16 +581,16 @@ class InstallPackagesCLI():
         # pylint: disable=no-self-use
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
-                    [
-                        'sudo',
-                        'pacman',
-                        # '-Rs',  # @TODO: manually remove dependencies of conflicting packages,
-                        # but excluding already built AUR packages from that list.
-                        '-R',
-                        '--noconfirm',
-                        '--nodeps',
-                        '--nodeps',
-                    ] + packages_to_be_removed,
+                [
+                    'sudo',
+                    'pacman',
+                    # '-Rs',  # @TODO: manually remove dependencies of conflicting packages,
+                    # but excluding already built AUR packages from that list.
+                    '-R',
+                    '--noconfirm',
+                    '--nodeps',
+                    '--nodeps',
+                ] + packages_to_be_removed,
             )
 
     def remove_repo_packages_conflicts(self):

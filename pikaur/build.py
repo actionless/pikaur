@@ -258,21 +258,21 @@ class PackageBuild(DataType):
                 bold_line(self.package_name)
             ))
             if not retry_interactive_command(
-                [
-                    'sudo',
-                    'pacman',
-                    '--sync',
-                    '--asdeps',
-                    '--needed',
-                    '--noconfirm',
-                ] + reconstruct_args(args, ignore_args=[
-                    'sync',
-                    'asdeps',
-                    'needed',
-                    'noconfirm',
-                    'sysupgrade',
-                    'refresh',
-                ]) + all_deps_to_install,
+                    [
+                        'sudo',
+                        'pacman',
+                        '--sync',
+                        '--asdeps',
+                        '--needed',
+                        '--noconfirm',
+                    ] + reconstruct_args(args, ignore_args=[
+                        'sync',
+                        'asdeps',
+                        'needed',
+                        'noconfirm',
+                        'sysupgrade',
+                        'refresh',
+                    ]) + all_deps_to_install,
             ):
                 self.failed = True
                 raise BuildError()

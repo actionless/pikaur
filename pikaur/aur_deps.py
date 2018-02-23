@@ -91,7 +91,7 @@ def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
     return not_found_deps
 
 
-def get_aur_pkg_deps_and_version_matchers(result):  # pylint: disable=invalid-name
+def get_aur_pkg_deps_and_version_matchers(result):
     deps = {}
     for dep in (result.Depends or []) + (result.MakeDepends or []):
         name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)

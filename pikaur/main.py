@@ -25,6 +25,7 @@ from .pacman import (
 )
 from .package_update import find_repo_updates, find_aur_updates
 from .install_cli import InstallPackagesCLI, exclude_ignored_packages
+from .prompt import retry_interactive_command, ask_to_continue
 
 
 REPO = 'repo'
@@ -61,7 +62,11 @@ def cli_install_packages(args, packages=None):
 
 def cli_upgrade_packages(args):
     if args.refresh:
-        interactive_spawn(['sudo', 'pacman', '--sync', '--refresh'])
+        if not retry_interactive_command(
+                ['sudo', 'pacman', '--sync', '--refresh']
+        ):
+            if not ask_to_continue(default_yes=False):
+                sys.exit(1)
     ignore = args.ignore or []
 
     print('{} {}'.format(

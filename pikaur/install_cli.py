@@ -290,7 +290,7 @@ class InstallPackagesCLI():
                 color_line('::', 12),
                 bold_line('[v]iew package detail   [m]anually select packages')
                 ),
-                answers='ynVm'
+                answers='Ynvm'
             )
             return answer
 

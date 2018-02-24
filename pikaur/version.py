@@ -40,6 +40,13 @@ _CACHED_VERSION_COMPARISONS = {}
 
 
 async def compare_versions_async(current_version, new_version):
+    """
+    vercmp is used to determine the relationship between two given version numbers.
+    It outputs values as follows:
+        < 0 : if ver1 < ver2
+        = 0 : if ver1 == ver2
+        > 0 : if ver1 > ver2
+    """
     if current_version == new_version:
         return 0
     if not _CACHED_VERSION_COMPARISONS.setdefault(current_version, {}).get(new_version):
@@ -97,10 +104,10 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
         return version
 
     def cmp_lt(v):
-        return compare_versions(v, get_version()) == 1
+        return compare_versions(v, get_version()) > 0
 
     def cmp_gt(v):
-        return compare_versions(v, get_version()) == -1
+        return compare_versions(v, get_version()) < 0
 
     def cmp_eq(v):
         return compare_versions(v, get_version()) == 0

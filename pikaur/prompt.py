@@ -35,7 +35,7 @@ def get_answer(question, answers='Yn'):
         return default
     finally:
         tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)
-        sys.stdout.write('\r\n')
+        sys.stdout.write('{}\r\n'.format(answer))
         tty.tcdrain(sys.stdin.fileno())
 
 

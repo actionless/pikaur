@@ -284,7 +284,7 @@ class InstallPackagesCLI():
                 aur_updates, aur_deps,
                 verbose=verbose
             ))
-            answer = get_answer('{} {}\n{} {}\n> '.format(
+            answer = get_answer('{} {}\n{} {}\n>>'.format(
                 color_line('::', 12),
                 bold_line('Proceed with installation? [Y/n] '),
                 color_line('::', 12),

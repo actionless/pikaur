@@ -289,8 +289,7 @@ class InstallPackagesCLI():
                 bold_line('Proceed with installation? [Y/n] '),
                 color_line('::', 12),
                 bold_line('[v]iew package detail   [m]anually select packages')),
-                                answers='Ynvm'
-            )
+                                answers='Ynvm')
             return answer
 
         answer = None

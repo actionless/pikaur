@@ -1,6 +1,6 @@
 from distutils.version import LooseVersion
 
-from .core import SingleTaskExecutor, CmdTaskWorker
+from .core import SingleTaskExecutor, CmdTaskWorker, execute_task
 
 
 def compare_versions_bak(current_version, new_version):
@@ -37,19 +37,6 @@ def compare_versions_bak(current_version, new_version):
 
 
 _CACHED_VERSION_COMPARISONS = {}
-# @TODO: refactor to dedup those two funcs:
-
-
-def compare_versions(current_version, new_version):
-    if current_version == new_version:
-        return 0
-    if not _CACHED_VERSION_COMPARISONS.setdefault(current_version, {}).get(new_version):
-        cmd_result = SingleTaskExecutor(
-            CmdTaskWorker(["vercmp", new_version, current_version])
-        ).execute()
-        compare_result = int(cmd_result.stdout)
-        _CACHED_VERSION_COMPARISONS[current_version][new_version] = compare_result
-    return _CACHED_VERSION_COMPARISONS[current_version][new_version]
 
 
 async def compare_versions_async(current_version, new_version):
@@ -62,6 +49,10 @@ async def compare_versions_async(current_version, new_version):
         compare_result = int(cmd_result.stdout)
         _CACHED_VERSION_COMPARISONS[current_version][new_version] = compare_result
     return _CACHED_VERSION_COMPARISONS[current_version][new_version]
+
+
+def compare_versions(current_version, new_version):
+    return execute_task(compare_versions_async(current_version, new_version))
 
 
 def compare_versions_test():
@@ -81,13 +72,7 @@ def compare_versions_test():
             assert compare_versions_bak(old_version, new_version)
         except AssertionError:
             traceback.print_exc()
-
-        class TestTask():
-            async def get_task(self):
-                return await compare_versions_async(old_version, new_version)
-
         assert compare_versions(old_version, new_version)
-        assert SingleTaskExecutor(TestTask).execute()
 
     print("== Testing when version should be not bigger:")
     for old_version, new_version in (
@@ -98,13 +83,7 @@ def compare_versions_test():
             assert not compare_versions_bak(old_version, new_version)
         except AssertionError:
             traceback.print_exc()
-
-        class TestTask():
-            async def get_task(self):
-                return await compare_versions_async(old_version, new_version)
-
         assert not compare_versions(old_version, new_version)
-        assert not SingleTaskExecutor(TestTask).execute()
 
     print("Tests passed!")
 

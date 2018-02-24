@@ -1,16 +1,52 @@
 import sys
+import tty
 
 from .core import interactive_spawn
 from .pprint import color_line
 
 
+def get_answer(question, answers='Yn'):
+    '''
+    Function displays a question and reads a single character
+    from STDIN as an answer. Then returns the character as lower character.
+    Valid answers are passed as 'answers' variable (the default is in capital).
+    Invalid answer will return default value.
+    '''
+    for c in answers:
+        if c.isupper():
+            default = c.lower()
+            break
+    else:
+        default = ''
+
+    if not sys.stdin.isatty():
+        return default
+
+    print(question, flush=True, end=" ")
+    previous_tty_settings = tty.tcgetattr(sys.stdin.fileno())
+    try:
+        tty.setraw(sys.stdin.fileno())
+        answer = sys.stdin.read(1).lower()
+        if answer in answers:
+            return answer
+        else:
+            return default
+    except Exception() as e:
+        return default
+    finally:
+        tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)
+        sys.stdout.write('\r\n')
+        tty.tcdrain(sys.stdin.fileno())
+
+
 def ask_to_continue(text='Do you want to proceed?', default_yes=True):
-    answer = input(text + (' [Y/n] ' if default_yes else ' [y/N] '))
     if default_yes:
-        if answer and answer.lower()[0] != 'y':
+        answer = get_answer('{} [Y/n] ', answers='Yn')
+        if answer and answer != 'y':
             return False
     else:
-        if not answer or answer.lower()[0] != 'y':
+        answer = get_answer('{} [y/N] ', answers='yN')
+        if not answer or answer != 'y':
             return False
     return True
 

@@ -31,7 +31,7 @@ from .conflicts import (
     check_conflicts, check_replacements,
 )
 from .prompt import (
-    ask_to_continue, retry_interactive_command,
+    get_answer, ask_to_continue, retry_interactive_command,
     retry_interactive_command_or_exit,
 )
 
@@ -284,12 +284,14 @@ class InstallPackagesCLI():
                 aur_updates, aur_deps,
                 verbose=verbose
             ))
-            answer = input('{} {}\n{} {}\n> '.format(
+            answer = get_answer('{} {}\n{} {}\n> '.format(
                 color_line('::', 12),
                 bold_line('Proceed with installation? [Y/n] '),
                 color_line('::', 12),
                 bold_line('[v]iew package detail   [m]anually select packages')
-            ))
+                ),
+                answers='ynVm'
+            )
             return answer
 
         answer = None
@@ -337,16 +339,16 @@ class InstallPackagesCLI():
                     ), 9
                 ))
                 print(err.result)
-                answer = input('{} {}\n{}\n{}\n{}\n{}\n> '.format(
+                answer = get_answer('{} {}\n{}\n{}\n{}\n{}\n> '.format(
                     color_line('::', 11),
                     'Try recovering?',
                     "[c] git checkout -- '*'",
                     # "[c] git checkout -- '*' ; git clean -f -d -x",
                     '[r] remove dir and clone again',
                     '[s] skip this package',
-                    '[a] abort',
-                ))
-                answer = answer.lower()[0]
+                    '[a] abort'),
+                    answers='crsA'
+                )
                 if answer == 'c':
                     package_build.git_reset_changed()
                 elif answer == 'r':

@@ -1,8 +1,6 @@
 from distutils.version import LooseVersion
 import ctypes
 
-from .core import SingleTaskExecutor, CmdTaskWorker, execute_task
-
 
 def compare_versions_bak(current_version, new_version):
     # @TODO: remove this before the release
@@ -52,7 +50,9 @@ def compare_versions(current_version, new_version):
         return 0
     if not _CACHED_VERSION_COMPARISONS.setdefault(current_version, {}).get(new_version):
         libalpm = ctypes.cdll.LoadLibrary('libalpm.so')
-        compare_result = libalpm.alpm_pkg_vercmp(bytes(current_version, 'ascii'), bytes(new_version, 'ascii'))
+        compare_result = libalpm.alpm_pkg_vercmp(
+            bytes(current_version, 'ascii'), bytes(new_version, 'ascii')
+        )
         _CACHED_VERSION_COMPARISONS[current_version][new_version] = compare_result
     return _CACHED_VERSION_COMPARISONS[current_version][new_version]
 

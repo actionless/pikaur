@@ -37,7 +37,7 @@ from .prompt import (
 
 
 def get_editor():
-    editor = os.environ.get('EDITOR')
+    editor = os.environ.get('VISUAL') or os.environ.get('EDITOR')
     if editor:
         return editor
     for editor in ('vim', 'nano', 'mcedit', 'edit'):
@@ -49,7 +49,7 @@ def get_editor():
     print(
         '{} {}'.format(
             color_line('error:', 9),
-            'no editor found. Try setting $EDITOR.'
+            'no editor found. Try setting $VISUAL or $EDITOR.'
         )
     )
     if not ask_to_continue('Do you want to proceed without editing?'):

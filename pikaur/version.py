@@ -1,6 +1,5 @@
 from distutils.version import LooseVersion
-
-from .core import SingleTaskExecutor, CmdTaskWorker, execute_task
+import ctypes
 
 
 def compare_versions_bak(current_version, new_version):
@@ -39,7 +38,7 @@ def compare_versions_bak(current_version, new_version):
 _CACHED_VERSION_COMPARISONS = {}
 
 
-async def compare_versions_async(current_version, new_version):
+def compare_versions(current_version, new_version):
     """
     vercmp is used to determine the relationship between two given version numbers.
     It outputs values as follows:
@@ -50,16 +49,12 @@ async def compare_versions_async(current_version, new_version):
     if current_version == new_version:
         return 0
     if not _CACHED_VERSION_COMPARISONS.setdefault(current_version, {}).get(new_version):
-        cmd_result = await SingleTaskExecutor(
-            CmdTaskWorker(["vercmp", current_version, new_version])
-        ).execute_async()
-        compare_result = int(cmd_result.stdout)
+        libalpm = ctypes.cdll.LoadLibrary('libalpm.so')
+        compare_result = libalpm.alpm_pkg_vercmp(
+            bytes(current_version, 'ascii'), bytes(new_version, 'ascii')
+        )
         _CACHED_VERSION_COMPARISONS[current_version][new_version] = compare_result
     return _CACHED_VERSION_COMPARISONS[current_version][new_version]
-
-
-def compare_versions(current_version, new_version):
-    return execute_task(compare_versions_async(current_version, new_version))
 
 
 def compare_versions_test():

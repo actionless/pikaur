@@ -2,6 +2,7 @@ import asyncio
 import subprocess
 import configparser
 import shutil
+from uuid import uuid1
 
 
 NOT_FOUND_ATOM = object()
@@ -15,11 +16,56 @@ def interactive_spawn(cmd, **kwargs):
 
 class MultipleTasksExecutor(object):
     loop = None
+    executor_id = None
+    futures = None
+    export_results = None
+
+    _all_cmds = {}
+    _all_results = {}
 
     def __init__(self, cmds):
+        self.executor_id = uuid1()
         self.cmds = cmds
-        self.results = {}
         self.futures = {}
+
+    @classmethod
+    def _get_results(cls, executor_id):
+        return cls._all_results.setdefault(executor_id, {})
+
+    @property
+    def results(self):
+        return self._get_results(self.executor_id)
+
+    @classmethod
+    def _get_cmds(cls, executor_id):
+        return cls._all_cmds[executor_id]
+
+    @classmethod
+    def _set_cmds(cls, executor_id, value):
+        cls._all_cmds[executor_id] = value
+
+    @property
+    def cmds(self):
+        return self._get_cmds(self.executor_id)
+
+    @cmds.setter
+    def cmds(self, value):
+        self._set_cmds(self.executor_id, value)
+
+    @property
+    def all_tasks_done(self):
+        return sum([
+            len(self._all_results.get(exec_id, [])) == len(cmds)
+            for exec_id, cmds in self._all_cmds.items()
+        ]) == len(self._all_cmds)
+
+    @classmethod
+    def mark_executor_done(cls, executor_id):
+        results = {}
+        results.update(cls._get_results(executor_id))
+        del cls._all_cmds[executor_id]
+        del cls._all_results[executor_id]
+        return results
 
     def create_process_done_callback(self, cmd_id):
 
@@ -27,11 +73,13 @@ class MultipleTasksExecutor(object):
             result = future.result()
             self.results[cmd_id] = result
             if len(self.results) == len(self.cmds):
+                self.export_results = self.mark_executor_done(self.executor_id)
+            if self.all_tasks_done:
                 self.loop.stop()
 
         return _process_done_callback
 
-    def execute(self):
+    def _execute_common(self):
         self.loop = asyncio.get_event_loop()
         for cmd_id, task_class in self.cmds.items():
             future = self.loop.create_task(
@@ -39,10 +87,17 @@ class MultipleTasksExecutor(object):
             )
             future.add_done_callback(self.create_process_done_callback(cmd_id))
             self.futures[cmd_id] = future
-        if self.loop.is_running():
-            print("DEBUG989817")
+
+    def execute(self):
+        self._execute_common()
         self.loop.run_forever()
-        return self.results
+        return self.export_results
+
+    async def execute_async(self):
+        self._execute_common()
+        for future in self.futures.values():
+            await future
+        return self.export_results
 
 
 class SingleTaskExecutor(MultipleTasksExecutor):
@@ -52,6 +107,28 @@ class SingleTaskExecutor(MultipleTasksExecutor):
 
     def execute(self):
         return super().execute()[0]
+
+    async def execute_async(self):
+        multi_result = await super().execute_async()
+        return multi_result[0]
+
+
+def create_worker_from_task(task):
+
+    class StubWorker():
+        async def get_task(self):
+            return await task
+
+    return StubWorker
+
+
+def execute_task(task):
+    return SingleTaskExecutor(create_worker_from_task(task)).execute()
+
+
+async def execute_task_async(task):
+    result = await SingleTaskExecutor(create_worker_from_task(task)).execute_async()
+    return result
 
 
 class DataType():
@@ -229,3 +306,71 @@ def get_chunks(iterable, chunk_size):
             index = 0
     if result:
         yield result
+
+
+class MultipleTasksExecutorPool(MultipleTasksExecutor):
+    loop = None
+    pool_size = None
+    tasks_queued = None
+
+    last_cmd_idx = None
+
+    def __init__(self, cmds, pool_size=None):
+        super().__init__(cmds)
+        self.cmds = list(cmds.items())
+        from multiprocessing import cpu_count
+        self.pool_size = pool_size or cpu_count()
+
+    def get_next_cmd(self):
+        if self.last_cmd_idx is not None:
+            self.last_cmd_idx += 1
+        else:
+            self.last_cmd_idx = 0
+        if self.last_cmd_idx > len(self.cmds):
+            return None, None
+        return self.cmds[self.last_cmd_idx]
+
+    def add_more_tasks(self):
+        while len(self.futures) < len(self.cmds):
+            cmd_id, task_class = self.get_next_cmd()
+            if not cmd_id:
+                return
+            future = self.loop.create_task(
+                task_class.get_task(self.loop)
+            )
+            future.add_done_callback(self.create_process_done_callback(cmd_id))
+            self.futures[cmd_id] = future
+            self.tasks_queued += 1
+            if self.tasks_queued >= self.pool_size:
+                break
+
+    def create_process_done_callback(self, cmd_id):
+
+        def _process_done_callback(future):
+            result = future.result()
+            self.results[cmd_id] = result
+            if len(self.results) == len(self.cmds):
+                self.export_results = self.mark_executor_done(self.executor_id)
+            else:
+                self.tasks_queued -= 1
+                self.add_more_tasks()
+            if self.all_tasks_done:
+                self.loop.stop()
+
+        return _process_done_callback
+
+    def execute_common(self):
+        self.loop = asyncio.get_event_loop()
+        self.tasks_queued = 0
+        self.add_more_tasks()
+
+    def execute(self):
+        self.execute_common()
+        self.loop.run_forever()
+        return self.export_results
+
+    async def execute_async(self):
+        self.execute_common()
+        for future in self.futures.values():
+            await future
+        return self.export_results

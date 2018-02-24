@@ -31,7 +31,7 @@ def get_answer(question, answers='Yn'):
         if answer in answers:
             return answer
         return default
-    except Exception() as err:
+    except Exception:
         return default
     finally:
         tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)

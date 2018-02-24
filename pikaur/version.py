@@ -1,7 +1,10 @@
 from distutils.version import LooseVersion
 
+from .core import SingleTaskExecutor, CmdTaskWorker
 
-def compare_versions(current_version, new_version):
+
+def compare_versions_bak(current_version, new_version):
+    # @TODO: remove this before the release
     if current_version != new_version:
         for separator in ('+',):
             current_version = current_version.replace(separator, '.')
@@ -33,8 +36,77 @@ def compare_versions(current_version, new_version):
     return False
 
 
+_CACHED_VERSION_COMPARISONS = {}
+# @TODO: refactor to dedup those two funcs:
+
+
+def compare_versions(current_version, new_version):
+    if current_version == new_version:
+        return 0
+    if not _CACHED_VERSION_COMPARISONS.setdefault(current_version, {}).get(new_version):
+        cmd_result = SingleTaskExecutor(
+            CmdTaskWorker(["vercmp", new_version, current_version])
+        ).execute()
+        compare_result = int(cmd_result.stdout)
+        _CACHED_VERSION_COMPARISONS[current_version][new_version] = compare_result
+    return _CACHED_VERSION_COMPARISONS[current_version][new_version]
+
+
+async def compare_versions_async(current_version, new_version):
+    if current_version == new_version:
+        return 0
+    if not _CACHED_VERSION_COMPARISONS.setdefault(current_version, {}).get(new_version):
+        cmd_result = await SingleTaskExecutor(
+            CmdTaskWorker(["vercmp", new_version, current_version])
+        ).execute_async()
+        compare_result = int(cmd_result.stdout)
+        _CACHED_VERSION_COMPARISONS[current_version][new_version] = compare_result
+    return _CACHED_VERSION_COMPARISONS[current_version][new_version]
+
+
 def compare_versions_test():
-    assert compare_versions('0.2+9+123abc-1', '0.3-1')
+
+    import traceback
+
+    print("== Testing when version should be bigger:")
+    for old_version, new_version in (
+        ('0.2+9+123abc-1', '0.3-1'),
+        ('0.50.12', '0.50.13'),
+        ('0.50.19', '0.50.20'),
+        ('0.50.2-1', '0.50.2+6+123131-1'),
+        ('0.50.2+1', '0.50.2+6+123131-1'),
+    ):
+        print((old_version, new_version))
+        try:
+            assert compare_versions_bak(old_version, new_version)
+        except AssertionError:
+            traceback.print_exc()
+
+        class TestTask():
+            async def get_task(self):
+                return await compare_versions_async(old_version, new_version)
+
+        assert compare_versions(old_version, new_version)
+        assert SingleTaskExecutor(TestTask).execute()
+
+    print("== Testing when version should be not bigger:")
+    for old_version, new_version in (
+        ('0.50.1', '0.50.1'),
+    ):
+        print((old_version, new_version))
+        try:
+            assert not compare_versions_bak(old_version, new_version)
+        except AssertionError:
+            traceback.print_exc()
+
+        class TestTask():
+            async def get_task(self):
+                return await compare_versions_async(old_version, new_version)
+
+        assert not compare_versions(old_version, new_version)
+        assert not SingleTaskExecutor(TestTask).execute()
+
+    print("Tests passed!")
 
 
 class VersionMatcher():

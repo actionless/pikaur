@@ -2,8 +2,6 @@ from distutils.version import LooseVersion
 import ctypes
 import re
 from itertools import zip_longest
-import operator
-import functools
 
 
 class PackageVersion:
@@ -19,47 +17,48 @@ class PackageVersion:
     def __init__(self, version_string):
         self.version_string = version_string
 
-        m = self.VERSION_RE.match(version_string)
-        epoch = m.group('epoch')
+        match = self.VERSION_RE.match(version_string)
+        epoch = match.group('epoch')
         if not epoch:
             epoch = 0
         else:
             epoch = int(epoch)
 
         self.epoch = epoch
-        self.pkgver = m.group('pkgver')
-        self.pkgrel = m.group('pkgrel')
+        self.pkgver = match.group('pkgver')
+        self.pkgrel = match.group('pkgrel')
 
         if self.pkgrel == '':
             self.pkgrel = None
 
-        self.pkgver_span = m.span('pkgver')
+        self.pkgver_span = match.span('pkgver')
 
         self.pkgver_parts = self._get_pkgver_parts(self.pkgver, offset=self.pkgver_span[0])
 
 
     def _get_pkgver_parts(self, pkgver, offset):
         parts = []
-        for m in self.PKGVER_PART_RE.finditer(pkgver):
-            if m[1] != None:
-                p = int(m[1])
+        for match in self.PKGVER_PART_RE.finditer(pkgver):
+            if match[1] != None:
+                part = int(match[1])
             else:
-                p = m[2]
+                part = match[2]
 
-            s = m.span()
-            parts.append((p, (offset + s[0], offset + s[1])))
+            span = match.span()
+            parts.append((part, (offset + span[0], offset + span[1])))
 
         return parts
 
-    '''
-    Returns a pair consisting of:
-    - Either -1, 0 or 1 indicating self < / = / > other.
-    - The first index of self's version string where the two fail to match.
-      If the two compare equal this is the length of the string.
-    '''
     def compare(self, other):
-        def unequal_res(v1, v2, pos):
-            return (-1 if v1 < v2 else 1, pos)
+        '''
+        Returns a pair consisting of:
+        - Either -1, 0 or 1 indicating self < / = / > other.
+        - The first index of self's version string where the two fail to match.
+          If the two compare equal this is the length of the string.
+        '''
+
+        def unequal_res(ver1, ver2, pos):
+            return (-1 if ver1 < ver2 else 1, pos)
 
         prefix = 0
         if self.epoch != other.epoch:
@@ -71,31 +70,32 @@ class PackageVersion:
         if prefix != 0:
             prefix -= 1
 
-        for x1, x2 in zip_longest(self.pkgver_parts, other.pkgver_parts):
-            if x1 == None:
+        for part_span1, part_span2 in zip_longest(self.pkgver_parts, other.pkgver_parts):
+            if part_span1 is None:
                 return (-1, self.pkgver_span[1])
 
-            p1, s1 = x1
+            part1, span1 = part_span1
 
-            if x2 == None:
+            if part_span2 is None:
                 return (1, prefix)
 
-            p2, s2 = x2
+            part2, _ = part_span2
 
-            if p1 == p2:
-                prefix = s1[1]
+            if part1 == part2:
+                prefix = span1[1]
                 continue
 
-            int1 = isinstance(p1, int)
-            int2 = isinstance(p2, int)
+            int1 = isinstance(part1, int)
+            int2 = isinstance(part2, int)
+
             if int1 and int2:
-                return unequal_res(p1, p2, prefix)
+                return unequal_res(part1, part2, prefix)
             elif int1:
                 return (1, prefix)
             elif int2:
                 return (-1, prefix)
-            else:
-                return unequal_res(p1, p2, prefix)
+
+            return unequal_res(part1, part2, prefix)
 
         if self.pkgrel == other.pkgrel or None in (self.pkgrel, other.pkgrel):
             return (0, len(self.version_string))
@@ -198,13 +198,15 @@ def compare_versions_test():
     ):
         res = compare_versions_bak(old_version, new_version)
         if res != (expected_result < 0):
-            print(f'compare_versions_bak failed: cmp({old_version}, {new_version}) should be {expected_result}, not {-1 if res else 0}')
+            print(f'compare_versions_bak failed: cmp({old_version}, {new_version})'
+                  f' should be {expected_result}, not {-1 if res else 0}')
 
         res1, prefix1 = PackageVersion(old_version).compare(PackageVersion(new_version))
         res2, prefix2 = PackageVersion(new_version).compare(PackageVersion(old_version))
 
         if res1 != -res2:
-            print(f'PackageVersion compare arguments are not swappable: {old_version}, {new_version}')
+            print(f'PackageVersion compare arguments are not swappable:'
+                  f'{old_version}, {new_version}')
 
         if expected_result != 0:
             expected1 = prefixes[0]
@@ -214,13 +216,16 @@ def compare_versions_test():
             expected2 = new_version
 
         if old_version[:prefix1] != expected1:
-            print(f'PackageVersion prefix is wrong ({old_version}, {new_version}): got {old_version[:prefix1]}, expected {expected1}')
+            print(f'PackageVersion prefix is wrong ({old_version}, {new_version}):'
+                  f'got {old_version[:prefix1]}, expected {expected1}')
 
         if new_version[:prefix2] != expected2:
-            print(f'PackageVersion prefix is wrong ({new_version}, {old_version}): got {new_version[:prefix2]}, expected {expected2}')
+            print(f'PackageVersion prefix is wrong ({new_version}, {old_version}):'
+                  f'got {new_version[:prefix2]}, expected {expected2}')
 
         if res1 != expected_result:
-            print(f'PackageVersion compare failed: cmp({old_version}, {new_version}) should be {expected_result}, not {res1}')
+            print(f'PackageVersion compare failed: cmp({old_version}, {new_version})'
+                  f'should be {expected_result}, not {res1}')
         assert compare_versions(old_version, new_version) == expected_result
 
     print("Tests passed!")

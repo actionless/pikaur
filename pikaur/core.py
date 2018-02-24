@@ -293,3 +293,70 @@ def get_chunks(iterable, chunk_size):
             index = 0
     if result:
         yield result
+
+
+class MultipleTasksExecutorPool(MultipleTasksExecutor):
+    loop = None
+    pool_size = None
+
+    last_cmd_idx = None
+
+    def __init__(self, cmds, pool_size=None):
+        self.cmds = list(cmds.items())
+        self.futures = {}
+        from multiprocessing import cpu_count
+        self.pool_size = pool_size or cpu_count()
+
+    def get_next_cmd(self):
+        if self.last_cmd_idx is not None:
+            self.last_cmd_idx += 1
+        else:
+            self.last_cmd_idx = 0
+        if self.last_cmd_idx > len(self.cmds):
+            return None, None
+        return self.cmds[self.last_cmd_idx]
+
+    def add_more_tasks(self):
+        while len(self.futures) < len(self.cmds):
+            cmd_id, task_class = self.get_next_cmd()
+            if not cmd_id:
+                return
+            future = self.loop.create_task(
+                task_class.get_task(self.loop)
+            )
+            future.add_done_callback(self.create_process_done_callback(cmd_id))
+            self.futures[cmd_id] = future
+            self.tasks_queued += 1
+            if self.tasks_queued >= self.pool_size:
+                break
+
+    def create_process_done_callback(self, cmd_id):
+
+        def _process_done_callback(future):
+            result = future.result()
+            self.results[cmd_id] = result
+            if len(self.results) == len(self.cmds):
+                self.export_results = self.mark_executor_done(self.executor_id)
+            else:
+                self.tasks_queued -= 1
+                self.add_more_tasks()
+            if self.all_tasks_done:
+                self.loop.stop()
+
+        return _process_done_callback
+
+    def execute_common(self):
+        self.loop = asyncio.get_event_loop()
+        self.tasks_queued = 0
+        self.add_more_tasks()
+
+    def execute(self):
+        self.execute_common()
+        self.loop.run_forever()
+        return self.export_results
+
+    async def execute_async(self):
+        self.execute_common()
+        for future in self.futures.values():
+            await future
+        return self.export_results

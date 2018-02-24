@@ -12,12 +12,13 @@ def get_answer(question, answers='Yn'):
     Valid answers are passed as 'answers' variable (the default is in capital).
     Invalid answer will return default value.
     '''
-    for c in answers:
-        if c.isupper():
-            default = c.lower()
+
+    default = ''
+
+    for letter in answers:
+        if letter.isupper():
+            default = letter.lower()
             break
-    else:
-        default = ''
 
     if not sys.stdin.isatty():
         return default
@@ -31,7 +32,7 @@ def get_answer(question, answers='Yn'):
             return answer
         else:
             return default
-    except Exception() as e:
+    except Exception() as err:
         return default
     finally:
         tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)

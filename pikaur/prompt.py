@@ -10,10 +10,10 @@ def get_answer(question, answers='Yn'):
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
     Valid answers are passed as 'answers' variable (the default is in capital).
-    Invalid answer will return default value.
+    Invalid answer will return an empty string.
     '''
 
-    default = ''
+    default = ' '
 
     for letter in answers:
         if letter.isupper():
@@ -28,11 +28,19 @@ def get_answer(question, answers='Yn'):
     try:
         tty.setraw(sys.stdin.fileno())
         answer = sys.stdin.read(1).lower()
+
+        # Exit when CRTL+C or CTRL+D
+        if ord(answer) == 3 or ord(answer) == 4:
+            sys.exit(1)
+        # Default when Enter
+        if ord(answer) == 13:
+            answer = default
+            return default
         if answer in answers:
             return answer
-        return default
+        return ' '
     except Exception:
-        return default
+        return ' '
     finally:
         tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)
         sys.stdout.write('{}\r\n'.format(answer))

@@ -51,7 +51,7 @@ async def compare_versions_async(current_version, new_version):
         return 0
     if not _CACHED_VERSION_COMPARISONS.setdefault(current_version, {}).get(new_version):
         cmd_result = await SingleTaskExecutor(
-            CmdTaskWorker(["vercmp", new_version, current_version])
+            CmdTaskWorker(["vercmp", current_version, new_version])
         ).execute_async()
         compare_result = int(cmd_result.stdout)
         _CACHED_VERSION_COMPARISONS[current_version][new_version] = compare_result
@@ -66,16 +66,16 @@ def compare_versions_test():
     import traceback
 
     for expected_result, old_version, new_version in (
-            (1, '0.2+9+123abc-1', '0.3-1'),
-            (1, '0.50.12', '0.50.13'),
-            (1, '0.50.19', '0.50.20'),
-            (1, '0.50.2-1', '0.50.2+6+123131-1'),
-            (1, '0.50.2+1', '0.50.2+6+123131-1'),
+            (-1, '0.2+9+123abc-1', '0.3-1'),
+            (-1, '0.50.12', '0.50.13'),
+            (-1, '0.50.19', '0.50.20'),
+            (-1, '0.50.2-1', '0.50.2+6+123131-1'),
+            (-1, '0.50.2+1', '0.50.2+6+123131-1'),
             (0, '0.50.1', '0.50.1'),
     ):
         print((old_version, new_version))
         try:
-            assert compare_versions_bak(old_version, new_version) == expected_result
+            assert compare_versions_bak(old_version, new_version) == (expected_result < 0)
         except AssertionError:
             traceback.print_exc()
         assert compare_versions(old_version, new_version) == expected_result
@@ -104,10 +104,10 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
         return version
 
     def cmp_lt(v):
-        return compare_versions(v, get_version()) > 0
+        return compare_versions(v, get_version()) < 0
 
     def cmp_gt(v):
-        return compare_versions(v, get_version()) < 0
+        return compare_versions(v, get_version()) > 0
 
     def cmp_eq(v):
         return compare_versions(v, get_version()) == 0

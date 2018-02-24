@@ -56,7 +56,7 @@ class FindAurUpdatesTask():
         aur_version = result.Version
         current_version = package_versions[pkg_name]
         compare_result = await compare_versions_async(current_version, aur_version)
-        if compare_result > 0:
+        if compare_result < 0:
             aur_update = PackageUpdate(
                 Name=pkg_name,
                 New_Version=aur_version,

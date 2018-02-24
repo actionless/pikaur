@@ -18,6 +18,7 @@ class MultipleTasksExecutor(object):
     loop = None
     executor_id = None
     futures = None
+    export_results = None
 
     _all_cmds = {}
     _all_results = {}
@@ -89,19 +90,13 @@ class MultipleTasksExecutor(object):
 
     def execute(self):
         self._execute_common()
-        if not self.loop.is_running():
-            self.loop.run_forever()
-        else:
-            print("WEIRD... 85J5")
+        self.loop.run_forever()
         return self.export_results
 
     async def execute_async(self):
         self._execute_common()
-        if not self.loop.is_running():
-            print("WEIRD... 3H93")
-        else:
-            for future in self.futures.values():
-                await future
+        for future in self.futures.values():
+            await future
         return self.export_results
 
 
@@ -316,12 +311,13 @@ def get_chunks(iterable, chunk_size):
 class MultipleTasksExecutorPool(MultipleTasksExecutor):
     loop = None
     pool_size = None
+    tasks_queued = None
 
     last_cmd_idx = None
 
     def __init__(self, cmds, pool_size=None):
+        super().__init__(cmds)
         self.cmds = list(cmds.items())
-        self.futures = {}
         from multiprocessing import cpu_count
         self.pool_size = pool_size or cpu_count()
 

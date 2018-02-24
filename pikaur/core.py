@@ -126,11 +126,6 @@ def execute_task(task):
     return SingleTaskExecutor(create_worker_from_task(task)).execute()
 
 
-async def execute_task_async(task):
-    result = await SingleTaskExecutor(create_worker_from_task(task)).execute_async()
-    return result
-
-
 class DataType():
 
     def __init__(self, **kwargs):

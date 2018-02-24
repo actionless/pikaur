@@ -289,7 +289,7 @@ class InstallPackagesCLI():
                 bold_line('Proceed with installation? [Y/n] '),
                 color_line('::', 12),
                 bold_line('[v]iew package detail   [m]anually select packages')),
-                answers='Ynvm'
+                                answers='Ynvm'
             )
             return answer
 
@@ -345,7 +345,8 @@ class InstallPackagesCLI():
                     # "[c] git checkout -- '*' ; git clean -f -d -x",
                     '[r] remove dir and clone again',
                     '[s] skip this package',
-                    '[a] abort'), answers='crsA'
+                    '[a] abort'),
+                                    answers='crsA'
                 )
                 if answer == 'c':
                     package_build.git_reset_changed()

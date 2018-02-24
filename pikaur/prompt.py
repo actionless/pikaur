@@ -30,8 +30,7 @@ def get_answer(question, answers='Yn'):
         answer = sys.stdin.read(1).lower()
         if answer in answers:
             return answer
-        else:
-            return default
+        return default
     except Exception() as err:
         return default
     finally:
@@ -42,11 +41,11 @@ def get_answer(question, answers='Yn'):
 
 def ask_to_continue(text='Do you want to proceed?', default_yes=True):
     if default_yes:
-        answer = get_answer('{} [Y/n] ', answers='Yn')
+        answer = get_answer('{} [Y/n] '.format(text), answers='Yn')
         if answer and answer != 'y':
             return False
     else:
-        answer = get_answer('{} [y/N] ', answers='yN')
+        answer = get_answer('{} [y/N] '.format(text), answers='yN')
         if not answer or answer != 'y':
             return False
     return True

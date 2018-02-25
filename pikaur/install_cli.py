@@ -460,7 +460,11 @@ class InstallPackagesCLI():
 
                 arch = platform.machine()
                 supported_archs = src_info.get_values('arch')
-                if ('any' not in supported_archs) and (arch not in supported_archs):
+                if supported_archs and (
+                        'any' not in supported_archs
+                ) and (
+                        arch not in supported_archs
+                ):
                     print("{} {} can't be built on the current arch ({}). Supported: {}".format(
                         color_line(':: error:', 9),
                         bold_line(pkg_name),

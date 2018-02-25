@@ -2,6 +2,7 @@ import sys
 import shutil
 
 from .config import VERSION
+from .version import compare_versions
 
 
 PADDING = 4
@@ -61,6 +62,9 @@ def print_not_found_packages(not_found_packages):
         print(format_paragraph(package))
 
 
+VERSION_SEPARATORS = ('.', '+', '-', ':')
+
+
 def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False, color=True):
 
     _color_line = color_line
@@ -68,21 +72,34 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
     if not color:
         _color_line = _bold_line = lambda x, *args: x
 
-    def get_common_string(str1, str2):
-        result = ''
-        if '' in (str1, str2):
-            return result
-        counter = 0
-        while (
-                counter < len(str1)
-        ) and (
-            counter < len(str2)
-        ) and (
-            str1[counter] == str2[counter]
+    def split_version(version):
+        splitted_version = []
+        block = ''
+        for char in version:
+            if char in VERSION_SEPARATORS:
+                splitted_version.append(block)
+                splitted_version.append(char)
+                block = ''
+            else:
+                block += char
+        return splitted_version
+
+    def get_common_version(version1, version2):
+        common_string = ''
+        common_length = 0
+        if '' in (version1, version2):
+            return common_string, common_length
+        for block1, block2 in zip(
+                split_version(version1),
+                split_version(version2)
         ):
-            result += str1[counter]
-            counter += 1
-        return result
+            if compare_versions(block1, block2) == 0:
+                common_string += block1
+                if block1 not in VERSION_SEPARATORS:
+                    common_length += 1
+            else:
+                break
+        return common_string, common_length
 
     def get_version_diff(version, common_version):
         new_version_postfix = version
@@ -94,7 +111,7 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
         return new_version_postfix
 
     def pretty_format(pkg_update):
-        common_version = get_common_string(
+        common_version, difference_size = get_common_version(
             pkg_update.Current_Version, pkg_update.New_Version
         )
         version_color = 10
@@ -102,7 +119,7 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
         new_color = 9
         column_width = min(int(get_term_width() / 2.5), 37)
         sort_by = '{:03d}{}'.format(
-            len(common_version)*10+len(pkg_update.New_Version),
+            difference_size,
             pkg_update.Name
         )
         pkg_name = _bold_line(pkg_update.Name)

@@ -27,13 +27,18 @@ def parse_args(args):
             ('i', 'info'),
             ('w', 'downloadonly'),
             ('q', 'quiet'),
-            ('h', 'help'),
             ('s', 'search'),
             ('u', 'sysupgrade'),
             ('y', 'refresh'),
             #
-            ('Q', 'query'),
+            ('h', 'help'),
             ('V', 'version'),
+            ('D', 'database'),
+            ('F', 'files'),
+            ('Q', 'query'),
+            ('R', 'remove'),
+            ('T', 'deptest'),
+            ('U', 'upgrade'),
     ):
         parser.add_argument('-'+letter, '--'+opt, action='store_true')
 

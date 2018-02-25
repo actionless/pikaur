@@ -192,6 +192,23 @@ def cli_print_version():
     print_version(pacman_version)
 
 
+def cli_print_help(args):
+    pacman_help = SingleTaskExecutor(CmdTaskWorker(
+        ['pacman', ] + args.raw,
+    )).execute().stdout.replace('pacman', 'pikaur')
+    pikaur_options_help = (
+        ('', '--noedit', "don't prompt to edit PKGBUILDs and other build files"),
+    )
+    print("\n{}{}{}".format(
+        pacman_help,
+        "\n\nPikaur-specific options:\n" if pikaur_options_help else '',
+        '\n'.join([
+            "{:>5} {:<16} {}".format(short_opt or '', long_opt or '', descr)
+            for short_opt, long_opt, descr in pikaur_options_help
+        ])
+    ))
+
+
 def cli_entry_point():
     # pylint: disable=too-many-branches
     raw_args = sys.argv[1:]
@@ -200,7 +217,7 @@ def cli_entry_point():
     not_implemented_in_pikaur = False
     require_sudo = True
 
-    if args.sync:
+    if args.sync and not args.help:
         if args.sysupgrade:
             cli_upgrade_packages(args)
         elif args.search:
@@ -217,7 +234,7 @@ def cli_entry_point():
         else:
             not_implemented_in_pikaur = True
 
-    elif args.query:
+    elif args.query and not args.help:
         if args.sysupgrade:
             cli_print_upgradeable(args)
         else:
@@ -226,11 +243,10 @@ def cli_entry_point():
 
     elif args.version:
         cli_print_version()
+    elif args.help:
+        cli_print_help(args)
     else:
         not_implemented_in_pikaur = True
-
-    if args.help:
-        require_sudo = False
 
     if not_implemented_in_pikaur:
         if require_sudo:

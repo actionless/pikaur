@@ -57,26 +57,6 @@ def get_editor():
     return None
 
 
-def ask_to_edit_file(filename, package_build):
-    if ask_to_continue(
-            "Do you want to {} {} for {} package?".format(
-                bold_line('edit'),
-                filename,
-                bold_line(package_build.package_name)
-            ),
-            default_yes=not package_build.is_installed
-    ):
-        interactive_spawn([
-            get_editor(),
-            os.path.join(
-                package_build.repo_path,
-                filename
-            )
-        ])
-        return True
-    return False
-
-
 def exclude_ignored_packages(package_names, args):
     excluded_pkgs = []
     for ignored_pkg in (args.ignore or []) + PacmanConfig.get('IgnorePkg', []):
@@ -135,8 +115,7 @@ class InstallPackagesCLI():
             return
         self.find_packages(packages)
 
-        if not args.noconfirm:
-            self.install_prompt()
+        self.install_prompt()
 
         self.get_package_builds()
         # @TODO: ask to install optdepends (?)
@@ -284,6 +263,9 @@ class InstallPackagesCLI():
                 aur_updates, aur_deps,
                 verbose=verbose
             ))
+
+        def _confirm_sysupgrade(verbose=False):
+            _print_sysupgrade(verbose=verbose)
             answer = input('{} {}\n{} {}\n> '.format(
                 color_line('::', 12),
                 bold_line('Proceed with installation? [Y/n] '),
@@ -292,16 +274,19 @@ class InstallPackagesCLI():
             ))
             return answer
 
+        if self.args.noconfirm:
+            _print_sysupgrade()
+            return
         answer = None
         while True:
             if answer is None:
-                answer = _print_sysupgrade()
+                answer = _confirm_sysupgrade()
             if answer:
                 letter = answer.lower()[0]
                 if letter == 'y':
                     break
                 elif letter == 'v':
-                    answer = _print_sysupgrade(verbose=True)
+                    answer = _confirm_sysupgrade(verbose=True)
                 elif letter == 'm':
                     print()
                     packages = manual_package_selection(
@@ -346,6 +331,8 @@ class InstallPackagesCLI():
                     '[s] skip this package',
                     '[a] abort',
                 ))
+                if self.args.noconfirm:
+                    answer = 'a'
                 answer = answer.lower()[0]
                 if answer == 'c':
                     package_build.git_reset_changed()
@@ -358,6 +345,9 @@ class InstallPackagesCLI():
                         self.aur_deps_names.remove(package_build.package_name)
                 else:
                     sys.exit(1)
+
+    def ask_to_continue(self, text=None, default_yes=True):
+        return ask_to_continue(text, default_yes, args=self.args)
 
     def ask_about_package_conflicts(self):
         print('looking for conflicting packages...')
@@ -384,7 +374,7 @@ class InstallPackagesCLI():
                     color_line('warning:', 11),
                     f"New package '{new_pkg_name}' conflicts with installed '{pkg_conflict}'.",
                 ))
-                answer = ask_to_continue('{} {}'.format(
+                answer = self.ask_to_continue('{} {}'.format(
                     color_line('::', 11),
                     f"Do you want to remove '{pkg_conflict}'?"
                 ), default_yes=False)
@@ -413,13 +403,40 @@ class InstallPackagesCLI():
         package_replacements = check_replacements()
         for repo_pkg_name, installed_pkgs_names in package_replacements.items():
             for installed_pkg_name in installed_pkgs_names:
-                if ask_to_continue("{} New package '{}' replaces installed '{}'. Proceed?".format(
+                if self.ask_to_continue("{} New package '{}' replaces installed '{}'. Proceed?".format(
                         color_line('::', 11),
                         bold_line(repo_pkg_name),
                         bold_line(installed_pkg_name)
                 )):
                     self.repo_packages_names.append(repo_pkg_name)
                     self.repo_packages_conflicts.append(installed_pkg_name)
+
+    def ask_to_edit_file(self, filename, package_build):
+        if self.args.noedit or self.args.noconfirm:
+            print('{} Skipping review of {} for {} package ({})'.format(
+                color_line('::', 11),
+                filename,
+                package_build.package_name,
+                (self.args.noedit and '--noedit') or (self.args.noconfirm and '--noconfirm')
+            ))
+            return False
+        if self.ask_to_continue(
+                "Do you want to {} {} for {} package?".format(
+                    bold_line('edit'),
+                    filename,
+                    bold_line(package_build.package_name)
+                ),
+                default_yes=not package_build.is_installed
+        ):
+            interactive_spawn([
+                get_editor(),
+                os.path.join(
+                    package_build.repo_path,
+                    filename
+                )
+            ])
+            return True
+        return False
 
     def review_build_files(self):
         for pkg_name in self.all_aur_packages_names:
@@ -435,7 +452,7 @@ class InstallPackagesCLI():
             else:
 
                 if repo_status.build_files_updated:
-                    if ask_to_continue(
+                    if self.ask_to_continue(
                             "Do you want to see build files {} for {} package?".format(
                                 bold_line('diff'),
                                 bold_line(pkg_name)
@@ -452,11 +469,11 @@ class InstallPackagesCLI():
                 src_info = SrcInfo(repo_status.repo_path)
 
                 if get_editor():
-                    if ask_to_edit_file('PKGBUILD', repo_status):
+                    if self.ask_to_edit_file('PKGBUILD', repo_status):
                         src_info.regenerate()
                     install_file_name = src_info.get_install_script()
                     if install_file_name:
-                        ask_to_edit_file(install_file_name, repo_status)
+                        self.ask_to_edit_file(install_file_name, repo_status)
 
                 arch = platform.machine()
                 supported_archs = src_info.get_values('arch')
@@ -494,7 +511,7 @@ class InstallPackagesCLI():
                 print(exc)
                 print(color_line(f"Can't build '{pkg_name}'.", 9))
                 failed_to_build.append(pkg_name)
-                # if not ask_to_continue():
+                # if not self.ask_to_continue():
                 #     sys.exit(1)
                 packages_to_be_built.remove(pkg_name)
             except DependencyNotBuiltYet:
@@ -543,7 +560,7 @@ class InstallPackagesCLI():
                         'ignore',
                     ]) + packages_to_be_installed,
             ):
-                if not ask_to_continue(default_yes=False):
+                if not self.ask_to_continue(default_yes=False):
                     self.revert_repo_transaction()
                     sys.exit(1)
 
@@ -643,7 +660,7 @@ class InstallPackagesCLI():
                         'ignore',
                     ]) + new_aur_deps_to_install,
             ):
-                if not ask_to_continue(default_yes=False):
+                if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
                     sys.exit(1)
             self.save_aur_transaction(new_aur_deps_to_install)
@@ -670,7 +687,7 @@ class InstallPackagesCLI():
                         'ignore',
                     ]) + aur_packages_to_install,
             ):
-                if not ask_to_continue(default_yes=False):
+                if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
                     sys.exit(1)
             self.save_aur_transaction(aur_packages_to_install)

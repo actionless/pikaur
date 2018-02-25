@@ -12,6 +12,11 @@ class SafeArgumentParser(argparse.ArgumentParser):
         super().error(message)
 
 
+PIKAUR_LONG_OPTS = (
+    'noedit',
+)
+
+
 def parse_args(args):
     parser = SafeArgumentParser(prog=sys.argv[0], add_help=False)
 
@@ -35,7 +40,7 @@ def parse_args(args):
     for opt in (
             'noconfirm',
             'needed',
-    ):
+    ) + PIKAUR_LONG_OPTS:
         parser.add_argument('--'+opt, action='store_true')
 
     parser.add_argument('--ignore', action='append')
@@ -60,6 +65,7 @@ def parse_args(args):
 def reconstruct_args(parsed_args, ignore_args=None):
     if not ignore_args:
         ignore_args = []
+    ignore_args += PIKAUR_LONG_OPTS
     reconstructed_args = {
         f'--{key}' if len(key) > 1 else f'-{key}': value
         for key, value in parsed_args.__dict__.items()

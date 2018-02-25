@@ -4,7 +4,10 @@ from .core import interactive_spawn
 from .pprint import color_line
 
 
-def ask_to_continue(text='Do you want to proceed?', default_yes=True):
+def ask_to_continue(text='Do you want to proceed?', default_yes=True, args=None):
+    if args and args.noconfirm and default_yes:
+        print(text + '[Y]es (--noconfirm)')
+        return True
     answer = input(text + (' [Y/n] ' if default_yes else ' [y/N] '))
     if default_yes:
         if answer and answer.lower()[0] != 'y':

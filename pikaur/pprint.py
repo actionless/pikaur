@@ -2,6 +2,7 @@ import sys
 import shutil
 
 from .config import VERSION
+from .version import PackageVersion
 
 
 PADDING = 4
@@ -68,41 +69,19 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
     if not color:
         _color_line = _bold_line = lambda x, *args: x
 
-    def get_common_string(str1, str2):
-        result = ''
-        if '' in (str1, str2):
-            return result
-        counter = 0
-        while (
-                counter < len(str1)
-        ) and (
-            counter < len(str2)
-        ) and (
-            str1[counter] == str2[counter]
-        ):
-            result += str1[counter]
-            counter += 1
-        return result
-
-    def get_version_diff(version, common_version):
-        new_version_postfix = version
-        if common_version != '':
-            _new_version_postfix = version.split(
-                common_version
-            )[1:]
-            new_version_postfix = common_version.join(_new_version_postfix)
-        return new_version_postfix
-
     def pretty_format(pkg_update):
-        common_version = get_common_string(
-            pkg_update.Current_Version, pkg_update.New_Version
-        )
+        current_version = PackageVersion(pkg_update.Current_Version)
+        new_version = PackageVersion(pkg_update.New_Version)
+
+        _, prefix1 = current_version.compare(new_version)
+        _, prefix2 = new_version.compare(current_version)
+
         version_color = 10
         old_color = 11
         new_color = 9
         column_width = min(int(get_term_width() / 2.5), 37)
         sort_by = '{:03d}{}'.format(
-            len(common_version)*10+len(pkg_update.New_Version),
+            prefix1*10+len(pkg_update.New_Version),
             pkg_update.Name
         )
         pkg_name = _bold_line(pkg_update.Name)
@@ -115,16 +94,10 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
             pkg_len += len(pkg_update.Repository) + 1
         return ' {pkg_name}{spacing} {current_version}{spacing2} -> {new_version}{verbose}'.format(
             pkg_name=pkg_name,
-            current_version=_color_line(common_version, version_color) +
-            _color_line(
-                get_version_diff(pkg_update.Current_Version, common_version),
-                old_color
-            ),
-            new_version=_color_line(common_version, version_color) +
-            _color_line(
-                get_version_diff(pkg_update.New_Version, common_version),
-                new_color
-            ),
+            current_version=_color_line(pkg_update.Current_Version[:prefix1], version_color) +
+            _color_line(pkg_update.Current_Version[prefix1:], old_color),
+            new_version=_color_line(pkg_update.New_Version[:prefix2], version_color) +
+            _color_line(pkg_update.New_Version[prefix2:], new_color),
             spacing=' ' * (column_width - pkg_len),
             spacing2=' ' * (column_width - len(pkg_update.Current_Version or '') - 18),
             verbose=(

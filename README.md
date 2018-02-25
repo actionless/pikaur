@@ -4,7 +4,7 @@ AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build t
 
 Inspired by `pacaur`, `yaourt` and `yay`.
 
-![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshot.png "Screenshot")
+![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
 ### Installation
 

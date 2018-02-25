@@ -21,25 +21,38 @@ from .exceptions import (
 
 class SrcInfo():
 
-    lines = None
+    common_lines = None
+    package_lines = None
     path = None
     repo_path = None
 
-    def __init__(self, repo_path):
+    def __init__(self, repo_path, package_name):
         self.path = os.path.join(
             repo_path,
             '.SRCINFO'
         )
         self.repo_path = repo_path
+
+        self.common_lines = []
+        self.package_lines = []
+        destination = self.common_lines
         with open(self.path) as srcinfo_file:
-            self.lines = srcinfo_file.readlines()
+            for line in srcinfo_file.readlines():
+                if line.startswith('pkgname ='):
+                    if line.split('=')[1].strip() == package_name:
+                        destination = self.package_lines
+                    else:
+                        destination = []
+                else:
+                    destination.append(line)
 
     def get_values(self, field):
         prefix = field + ' = '
         values = []
-        for line in self.lines:
-            if line.strip().startswith(prefix):
-                values.append(line.strip().split(prefix)[1])
+        for lines in (self.common_lines, self.package_lines):
+            for line in lines:
+                if line.strip().startswith(prefix):
+                    values.append(line.strip().split(prefix)[1])
         return values
 
     def get_install_script(self):
@@ -319,7 +332,7 @@ class PackageBuild(DataType):
             remove_dir(self.build_dir)
         shutil.copytree(repo_path, self.build_dir)
 
-        src_info = SrcInfo(repo_path)
+        src_info = SrcInfo(repo_path, self.package_name)
         make_deps = src_info.get_makedepends()
         _, new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = src_info.get_depends()

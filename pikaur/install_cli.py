@@ -469,7 +469,7 @@ class InstallPackagesCLI():
                             repo_status.last_installed_hash,
                             repo_status.current_hash,
                         ])
-                src_info = SrcInfo(repo_status.repo_path)
+                src_info = SrcInfo(repo_status.repo_path, pkg_name)
 
                 if get_editor():
                     if self.ask_to_edit_file('PKGBUILD', repo_status):

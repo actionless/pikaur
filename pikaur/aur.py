@@ -152,10 +152,6 @@ class AurTaskWorkerInfo(AurTaskWorker):
             self.params += '&arg[]=' + quote(package)
 
 
-def get_repo_url(package_name):
-    return f'https://aur.archlinux.org/{package_name}.git'
-
-
 _AUR_PKGS_FIND_CACHE = {}
 
 
@@ -193,3 +189,8 @@ def find_aur_packages(package_names):
         ]
 
     return json_results, not_found_packages
+
+
+def get_repo_url(package_name):
+    package_base_name = find_aur_packages([package_name])[0][0].PackageBase
+    return f'https://aur.archlinux.org/{package_base_name}.git'

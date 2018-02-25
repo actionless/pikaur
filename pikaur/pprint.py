@@ -61,7 +61,9 @@ def print_not_found_packages(not_found_packages):
         print(format_paragraph(package))
 
 
-def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False, color=True):
+def pretty_format_upgradeable(
+        packages_updates, verbose=False, print_repo=False, color=True, template=None
+):
 
     _color_line = color_line
     _bold_line = bold_line
@@ -93,7 +95,7 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
             new_version_postfix = common_version.join(_new_version_postfix)
         return new_version_postfix
 
-    def pretty_format(pkg_update):
+    def pretty_format(pkg_update, template):
         common_version = get_common_string(
             pkg_update.Current_Version, pkg_update.New_Version
         )
@@ -113,7 +115,9 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
                 pkg_name
             )
             pkg_len += len(pkg_update.Repository) + 1
-        return ' {pkg_name}{spacing} {current_version}{spacing2} -> {new_version}{verbose}'.format(
+        return (
+            template or ' {pkg_name}{spacing} {current_version}{spacing2} -> {new_version}{verbose}'
+        ).format(
             pkg_name=pkg_name,
             current_version=_color_line(common_version, version_color) +
             _color_line(
@@ -136,7 +140,7 @@ def pretty_format_upgradeable(packages_updates, verbose=False, print_repo=False,
     return '\n'.join([
         f'{line}' for line, _ in sorted(
             [
-                pretty_format(pkg_update)
+                pretty_format(pkg_update, template=template)
                 for pkg_update in packages_updates
             ],
             key=lambda x: x[1],

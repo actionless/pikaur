@@ -1,6 +1,7 @@
 from .pacman import PackageDB
 from .aur import find_aur_packages
 from .version import get_package_name_and_version_matcher_from_depend_line
+from .package_update import get_remote_package_version
 
 
 def get_new_repo_pkgs_conflicts(repo_packages_names):
@@ -42,16 +43,6 @@ def get_all_local_pkgs_conflicts(all_local_pkgs_info):
     return all_local_pgks_conflicts_lists
 
 
-def _get_package_version(new_pkg_name):
-    repo_info = PackageDB.get_repo_dict().get(new_pkg_name)
-    if repo_info:
-        return repo_info.Version
-    aur_packages, _not_found = find_aur_packages([new_pkg_name])
-    if aur_packages:
-        return aur_packages[0].Version
-    return None
-
-
 def find_conflicting_with_new_pkgs(new_pkg_name, all_pkgs_names, new_pkg_conflicts_list):
     # find if any of new packages have Conflicts with
     # already installed ones or with each other:
@@ -69,7 +60,7 @@ def find_conflicting_with_new_pkgs(new_pkg_name, all_pkgs_names, new_pkg_conflic
                 ) and (
                     new_pkg_name != conflict_pkg_name
                 ) and (
-                    conflict_version_matcher(_get_package_version(installed_pkg_name))
+                    conflict_version_matcher(get_remote_package_version(installed_pkg_name))
                 ):
                     new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
             for installed_pkg_name, provides in local_provided.items():
@@ -81,7 +72,7 @@ def find_conflicting_with_new_pkgs(new_pkg_name, all_pkgs_names, new_pkg_conflic
                     ) and (
                         conflict_version_matcher(
                             provided_pkg.version_matcher.version or
-                            _get_package_version(installed_pkg_name)
+                            get_remote_package_version(installed_pkg_name)
                         )
                     ):
                         new_pkgs_conflicts.setdefault(new_pkg_name, []).append(
@@ -106,7 +97,7 @@ def find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_list
             ) and (
                 local_pkg_name != new_pkg_name
             ) and (
-                conflict_version_matcher(_get_package_version(new_pkg_name))
+                conflict_version_matcher(get_remote_package_version(new_pkg_name))
             ):
                 new_pkgs_conflicts.setdefault(new_pkg_name, []).append(local_pkg_name)
     return new_pkgs_conflicts

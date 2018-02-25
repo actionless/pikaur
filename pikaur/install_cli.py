@@ -10,7 +10,7 @@ from .aur_deps import find_aur_deps
 from .pacman import (
     find_repo_packages, PackageDB, OFFICIAL_REPOS, PacmanConfig,
 )
-from .package_update import PackageUpdate
+from .package_update import PackageUpdate, get_remote_package_version
 from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
@@ -21,7 +21,8 @@ from .build import (
 )
 from .pprint import (
     color_line, bold_line,
-    pretty_format_sysupgrade, print_not_found_packages,
+    pretty_format_sysupgrade, pretty_format_upgradeable,
+    print_not_found_packages,
 )
 from .core import (
     SingleTaskExecutor, CmdTaskWorker,
@@ -156,10 +157,22 @@ class InstallPackagesCLI():
     def exclude_ignored_packages(self, packages):
         excluded_packages = exclude_ignored_packages(packages, self.args)
         for package_name in excluded_packages:
-            print('{} {} {}'.format(
+            current_version = PackageDB.get_local_dict().get(package_name)
+            new_version = get_remote_package_version(package_name)
+            print('{} Ignoring package {}'.format(
                 color_line('::', 11),
-                "Ignoring package",
-                bold_line(package_name)
+                pretty_format_upgradeable(
+                    [PackageUpdate(
+                        Name=package_name,
+                        Current_Version=current_version or '',
+                        New_Version=new_version or ''
+                    )],
+                    template=(
+                        "{pkg_name} ({current_version} => {new_version})"
+                        if current_version else
+                        "{pkg_name} {new_version}"
+                    )
+                )
             ))
 
     def find_packages(self, packages):

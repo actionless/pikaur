@@ -125,7 +125,7 @@ class InstallPackagesCLI():
         self.review_build_files()
 
         # get sudo for further questions (command should do nothing):
-        interactive_spawn(['sudo', 'pacman', 'T'])
+        interactive_spawn(['sudo', 'pacman', '-T'])
 
         self.build_packages()
 

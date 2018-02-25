@@ -1,6 +1,6 @@
 import sys
 
-from . import argparse as argparse
+from . import argparse as argparse  # pylint: disable=no-name-in-module
 
 
 class SafeArgumentParser(argparse.ArgumentParser):

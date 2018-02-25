@@ -49,6 +49,7 @@ class PackageVersion:
 
         return parts
 
+    # pylint: disable=too-many-return-statements
     def compare(self, other):
         '''
         Returns a pair consisting of:

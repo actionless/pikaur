@@ -80,6 +80,7 @@ complete -c $progname -n "not $noopt" -l gpgdir -d 'GPG directory to verify sign
 complete -c $progname -n "not $noopt" -l hookdir -d 'Hook file directory'
 complete -c $progname -n "not $noopt" -l logfile -d 'Specify alternative log file'
 complete -c $progname -n "not $noopt" -l noconfirm -d 'Bypass any question' -f
+complete -c $progname -n "not $noopt" -l noedit -d 'Bypass editing PKGBUILDs' -f
 
 # Transaction options (sync, remove, upgrade)
 for condition in sync remove upgrade

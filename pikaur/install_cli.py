@@ -471,6 +471,7 @@ class InstallPackagesCLI():
 
     def build_packages(self):
         failed_to_build = []
+        deps_fails_counter = {}
         packages_to_be_built = self.all_aur_packages_names[:]
         index = 0
         while packages_to_be_built:
@@ -494,6 +495,15 @@ class InstallPackagesCLI():
                 packages_to_be_built.remove(pkg_name)
             except DependencyNotBuiltYet:
                 index += 1
+                deps_fails_counter.setdefault(pkg_name, 0)
+                deps_fails_counter[pkg_name] += 1
+                if deps_fails_counter[pkg_name] > len(self.all_aur_packages_names):
+                    print('{} {} {}'.format(
+                        color_line(':: error:', 9),
+                        "Dependency cycle detected between",
+                        deps_fails_counter
+                    ))
+                    sys.exit(1)
             else:
                 packages_to_be_built.remove(pkg_name)
 

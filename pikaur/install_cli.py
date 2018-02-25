@@ -404,11 +404,13 @@ class InstallPackagesCLI():
         package_replacements = check_replacements()
         for repo_pkg_name, installed_pkgs_names in package_replacements.items():
             for installed_pkg_name in installed_pkgs_names:
-                if self.ask_to_continue("{} New package '{}' replaces installed '{}'. Proceed?".format(
-                        color_line('::', 11),
-                        bold_line(repo_pkg_name),
-                        bold_line(installed_pkg_name)
-                )):
+                if self.ask_to_continue(
+                        "{} New package '{}' replaces installed '{}'. Proceed?".format(
+                            color_line('::', 11),
+                            bold_line(repo_pkg_name),
+                            bold_line(installed_pkg_name)
+                        )
+                ):
                     self.repo_packages_names.append(repo_pkg_name)
                     self.repo_packages_conflicts.append(installed_pkg_name)
 
@@ -481,7 +483,7 @@ class InstallPackagesCLI():
                 if supported_archs and (
                         'any' not in supported_archs
                 ) and (
-                        arch not in supported_archs
+                    arch not in supported_archs
                 ):
                     print("{} {} can't be built on the current arch ({}). Supported: {}".format(
                         color_line(':: error:', 9),

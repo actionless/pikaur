@@ -35,9 +35,6 @@ def compare_versions_bak(current_version, new_version):
     return False
 
 
-_CACHED_VERSION_COMPARISONS = {}
-
-
 def compare_versions(current_version, new_version):
     """
     vercmp is used to determine the relationship between two given version numbers.
@@ -48,13 +45,11 @@ def compare_versions(current_version, new_version):
     """
     if current_version == new_version:
         return 0
-    if not _CACHED_VERSION_COMPARISONS.setdefault(current_version, {}).get(new_version):
-        libalpm = ctypes.cdll.LoadLibrary('libalpm.so')
-        compare_result = libalpm.alpm_pkg_vercmp(
-            bytes(current_version, 'ascii'), bytes(new_version, 'ascii')
-        )
-        _CACHED_VERSION_COMPARISONS[current_version][new_version] = compare_result
-    return _CACHED_VERSION_COMPARISONS[current_version][new_version]
+    libalpm = ctypes.cdll.LoadLibrary('libalpm.so')
+    compare_result = libalpm.alpm_pkg_vercmp(
+        bytes(current_version, 'ascii'), bytes(new_version, 'ascii')
+    )
+    return compare_result
 
 
 def compare_versions_test():

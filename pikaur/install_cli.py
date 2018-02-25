@@ -322,17 +322,18 @@ class InstallPackagesCLI():
                     ), 9
                 ))
                 print(err.result)
-                answer = input('{} {}\n{}\n{}\n{}\n{}\n> '.format(
-                    color_line('::', 11),
-                    'Try recovering?',
-                    "[c] git checkout -- '*'",
-                    # "[c] git checkout -- '*' ; git clean -f -d -x",
-                    '[r] remove dir and clone again',
-                    '[s] skip this package',
-                    '[a] abort',
-                ))
                 if self.args.noconfirm:
                     answer = 'a'
+                else:
+                    answer = input('{} {}\n{}\n{}\n{}\n{}\n> '.format(
+                        color_line('::', 11),
+                        'Try recovering?',
+                        "[c] git checkout -- '*'",
+                        # "[c] git checkout -- '*' ; git clean -f -d -x",
+                        '[r] remove dir and clone again',
+                        '[s] skip this package',
+                        '[a] abort',
+                    ))
                 answer = answer.lower()[0]
                 if answer == 'c':
                     package_build.git_reset_changed()

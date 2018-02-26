@@ -348,6 +348,7 @@ class PackageBuild(DataType):
         if not args.needed:
             makepkg_args.append('--force')
 
+        print()
         build_succeeded = retry_interactive_command(
             [
                 'makepkg',

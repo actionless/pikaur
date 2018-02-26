@@ -19,6 +19,21 @@ from .exceptions import (
 )
 
 
+def asroot():
+    return os.geteuid() == 0
+
+
+def isolate_root_cmd(cmd, cwd=None):
+    if not asroot():
+        return cmd
+    base_root_isolator = ['systemd-run', '--pipe',
+                          '-p', 'DynamicUser=yes',
+                          '-p', 'CacheDirectory=pikaur']
+    if cwd is not None:
+        base_root_isolator += ['-p', 'WorkingDirectory=' + cwd]
+    return base_root_isolator + cmd
+
+
 class SrcInfo():
 
     common_lines = None
@@ -76,9 +91,9 @@ class SrcInfo():
     def regenerate(self):
         with open(self.path, 'w') as srcinfo_file:
             result = SingleTaskExecutor(
-                CmdTaskWorker([
-                    'makepkg', '--printsrcinfo',
-                ], cwd=self.repo_path)
+                CmdTaskWorker(isolate_root_cmd(['makepkg', '--printsrcinfo'],
+                                               cwd=self.repo_path),
+                              cwd=self.repo_path)
             ).execute()
             srcinfo_file.write(result.stdout)
 
@@ -102,8 +117,12 @@ class PackageBuild(DataType):
 
     def __init__(self, package_name):  # pylint: disable=super-init-not-called
         self.package_name = package_name
-        self.build_dir = os.path.join(BUILD_CACHE, self.package_name)
-        repo_path = os.path.join(AUR_REPOS_CACHE, package_name)
+        if asroot():
+            self.build_dir = "/var/cache/pikaur/build"
+            repo_path = "/var/cache/pikaur/aur_repos"
+        else:
+            self.build_dir = os.path.join(BUILD_CACHE, self.package_name)
+            repo_path = os.path.join(AUR_REPOS_CACHE, package_name)
         if os.path.exists(repo_path):
             # pylint: disable=simplifiable-if-statement
             if os.path.exists(os.path.join(repo_path, '.git')):
@@ -319,7 +338,8 @@ class PackageBuild(DataType):
             config_path=os.path.join(dest_dir, 'PKGBUILD')
         )
         full_pkg_names = SingleTaskExecutor(CmdTaskWorker(
-            ['makepkg', '--packagelist', ],
+            isolate_root_cmd(['makepkg', '--packagelist'],
+                             cwd=self.build_dir),
             cwd=self.build_dir
         )).execute().stdout.splitlines()
         full_pkg_name = full_pkg_names[0]
@@ -333,12 +353,15 @@ class PackageBuild(DataType):
             self.built_package_path = built_package_path
 
     def build(self, args, all_package_builds):
-        repo_path = self.repo_path
         if os.path.exists(self.build_dir):
             remove_dir(self.build_dir)
-        shutil.copytree(repo_path, self.build_dir)
 
-        src_info = SrcInfo(repo_path, self.package_name)
+        copy_command = ['cp', '-R', self.repo_path, self.build_dir]
+        SingleTaskExecutor(CmdTaskWorker(
+            isolate_root_cmd(copy_command)
+        )).execute()
+
+        src_info = SrcInfo(self.repo_path, self.package_name)
         make_deps = src_info.get_makedepends()
         _, new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = src_info.get_depends()
@@ -356,9 +379,8 @@ class PackageBuild(DataType):
 
         print()
         build_succeeded = retry_interactive_command(
-            [
-                'makepkg',
-            ] + makepkg_args,
+            isolate_root_cmd(['makepkg'] + makepkg_args,
+                             cwd=self.build_dir),
             cwd=self.build_dir
         )
 

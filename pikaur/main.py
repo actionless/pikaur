@@ -317,12 +317,6 @@ def cli_entry_point():
 
 
 def main():
-    if os.getuid() == 0:
-        print_status_message("{} {}".format(
-            color_line('::', 9),
-            "Don't run me as root."
-        ))
-        sys.exit(1)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     try:
         cli_entry_point()

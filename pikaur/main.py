@@ -21,7 +21,7 @@ from .aur import (
     AurTaskWorkerSearch, AurTaskWorkerInfo,
 )
 from .pacman import (
-    PacmanColorTaskWorker, PackageDB, find_packages_not_from_repo,
+    PacmanColorTaskWorker, PackageDB,
 )
 from .package_update import find_repo_updates, find_aur_updates
 from .install_cli import InstallPackagesCLI, exclude_ignored_packages
@@ -48,7 +48,7 @@ init_readline()
 
 
 def cli_print_upgradeable(args):
-    updates, _ = find_aur_updates(find_packages_not_from_repo())
+    updates, _not_found_aur_pkgs = find_aur_updates()
     updates += find_repo_updates()
     if args.quiet:
         print_upgradeable(updates)
@@ -80,8 +80,7 @@ def cli_upgrade_packages(args):
         color_line('::', 12),
         bold_line('Starting full AUR upgrade...')
     ))
-    aur_updates, not_found_aur_pkgs = \
-        find_aur_updates(find_packages_not_from_repo())
+    aur_updates, not_found_aur_pkgs = find_aur_updates()
     exclude_ignored_packages(not_found_aur_pkgs, args)
     if not_found_aur_pkgs:
         print_not_found_packages(sorted(not_found_aur_pkgs))

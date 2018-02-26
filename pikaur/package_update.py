@@ -1,6 +1,6 @@
 from .core import DataType
 from .version import compare_versions
-from .pacman import PackageDB
+from .pacman import PackageDB, find_packages_not_from_repo
 from .aur import find_aur_packages
 
 
@@ -37,15 +37,15 @@ def find_repo_updates():
     return repo_packages_updates
 
 
-def find_aur_updates(package_versions):
-    aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(
-        package_versions.keys()
-    )
+def find_aur_updates():
+    package_names = find_packages_not_from_repo()
+    local_packages = PackageDB.get_local_dict()
+    aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
     aur_updates = []
     for result in aur_pkgs_info:
         pkg_name = result.Name
         aur_version = result.Version
-        current_version = package_versions[pkg_name]
+        current_version = local_packages[pkg_name].version
         compare_result = compare_versions(current_version, aur_version)
         if compare_result < 0:
             aur_updates.append(PackageUpdate(

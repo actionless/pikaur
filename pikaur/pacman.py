@@ -165,7 +165,7 @@ class PackageDB(PackageDBCommon):
         return cls._packages_list_cache[cls.repo]
 
 
-def find_pacman_packages(packages, local=False):
+def _find_pacman_packages(packages, local=False):
     all_repo_packages = (
         PackageDB.get_local_dict() if local else PackageDB.get_repo_dict()
     ).keys()
@@ -180,18 +180,15 @@ def find_pacman_packages(packages, local=False):
 
 
 def find_repo_packages(packages):
-    return find_pacman_packages(packages, local=False)
+    return _find_pacman_packages(packages, local=False)
 
 
 def find_local_packages(packages):
-    return find_pacman_packages(packages, local=True)
+    return _find_pacman_packages(packages, local=True)
 
 
 def find_packages_not_from_repo():
     _repo_packages, not_found_packages = find_repo_packages(
         PackageDB.get_local_dict().keys()
     )
-    return {
-        pkg_name: PackageDB.get_local_dict()[pkg_name].version
-        for pkg_name in not_found_packages
-    }
+    return not_found_packages

@@ -266,7 +266,8 @@ class PackageBuild(DataType):
                 if dep_name in local_provided:
                     all_deps_to_install.remove(dep_name)
         if all_deps_to_install:
-            # @TODO: resolve makedeps in case if it was specified by Provides, not real name - 1) store them
+            # @TODO: resolve makedeps in case if it was specified by Provides,
+            # @TODO: not real name - 1) store them
             print('{} {} {}:'.format(
                 color_line('::', 13),
                 "Installing repository dependencies for",
@@ -299,7 +300,8 @@ class PackageBuild(DataType):
                 "Removing make dependencies for",
                 bold_line(self.package_name)
             ))
-            # @TODO: resolve makedeps in case if it was specified by Provides, not real name - 2) remove them
+            # @TODO: resolve makedeps in case if it was specified by Provides,
+            # @TODO: not real name - 2) remove them
             retry_interactive_command(
                 [
                     'sudo',

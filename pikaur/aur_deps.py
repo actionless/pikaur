@@ -125,7 +125,7 @@ def find_deps_for_aur_pkg(aur_pkg_name, version_matchers, aur_pkgs_info):
     aur_deps_info, not_found_aur_deps = find_aur_packages(
         not_found_local_pkgs
     )
-    # TODO: find packages Provided by AUR packages
+    # @TODO: find packages Provided by AUR packages
     if not_found_aur_deps:
         problem_packages_names = []
         for result in aur_pkgs_info:

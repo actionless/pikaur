@@ -7,11 +7,12 @@ import sys
 import readline
 import signal
 from multiprocessing.pool import ThreadPool
+import subprocess
 
 from .args import parse_args
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
-    CmdTaskWorker, interactive_spawn, remove_dir,
+    CmdTaskWorker, interactive_spawn, isroot, remove_dir,
 )
 from .pprint import (
     color_line, bold_line,
@@ -29,7 +30,7 @@ from .pacman import (
 from .package_update import find_repo_updates, find_aur_updates
 from .install_cli import InstallPackagesCLI, exclude_ignored_packages
 from .prompt import retry_interactive_command_or_exit, ask_to_continue
-from .config import BUILD_CACHE
+from .config import CACHE_ROOT, BUILD_CACHE_DIR
 
 
 REPO = 'repo'
@@ -135,12 +136,13 @@ def cli_info_packages(args):
 
 
 def cli_clean_packages_cache(args):
-    if os.path.exists(BUILD_CACHE):
-        print(f'\nBuild directory: {BUILD_CACHE}')
+    build_cache = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
+    if os.path.exists(build_cache):
+        print(f'\nBuild directory: {build_cache}')
         if ask_to_continue("{} Do you want to remove all files?".format(
                 color_line('::', 12)
         )):
-            remove_dir(BUILD_CACHE)
+            remove_dir(build_cache)
     sys.exit(
         interactive_spawn(['sudo', 'pacman', ] + args.raw).returncode
     )
@@ -316,7 +318,25 @@ def cli_entry_point():
         )
 
 
+def check_systemd_dynamic_users():
+    try:
+        out = subprocess.check_output(['systemd-run', '--version'],
+                                      universal_newlines=True)
+    except FileNotFoundError:
+        return False
+    first_line = out.split('\n')[0]
+    version = int(first_line.split()[1])
+    return version >= 235
+
+
 def main():
+    if isroot() and not check_systemd_dynamic_users():
+        print_status_message("{} {}".format(
+            color_line('::', 9),
+            "pikaur requires systemd >= 235 (dynamic users) to be run as root."
+        ))
+        sys.exit(1)
+
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     try:
         cli_entry_point()

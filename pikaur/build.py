@@ -5,10 +5,10 @@ import platform
 from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
-    ConfigReader, remove_dir,
+    ConfigReader, isolate_root_cmd, isroot, remove_dir,
 )
 from .version import get_package_name_and_version_matcher_from_depend_line
-from .config import AUR_REPOS_CACHE, BUILD_CACHE
+from .config import CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR
 from .aur import get_repo_url
 from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args
@@ -17,21 +17,6 @@ from .prompt import retry_interactive_command
 from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
 )
-
-
-def asroot():
-    return os.geteuid() == 0
-
-
-def isolate_root_cmd(cmd, cwd=None):
-    if not asroot():
-        return cmd
-    base_root_isolator = ['systemd-run', '--pipe',
-                          '-p', 'DynamicUser=yes',
-                          '-p', 'CacheDirectory=pikaur']
-    if cwd is not None:
-        base_root_isolator += ['-p', 'WorkingDirectory=' + cwd]
-    return base_root_isolator + cmd
 
 
 class SrcInfo():
@@ -117,22 +102,25 @@ class PackageBuild(DataType):
 
     def __init__(self, package_name):  # pylint: disable=super-init-not-called
         self.package_name = package_name
-        if asroot():
-            self.build_dir = "/var/cache/pikaur/build"
-            repo_path = "/var/cache/pikaur/aur_repos"
+        if isroot():
+            cache_root = '/var/cache/pikaur'
         else:
-            self.build_dir = os.path.join(BUILD_CACHE, self.package_name)
-            repo_path = os.path.join(AUR_REPOS_CACHE, package_name)
-        if os.path.exists(repo_path):
+            cache_root = CACHE_ROOT
+
+        self.build_dir = os.path.join(cache_root, BUILD_CACHE_DIR,
+                                      self.package_name)
+        self.repo_path = os.path.join(cache_root, AUR_REPOS_CACHE_DIR,
+                                      self.package_name)
+
+        if os.path.exists(self.repo_path):
             # pylint: disable=simplifiable-if-statement
-            if os.path.exists(os.path.join(repo_path, '.git')):
+            if os.path.exists(os.path.join(self.repo_path, '.git')):
                 self.pull = True
             else:
                 self.clone = True
         else:
-            os.makedirs(repo_path)
+            os.makedirs(self.repo_path)
             self.clone = True
-        self.repo_path = repo_path
 
     def create_clone_task(self):
         return CmdTaskWorker([
@@ -355,6 +343,11 @@ class PackageBuild(DataType):
     def build(self, args, all_package_builds):
         if os.path.exists(self.build_dir):
             remove_dir(self.build_dir)
+
+        mkdir_command = ['mkdir', '-p', os.path.dirname(self.build_dir)]
+        SingleTaskExecutor(CmdTaskWorker(
+            isolate_root_cmd(mkdir_command)
+        )).execute()
 
         copy_command = ['cp', '-R', self.repo_path, self.build_dir]
         SingleTaskExecutor(CmdTaskWorker(

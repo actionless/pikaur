@@ -1,7 +1,8 @@
 import asyncio
-import subprocess
 import configparser
+import os
 import shutil
+import subprocess
 from uuid import uuid1
 
 
@@ -12,6 +13,21 @@ def interactive_spawn(cmd, **kwargs):
     process = subprocess.Popen(cmd, **kwargs)
     process.communicate()
     return process
+
+
+def isroot():
+    return os.geteuid() == 0
+
+
+def isolate_root_cmd(cmd, cwd=None):
+    if not isroot():
+        return cmd
+    base_root_isolator = ['systemd-run', '--pipe',
+                          '-p', 'DynamicUser=yes',
+                          '-p', 'CacheDirectory=pikaur']
+    if cwd is not None:
+        base_root_isolator += ['-p', 'WorkingDirectory=' + cwd]
+    return base_root_isolator + cmd
 
 
 class MultipleTasksExecutor(object):

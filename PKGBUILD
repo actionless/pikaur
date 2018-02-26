@@ -3,7 +3,7 @@
 
 pkgname=pikaur-git
 pkgver=0.6
-pkgrel=2
+pkgrel=3
 pkgdesc="AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction."
 arch=('any')
 url="https://github.com/actionless/pikaur"
@@ -15,9 +15,8 @@ md5sums=(
 	"SKIP"
 )
 depends=(
-	'python'
+	'pyalpm'
 	'python-setuptools'
-	'pacman'
 	'git'
 	'sudo'
 	'fakeroot'

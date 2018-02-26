@@ -1,4 +1,4 @@
-import ctypes
+from pyalpm import vercmp  # pylint: disable=no-name-in-module
 
 
 def compare_versions(current_version, new_version):
@@ -9,25 +9,7 @@ def compare_versions(current_version, new_version):
         = 0 : if ver1 == ver2
         > 0 : if ver1 > ver2
     """
-    if current_version == new_version:
-        return 0
-    libalpm = ctypes.cdll.LoadLibrary('libalpm.so')
-    compare_result = libalpm.alpm_pkg_vercmp(
-        bytes(current_version, 'ascii'), bytes(new_version, 'ascii')
-    )
-    return compare_result
-
-
-def compare_versions_test():
-    for expected_result, old_version, new_version in (
-            (-1, '0.2+9+123abc-1', '0.3-1'),
-            (-1, '0.50.12', '0.50.13'),
-            (-1, '0.50.19', '0.50.20'),
-            (-1, '0.50.2-1', '0.50.2+6+123131-1'),
-            (-1, '0.50.2+1', '0.50.2+6+123131-1'),
-            (0, '0.50.1', '0.50.1'),
-    ):
-        assert compare_versions(old_version, new_version) == expected_result
+    return vercmp(current_version, new_version)
 
 
 class VersionMatcher():

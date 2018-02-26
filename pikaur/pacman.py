@@ -137,16 +137,21 @@ class PackageDBCommon():
         return cls._get_provided_dict(cls.local)
 
 
-alpm_handle = PacmanConfig().initialize_alpm()
-
-
 class PackageDB(PackageDBCommon):
+
+    _alpm_handle = None
+
+    @classmethod
+    def get_alpm_handle(cls):
+        if not cls._alpm_handle:
+            cls._alpm_handle = PacmanConfig().initialize_alpm()
+        return cls._alpm_handle
 
     @classmethod
     def get_local_list(cls):
         if not cls._packages_list_cache.get(cls.local):
             print("Reading local package database...")
-            cls._packages_list_cache[cls.local] = alpm_handle.get_localdb().search('')
+            cls._packages_list_cache[cls.local] = cls.get_alpm_handle().get_localdb().search('')
         return cls._packages_list_cache[cls.local]
 
     @classmethod
@@ -154,8 +159,8 @@ class PackageDB(PackageDBCommon):
         if not cls._packages_list_cache.get(cls.repo):
             print("Reading repository package databases...")
             result = []
-            for db in alpm_handle.get_syncdbs():
-                result += db.search('')
+            for sync_db in cls.get_alpm_handle().get_syncdbs():
+                result += sync_db.search('')
             cls._packages_list_cache[cls.repo] = result
         return cls._packages_list_cache[cls.repo]
 

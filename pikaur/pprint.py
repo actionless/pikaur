@@ -84,6 +84,8 @@ def pretty_format_upgradeable(
                 block = ''
             else:
                 block += char
+        if block != '':
+            splitted_version.append(block)
         return splitted_version
 
     def get_common_version(version1, version2):

@@ -1,8 +1,6 @@
-from .core import (
-    DataType, SingleTaskExecutor,
-)
+from .core import DataType
 from .version import compare_versions
-from .pacman import PacmanTaskWorker, PackageDB
+from .pacman import PackageDB
 from .aur import find_aur_packages
 
 
@@ -21,23 +19,21 @@ class PackageUpdate(DataType):
 
 
 def find_repo_updates():
-    result = SingleTaskExecutor(
-        PacmanTaskWorker(['-Qu', ])
-    ).execute()
-    packages_updates_lines = result.stdouts
     repo_packages_updates = []
-    repo_pkgs_info = PackageDB.get_repo_dict()
-    for update in packages_updates_lines:
-        pkg_name, current_version, _, new_version, *_ = update.split()
-        pkg_info = repo_pkgs_info[pkg_name]
-        repo_packages_updates.append(
-            PackageUpdate(
-                Name=pkg_name,
-                New_Version=new_version,
-                Current_Version=current_version,
-                Description=pkg_info.desc,
+    repo_dict = PackageDB.get_repo_dict()
+    for local_pkg in PackageDB.get_local_list():
+        repo_pkg = repo_dict.get(local_pkg.name)
+        if not repo_pkg:
+            continue
+        if compare_versions(local_pkg.version, repo_pkg.version) < 0:
+            repo_packages_updates.append(
+                PackageUpdate(
+                    Name=local_pkg.name,
+                    New_Version=repo_pkg.version,
+                    Current_Version=local_pkg.version,
+                    Description=repo_pkg.desc,
+                )
             )
-        )
     return repo_packages_updates
 
 

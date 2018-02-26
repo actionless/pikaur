@@ -3,7 +3,7 @@
 
 pkgname=pikaur-git
 pkgver=0.6
-pkgrel=3
+pkgrel=4
 pkgdesc="AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction."
 arch=('any')
 url="https://github.com/actionless/pikaur"
@@ -32,4 +32,5 @@ package() {
 	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
 	python setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
 	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	cp -r "${srcdir}/${pkgname}/packaging/"* "${pkgdir}"
 }

@@ -1,4 +1,4 @@
-from pycman.config import PacmanConfig as ConfigReader
+from pycman.config import PacmanConfig as PycmanConfig
 
 from .core import (
     DataType, CmdTaskWorker,
@@ -17,7 +17,7 @@ OFFICIAL_REPOS = (
 )
 
 
-class PacmanConfig(ConfigReader):
+class PacmanConfig(PycmanConfig):
 
     def __init__(self):
         super().__init__('/etc/pacman.conf')

@@ -223,6 +223,7 @@ class PackageBuild(DataType):
     def _install_built_deps(self, args, all_package_builds, all_deps_to_install):
         built_deps_to_install = []
         for dep in all_deps_to_install[:]:
+            # @TODO: check if dep is Provided by built package
             if dep in all_package_builds:
                 if all_package_builds[dep].failed:
                     self.failed = True
@@ -265,6 +266,7 @@ class PackageBuild(DataType):
                 if dep_name in local_provided:
                     all_deps_to_install.remove(dep_name)
         if all_deps_to_install:
+            # @TODO: resolve makedeps in case if it was specified by Provides, not real name - 1) store them
             print('{} {} {}:'.format(
                 color_line('::', 13),
                 "Installing repository dependencies for",
@@ -297,7 +299,7 @@ class PackageBuild(DataType):
                 "Removing make dependencies for",
                 bold_line(self.package_name)
             ))
-            # @TODO: resolve makedeps in case if it was specified by Provides, not real name
+            # @TODO: resolve makedeps in case if it was specified by Provides, not real name - 2) remove them
             retry_interactive_command(
                 [
                     'sudo',

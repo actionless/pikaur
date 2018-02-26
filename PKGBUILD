@@ -1,11 +1,11 @@
-# Maintainer: Yauhen Kirylau <yawghen AT gmail.com>
-# Upstream URL: https://github.com/actionless/oomox
+# Maintainer: Yauheni Kirylau <actionless dot loveless AT gmail.com>
+# shellcheck disable=SC2034,SC2154
 
 pkgname=pikaur-git
 pkgver=0.6
-pkgrel=1
+pkgrel=2
 pkgdesc="AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction."
-arch=('x86_64' 'i686' 'arm' 'armv6h' 'armv7h' 'aarch64')
+arch=('any')
 url="https://github.com/actionless/pikaur"
 license=('GPLv3')
 source=(
@@ -16,29 +16,21 @@ md5sums=(
 )
 depends=(
 	'python'
+	'python-setuptools'
 	'pacman'
 	'git'
 	'sudo'
 	'fakeroot'
 )
-makedepends=(
-	'nuitka'
-	'chrpath'
-)
 
 pkgver() {
-	cd "${srcdir}/${pkgname}"
+	cd "${srcdir}/${pkgname}" || exit 1
 	git describe | sed 's/^v//;s/-/+/g'
 }
 
-build() {
-	cd "${srcdir}/${pkgname}"
-	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
-	nuitka --plugin-enable=pylint-warnings --recurse-directory=pikaur --recurse-all ./pikaur.py
-}
-
 package() {
-	cp -r ${srcdir}/${pkgname}/packaging/* ${pkgdir}
-	mkdir -p "${pkgdir}/usr/bin/"
-	install -D -m755 "${srcdir}/${pkgname}/pikaur.exe" "${pkgdir}/usr/bin/pikaur"
+	cd "${srcdir}/${pkgname}" || exit 1
+	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
+	python setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
+	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

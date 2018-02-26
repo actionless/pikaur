@@ -157,14 +157,15 @@ class InstallPackagesCLI():
     def exclude_ignored_packages(self, packages):
         excluded_packages = exclude_ignored_packages(packages, self.args)
         for package_name in excluded_packages:
-            current_version = PackageDB.get_local_dict().get(package_name)
+            current = PackageDB.get_local_dict().get(package_name)
+            current_version = current.Version if current else ''
             new_version = get_remote_package_version(package_name)
             print('{} Ignoring package {}'.format(
                 color_line('::', 11),
                 pretty_format_upgradeable(
                     [PackageUpdate(
                         Name=package_name,
-                        Current_Version=current_version or '',
+                        Current_Version=current_version,
                         New_Version=new_version or ''
                     )],
                     template=(

@@ -30,8 +30,8 @@ python3 ./pikaur.py -Syu
 
 ```sh
 ~/.cache/pikaur/
-	aur_repos/  # keep there aur repos; show diff when updating
-		last_installed.txt  # aur repo hash of last successfully installed package
-	build/  # build directory; (remove after build?)
+├── aur_repos/  # keep there aur repos; show diff when updating
+│   └── last_installed.txt  # aur repo hash of last successfully installed package
+└── build/  # build directory (removed after successfull build)
 ~/.config/pikaur.conf  # like /etc/pacman.conf (not implemented yet)
 ```

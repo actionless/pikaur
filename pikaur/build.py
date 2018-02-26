@@ -324,7 +324,9 @@ class PackageBuild(DataType):
             for pkg_name in full_pkg_names:
                 if arch in pkg_name:
                     full_pkg_name = pkg_name
-        self.built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
+        built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
+        if os.path.exists(built_package_path):
+            self.built_package_path = built_package_path
 
     def build(self, args, all_package_builds):
         repo_path = self.repo_path

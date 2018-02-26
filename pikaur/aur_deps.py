@@ -61,9 +61,9 @@ def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
         # exlicit deps:
         pkg_info = all_pkgs_info.get(dep_name)
         if pkg_info:
-            if not version_matcher(pkg_info.Version):
+            if not version_matcher(pkg_info.version):
                 raise DependencyVersionMismatch(
-                    version_found=pkg_info.Version,
+                    version_found=pkg_info.version,
                     dependency_line=version_matcher.line,
                     who_depends=aur_pkg_name,
                     depends_on=dep_name,
@@ -75,7 +75,7 @@ def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
         if provided_by_pkgs:
             fallback_version = None
             if pkg_info:
-                fallback_version = pkg_info.Version
+                fallback_version = pkg_info.version
             if not sum([
                     version_matcher(dep_version or fallback_version)
                     for dep_name, dep_version in provided_by_pkgs

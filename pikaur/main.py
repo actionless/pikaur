@@ -50,7 +50,6 @@ init_readline()
 def cli_print_upgradeable(args):
     updates, _ = find_aur_updates(find_packages_not_from_repo())
     updates += find_repo_updates()
-    updates = sorted(updates, key=lambda u: u.Name)
     if args.quiet:
         print_upgradeable(updates)
     else:
@@ -150,7 +149,7 @@ def cli_search_packages(args):
     class GetLocalPkgsVersionsTask():
         async def get_task(self):
             return {
-                pkg_name: pkg.Version
+                pkg_name: pkg.version
                 for pkg_name, pkg in PackageDB.get_local_dict().items()
             }
 

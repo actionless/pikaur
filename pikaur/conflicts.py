@@ -10,10 +10,10 @@ def get_new_repo_pkgs_conflicts(repo_packages_names):
     for repo_package_name in repo_packages_names:
         repo_pkg_info = all_repo_pkgs_info[repo_package_name]
         conflicts = []
-        if repo_pkg_info.Conflicts_With:
-            conflicts += repo_pkg_info.Conflicts_With
-        if repo_pkg_info.Replaces:
-            conflicts += repo_pkg_info.Replaces
+        if repo_pkg_info.conflicts:
+            conflicts += repo_pkg_info.conflicts
+        if repo_pkg_info.replaces:
+            conflicts += repo_pkg_info.replaces
         if conflicts:
             new_pkgs_conflicts_lists[repo_package_name] = list(set(conflicts))
     return new_pkgs_conflicts_lists
@@ -34,12 +34,12 @@ def get_all_local_pkgs_conflicts(all_local_pkgs_info):
     all_local_pgks_conflicts_lists = {}
     for local_pkg_info in all_local_pkgs_info.values():
         conflicts = []
-        if local_pkg_info.Conflicts_With:
-            conflicts += local_pkg_info.Conflicts_With
-        if local_pkg_info.Replaces:
-            conflicts += local_pkg_info.Replaces
+        if local_pkg_info.conflicts:
+            conflicts += local_pkg_info.conflicts
+        if local_pkg_info.replaces:
+            conflicts += local_pkg_info.replaces
         if conflicts:
-            all_local_pgks_conflicts_lists[local_pkg_info.Name] = list(set(conflicts))
+            all_local_pgks_conflicts_lists[local_pkg_info.name] = list(set(conflicts))
     return all_local_pgks_conflicts_lists
 
 
@@ -143,8 +143,8 @@ def check_replacements():
 
     replaces_lists = {}
     for repo_pkg_name, repo_pkg_info in all_repo_pkgs_info.items():
-        if repo_pkg_info.Replaces:
-            for dep_name in repo_pkg_info.Replaces:
+        if repo_pkg_info.replaces:
+            for dep_name in repo_pkg_info.replaces:
                 if dep_name != repo_pkg_name:
                     replaces_lists.setdefault(repo_pkg_name, []).append(dep_name)
 

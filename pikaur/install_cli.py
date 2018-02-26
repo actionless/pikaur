@@ -158,7 +158,7 @@ class InstallPackagesCLI():
         excluded_packages = exclude_ignored_packages(packages, self.args)
         for package_name in excluded_packages:
             current = PackageDB.get_local_dict().get(package_name)
-            current_version = current.Version if current else ''
+            current_version = current.version if current else ''
             new_version = get_remote_package_version(package_name)
             print('{} Ignoring package {}'.format(
                 color_line('::', 11),
@@ -214,12 +214,12 @@ class InstallPackagesCLI():
             local_pkg = local_pkgs.get(pkg_name)
             pkg = PackageUpdate(
                 Name=pkg_name,
-                Current_Version=local_pkg.Version if local_pkg else ' ',
-                New_Version=repo_pkg.Version,
-                Description=repo_pkg.Description,
-                Repository=repo_pkg.Repository
+                Current_Version=local_pkg.version if local_pkg else ' ',
+                New_Version=repo_pkg.version,
+                Description=repo_pkg.desc,
+                Repository=repo_pkg.db.name
             )
-            if repo_pkg.Repository in OFFICIAL_REPOS:
+            if repo_pkg.db.name in OFFICIAL_REPOS:
                 repo_packages_updates.append(pkg)
             else:
                 thirdparty_repo_packages_updates.append(pkg)
@@ -239,7 +239,7 @@ class InstallPackagesCLI():
             local_pkg = local_pkgs.get(pkg_name)
             aur_updates.append(PackageUpdate(
                 Name=pkg_name,
-                Current_Version=local_pkg.Version if local_pkg else ' ',
+                Current_Version=local_pkg.version if local_pkg else ' ',
                 New_Version=aur_pkg.Version,
                 Description=aur_pkg.Description
             ))
@@ -259,7 +259,7 @@ class InstallPackagesCLI():
             local_pkg = local_pkgs.get(pkg_name)
             aur_deps.append(PackageUpdate(
                 Name=pkg_name,
-                Current_Version=local_pkg.Version if local_pkg else ' ',
+                Current_Version=local_pkg.version if local_pkg else ' ',
                 New_Version=aur_pkg.Version,
                 Description=aur_pkg.Description
             ))

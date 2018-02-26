@@ -35,7 +35,7 @@ def find_repo_updates():
                 Name=pkg_name,
                 New_Version=new_version,
                 Current_Version=current_version,
-                Description=pkg_info.Description,
+                Description=pkg_info.desc,
             )
         )
     return repo_packages_updates
@@ -64,7 +64,7 @@ def find_aur_updates(package_versions):
 def get_remote_package_version(new_pkg_name):
     repo_info = PackageDB.get_repo_dict().get(new_pkg_name)
     if repo_info:
-        return repo_info.Version
+        return repo_info.version
     aur_packages, _not_found = find_aur_packages([new_pkg_name])
     if aur_packages:
         return aur_packages[0].Version

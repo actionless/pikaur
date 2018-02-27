@@ -12,7 +12,7 @@ import subprocess
 from .args import parse_args
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
-    CmdTaskWorker, interactive_spawn, isroot, remove_dir,
+    CmdTaskWorker, interactive_spawn, running_as_root, remove_dir,
 )
 from .pprint import (
     color_line, bold_line,
@@ -330,7 +330,7 @@ def check_systemd_dynamic_users():
 
 
 def main():
-    if isroot() and not check_systemd_dynamic_users():
+    if running_as_root() and not check_systemd_dynamic_users():
         print_status_message("{} {}".format(
             color_line('::', 9),
             "pikaur requires systemd >= 235 (dynamic users) to be run as root."

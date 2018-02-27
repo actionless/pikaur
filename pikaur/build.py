@@ -5,7 +5,7 @@ import platform
 from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
-    ConfigReader, isolate_root_cmd, isroot, remove_dir,
+    ConfigReader, isolate_root_cmd, remove_dir,
 )
 from .version import get_package_name_and_version_matcher_from_depend_line
 from .config import CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR
@@ -102,14 +102,10 @@ class PackageBuild(DataType):
 
     def __init__(self, package_name):  # pylint: disable=super-init-not-called
         self.package_name = package_name
-        if isroot():
-            cache_root = '/var/cache/pikaur'
-        else:
-            cache_root = CACHE_ROOT
 
-        self.build_dir = os.path.join(cache_root, BUILD_CACHE_DIR,
+        self.build_dir = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR,
                                       self.package_name)
-        self.repo_path = os.path.join(cache_root, AUR_REPOS_CACHE_DIR,
+        self.repo_path = os.path.join(CACHE_ROOT, AUR_REPOS_CACHE_DIR,
                                       self.package_name)
 
         if os.path.exists(self.repo_path):

@@ -15,12 +15,12 @@ def interactive_spawn(cmd, **kwargs):
     return process
 
 
-def isroot():
+def running_as_root():
     return os.geteuid() == 0
 
 
 def isolate_root_cmd(cmd, cwd=None):
-    if not isroot():
+    if not running_as_root():
         return cmd
     base_root_isolator = ['systemd-run', '--pipe',
                           '-p', 'DynamicUser=yes',

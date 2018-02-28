@@ -5,6 +5,7 @@ import os
 import sys
 # import argparse
 import readline
+import signal
 
 from .args import parse_args
 from .core import (
@@ -275,6 +276,7 @@ def main():
             "Don't run me as root."
         ))
         sys.exit(1)
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     try:
         cli_entry_point()
     except KeyboardInterrupt:

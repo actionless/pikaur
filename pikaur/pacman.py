@@ -4,6 +4,7 @@ from .core import (
     DataType, CmdTaskWorker,
 )
 from .version import get_package_name_and_version_matcher_from_depend_line
+from .pprint import print_status_message
 
 
 OFFICIAL_REPOS = (
@@ -150,14 +151,14 @@ class PackageDB(PackageDBCommon):
     @classmethod
     def get_local_list(cls):
         if not cls._packages_list_cache.get(cls.local):
-            print("Reading local package database...")
+            print_status_message("Reading local package database...")
             cls._packages_list_cache[cls.local] = cls.get_alpm_handle().get_localdb().search('')
         return cls._packages_list_cache[cls.local]
 
     @classmethod
     def get_repo_list(cls):
         if not cls._packages_list_cache.get(cls.repo):
-            print("Reading repository package databases...")
+            print_status_message("Reading repository package databases...")
             result = []
             for sync_db in cls.get_alpm_handle().get_syncdbs():
                 result += sync_db.search('')

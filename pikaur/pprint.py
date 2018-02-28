@@ -53,6 +53,10 @@ def format_paragraph(line):
     ])
 
 
+def print_status_message(message):
+    sys.stderr.write(f'{message}\n')
+
+
 def print_not_found_packages(not_found_packages):
     print("{} {}".format(
         color_line(':: warning:', 11),

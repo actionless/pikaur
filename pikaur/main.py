@@ -14,6 +14,7 @@ from .core import (
 )
 from .pprint import (
     color_line, bold_line,
+    print_status_message,
     print_upgradeable, pretty_format_upgradeable,
     print_not_found_packages, print_aur_search_results,
     print_version,
@@ -271,7 +272,7 @@ def cli_entry_point():
 
 def main():
     if os.getuid() == 0:
-        print("{} {}".format(
+        print_status_message("{} {}".format(
             color_line('::', 9),
             "Don't run me as root."
         ))

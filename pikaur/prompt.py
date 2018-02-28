@@ -1,12 +1,12 @@
 import sys
 
 from .core import interactive_spawn
-from .pprint import color_line
+from .pprint import color_line, print_status_message
 
 
 def ask_to_continue(text='Do you want to proceed?', default_yes=True, args=None):
     if args and args.noconfirm and default_yes:
-        print(text + ' [Y]es (--noconfirm)')
+        print_status_message(text + ' [Y]es (--noconfirm)')
         return True
     answer = input(text + (' [Y/n] ' if default_yes else ' [y/N] '))
     if default_yes:
@@ -35,7 +35,7 @@ def ask_to_retry_decorator(fun):
 def retry_interactive_command(cmd_args, **kwargs):
     good = interactive_spawn(cmd_args, **kwargs).returncode == 0
     if not good:
-        print(color_line('Command "{}" failed to execute.'.format(
+        print_status_message(color_line('Command "{}" failed to execute.'.format(
             ' '.join(cmd_args)
         ), 9))
     return good

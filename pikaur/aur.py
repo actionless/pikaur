@@ -6,6 +6,7 @@ from urllib.parse import urlencode, quote
 
 from .core import MultipleTasksExecutor, DataType, get_chunks
 from .config import VERSION
+from .pprint import print_status_message
 
 
 class NetworkTaskResult():
@@ -44,7 +45,7 @@ class NetworkTaskResult():
         try:
             self.json = json.loads(payload)
         except Exception as exc:
-            print(f'PAYLOAD: {payload}')
+            print_status_message(f'PAYLOAD: {payload}')
             raise exc
         return self
 

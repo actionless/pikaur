@@ -5,7 +5,7 @@ import platform
 from .core import (
     DataType, CmdTaskWorker,
     MultipleTasksExecutor, SingleTaskExecutor,
-    ConfigReader, isolate_root_cmd, remove_dir,
+    ConfigReader, isolate_root_cmd, remove_dir, running_as_root,
 )
 from .version import get_package_name_and_version_matcher_from_depend_line
 from .config import CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR
@@ -337,18 +337,18 @@ class PackageBuild(DataType):
             self.built_package_path = built_package_path
 
     def build(self, args, all_package_builds):
+        if running_as_root():
+            # Let systemd-run setup the directories and symlinks
+            true_cmd = isolate_root_cmd(['true'])
+            SingleTaskExecutor(CmdTaskWorker(true_cmd)).execute()
+
+            # Chown the private CacheDirectory to root to signal systemd that
+            # it needs to recursively chown it to the correct user
+            os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
+
         if os.path.exists(self.build_dir):
             remove_dir(self.build_dir)
-
-        mkdir_command = ['mkdir', '-p', os.path.dirname(self.build_dir)]
-        SingleTaskExecutor(CmdTaskWorker(
-            isolate_root_cmd(mkdir_command)
-        )).execute()
-
-        copy_command = ['cp', '-R', self.repo_path, self.build_dir]
-        SingleTaskExecutor(CmdTaskWorker(
-            isolate_root_cmd(copy_command)
-        )).execute()
+        shutil.copytree(self.repo_path, self.build_dir)
 
         src_info = SrcInfo(self.repo_path, self.package_name)
         make_deps = src_info.get_makedepends()

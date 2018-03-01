@@ -22,7 +22,7 @@ def running_as_root():
 def isolate_root_cmd(cmd, cwd=None):
     if not running_as_root():
         return cmd
-    base_root_isolator = ['systemd-run', '--pipe',
+    base_root_isolator = ['systemd-run', '--pipe', '--wait',
                           '-p', 'DynamicUser=yes',
                           '-p', 'CacheDirectory=pikaur']
     if cwd is not None:

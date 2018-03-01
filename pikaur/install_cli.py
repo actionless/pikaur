@@ -466,46 +466,45 @@ class InstallPackagesCLI():
                         'is up to date -- skipping'
                     )
                 )
-            else:
-
-                if repo_status.build_files_updated:
-                    if self.ask_to_continue(
-                            "Do you want to see build files {} for {} package?".format(
-                                bold_line('diff'),
-                                bold_line(pkg_name)
-                            )
-                    ):
-                        interactive_spawn([
-                            'git',
-                            '-C',
-                            repo_status.repo_path,
-                            'diff',
-                            repo_status.last_installed_hash,
-                            repo_status.current_hash,
-                        ])
-                src_info = SrcInfo(repo_status.repo_path, pkg_name)
-
-                if get_editor():
-                    if self.ask_to_edit_file('PKGBUILD', repo_status):
-                        src_info.regenerate()
-                    install_file_name = src_info.get_install_script()
-                    if install_file_name:
-                        self.ask_to_edit_file(install_file_name, repo_status)
-
-                arch = platform.machine()
-                supported_archs = src_info.get_values('arch')
-                if supported_archs and (
-                        'any' not in supported_archs
-                ) and (
-                    arch not in supported_archs
+                return
+            if repo_status.build_files_updated and not self.args.noconfirm:
+                if self.ask_to_continue(
+                        "Do you want to see build files {} for {} package?".format(
+                            bold_line('diff'),
+                            bold_line(pkg_name)
+                        )
                 ):
-                    print("{} {} can't be built on the current arch ({}). Supported: {}".format(
-                        color_line(':: error:', 9),
-                        bold_line(pkg_name),
-                        arch,
-                        ', '.join(supported_archs)
-                    ))
-                    sys.exit(1)
+                    interactive_spawn([
+                        'git',
+                        '-C',
+                        repo_status.repo_path,
+                        'diff',
+                        repo_status.last_installed_hash,
+                        repo_status.current_hash,
+                    ])
+            src_info = SrcInfo(repo_status.repo_path, pkg_name)
+
+            if get_editor():
+                if self.ask_to_edit_file('PKGBUILD', repo_status):
+                    src_info.regenerate()
+                install_file_name = src_info.get_install_script()
+                if install_file_name:
+                    self.ask_to_edit_file(install_file_name, repo_status)
+
+            arch = platform.machine()
+            supported_archs = src_info.get_values('arch')
+            if supported_archs and (
+                    'any' not in supported_archs
+            ) and (
+                arch not in supported_archs
+            ):
+                print("{} {} can't be built on the current arch ({}). Supported: {}".format(
+                    color_line(':: error:', 9),
+                    bold_line(pkg_name),
+                    arch,
+                    ', '.join(supported_archs)
+                ))
+                sys.exit(1)
 
     def build_packages(self):
         failed_to_build = []

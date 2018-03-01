@@ -64,7 +64,7 @@ _pacman() {
         'c g i l p s u w y')
   upgrade=('asdeps asexplicit force needed nodeps assume-installed print recursive' 'p')
   common=('arch cachedir color config confirm dbpath debug gpgdir help hookdir logfile
-           names-only noconfirm noedit noprogressbar noscriptlet quiet root verbose' 'b d h q r v')
+           namesonly noconfirm noedit noprogressbar noscriptlet quiet root verbose' 'b d h q r v')
   core=('database files help query remove sync upgrade version' 'D F Q R S U V h')
 
   for o in 'D database' 'F files' 'Q query' 'R remove' 'S sync' 'U upgrade'; do

@@ -158,7 +158,7 @@ def package_search_worker(args):
 
     elif index == REPO:
         result = PackageDB.search_repo(args['query'])
-        if args['names_only']:
+        if args['namesonly']:
             result = [pkg for pkg in result if args['query'] in pkg.name]
         index = ' '.join((args['index'], args['query'], ))
 
@@ -167,7 +167,7 @@ def package_search_worker(args):
             AUR+search_word: AurTaskWorkerSearch(search_query=search_word)
             for search_word in args['queries']
         }).execute()
-        if args['names_only']:
+        if args['namesonly']:
             for subindex, subresult in result.items():
                 result[subindex] = [
                     pkg for pkg in subresult
@@ -209,14 +209,14 @@ def cli_search_packages(args):
             {
                 "index": REPO,
                 "query": search_word,
-                "names_only": args.names_only,
+                "namesonly": args.namesonly,
             }
             for search_word in search_query
         ] + [
             {
                 "index": AUR,
                 "queries": search_query,
-                "names_only": args.names_only,
+                "namesonly": args.namesonly,
             }
         ])
     result = dict(results)
@@ -254,7 +254,7 @@ def cli_print_help(args):
     )
     pikaur_options_help = (
         ('', '--noedit', "don't prompt to edit PKGBUILDs and other build files"),
-        ('', '--names-only', "search only in package names"),
+        ('', '--namesonly', "search only in package names"),
     )
     print("\n{}{}{}".format(
         pacman_help,

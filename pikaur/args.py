@@ -14,7 +14,7 @@ class SafeArgumentParser(argparse.ArgumentParser):
 
 PIKAUR_LONG_OPTS = (
     'noedit',
-    'names-only',
+    'namesonly',
 )
 
 

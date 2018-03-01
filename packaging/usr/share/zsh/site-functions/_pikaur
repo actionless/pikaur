@@ -4,4 +4,7 @@
 # /usr/share/zsh/site-functions/_pikaur
 #
 
-compdef '_dispatch pacman pacman' pikaur
+_dispatch pacman pacman
+_arguments \
+	'--noedit[Bypass editing PKGBUILDs]' \
+	'--namesonly[Search only in package names]'

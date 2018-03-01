@@ -198,7 +198,9 @@ def join_search_results(all_aur_results):
 
 def cli_search_packages(args):
     search_query = args.positional or []
-    progressbar_length = len(search_query) + 2
+    REPO_ONLY = False
+    AUR_ONLY = False
+    progressbar_length = len(search_query) + REPO_ONLY + AUR_ONLY
     sys.stderr.write('Searching... [' + '-' * progressbar_length + ']')
     sys.stderr.write(f'{(chr(27))}[\bb' * (progressbar_length + 1))
     sys.stderr.flush()
@@ -207,36 +209,44 @@ def cli_search_packages(args):
             {
                 "index": LOCAL,
             }
-        ] + [
-            {
-                "index": REPO,
-                "query": search_word,
-                "namesonly": args.namesonly,
-            }
-            for search_word in search_query
-        ] + [
-            {
-                "index": AUR,
-                "queries": search_query,
-                "namesonly": args.namesonly,
-            }
-        ])
+        ] + (
+            [
+                {
+                    "index": REPO,
+                    "query": search_word,
+                    "namesonly": args.namesonly,
+                }
+                for search_word in search_query
+            ] if not AUR_ONLY
+            else []
+        ) + (
+            [
+                {
+                    "index": AUR,
+                    "queries": search_query,
+                    "namesonly": args.namesonly,
+                }
+            ] if not REPO_ONLY
+            else []
+        ))
     result = dict(results)
     sys.stderr.write('\n')
 
-    repo_result = join_search_results([r for k, r in result.items() if k.startswith(REPO)])
-    aur_result = join_search_results([r for k, r in result[AUR].items()])
     local_pkgs_versions = result[LOCAL]
-    print_package_search_results(
-        packages=repo_result,
-        local_pkgs_versions=local_pkgs_versions,
-        args=args
-    )
-    print_package_search_results(
-        packages=aur_result,
-        local_pkgs_versions=local_pkgs_versions,
-        args=args
-    )
+    if not AUR_ONLY:
+        repo_result = join_search_results([r for k, r in result.items() if k.startswith(REPO)])
+        print_package_search_results(
+            packages=repo_result,
+            local_pkgs_versions=local_pkgs_versions,
+            args=args
+        )
+    if not REPO_ONLY:
+        aur_result = join_search_results([r for k, r in result[AUR].items()])
+        print_package_search_results(
+            packages=aur_result,
+            local_pkgs_versions=local_pkgs_versions,
+            args=args
+        )
 
 
 def cli_print_version():

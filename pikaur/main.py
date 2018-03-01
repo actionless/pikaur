@@ -268,14 +268,17 @@ def cli_print_help(args):
         ('', '--noedit', "don't prompt to edit PKGBUILDs and other build files"),
         ('', '--namesonly', "search only in package names"),
     )
-    print("\n{}{}{}".format(
+    print(''.join([
+        '\n',
         pacman_help,
-        "\n\nPikaur-specific options:\n" if pikaur_options_help else '',
+        '\n\nPikaur-specific options:\n' if pikaur_options_help else '',
         '\n'.join([
-            "{:>5} {:<16} {}".format(short_opt or '', long_opt or '', descr)
+            '{:>5} {:<16} {}'.format(
+                short_opt or '', long_opt or '', descr
+            )
             for short_opt, long_opt, descr in pikaur_options_help
         ])
-    ))
+    ]))
 
 
 def cli_entry_point():

@@ -242,8 +242,8 @@ def print_package_search_results(packages, local_pkgs_versions, args):
     def get_sort_key(pkg):
         if getattr(pkg, "numvotes", None):
             return (pkg.numvotes + 0.1) * (pkg.popularity + 0.1)
-        else:
-            return 1
+        return 1
+
     local_pkgs_names = local_pkgs_versions.keys()
     for package in sorted(
             packages,

@@ -45,8 +45,8 @@ def find_aur_updates():
     aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
     aur_updates = []
     for result in aur_pkgs_info:
-        pkg_name = result.Name
-        aur_version = result.Version
+        pkg_name = result.name
+        aur_version = result.version
         current_version = local_packages[pkg_name].version
         compare_result = compare_versions(current_version, aur_version)
         if compare_result < 0:
@@ -54,7 +54,7 @@ def find_aur_updates():
                 Name=pkg_name,
                 New_Version=aur_version,
                 Current_Version=current_version,
-                Description=result.Description
+                Description=result.description
             ))
     return aur_updates, not_found_aur_pkgs
 
@@ -65,5 +65,5 @@ def get_remote_package_version(new_pkg_name):
         return repo_info.version
     aur_packages, _not_found = find_aur_packages([new_pkg_name])
     if aur_packages:
-        return aur_packages[0].Version
+        return aur_packages[0].version
     return None

@@ -80,7 +80,11 @@ class MultipleTasksExecutor(object):
         return _process_done_callback
 
     def _execute_common(self):
-        self.loop = asyncio.get_event_loop()
+        try:
+            self.loop = asyncio.get_event_loop()
+        except RuntimeError:
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
         for cmd_id, task_class in self.cmds.items():
             future = self.loop.create_task(
                 task_class.get_task(self.loop)

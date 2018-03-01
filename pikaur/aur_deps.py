@@ -93,7 +93,7 @@ def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
 
 def get_aur_pkg_deps_and_version_matchers(result):
     deps = {}
-    for dep in (result.Depends or []) + (result.MakeDepends or []):
+    for dep in (result.depends or []) + (result.makedepends or []):
         name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
         deps[name] = version_matcher
     return deps
@@ -132,7 +132,7 @@ def find_deps_for_aur_pkg(aur_pkg_name, version_matchers, aur_pkgs_info):
             deps = get_aur_pkg_deps_and_version_matchers(result).keys()
             for not_found_pkg in not_found_aur_deps:
                 if not_found_pkg in deps:
-                    problem_packages_names.append(result.Name)
+                    problem_packages_names.append(result.name)
                     break
         raise PackagesNotFoundInAUR(
             packages=not_found_aur_deps,
@@ -141,12 +141,12 @@ def find_deps_for_aur_pkg(aur_pkg_name, version_matchers, aur_pkgs_info):
 
     # check versions of found AUR packages:
     for aur_dep_info in aur_deps_info:
-        aur_dep_name = aur_dep_info.Name
+        aur_dep_name = aur_dep_info.name
         version_matcher = version_matchers[aur_dep_name]
         # print(aur_dep_info)
-        if not version_matcher(aur_dep_info.Version):
+        if not version_matcher(aur_dep_info.version):
             raise DependencyVersionMismatch(
-                version_found=aur_dep_info.Version,
+                version_found=aur_dep_info.version,
                 dependency_line=version_matcher.line,
                 who_depends=aur_pkg_name,
                 depends_on=aur_dep_name,
@@ -167,7 +167,7 @@ def find_aur_deps(package_names):
         for result in aur_pkgs_info:
             aur_pkg_deps = get_aur_pkg_deps_and_version_matchers(result)
             if aur_pkg_deps:
-                all_deps_for_aur_packages[result.Name] = aur_pkg_deps
+                all_deps_for_aur_packages[result.name] = aur_pkg_deps
 
         not_found_local_pkgs = []
         for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():

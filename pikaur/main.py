@@ -6,6 +6,7 @@ import sys
 # import argparse
 import readline
 import signal
+from multiprocessing.pool import ThreadPool
 
 from .args import parse_args
 from .core import (
@@ -16,7 +17,7 @@ from .pprint import (
     color_line, bold_line,
     print_status_message,
     print_upgradeable, pretty_format_upgradeable,
-    print_not_found_packages, print_aur_search_results,
+    print_not_found_packages, print_package_search_results,
     print_version,
 )
 from .aur import (
@@ -145,48 +146,78 @@ def cli_clean_packages_cache(args):
     )
 
 
-def cli_search_packages(args):
+def package_search_worker(args):
+    index = args['index']
+    result = None
+    if index == LOCAL:
+        result = {
+            pkg_name: pkg.version
+            for pkg_name, pkg in PackageDB.get_local_dict(quiet=True).items()
+        }
+    elif index == REPO:
+        result = PackageDB.search_repo(args['query'])
+        index = ' '.join((args['index'], args['query'], ))
+    elif index == AUR:
+        result = MultipleTasksExecutor({
+            AUR+search_word: AurTaskWorkerSearch(search_query=search_word)
+            for search_word in (args['queries'])
+        }).execute()
+    sys.stderr.write('#')
+    sys.stderr.flush()
+    return index, result
 
-    class GetLocalPkgsVersionsTask():
-        async def get_task(self):
-            return {
-                pkg_name: pkg.version
-                for pkg_name, pkg in PackageDB.get_local_dict().items()
-            }
 
-    tasks = {
-        REPO: PacmanColorTaskWorker(args.raw),
-        LOCAL: GetLocalPkgsVersionsTask,
-    }
-    tasks.update({
-        AUR+search_word: AurTaskWorkerSearch(search_query=search_word)
-        for search_word in (args.positional or [])
-    })
-    result = MultipleTasksExecutor(tasks).execute()
-    local_pkgs_versions = result[LOCAL]
-
-    all_aur_results = {
-        key: search_results for key, search_results in result.items()
-        if key.startswith(AUR)
-    }
+def join_search_results(all_aur_results):
     aur_pkgs_nameset = None
-    for key, search_results in all_aur_results.items():
-        new_aur_pkgs_nameset = set([result.Name for result in search_results])
+    for search_results in all_aur_results:
+        new_aur_pkgs_nameset = set([result.name for result in search_results])
         if aur_pkgs_nameset:
             aur_pkgs_nameset = aur_pkgs_nameset.intersection(new_aur_pkgs_nameset)
         else:
             aur_pkgs_nameset = new_aur_pkgs_nameset
-    aur_result = {
-        result.Name: result
-        for key, search_results in all_aur_results.items()
-        for result in search_results
-        if result.Name in aur_pkgs_nameset
+    return {
+        result.name: result
+        for result in all_aur_results[0]
+        if result.name in aur_pkgs_nameset
     }.values()
 
-    if result[REPO].stdout != '':
-        print(result[REPO].stdout)
-    print_aur_search_results(
-        aur_results=aur_result,
+
+def cli_search_packages(args):
+    search_query = args.positional or []
+    progressbar_length = len(search_query) + 2
+    sys.stderr.write('Searching... [' + '-' * progressbar_length + ']')
+    sys.stderr.write(f'{(chr(27))}[\bb' * (progressbar_length + 1))
+    sys.stderr.flush()
+    with ThreadPool() as pool:
+        results = pool.map(package_search_worker, [
+            {
+                "index": LOCAL,
+            }
+        ] + [
+            {
+                "index": REPO,
+                "query": search_word,
+            }
+            for search_word in search_query
+        ] + [
+            {
+                "index": AUR,
+                "queries": search_query,
+            }
+        ])
+    print_status_message()
+    result = dict(results)
+
+    repo_result = join_search_results([r for k, r in result.items() if k.startswith(REPO)])
+    aur_result = join_search_results([r for k, r in result[AUR].items()])
+    local_pkgs_versions = result[LOCAL]
+    print_package_search_results(
+        packages=repo_result,
+        local_pkgs_versions=local_pkgs_versions,
+        args=args
+    )
+    print_package_search_results(
+        packages=aur_result,
         local_pkgs_versions=local_pkgs_versions,
         args=args
     )

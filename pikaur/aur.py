@@ -84,31 +84,36 @@ async def https_client_task(loop, host, uri, port=443):
 
 
 class AURPackageInfo(DataType):
-    Name = None
-    Version = None
-    Description = None
-    NumVotes = None
-    Popularity = None
-    Depends = None
-    MakeDepends = None
-    Conflicts = None
-    Replaces = None
+    name = None
+    version = None
+    desc = None
+    numvotes = None
+    popularity = None
+    depends = None
+    makedepends = None
+    conflicts = None
+    replaces = None
 
-    ID = None  # pylint: disable=invalid-name
-    PackageBaseID = None
-    PackageBase = None
-    URL = None
-    OutOfDate = None
-    Maintainer = None
-    FirstSubmitted = None
-    LastModified = None
-    URLPath = None
-    OptDepends = None
-    Provides = None
-    License = None
-    Keywords = None
-    Groups = None
-    CheckDepends = None
+    id = None  # pylint: disable=invalid-name
+    packagebaseid = None
+    packagebase = None
+    url = None
+    outofdate = None
+    maintainer = None
+    firstsubmitted = None
+    lastmodified = None
+    urlpath = None
+    optdepends = None
+    provides = None
+    license = None
+    keywords = None
+    groups = None
+    checkdepends = None
+
+    def __init__(self, **kwargs):
+        if 'description' in kwargs:
+            kwargs['desc'] = kwargs.pop('description')
+        super().__init__(**kwargs)
 
 
 class AurTaskWorker():
@@ -122,7 +127,7 @@ class AurTaskWorker():
             loop, self.host, self.uri, port=443
         )
         return [
-            AURPackageInfo(**aur_json)
+            AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
             for aur_json in raw_result.json.get('results', [])
         ]
 
@@ -176,11 +181,11 @@ def find_aur_packages(package_names):
 
         for result in results.values():
             for aur_pkg in result:
-                _AUR_PKGS_FIND_CACHE[aur_pkg.Name] = aur_pkg
+                _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg
                 json_results.append(aur_pkg)
 
     found_aur_packages = [
-        result.Name for result in json_results
+        result.name for result in json_results
     ]
     not_found_packages = []
     if len(package_names) != len(found_aur_packages):
@@ -193,5 +198,5 @@ def find_aur_packages(package_names):
 
 
 def get_repo_url(package_name):
-    package_base_name = find_aur_packages([package_name])[0][0].PackageBase
+    package_base_name = find_aur_packages([package_name])[0][0].packagebase
     return f'https://aur.archlinux.org/{package_base_name}.git'

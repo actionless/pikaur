@@ -53,7 +53,7 @@ def format_paragraph(line):
     ])
 
 
-def print_status_message(message):
+def print_status_message(message=''):
     sys.stderr.write(f'{message}\n')
 
 
@@ -234,32 +234,58 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
     return '\n'.join(result)
 
 
-def print_aur_search_results(aur_results, local_pkgs_versions, args):
+def pretty_format_repo_name(repo_name):
+    return color_line(f'{repo_name}/', len(repo_name) % 5 + 10)
+
+
+def print_package_search_results(packages, local_pkgs_versions, args):
+    def get_sort_key(pkg):
+        if getattr(pkg, "numvotes", None):
+            return (pkg.numvotes + 0.1) * (pkg.popularity + 0.1)
+        else:
+            return 1
     local_pkgs_names = local_pkgs_versions.keys()
-    for aur_pkg in sorted(
-            aur_results,
-            key=lambda pkg: (pkg.NumVotes + 0.1) * (pkg.Popularity + 0.1),
+    for package in sorted(
+            packages,
+            key=get_sort_key,
             reverse=True
     ):
         # @TODO: return only packages for the current architecture
-        pkg_name = aur_pkg.Name
+        pkg_name = package.name
         if args.quiet:
             print(pkg_name)
         else:
-            print("{}{} {} {}({}, {:.2f})".format(
-                # color_line('aur/', 13),
-                color_line('aur/', 9),
-                bold_line(pkg_name),
-                color_line(aur_pkg.Version, 10),
-                color_line('[installed{}] '.format(
+
+            repo = color_line('aur/', 9)
+            if getattr(package, 'db', None):
+                repo = pretty_format_repo_name(package.db.name)
+
+            groups = ''
+            if getattr(package, 'groups', None):
+                groups = color_line('({}) '.format(' '.join(package.groups)), 4)
+
+            installed = ''
+            if pkg_name in local_pkgs_names and package.version != local_pkgs_versions[pkg_name]:
+                installed = color_line('[installed{}] '.format(
                     f': {local_pkgs_versions[pkg_name]}'
-                    if aur_pkg.Version != local_pkgs_versions[pkg_name]
-                    else ''
-                ), 14) if pkg_name in local_pkgs_names else '',
-                aur_pkg.NumVotes,
-                aur_pkg.Popularity
+                ), 14)
+
+            rating = ''
+            if getattr(package, "numvotes", None):
+                rating = color_line('({}, {:.2f})'.format(
+                    package.numvotes,
+                    package.popularity
+                ), 3)
+
+            print("{}{} {} {}{}{}".format(
+                repo,
+                bold_line(pkg_name),
+                color_line(package.version, 10),
+                groups,
+                installed,
+                rating
             ))
-            print(format_paragraph(f'{aur_pkg.Description}'))
+            print(format_paragraph(f'{package.desc}'))
 
 
 def print_version(pacman_version):

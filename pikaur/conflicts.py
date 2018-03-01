@@ -24,9 +24,9 @@ def get_new_aur_pkgs_conflicts(aur_packages_names):
     aur_pkgs_info, _not_founds_pkgs = find_aur_packages(aur_packages_names)
     for aur_json in aur_pkgs_info:
         conflicts = []
-        conflicts += aur_json.Conflicts or []
-        conflicts += aur_json.Replaces or []
-        new_pkgs_conflicts_lists[aur_json.Name] = list(set(conflicts))
+        conflicts += aur_json.conflicts or []
+        conflicts += aur_json.replaces or []
+        new_pkgs_conflicts_lists[aur_json.name] = list(set(conflicts))
     return new_pkgs_conflicts_lists
 
 

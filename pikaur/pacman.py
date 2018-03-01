@@ -60,32 +60,32 @@ class PackageDBCommon():
     local = 'local'
 
     @classmethod
-    def get_repo_list(cls):
+    def get_repo_list(cls, **kwargs):
         if not cls._packages_list_cache.get(cls.repo):
-            cls._packages_list_cache[cls.repo] = cls.get_repo_dict().values()
+            cls._packages_list_cache[cls.repo] = cls.get_repo_dict(**kwargs).values()
         return cls._packages_list_cache[cls.repo]
 
     @classmethod
-    def get_local_list(cls):
+    def get_local_list(cls, **kwargs):
         if not cls._packages_list_cache.get(cls.local):
-            cls._packages_list_cache[cls.local] = cls.get_local_dict().values()
+            cls._packages_list_cache[cls.local] = cls.get_local_dict(**kwargs).values()
         return cls._packages_list_cache[cls.local]
 
     @classmethod
-    def get_repo_dict(cls):
+    def get_repo_dict(cls, **kwargs):
         if not cls._packages_dict_cache.get(cls.repo):
             cls._packages_dict_cache[cls.repo] = {
                 pkg.name: pkg
-                for pkg in cls.get_repo_list()
+                for pkg in cls.get_repo_list(**kwargs)
             }
         return cls._packages_dict_cache[cls.repo]
 
     @classmethod
-    def get_local_dict(cls):
+    def get_local_dict(cls, **kwargs):
         if not cls._packages_dict_cache.get(cls.local):
             cls._packages_dict_cache[cls.local] = {
                 pkg.name: pkg
-                for pkg in cls.get_local_list()
+                for pkg in cls.get_local_list(**kwargs)
             }
         return cls._packages_dict_cache[cls.local]
 
@@ -149,20 +149,30 @@ class PackageDB(PackageDBCommon):
         return cls._alpm_handle
 
     @classmethod
-    def get_local_list(cls):
+    def search_local(cls, search_query):
+        return cls.get_alpm_handle().get_localdb().search(search_query)
+
+    @classmethod
+    def get_local_list(cls, **kwargs):
         if not cls._packages_list_cache.get(cls.local):
-            print_status_message("Reading local package database...")
-            cls._packages_list_cache[cls.local] = cls.get_alpm_handle().get_localdb().search('')
+            if not kwargs.get('quiet'):
+                print_status_message("Reading local package database...")
+            cls._packages_list_cache[cls.local] = cls.search_local('')
         return cls._packages_list_cache[cls.local]
 
     @classmethod
-    def get_repo_list(cls):
+    def search_repo(cls, search_query):
+        result = []
+        for sync_db in cls.get_alpm_handle().get_syncdbs():
+            result += sync_db.search(search_query)
+        return result
+
+    @classmethod
+    def get_repo_list(cls, **kwargs):
         if not cls._packages_list_cache.get(cls.repo):
-            print_status_message("Reading repository package databases...")
-            result = []
-            for sync_db in cls.get_alpm_handle().get_syncdbs():
-                result += sync_db.search('')
-            cls._packages_list_cache[cls.repo] = result
+            if not kwargs.get('quiet'):
+                print_status_message("Reading repository package databases...")
+            cls._packages_list_cache[cls.repo] = cls.search_repo('')
         return cls._packages_list_cache[cls.repo]
 
 

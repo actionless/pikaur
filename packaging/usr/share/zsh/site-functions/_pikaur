@@ -1,0 +1,7 @@
+#compdef pikaur
+
+#
+# /usr/share/zsh/site-functions/_pikaur
+#
+
+compdef '_dispatch pacman pacman' pikaur

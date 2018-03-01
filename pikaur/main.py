@@ -198,8 +198,8 @@ def join_search_results(all_aur_results):
 
 def cli_search_packages(args):
     search_query = args.positional or []
-    REPO_ONLY = False
-    AUR_ONLY = False
+    REPO_ONLY = False  # pylint: disable=invalid-name
+    AUR_ONLY = False  # pylint: disable=invalid-name
     progressbar_length = len(search_query) + (not REPO_ONLY) + (not AUR_ONLY)
     sys.stderr.write('Searching... [' + '-' * progressbar_length + ']')
     sys.stderr.write(f'{(chr(27))}[\bb' * (progressbar_length + 1))

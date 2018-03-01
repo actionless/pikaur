@@ -265,9 +265,11 @@ def print_package_search_results(packages, local_pkgs_versions, args):
                 groups = color_line('({}) '.format(' '.join(package.groups)), 4)
 
             installed = ''
-            if pkg_name in local_pkgs_names and package.version != local_pkgs_versions[pkg_name]:
+            if pkg_name in local_pkgs_names:
                 installed = color_line('[installed{}] '.format(
                     f': {local_pkgs_versions[pkg_name]}'
+                    if package.version != local_pkgs_versions[pkg_name]
+                    else ''
                 ), 14)
 
             rating = ''

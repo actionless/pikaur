@@ -200,7 +200,7 @@ def cli_search_packages(args):
     search_query = args.positional or []
     REPO_ONLY = False
     AUR_ONLY = False
-    progressbar_length = len(search_query) + REPO_ONLY + AUR_ONLY
+    progressbar_length = len(search_query) + (not REPO_ONLY) + (not AUR_ONLY)
     sys.stderr.write('Searching... [' + '-' * progressbar_length + ']')
     sys.stderr.write(f'{(chr(27))}[\bb' * (progressbar_length + 1))
     sys.stderr.flush()

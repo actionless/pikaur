@@ -54,7 +54,7 @@ def find_aur_updates():
                 Name=pkg_name,
                 New_Version=aur_version,
                 Current_Version=current_version,
-                Description=result.description
+                Description=result.desc
             ))
     return aur_updates, not_found_aur_pkgs
 

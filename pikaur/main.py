@@ -149,19 +149,31 @@ def cli_clean_packages_cache(args):
 def package_search_worker(args):
     index = args['index']
     result = None
+
     if index == LOCAL:
         result = {
             pkg_name: pkg.version
             for pkg_name, pkg in PackageDB.get_local_dict(quiet=True).items()
         }
+
     elif index == REPO:
         result = PackageDB.search_repo(args['query'])
+        if args['names_only']:
+            result = [pkg for pkg in result if args['query'] in pkg.name]
         index = ' '.join((args['index'], args['query'], ))
+
     elif index == AUR:
         result = MultipleTasksExecutor({
             AUR+search_word: AurTaskWorkerSearch(search_query=search_word)
-            for search_word in (args['queries'])
+            for search_word in args['queries']
         }).execute()
+        if args['names_only']:
+            for subindex, subresult in result.items():
+                result[subindex] = [
+                    pkg for pkg in subresult
+                    if subindex.split(AUR)[1] in pkg.name
+                ]
+
     sys.stderr.write('#')
     sys.stderr.flush()
     return index, result
@@ -197,16 +209,18 @@ def cli_search_packages(args):
             {
                 "index": REPO,
                 "query": search_word,
+                "names_only": args.names_only,
             }
             for search_word in search_query
         ] + [
             {
                 "index": AUR,
                 "queries": search_query,
+                "names_only": args.names_only,
             }
         ])
-    print_status_message()
     result = dict(results)
+    sys.stderr.write('\n')
 
     repo_result = join_search_results([r for k, r in result.items() if k.startswith(REPO)])
     aur_result = join_search_results([r for k, r in result[AUR].items()])
@@ -240,6 +254,7 @@ def cli_print_help(args):
     )
     pikaur_options_help = (
         ('', '--noedit', "don't prompt to edit PKGBUILDs and other build files"),
+        ('', '--names-only', "search only in package names"),
     )
     print("\n{}{}{}".format(
         pacman_help,

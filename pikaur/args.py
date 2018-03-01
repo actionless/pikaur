@@ -14,6 +14,7 @@ class SafeArgumentParser(argparse.ArgumentParser):
 
 PIKAUR_LONG_OPTS = (
     'noedit',
+    'names-only',
 )
 
 
@@ -70,7 +71,7 @@ def parse_args(args):
 def reconstruct_args(parsed_args, ignore_args=None):
     if not ignore_args:
         ignore_args = []
-    ignore_args += PIKAUR_LONG_OPTS
+    ignore_args += [opt.replace('-', '_') for opt in PIKAUR_LONG_OPTS]
     reconstructed_args = {
         f'--{key}' if len(key) > 1 else f'-{key}': value
         for key, value in parsed_args.__dict__.items()

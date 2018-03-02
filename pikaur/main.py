@@ -191,8 +191,9 @@ def package_search_worker(args):
             else:
                 result = {'all': get_all_aur_packages()}
 
-    sys.stderr.write('#')
-    sys.stderr.flush()
+    if not args.get('quiet'):
+        sys.stderr.write('#')
+        sys.stderr.flush()
     return index, result
 
 
@@ -215,14 +216,16 @@ def cli_search_packages(args):
     search_query = args.positional or []
     REPO_ONLY = False  # pylint: disable=invalid-name
     AUR_ONLY = False  # pylint: disable=invalid-name
-    progressbar_length = max(len(search_query), 1) + (not REPO_ONLY) + (not AUR_ONLY)
-    sys.stderr.write('Searching... [' + '-' * progressbar_length + ']')
-    sys.stderr.write(f'{(chr(27))}[\bb' * (progressbar_length + 1))
-    sys.stderr.flush()
+    if not args.quiet:
+        progressbar_length = max(len(search_query), 1) + (not REPO_ONLY) + (not AUR_ONLY)
+        sys.stderr.write('Searching... [' + '-' * progressbar_length + ']')
+        sys.stderr.write(f'{(chr(27))}[\bb' * (progressbar_length + 1))
+        sys.stderr.flush()
     with ThreadPool() as pool:
         results = pool.map(package_search_worker, [
             {
                 "index": LOCAL,
+                "quiet": args.quiet,
             }
         ] + (
             [
@@ -230,6 +233,7 @@ def cli_search_packages(args):
                     "index": REPO,
                     "query": search_word,
                     "namesonly": args.namesonly,
+                    "quiet": args.quiet,
                 }
                 for search_word in search_query or ['']
             ] if not AUR_ONLY
@@ -246,7 +250,8 @@ def cli_search_packages(args):
             else []
         ))
     result = dict(results)
-    sys.stderr.write('\n')
+    if not args.quiet:
+        sys.stderr.write('\n')
 
     local_pkgs_versions = result[LOCAL]
     if not AUR_ONLY:

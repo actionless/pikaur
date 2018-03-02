@@ -113,9 +113,11 @@ class NetworkTaskResultGzip(DataType):
 
 
 async def https_client_task(
-        loop, host, uri, port=443,
-        content_type="application/json", result_class=NetworkTaskResultJson
+        loop, host, uri,
+        content_type="application/json",
+        result_class=NetworkTaskResultJson
 ):
+    port = 443
     # open SSL connection:
     ssl_context = ssl.create_default_context(
         ssl.Purpose.SERVER_AUTH,
@@ -189,7 +191,7 @@ class AurTaskWorker():
 
     async def aur_client_task(self, loop):
         raw_result = await https_client_task(
-            loop, self.host, self.uri, port=443
+            loop, self.host, self.uri,
         )
         return [
             AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
@@ -237,13 +239,14 @@ def find_aur_packages(package_names, enable_progressbar=False):
             package_names.remove(package_name)
 
     if package_names:
-        results = MultipleTasksExecutorPool({
-            _id: AurTaskWorkerInfo(packages=packages_chunk)
-            for _id, packages_chunk in enumerate(
-                # get_chunks(package_names, chunk_size=100)
-                get_chunks(package_names, chunk_size=250)
-            )
-        },
+        results = MultipleTasksExecutorPool(
+            {
+                _id: AurTaskWorkerInfo(packages=packages_chunk)
+                for _id, packages_chunk in enumerate(
+                    # get_chunks(package_names, chunk_size=100)
+                    get_chunks(package_names, chunk_size=250)
+                )
+            },
             pool_size=8,
             enable_progressbar=enable_progressbar
         ).execute()
@@ -292,7 +295,7 @@ _AUR_PKGS_LIST_CACHE = None
 
 
 def get_all_aur_names():
-    global _AUR_PKGS_LIST_CACHE
+    global _AUR_PKGS_LIST_CACHE  # pylint: disable=global-statement
     if not _AUR_PKGS_LIST_CACHE:
         _AUR_PKGS_LIST_CACHE = SingleTaskExecutor(
             AurTaskWorkerList()

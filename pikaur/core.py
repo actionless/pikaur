@@ -346,6 +346,7 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
             import sys
             sys.stderr.write('\n')
             self.progress_bar = ProgressBar(
+                message=enable_progressbar,
                 length=len(cmds)
             )
 

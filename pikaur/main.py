@@ -13,6 +13,7 @@ from .args import parse_args
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
     CmdTaskWorker, interactive_spawn, running_as_root, remove_dir,
+    DataType,
 )
 from .pprint import (
     color_line, bold_line,
@@ -23,6 +24,7 @@ from .pprint import (
 )
 from .aur import (
     AurTaskWorkerSearch, AurTaskWorkerInfo,
+    get_all_aur_packages, get_all_aur_names,
 )
 from .pacman import (
     PacmanColorTaskWorker, PackageDB,
@@ -159,22 +161,35 @@ def package_search_worker(args):
         }
 
     elif index == REPO:
-        result = PackageDB.search_repo(args['query'])
-        if args['namesonly']:
-            result = [pkg for pkg in result if args['query'] in pkg.name]
-        index = ' '.join((args['index'], args['query'], ))
+        if args['query']:
+            result = PackageDB.search_repo(args['query'])
+            if args['namesonly']:
+                result = [pkg for pkg in result if args['query'] in pkg.name]
+            index = ' '.join((args['index'], args['query'], ))
+        else:
+            result = PackageDB.get_repo_list(quiet=True)
 
     elif index == AUR:
-        result = MultipleTasksExecutor({
-            AUR+search_word: AurTaskWorkerSearch(search_query=search_word)
-            for search_word in args['queries']
-        }).execute()
-        if args['namesonly']:
-            for subindex, subresult in result.items():
-                result[subindex] = [
-                    pkg for pkg in subresult
-                    if subindex.split(AUR)[1] in pkg.name
-                ]
+        if args['queries']:
+            result = MultipleTasksExecutor({
+                AUR+search_word: AurTaskWorkerSearch(search_query=search_word)
+                for search_word in args['queries']
+            }).execute()
+            if args['namesonly']:
+                for subindex, subresult in result.items():
+                    result[subindex] = [
+                        pkg for pkg in subresult
+                        if subindex.split(AUR)[1] in pkg.name
+                    ]
+        else:
+            if args['quiet']:
+                class TmpNameType(DataType):
+                    name = None
+                result = {'all': [
+                    TmpNameType(name=name) for name in get_all_aur_names()
+                ]}
+            else:
+                result = {'all': get_all_aur_packages()}
 
     sys.stderr.write('#')
     sys.stderr.flush()
@@ -200,7 +215,7 @@ def cli_search_packages(args):
     search_query = args.positional or []
     REPO_ONLY = False  # pylint: disable=invalid-name
     AUR_ONLY = False  # pylint: disable=invalid-name
-    progressbar_length = len(search_query) + (not REPO_ONLY) + (not AUR_ONLY)
+    progressbar_length = max(len(search_query), 1) + (not REPO_ONLY) + (not AUR_ONLY)
     sys.stderr.write('Searching... [' + '-' * progressbar_length + ']')
     sys.stderr.write(f'{(chr(27))}[\bb' * (progressbar_length + 1))
     sys.stderr.flush()
@@ -216,7 +231,7 @@ def cli_search_packages(args):
                     "query": search_word,
                     "namesonly": args.namesonly,
                 }
-                for search_word in search_query
+                for search_word in search_query or ['']
             ] if not AUR_ONLY
             else []
         ) + (
@@ -225,6 +240,7 @@ def cli_search_packages(args):
                     "index": AUR,
                     "queries": search_query,
                     "namesonly": args.namesonly,
+                    "quiet": args.quiet,
                 }
             ] if not REPO_ONLY
             else []

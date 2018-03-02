@@ -334,12 +334,20 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
     tasks_queued = None
 
     last_cmd_idx = None
+    progress_bar = None
 
-    def __init__(self, cmds, pool_size=None):
+    def __init__(self, cmds, pool_size=None, enable_progressbar=False):
         super().__init__(cmds)
         self.cmds = list(cmds.items())
         from multiprocessing import cpu_count
         self.pool_size = pool_size or cpu_count()
+        if enable_progressbar:
+            from .pprint import ProgressBar
+            import sys
+            sys.stderr.write('\n')
+            self.progress_bar = ProgressBar(
+                length=len(cmds)
+            )
 
     def get_next_cmd(self):
         if self.last_cmd_idx is not None:
@@ -367,6 +375,8 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
     def create_process_done_callback(self, cmd_id):
 
         def _process_done_callback(future):
+            if self.progress_bar:
+                self.progress_bar.update()
             result = future.result()
             self.results[cmd_id] = result
             if len(self.results) == len(self.cmds):

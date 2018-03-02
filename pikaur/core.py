@@ -30,6 +30,15 @@ def isolate_root_cmd(cmd, cwd=None):
     return base_root_isolator + cmd
 
 
+def get_event_loop():
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop
+
+
 class MultipleTasksExecutor(object):
     loop = None
     executor_id = None
@@ -96,11 +105,7 @@ class MultipleTasksExecutor(object):
         return _process_done_callback
 
     def _execute_common(self):
-        try:
-            self.loop = asyncio.get_event_loop()
-        except RuntimeError:
-            self.loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(self.loop)
+        self.loop = get_event_loop()
         for cmd_id, task_class in self.cmds.items():
             future = self.loop.create_task(
                 task_class.get_task(self.loop)
@@ -375,7 +380,7 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
         return _process_done_callback
 
     def execute_common(self):
-        self.loop = asyncio.get_event_loop()
+        self.loop = get_event_loop()
         self.tasks_queued = 0
         self.add_more_tasks()
 

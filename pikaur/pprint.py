@@ -313,21 +313,21 @@ class ProgressBar(object):
     index = 0
     progress = 0
 
-    def __init__(self, message, length):
+    def __init__(self, length, message=''):
         self.message = message
         width = get_term_width() - len(message)
         self.print_ratio = length / width
-        print(message, end='')
+        sys.stderr.write(message)
 
     def update(self):
         self.index += 1
         if self.index / self.print_ratio > self.progress:
             self.progress += 1
-            print('.', end='')
-            sys.stdout.flush()
+            sys.stderr.write('.')
+            sys.stderr.flush()
 
     def __enter__(self):
         return self.update
 
     def __exit__(self, *exc_details):
-        print()
+        sys.stderr.write('\n')

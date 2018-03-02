@@ -7,6 +7,9 @@ from uuid import uuid1
 
 
 NOT_FOUND_ATOM = object()
+REPO = 'repo'
+AUR = 'aur'
+LOCAL = 'local'
 
 
 def interactive_spawn(cmd, **kwargs):

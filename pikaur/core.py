@@ -353,7 +353,7 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
     def add_more_tasks(self):
         while len(self.futures) < len(self.cmds):
             cmd_id, task_class = self.get_next_cmd()
-            if not cmd_id:
+            if cmd_id is None:
                 return
             future = self.loop.create_task(
                 task_class.get_task(self.loop)

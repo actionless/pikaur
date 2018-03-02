@@ -43,9 +43,9 @@ _pacman_keyids() {
 _pacman_pkg() {
   _arch_compgen "$(
     if [[ $2 ]]; then
-      \pacman -$1 2>/dev/null | \cut -d' ' -f1 | \sort -u
+      \pikaur -$1 2>/dev/null | \cut -d' ' -f1 | \sort -u
     else
-      \pacman -$1 2>/dev/null
+      \pikaur -$1 2>/dev/null
     fi
   )"
 }
@@ -81,7 +81,7 @@ _pacman() {
       D|R)
           _pacman_pkg Qq;;
       F)
-          _arch_incomp 'l list'   && _pacman_pkg Slq;
+          _arch_incomp 'l list'   && _pacman_pkg Ssq;
           ;;
       Q)
         { _arch_incomp 'g groups' && _pacman_pkg Qg sort; }    ||
@@ -91,7 +91,7 @@ _pacman() {
       S)
         { _arch_incomp 'g groups' && _pacman_pkg Sg; }      ||
         { _arch_incomp 'l list'   && _pacman_pkg Sl sort; } ||
-          _pacman_pkg Slq;;
+          _pacman_pkg Ssq;;
       U)
           _pacman_file;;
       esac

@@ -3,7 +3,6 @@
 
 import os
 import sys
-# import argparse
 import readline
 import signal
 import subprocess

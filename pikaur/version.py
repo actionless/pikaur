@@ -1,6 +1,9 @@
 from pyalpm import vercmp  # pylint: disable=no-name-in-module
 
 
+VERSION_SEPARATORS = ('.', '+', '-', ':')
+
+
 def compare_versions(current_version, new_version):
     """
     vercmp is used to determine the relationship between two given version numbers.
@@ -68,3 +71,46 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
         pkg_name = depend_line
 
     return pkg_name, VersionMatcher(version_matcher, version, depend_line)
+
+
+def split_version(version):
+    splitted_version = []
+    block = ''
+    for char in version:
+        if char in VERSION_SEPARATORS:
+            splitted_version.append(block)
+            splitted_version.append(char)
+            block = ''
+        else:
+            block += char
+    if block != '':
+        splitted_version.append(block)
+    return splitted_version
+
+
+def get_common_version(version1, version2):
+    common_string = ''
+    common_length = 0
+    if '' in (version1, version2):
+        return common_string, common_length
+    for block1, block2 in zip(
+            split_version(version1),
+            split_version(version2)
+    ):
+        if compare_versions(block1, block2) == 0:
+            common_string += block1
+            if block1 not in VERSION_SEPARATORS:
+                common_length += 1
+        else:
+            break
+    return common_string, common_length
+
+
+def get_version_diff(version, common_version):
+    new_version_postfix = version
+    if common_version != '':
+        _new_version_postfix = version.split(
+            common_version
+        )[1:]
+        new_version_postfix = common_version.join(_new_version_postfix)
+    return new_version_postfix

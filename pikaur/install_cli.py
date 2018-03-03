@@ -40,13 +40,14 @@ from .prompt import (
 def get_editor():
     editor = os.environ.get('VISUAL') or os.environ.get('EDITOR')
     if editor:
+        editor = editor.split(' ')
         return editor
     for editor in ('vim', 'nano', 'mcedit', 'edit'):
         result = SingleTaskExecutor(
             CmdTaskWorker(['which', editor])
         ).execute()
         if result.return_code == 0:
-            return editor
+            return [editor, ]
     print(
         '{} {}'.format(
             color_line('error:', 9),
@@ -72,10 +73,9 @@ def manual_package_selection(text):
     with NamedTemporaryFile() as tmp_file:
         with open(tmp_file.name, 'w') as write_file:
             write_file.write(text)
-        interactive_spawn([
-            get_editor(),
-            tmp_file.name
-        ])
+        interactive_spawn(
+            get_editor() + [tmp_file.name, ]
+        )
         with open(tmp_file.name, 'r') as read_file:
             for line in read_file.readlines():
                 line = line.lstrip()
@@ -445,13 +445,14 @@ class InstallPackagesCLI():
                 ),
                 default_yes=not package_build.is_installed
         ):
-            interactive_spawn([
-                get_editor(),
-                os.path.join(
-                    package_build.repo_path,
-                    filename
-                )
-            ])
+            interactive_spawn(
+                get_editor() + [
+                    os.path.join(
+                        package_build.repo_path,
+                        filename
+                    )
+                ]
+            )
             return True
         return False
 

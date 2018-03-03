@@ -17,7 +17,7 @@ from .core import (
 from .pprint import (
     color_line, bold_line,
     print_status_message,
-    print_upgradeable, pretty_format_upgradeable,
+    pretty_format_upgradeable,
     print_not_found_packages,
     print_version,
 )
@@ -48,7 +48,9 @@ def cli_print_upgradeable(args):
     updates, _not_found_aur_pkgs = find_aur_updates()
     updates += find_repo_updates()
     if args.quiet:
-        print_upgradeable(updates)
+        print('\n'.join([
+            pkg_update.Name for pkg_update in updates
+        ]))
     else:
         print(pretty_format_upgradeable(updates))
 

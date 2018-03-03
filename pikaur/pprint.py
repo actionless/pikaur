@@ -171,13 +171,6 @@ def pretty_format_upgradeable(
     ])
 
 
-def print_upgradeable(packages_updates):
-    print('\n'.join([
-        pkg_update.Name
-        for pkg_update in packages_updates
-    ]))
-
-
 def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
         repo_packages_updates=None, thirdparty_repo_packages_updates=None,
         aur_updates=None, new_aur_deps=None,

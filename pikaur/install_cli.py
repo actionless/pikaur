@@ -487,6 +487,7 @@ class InstallPackagesCLI():
             if get_editor():
                 if self.ask_to_edit_file('PKGBUILD', repo_status):
                     src_info.regenerate()
+                    # @TODO: recompute AUR deps
                 install_file_name = src_info.get_install_script()
                 if install_file_name:
                     self.ask_to_edit_file(install_file_name, repo_status)

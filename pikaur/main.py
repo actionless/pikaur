@@ -6,6 +6,7 @@ import sys
 import readline
 import signal
 import subprocess
+from datetime import datetime
 
 from .args import parse_args
 from .core import (
@@ -117,16 +118,15 @@ def cli_info_packages(args):
     if result[REPO].stdout:
         print(result[REPO].stdout, end='\n' if aur_pkgs else '')
     for i, aur_pkg in enumerate(aur_pkgs):
-        print(
-            '\n'.join([
-                '{key:24}: {value}'.format(
-                    key=bold_line(key),
-                    value=value if not isinstance(value, list)
-                    else ', '.join(value)
-                )
-                for key, value in aur_pkg.__dict__.items()
-            ]) + ('\n' if i+1 < num_found else '')
-        )
+        pkg_info_lines = []
+        for key, value in aur_pkg.__dict__.items():
+            if key in ['firstsubmitted', 'lastmodified']:
+                value = datetime.fromtimestamp(value).strftime('%c')
+            elif isinstance(value, list):
+                value = ', '.join(value)
+            pkg_info_lines.append('{key:24}: {value}'.format(
+                key=bold_line(key), value=value))
+        print('\n'.join(pkg_info_lines) + ('\n' if i+1 < num_found else ''))
 
 
 def cli_clean_packages_cache(args):

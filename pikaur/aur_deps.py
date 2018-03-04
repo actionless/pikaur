@@ -157,11 +157,11 @@ def find_deps_for_aur_pkg(aur_pkg_name, version_matchers, aur_pkgs_info):
 
 def find_aur_deps(package_names):
 
+    iter_package_names = package_names[:]
     new_aur_deps = []
-    while package_names:
-
+    while iter_package_names:
         all_deps_for_aur_packages = {}
-        aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
+        aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(iter_package_names)
         if not_found_aur_pkgs:
             raise PackagesNotFoundInAUR(packages=not_found_aur_pkgs)
         for result in aur_pkgs_info:
@@ -176,7 +176,10 @@ def find_aur_deps(package_names):
                 aur_pkgs_info=aur_pkgs_info,
                 version_matchers=deps_for_aur_package,
             )
-        new_aur_deps += not_found_local_pkgs
-        package_names = not_found_local_pkgs
+        iter_package_names = []
+        for pkg_name in not_found_local_pkgs:
+            if pkg_name not in new_aur_deps and pkg_name not in package_names:
+                new_aur_deps.append(pkg_name)
+                iter_package_names.append(pkg_name)
 
-    return list(set(new_aur_deps))
+    return new_aur_deps

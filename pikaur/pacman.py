@@ -3,6 +3,7 @@ from pycman.config import PacmanConfig as PycmanConfig
 from .core import (
     DataType, CmdTaskWorker,
 )
+from .i18n import _
 from .version import get_package_name_and_version_matcher_from_depend_line
 from .pprint import print_status_message
 
@@ -156,7 +157,7 @@ class PackageDB(PackageDBCommon):
     def get_local_list(cls, **kwargs):
         if not cls._packages_list_cache.get(cls.local):
             if not kwargs.get('quiet'):
-                print_status_message("Reading local package database...")
+                print_status_message(_("Reading local package database..."))
             cls._packages_list_cache[cls.local] = cls.search_local('')
         return cls._packages_list_cache[cls.local]
 
@@ -171,7 +172,7 @@ class PackageDB(PackageDBCommon):
     def get_repo_list(cls, **kwargs):
         if not cls._packages_list_cache.get(cls.repo):
             if not kwargs.get('quiet'):
-                print_status_message("Reading repository package databases...")
+                print_status_message(_("Reading repository package databases..."))
             cls._packages_list_cache[cls.repo] = cls.search_repo('')
         return cls._packages_list_cache[cls.repo]
 

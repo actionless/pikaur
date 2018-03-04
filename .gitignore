@@ -1,1 +1,3 @@
 __pycache__/
+locale/*.mo
+locale/pikaur.pot

@@ -31,6 +31,10 @@ package() {
 	cd "${srcdir}/${pkgname}" || exit 1
 	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
 	python setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
+	make
+	for lang in fr; do
+		install -Dm644 "locale/${lang}.mo" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"
+	done
 	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 	cp -r "${srcdir}/${pkgname}/packaging/"* "${pkgdir}"
 }

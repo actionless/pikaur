@@ -3,6 +3,7 @@ import shutil
 
 from .config import VERSION
 from .version import get_common_version, get_version_diff
+from .i18n import _, _n
 
 
 PADDING = 4
@@ -59,8 +60,8 @@ def print_status_message(message=''):
 
 def print_not_found_packages(not_found_packages):
     print("{} {}".format(
-        color_line(':: warning:', 11),
-        bold_line('Following packages can not be found in AUR:'),
+        color_line(':: ' + _("warning:"), 11),
+        bold_line(_("Following packages can not be found in AUR:")),
     ))
     for package in not_found_packages:
         print(format_paragraph(package))
@@ -143,9 +144,10 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
     if repo_packages_updates:
         result.append('\n{} {}'.format(
             _color_line('::', 12),
-            _bold_line('Repository package{plural} will be installed:'.format(
-                plural='s' if len(repo_packages_updates) > 1 else ''
-            ))
+            _bold_line(_n(
+                "Repository package will be installed:",
+                "Repository packages will be installed:",
+                len(repo_packages_updates)))
         ))
         result.append(pretty_format_upgradeable(
             repo_packages_updates, verbose=verbose, color=color
@@ -153,9 +155,9 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
     if thirdparty_repo_packages_updates:
         result.append('\n{} {}'.format(
             _color_line('::', 12),
-            _bold_line('Third-party repository package{plural} will be installed:'.format(
-                plural='s' if len(thirdparty_repo_packages_updates) > 1 else ''
-            ))
+            _bold_line(_n("Third-party repository package will be installed:",
+                          "Third-party repository packages will be installed:",
+                          len(thirdparty_repo_packages_updates)))
         ))
         result.append(pretty_format_upgradeable(
             thirdparty_repo_packages_updates, verbose=verbose, print_repo=True, color=color
@@ -163,9 +165,9 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
     if aur_updates:
         result.append('\n{} {}'.format(
             _color_line('::', 14),
-            _bold_line('AUR package{plural} will be installed:'.format(
-                plural='s' if len(aur_updates) > 1 else ''
-            ))
+            _bold_line(_n("AUR package will be installed:",
+                          "AUR packages will be installed:",
+                          len(aur_updates)))
         ))
         result.append(pretty_format_upgradeable(
             aur_updates, verbose=verbose, color=color
@@ -173,9 +175,9 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
     if new_aur_deps:
         result.append('\n{} {}'.format(
             _color_line('::', 11),
-            _bold_line('New dependenc{plural} will be installed from AUR:'.format(
-                plural='ies' if len(new_aur_deps) > 1 else 'y'
-            ))
+            _bold_line(_n("New dependency will be installed from AUR:",
+                          "New dependencies will be installed from AUR:",
+                          len(new_aur_deps)))
         ))
         result.append(pretty_format_upgradeable(
             new_aur_deps, verbose=verbose, color=color

@@ -10,6 +10,7 @@ from .core import (
     SingleTaskExecutor, MultipleTasksExecutorPool
 )
 from .config import VERSION
+from .i18n import _
 from .pprint import print_status_message
 
 
@@ -306,5 +307,5 @@ def get_all_aur_names():
 def get_all_aur_packages():
     return find_aur_packages(
         get_all_aur_names(),
-        enable_progressbar="Getting ALL AUR info "
+        enable_progressbar=_("Getting ALL AUR info") + " "
     )[0]

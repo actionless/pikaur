@@ -7,6 +7,7 @@ import readline
 import signal
 import subprocess
 
+from .i18n import _  # keep that first
 from .args import parse_args
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor,
@@ -67,7 +68,7 @@ def cli_upgrade_packages(args):
 
     print('{} {}'.format(
         color_line('::', 12),
-        bold_line('Starting full system upgrade...')
+        bold_line(_("Starting full system upgrade..."))
     ))
     repo_packages_updates = [
         pkg for pkg in find_repo_updates()
@@ -76,7 +77,7 @@ def cli_upgrade_packages(args):
 
     print('{} {}'.format(
         color_line('::', 12),
-        bold_line('Starting full AUR upgrade...')
+        bold_line(_("Starting full AUR upgrade..."))
     ))
     aur_updates, not_found_aur_pkgs = find_aur_updates()
     exclude_ignored_packages(not_found_aur_pkgs, args)
@@ -101,7 +102,7 @@ def cli_upgrade_packages(args):
     else:
         print('\n{} {}'.format(
             color_line('::', 10),
-            bold_line('Already up-to-date.')
+            bold_line(_("Already up-to-date."))
         ))
 
 
@@ -132,9 +133,10 @@ def cli_info_packages(args):
 def cli_clean_packages_cache(args):
     build_cache = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
     if os.path.exists(build_cache):
-        print(f'\nBuild directory: {build_cache}')
-        if ask_to_continue("{} Do you want to remove all files?".format(
-                color_line('::', 12)
+        print('\n' + _("Build directory: {}").format(build_cache))
+        if ask_to_continue('{} {}'.format(
+                color_line('::', 12),
+                _("Do you want to remove all files?")
         )):
             remove_dir(build_cache)
     sys.exit(
@@ -155,16 +157,16 @@ def cli_print_help(args):
     )).execute().stdout.replace(
         'pacman', 'pikaur'
     ).replace(
-        'options:', '\nCommon Pacman options:'
+        'options:', '\n' + _("Common pacman options:")
     )
     pikaur_options_help = (
-        ('', '--noedit', "don't prompt to edit PKGBUILDs and other build files"),
-        ('', '--namesonly', "search only in package names"),
+        ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
+        ('', '--namesonly', _("search only in package names")),
     )
     print(''.join([
         '\n',
         pacman_help,
-        '\n\nPikaur-specific options:\n' if pikaur_options_help else '',
+        '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
         '\n'.join([
             '{:>5} {:<16} {}'.format(
                 short_opt or '', long_opt or '', descr
@@ -239,11 +241,12 @@ def main():
     if running_as_root() and not check_systemd_dynamic_users():
         print_status_message("{} {}".format(
             color_line('::', 9),
-            "pikaur requires systemd >= 235 (dynamic users) to be run as root."
+            _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         ))
         sys.exit(1)
 
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
     try:
         cli_entry_point()
     except KeyboardInterrupt:

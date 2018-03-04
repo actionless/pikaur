@@ -7,6 +7,7 @@ from .core import (
     MultipleTasksExecutor, SingleTaskExecutor,
     ConfigReader, isolate_root_cmd, remove_dir, running_as_root,
 )
+from .i18n import _
 from .version import get_package_name_and_version_matcher_from_depend_line
 from .config import CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR
 from .aur import get_repo_url
@@ -238,10 +239,10 @@ class PackageBuild(DataType):
                 all_deps_to_install.remove(dep)
 
         if built_deps_to_install:
-            print('{} {} {}:'.format(
+            print('{} {}:'.format(
                 color_line('::', 13),
-                "Installing already built dependencies for",
-                bold_line(self.package_name)
+                _("Installing already built dependencies for {}").format(
+                    bold_line(self.package_name))
             ))
             if not retry_interactive_command(
                     [
@@ -271,10 +272,10 @@ class PackageBuild(DataType):
         if all_deps_to_install:
             # @TODO: resolve makedeps in case if it was specified by Provides,
             # @TODO: not real name - 1) store them
-            print('{} {} {}:'.format(
+            print('{} {}:'.format(
                 color_line('::', 13),
-                "Installing repository dependencies for",
-                bold_line(self.package_name)
+                _("Installing repository dependencies for {}").format(
+                    bold_line(self.package_name))
             ))
             if not retry_interactive_command(
                     [
@@ -298,10 +299,10 @@ class PackageBuild(DataType):
 
     def _remove_make_deps(self, new_make_deps_to_install):
         if new_make_deps_to_install:
-            print('{} {} {}:'.format(
+            print('{} {}:'.format(
                 color_line('::', 13),
-                "Removing make dependencies for",
-                bold_line(self.package_name)
+                _("Removing make dependencies for {}").format(
+                    bold_line(self.package_name))
             ))
             # @TODO: resolve makedeps in case if it was specified by Provides,
             # @TODO: not real name - 2) remove them
@@ -352,9 +353,9 @@ class PackageBuild(DataType):
 
         src_info = SrcInfo(self.repo_path, self.package_name)
         make_deps = src_info.get_makedepends()
-        _, new_make_deps_to_install = find_local_packages(make_deps)
+        __, new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = src_info.get_depends()
-        _, new_deps_to_install = find_local_packages(new_deps)
+        __, new_deps_to_install = find_local_packages(new_deps)
         all_deps_to_install = new_make_deps_to_install + new_deps_to_install
 
         self._install_built_deps(args, all_package_builds, all_deps_to_install)
@@ -377,10 +378,10 @@ class PackageBuild(DataType):
 
         if not build_succeeded:
             if new_deps_to_install:
-                print('{} {} {}:'.format(
+                print('{} {}:'.format(
                     color_line('::', 13),
-                    "Removing already installed dependencies for",
-                    bold_line(self.package_name)
+                    _("Removing already installed dependencies for {}").format(
+                        bold_line(self.package_name))
                 ))
                 retry_interactive_command(
                     [

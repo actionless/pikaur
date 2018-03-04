@@ -2,6 +2,7 @@ import sys
 from multiprocessing.pool import ThreadPool
 
 from .core import DataType, MultipleTasksExecutor, LOCAL, REPO, AUR
+from .i18n import _
 from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
 from .pacman import PackageDB
 from .aur import (
@@ -100,11 +101,12 @@ def print_package_search_results(packages, local_pkgs_versions, args):
 
             installed = ''
             if pkg_name in local_pkgs_names:
-                installed = color_line('[installed{}] '.format(
-                    f': {local_pkgs_versions[pkg_name]}'
-                    if package.version != local_pkgs_versions[pkg_name]
-                    else ''
-                ), 14)
+                if package.version != local_pkgs_versions[pkg_name]:
+                    installed = color_line(_("[installed: {version}]").format(
+                        version=local_pkgs_versions[pkg_name],
+                    ) + ' ', 14)
+                else:
+                    installed = color_line(_("[installed]") + ' ', 14)
 
             rating = ''
             if getattr(package, "numvotes", None):
@@ -130,8 +132,8 @@ def cli_search_packages(args):
     AUR_ONLY = False  # pylint: disable=invalid-name
     if not args.quiet:
         progressbar_length = max(len(search_query), 1) + (not REPO_ONLY) + (not AUR_ONLY)
-        sys.stderr.write('Searching... [' + '-' * progressbar_length + ']')
-        sys.stderr.write(f'{(chr(27))}[\bb' * (progressbar_length + 1))
+        sys.stderr.write(_("Searching... [{bar}]").format(bar='-' * progressbar_length))
+        sys.stderr.write('\x1b[\bb' * (progressbar_length + 1))
         sys.stderr.flush()
     with ThreadPool() as pool:
         results = pool.map(package_search_worker, [

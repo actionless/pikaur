@@ -20,7 +20,7 @@ def find_provided_pkgs(pkg_names, source):
         provided_dict = PackageDB.get_repo_provided_dict()
     else:
         provided_dict = PackageDB.get_local_provided_dict()
-    for pkg_name, provided in provided_dict.items():
+    for provided in provided_dict.values():
         for provided_pkg in provided:
             for dep_name in pkg_names:
                 if dep_name == provided_pkg.name:

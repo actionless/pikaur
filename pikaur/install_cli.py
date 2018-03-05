@@ -92,7 +92,8 @@ def manual_package_selection(text):
 class InstallPackagesCLI():
 
     args = None
-    repo_packages_names = None
+    repo_packages = None
+    repo_packages_names = None  # @TODO: remove me
     aur_packages_names = None
     aur_deps_names = None
     package_builds = None
@@ -178,9 +179,10 @@ class InstallPackagesCLI():
 
     def find_packages(self, packages):
         print("resolving dependencies...")
-        self.repo_packages_names, self.aur_packages_names = find_repo_packages(
+        self.repo_packages, self.aur_packages_names = find_repo_packages(
             packages
         )
+        self.repo_packages_names = [pkg.name for pkg in self.repo_packages]
         try:
             self.aur_deps_names = find_aur_deps(self.aur_packages_names)
         except PackagesNotFoundInAUR as exc:
@@ -205,12 +207,11 @@ class InstallPackagesCLI():
             sys.exit(1)
 
     def _get_repo_pkgs_updates(self):
-        repo_pkgs = PackageDB.get_repo_dict()
         local_pkgs = PackageDB.get_local_dict()
         repo_packages_updates = []
         thirdparty_repo_packages_updates = []
-        for pkg_name in self.repo_packages_names:
-            repo_pkg = repo_pkgs[pkg_name]
+        for repo_pkg in self.repo_packages:
+            pkg_name = repo_pkg.name
             local_pkg = local_pkgs.get(pkg_name)
             pkg = PackageUpdate(
                 Name=pkg_name,
@@ -367,7 +368,7 @@ class InstallPackagesCLI():
     def ask_about_package_conflicts(self):
         print('looking for conflicting packages...')
         conflict_result = check_conflicts(
-            self.repo_packages_names, self.aur_packages_names
+            self.repo_packages, self.aur_packages_names
         )
         if not conflict_result:
             self.aur_packages_conflicts = []

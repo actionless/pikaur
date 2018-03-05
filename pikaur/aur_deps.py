@@ -32,57 +32,49 @@ def find_provided_pkgs(pkg_names, source):
 
 def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
     # try to find explicit pkgs:
-    deps = not_found_deps = None
+    not_found_deps = None
+    deps = {}
     if source == REPO_PKG:
-        deps, not_found_deps = find_repo_packages(deps_pkg_names, name_only=True)
+        deps, not_found_deps = find_repo_packages(deps_pkg_names)
     else:
         deps, not_found_deps = find_local_packages(deps_pkg_names)
+    deps = {dep.name: dep for dep in deps}
 
     # try to find pkgs provided by other pkgs:
     provided_by_backrefs = find_provided_pkgs(
         pkg_names=not_found_deps,
         source=source
     )
-    for dep_name, dep in provided_by_backrefs.items():
+    for dep_name in provided_by_backrefs:
         not_found_deps.remove(dep_name)
-        deps.append(dep)
-    if not deps:
-        return not_found_deps
 
-    # check versions of found packages:
-    for dep in set(deps):
-        dep_name = dep.name
+    # check versions of found excplicit deps:
+    for dep_name, dep in deps.items():
         version_matcher = version_matchers[dep_name]
+        if not version_matcher(dep.version):
+            raise DependencyVersionMismatch(
+                version_found=dep.version,
+                dependency_line=version_matcher.line,
+                who_depends=aur_pkg_name,
+                depends_on=dep_name,
+                location=source,
+            )
 
-        # exlicit deps:
-        if dep:
-            if not version_matcher(dep.version):
-                raise DependencyVersionMismatch(
-                    version_found=dep.version,
-                    dependency_line=version_matcher.line,
-                    who_depends=aur_pkg_name,
-                    depends_on=dep_name,
-                    location=source,
-                )
+    # dep via provided pkg:
+    for dep_name, provided_by_pkgs in provided_by_backrefs.items():
+        version_matcher = version_matchers[dep_name]
+        if not sum([
+                version_matcher(provided.version_matcher.version or provided.package.version)
+                for provided in provided_by_pkgs
+        ]):
+            raise DependencyVersionMismatch(
+                version_found={pkg.name: pkg.version for pkg in provided_by_pkgs},
+                dependency_line=version_matcher.line,
+                who_depends=aur_pkg_name,
+                depends_on=dep_name,
+                location=source,
+            )
 
-        # dep via provided pkg:
-        provided_by_pkgs = provided_by_backrefs.get(dep_name)
-        if provided_by_pkgs:
-            fallback_version = None
-            if dep:
-                fallback_version = dep.version
-            if not sum([
-                    version_matcher(pkg.version or fallback_version)
-                    for pkg in provided_by_pkgs
-            ]):
-                raise DependencyVersionMismatch(
-                    version_found=provided_by_pkgs,
-                    dependency_line=version_matcher.line,
-                    who_depends=aur_pkg_name,
-                    depends_on=dep_name,
-                    location=source,
-                )
-    #
     return not_found_deps
 
 

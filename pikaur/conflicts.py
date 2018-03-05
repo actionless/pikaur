@@ -110,7 +110,7 @@ def check_conflicts(repo_packages, aur_packages_names):
 
     new_pkgs_conflicts_lists = {}
     new_pkgs_conflicts_lists.update(
-        get_new_repo_pkgs_conflicts(repo_packages_names)
+        get_new_repo_pkgs_conflicts(repo_packages)
     )
     new_pkgs_conflicts_lists.update(
         get_new_aur_pkgs_conflicts(aur_packages_names)

@@ -168,20 +168,29 @@ class PackageDB(PackageDBCommon):
         return cls._packages_list_cache[cls.local]
 
     @classmethod
-    def search_repo_dict(cls, search_query, db_name=None):
+    def search_repo_dict(
+            cls, search_query, db_name=None, names_only=False, exact_match=False
+    ):
         if '/' in search_query:
             db_name, search_query = search_query.split('/')
         result = {}
         for sync_db in reversed(cls.get_alpm_handle().get_syncdbs()):
             if not db_name or db_name == sync_db.name:
                 for pkg in sync_db.search(search_query):
-                    result[pkg.name] = pkg
+                    if (
+                            (
+                                not names_only or search_query in pkg.name
+                            ) and (
+                                not exact_match or search_query == pkg.name
+                            )
+                    ):
+                        result[pkg.name] = pkg
         return result
 
     @classmethod
-    def search_repo(cls, search_query, db_name=None):
+    def search_repo(cls, *args, **kwargs):
         return list(
-            cls.search_repo_dict(search_query, db_name=db_name).values()
+            cls.search_repo_dict(*args, **kwargs).values()
         )
 
     @classmethod
@@ -193,15 +202,13 @@ class PackageDB(PackageDBCommon):
         return cls._packages_dict_cache[cls.repo]
 
 
-def find_repo_packages(package_names, name_only=False):
+def find_repo_packages(package_names):
     pacman_packages = []
     not_found_packages = []
     for package_name in package_names:
-        search_results = PackageDB.search_repo(package_name)
+        search_results = PackageDB.search_repo(package_name, exact_match=True)
         if search_results:
-            pkg = search_results[0]
-            if not name_only or pkg.name == package_name:
-                pacman_packages.append(pkg)
+            pacman_packages.append(search_results[0])
         else:
             not_found_packages.append(package_name)
     return pacman_packages, not_found_packages

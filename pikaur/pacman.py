@@ -161,18 +161,23 @@ class PackageDB(PackageDBCommon):
         return cls._packages_list_cache[cls.local]
 
     @classmethod
-    def search_repo(cls, search_query):
-        result = []
-        for sync_db in cls.get_alpm_handle().get_syncdbs():
-            result += sync_db.search(search_query)
+    def search_repo_dict(cls, search_query):
+        result = {}
+        for sync_db in reversed(cls.get_alpm_handle().get_syncdbs()):
+            for pkg in sync_db.search(search_query):
+                result[pkg.name] = pkg
         return result
 
     @classmethod
-    def get_repo_list(cls, **kwargs):
+    def search_repo(cls, search_query):
+        return cls.search_repo_dict(search_query).values()
+
+    @classmethod
+    def get_repo_dict(cls, **kwargs):
         if not cls._packages_list_cache.get(cls.repo):
             if not kwargs.get('quiet'):
                 print_status_message("Reading repository package databases...")
-            cls._packages_list_cache[cls.repo] = cls.search_repo('')
+            cls._packages_list_cache[cls.repo] = cls.search_repo_dict('')
         return cls._packages_list_cache[cls.repo]
 
 

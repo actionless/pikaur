@@ -215,7 +215,7 @@ def cli_entry_point():
         not_implemented_in_pikaur = True
 
     if not_implemented_in_pikaur:
-        if require_sudo:
+        if require_sudo and raw_args:
             sys.exit(
                 interactive_spawn(['sudo', 'pacman', ] + raw_args).returncode
             )

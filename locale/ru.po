@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-06 16:12+0300\n"
-"PO-Revision-Date: 2018-03-06 21:44+0300\n"
+"PO-Revision-Date: 2018-03-06 21:55+0300\n"
 "Last-Translator: Yardanico <tiberiumk12@gmail.com>\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -108,7 +108,7 @@ msgstr "Получение всех данных из AUR"
 
 #: pikaur/install_cli.py:167
 msgid "Ignoring package {}"
-msgstr "Игнорировать пакет {}"
+msgstr "Игнорирую пакет {}"
 
 #: pikaur/build.py:244
 msgid "Installing already built dependencies for {}"

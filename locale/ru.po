@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-06 16:12+0300\n"
-"PO-Revision-Date: 2018-03-06 17:57+0300\n"
+"PO-Revision-Date: 2018-03-06 21:44+0300\n"
 "Last-Translator: Yardanico <tiberiumk12@gmail.com>\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -104,11 +104,11 @@ msgstr "Данные пакеты не могут быть найдены в AUR
 
 #: pikaur/aur.py:310
 msgid "Getting ALL AUR info"
-msgstr "Получение с AUR ВСЕХ ДАННЫХ"
+msgstr "Получение всех данных из AUR"
 
 #: pikaur/install_cli.py:167
 msgid "Ignoring package {}"
-msgstr "Игнорирование пакета {}"
+msgstr "Игнорировать пакет {}"
 
 #: pikaur/build.py:244
 msgid "Installing already built dependencies for {}"
@@ -209,7 +209,7 @@ msgstr[1] "Будут установлены следующие пакеты и�
 # This can probably have better translation, but I didn't find any
 #: pikaur/install_cli.py:345
 msgid "Try recovering?"
-msgstr "Попробовать снова?"
+msgstr "Попробовать восстановить?"
 
 #: pikaur/install_cli.py:200
 msgid "Version mismatch:"

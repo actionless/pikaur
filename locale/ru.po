@@ -255,7 +255,7 @@ msgstr "[v] просмотреть описания пакетов   [m] вру�
 
 #: pikaur/prompt.py:12
 msgid "[y/N]"
-msgstr "[y/N] да/Нет"
+msgstr "[y/N]"
 
 #: pikaur/install_cli.py:341
 msgid "a"

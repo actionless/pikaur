@@ -4,11 +4,10 @@ from .version import get_package_name_and_version_matcher_from_depend_line
 from .package_update import get_remote_package_version
 
 
-def get_new_repo_pkgs_conflicts(repo_packages_names):
+def get_new_repo_pkgs_conflicts(repo_packages):
     new_pkgs_conflicts_lists = {}
-    all_repo_pkgs_info = PackageDB.get_repo_dict()
-    for repo_package_name in repo_packages_names:
-        repo_pkg_info = all_repo_pkgs_info[repo_package_name]
+    for repo_pkg_info in repo_packages:
+        repo_package_name = repo_pkg_info.name
         conflicts = []
         if repo_pkg_info.conflicts:
             conflicts += repo_pkg_info.conflicts
@@ -103,14 +102,15 @@ def find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_list
     return new_pkgs_conflicts
 
 
-def check_conflicts(repo_packages_names, aur_packages_names):
+def check_conflicts(repo_packages, aur_packages_names):
     all_local_pkgs_info = PackageDB.get_local_dict()
     all_local_pkgs_names = list(all_local_pkgs_info.keys())
+    repo_packages_names = [pkg.name for pkg in repo_packages]
     all_new_pkgs_names = repo_packages_names + aur_packages_names
 
     new_pkgs_conflicts_lists = {}
     new_pkgs_conflicts_lists.update(
-        get_new_repo_pkgs_conflicts(repo_packages_names)
+        get_new_repo_pkgs_conflicts(repo_packages)
     )
     new_pkgs_conflicts_lists.update(
         get_new_aur_pkgs_conflicts(aur_packages_names)

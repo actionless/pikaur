@@ -23,9 +23,9 @@ def package_search_worker(args):
 
     elif index == REPO:
         if args['query']:
-            result = PackageDB.search_repo(args['query'])
-            if args['namesonly']:
-                result = [pkg for pkg in result if args['query'] in pkg.name]
+            result = PackageDB.search_repo(
+                args['query'], names_only=args['namesonly']
+            )
             index = ' '.join((args['index'], args['query'], ))
         else:
             result = PackageDB.get_repo_list(quiet=True)

@@ -20,23 +20,25 @@ def find_provided_pkgs(pkg_names, source):
         provided_dict = PackageDB.get_repo_provided_dict()
     else:
         provided_dict = PackageDB.get_local_provided_dict()
-    for pkg_name, provided in provided_dict.items():
+    for provided in provided_dict.values():
         for provided_pkg in provided:
             for dep_name in pkg_names:
                 if dep_name == provided_pkg.name:
                     provided_by_backrefs.setdefault(
                         dep_name, []
-                    ).append((pkg_name, provided_pkg.version_matcher.version))
+                    ).append(provided_pkg)
     return provided_by_backrefs
 
 
 def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
     # try to find explicit pkgs:
-    deps_names = not_found_deps = None
+    not_found_deps = None
+    deps = {}
     if source == REPO_PKG:
-        deps_names, not_found_deps = find_repo_packages(deps_pkg_names)
+        deps, not_found_deps = find_repo_packages(deps_pkg_names)
     else:
-        deps_names, not_found_deps = find_local_packages(deps_pkg_names)
+        deps, not_found_deps = find_local_packages(deps_pkg_names)
+    deps = {dep.name: dep for dep in deps}
 
     # try to find pkgs provided by other pkgs:
     provided_by_backrefs = find_provided_pkgs(
@@ -45,49 +47,34 @@ def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
     )
     for dep_name in provided_by_backrefs:
         not_found_deps.remove(dep_name)
-        deps_names.append(dep_name)
-    if not deps_names:
-        return not_found_deps
 
-    all_pkgs_info = None
-    if source == REPO_PKG:
-        all_pkgs_info = PackageDB.get_repo_dict()
-    else:
-        all_pkgs_info = PackageDB.get_local_dict()
-    # check versions of found packages:
-    for dep_name in set(deps_names):
+    # check versions of found excplicit deps:
+    for dep_name, dep in deps.items():
         version_matcher = version_matchers[dep_name]
+        if not version_matcher(dep.version):
+            raise DependencyVersionMismatch(
+                version_found=dep.version,
+                dependency_line=version_matcher.line,
+                who_depends=aur_pkg_name,
+                depends_on=dep_name,
+                location=source,
+            )
 
-        # exlicit deps:
-        pkg_info = all_pkgs_info.get(dep_name)
-        if pkg_info:
-            if not version_matcher(pkg_info.version):
-                raise DependencyVersionMismatch(
-                    version_found=pkg_info.version,
-                    dependency_line=version_matcher.line,
-                    who_depends=aur_pkg_name,
-                    depends_on=dep_name,
-                    location=source,
-                )
+    # dep via provided pkg:
+    for dep_name, provided_by_pkgs in provided_by_backrefs.items():
+        version_matcher = version_matchers[dep_name]
+        if not sum([
+                version_matcher(provided.version_matcher.version or provided.package.version)
+                for provided in provided_by_pkgs
+        ]):
+            raise DependencyVersionMismatch(
+                version_found={pkg.name: pkg.version for pkg in provided_by_pkgs},
+                dependency_line=version_matcher.line,
+                who_depends=aur_pkg_name,
+                depends_on=dep_name,
+                location=source,
+            )
 
-        # dep via provided pkg:
-        provided_by_pkgs = provided_by_backrefs.get(dep_name)
-        if provided_by_pkgs:
-            fallback_version = None
-            if pkg_info:
-                fallback_version = pkg_info.version
-            if not sum([
-                    version_matcher(dep_version or fallback_version)
-                    for dep_name, dep_version in provided_by_pkgs
-            ]):
-                raise DependencyVersionMismatch(
-                    version_found=provided_by_pkgs,
-                    dependency_line=version_matcher.line,
-                    who_depends=aur_pkg_name,
-                    depends_on=dep_name,
-                    location=source,
-                )
-    #
     return not_found_deps
 
 
@@ -157,11 +144,11 @@ def find_deps_for_aur_pkg(aur_pkg_name, version_matchers, aur_pkgs_info):
 
 def find_aur_deps(package_names):
 
+    iter_package_names = package_names[:]
     new_aur_deps = []
-    while package_names:
-
+    while iter_package_names:
         all_deps_for_aur_packages = {}
-        aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
+        aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(iter_package_names)
         if not_found_aur_pkgs:
             raise PackagesNotFoundInAUR(packages=not_found_aur_pkgs)
         for result in aur_pkgs_info:
@@ -176,7 +163,10 @@ def find_aur_deps(package_names):
                 aur_pkgs_info=aur_pkgs_info,
                 version_matchers=deps_for_aur_package,
             )
-        new_aur_deps += not_found_local_pkgs
-        package_names = not_found_local_pkgs
+        iter_package_names = []
+        for pkg_name in not_found_local_pkgs:
+            if pkg_name not in new_aur_deps and pkg_name not in package_names:
+                new_aur_deps.append(pkg_name)
+                iter_package_names.append(pkg_name)
 
-    return list(set(new_aur_deps))
+    return new_aur_deps

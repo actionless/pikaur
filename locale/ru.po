@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-06 16:12+0300\n"
-"PO-Revision-Date: 2018-03-06 17:33+0300\n"
+"PO-Revision-Date: 2018-03-06 17:57+0300\n"
 "Last-Translator: Yardanico <tiberiumk12@gmail.com>\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -53,7 +53,7 @@ msgstr "Не удалось выполнить команду '{}'."
 
 #: pikaur/main.py:160
 msgid "Common pacman options:"
-msgstr "Стандартные параметры pacman:\t"
+msgstr "Стандартные параметры pacman:"
 
 #: pikaur/install_cli.py:195
 msgid "Dependencies missing for {}"
@@ -92,7 +92,7 @@ msgstr "Хотите ли вы просмотреть {diff} файлов сбо
 #: pikaur/install_cli.py:446
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
-msgstr "Хотите ли вы от{edit} {file} из пакета {name}?"
+msgstr "Хотите ли вы {edit} {file} из пакета {name}?"
 
 #: pikaur/install_cli.py:151
 msgid "Failed to build following packages:"
@@ -161,7 +161,7 @@ msgstr "Чтение локальной базы данных пакетов..."
 
 #: pikaur/pacman.py:201
 msgid "Reading repository package databases..."
-msgstr "Чтение базы данных пакетов репозитория.."
+msgstr "Чтение баз данных пакетов из репозиториев..."
 
 #: pikaur/build.py:383
 msgid "Removing already installed dependencies for {}"
@@ -185,7 +185,7 @@ msgstr "Откат транзакции {target}..."
 #: pikaur/search_cli.py:135
 #, python-brace-format
 msgid "Searching... [{bar}]"
-msgstr "Поиск.. [{bar}]"
+msgstr "Поиск... [{bar}]"
 
 #: pikaur/install_cli.py:438
 #, python-brace-format
@@ -217,7 +217,7 @@ msgstr "Несовпадение версии:"
 
 #: pikaur/prompt.py:12
 msgid "[Y/n]"
-msgstr "[Y/n] Да/нет"
+msgstr "[Y/n]"
 
 #: pikaur/prompt.py:10
 msgid "[Y]es (--noconfirm)"
@@ -251,7 +251,7 @@ msgstr "[s] пропустить этот пакет"
 
 #: pikaur/install_cli.py:288
 msgid "[v]iew package detail   [m]anually select packages"
-msgstr "[v] просмотреть информацию о пакете   [m] вручную выбрать пакеты"
+msgstr "[v] просмотреть описания пакетов   [m] вручную выбрать пакеты"
 
 #: pikaur/prompt.py:12
 msgid "[y/N]"
@@ -271,11 +271,11 @@ msgstr "различия"
 
 #: pikaur/main.py:163
 msgid "don't prompt to edit PKGBUILDs and other build files"
-msgstr "не спрашивать редактирования  файлов PKGBUILD и других файлов сборки"
+msgstr "не запрашивать редактирование файлов PKGBUILD и других файлов сборки"
 
 #: pikaur/install_cli.py:447
 msgid "edit"
-msgstr "редактировать"
+msgstr "отредактировать"
 
 #: pikaur/install_cli.py:545
 msgid "error:"

@@ -245,7 +245,7 @@ def find_aur_packages(package_names, enable_progressbar=False):
                 _id: AurTaskWorkerInfo(packages=packages_chunk)
                 for _id, packages_chunk in enumerate(
                     # get_chunks(package_names, chunk_size=100)
-                    get_chunks(package_names, chunk_size=250)
+                    get_chunks(package_names, chunk_size=200)
                 )
             },
             pool_size=8,

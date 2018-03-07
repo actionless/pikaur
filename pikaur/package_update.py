@@ -1,5 +1,5 @@
 from .core import DataType
-from .i18n import _
+from .i18n import _n
 from .version import compare_versions
 from .pacman import PackageDB, find_packages_not_from_repo
 from .aur import find_aur_packages
@@ -42,7 +42,9 @@ def find_repo_updates():
 def find_aur_updates():
     package_names = find_packages_not_from_repo()
     local_packages = PackageDB.get_local_dict()
-    print_status_message(_("Reading AUR packages info..."))
+    print_status_message(_n("Reading AUR package info...",
+                            "Reading AUR packages info...",
+                            len(package_names)))
     aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
     aur_updates = []
     for result in aur_pkgs_info:

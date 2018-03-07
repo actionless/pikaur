@@ -32,7 +32,7 @@ package() {
 	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
 	python setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
 	make
-	for lang in fr; do
+	for lang in fr ru; do
 		install -Dm644 "locale/${lang}.mo" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"
 	done
 	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"

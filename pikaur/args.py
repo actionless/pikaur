@@ -1,15 +1,27 @@
 import sys
+from typing import List
 
 from . import argparse as argparse  # pylint: disable=no-name-in-module
 
 
-class SafeArgumentParser(argparse.ArgumentParser):
+class PikaurArgs(argparse.Namespace):
+    unknown_args: List[str] = None
+    raw: List[str] = None
 
-    def error(self, message):
+
+class PikaurArgumentParser(argparse.ArgumentParser):
+
+    def error(self, message: str) -> None:
         exc = sys.exc_info()[1]
         if exc:
             raise exc
         super().error(message)
+
+    def parse_pikaur_args(self, args: List[str]) -> PikaurArgs:
+        parsed_args, unknown_args = self.parse_known_args(args)
+        parsed_args.unknown_args = unknown_args
+        parsed_args.raw = args
+        return parsed_args
 
 
 PIKAUR_LONG_OPTS = (
@@ -18,8 +30,8 @@ PIKAUR_LONG_OPTS = (
 )
 
 
-def parse_args(args):
-    parser = SafeArgumentParser(prog=sys.argv[0], add_help=False)
+def parse_args(args: List[str]) -> PikaurArgs:
+    parser = PikaurArgumentParser(prog=sys.argv[0], add_help=False)
 
     for letter, opt in (
             ('S', 'sync'),
@@ -52,9 +64,7 @@ def parse_args(args):
     parser.add_argument('--ignore', action='append')
     parser.add_argument('positional', nargs='*')
 
-    parsed_args, unknown_args = parser.parse_known_args(args)
-    parsed_args.unknown_args = unknown_args
-    parsed_args.raw = args
+    parsed_args = parser.parse_pikaur_args(args)
 
     # print("ARGPARSE:")
     # print(parsed_args)
@@ -68,7 +78,7 @@ def parse_args(args):
     return parsed_args
 
 
-def reconstruct_args(parsed_args, ignore_args=None):
+def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str]=None) -> List[str]:
     if not ignore_args:
         ignore_args = []
     ignore_args += [opt.replace('-', '_') for opt in PIKAUR_LONG_OPTS]

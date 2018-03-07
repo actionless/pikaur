@@ -2,7 +2,7 @@ import os
 
 from .core import running_as_root
 
-VERSION = '0.7-dev'
+VERSION = '0.8-dev'
 
 if running_as_root():
     CACHE_ROOT = '/var/cache/pikaur'

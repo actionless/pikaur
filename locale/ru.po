@@ -152,8 +152,10 @@ msgid "Proceed with installation? [Y/n]"
 msgstr "Продолжить установку? [Y/n]"
 
 #: pikaur/package_update.py:45
-msgid "Reading AUR packages info..."
-msgstr "Чтение информации о пакетах из AUR..."
+msgid "Reading AUR package info..."
+msgid_plural "Reading AUR packages info..."
+msgstr[0] "Чтение информации о пакете из AUR..."
+msgstr[1] "Чтение информации о пакетах из AUR..."
 
 #: pikaur/pacman.py:167
 msgid "Reading local package database..."

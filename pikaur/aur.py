@@ -4,6 +4,8 @@ import email
 import json
 import gzip
 from urllib.parse import urlencode, quote
+from typing import List, Dict, Union, Any, Type, Awaitable, Tuple
+from abc import ABCMeta
 
 from .core import (
     DataType, get_chunks,
@@ -14,54 +16,68 @@ from .i18n import _
 from .pprint import print_status_message
 
 
-class NetworkTaskResultJson():
-    return_code = None
-    headers = None
-    json = None
+AUR_HOST = 'aur.archlinux.org'
+
+
+class NetworkTaskResultInterface(ABCMeta):
 
     @classmethod
-    def from_bytes(cls, bytes_response):
+    def from_bytes(cls, bytes_response: bytes) -> 'NetworkTaskResult':
+        pass
+
+
+class NetworkTaskResult(DataType, metaclass=NetworkTaskResultInterface):
+    return_code: int = None
+    headers: Dict[str, str] = None
+
+
+class NetworkTaskResultJson(NetworkTaskResult):
+    json: Dict[str, Any] = None
+
+    @classmethod
+    def from_bytes(cls, bytes_response: bytes) -> 'NetworkTaskResultJson':
         # prepare response for parsing:
-        bytes_response = bytes_response.decode('utf-8')
-        request_result, the_rest = bytes_response.split('\r\n', 1)
+        string_response = bytes_response.decode('utf-8')
+        request_result, the_rest = string_response.split('\r\n', 1)
         # parse reponse:
         parsed_response = email.message_from_string(the_rest)
         # from email.policy import EmailPolicy
         # parsed_response = email.message_from_string(
         #    headers, policy=EmailPolicy
         # )
-        headers = dict(parsed_response.items())
+        headers = {k: str(v) for k, v in parsed_response.items()}
         # join chunked response parts into one:
-        payload = ''
+        string_payload = ''
+        parsed_payload = parsed_response.get_payload()
+        if not isinstance(parsed_payload, str):
+            raise RuntimeError()
         if headers.get('Transfer-Encoding') == 'chunked':
-            all_lines = parsed_response.get_payload().split('\r\n')
+            all_lines = parsed_payload.split('\r\n')
             while all_lines:
                 length = int('0x' + all_lines.pop(0), 16)
                 if length == 0:
                     break
-                payload += all_lines.pop(0)
+                string_payload += all_lines.pop(0)
         else:
-            payload = parsed_response.get_payload()
+            string_payload = parsed_payload
 
         # save result:
         self = cls()
-        self.return_code = request_result.split()[1]
+        self.return_code = int(request_result.split()[1])
         self.headers = headers
         try:
-            self.json = json.loads(payload)
+            self.json = json.loads(string_payload)
         except Exception as exc:
-            print_status_message(f'PAYLOAD: {payload}')
+            print_status_message(f'PAYLOAD: {string_payload}')
             raise exc
         return self
 
 
-class NetworkTaskResultGzip(DataType):
-    return_code = None
-    headers = None
-    text = None
+class NetworkTaskResultGzip(NetworkTaskResult):
+    text: str = None
 
     @classmethod
-    def from_bytes(cls, bytes_response):
+    def from_bytes(cls, bytes_response: bytes) -> 'NetworkTaskResultGzip':
         # parse headers:
         ready_to_parse = False
         all_lines = bytes_response.split(b'\r\n')
@@ -75,9 +91,9 @@ class NetworkTaskResultGzip(DataType):
                     ready_to_parse = True
                     continue
                 elif b':' in line:
-                    header, *value = line.split(b':')
-                    value = b':'.join(value).strip()
-                    headers[header] = value
+                    header, *the_rest = line.split(b':')
+                    value = b':'.join(the_rest).strip()
+                    headers[header.decode('utf-8')] = value.decode('utf-8')
             if ready_to_parse:
                 break
 
@@ -114,10 +130,13 @@ class NetworkTaskResultGzip(DataType):
 
 
 async def https_client_task(
-        loop, host, uri,
+        loop: asyncio.AbstractEventLoop,
+        host: str,
+        uri: str,
+        result_class: Type[NetworkTaskResult],
         content_type="application/json",
-        result_class=NetworkTaskResultJson
-):
+) -> NetworkTaskResult:
+
     port = 443
     # open SSL connection:
     ssl_context = ssl.create_default_context(
@@ -152,31 +171,31 @@ async def https_client_task(
 
 
 class AURPackageInfo(DataType):
-    name = None
-    version = None
-    desc = None
-    numvotes = None
-    popularity = None
-    depends = None
-    makedepends = None
-    conflicts = None
-    replaces = None
+    name: str = None
+    version: str = None
+    desc: str = None
+    numvotes: int = None
+    popularity: float = None
+    depends: List[str] = None
+    makedepends: List[str] = None
+    conflicts: List[str] = None
+    replaces: List[str] = None
 
-    id = None  # pylint: disable=invalid-name
-    packagebaseid = None
-    packagebase = None
-    url = None
-    outofdate = None
-    maintainer = None
-    firstsubmitted = None
-    lastmodified = None
-    urlpath = None
-    optdepends = None
-    provides = None
-    license = None
-    keywords = None
-    groups = None
-    checkdepends = None
+    id: str = None  # pylint: disable=invalid-name
+    packagebaseid: str = None
+    packagebase: str = None
+    url: str = None
+    outofdate: int = None
+    maintainer: str = None
+    firstsubmitted: int = None
+    lastmodified: int = None
+    urlpath: str = None
+    optdepends: List[str] = None
+    provides: List[str] = None
+    license: str = None
+    keywords: List[str] = None
+    groups: List[str] = None
+    checkdepends: List[str] = None
 
     def __init__(self, **kwargs):
         if 'description' in kwargs:
@@ -185,28 +204,28 @@ class AURPackageInfo(DataType):
 
 
 class AurTaskWorker():
+    uri: str = None
+    params: str = None
 
-    host = 'aur.archlinux.org'
-    uri = None
-    params = None
-
-    async def aur_client_task(self, loop):
+    async def aur_client_task(self, loop: asyncio.AbstractEventLoop) -> List[AURPackageInfo]:
         raw_result = await https_client_task(
-            loop, self.host, self.uri,
+            loop, AUR_HOST, self.uri, result_class=NetworkTaskResultJson
         )
+        if not isinstance(raw_result, NetworkTaskResultJson):
+            raise RuntimeError
         return [
             AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
             for aur_json in raw_result.json.get('results', [])
         ]
 
-    def get_task(self, loop):
+    def get_task(self, loop: asyncio.AbstractEventLoop) -> Awaitable[List[AURPackageInfo]]:
         self.uri = f'/rpc/?{self.params}'
         return self.aur_client_task(loop)
 
 
 class AurTaskWorkerSearch(AurTaskWorker):
 
-    def __init__(self, search_query):
+    def __init__(self, search_query: str) -> None:
         self.params = urlencode({
             'v': 5,
             'type': 'search',
@@ -217,7 +236,7 @@ class AurTaskWorkerSearch(AurTaskWorker):
 
 class AurTaskWorkerInfo(AurTaskWorker):
 
-    def __init__(self, packages):
+    def __init__(self, packages: List[str]) -> None:
         self.params = urlencode({
             'v': 5,
             'type': 'info',
@@ -226,10 +245,32 @@ class AurTaskWorkerInfo(AurTaskWorker):
             self.params += '&arg[]=' + quote(package)
 
 
-_AUR_PKGS_FIND_CACHE = {}
+class AurTaskWorkerList():
+
+    uri = '/packages.gz'
+
+    async def aur_client_task(self, loop: asyncio.AbstractEventLoop) -> List[str]:
+        raw_result = await https_client_task(
+            loop, AUR_HOST, self.uri, result_class=NetworkTaskResultGzip
+        )
+        if not isinstance(raw_result, NetworkTaskResultGzip):
+            raise RuntimeError
+        return [
+            pkg_name for pkg_name in raw_result.text.split('\n')
+            if pkg_name
+        ][1:]
+
+    def get_task(self, loop: asyncio.AbstractEventLoop) -> Awaitable[List[str]]:
+        return self.aur_client_task(loop)
 
 
-def find_aur_packages(package_names, enable_progressbar=False):
+_AUR_PKGS_FIND_CACHE: Dict[str, AURPackageInfo] = {}
+
+
+def find_aur_packages(
+        package_names: List[str], enable_progressbar=False
+) -> Tuple[List[AURPackageInfo], List[str]]:
+
     # @TODO: return only packages for the current architecture
     package_names = list(package_names)[:]
     json_results = []
@@ -260,7 +301,7 @@ def find_aur_packages(package_names, enable_progressbar=False):
     found_aur_packages = [
         result.name for result in json_results
     ]
-    not_found_packages = []
+    not_found_packages: List[str] = []
     if len(package_names) != len(found_aur_packages):
         not_found_packages = [
             package for package in package_names
@@ -270,32 +311,15 @@ def find_aur_packages(package_names, enable_progressbar=False):
     return json_results, not_found_packages
 
 
-def get_repo_url(package_name):
+def get_repo_url(package_name: str) -> str:
     package_base_name = find_aur_packages([package_name])[0][0].packagebase
     return f'https://aur.archlinux.org/{package_base_name}.git'
 
 
-class AurTaskWorkerList(AurTaskWorker):
-
-    uri = '/packages.gz'
-
-    async def aur_client_task(self, loop):
-        raw_result = await https_client_task(
-            loop, self.host, self.uri, result_class=NetworkTaskResultGzip
-        )
-        return [
-            pkg_name for pkg_name in raw_result.text.split('\n')
-            if pkg_name
-        ][1:]
-
-    def get_task(self, loop):
-        return self.aur_client_task(loop)
+_AUR_PKGS_LIST_CACHE: List[str] = None
 
 
-_AUR_PKGS_LIST_CACHE = None
-
-
-def get_all_aur_names():
+def get_all_aur_names() -> List[str]:
     global _AUR_PKGS_LIST_CACHE  # pylint: disable=global-statement
     if not _AUR_PKGS_LIST_CACHE:
         _AUR_PKGS_LIST_CACHE = SingleTaskExecutor(
@@ -304,7 +328,7 @@ def get_all_aur_names():
     return _AUR_PKGS_LIST_CACHE
 
 
-def get_all_aur_packages():
+def get_all_aur_packages() -> List[AURPackageInfo]:
     return find_aur_packages(
         get_all_aur_names(),
         enable_progressbar=_("Getting ALL AUR info") + " "

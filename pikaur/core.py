@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 from uuid import uuid1
+from typing import Dict, Coroutine, Any, List
 
 
 NOT_FOUND_ATOM = object()
@@ -48,8 +49,8 @@ class MultipleTasksExecutor(object):
     futures = None
     export_results = None
 
-    _all_cmds = {}
-    _all_results = {}
+    _all_cmds: Dict[str, Coroutine] = {}
+    _all_results: Dict[str, Any] = {}
 
     def __init__(self, cmds):
         self.executor_id = uuid1()
@@ -261,8 +262,8 @@ class ConfigReader():
 
     _cached_config = None
     default_config_path = None
-    list_fields = []
-    ignored_fields = []
+    list_fields: List[str] = []
+    ignored_fields: List[str] = []
 
     @classmethod
     def _approve_line_for_parsing(cls, line):

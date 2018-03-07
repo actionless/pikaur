@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-07 20:16+0300\n"
-"PO-Revision-Date: 2018-03-07 20:17+0300\n"
-"Last-Translator: Yardanico <tiberiumk12@gmail.com>\n"
+"POT-Creation-Date: 2018-03-09 00:25+0300\n"
+"PO-Revision-Date: 2018-03-09 20:31+0300\n"
+"Last-Translator: Mauladen <twertrue@yandex.ru>\n"
 "Language-Team: none\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -40,12 +40,12 @@ msgstr "Невозможно собрать '{name}'."
 #: pikaur/install_cli.py:333
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
-msgstr "Невозможно клонировать из AUR пакет '{name}' по пути '{path}':"
+msgstr "Невозможно клонировать пакет '{name}' из AUR по пути '{path}':"
 
 #: pikaur/install_cli.py:335
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
-msgstr "Невозможно обновить из AUR пакет '{name}' по пути '{path}':"
+msgstr "Невозможно обновить пакет '{name}' из AUR по пути '{path}':"
 
 #: pikaur/prompt.py:39
 msgid "Command '{}' failed to execute."
@@ -108,7 +108,7 @@ msgstr "Получение всех данных из AUR"
 
 #: pikaur/install_cli.py:167
 msgid "Ignoring package {}"
-msgstr "Игнорирую пакет {}"
+msgstr "Игнорирование пакета {}"
 
 #: pikaur/build.py:244
 msgid "Installing already built dependencies for {}"
@@ -153,7 +153,7 @@ msgstr "Продолжить установку? [Y/n]"
 
 #: pikaur/package_update.py:45
 msgid "Reading AUR packages info..."
-msgstr "Чтение информации пакетов из AUR..."
+msgstr "Чтение информации о пакетах из AUR..."
 
 #: pikaur/pacman.py:167
 msgid "Reading local package database..."
@@ -221,7 +221,7 @@ msgstr "[Y/n]"
 
 #: pikaur/prompt.py:10
 msgid "[Y]es (--noconfirm)"
-msgstr "[Y] Да (--noconfirm)"
+msgstr "[Y]es (--noconfirm)"
 
 #: pikaur/install_cli.py:350
 msgid "[a] abort"
@@ -291,15 +291,11 @@ msgstr "m"
 
 #: pikaur/install_cli.py:55
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
-msgstr ""
-"редактор не найден. Попробуйте установить переменные окружения $VISUAL или "
-"$EDITOR."
+msgstr "редактор не найден. Попробуйте установить переменную окружения $VISUAL или $EDITOR."
 
 #: pikaur/main.py:244
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
-msgstr ""
-"pikaur требует systemd >= 235 (поддержка динамических пользователей) для "
-"запуска от root."
+msgstr "pikaur требует systemd >= 235 (поддержка динамических пользователей) для запуска от root."
 
 #: pikaur/install_cli.py:355
 msgid "r"
@@ -334,8 +330,7 @@ msgstr "y"
 msgid ""
 "{name} can't be built on the current arch ({arch}). Supported: {suparch}"
 msgstr ""
-"{name} не может быть собран на текущей архитектуре ({arch}). Поддерживаемые "
-"архитектуры: {suparch}"
+"{name} не может быть собран на текущей архитектуре ({arch}). Поддерживаемые архитектуры: {suparch}"
 
 #: pikaur/install_cli.py:471
 #, python-brace-format

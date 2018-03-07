@@ -228,7 +228,10 @@ def find_local_packages(package_names):
 
 
 def find_packages_not_from_repo():
-    _repo_packages, not_found_packages = find_repo_packages(
-        PackageDB.get_local_dict().keys()
-    )
+    local_pkg_names = PackageDB.get_local_dict().keys()
+    repo_pkg_names = PackageDB.get_repo_dict().keys()
+    not_found_packages = []
+    for pkg_name in local_pkg_names:
+        if pkg_name not in repo_pkg_names:
+            not_found_packages.append(pkg_name)
     return not_found_packages

@@ -1,10 +1,16 @@
+from typing import List, Dict
+
 from pycman.config import PacmanConfig as PycmanConfig
+import pyalpm
 
 from .core import (
     DataType, CmdTaskWorker,
 )
 from .i18n import _
-from .version import get_package_name_and_version_matcher_from_depend_line
+from .version import (
+    get_package_name_and_version_matcher_from_depend_line,
+    VersionMatcher,
+)
 from .pprint import print_status_message
 
 
@@ -27,7 +33,7 @@ class PacmanConfig(PycmanConfig):
 
 class PacmanTaskWorker(CmdTaskWorker):
 
-    def __init__(self, args):
+    def __init__(self, args: List[str]) -> None:
         super().__init__(
             [
                 "pacman",
@@ -37,7 +43,7 @@ class PacmanTaskWorker(CmdTaskWorker):
 
 class PacmanColorTaskWorker(PacmanTaskWorker):
 
-    def __init__(self, args):
+    def __init__(self, args: List[str]) -> None:
         super().__init__(
             [
                 "--color=always",
@@ -46,17 +52,17 @@ class PacmanColorTaskWorker(PacmanTaskWorker):
 
 
 class ProvidedDependency(DataType):
-    name = None
-    package = None
-    version_matcher = None
+    name: str = None
+    package: pyalpm.Package = None
+    version_matcher: VersionMatcher = None
 
 
 class PackageDBCommon():
 
-    _packages_list_cache = {}
-    _packages_dict_cache = {}
-    _provided_list_cache = {}
-    _provided_dict_cache = {}
+    _packages_list_cache: Dict[str, List[pyalpm.Package]] = {}
+    _packages_dict_cache: Dict[str, Dict[str, pyalpm.Package]] = {}
+    _provided_list_cache: Dict[str, List[str]] = {}
+    _provided_dict_cache: Dict[str, Dict[str, List[ProvidedDependency]]] = {}
 
     repo = 'repo'
     local = 'local'
@@ -96,7 +102,7 @@ class PackageDBCommon():
         return cls._packages_dict_cache[cls.local]
 
     @classmethod
-    def _get_provided(cls, local):
+    def _get_provided_names(cls, local: str) -> List[str]:
         if not cls._provided_list_cache.get(local):
             cls._provided_list_cache[local] = [
                 provided_pkg.name
@@ -106,17 +112,17 @@ class PackageDBCommon():
         return cls._provided_list_cache[local]
 
     @classmethod
-    def get_repo_provided(cls):
-        return cls._get_provided(cls.repo)
+    def get_repo_provided_names(cls) -> List[str]:
+        return cls._get_provided_names(cls.repo)
 
     @classmethod
-    def get_local_provided(cls):
-        return cls._get_provided(cls.local)
+    def get_local_provided_names(cls) -> List[str]:
+        return cls._get_provided_names(cls.local)
 
     @classmethod
-    def _get_provided_dict(cls, local):
+    def _get_provided_dict(cls, local: str) -> Dict[str, List[ProvidedDependency]]:
         if not cls._provided_dict_cache.get(local):
-            provided_pkg_names = {}
+            provided_pkg_names: Dict[str, List[ProvidedDependency]] = {}
             for pkg in (
                     cls.get_local_list() if local == cls.local
                     else cls.get_repo_list()
@@ -138,11 +144,11 @@ class PackageDBCommon():
         return cls._provided_dict_cache[local]
 
     @classmethod
-    def get_repo_provided_dict(cls):
+    def get_repo_provided_dict(cls) -> Dict[str, List[ProvidedDependency]]:
         return cls._get_provided_dict(cls.repo)
 
     @classmethod
-    def get_local_provided_dict(cls):
+    def get_local_provided_dict(cls) -> Dict[str, List[ProvidedDependency]]:
         return cls._get_provided_dict(cls.local)
 
 

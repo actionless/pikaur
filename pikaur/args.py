@@ -19,6 +19,7 @@ class PikaurArgumentParser(argparse.ArgumentParser):
 
     def parse_pikaur_args(self, args: List[str]) -> PikaurArgs:
         parsed_args, unknown_args = self.parse_known_args(args)
+        parsed_args.__class__ = PikaurArgs  # #sorryboutit
         parsed_args.unknown_args = unknown_args
         parsed_args.raw = args
         return parsed_args
@@ -78,7 +79,7 @@ def parse_args(args: List[str]) -> PikaurArgs:
     return parsed_args
 
 
-def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str]=None) -> List[str]:
+def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> List[str]:
     if not ignore_args:
         ignore_args = []
     ignore_args += [opt.replace('-', '_') for opt in PIKAUR_LONG_OPTS]

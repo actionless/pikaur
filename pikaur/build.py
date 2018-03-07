@@ -265,7 +265,7 @@ class PackageBuild(DataType):
 
     def _install_repo_deps(self, args, all_deps_to_install):
         if all_deps_to_install:
-            local_provided = PackageDB.get_local_provided()
+            local_provided = PackageDB.get_local_provided_names()
             for dep_name in all_deps_to_install[:]:
                 if dep_name in local_provided:
                     all_deps_to_install.remove(dep_name)

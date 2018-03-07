@@ -4,7 +4,7 @@ import email
 import json
 import gzip
 from urllib.parse import urlencode, quote
-from typing import List, Dict, Union, Any, Type, Awaitable, Tuple
+from typing import List, Dict, Any, Type, Awaitable, Tuple
 from abc import ABCMeta
 
 from .core import (
@@ -22,7 +22,7 @@ AUR_HOST = 'aur.archlinux.org'
 class NetworkTaskResultInterface(ABCMeta):
 
     @classmethod
-    def from_bytes(cls, bytes_response: bytes) -> 'NetworkTaskResult':
+    def from_bytes(mcs, bytes_response: bytes) -> 'NetworkTaskResult':
         pass
 
 
@@ -76,13 +76,10 @@ class NetworkTaskResultJson(NetworkTaskResult):
 class NetworkTaskResultGzip(NetworkTaskResult):
     text: str = None
 
-    @classmethod
-    def from_bytes(cls, bytes_response: bytes) -> 'NetworkTaskResultGzip':
-        # parse headers:
-        ready_to_parse = False
-        all_lines = bytes_response.split(b'\r\n')
-        return_code = all_lines[0].split()[1]
+    @staticmethod
+    def parse_headers(all_lines: List[bytes]) -> Dict[str, str]:
         headers = {}
+        ready_to_parse = False
         while all_lines:
             line = all_lines[0]
             if not ready_to_parse:
@@ -96,7 +93,10 @@ class NetworkTaskResultGzip(NetworkTaskResult):
                     headers[header.decode('utf-8')] = value.decode('utf-8')
             if ready_to_parse:
                 break
+        return headers
 
+    @staticmethod
+    def parse_chunked_response(all_lines: List[bytes]) -> bytes:
         # cut chunked response tail:
         ready_to_parse = False
         while all_lines:
@@ -118,7 +118,14 @@ class NetworkTaskResultGzip(NetworkTaskResult):
             all_lines = remained_to_parse.split(b'\r\n')
             chunk_size = int(all_lines[0], 16)
             remained_to_parse = b'\r\n'.join(all_lines[1:])
+        return response_payload
 
+    @classmethod
+    def from_bytes(cls, bytes_response: bytes) -> 'NetworkTaskResultGzip':
+        all_lines = bytes_response.split(b'\r\n')
+        return_code = int(all_lines[0].split()[1])
+        headers = cls.parse_headers(all_lines)
+        response_payload = cls.parse_chunked_response(all_lines)
         # decode and save the result:
         decompressed_bytes_response = gzip.decompress(response_payload)
         text_response = decompressed_bytes_response.decode('utf-8')

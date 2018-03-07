@@ -366,7 +366,7 @@ class InstallPackagesCLI():
         return ask_to_continue(text, default_yes, args=self.args)
 
     def ask_about_package_conflicts(self):
-        print('looking for conflicting packages...')
+        print(_('looking for conflicting packages...'))
         conflict_result = check_conflicts(
             self.repo_packages, self.aur_packages_names
         )

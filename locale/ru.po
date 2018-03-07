@@ -108,7 +108,7 @@ msgstr "Получение всех данных из AUR"
 
 #: pikaur/install_cli.py:167
 msgid "Ignoring package {}"
-msgstr "Игнорирование пакета {}"
+msgstr "Пакет {} был проигнорирован"
 
 #: pikaur/build.py:244
 msgid "Installing already built dependencies for {}"

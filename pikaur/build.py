@@ -320,7 +320,7 @@ class PackageBuild(DataType):
         pkg_ext = MakepkgConfig.get('PKGEXT', '.pkg.tar.xz')
         pkg_ext = MakepkgConfig.get(
             'PKGEXT', pkg_ext,
-            config_path=os.path.join(dest_dir, 'PKGBUILD')
+            config_path=os.path.join(self.build_dir, 'PKGBUILD')
         )
         full_pkg_names = SingleTaskExecutor(CmdTaskWorker(
             isolate_root_cmd(['makepkg', '--packagelist'],

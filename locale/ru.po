@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-06 16:12+0300\n"
-"PO-Revision-Date: 2018-03-06 21:55+0300\n"
+"POT-Creation-Date: 2018-03-07 20:16+0300\n"
+"PO-Revision-Date: 2018-03-07 20:17+0300\n"
 "Last-Translator: Yardanico <tiberiumk12@gmail.com>\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -281,6 +281,10 @@ msgstr "отредактировать"
 msgid "error:"
 msgstr "ошибка:"
 
+#: pikaur/install_cli.py:369
+msgid "looking for conflicting packages..."
+msgstr "поиск конфликтующих пакетов..."
+
 #: pikaur/install_cli.py:305
 msgid "m"
 msgstr "m"
@@ -317,11 +321,11 @@ msgstr "искать только в именах пакетов"
 msgid "v"
 msgstr "v"
 
-#: pikaur/install_cli.py:389 pikaur/install_cli.py:470 pikaur/pprint.py:63
+#: pikaur/pprint.py:63 pikaur/install_cli.py:389 pikaur/install_cli.py:470
 msgid "warning:"
 msgstr "внимание:"
 
-#: pikaur/install_cli.py:301 pikaur/prompt.py:14 pikaur/prompt.py:17
+#: pikaur/prompt.py:14 pikaur/prompt.py:17 pikaur/install_cli.py:301
 msgid "y"
 msgstr "y"
 

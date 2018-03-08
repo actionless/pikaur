@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple, Iterable
 
 from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
@@ -65,36 +65,36 @@ class PackageDBCommon():
     _provided_dict_cache: Dict[PackageSource, Dict[str, List[ProvidedDependency]]] = {}
 
     @classmethod
-    def get_repo_list(cls, **kwargs):
+    def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.REPO):
             cls._packages_list_cache[PackageSource.REPO] = list(
-                cls.get_repo_dict(**kwargs).values()
+                cls.get_repo_dict(quiet=quiet).values()
             )
         return cls._packages_list_cache[PackageSource.REPO]
 
     @classmethod
-    def get_local_list(cls, **kwargs):
+    def get_local_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.LOCAL):
             cls._packages_list_cache[PackageSource.LOCAL] = list(
-                cls.get_local_dict(**kwargs).values()
+                cls.get_local_dict(quiet=quiet).values()
             )
         return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
-    def get_repo_dict(cls, **kwargs):
+    def get_repo_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:
         if not cls._packages_dict_cache.get(PackageSource.REPO):
             cls._packages_dict_cache[PackageSource.REPO] = {
                 pkg.name: pkg
-                for pkg in cls.get_repo_list(**kwargs)
+                for pkg in cls.get_repo_list(quiet=quiet)
             }
         return cls._packages_dict_cache[PackageSource.REPO]
 
     @classmethod
-    def get_local_dict(cls, **kwargs):
+    def get_local_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:
         if not cls._packages_dict_cache.get(PackageSource.LOCAL):
             cls._packages_dict_cache[PackageSource.LOCAL] = {
                 pkg.name: pkg
-                for pkg in cls.get_local_list(**kwargs)
+                for pkg in cls.get_local_list(quiet=quiet)
             }
         return cls._packages_dict_cache[PackageSource.LOCAL]
 
@@ -158,28 +158,28 @@ class RepositoryNotFound(Exception):
 
 class PackageDB(PackageDBCommon):
 
-    _alpm_handle = None
+    _alpm_handle: pyalpm.Handle = None
 
     @classmethod
-    def get_alpm_handle(cls):
+    def get_alpm_handle(cls) -> pyalpm.Handle:
         if not cls._alpm_handle:
             cls._alpm_handle = PacmanConfig().initialize_alpm()
         return cls._alpm_handle
 
     @classmethod
-    def search_local(cls, search_query):
+    def search_local(cls, search_query: str) -> List[pyalpm.Package]:
         return cls.get_alpm_handle().get_localdb().search(search_query)
 
     @classmethod
-    def get_local_list(cls, **kwargs):
+    def get_local_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.LOCAL):
-            if not kwargs.get('quiet'):
+            if not quiet:
                 print_status_message(_("Reading local package database..."))
             cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local('')
         return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
-    def get_repo_priority(cls, repo_name: str):
+    def get_repo_priority(cls, repo_name: str) -> int:
         """
         0 is the highest priority
         """
@@ -191,7 +191,7 @@ class PackageDB(PackageDBCommon):
     @classmethod
     def search_repo_dict(
             cls, search_query, db_name: str = None, names_only=False, exact_match=False
-    ):
+    ) -> Dict[str, pyalpm.Package]:
         if '/' in search_query:
             db_name, search_query = search_query.split('/')
         result = {}
@@ -209,21 +209,21 @@ class PackageDB(PackageDBCommon):
         return result
 
     @classmethod
-    def search_repo(cls, *args, **kwargs):
+    def search_repo(cls, *args, **kwargs) -> List[pyalpm.Package]:
         return list(
             cls.search_repo_dict(*args, **kwargs).values()
         )
 
     @classmethod
-    def get_repo_dict(cls, **kwargs):
+    def get_repo_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:
         if not cls._packages_dict_cache.get(PackageSource.REPO):
-            if not kwargs.get('quiet'):
+            if not quiet:
                 print_status_message(_("Reading repository package databases..."))
             cls._packages_dict_cache[PackageSource.REPO] = cls.search_repo_dict('')
         return cls._packages_dict_cache[PackageSource.REPO]
 
 
-def find_repo_packages(package_names):
+def find_repo_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     pacman_packages = []
     not_found_packages = []
     for package_name in package_names:
@@ -235,7 +235,7 @@ def find_repo_packages(package_names):
     return pacman_packages, not_found_packages
 
 
-def find_local_packages(package_names):
+def find_local_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     all_local_pkgs = PackageDB.get_local_dict()
     pacman_packages = []
     not_found_packages = []
@@ -247,7 +247,7 @@ def find_local_packages(package_names):
     return pacman_packages, not_found_packages
 
 
-def find_packages_not_from_repo():
+def find_packages_not_from_repo() -> List[str]:
     local_pkg_names = PackageDB.get_local_dict().keys()
     repo_pkg_names = PackageDB.get_repo_dict().keys()
     not_found_packages = []

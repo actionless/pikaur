@@ -38,28 +38,6 @@ from .prompt import (
 )
 
 
-def get_editor():
-    editor = os.environ.get('VISUAL') or os.environ.get('EDITOR')
-    if editor:
-        editor = editor.split(' ')
-        return editor
-    for editor in ('vim', 'nano', 'mcedit', 'edit'):
-        result = SingleTaskExecutor(
-            CmdTaskWorker(['which', editor])
-        ).execute()
-        if result.return_code == 0:
-            return [editor, ]
-    print(
-        '{} {}'.format(
-            color_line('error:', 9),
-            _("no editor found. Try setting $VISUAL or $EDITOR.")
-        )
-    )
-    if not ask_to_continue(_("Do you want to proceed without editing?")):
-        sys.exit(2)
-    return None
-
-
 def exclude_ignored_packages(package_names, args):
     excluded_pkgs = []
     for ignored_pkg in (args.ignore or []) + PacmanConfig().options.get('IgnorePkg', []):
@@ -69,28 +47,9 @@ def exclude_ignored_packages(package_names, args):
     return excluded_pkgs
 
 
-def manual_package_selection(text):
-    selected_packages = []
-    with NamedTemporaryFile() as tmp_file:
-        with open(tmp_file.name, 'w') as write_file:
-            write_file.write(text)
-        interactive_spawn(
-            get_editor() + [tmp_file.name, ]
-        )
-        with open(tmp_file.name, 'r') as read_file:
-            for line in read_file.readlines():
-                line = line.lstrip()
-                if not line:
-                    continue
-                if not line.startswith('::') and not line.startswith('#'):
-                    pkg_name = line.split()[0]
-                    if '/' in pkg_name:
-                        pkg_name = pkg_name.split('/')[1]
-                    selected_packages.append(pkg_name)
-    return selected_packages
-
-
 class InstallPackagesCLI():
+    # @TODO: refactor this warning:
+    # pylint: disable=too-many-public-methods
 
     args = None
     repo_packages = None
@@ -153,6 +112,27 @@ class InstallPackagesCLI():
     @property
     def all_aur_packages_names(self):
         return self.aur_packages_names + self.aur_deps_names
+
+    def get_editor(self):
+        editor = os.environ.get('VISUAL') or os.environ.get('EDITOR')
+        if editor:
+            editor = editor.split(' ')
+            return editor
+        for editor in ('vim', 'nano', 'mcedit', 'edit'):
+            result = SingleTaskExecutor(
+                CmdTaskWorker(['which', editor])
+            ).execute()
+            if result.return_code == 0:
+                return [editor, ]
+        print(
+            '{} {}'.format(
+                color_line('error:', 9),
+                _("no editor found. Try setting $VISUAL or $EDITOR.")
+            )
+        )
+        if not ask_to_continue(_("Do you want to proceed without editing?"), args=self.args):
+            sys.exit(2)
+        return None
 
     def exclude_ignored_packages(self, packages):
         excluded_packages = exclude_ignored_packages(packages, self.args)
@@ -264,6 +244,26 @@ class InstallPackagesCLI():
             ))
         return aur_deps
 
+    def manual_package_selection(self, text):
+        selected_packages = []
+        with NamedTemporaryFile() as tmp_file:
+            with open(tmp_file.name, 'w') as write_file:
+                write_file.write(text)
+            interactive_spawn(
+                self.get_editor() + [tmp_file.name, ]
+            )
+            with open(tmp_file.name, 'r') as read_file:
+                for line in read_file.readlines():
+                    line = line.lstrip()
+                    if not line:
+                        continue
+                    if not line.startswith('::') and not line.startswith('#'):
+                        pkg_name = line.split()[0]
+                        if '/' in pkg_name:
+                            pkg_name = pkg_name.split('/')[1]
+                        selected_packages.append(pkg_name)
+        return selected_packages
+
     def install_prompt(self):
         repo_packages_updates, thirdparty_repo_packages_updates = \
             self._get_repo_pkgs_updates()
@@ -302,7 +302,7 @@ class InstallPackagesCLI():
                     answer = _confirm_sysupgrade(verbose=True)
                 elif letter == _("m"):
                     print()
-                    packages = manual_package_selection(
+                    packages = self.manual_package_selection(
                         text=pretty_format_sysupgrade(
                             repo_packages_updates, thirdparty_repo_packages_updates,
                             aur_updates,
@@ -449,7 +449,7 @@ class InstallPackagesCLI():
                 default_yes=not package_build.is_installed
         ):
             interactive_spawn(
-                get_editor() + [
+                self.get_editor() + [
                     os.path.join(
                         package_build.repo_path,
                         filename
@@ -485,7 +485,7 @@ class InstallPackagesCLI():
                     ])
             src_info = SrcInfo(repo_status.repo_path, pkg_name)
 
-            if get_editor():
+            if self.get_editor():
                 if self.ask_to_edit_file('PKGBUILD', repo_status):
                     src_info.regenerate()
                     # @TODO: recompute AUR deps

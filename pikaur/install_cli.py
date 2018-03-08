@@ -130,7 +130,7 @@ class InstallPackagesCLI():
                 _("no editor found. Try setting $VISUAL or $EDITOR.")
             )
         )
-        if not ask_to_continue(_("Do you want to proceed without editing?"), args=self.args):
+        if not self.ask_to_continue(_("Do you want to proceed without editing?")):
             sys.exit(2)
         return None
 
@@ -424,7 +424,7 @@ class InstallPackagesCLI():
                               "Proceed?").format(
                                   new=bold_line(repo_pkg_name),
                                   installed=bold_line(installed_pkg_name))
-                        )
+                        ), default_yes=False
                 ):
                     self.repo_packages_names.append(repo_pkg_name)
                     self.repo_packages_conflicts.append(installed_pkg_name)

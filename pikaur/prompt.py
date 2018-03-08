@@ -5,7 +5,9 @@ from .i18n import _
 from .pprint import color_line, print_status_message
 
 
-def ask_to_continue(text=_("Do you want to proceed?"), default_yes=True, args=None):
+def ask_to_continue(text=None, default_yes=True, args=None):
+    if text is None:
+        text = _("Do you want to proceed?")
     if args and args.noconfirm and default_yes:
         print_status_message('{} {}'.format(text, _("[Y]es (--noconfirm)")))
         return True

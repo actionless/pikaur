@@ -229,7 +229,7 @@ class PackageBuild(DataType):
         return already_installed
 
     @property
-    def all_deps_to_install(self):
+    def all_deps_to_install(self) -> List[str]:
         return self.new_make_deps_to_install + self.new_deps_to_install
 
     def _install_built_deps(
@@ -425,7 +425,7 @@ class PackageBuild(DataType):
             self._set_built_package_path()
 
 
-def clone_pkgbuilds_git_repos(package_names):
+def clone_pkgbuilds_git_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
     package_builds = {
         package_name: PackageBuild(package_name)
         for package_name in package_names

@@ -102,6 +102,7 @@ class PackageBuild(DataType):
     already_installed: bool = None
     failed: bool = None
 
+    new_deps_to_install: List[str] = None
     new_make_deps_to_install: List[str] = None
 
     def __init__(self, package_name: str) -> None:  # pylint: disable=super-init-not-called
@@ -227,15 +228,18 @@ class PackageBuild(DataType):
         self.already_installed = already_installed
         return already_installed
 
+    @property
+    def all_deps_to_install(self):
+        return self.new_make_deps_to_install + self.new_deps_to_install
+
     def _install_built_deps(
             self,
             args: PikaurArgs,
-            all_package_builds: Dict[str, 'PackageBuild'],
-            all_deps_to_install: List[str]
+            all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
 
         built_deps_to_install = []
-        for dep in all_deps_to_install[:]:
+        for dep in self.all_deps_to_install:
             # @TODO: check if dep is Provided by built package
             if dep in all_package_builds:
                 if all_package_builds[dep].failed:
@@ -245,7 +249,10 @@ class PackageBuild(DataType):
                 if not built_package_path:
                     raise DependencyNotBuiltYet()
                 built_deps_to_install.append(built_package_path)
-                all_deps_to_install.remove(dep)
+                if dep in self.new_make_deps_to_install:
+                    self.new_make_deps_to_install.remove(dep)
+                if dep in self.new_deps_to_install:
+                    self.new_deps_to_install.remove(dep)
 
         if built_deps_to_install:
             print('{} {}:'.format(
@@ -272,18 +279,19 @@ class PackageBuild(DataType):
                 self.failed = True
                 raise DependencyError()
 
-    def _install_repo_deps(
-            self, args: PikaurArgs, all_deps_to_install: List[str]
-    ) -> None:
+    def _install_repo_deps(self, args: PikaurArgs) -> None:
 
-        if all_deps_to_install:
+        if self.all_deps_to_install:
             local_provided = PackageDB.get_local_provided_names()
-            for dep_name in all_deps_to_install[:]:
+            for dep_name in self.all_deps_to_install:
                 if dep_name in local_provided:
-                    all_deps_to_install.remove(dep_name)
-        if all_deps_to_install:
+                    if dep_name in self.new_make_deps_to_install:
+                        self.new_make_deps_to_install.remove(dep_name)
+                    if dep_name in self.new_deps_to_install:
+                        self.new_deps_to_install.remove(dep_name)
+        if self.all_deps_to_install:
             all_repo_pkgs_names = PackageDB.get_repo_dict().keys()
-            for pkg_name in all_deps_to_install:
+            for pkg_name in self.all_deps_to_install:
                 if (
                         pkg_name not in all_repo_pkgs_names
                 ) and (
@@ -314,7 +322,7 @@ class PackageBuild(DataType):
                         'noconfirm',
                         'sysupgrade',
                         'refresh',
-                    ]) + all_deps_to_install,
+                    ]) + self.all_deps_to_install,
             ):
                 self.failed = True
                 raise BuildError()
@@ -377,11 +385,10 @@ class PackageBuild(DataType):
         make_deps = src_info.get_makedepends()
         __, self.new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = src_info.get_depends()
-        __, new_deps_to_install = find_local_packages(new_deps)
-        all_deps_to_install = self.new_make_deps_to_install + new_deps_to_install
+        __, self.new_deps_to_install = find_local_packages(new_deps)
 
-        self._install_built_deps(args, all_package_builds, all_deps_to_install)
-        self._install_repo_deps(args, all_deps_to_install)
+        self._install_built_deps(args, all_package_builds)
+        self._install_repo_deps(args)
 
         makepkg_args = [
             '--nodeps',
@@ -399,7 +406,7 @@ class PackageBuild(DataType):
         self._remove_make_deps()
 
         if not build_succeeded:
-            if new_deps_to_install:
+            if self.new_deps_to_install:
                 print('{} {}:'.format(
                     color_line('::', 13),
                     _("Removing already installed dependencies for {}").format(
@@ -410,7 +417,7 @@ class PackageBuild(DataType):
                         'sudo',
                         'pacman',
                         '-Rs',
-                    ] + new_deps_to_install,
+                    ] + self.new_deps_to_install,
                 )
             self.failed = True
             raise BuildError()

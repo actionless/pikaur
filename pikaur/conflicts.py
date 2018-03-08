@@ -151,6 +151,11 @@ def check_replacements():
     new_pkgs_replaces = {}
     for pkg_name, replace_list in replaces_lists.items():
         for replace_pkg_name in replace_list:
-            if replace_pkg_name in all_local_pkgs_names:
+            if (replace_pkg_name in all_local_pkgs_names) and (
+                    (pkg_name not in all_repo_pkgs_info) or (
+                        PackageDB.get_repo_priority(all_repo_pkgs_info[replace_pkg_name].db.name) <=
+                        PackageDB.get_repo_priority(all_repo_pkgs_info[pkg_name].db.name)
+                    )
+            ):
                 new_pkgs_replaces.setdefault(pkg_name, []).append(replace_pkg_name)
     return new_pkgs_replaces

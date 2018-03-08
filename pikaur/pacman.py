@@ -152,6 +152,10 @@ class PackageDBCommon():
         return cls._get_provided_dict(PackageSource.LOCAL)
 
 
+class RepositoryNotFound(Exception):
+    pass
+
+
 class PackageDB(PackageDBCommon):
 
     _alpm_handle = None
@@ -175,8 +179,18 @@ class PackageDB(PackageDBCommon):
         return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
+    def get_repo_priority(cls, repo_name: str):
+        """
+        0 is the highest priority
+        """
+        repos = [r.name for r in cls.get_alpm_handle().get_syncdbs()]
+        if repo_name not in repos:
+            raise RepositoryNotFound(f"'{repo_name}' in {repos}")
+        return repos.index(repo_name)
+
+    @classmethod
     def search_repo_dict(
-            cls, search_query, db_name=None, names_only=False, exact_match=False
+            cls, search_query, db_name: str = None, names_only=False, exact_match=False
     ):
         if '/' in search_query:
             db_name, search_query = search_query.split('/')

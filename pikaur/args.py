@@ -1,5 +1,5 @@
 import sys
-from typing import List
+from typing import List, Any
 
 from . import argparse as argparse  # pylint: disable=no-name-in-module
 
@@ -7,6 +7,26 @@ from . import argparse as argparse  # pylint: disable=no-name-in-module
 class PikaurArgs(argparse.Namespace):
     unknown_args: List[str] = None
     raw: List[str] = None
+
+    def __getattr__(self, name: str) -> Any:
+        """
+        this is a hack for typing/mypy
+        """
+        return getattr(super(), name)
+
+    @classmethod
+    def from_namespace(
+            cls,
+            namespace: argparse.Namespace,
+            unknown_args: List[str],
+            raw_args: List[str]
+    ) -> 'PikaurArgs':
+        result = cls()
+        for key, value in namespace.__dict__.items():
+            setattr(result, key, value)
+        result.unknown_args = unknown_args
+        result.raw = raw_args
+        return result
 
 
 class PikaurArgumentParser(argparse.ArgumentParser):
@@ -17,12 +37,13 @@ class PikaurArgumentParser(argparse.ArgumentParser):
             raise exc
         super().error(message)
 
-    def parse_pikaur_args(self, args: List[str]) -> PikaurArgs:
-        parsed_args, unknown_args = self.parse_known_args(args)
-        parsed_args.__class__ = PikaurArgs  # #sorryboutit
-        parsed_args.unknown_args = unknown_args
-        parsed_args.raw = args
-        return parsed_args
+    def parse_pikaur_args(self, raw_args: List[str]) -> PikaurArgs:
+        parsed_args, unknown_args = self.parse_known_args(raw_args)
+        return PikaurArgs.from_namespace(
+            namespace=parsed_args,
+            unknown_args=unknown_args,
+            raw_args=raw_args
+        )
 
 
 PIKAUR_LONG_OPTS = (
@@ -69,6 +90,7 @@ def parse_args(args: List[str]) -> PikaurArgs:
 
     # print("ARGPARSE:")
     # print(parsed_args)
+    # print(dir(parsed_args))
     # print(f'args = {args}')
     # print(reconstructed_args)
     # print(unknown_args)

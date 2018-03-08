@@ -102,7 +102,7 @@ class PackageBuild(DataType):
     already_installed: bool = None
     failed: bool = None
 
-    new_make_deps_to_install: List[str]
+    new_make_deps_to_install: List[str] = None
 
     def __init__(self, package_name: str) -> None:  # pylint: disable=super-init-not-called
         self.package_name = package_name

@@ -1,3 +1,5 @@
+import pyalpm
+
 from .core import DataType
 from .i18n import _n
 from .version import compare_versions
@@ -22,20 +24,20 @@ class PackageUpdate(DataType):
 
 def find_repo_updates():
     repo_packages_updates = []
-    repo_dict = PackageDB.get_repo_dict()
     for local_pkg in PackageDB.get_local_list():
-        repo_pkg = repo_dict.get(local_pkg.name)
+        repo_pkg = pyalpm.sync_newversion(
+            local_pkg, PackageDB.get_alpm_handle().get_syncdbs()
+        )
         if not repo_pkg:
             continue
-        if compare_versions(local_pkg.version, repo_pkg.version) < 0:
-            repo_packages_updates.append(
-                PackageUpdate(
-                    Name=local_pkg.name,
-                    New_Version=repo_pkg.version,
-                    Current_Version=local_pkg.version,
-                    Description=repo_pkg.desc,
-                )
+        repo_packages_updates.append(
+            PackageUpdate(
+                Name=local_pkg.name,
+                New_Version=repo_pkg.version,
+                Current_Version=local_pkg.version,
+                Description=repo_pkg.desc,
             )
+        )
     return repo_packages_updates
 
 

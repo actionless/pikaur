@@ -2,3 +2,4 @@
 set -euo pipefail
 
 pylint pikaur.py pikaur
+mypy --ignore-missing-imports pikaur

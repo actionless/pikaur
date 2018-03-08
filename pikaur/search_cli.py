@@ -6,7 +6,7 @@ from .i18n import _
 from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
 from .pacman import PackageDB
 from .aur import (
-    AurTaskWorkerSearch,
+    AURTaskWorkerSearch,
     get_all_aur_packages, get_all_aur_names,
 )
 
@@ -33,7 +33,7 @@ def package_search_worker(args):
     elif index == AUR:
         if args['queries']:
             result = MultipleTasksExecutor({
-                AUR+search_word: AurTaskWorkerSearch(search_query=search_word)
+                AUR+search_word: AURTaskWorkerSearch(search_query=search_word)
                 for search_word in args['queries']
             }).execute()
             if args['namesonly']:

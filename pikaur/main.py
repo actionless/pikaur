@@ -23,7 +23,7 @@ from .pprint import (
     print_version,
 )
 from .pacman import PacmanColorTaskWorker
-from .aur import AurTaskWorkerInfo
+from .aur import AURTaskWorkerInfo
 from .package_update import find_repo_updates, find_aur_updates
 from .prompt import retry_interactive_command_or_exit, ask_to_continue
 from .config import CACHE_ROOT, BUILD_CACHE_DIR
@@ -110,7 +110,7 @@ def cli_upgrade_packages(args):
 def cli_info_packages(args):
     result = MultipleTasksExecutor({
         REPO: PacmanColorTaskWorker(args.raw),
-        AUR: AurTaskWorkerInfo(
+        AUR: AURTaskWorkerInfo(
             packages=args.positional or []
         ),
     }).execute()

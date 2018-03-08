@@ -31,11 +31,11 @@ class NetworkTaskResult(DataType, metaclass=NetworkTaskResultInterface):
     headers: Dict[str, str] = None
 
 
-class NetworkTaskResultJson(NetworkTaskResult):
+class NetworkTaskResultJSON(NetworkTaskResult):
     json: Dict[str, Any] = None
 
     @classmethod
-    def from_bytes(cls, bytes_response: bytes) -> 'NetworkTaskResultJson':
+    def from_bytes(cls, bytes_response: bytes) -> 'NetworkTaskResultJSON':
         # prepare response for parsing:
         string_response = bytes_response.decode('utf-8')
         request_result, the_rest = string_response.split('\r\n', 1)
@@ -210,15 +210,15 @@ class AURPackageInfo(DataType):
         super().__init__(**kwargs)
 
 
-class AurTaskWorker():
+class AURTaskWorker():
     uri: str = None
     params: str = None
 
     async def aur_client_task(self, loop: asyncio.AbstractEventLoop) -> List[AURPackageInfo]:
         raw_result = await https_client_task(
-            loop, AUR_HOST, self.uri, result_class=NetworkTaskResultJson
+            loop, AUR_HOST, self.uri, result_class=NetworkTaskResultJSON
         )
-        if not isinstance(raw_result, NetworkTaskResultJson):
+        if not isinstance(raw_result, NetworkTaskResultJSON):
             raise RuntimeError
         return [
             AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
@@ -230,7 +230,7 @@ class AurTaskWorker():
         return self.aur_client_task(loop)
 
 
-class AurTaskWorkerSearch(AurTaskWorker):
+class AURTaskWorkerSearch(AURTaskWorker):
 
     def __init__(self, search_query: str) -> None:
         self.params = urlencode({
@@ -241,7 +241,7 @@ class AurTaskWorkerSearch(AurTaskWorker):
         })
 
 
-class AurTaskWorkerInfo(AurTaskWorker):
+class AURTaskWorkerInfo(AURTaskWorker):
 
     def __init__(self, packages: List[str]) -> None:
         self.params = urlencode({
@@ -252,7 +252,7 @@ class AurTaskWorkerInfo(AurTaskWorker):
             self.params += '&arg[]=' + quote(package)
 
 
-class AurTaskWorkerList():
+class AURTaskWorkerList():
 
     uri = '/packages.gz'
 
@@ -290,7 +290,7 @@ def find_aur_packages(
     if package_names:
         results = MultipleTasksExecutorPool(
             {
-                _id: AurTaskWorkerInfo(packages=packages_chunk)
+                _id: AURTaskWorkerInfo(packages=packages_chunk)
                 for _id, packages_chunk in enumerate(
                     # get_chunks(package_names, chunk_size=100)
                     get_chunks(package_names, chunk_size=200)
@@ -330,7 +330,7 @@ def get_all_aur_names() -> List[str]:
     global _AUR_PKGS_LIST_CACHE  # pylint: disable=global-statement
     if not _AUR_PKGS_LIST_CACHE:
         _AUR_PKGS_LIST_CACHE = SingleTaskExecutor(
-            AurTaskWorkerList()
+            AURTaskWorkerList()
         ).execute()
     return _AUR_PKGS_LIST_CACHE
 

@@ -3,6 +3,7 @@ import configparser
 import os
 import shutil
 import subprocess
+import enum
 from uuid import uuid1
 from typing import Dict, Coroutine, Any, List
 
@@ -11,6 +12,12 @@ NOT_FOUND_ATOM = object()
 REPO = 'repo'
 AUR = 'aur'
 LOCAL = 'local'
+
+
+class PackageSource(enum.Enum):
+    REPO = enum.auto()
+    AUR = enum.auto()
+    LOCAL = enum.auto()
 
 
 def interactive_spawn(cmd, **kwargs):

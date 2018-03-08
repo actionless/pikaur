@@ -1,22 +1,29 @@
+from typing import List, Dict, Iterable
+
+import pyalpm
+
 from .pacman import (
-    PackageDB, find_local_packages, find_repo_packages,
+    PackageDB, ProvidedDependency,
+    find_local_packages, find_repo_packages,
 )
 from .version import (
+    VersionMatcher,
     get_package_name_and_version_matcher_from_depend_line,
 )
-from .aur import find_aur_packages
+from .aur import AURPackageInfo, find_aur_packages
 from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch
+from .core import PackageSource
 
 
-LOCAL_PKG = 'local'
-REPO_PKG = 'repo'
+def find_provided_pkgs(
+        pkg_names: List[str],
+        source: PackageSource
+) -> Dict[str, List[ProvidedDependency]]:
 
-
-def find_provided_pkgs(pkg_names, source):
-    provided_by_backrefs = {}
+    provided_by_backrefs: Dict[str, List[ProvidedDependency]] = {}
     if not pkg_names:
         return provided_by_backrefs
-    if source == REPO_PKG:
+    if source == PackageSource.REPO:
         provided_dict = PackageDB.get_repo_provided_dict()
     else:
         provided_dict = PackageDB.get_local_provided_dict()
@@ -30,15 +37,19 @@ def find_provided_pkgs(pkg_names, source):
     return provided_by_backrefs
 
 
-def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
+def check_deps_versions(
+        aur_pkg_name: str,
+        deps_pkg_names: Iterable[str],
+        version_matchers: Dict[str, VersionMatcher],
+        source: PackageSource
+) -> List[str]:
     # try to find explicit pkgs:
     not_found_deps = None
-    deps = {}
-    if source == REPO_PKG:
+    deps: List[pyalpm.Package] = []
+    if source == PackageSource.REPO:
         deps, not_found_deps = find_repo_packages(deps_pkg_names)
     else:
         deps, not_found_deps = find_local_packages(deps_pkg_names)
-    deps = {dep.name: dep for dep in deps}
 
     # try to find pkgs provided by other pkgs:
     provided_by_backrefs = find_provided_pkgs(
@@ -49,7 +60,8 @@ def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
         not_found_deps.remove(dep_name)
 
     # check versions of found excplicit deps:
-    for dep_name, dep in deps.items():
+    for dep in deps:
+        dep_name = dep.name
         version_matcher = version_matchers[dep_name]
         if not version_matcher(dep.version):
             raise DependencyVersionMismatch(
@@ -68,7 +80,9 @@ def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
                 for provided in provided_by_pkgs
         ]):
             raise DependencyVersionMismatch(
-                version_found={pkg.name: pkg.version for pkg in provided_by_pkgs},
+                version_found={
+                    provided.name: provided.package.version for provided in provided_by_pkgs
+                },
                 dependency_line=version_matcher.line,
                 who_depends=aur_pkg_name,
                 depends_on=dep_name,
@@ -78,21 +92,25 @@ def check_deps_versions(aur_pkg_name, deps_pkg_names, version_matchers, source):
     return not_found_deps
 
 
-def get_aur_pkg_deps_and_version_matchers(result):
+def get_aur_pkg_deps_and_version_matchers(aur_pkg: AURPackageInfo) -> Dict[str, VersionMatcher]:
     deps = {}
-    for dep in (result.depends or []) + (result.makedepends or []):
+    for dep in (aur_pkg.depends or []) + (aur_pkg.makedepends or []):
         name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
         deps[name] = version_matcher
     return deps
 
 
-def find_deps_for_aur_pkg(aur_pkg_name, version_matchers, aur_pkgs_info):
+def find_missing_deps_for_aur_pkg(
+        aur_pkg_name: str,
+        version_matchers: Dict[str, VersionMatcher],
+        aur_pkgs_info: List[AURPackageInfo]
+) -> List[str]:
     # repo pkgs
     not_found_deps = check_deps_versions(
         aur_pkg_name=aur_pkg_name,
         deps_pkg_names=version_matchers.keys(),
         version_matchers=version_matchers,
-        source=REPO_PKG
+        source=PackageSource.REPO
     )
 
     if not not_found_deps:
@@ -103,7 +121,7 @@ def find_deps_for_aur_pkg(aur_pkg_name, version_matchers, aur_pkgs_info):
         aur_pkg_name=aur_pkg_name,
         deps_pkg_names=not_found_deps,
         version_matchers=version_matchers,
-        source=LOCAL_PKG
+        source=PackageSource.LOCAL
     )
     if not not_found_local_pkgs:
         return []
@@ -137,15 +155,15 @@ def find_deps_for_aur_pkg(aur_pkg_name, version_matchers, aur_pkgs_info):
                 dependency_line=version_matcher.line,
                 who_depends=aur_pkg_name,
                 depends_on=aur_dep_name,
-                location='aur'
+                location=PackageSource.AUR
             )
     return not_found_local_pkgs
 
 
-def find_aur_deps(package_names):
+def find_aur_deps(package_names: List[str]) -> List[str]:
 
     iter_package_names = package_names[:]
-    new_aur_deps = []
+    new_aur_deps: List[str] = []
     while iter_package_names:
         all_deps_for_aur_packages = {}
         aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(iter_package_names)
@@ -156,9 +174,9 @@ def find_aur_deps(package_names):
             if aur_pkg_deps:
                 all_deps_for_aur_packages[result.name] = aur_pkg_deps
 
-        not_found_local_pkgs = []
+        not_found_local_pkgs: List[str] = []
         for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():
-            not_found_local_pkgs += find_deps_for_aur_pkg(
+            not_found_local_pkgs += find_missing_deps_for_aur_pkg(
                 aur_pkg_name=aur_pkg_name,
                 aur_pkgs_info=aur_pkgs_info,
                 version_matchers=deps_for_aur_package,

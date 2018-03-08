@@ -4,7 +4,7 @@ from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
 
 from .core import (
-    DataType, CmdTaskWorker,
+    DataType, CmdTaskWorker, PackageSource,
 )
 from .i18n import _
 from .version import (
@@ -59,72 +59,72 @@ class ProvidedDependency(DataType):
 
 class PackageDBCommon():
 
-    _packages_list_cache: Dict[str, List[pyalpm.Package]] = {}
-    _packages_dict_cache: Dict[str, Dict[str, pyalpm.Package]] = {}
-    _provided_list_cache: Dict[str, List[str]] = {}
-    _provided_dict_cache: Dict[str, Dict[str, List[ProvidedDependency]]] = {}
-
-    repo = 'repo'
-    local = 'local'
+    _packages_list_cache: Dict[PackageSource, List[pyalpm.Package]] = {}
+    _packages_dict_cache: Dict[PackageSource, Dict[str, pyalpm.Package]] = {}
+    _provided_list_cache: Dict[PackageSource, List[str]] = {}
+    _provided_dict_cache: Dict[PackageSource, Dict[str, List[ProvidedDependency]]] = {}
 
     @classmethod
     def get_repo_list(cls, **kwargs):
-        if not cls._packages_list_cache.get(cls.repo):
-            cls._packages_list_cache[cls.repo] = list(
+        if not cls._packages_list_cache.get(PackageSource.REPO):
+            cls._packages_list_cache[PackageSource.REPO] = list(
                 cls.get_repo_dict(**kwargs).values()
             )
-        return cls._packages_list_cache[cls.repo]
+        return cls._packages_list_cache[PackageSource.REPO]
 
     @classmethod
     def get_local_list(cls, **kwargs):
-        if not cls._packages_list_cache.get(cls.local):
-            cls._packages_list_cache[cls.local] = list(
+        if not cls._packages_list_cache.get(PackageSource.LOCAL):
+            cls._packages_list_cache[PackageSource.LOCAL] = list(
                 cls.get_local_dict(**kwargs).values()
             )
-        return cls._packages_list_cache[cls.local]
+        return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
     def get_repo_dict(cls, **kwargs):
-        if not cls._packages_dict_cache.get(cls.repo):
-            cls._packages_dict_cache[cls.repo] = {
+        if not cls._packages_dict_cache.get(PackageSource.REPO):
+            cls._packages_dict_cache[PackageSource.REPO] = {
                 pkg.name: pkg
                 for pkg in cls.get_repo_list(**kwargs)
             }
-        return cls._packages_dict_cache[cls.repo]
+        return cls._packages_dict_cache[PackageSource.REPO]
 
     @classmethod
     def get_local_dict(cls, **kwargs):
-        if not cls._packages_dict_cache.get(cls.local):
-            cls._packages_dict_cache[cls.local] = {
+        if not cls._packages_dict_cache.get(PackageSource.LOCAL):
+            cls._packages_dict_cache[PackageSource.LOCAL] = {
                 pkg.name: pkg
                 for pkg in cls.get_local_list(**kwargs)
             }
-        return cls._packages_dict_cache[cls.local]
+        return cls._packages_dict_cache[PackageSource.LOCAL]
 
     @classmethod
-    def _get_provided_names(cls, local: str) -> List[str]:
-        if not cls._provided_list_cache.get(local):
-            cls._provided_list_cache[local] = [
+    def _get_provided_names(cls, package_source: PackageSource) -> List[str]:
+        if not cls._provided_list_cache.get(package_source):
+            cls._provided_list_cache[package_source] = [
                 provided_pkg.name
-                for provided_pkgs in cls._get_provided_dict(local).values()
+                for provided_pkgs in cls._get_provided_dict(package_source).values()
                 for provided_pkg in provided_pkgs
             ]
-        return cls._provided_list_cache[local]
+        return cls._provided_list_cache[package_source]
 
     @classmethod
     def get_repo_provided_names(cls) -> List[str]:
-        return cls._get_provided_names(cls.repo)
+        return cls._get_provided_names(PackageSource.REPO)
 
     @classmethod
     def get_local_provided_names(cls) -> List[str]:
-        return cls._get_provided_names(cls.local)
+        return cls._get_provided_names(PackageSource.LOCAL)
 
     @classmethod
-    def _get_provided_dict(cls, local: str) -> Dict[str, List[ProvidedDependency]]:
-        if not cls._provided_dict_cache.get(local):
+    def _get_provided_dict(
+            cls, package_source: PackageSource
+    ) -> Dict[str, List[ProvidedDependency]]:
+
+        if not cls._provided_dict_cache.get(package_source):
             provided_pkg_names: Dict[str, List[ProvidedDependency]] = {}
             for pkg in (
-                    cls.get_local_list() if local == cls.local
+                    cls.get_local_list() if package_source == PackageSource.LOCAL
                     else cls.get_repo_list()
             ):
                 if pkg.provides:
@@ -140,16 +140,16 @@ class PackageDBCommon():
                                 version_matcher=version_matcher
                             )
                         )
-            cls._provided_dict_cache[local] = provided_pkg_names
-        return cls._provided_dict_cache[local]
+            cls._provided_dict_cache[package_source] = provided_pkg_names
+        return cls._provided_dict_cache[package_source]
 
     @classmethod
     def get_repo_provided_dict(cls) -> Dict[str, List[ProvidedDependency]]:
-        return cls._get_provided_dict(cls.repo)
+        return cls._get_provided_dict(PackageSource.REPO)
 
     @classmethod
     def get_local_provided_dict(cls) -> Dict[str, List[ProvidedDependency]]:
-        return cls._get_provided_dict(cls.local)
+        return cls._get_provided_dict(PackageSource.LOCAL)
 
 
 class PackageDB(PackageDBCommon):
@@ -168,11 +168,11 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def get_local_list(cls, **kwargs):
-        if not cls._packages_list_cache.get(cls.local):
+        if not cls._packages_list_cache.get(PackageSource.LOCAL):
             if not kwargs.get('quiet'):
                 print_status_message(_("Reading local package database..."))
-            cls._packages_list_cache[cls.local] = cls.search_local('')
-        return cls._packages_list_cache[cls.local]
+            cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local('')
+        return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
     def search_repo_dict(
@@ -202,11 +202,11 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def get_repo_dict(cls, **kwargs):
-        if not cls._packages_dict_cache.get(cls.repo):
+        if not cls._packages_dict_cache.get(PackageSource.REPO):
             if not kwargs.get('quiet'):
                 print_status_message(_("Reading repository package databases..."))
-            cls._packages_dict_cache[cls.repo] = cls.search_repo_dict('')
-        return cls._packages_dict_cache[cls.repo]
+            cls._packages_dict_cache[PackageSource.REPO] = cls.search_repo_dict('')
+        return cls._packages_dict_cache[PackageSource.REPO]
 
 
 def find_repo_packages(package_names):

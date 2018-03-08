@@ -26,7 +26,7 @@ from .pprint import (
     print_not_found_packages,
 )
 from .core import (
-    SingleTaskExecutor, CmdTaskWorker,
+    SingleTaskExecutor, CmdTaskWorker, PackageSource,
     interactive_spawn, remove_dir,
 )
 from .conflicts import (
@@ -102,8 +102,6 @@ class InstallPackagesCLI():
     repo_packages_conflicts = None
     failed_to_build = None
     transactions = None
-    REPO = 'repo'
-    AUR = 'aur'
 
     def __init__(self, args, packages=None):
         self.args = args
@@ -598,12 +596,12 @@ class InstallPackagesCLI():
 
     def save_repo_transaction(self, removed=None, installed=None):
         return self._save_transaction(
-            self.REPO, removed=removed, installed=installed
+            PackageSource.REPO, removed=removed, installed=installed
         )
 
     def save_aur_transaction(self, removed=None, installed=None):
         return self._save_transaction(
-            self.AUR, removed=removed, installed=installed
+            PackageSource.AUR, removed=removed, installed=installed
         )
 
     def _revert_transaction(self, target):
@@ -624,10 +622,10 @@ class InstallPackagesCLI():
             self._remove_packages(installed)
 
     def revert_repo_transaction(self):
-        self._revert_transaction(self.REPO)
+        self._revert_transaction(PackageSource.REPO)
 
     def revert_aur_transaction(self):
-        self._revert_transaction(self.AUR)
+        self._revert_transaction(PackageSource.AUR)
 
     def _remove_conflicting_packages(self, packages_to_be_removed):
         # pylint: disable=no-self-use

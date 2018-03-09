@@ -17,7 +17,7 @@ class BuildError(Exception):
 
 
 class CloneError(DataType, Exception):
-    build: PackageBuild = None
+    build: 'PackageBuild' = None
     result: TaskResult = None
 
 
@@ -32,7 +32,7 @@ class DependencyVersionMismatch(DataType, Exception):
     depends_on: str = None
     location: str = None
 
-    version_matcher: VersionMatcher = None
+    version_matcher: 'VersionMatcher' = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

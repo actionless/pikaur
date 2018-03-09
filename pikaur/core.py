@@ -369,7 +369,7 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
     last_cmd_idx: int = None
     indexed_cmds: List[Tuple[str, TaskWorker]] = None
 
-    progress_bar: ProgressBar = None
+    progress_bar: 'ProgressBar' = None
 
     def __init__(
             self,

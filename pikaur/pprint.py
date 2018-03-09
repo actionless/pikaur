@@ -1,15 +1,19 @@
 import sys
 import shutil
+from typing import List, TYPE_CHECKING, Callable
 
 from .config import VERSION
 from .version import get_common_version, get_version_diff
 from .i18n import _, _n
 
+if TYPE_CHECKING:
+    from .package_update import PackageUpdate
+
 
 PADDING = 4
 
 
-def color_line(line, color_number):
+def color_line(line: str, color_number: int) -> str:
     result = ''
     if color_number >= 8:
         result += "\033[1m"
@@ -20,20 +24,20 @@ def color_line(line, color_number):
     return result
 
 
-def bold_line(line):
+def bold_line(line: str) -> str:
     return f'\033[1m{line}\033[0m'
 
 
-def get_term_width():
+def get_term_width() -> int:
     return shutil.get_terminal_size((80, 80)).columns
 
 
-def format_paragraph(line):
+def format_paragraph(line: str) -> str:
     term_width = get_term_width()
     max_line_width = term_width - PADDING * 2
 
     result = []
-    current_line = []
+    current_line: List[str] = []
     line_length = 0
     for word in line.split():
         if len(word) + line_length > max_line_width:
@@ -54,11 +58,11 @@ def format_paragraph(line):
     ])
 
 
-def print_status_message(message=''):
+def print_status_message(message='') -> None:
     sys.stderr.write(f'{message}\n')
 
 
-def print_not_found_packages(not_found_packages):
+def print_not_found_packages(not_found_packages: List[str]) -> None:
     print("{} {}".format(
         color_line(':: ' + _("warning:"), 11),
         bold_line(_("Following packages can not be found in AUR:")),
@@ -68,13 +72,15 @@ def print_not_found_packages(not_found_packages):
 
 
 def pretty_format_upgradeable(
-        packages_updates, verbose=False, print_repo=False, color=True, template=None
-):
+        packages_updates: List['PackageUpdate'],
+        verbose=False, print_repo=False, color=True, template=None
+) -> str:
 
     _color_line = color_line
     _bold_line = bold_line
     if not color:
-        _color_line = _bold_line = lambda x, *args: x
+        _color_line = lambda line, color: line  # noqa
+        _bold_line = lambda line: line  # noqa
 
     def pretty_format(pkg_update):
         common_version, difference_size = get_common_version(
@@ -130,15 +136,18 @@ def pretty_format_upgradeable(
 
 
 def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
-        repo_packages_updates=None, thirdparty_repo_packages_updates=None,
-        aur_updates=None, new_aur_deps=None,
+        repo_packages_updates: List['PackageUpdate'] = None,
+        thirdparty_repo_packages_updates: List['PackageUpdate'] = None,
+        aur_updates: List['PackageUpdate'] = None,
+        new_aur_deps: List['PackageUpdate'] = None,
         verbose=False, color=True
-):
+) -> str:
 
     _color_line = color_line
     _bold_line = bold_line
     if not color:
-        _color_line = _bold_line = lambda x, *args: x
+        _color_line = lambda line, color: line  # noqa
+        _bold_line = lambda line: line  # noqa
 
     result = []
     if repo_packages_updates:
@@ -186,11 +195,11 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
     return '\n'.join(result)
 
 
-def pretty_format_repo_name(repo_name):
+def pretty_format_repo_name(repo_name: str) -> str:
     return color_line(f'{repo_name}/', len(repo_name) % 5 + 10)
 
 
-def print_version(pacman_version):
+def print_version(pacman_version: str) -> None:
     sys.stdout.buffer.write((r"""
       /:}               _
      /--1             / :}
@@ -208,8 +217,8 @@ def print_version(pacman_version):
 
 class ProgressBar(object):
 
-    message = None
-    print_ratio = None
+    message: str = None
+    print_ratio: float = None
     index = 0
     progress = 0
 
@@ -218,7 +227,7 @@ class ProgressBar(object):
     EMPTY = '-'
     FULL = '#'
 
-    def __init__(self, length, message=''):
+    def __init__(self, length: int, message='') -> None:
         self.message = message
         width = (
             get_term_width() - len(message) -
@@ -229,15 +238,15 @@ class ProgressBar(object):
         sys.stderr.write(self.LEFT_DECORATION + self.EMPTY * width + self.RIGHT_DECORATION)
         sys.stderr.write(f'{(chr(27))}[\bb' * (width + len(self.RIGHT_DECORATION)))
 
-    def update(self):
+    def update(self) -> None:
         self.index += 1
         if self.index / self.print_ratio > self.progress:
             self.progress += 1
             sys.stderr.write(self.FULL)
             sys.stderr.flush()
 
-    def __enter__(self):
+    def __enter__(self) -> Callable:
         return self.update
 
-    def __exit__(self, *exc_details):
+    def __exit__(self, *exc_details) -> None:
         sys.stderr.write('\n')

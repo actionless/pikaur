@@ -11,9 +11,8 @@ from datetime import datetime
 from .i18n import _  # keep that first
 from .args import parse_args
 from .core import (
-    SingleTaskExecutor, MultipleTasksExecutor,
+    SingleTaskExecutor, MultipleTasksExecutor, PackageSource,
     CmdTaskWorker, interactive_spawn, running_as_root, remove_dir,
-    REPO, AUR,
 )
 from .pprint import (
     color_line, bold_line,
@@ -109,15 +108,15 @@ def cli_upgrade_packages(args):
 
 def cli_info_packages(args):
     result = MultipleTasksExecutor({
-        REPO: PacmanColorTaskWorker(args.raw),
-        AUR: AURTaskWorkerInfo(
+        PackageSource.REPO: PacmanColorTaskWorker(args.raw),
+        PackageSource.AUR: AURTaskWorkerInfo(
             packages=args.positional or []
         ),
     }).execute()
-    aur_pkgs = result[AUR]
+    aur_pkgs = result[PackageSource.AUR]
     num_found = len(aur_pkgs)
-    if result[REPO].stdout:
-        print(result[REPO].stdout, end='\n' if aur_pkgs else '')
+    if result[PackageSource.REPO].stdout:
+        print(result[PackageSource.REPO].stdout, end='\n' if aur_pkgs else '')
     for i, aur_pkg in enumerate(aur_pkgs):
         pkg_info_lines = []
         for key, value in aur_pkg.__dict__.items():

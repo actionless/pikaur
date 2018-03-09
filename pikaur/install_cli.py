@@ -30,7 +30,7 @@ from .core import (
     interactive_spawn, remove_dir,
 )
 from .conflicts import (
-    check_conflicts, check_replacements,
+    find_conflicts, find_replacements,
 )
 from .prompt import (
     ask_to_continue, retry_interactive_command,
@@ -365,7 +365,7 @@ class InstallPackagesCLI():
 
     def ask_about_package_conflicts(self):
         print(_('looking for conflicting packages...'))
-        conflict_result = check_conflicts(
+        conflict_result = find_conflicts(
             self.repo_packages, self.aur_packages_names
         )
         if not conflict_result:
@@ -414,7 +414,7 @@ class InstallPackagesCLI():
         )))
 
     def ask_about_package_replacements(self):
-        package_replacements = check_replacements()
+        package_replacements = find_replacements()
         for repo_pkg_name, installed_pkgs_names in package_replacements.items():
             for installed_pkg_name in installed_pkgs_names:
                 if self.ask_to_continue(

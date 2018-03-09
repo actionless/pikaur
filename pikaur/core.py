@@ -9,9 +9,6 @@ from typing import Dict, Coroutine, Any, List
 
 
 NOT_FOUND_ATOM = object()
-REPO = 'repo'
-AUR = 'aur'
-LOCAL = 'local'
 
 
 class PackageSource(enum.Enum):

@@ -1,14 +1,18 @@
+from typing import List, Dict
+
+import pyalpm
+
 from .pacman import PackageDB
 from .aur import find_aur_packages
 from .version import get_package_name_and_version_matcher_from_depend_line
 from .package_update import get_remote_package_version
 
 
-def get_new_repo_pkgs_conflicts(repo_packages):
+def get_new_repo_pkgs_conflicts(repo_packages: List[pyalpm.Package]) -> Dict[str, List[str]]:
     new_pkgs_conflicts_lists = {}
     for repo_pkg_info in repo_packages:
         repo_package_name = repo_pkg_info.name
-        conflicts = []
+        conflicts: List[str] = []
         if repo_pkg_info.conflicts:
             conflicts += repo_pkg_info.conflicts
         if repo_pkg_info.replaces:
@@ -18,21 +22,22 @@ def get_new_repo_pkgs_conflicts(repo_packages):
     return new_pkgs_conflicts_lists
 
 
-def get_new_aur_pkgs_conflicts(aur_packages_names):
+def get_new_aur_pkgs_conflicts(aur_packages_names: List[str]) -> Dict[str, List[str]]:
     new_pkgs_conflicts_lists = {}
     aur_pkgs_info, _not_founds_pkgs = find_aur_packages(aur_packages_names)
     for aur_json in aur_pkgs_info:
-        conflicts = []
+        conflicts: List[str] = []
         conflicts += aur_json.conflicts or []
         conflicts += aur_json.replaces or []
         new_pkgs_conflicts_lists[aur_json.name] = list(set(conflicts))
     return new_pkgs_conflicts_lists
 
 
-def get_all_local_pkgs_conflicts(all_local_pkgs_info):
+def get_all_local_pkgs_conflicts() -> Dict[str, List[str]]:
+    all_local_pkgs_info = PackageDB.get_local_dict()
     all_local_pgks_conflicts_lists = {}
     for local_pkg_info in all_local_pkgs_info.values():
-        conflicts = []
+        conflicts: List[str] = []
         if local_pkg_info.conflicts:
             conflicts += local_pkg_info.conflicts
         if local_pkg_info.replaces:
@@ -42,11 +47,17 @@ def get_all_local_pkgs_conflicts(all_local_pkgs_info):
     return all_local_pgks_conflicts_lists
 
 
-def find_conflicting_with_new_pkgs(new_pkg_name, all_pkgs_names, new_pkg_conflicts_list):
-    # find if any of new packages have Conflicts with
-    # already installed ones or with each other:
+def find_conflicting_with_new_pkgs(
+        new_pkg_name: str,
+        all_pkgs_names: List[str],
+        new_pkg_conflicts_list: List[str]
+) -> Dict[str, List[str]]:
+    """
+    find if any of new packages have Conflicts with
+    already installed ones or with each other
+    """
     local_provided = PackageDB.get_local_provided_dict()
-    new_pkgs_conflicts = {}
+    new_pkgs_conflicts: Dict[str, List[str]] = {}
     for conflict_line in new_pkg_conflicts_list:
         conflict_pkg_name, conflict_version_matcher = \
             get_package_name_and_version_matcher_from_depend_line(
@@ -80,9 +91,14 @@ def find_conflicting_with_new_pkgs(new_pkg_name, all_pkgs_names, new_pkg_conflic
     return new_pkgs_conflicts
 
 
-def find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_lists):
-    # find if any of already installed packages have Conflicts with the new ones:
-    new_pkgs_conflicts = {}
+def find_conflicting_with_local_pkgs(
+        new_pkg_name: str,
+        all_local_pgks_conflicts_lists: Dict[str, List[str]]
+) -> Dict[str, List[str]]:
+    """
+    find if any of already installed packages have Conflicts with the new ones
+    """
+    new_pkgs_conflicts: Dict[str, List[str]] = {}
     for local_pkg_name, local_pkg_conflicts_list in all_local_pgks_conflicts_lists.items():
         if new_pkg_name == local_pkg_name:
             continue
@@ -102,7 +118,11 @@ def find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_list
     return new_pkgs_conflicts
 
 
-def check_conflicts(repo_packages, aur_packages_names):
+def find_conflicts(
+        repo_packages: List[pyalpm.Package],
+        aur_packages_names: List[str]
+) -> Dict[str, List[str]]:
+
     all_local_pkgs_info = PackageDB.get_local_dict()
     all_local_pkgs_names = list(all_local_pkgs_info.keys())
     repo_packages_names = [pkg.name for pkg in repo_packages]
@@ -115,9 +135,7 @@ def check_conflicts(repo_packages, aur_packages_names):
     new_pkgs_conflicts_lists.update(
         get_new_aur_pkgs_conflicts(aur_packages_names)
     )
-    all_local_pgks_conflicts_lists = get_all_local_pkgs_conflicts(
-        all_local_pkgs_info
-    )
+    all_local_pgks_conflicts_lists = get_all_local_pkgs_conflicts()
 
     conflicts_result = {}
     for new_pkg_name, new_pkg_conflicts_list in new_pkgs_conflicts_lists.items():
@@ -136,19 +154,19 @@ def check_conflicts(repo_packages, aur_packages_names):
     return conflicts_result
 
 
-def check_replacements():
+def find_replacements() -> Dict[str, List[str]]:
     all_repo_pkgs_info = PackageDB.get_repo_dict()
     all_local_pkgs_info = PackageDB.get_local_dict()
     all_local_pkgs_names = all_local_pkgs_info.keys()
 
-    replaces_lists = {}
+    replaces_lists: Dict[str, List[str]] = {}
     for repo_pkg_name, repo_pkg_info in all_repo_pkgs_info.items():
         if repo_pkg_info.replaces:
             for dep_name in repo_pkg_info.replaces:
                 if dep_name != repo_pkg_name:
                     replaces_lists.setdefault(repo_pkg_name, []).append(dep_name)
 
-    new_pkgs_replaces = {}
+    new_pkgs_replaces: Dict[str, List[str]] = {}
     for pkg_name, replace_list in replaces_lists.items():
         for replace_pkg_name in replace_list:
             if (replace_pkg_name in all_local_pkgs_names) and (

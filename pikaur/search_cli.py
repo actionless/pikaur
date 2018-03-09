@@ -1,7 +1,7 @@
 import sys
 from multiprocessing.pool import ThreadPool
 
-from .core import DataType, MultipleTasksExecutor, LOCAL, REPO, AUR
+from .core import DataType, MultipleTasksExecutor, PackageSource
 from .i18n import _
 from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
 from .pacman import PackageDB
@@ -15,13 +15,13 @@ def package_search_worker(args):
     index = args['index']
     result = None
 
-    if index == LOCAL:
+    if index == PackageSource.LOCAL:
         result = {
             pkg_name: pkg.version
             for pkg_name, pkg in PackageDB.get_local_dict(quiet=True).items()
         }
 
-    elif index == REPO:
+    elif index == PackageSource.REPO:
         if args['query']:
             result = PackageDB.search_repo(
                 args['query'], names_only=args['namesonly']
@@ -30,17 +30,17 @@ def package_search_worker(args):
         else:
             result = PackageDB.get_repo_list(quiet=True)
 
-    elif index == AUR:
+    elif index == PackageSource.AUR:
         if args['queries']:
             result = MultipleTasksExecutor({
-                AUR+search_word: AURTaskWorkerSearch(search_query=search_word)
+                PackageSource.AUR+search_word: AURTaskWorkerSearch(search_query=search_word)
                 for search_word in args['queries']
             }).execute()
             if args['namesonly']:
                 for subindex, subresult in result.items():
                     result[subindex] = [
                         pkg for pkg in subresult
-                        if subindex.split(AUR)[1] in pkg.name
+                        if subindex.split(PackageSource.AUR)[1] in pkg.name
                     ]
         else:
             if args['quiet']:
@@ -138,13 +138,13 @@ def cli_search_packages(args):
     with ThreadPool() as pool:
         results = pool.map(package_search_worker, [
             {
-                "index": LOCAL,
+                "index": PackageSource.LOCAL,
                 "quiet": args.quiet,
             }
         ] + (
             [
                 {
-                    "index": REPO,
+                    "index": PackageSource.REPO,
                     "query": search_word,
                     "namesonly": args.namesonly,
                     "quiet": args.quiet,
@@ -155,7 +155,7 @@ def cli_search_packages(args):
         ) + (
             [
                 {
-                    "index": AUR,
+                    "index": PackageSource.AUR,
                     "queries": search_query,
                     "namesonly": args.namesonly,
                     "quiet": args.quiet,
@@ -167,16 +167,20 @@ def cli_search_packages(args):
     if not args.quiet:
         sys.stderr.write('\n')
 
-    local_pkgs_versions = result[LOCAL]
+    local_pkgs_versions = result[PackageSource.LOCAL]
     if not AUR_ONLY:
-        repo_result = join_search_results([r for k, r in result.items() if k.startswith(REPO)])
+        repo_result = join_search_results([
+            r for k, r in result.items() if k.startswith(PackageSource.REPO)
+        ])
         print_package_search_results(
             packages=repo_result,
             local_pkgs_versions=local_pkgs_versions,
             args=args
         )
     if not REPO_ONLY:
-        aur_result = join_search_results([r for k, r in result[AUR].items()])
+        aur_result = join_search_results([
+            r for k, r in result[PackageSource.AUR].items()
+        ])
         print_package_search_results(
             packages=aur_result,
             local_pkgs_versions=local_pkgs_versions,

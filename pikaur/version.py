@@ -1,10 +1,12 @@
-from pyalpm import vercmp  # pylint: disable=no-name-in-module
+from typing import Callable, Tuple, List
+
+import pyalpm
 
 
 VERSION_SEPARATORS = ('.', '+', '-', ':')
 
 
-def compare_versions(current_version, new_version):
+def compare_versions(version1: str, version2: str) -> int:
     """
     vercmp is used to determine the relationship between two given version numbers.
     It outputs values as follows:
@@ -12,25 +14,28 @@ def compare_versions(current_version, new_version):
         = 0 : if ver1 == ver2
         > 0 : if ver1 > ver2
     """
-    return vercmp(current_version, new_version)
+    return pyalpm.vercmp(version1, version2)
 
 
 class VersionMatcher():
 
-    def __call__(self, version):
+    def __call__(self, version: str) -> int:
         result = self.version_matcher(version)
         # print(f"dep:{self.line} found:{version} result:{result}")
         return result
 
-    def __init__(self, matcher_func, version, depend_line):
+    def __init__(self, matcher_func: Callable[[str], int], version: str, depend_line: str) -> None:
         self.version_matcher = matcher_func
         self.version = version
         self.line = depend_line
 
 
 # pylint: disable=invalid-name
-def get_package_name_and_version_matcher_from_depend_line(depend_line):
-    version = None
+def get_package_name_and_version_matcher_from_depend_line(
+        depend_line: str
+) -> Tuple[str, VersionMatcher]:
+
+    version: str = None
 
     def get_version():
         return version
@@ -73,7 +78,7 @@ def get_package_name_and_version_matcher_from_depend_line(depend_line):
     return pkg_name, VersionMatcher(version_matcher, version, depend_line)
 
 
-def split_version(version):
+def split_version(version: str) -> List[str]:
     splitted_version = []
     block = ''
     for char in version:
@@ -88,7 +93,7 @@ def split_version(version):
     return splitted_version
 
 
-def get_common_version(version1, version2):
+def get_common_version(version1: str, version2: str) -> Tuple[str, int]:
     common_string = ''
     common_length = 0
     if '' in (version1, version2):
@@ -106,7 +111,7 @@ def get_common_version(version1, version2):
     return common_string, common_length
 
 
-def get_version_diff(version, common_version):
+def get_version_diff(version: str, common_version: str) -> str:
     new_version_postfix = version
     if common_version != '':
         _new_version_postfix = version.split(

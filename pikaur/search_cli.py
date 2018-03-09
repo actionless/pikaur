@@ -21,7 +21,7 @@ def package_search_worker(args):
             for pkg_name, pkg in PackageDB.get_local_dict(quiet=True).items()
         }
 
-    elif index == PackageSource.REPO:
+    elif str(index).startswith(str(PackageSource.REPO)):
         if args['query']:
             result = PackageDB.search_repo(
                 args['query'], names_only=args['namesonly']
@@ -40,7 +40,7 @@ def package_search_worker(args):
                 for subindex, subresult in result.items():
                     result[subindex] = [
                         pkg for pkg in subresult
-                        if subindex.split(PackageSource.AUR)[1] in pkg.name
+                        if subindex.split(str(PackageSource.AUR))[1] in pkg.name
                     ]
         else:
             if args['quiet']:
@@ -144,12 +144,12 @@ def cli_search_packages(args):
         ] + (
             [
                 {
-                    "index": PackageSource.REPO,
+                    "index": str(PackageSource.REPO) + search_word,
                     "query": search_word,
                     "namesonly": args.namesonly,
                     "quiet": args.quiet,
                 }
-                for search_word in search_query or ['']
+                for search_word in (search_query or [''])
             ] if not AUR_ONLY
             else []
         ) + (

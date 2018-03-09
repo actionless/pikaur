@@ -1,3 +1,5 @@
+from typing import List, Union, Tuple
+
 import pyalpm
 
 from .core import DataType
@@ -9,11 +11,12 @@ from .pprint import print_status_message
 
 
 class PackageUpdate(DataType):
-    Name = None
-    Current_Version = None
-    New_Version = None
-    Description = None
-    Repository = None
+    # @TODO: use lowercase properties
+    Name: str = None
+    Current_Version: str = None
+    New_Version: str = None
+    Description: str = None
+    Repository: str = None
 
     def __repr__(self):
         return (
@@ -22,7 +25,7 @@ class PackageUpdate(DataType):
         )
 
 
-def find_repo_updates():
+def find_repo_updates() -> List[PackageUpdate]:
     repo_packages_updates = []
     for local_pkg in PackageDB.get_local_list():
         repo_pkg = pyalpm.sync_newversion(
@@ -41,7 +44,7 @@ def find_repo_updates():
     return repo_packages_updates
 
 
-def find_aur_updates():
+def find_aur_updates() -> Tuple[List[PackageUpdate], List[str]]:
     package_names = find_packages_not_from_repo()
     local_packages = PackageDB.get_local_dict()
     print_status_message(_n("Reading AUR package info...",
@@ -64,7 +67,7 @@ def find_aur_updates():
     return aur_updates, not_found_aur_pkgs
 
 
-def get_remote_package_version(new_pkg_name):
+def get_remote_package_version(new_pkg_name: str) -> Union[str, None]:
     repo_info = PackageDB.get_repo_dict().get(new_pkg_name)
     if repo_info:
         return repo_info.version

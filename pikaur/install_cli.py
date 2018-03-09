@@ -3,8 +3,11 @@ import sys
 import os
 from tempfile import NamedTemporaryFile
 from functools import reduce
+from typing import List, Dict, Union, Tuple
 
-from .args import reconstruct_args
+import pyalpm
+
+from .args import reconstruct_args, PikaurArgs
 from .aur import find_aur_packages
 from .aur_deps import find_aur_deps
 from .i18n import _
@@ -17,7 +20,7 @@ from .exceptions import (
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
 )
 from .build import (
-    SrcInfo,
+    SrcInfo, PackageBuild,
     clone_pkgbuilds_git_repos,
 )
 from .pprint import (
@@ -38,7 +41,7 @@ from .prompt import (
 )
 
 
-def exclude_ignored_packages(package_names, args):
+def exclude_ignored_packages(package_names: List[str], args: PikaurArgs) -> List[str]:
     excluded_pkgs = []
     for ignored_pkg in (args.ignore or []) + PacmanConfig().options.get('IgnorePkg', []):
         if ignored_pkg in package_names:
@@ -51,18 +54,18 @@ class InstallPackagesCLI():
     # @TODO: refactor this warning:
     # pylint: disable=too-many-public-methods
 
-    args = None
-    repo_packages = None
-    repo_packages_names = None  # @TODO: remove me
-    aur_packages_names = None
-    aur_deps_names = None
-    package_builds = None
-    aur_packages_conflicts = None
-    repo_packages_conflicts = None
-    failed_to_build = None
-    transactions = None
+    args: PikaurArgs = None
+    repo_packages: List[pyalpm.Package] = None
+    repo_packages_names: List[str] = None  # @TODO: remove me
+    aur_packages_names: List[str] = None
+    aur_deps_names: List[str] = None
+    package_builds: Dict[str, PackageBuild] = None
+    aur_packages_conflicts: List[str] = None
+    repo_packages_conflicts: List[str] = None
+    failed_to_build: List[str] = None
+    transactions: Dict[str, Dict[str, List[str]]] = None
 
-    def __init__(self, args, packages=None):
+    def __init__(self, args: PikaurArgs, packages: List[str] = None) -> None:
         self.args = args
 
         packages = packages or args.positional
@@ -110,14 +113,13 @@ class InstallPackagesCLI():
             ))
 
     @property
-    def all_aur_packages_names(self):
+    def all_aur_packages_names(self) -> List[str]:
         return self.aur_packages_names + self.aur_deps_names
 
-    def get_editor(self):
-        editor = os.environ.get('VISUAL') or os.environ.get('EDITOR')
-        if editor:
-            editor = editor.split(' ')
-            return editor
+    def get_editor(self) -> Union[List[str], None]:
+        editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
+        if editor_line:
+            return editor_line.split(' ')
         for editor in ('vim', 'nano', 'mcedit', 'edit'):
             result = SingleTaskExecutor(
                 CmdTaskWorker(['which', editor])
@@ -134,7 +136,7 @@ class InstallPackagesCLI():
             sys.exit(2)
         return None
 
-    def exclude_ignored_packages(self, packages):
+    def exclude_ignored_packages(self, packages: List[str]) -> None:
         excluded_packages = exclude_ignored_packages(packages, self.args)
         for package_name in excluded_packages:
             current = PackageDB.get_local_dict().get(package_name)
@@ -157,7 +159,7 @@ class InstallPackagesCLI():
                     ))
             ))
 
-    def find_packages(self, packages):
+    def find_packages(self, packages: List[str]) -> None:
         print(_("resolving dependencies..."))
         self.repo_packages, self.aur_packages_names = find_repo_packages(
             packages
@@ -184,7 +186,7 @@ class InstallPackagesCLI():
             ))
             sys.exit(1)
 
-    def _get_repo_pkgs_updates(self):
+    def _get_repo_pkgs_updates(self) -> Tuple[List[PackageUpdate], List[PackageUpdate]]:
         local_pkgs = PackageDB.get_local_dict()
         repo_packages_updates = []
         thirdparty_repo_packages_updates = []
@@ -204,7 +206,7 @@ class InstallPackagesCLI():
                 thirdparty_repo_packages_updates.append(pkg)
         return repo_packages_updates, thirdparty_repo_packages_updates
 
-    def _get_aur_updates(self):
+    def _get_aur_updates(self) -> List[PackageUpdate]:
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
             aur_pkg.name: aur_pkg
@@ -224,7 +226,7 @@ class InstallPackagesCLI():
             ))
         return aur_updates
 
-    def _get_aur_deps(self):
+    def _get_aur_deps(self) -> List[PackageUpdate]:
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
             aur_pkg.name: aur_pkg
@@ -264,20 +266,20 @@ class InstallPackagesCLI():
                         selected_packages.append(pkg_name)
         return selected_packages
 
-    def install_prompt(self):
+    def install_prompt(self) -> None:
         repo_packages_updates, thirdparty_repo_packages_updates = \
             self._get_repo_pkgs_updates()
         aur_updates = self._get_aur_updates()
         aur_deps = self._get_aur_deps()
 
-        def _print_sysupgrade(verbose=False):
+        def _print_sysupgrade(verbose=False) -> None:
             print(pretty_format_sysupgrade(
                 repo_packages_updates, thirdparty_repo_packages_updates,
                 aur_updates, aur_deps,
                 verbose=verbose
             ))
 
-        def _confirm_sysupgrade(verbose=False):
+        def _confirm_sysupgrade(verbose=False) -> str:
             _print_sysupgrade(verbose=verbose)
             answer = input('{} {}\n{} {}\n> '.format(
                 color_line('::', 12),
@@ -317,9 +319,9 @@ class InstallPackagesCLI():
             else:
                 break
 
-    def get_package_builds(self):
+    def get_package_builds(self) -> None:
         if not self.all_aur_packages_names:
-            self.package_builds = []
+            self.package_builds = {}
             return
         while self.all_aur_packages_names:
             try:
@@ -360,10 +362,10 @@ class InstallPackagesCLI():
                 else:
                     sys.exit(1)
 
-    def ask_to_continue(self, text=None, default_yes=True):
+    def ask_to_continue(self, text: str = None, default_yes=True) -> bool:
         return ask_to_continue(text, default_yes, args=self.args)
 
-    def ask_about_package_conflicts(self):
+    def ask_about_package_conflicts(self) -> None:
         print(_('looking for conflicting packages...'))
         conflict_result = find_conflicts(
             self.repo_packages, self.aur_packages_names
@@ -395,7 +397,7 @@ class InstallPackagesCLI():
                 if not answer:
                     sys.exit(1)
         self.aur_packages_conflicts = list(set(reduce(
-            lambda x, y: x+y,
+            lambda x, y: list(x)+y,
             [
                 conflicts
                 for pkg_name, conflicts in conflict_result.items()
@@ -404,7 +406,7 @@ class InstallPackagesCLI():
             []
         )))
         self.repo_packages_conflicts = list(set(reduce(
-            lambda x, y: x+y,
+            lambda x, y: list(x)+y,
             [
                 conflicts
                 for pkg_name, conflicts in conflict_result.items()
@@ -413,7 +415,7 @@ class InstallPackagesCLI():
             []
         )))
 
-    def ask_about_package_replacements(self):
+    def ask_about_package_replacements(self) -> None:
         package_replacements = find_replacements()
         for repo_pkg_name, installed_pkgs_names in package_replacements.items():
             for installed_pkg_name in installed_pkgs_names:
@@ -429,7 +431,7 @@ class InstallPackagesCLI():
                     self.repo_packages_names.append(repo_pkg_name)
                     self.repo_packages_conflicts.append(installed_pkg_name)
 
-    def ask_to_edit_file(self, filename, package_build):
+    def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
         if self.args.noedit or self.args.noconfirm:
             print('{} {}'.format(
                 color_line('::', 11),
@@ -459,7 +461,7 @@ class InstallPackagesCLI():
             return True
         return False
 
-    def review_build_files(self):
+    def review_build_files(self) -> None:
         for pkg_name in self.all_aur_packages_names:
             repo_status = self.package_builds[pkg_name]
             if self.args.needed and repo_status.version_already_installed:
@@ -510,9 +512,9 @@ class InstallPackagesCLI():
                 ))
                 sys.exit(1)
 
-    def build_packages(self):
+    def build_packages(self) -> None:
         failed_to_build = []
-        deps_fails_counter = {}
+        deps_fails_counter: Dict[str, int] = {}
         packages_to_be_built = self.all_aur_packages_names[:]
         index = 0
         while packages_to_be_built:
@@ -549,7 +551,7 @@ class InstallPackagesCLI():
 
         self.failed_to_build = failed_to_build
 
-    def _remove_packages(self, packages_to_be_removed):
+    def _remove_packages(self, packages_to_be_removed: List[str]) -> None:
         # pylint: disable=no-self-use
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
@@ -563,7 +565,7 @@ class InstallPackagesCLI():
                 ] + packages_to_be_removed,
             )
 
-    def _install_repo_packages(self, packages_to_be_installed):
+    def _install_repo_packages(self, packages_to_be_installed: List[str]) -> None:
         if self.repo_packages_names:
             if not retry_interactive_command(
                     [
@@ -583,10 +585,15 @@ class InstallPackagesCLI():
                     self.revert_repo_transaction()
                     sys.exit(1)
 
-    def _save_transaction(self, target, removed=None, installed=None):
+    def _save_transaction(
+            self,
+            target: PackageSource,
+            removed: List[str] = None,
+            installed: List[str] = None
+    ) -> None:
         if not self.transactions:
             self.transactions = {}
-        target_transaction = self.transactions.setdefault(target, {})
+        target_transaction = self.transactions.setdefault(str(target), {})
         if removed:
             for pkg_name in removed:
                 target_transaction.setdefault('removed', []).append(pkg_name)
@@ -594,20 +601,20 @@ class InstallPackagesCLI():
             for pkg_name in installed:
                 target_transaction.setdefault('installed', []).append(pkg_name)
 
-    def save_repo_transaction(self, removed=None, installed=None):
-        return self._save_transaction(
+    def save_repo_transaction(self, removed: List[str] = None, installed: List[str] = None) -> None:
+        self._save_transaction(
             PackageSource.REPO, removed=removed, installed=installed
         )
 
-    def save_aur_transaction(self, removed=None, installed=None):
-        return self._save_transaction(
+    def save_aur_transaction(self, removed: List[str] = None, installed: List[str] = None) -> None:
+        self._save_transaction(
             PackageSource.AUR, removed=removed, installed=installed
         )
 
-    def _revert_transaction(self, target):
+    def _revert_transaction(self, target: PackageSource) -> None:
         if not self.transactions:
             return
-        target_transaction = self.transactions.get(target)
+        target_transaction = self.transactions.get(str(target))
         if not target_transaction:
             return
         print('{} {}'.format(
@@ -621,13 +628,13 @@ class InstallPackagesCLI():
         if installed:
             self._remove_packages(installed)
 
-    def revert_repo_transaction(self):
+    def revert_repo_transaction(self) -> None:
         self._revert_transaction(PackageSource.REPO)
 
-    def revert_aur_transaction(self):
+    def revert_aur_transaction(self) -> None:
         self._revert_transaction(PackageSource.AUR)
 
-    def _remove_conflicting_packages(self, packages_to_be_removed):
+    def _remove_conflicting_packages(self, packages_to_be_removed: List[str]) -> None:
         # pylint: disable=no-self-use
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
@@ -643,19 +650,19 @@ class InstallPackagesCLI():
                 ] + packages_to_be_removed,
             )
 
-    def remove_repo_packages_conflicts(self):
+    def remove_repo_packages_conflicts(self) -> None:
         self._remove_conflicting_packages(self.repo_packages_conflicts)
         self.save_repo_transaction(removed=self.repo_packages_conflicts)
 
-    def remove_aur_packages_conflicts(self):
+    def remove_aur_packages_conflicts(self) -> None:
         self._remove_conflicting_packages(self.aur_packages_conflicts)
         self.save_aur_transaction(removed=self.aur_packages_conflicts)
 
-    def install_repo_packages(self):
+    def install_repo_packages(self) -> None:
         self._install_repo_packages(self.repo_packages_names)
         self.save_repo_transaction(self.repo_packages_names)
 
-    def install_new_aur_deps(self):
+    def install_new_aur_deps(self) -> None:
         new_aur_deps_to_install = [
             self.package_builds[pkg_name].built_package_path
             for pkg_name in self.aur_deps_names
@@ -684,7 +691,7 @@ class InstallPackagesCLI():
                     sys.exit(1)
             self.save_aur_transaction(new_aur_deps_to_install)
 
-    def install_aur_packages(self):
+    def install_aur_packages(self) -> None:
         aur_packages_to_install = [
             self.package_builds[pkg_name].built_package_path
             for pkg_name in self.aur_packages_names

@@ -7,9 +7,10 @@ import readline
 import signal
 import subprocess
 from datetime import datetime
+from typing import List
 
 from .i18n import _  # keep that first
-from .args import parse_args
+from .args import parse_args, PikaurArgs
 from .core import (
     SingleTaskExecutor, MultipleTasksExecutor, PackageSource,
     CmdTaskWorker, interactive_spawn, running_as_root, remove_dir,
@@ -31,7 +32,7 @@ from .install_cli import InstallPackagesCLI, exclude_ignored_packages
 from .search_cli import cli_search_packages
 
 
-def init_readline():
+def init_readline() -> None:
     # follow GNU readline config in prompts:
     system_inputrc_path = '/etc/inputrc'
     if os.path.exists(system_inputrc_path):
@@ -44,7 +45,7 @@ def init_readline():
 init_readline()
 
 
-def cli_print_upgradeable(args):
+def cli_print_upgradeable(args: PikaurArgs) -> None:
     updates, _not_found_aur_pkgs = find_aur_updates()
     updates += find_repo_updates()
     if args.quiet:
@@ -55,11 +56,11 @@ def cli_print_upgradeable(args):
         print(pretty_format_upgradeable(updates))
 
 
-def cli_install_packages(args, packages=None):
+def cli_install_packages(args, packages: List[str] = None) -> None:
     InstallPackagesCLI(args=args, packages=packages)
 
 
-def cli_upgrade_packages(args):
+def cli_upgrade_packages(args: PikaurArgs) -> None:
     if args.refresh:
         retry_interactive_command_or_exit(
             ['sudo', 'pacman', '--sync', '--refresh']
@@ -106,17 +107,17 @@ def cli_upgrade_packages(args):
         ))
 
 
-def cli_info_packages(args):
+def cli_info_packages(args: PikaurArgs) -> None:
     result = MultipleTasksExecutor({
-        PackageSource.REPO: PacmanColorTaskWorker(args.raw),
-        PackageSource.AUR: AURTaskWorkerInfo(
+        str(PackageSource.REPO): PacmanColorTaskWorker(args.raw),
+        str(PackageSource.AUR): AURTaskWorkerInfo(
             packages=args.positional or []
         ),
     }).execute()
-    aur_pkgs = result[PackageSource.AUR]
+    aur_pkgs = result[str(PackageSource.AUR)]
     num_found = len(aur_pkgs)
-    if result[PackageSource.REPO].stdout:
-        print(result[PackageSource.REPO].stdout, end='\n' if aur_pkgs else '')
+    if result[str(PackageSource.REPO)].stdout:
+        print(result[str(PackageSource.REPO)].stdout, end='\n' if aur_pkgs else '')
     for i, aur_pkg in enumerate(aur_pkgs):
         pkg_info_lines = []
         for key, value in aur_pkg.__dict__.items():
@@ -129,7 +130,7 @@ def cli_info_packages(args):
         print('\n'.join(pkg_info_lines) + ('\n' if i+1 < num_found else ''))
 
 
-def cli_clean_packages_cache(args):
+def cli_clean_packages_cache(args: PikaurArgs) -> None:
     build_cache = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
     if os.path.exists(build_cache):
         print('\n' + _("Build directory: {}").format(build_cache))
@@ -143,14 +144,14 @@ def cli_clean_packages_cache(args):
     )
 
 
-def cli_print_version():
+def cli_print_version() -> None:
     pacman_version = SingleTaskExecutor(CmdTaskWorker(
         ['pacman', '--version', ],
     )).execute().stdout.splitlines()[1].strip(' .-')
     print_version(pacman_version)
 
 
-def cli_print_help(args):
+def cli_print_help(args: PikaurArgs) -> None:
     pacman_help = SingleTaskExecutor(CmdTaskWorker(
         ['pacman', ] + args.raw,
     )).execute().stdout.replace(
@@ -175,7 +176,7 @@ def cli_print_help(args):
     ]))
 
 
-def cli_entry_point():
+def cli_entry_point() -> None:
     # pylint: disable=too-many-branches
     raw_args = sys.argv[1:]
     args = parse_args(raw_args)
@@ -225,7 +226,7 @@ def cli_entry_point():
         )
 
 
-def check_systemd_dynamic_users():
+def check_systemd_dynamic_users() -> bool:
     try:
         out = subprocess.check_output(['systemd-run', '--version'],
                                       universal_newlines=True)
@@ -236,7 +237,7 @@ def check_systemd_dynamic_users():
     return version >= 235
 
 
-def main():
+def main() -> None:
     if running_as_root() and not check_systemd_dynamic_users():
         print_status_message("{} {}".format(
             color_line('::', 9),

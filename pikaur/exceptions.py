@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, List
 from .core import DataType, TaskResult
 
 if TYPE_CHECKING:
+    # pylint: disable=unused-import
     from .build import PackageBuild
     from .version import VersionMatcher
 

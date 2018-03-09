@@ -7,6 +7,7 @@ from .version import get_common_version, get_version_diff
 from .i18n import _, _n
 
 if TYPE_CHECKING:
+    # pylint: disable=unused-import
     from .package_update import PackageUpdate
 
 

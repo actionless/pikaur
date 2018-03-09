@@ -12,7 +12,8 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from .pprint import ProgressBar
+    # pylint: disable=unused-import
+    from .pprint import ProgressBar  # noqa
 
 
 NOT_FOUND_ATOM = object()
@@ -383,7 +384,7 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
         self.pool_size = pool_size or cpu_count()
         if enable_progressbar:
             import sys
-            from .pprint import ProgressBar  # pylint: disable=redefined-outer-name
+            from .pprint import ProgressBar  # noqa pylint: disable=redefined-outer-name
             sys.stderr.write('\n')
             self.progress_bar = ProgressBar(
                 message=enable_progressbar,

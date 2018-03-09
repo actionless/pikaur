@@ -33,7 +33,7 @@ def package_search_worker(args):
     elif index == PackageSource.AUR:
         if args['queries']:
             result = MultipleTasksExecutor({
-                PackageSource.AUR+search_word: AURTaskWorkerSearch(search_query=search_word)
+                str(PackageSource.AUR)+search_word: AURTaskWorkerSearch(search_query=search_word)
                 for search_word in args['queries']
             }).execute()
             if args['namesonly']:
@@ -170,7 +170,7 @@ def cli_search_packages(args):
     local_pkgs_versions = result[PackageSource.LOCAL]
     if not AUR_ONLY:
         repo_result = join_search_results([
-            r for k, r in result.items() if k.startswith(PackageSource.REPO)
+            r for k, r in result.items() if str(k).startswith(str(PackageSource.REPO))
         ])
         print_package_search_results(
             packages=repo_result,

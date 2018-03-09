@@ -1,19 +1,23 @@
 import sys
 from multiprocessing.pool import ThreadPool
+from typing import Any, Dict, Tuple, List, Iterable, Union
+
+import pyalpm
 
 from .core import DataType, MultipleTasksExecutor, PackageSource
 from .i18n import _
 from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
 from .pacman import PackageDB
 from .aur import (
-    AURTaskWorkerSearch,
+    AURTaskWorkerSearch, AURPackageInfo,
     get_all_aur_packages, get_all_aur_names,
 )
+from .args import PikaurArgs
 
 
-def package_search_worker(args):
+def package_search_worker(args: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     index = args['index']
-    result = None
+    result: Any = None
 
     if index == PackageSource.LOCAL:
         result = {
@@ -58,7 +62,7 @@ def package_search_worker(args):
     return index, result
 
 
-def join_search_results(all_aur_results):
+def join_search_results(all_aur_results: List[List[AURPackageInfo]]) -> Iterable[AURPackageInfo]:
     aur_pkgs_nameset = None
     for search_results in all_aur_results:
         new_aur_pkgs_nameset = set([result.name for result in search_results])
@@ -73,8 +77,13 @@ def join_search_results(all_aur_results):
     }.values()
 
 
-def print_package_search_results(packages, local_pkgs_versions, args):
-    def get_sort_key(pkg):
+def print_package_search_results(
+        packages: Iterable[Union[AURPackageInfo, pyalpm.Package]],
+        local_pkgs_versions: Dict[str, str],
+        args: PikaurArgs
+) -> None:
+
+    def get_sort_key(pkg: AURPackageInfo) -> float:
         if getattr(pkg, "numvotes", None):
             return (pkg.numvotes + 0.1) * (pkg.popularity + 0.1)
         return 1
@@ -92,7 +101,7 @@ def print_package_search_results(packages, local_pkgs_versions, args):
         else:
 
             repo = color_line('aur/', 9)
-            if getattr(package, 'db', None):
+            if isinstance(package, pyalpm.Package):
                 repo = pretty_format_repo_name(package.db.name)
 
             groups = ''
@@ -126,7 +135,7 @@ def print_package_search_results(packages, local_pkgs_versions, args):
             print(format_paragraph(f'{package.desc}'))
 
 
-def cli_search_packages(args):
+def cli_search_packages(args: PikaurArgs) -> None:
     search_query = args.positional or []
     REPO_ONLY = False  # pylint: disable=invalid-name
     AUR_ONLY = False  # pylint: disable=invalid-name

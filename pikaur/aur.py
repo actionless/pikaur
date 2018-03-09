@@ -9,7 +9,7 @@ from abc import ABCMeta
 
 from .core import (
     DataType, get_chunks,
-    SingleTaskExecutor, MultipleTasksExecutorPool
+    SingleTaskExecutor, MultipleTasksExecutorPool, TaskWorker,
 )
 from .config import VERSION
 from .i18n import _
@@ -210,7 +210,7 @@ class AURPackageInfo(DataType):
         super().__init__(**kwargs)
 
 
-class AURTaskWorker():
+class AURTaskWorker(TaskWorker):
     uri: str = None
     params: str = None
 
@@ -252,7 +252,7 @@ class AURTaskWorkerInfo(AURTaskWorker):
             self.params += '&arg[]=' + quote(package)
 
 
-class AURTaskWorkerList():
+class AURTaskWorkerList(TaskWorker):
 
     uri = '/packages.gz'
 
@@ -290,7 +290,7 @@ def find_aur_packages(
     if package_names:
         results = MultipleTasksExecutorPool(
             {
-                _id: AURTaskWorkerInfo(packages=packages_chunk)
+                str(_id): AURTaskWorkerInfo(packages=packages_chunk)
                 for _id, packages_chunk in enumerate(
                     # get_chunks(package_names, chunk_size=100)
                     get_chunks(package_names, chunk_size=200)

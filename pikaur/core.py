@@ -6,7 +6,13 @@ import subprocess
 import enum
 import uuid
 from abc import ABCMeta
-from typing import Dict, Any, List, Callable, Awaitable, Iterable, Tuple
+from typing import (
+    TYPE_CHECKING,
+    Dict, Any, List, Callable, Awaitable, Iterable, Tuple
+)
+
+if TYPE_CHECKING:
+    from .pprint import ProgressBar
 
 
 NOT_FOUND_ATOM = object()
@@ -187,7 +193,11 @@ class DataType():
         super().__setattr__(key, value)
 
 
-class CmdTaskResult(DataType):
+class TaskResult(DataType):
+    pass
+
+
+class CmdTaskResult(TaskResult):
     stderrs: List[str] = None
     stdouts: List[str] = None
     return_code: int = None
@@ -359,7 +369,7 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
     last_cmd_idx: int = None
     indexed_cmds: List[Tuple[str, TaskWorker]] = None
 
-    progress_bar = None
+    progress_bar: ProgressBar = None
 
     def __init__(
             self,
@@ -373,7 +383,7 @@ class MultipleTasksExecutorPool(MultipleTasksExecutor):
         self.pool_size = pool_size or cpu_count()
         if enable_progressbar:
             import sys
-            from .pprint import ProgressBar
+            from .pprint import ProgressBar  # pylint: disable=redefined-outer-name
             sys.stderr.write('\n')
             self.progress_bar = ProgressBar(
                 message=enable_progressbar,

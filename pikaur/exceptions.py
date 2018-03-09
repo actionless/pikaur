@@ -1,9 +1,15 @@
-from .core import DataType
+from typing import TYPE_CHECKING, List
+
+from .core import DataType, TaskResult
+
+if TYPE_CHECKING:
+    from .build import PackageBuild
+    from .version import VersionMatcher
 
 
 class PackagesNotFoundInAUR(DataType, Exception):
-    packages = None
-    wanted_by = None
+    packages: List[str] = None
+    wanted_by: str = None
 
 
 class BuildError(Exception):
@@ -11,8 +17,8 @@ class BuildError(Exception):
 
 
 class CloneError(DataType, Exception):
-    build = None
-    result = None
+    build: PackageBuild = None
+    result: TaskResult = None
 
 
 class DependencyError(Exception):
@@ -20,13 +26,13 @@ class DependencyError(Exception):
 
 
 class DependencyVersionMismatch(DataType, Exception):
-    version_found = None
-    dependency_line = None
-    who_depends = None
-    depends_on = None
-    location = None
+    version_found: str = None
+    dependency_line: str = None
+    who_depends: str = None
+    depends_on: str = None
+    location: str = None
 
-    version_matcher = None
+    version_matcher: VersionMatcher = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

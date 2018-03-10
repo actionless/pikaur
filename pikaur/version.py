@@ -37,26 +37,29 @@ def get_package_name_and_version_matcher_from_depend_line(
 
     version: str = None
 
-    def get_version():
+    def get_version() -> str:
         return version
 
-    def cmp_lt(v):
+    def cmp_lt(v: str) -> int:
         return compare_versions(v, get_version()) < 0
 
-    def cmp_gt(v):
+    def cmp_gt(v: str) -> int:
         return compare_versions(v, get_version()) > 0
 
-    def cmp_eq(v):
+    def cmp_eq(v: str) -> int:
         return compare_versions(v, get_version()) == 0
 
-    def cmp_le(v):
+    def cmp_le(v: str) -> int:
         return cmp_eq(v) or cmp_lt(v)
 
-    def cmp_ge(v):
+    def cmp_ge(v: str) -> int:
         return cmp_eq(v) or cmp_gt(v)
 
+    def cmp_default(v: str) -> int:
+        return 0
+
     cond = None
-    version_matcher = lambda v: True  # noqa
+    version_matcher = cmp_default
     for test_cond, matcher in (
             ('>=', cmp_ge),
             ('<=', cmp_le),

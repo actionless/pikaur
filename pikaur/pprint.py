@@ -1,6 +1,6 @@
 import sys
 import shutil
-from typing import List, TYPE_CHECKING, Callable
+from typing import List, TYPE_CHECKING, Callable, Tuple
 
 from .config import VERSION
 from .version import get_common_version, get_version_diff
@@ -8,7 +8,7 @@ from .i18n import _, _n
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
-    from .package_update import PackageUpdate
+    from .package_update import PackageUpdate  # noqa
 
 
 PADDING = 4
@@ -74,7 +74,7 @@ def print_not_found_packages(not_found_packages: List[str]) -> None:
 
 def pretty_format_upgradeable(
         packages_updates: List['PackageUpdate'],
-        verbose=False, print_repo=False, color=True, template=None
+        verbose=False, print_repo=False, color=True, template: str = None
 ) -> str:
 
     _color_line = color_line
@@ -83,7 +83,7 @@ def pretty_format_upgradeable(
         _color_line = lambda line, color: line  # noqa
         _bold_line = lambda line: line  # noqa
 
-    def pretty_format(pkg_update):
+    def pretty_format(pkg_update: 'PackageUpdate') -> Tuple[str, str]:
         common_version, difference_size = get_common_version(
             pkg_update.Current_Version, pkg_update.New_Version
         )
@@ -170,7 +170,8 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
                           len(thirdparty_repo_packages_updates)))
         ))
         result.append(pretty_format_upgradeable(
-            thirdparty_repo_packages_updates, verbose=verbose, print_repo=True, color=color
+            thirdparty_repo_packages_updates,
+            verbose=verbose, color=color, print_repo=True
         ))
     if aur_updates:
         result.append('\n{} {}'.format(
@@ -180,7 +181,8 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
                           len(aur_updates)))
         ))
         result.append(pretty_format_upgradeable(
-            aur_updates, verbose=verbose, color=color
+            aur_updates,
+            verbose=verbose, color=color, print_repo=False
         ))
     if new_aur_deps:
         result.append('\n{} {}'.format(
@@ -190,7 +192,8 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
                           len(new_aur_deps)))
         ))
         result.append(pretty_format_upgradeable(
-            new_aur_deps, verbose=verbose, color=color
+            new_aur_deps,
+            verbose=verbose, color=color, print_repo=False
         ))
     result += ['']
     return '\n'.join(result)

@@ -279,7 +279,7 @@ class CmdTaskWorker(TaskWorker):
         )
         return result
 
-    def __init__(self, cmd, **kwargs):
+    def __init__(self, cmd: List[str], **kwargs) -> None:
         self.cmd = cmd
         self.stderrs = []
         self.stdouts = []

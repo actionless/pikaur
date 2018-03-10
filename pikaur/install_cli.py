@@ -246,7 +246,7 @@ class InstallPackagesCLI():
             ))
         return aur_deps
 
-    def manual_package_selection(self, text):
+    def manual_package_selection(self, text: str) -> List[str]:
         selected_packages = []
         with NamedTemporaryFile() as tmp_file:
             with open(tmp_file.name, 'w') as write_file:

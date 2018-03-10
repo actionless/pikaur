@@ -18,7 +18,7 @@ class PackageUpdate(DataType):
     Description: str = None
     Repository: str = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'<{self.__class__.__name__} "{self.Name}" '
             f'{self.Current_Version} -> {self.New_Version}>'

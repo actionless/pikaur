@@ -2,7 +2,7 @@ import sys
 import shutil
 from typing import List, TYPE_CHECKING, Callable, Tuple
 
-from .config import VERSION
+from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
 from .i18n import _, _n
 
@@ -160,7 +160,9 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
                 len(repo_packages_updates)))
         ))
         result.append(pretty_format_upgradeable(
-            repo_packages_updates, verbose=verbose, color=color
+            repo_packages_updates,
+            verbose=verbose, color=color,
+            print_repo=PikaurConfig().sync.get('AlwaysShowPkgOrigin')
         ))
     if thirdparty_repo_packages_updates:
         result.append('\n{} {}'.format(

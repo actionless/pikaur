@@ -6,6 +6,7 @@ Inspired by `pacaur`, `yaourt` and `yay`.
 
 ![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
+
 ### Installation
 
 ```sh
@@ -33,8 +34,18 @@ python3 ./pikaur.py -Syu
 ├── aur_repos/  # keep there aur repos; show diff when updating
 │   └── last_installed.txt  # aur repo hash of last successfully installed package
 └── build/  # build directory (removed after successfull build)
-~/.config/pikaur.conf  # like /etc/pacman.conf (not implemented yet)
+~/.config/pikaur.conf  # config file
 ```
+
+
+### Configuration
+
+~/.config/pikaur.conf
+
+#### [sync]
+
+##### AlwaysShowPkgOrigin (default: no)
+when installing new packages show their repository name even if they are coming from one of the official Arch Linux repositories.
 
 
 ### Contributing

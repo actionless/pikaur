@@ -1,5 +1,6 @@
 import os
 import configparser
+from typing import Union
 
 from .core import running_as_root
 
@@ -32,7 +33,10 @@ _CONFIG_SCHEMA = {
 }
 
 
-def write_config(config=None):
+_CONFIG_TYPES = Union[str, bool]
+
+
+def write_config(config: configparser.ConfigParser = None) -> None:
     if not config:
         config = configparser.ConfigParser()
     need_write = False
@@ -52,38 +56,33 @@ class PikaurConfigSection():
 
     section: configparser.SectionProxy = None
 
-    def __init__(self, section):
+    def __init__(self, section: configparser.SectionProxy) -> None:
         self.section = section
 
-    def get(self, key, *args):
+    def get(self, key: str, *args) -> _CONFIG_TYPES:
         section = self.section
         if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') == 'bool':
-            return section.getboolean(key, *args)
-        else:
-            return section.get(key, *args)
+            return section.getboolean(key)
+        return section.get(key, *args)
 
 
 class PikaurConfig():
 
     _config: configparser.ConfigParser = None
 
-    bool_fields = (
-        'AlwaysShowPkgOrigin',
-    )
-
     @classmethod
-    def get_config(cls):
+    def get_config(cls) -> configparser.ConfigParser:
         if not cls._config:
             cls._config = configparser.ConfigParser()
             if not os.path.exists(CONFIG_PATH):
                 write_config()
-            cls._config.read = cls._config.read(CONFIG_PATH)
+            cls._config.read(CONFIG_PATH)
             write_config(config=cls._config)
         return cls._config
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> PikaurConfigSection:
         return PikaurConfigSection(self.get_config()[attr])
 
     @classmethod
-    def get(cls, section, key, *args):
+    def get(cls, section: str, key: str, *args) -> _CONFIG_TYPES:
         return getattr(cls(), section).get(key, *args)

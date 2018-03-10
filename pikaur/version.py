@@ -56,6 +56,7 @@ def get_package_name_and_version_matcher_from_depend_line(
         return cmp_eq(v) or cmp_gt(v)
 
     def cmp_default(v: str) -> int:
+        _v = v  # hello, mypy  # noqa
         return 0
 
     cond = None

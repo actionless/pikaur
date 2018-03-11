@@ -202,10 +202,10 @@ def cli_entry_point() -> None:
     not_implemented_in_pikaur = False
     require_sudo = True
 
-    if args.version:
-        cli_print_version(args)
-    elif args.help:
+    if args.help:
         cli_print_help(args)
+    elif args.version:
+        cli_print_version(args)
 
     elif args.sync:
         if args.sysupgrade:

@@ -1,3 +1,5 @@
 __pycache__/
+.mypy_cache/
+Dockerfile
 locale/*.mo
 locale/pikaur.pot

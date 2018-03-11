@@ -92,6 +92,7 @@ class MakepkgConfig(ConfigReader):
 
 
 class PackageBuild(DataType):
+    # pylint: disable=too-many-instance-attributes
     clone = False
     pull = False
 

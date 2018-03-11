@@ -7,7 +7,7 @@ import readline
 import signal
 import subprocess
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
 from .i18n import _  # keep that first
 from .args import parse_args, PikaurArgs
@@ -24,7 +24,10 @@ from .pprint import (
 )
 from .pacman import PacmanColorTaskWorker
 from .aur import AURTaskWorkerInfo
-from .package_update import find_repo_updates, find_aur_updates
+from .package_update import (
+    PackageUpdate,
+    find_repo_updates, find_aur_updates,
+)
 from .prompt import retry_interactive_command_or_exit, ask_to_continue
 from .config import CACHE_ROOT, BUILD_CACHE_DIR
 
@@ -46,7 +49,7 @@ init_readline()
 
 
 def cli_print_upgradeable(args: PikaurArgs) -> None:
-    updates = []
+    updates: List[PackageUpdate] = []
     if not args.repo:
         aur_updates, _not_found_aur_pkgs = find_aur_updates()
         updates += aur_updates
@@ -71,7 +74,7 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
         )
     ignore = args.ignore or []
 
-    repo_packages_updates = []
+    repo_packages_updates: List[PackageUpdate] = []
     if not args.aur:
         print('{} {}'.format(
             color_line('::', 12),
@@ -82,7 +85,7 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
             if pkg.Name not in ignore
         ]
 
-    aur_updates = []
+    aur_updates: List[PackageUpdate] = []
     if not args.repo:
         print('{} {}'.format(
             color_line('::', 12),
@@ -167,7 +170,7 @@ def cli_print_help(args: PikaurArgs) -> None:
     ).replace(
         'options:', '\n' + _("Common pacman options:")
     )
-    pikaur_options_help = []
+    pikaur_options_help: List[Tuple[str, str, str]] = []
     if args.sync:
         pikaur_options_help += [
             ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
@@ -176,7 +179,7 @@ def cli_print_help(args: PikaurArgs) -> None:
     if args.sync or args.query:
         pikaur_options_help += [
             ('', '--repo', _("query packages from repository only")),
-            ('', '--aur',  _("query packages from AUR only")),
+            ('', '--aur', _("query packages from AUR only")),
         ]
     print(''.join([
         '\n',

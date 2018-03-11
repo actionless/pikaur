@@ -29,11 +29,25 @@ _CONFIG_SCHEMA = {
             'type': 'bool',
             'default': 'no',
         },
+    },
+    'colors': {
+        'Version': {
+            'type': 'int',
+            'default': '10',
+        },
+        'VersionDiffOld': {
+            'type': 'int',
+            'default': '11',
+        },
+        'VersionDiffNew': {
+            'type': 'int',
+            'default': '9',
+        },
     }
 }
 
 
-_CONFIG_TYPES = Union[str, bool]
+_CONFIG_TYPES = Union[str, bool, int]
 
 
 def write_config(config: configparser.ConfigParser = None) -> None:
@@ -63,6 +77,8 @@ class PikaurConfigSection():
         section = self.section
         if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') == 'bool':
             return section.getboolean(key)
+        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') == 'int':
+            return section.getint(key)
         return section.get(key, *args)
 
 

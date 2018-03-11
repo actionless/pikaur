@@ -47,6 +47,14 @@ python3 ./pikaur.py -Syu
 ##### AlwaysShowPkgOrigin (default: no)
 when installing new packages show their repository name even if they are coming from one of the official Arch Linux repositories.
 
+#### [colors]
+
+terminal colors, from 0 to 15
+
+##### Version (default: 10)
+##### VersionDiffOld (default: 11)
+##### VersionDiffNew (default: 9)
+
 
 ### Contributing
 

@@ -87,9 +87,10 @@ def pretty_format_upgradeable(
         common_version, difference_size = get_common_version(
             pkg_update.Current_Version, pkg_update.New_Version
         )
-        version_color = 10
-        old_color = 11
-        new_color = 9
+        color_config = PikaurConfig().colors
+        version_color: int = color_config.get('Version')  # type: ignore
+        old_color: int = color_config.get('VersionDiffOld')  # type: ignore
+        new_color: int = color_config.get('VersionDiffNew')  # type: ignore
         column_width = min(int(get_term_width() / 2.5), 37)
         sort_by = '{:03d}{}'.format(
             difference_size,

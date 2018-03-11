@@ -24,7 +24,7 @@ depends=(
 
 pkgver() {
 	cd "${srcdir}/${pkgname}" || exit 1
-	git describe | sed 's/^v//;s/-/+/g'
+	git describe | sed 's/^v//;s/-/+/g' || echo 0.0.1
 }
 
 package() {

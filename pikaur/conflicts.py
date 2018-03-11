@@ -77,7 +77,7 @@ def find_conflicting_with_new_pkgs(
                 for provided_pkg in provides:
                     installed_pkg_name = provided_pkg.package.name
                     if (
-                            conflict_pkg_name == provided_pkg.name
+                            conflict_pkg_name == provided_dep
                     ) and (
                         new_pkg_name != installed_pkg_name
                     ) and (

@@ -155,11 +155,11 @@ def cli_clean_packages_cache(args: PikaurArgs) -> None:
     )
 
 
-def cli_print_version() -> None:
+def cli_print_version(args: PikaurArgs) -> None:
     pacman_version = SingleTaskExecutor(CmdTaskWorker(
         ['pacman', '--version', ],
     )).execute().stdout.splitlines()[1].strip(' .-')
-    print_version(pacman_version)
+    print_version(pacman_version, quiet=args.quiet)
 
 
 def cli_print_help(args: PikaurArgs) -> None:
@@ -203,7 +203,7 @@ def cli_entry_point() -> None:
     require_sudo = True
 
     if args.version:
-        cli_print_version()
+        cli_print_version(args)
     elif args.help:
         cli_print_help(args)
 

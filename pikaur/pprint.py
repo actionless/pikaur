@@ -206,13 +206,17 @@ def pretty_format_repo_name(repo_name: str) -> str:
     return color_line(f'{repo_name}/', len(repo_name) % 5 + 10)
 
 
-def print_version(pacman_version: str) -> None:
-    sys.stdout.buffer.write((r"""
+def print_version(pacman_version: str, quiet=False) -> None:
+    if quiet:
+        print(f'Pikaur v{VERSION}')
+        print(pacman_version)
+    else:
+        sys.stdout.buffer.write((r"""
       /:}               _
      /--1             / :}
     /   |           / `-/
    |  ,  --------  /   /
-   |'                 Y      Pikaur """+VERSION+r"""
+   |'                 Y      Pikaur v"""+VERSION+r"""
   /                   l      (C) 2018 Pikaur development team
   l  /       \        l      Licensed under GPLv3
   j  ●   .   ●        l

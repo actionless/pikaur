@@ -27,10 +27,10 @@ def find_provided_pkgs(
         provided_dict = PackageDB.get_repo_provided_dict()
     else:
         provided_dict = PackageDB.get_local_provided_dict()
-    for provided in provided_dict.values():
+    for provided_name, provided in provided_dict.items():
         for provided_pkg in provided:
             for dep_name in pkg_names:
-                if dep_name == provided_pkg.name:
+                if dep_name == provided_name:
                     provided_by_backrefs.setdefault(
                         dep_name, []
                     ).append(provided_pkg)

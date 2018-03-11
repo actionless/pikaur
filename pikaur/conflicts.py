@@ -73,8 +73,9 @@ def find_conflicting_with_new_pkgs(
                     conflict_version_matcher(get_remote_package_version(installed_pkg_name))
                 ):
                     new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
-            for installed_pkg_name, provides in local_provided.items():
+            for provided_dep, provides in local_provided.items():
                 for provided_pkg in provides:
+                    installed_pkg_name = provided_pkg.package.name
                     if (
                             conflict_pkg_name == provided_pkg.name
                     ) and (

@@ -56,6 +56,12 @@ class ProvidedDependency(DataType):
     package: pyalpm.Package = None
     version_matcher: VersionMatcher = None
 
+    def __repr__(self) -> str:
+        return (
+            f'<{self.__class__.__name__} "{self.name}" '
+            f'{self.version_matcher.line}>'
+        )
+
 
 class PackageDBCommon():
 
@@ -133,7 +139,7 @@ class PackageDBCommon():
                             get_package_name_and_version_matcher_from_depend_line(
                                 provided_pkg
                             )
-                        provided_pkg_names.setdefault(pkg.name, []).append(
+                        provided_pkg_names.setdefault(provided_name, []).append(
                             ProvidedDependency(
                                 name=provided_name,
                                 package=pkg,

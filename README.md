@@ -4,12 +4,12 @@ AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build t
 
 Inspired by `pacaur`, `yaourt` and `yay`.
 
-* [Installation][#installation]
-* [Run without installation][#run-without-installation]
-* [Configuration][#configuration]
-* [Directories][#directories]
-* [Contributing][#contributing]
-* - [Translations][#translations]
+* [Installation](#installation "")
+* [Run without installation](#run-without-installation "")
+* [Configuration](#configuration "")
+* [Directories](#directories "")
+* [Contributing](#contributing "")
+* - [Translations](#translations "")
 
 ![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
@@ -34,16 +34,6 @@ python3 ./pikaur.py -Syu
 ```
 
 
-### Directories
-
-```sh
-~/.cache/pikaur/
-├── aur_repos/  # keep there aur repos; show diff when updating
-│   └── last_installed.txt  # aur repo hash of last successfully installed package
-└── build/  # build directory (removed after successfull build)
-~/.config/pikaur.conf  # config file
-```
-
 
 ### Configuration
 
@@ -61,6 +51,19 @@ terminal colors, from 0 to 15
 ##### Version (default: 10)
 ##### VersionDiffOld (default: 11)
 ##### VersionDiffNew (default: 9)
+
+
+
+### Directories
+
+```sh
+~/.cache/pikaur/
+├── aur_repos/  # keep there aur repos; show diff when updating
+│   └── last_installed.txt  # aur repo hash of last successfully installed package
+└── build/  # build directory (removed after successfull build)
+~/.config/pikaur.conf  # config file
+```
+
 
 
 ### Contributing

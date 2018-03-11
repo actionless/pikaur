@@ -159,10 +159,12 @@ def cli_print_help(args: PikaurArgs) -> None:
     ).replace(
         'options:', '\n' + _("Common pacman options:")
     )
-    pikaur_options_help = (
-        ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
-        ('', '--namesonly', _("search only in package names")),
-    )
+    pikaur_options_help = []
+    if args.sync:
+        pikaur_options_help += [
+            ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
+            ('', '--namesonly', _("search only in package names")),
+        ]
     print(''.join([
         '\n',
         pacman_help,

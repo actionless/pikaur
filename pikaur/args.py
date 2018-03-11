@@ -49,6 +49,8 @@ class PikaurArgumentParser(argparse.ArgumentParser):
 PIKAUR_LONG_OPTS = (
     'noedit',
     'namesonly',
+    'repo',
+    'aur',
 )
 
 

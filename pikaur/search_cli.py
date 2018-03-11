@@ -137,8 +137,8 @@ def print_package_search_results(
 
 def cli_search_packages(args: PikaurArgs) -> None:
     search_query = args.positional or []
-    REPO_ONLY = False  # pylint: disable=invalid-name
-    AUR_ONLY = False  # pylint: disable=invalid-name
+    REPO_ONLY = args.repo  # pylint: disable=invalid-name
+    AUR_ONLY = args.aur  # pylint: disable=invalid-name
     if not args.quiet:
         progressbar_length = max(len(search_query), 1) + (not REPO_ONLY) + (not AUR_ONLY)
         sys.stderr.write(_("Searching... [{bar}]").format(bar='-' * progressbar_length))

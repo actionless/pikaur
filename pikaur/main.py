@@ -46,8 +46,12 @@ init_readline()
 
 
 def cli_print_upgradeable(args: PikaurArgs) -> None:
-    updates, _not_found_aur_pkgs = find_aur_updates()
-    updates += find_repo_updates()
+    updates = []
+    if not args.repo:
+        aur_updates, _not_found_aur_pkgs = find_aur_updates()
+        updates += aur_updates
+    if not args.aur:
+        updates += find_repo_updates()
     if args.quiet:
         print('\n'.join([
             pkg_update.Name for pkg_update in updates
@@ -67,27 +71,31 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
         )
     ignore = args.ignore or []
 
-    print('{} {}'.format(
-        color_line('::', 12),
-        bold_line(_("Starting full system upgrade..."))
-    ))
-    repo_packages_updates = [
-        pkg for pkg in find_repo_updates()
-        if pkg.Name not in ignore
-    ]
+    repo_packages_updates = []
+    if not args.aur:
+        print('{} {}'.format(
+            color_line('::', 12),
+            bold_line(_("Starting full system upgrade..."))
+        ))
+        repo_packages_updates = [
+            pkg for pkg in find_repo_updates()
+            if pkg.Name not in ignore
+        ]
 
-    print('{} {}'.format(
-        color_line('::', 12),
-        bold_line(_("Starting full AUR upgrade..."))
-    ))
-    aur_updates, not_found_aur_pkgs = find_aur_updates()
-    exclude_ignored_packages(not_found_aur_pkgs, args)
-    if not_found_aur_pkgs:
-        print_not_found_packages(sorted(not_found_aur_pkgs))
-    aur_updates = [
-        pkg for pkg in aur_updates
-        if pkg.Name not in ignore
-    ]
+    aur_updates = []
+    if not args.repo:
+        print('{} {}'.format(
+            color_line('::', 12),
+            bold_line(_("Starting full AUR upgrade..."))
+        ))
+        aur_updates, not_found_aur_pkgs = find_aur_updates()
+        exclude_ignored_packages(not_found_aur_pkgs, args)
+        if not_found_aur_pkgs:
+            print_not_found_packages(sorted(not_found_aur_pkgs))
+        aur_updates = [
+            pkg for pkg in aur_updates
+            if pkg.Name not in ignore
+        ]
 
     all_upgradeable_package_names = [
         u.Name for u in repo_packages_updates
@@ -164,6 +172,11 @@ def cli_print_help(args: PikaurArgs) -> None:
         pikaur_options_help += [
             ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
             ('', '--namesonly', _("search only in package names")),
+        ]
+    if args.sync or args.query:
+        pikaur_options_help += [
+            ('', '--repo', _("query packages from repository only")),
+            ('', '--aur',  _("query packages from AUR only")),
         ]
     print(''.join([
         '\n',

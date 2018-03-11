@@ -105,6 +105,7 @@ class PackageBuild(DataType):
 
     already_installed: bool = None
     failed: bool = None
+    built_package_installed = False
 
     new_deps_to_install: List[str] = None
     new_make_deps_to_install: List[str] = None
@@ -255,9 +256,10 @@ class PackageBuild(DataType):
                 raise DependencyError()
             if not package_build.built_package_path:
                 raise DependencyNotBuiltYet()
-            self.built_deps_to_install[
-                package_build.package_name
-            ] = package_build.built_package_path
+            if not package_build.built_package_installed:
+                self.built_deps_to_install[
+                    package_build.package_name
+                ] = package_build.built_package_path
             if dep in self.new_make_deps_to_install:
                 self.new_make_deps_to_install.remove(dep)
             if dep in self.new_deps_to_install:
@@ -269,7 +271,7 @@ class PackageBuild(DataType):
                 _("Installing already built dependencies for {}").format(
                     bold_line(self.package_name))
             ))
-            if not retry_interactive_command(
+            if retry_interactive_command(
                     [
                         'sudo',
                         'pacman',
@@ -286,6 +288,9 @@ class PackageBuild(DataType):
                         'downloadonly',
                     ]) + list(self.built_deps_to_install.values()),
             ):
+                for pkg_name in self.built_deps_to_install:
+                    all_package_builds[pkg_name].built_package_installed = True
+            else:
                 self.failed = True
                 raise DependencyError()
 
@@ -426,7 +431,7 @@ class PackageBuild(DataType):
         self._install_repo_deps(args)
 
         makepkg_args = [
-            '--nodeps',
+            '--nodeps', '--noconfirm',
         ]
         if not args.needed:
             makepkg_args.append('--force')

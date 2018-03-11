@@ -103,7 +103,8 @@ class InstallPackagesCLI():
         if self.package_builds:
             for package_build in self.package_builds.values():
                 if package_build.built_package_path:
-                    package_build.update_last_installed_file()
+                    if not args.downloadonly:
+                        package_build.update_last_installed_file()
                     remove_dir(package_build.build_dir)
 
         if self.failed_to_build:

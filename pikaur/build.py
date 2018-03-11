@@ -107,6 +107,7 @@ class PackageBuild(DataType):
 
     new_deps_to_install: List[str] = None
     new_make_deps_to_install: List[str] = None
+    built_deps_to_install: Dict[str, str] = None
 
     def __init__(self, package_name: str) -> None:  # pylint: disable=super-init-not-called
         self.package_name = package_name
@@ -242,23 +243,26 @@ class PackageBuild(DataType):
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
 
-        built_deps_to_install = []
+        self.built_deps_to_install = {}
         for dep in self.all_deps_to_install:
             # @TODO: check if dep is Provided by built package
-            if dep in all_package_builds:
-                if all_package_builds[dep].failed:
-                    self.failed = True
-                    raise DependencyError()
-                built_package_path = all_package_builds[dep].built_package_path
-                if not built_package_path:
-                    raise DependencyNotBuiltYet()
-                built_deps_to_install.append(built_package_path)
-                if dep in self.new_make_deps_to_install:
-                    self.new_make_deps_to_install.remove(dep)
-                if dep in self.new_deps_to_install:
-                    self.new_deps_to_install.remove(dep)
+            if dep not in all_package_builds:
+                continue
+            package_build = all_package_builds[dep]
+            if package_build.failed:
+                self.failed = True
+                raise DependencyError()
+            if not package_build.built_package_path:
+                raise DependencyNotBuiltYet()
+            self.built_deps_to_install[
+                package_build.package_name
+            ] = package_build.built_package_path
+            if dep in self.new_make_deps_to_install:
+                self.new_make_deps_to_install.remove(dep)
+            if dep in self.new_deps_to_install:
+                self.new_deps_to_install.remove(dep)
 
-        if built_deps_to_install:
+        if self.built_deps_to_install:
             print('{} {}:'.format(
                 color_line('::', 13),
                 _("Installing already built dependencies for {}").format(
@@ -278,7 +282,8 @@ class PackageBuild(DataType):
                         'sync',
                         'sysupgrade',
                         'refresh',
-                    ]) + built_deps_to_install,
+                        'downloadonly',
+                    ]) + list(self.built_deps_to_install.values()),
             ):
                 self.failed = True
                 raise DependencyError()
@@ -330,6 +335,22 @@ class PackageBuild(DataType):
             ):
                 self.failed = True
                 raise BuildError()
+
+    def _remove_deps(self) -> None:
+        if self.new_deps_to_install or self.built_deps_to_install:
+            print('{} {}:'.format(
+                color_line('::', 13),
+                _("Removing already installed dependencies for {}").format(
+                    bold_line(self.package_name))
+            ))
+            retry_interactive_command(
+                [
+                    'sudo',
+                    'pacman',
+                    '-Rs',
+                    '--noconfirm',
+                ] + self.new_deps_to_install + list(self.built_deps_to_install),
+            )
 
     def _remove_make_deps(self) -> None:
         if self.new_make_deps_to_install:
@@ -411,27 +432,19 @@ class PackageBuild(DataType):
 
         print()
         build_succeeded = retry_interactive_command(
-            isolate_root_cmd(['makepkg'] + makepkg_args,
-                             cwd=self.build_dir),
+            isolate_root_cmd(
+                ['makepkg'] + makepkg_args,
+                cwd=self.build_dir
+            ),
             cwd=self.build_dir
         )
 
         self._remove_make_deps()
+        if args.downloadonly:
+            self._remove_deps()
 
         if not build_succeeded:
-            if self.new_deps_to_install:
-                print('{} {}:'.format(
-                    color_line('::', 13),
-                    _("Removing already installed dependencies for {}").format(
-                        bold_line(self.package_name))
-                ))
-                retry_interactive_command(
-                    [
-                        'sudo',
-                        'pacman',
-                        '-Rs',
-                    ] + self.new_deps_to_install,
-                )
+            self._remove_deps()
             self.failed = True
             raise BuildError()
         else:

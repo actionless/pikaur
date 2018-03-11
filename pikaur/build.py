@@ -105,6 +105,7 @@ class PackageBuild(DataType):
 
     already_installed: bool = None
     failed: bool = None
+    installed = False
 
     new_deps_to_install: List[str] = None
     new_make_deps_to_install: List[str] = None
@@ -255,9 +256,10 @@ class PackageBuild(DataType):
                 raise DependencyError()
             if not package_build.built_package_path:
                 raise DependencyNotBuiltYet()
-            self.built_deps_to_install[
-                package_build.package_name
-            ] = package_build.built_package_path
+            if not package_build.installed:
+                self.built_deps_to_install[
+                    package_build.package_name
+                ] = package_build.built_package_path
             if dep in self.new_make_deps_to_install:
                 self.new_make_deps_to_install.remove(dep)
             if dep in self.new_deps_to_install:
@@ -269,105 +271,26 @@ class PackageBuild(DataType):
                 _("Installing already built dependencies for {}").format(
                     bold_line(self.package_name))
             ))
-            if not retry_interactive_command(
+            if retry_interactive_command(
                     [
                         'sudo',
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        '--noconfirm',
                     ] + reconstruct_args(args, ignore_args=[
                         'upgrade',
                         'asdeps',
-                        'noconfirm',
                         'sync',
                         'sysupgrade',
                         'refresh',
                         'downloadonly',
                     ]) + list(self.built_deps_to_install.values()),
             ):
+                for pkg_name in self.built_deps_to_install:
+                    all_package_builds[pkg_name].installed = True
+            else:
                 self.failed = True
                 raise DependencyError()
-
-    def _install_repo_deps(self, args: PikaurArgs) -> None:
-
-        if self.all_deps_to_install:
-            local_provided = PackageDB.get_local_provided_names()
-            for dep_name in self.all_deps_to_install:
-                if dep_name in local_provided:
-                    if dep_name in self.new_make_deps_to_install:
-                        self.new_make_deps_to_install.remove(dep_name)
-                    if dep_name in self.new_deps_to_install:
-                        self.new_deps_to_install.remove(dep_name)
-        if self.all_deps_to_install:
-            all_repo_pkgs_names = PackageDB.get_repo_dict().keys()
-            for pkg_name in self.all_deps_to_install:
-                if (
-                        pkg_name not in all_repo_pkgs_names
-                ) and (
-                    pkg_name in self.new_make_deps_to_install
-                ):
-                    # @TODO: choose alternative provided packages?
-                    provided_by = PackageDB.get_repo_provided_dict()[pkg_name][0].name
-                    #
-                    self.new_make_deps_to_install.remove(pkg_name)
-                    self.new_make_deps_to_install.append(provided_by)
-            print('{} {}:'.format(
-                color_line('::', 13),
-                _("Installing repository dependencies for {}").format(
-                    bold_line(self.package_name))
-            ))
-            if not retry_interactive_command(
-                    [
-                        'sudo',
-                        'pacman',
-                        '--sync',
-                        '--asdeps',
-                        '--needed',
-                        '--noconfirm',
-                    ] + reconstruct_args(args, ignore_args=[
-                        'sync',
-                        'asdeps',
-                        'needed',
-                        'noconfirm',
-                        'sysupgrade',
-                        'refresh',
-                    ]) + self.all_deps_to_install,
-            ):
-                self.failed = True
-                raise BuildError()
-
-    def _remove_deps(self) -> None:
-        if self.new_deps_to_install or self.built_deps_to_install:
-            print('{} {}:'.format(
-                color_line('::', 13),
-                _("Removing already installed dependencies for {}").format(
-                    bold_line(self.package_name))
-            ))
-            retry_interactive_command(
-                [
-                    'sudo',
-                    'pacman',
-                    '-Rs',
-                    '--noconfirm',
-                ] + self.new_deps_to_install + list(self.built_deps_to_install),
-            )
-
-    def _remove_make_deps(self) -> None:
-        if self.new_make_deps_to_install:
-            print('{} {}:'.format(
-                color_line('::', 13),
-                _("Removing make dependencies for {}").format(
-                    bold_line(self.package_name))
-            ))
-            retry_interactive_command(
-                [
-                    'sudo',
-                    'pacman',
-                    '-Rs',
-                    '--noconfirm',
-                ] + self.new_make_deps_to_install,
-            )
 
     def _set_built_package_path(self) -> None:
         dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)
@@ -423,29 +346,25 @@ class PackageBuild(DataType):
         __, self.new_deps_to_install = find_local_packages(new_deps)
 
         self._install_built_deps(args, all_package_builds)
-        self._install_repo_deps(args)
 
-        makepkg_args = [
-            '--nodeps',
-        ]
+        makepkg_args = []
         if not args.needed:
             makepkg_args.append('--force')
 
         print()
         build_succeeded = retry_interactive_command(
             isolate_root_cmd(
-                ['makepkg'] + makepkg_args,
+                [
+                    'makepkg',
+                    '--syncdeps',
+                    '--rmdeps',
+                ] + makepkg_args,
                 cwd=self.build_dir
             ),
             cwd=self.build_dir
         )
 
-        self._remove_make_deps()
-        if args.downloadonly:
-            self._remove_deps()
-
         if not build_succeeded:
-            self._remove_deps()
             self.failed = True
             raise BuildError()
         else:

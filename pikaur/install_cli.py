@@ -92,7 +92,6 @@ class InstallPackagesCLI():
 
         self.build_packages()
 
-        self.remove_repo_packages_conflicts()
         self.install_repo_packages()
         if not args.downloadonly:
             self.remove_aur_packages_conflicts()
@@ -561,8 +560,7 @@ class InstallPackagesCLI():
                     'pacman',
                     # '-Rs',  # @TODO: manually remove dependencies of conflicting packages,
                     # but excluding already built AUR packages from that list.
-                    '-R',
-                    '--noconfirm',
+                    '-Rs',
                 ] + packages_to_be_removed,
             )
 
@@ -573,10 +571,8 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--sync',
-                        '--noconfirm',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
-                        'noconfirm',
                         'sysupgrade',
                         'refresh',
                         'ignore',
@@ -645,15 +641,10 @@ class InstallPackagesCLI():
                     # '-Rs',  # @TODO: manually remove dependencies of conflicting packages,
                     # but excluding already built AUR packages from that list.
                     '-R',
-                    '--noconfirm',
                     '--nodeps',
                     '--nodeps',
                 ] + packages_to_be_removed,
             )
-
-    def remove_repo_packages_conflicts(self) -> None:
-        self._remove_conflicting_packages(self.repo_packages_conflicts)
-        self.save_repo_transaction(removed=self.repo_packages_conflicts)
 
     def remove_aur_packages_conflicts(self) -> None:
         self._remove_conflicting_packages(self.aur_packages_conflicts)
@@ -667,7 +658,8 @@ class InstallPackagesCLI():
         new_aur_deps_to_install = [
             self.package_builds[pkg_name].built_package_path
             for pkg_name in self.aur_deps_names
-            if self.package_builds[pkg_name].built_package_path
+            if self.package_builds[pkg_name].built_package_path and
+            not self.package_builds[pkg_name].installed
         ]
         if new_aur_deps_to_install:
             if not retry_interactive_command(
@@ -676,11 +668,9 @@ class InstallPackagesCLI():
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        '--noconfirm',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'asdeps',
-                        'noconfirm',
                         'sync',
                         'sysupgrade',
                         'refresh',
@@ -704,10 +694,8 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--upgrade',
-                        '--noconfirm',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
-                        'noconfirm',
                         'sync',
                         'sysupgrade',
                         'refresh',

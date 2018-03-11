@@ -24,6 +24,7 @@ depends=(
 
 pkgver() {
 	cd "${srcdir}/${pkgname}" || exit 1
+	set -o pipefail
 	git describe | sed 's/^v//;s/-/+/g' || echo 0.0.1
 }
 

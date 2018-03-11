@@ -659,7 +659,7 @@ class InstallPackagesCLI():
             self.package_builds[pkg_name].built_package_path
             for pkg_name in self.aur_deps_names
             if self.package_builds[pkg_name].built_package_path and
-            not self.package_builds[pkg_name].installed
+            not self.package_builds[pkg_name].built_package_installed
         ]
         if new_aur_deps_to_install:
             if not retry_interactive_command(

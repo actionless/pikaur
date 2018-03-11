@@ -105,7 +105,7 @@ class PackageBuild(DataType):
 
     already_installed: bool = None
     failed: bool = None
-    installed = False
+    built_package_installed = False
 
     new_deps_to_install: List[str] = None
     new_make_deps_to_install: List[str] = None
@@ -256,7 +256,7 @@ class PackageBuild(DataType):
                 raise DependencyError()
             if not package_build.built_package_path:
                 raise DependencyNotBuiltYet()
-            if not package_build.installed:
+            if not package_build.built_package_installed:
                 self.built_deps_to_install[
                     package_build.package_name
                 ] = package_build.built_package_path
@@ -287,7 +287,7 @@ class PackageBuild(DataType):
                     ]) + list(self.built_deps_to_install.values()),
             ):
                 for pkg_name in self.built_deps_to_install:
-                    all_package_builds[pkg_name].installed = True
+                    all_package_builds[pkg_name].built_package_installed = True
             else:
                 self.failed = True
                 raise DependencyError()

@@ -13,6 +13,7 @@ else:
 
 AUR_REPOS_CACHE_DIR = 'aur_repos'
 BUILD_CACHE_DIR = 'build'
+PACKAGE_CACHE_DIR = 'pkg'
 
 CONFIG_PATH = os.path.join(
     os.environ.get(

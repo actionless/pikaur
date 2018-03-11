@@ -10,7 +10,9 @@ from .core import (
 )
 from .i18n import _
 from .version import get_package_name_and_version_matcher_from_depend_line
-from .config import CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR
+from .config import (
+    CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_DIR,
+)
 from .aur import get_repo_url
 from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args, PikaurArgs
@@ -97,6 +99,7 @@ class PackageBuild(DataType):
 
     repo_path: str = None
     build_dir: str = None
+    package_dir: str = None
     built_package_path: str = None
 
     already_installed: bool = None
@@ -108,10 +111,11 @@ class PackageBuild(DataType):
     def __init__(self, package_name: str) -> None:  # pylint: disable=super-init-not-called
         self.package_name = package_name
 
-        self.build_dir = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR,
-                                      self.package_name)
         self.repo_path = os.path.join(CACHE_ROOT, AUR_REPOS_CACHE_DIR,
                                       self.package_name)
+        self.build_dir = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR,
+                                      self.package_name)
+        self.package_dir = os.path.join(CACHE_ROOT, PACKAGE_CACHE_DIR)
 
         if os.path.exists(self.repo_path):
             # pylint: disable=simplifiable-if-statement
@@ -362,8 +366,17 @@ class PackageBuild(DataType):
                 if arch in pkg_name:
                     full_pkg_name = pkg_name
         built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
-        if os.path.exists(built_package_path):
-            self.built_package_path = built_package_path
+        if not os.path.exists(built_package_path):
+            return
+        if dest_dir == self.build_dir:
+            new_package_path = os.path.join(self.package_dir, full_pkg_name+pkg_ext)
+            if not os.path.exists(self.package_dir):
+                os.makedirs(self.package_dir)
+            if os.path.exists(new_package_path):
+                os.remove(new_package_path)
+            shutil.move(built_package_path, self.package_dir)
+            built_package_path = new_package_path
+        self.built_package_path = built_package_path
 
     def build(
             self, args: PikaurArgs, all_package_builds: Dict[str, 'PackageBuild']

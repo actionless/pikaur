@@ -60,7 +60,8 @@ terminal colors, from 0 to 15
 ~/.cache/pikaur/
 ├── aur_repos/  # keep there aur repos; show diff when updating
 │   └── last_installed.txt  # aur repo hash of last successfully installed package
-└── build/  # build directory (removed after successfull build)
+├── build/  # build directory (removed after successfull build)
+└── pkg/  # built packages directory
 ~/.config/pikaur.conf  # config file
 ```
 

@@ -4,6 +4,13 @@ AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build t
 
 Inspired by `pacaur`, `yaourt` and `yay`.
 
+* [Installation][#installation]
+* [Run without installation][#run-without-installation]
+* [Configuration][#configuration]
+* [Directories][#directories]
+* [Contributing][#contributing]
+* - [Translations][#translations]
+
 ![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
 

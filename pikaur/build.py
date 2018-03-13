@@ -308,7 +308,7 @@ class PackageBuild(DataType):
         if len(full_pkg_names) > 1:
             arch = platform.machine()
             for pkg_name in full_pkg_names:
-                if arch in pkg_name:
+                if arch in pkg_name and self.package_name in pkg_name:
                     full_pkg_name = pkg_name
         built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
         if not os.path.exists(built_package_path):

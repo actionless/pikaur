@@ -172,6 +172,7 @@ def find_replacements() -> Dict[str, List[str]]:
         for replace_pkg_name in replace_list:
             if (replace_pkg_name in all_local_pkgs_names) and (
                     (pkg_name not in all_repo_pkgs_info) or (
+                        replace_pkg_name in all_repo_pkgs_info and
                         PackageDB.get_repo_priority(all_repo_pkgs_info[replace_pkg_name].db.name) <=
                         PackageDB.get_repo_priority(all_repo_pkgs_info[pkg_name].db.name)
                     )

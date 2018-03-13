@@ -8,6 +8,7 @@ Inspired by `pacaur`, `yaourt` and `yay`.
 * [Run without installation](#run-without-installation "")
 * [Configuration](#configuration "")
 * [Directories](#directories "")
+* [FAQ](#faq "")
 * [Contributing](#contributing "")
 * - [Translations](#translations "")
 
@@ -65,6 +66,11 @@ terminal colors, from 0 to 15
 ~/.config/pikaur.conf  # config file
 ```
 
+### FAQ
+
+##### How to avoid of automatically importing GPG keys?
+
+It's recommended to control the keys manually. However if you know what you doing, `keyserver-options auto-key-retrieve` GPG option will automatically import GPG keys.
 
 
 ### Contributing

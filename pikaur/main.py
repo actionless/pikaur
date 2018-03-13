@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import List, Tuple
 
 from .i18n import _  # keep that first
-from .args import parse_args, PikaurArgs
+from .args import parse_args, PikaurArgs, reconstruct_args
 from .core import (
     PackageSource, CmdTaskWorker,
     interactive_spawn, running_as_root, remove_dir,
@@ -143,18 +143,22 @@ def cli_info_packages(args: PikaurArgs) -> None:
 
 
 def cli_clean_packages_cache(args: PikaurArgs) -> None:
-    # @TODO: flush ~/.cache/pikaur/pkg on -Scc
-    build_cache = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
-    if os.path.exists(build_cache):
-        print('\n' + _("Build directory: {}").format(build_cache))
-        if ask_to_continue('{} {}'.format(
-                color_line('::', 12),
-                _("Do you want to remove all files?")
-        )):
-            remove_dir(build_cache)
-    sys.exit(
-        interactive_spawn(['sudo', 'pacman', ] + args.raw).returncode
-    )
+    if not args.repo:
+        # @TODO: flush ~/.cache/pikaur/pkg on -Scc
+        build_cache = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
+        if os.path.exists(build_cache):
+            print('\n' + _("Build directory: {}").format(build_cache))
+            if ask_to_continue('{} {}'.format(
+                    color_line('::', 12),
+                    _("Do you want to remove all files?")
+            )):
+                remove_dir(build_cache)
+    if not args.aur:
+        sys.exit(
+            interactive_spawn(
+                ['sudo', 'pacman', ] + reconstruct_args(args, ['--repo'])
+            ).returncode
+        )
 
 
 def cli_print_version(args: PikaurArgs) -> None:

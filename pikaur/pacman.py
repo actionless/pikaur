@@ -105,24 +105,6 @@ class PackageDBCommon():
         return cls._packages_dict_cache[PackageSource.LOCAL]
 
     @classmethod
-    def _get_provided_names(cls, package_source: PackageSource) -> List[str]:
-        if not cls._provided_list_cache.get(package_source):
-            cls._provided_list_cache[package_source] = [
-                provided_pkg.name
-                for provided_pkgs in cls._get_provided_dict(package_source).values()
-                for provided_pkg in provided_pkgs
-            ]
-        return cls._provided_list_cache[package_source]
-
-    @classmethod
-    def get_repo_provided_names(cls) -> List[str]:
-        return cls._get_provided_names(PackageSource.REPO)
-
-    @classmethod
-    def get_local_provided_names(cls) -> List[str]:
-        return cls._get_provided_names(PackageSource.LOCAL)
-
-    @classmethod
     def _get_provided_dict(
             cls, package_source: PackageSource
     ) -> Dict[str, List[ProvidedDependency]]:

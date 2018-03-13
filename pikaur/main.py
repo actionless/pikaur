@@ -142,6 +142,7 @@ def cli_info_packages(args: PikaurArgs) -> None:
 
 
 def cli_clean_packages_cache(args: PikaurArgs) -> None:
+    # @TODO: flush ~/.cache/pikaur/pkg on -Scc
     build_cache = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
     if os.path.exists(build_cache):
         print('\n' + _("Build directory: {}").format(build_cache))

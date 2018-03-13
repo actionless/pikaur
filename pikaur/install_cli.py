@@ -28,9 +28,10 @@ from .pprint import (
     print_not_found_packages,
 )
 from .core import (
-    SingleTaskExecutor, CmdTaskWorker, PackageSource,
+    CmdTaskWorker, PackageSource,
     interactive_spawn, remove_dir,
 )
+from .async import SingleTaskExecutor
 from .replacements import (
     find_replacements,
 )

@@ -4,7 +4,8 @@ from typing import Any, Dict, Tuple, List, Iterable, Union
 
 import pyalpm
 
-from .core import DataType, MultipleTasksExecutor, PackageSource
+from .core import DataType, PackageSource
+from .async import MultipleTasksExecutor
 from .i18n import _
 from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
 from .pacman import PackageDB

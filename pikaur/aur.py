@@ -7,10 +7,8 @@ from urllib.parse import urlencode, quote
 from typing import List, Dict, Any, Type, Awaitable, Tuple
 from abc import ABCMeta
 
-from .core import (
-    DataType, get_chunks,
-    SingleTaskExecutor, MultipleTasksExecutorPool, TaskWorker,
-)
+from .core import DataType, get_chunks
+from .async import SingleTaskExecutor, MultipleTasksExecutorPool, TaskWorker
 from .config import VERSION
 from .i18n import _
 from .pprint import print_status_message

@@ -31,7 +31,7 @@ from .core import (
     SingleTaskExecutor, CmdTaskWorker, PackageSource,
     interactive_spawn, remove_dir,
 )
-from .conflicts import (
+from .replacements import (
     find_replacements,
 )
 from .prompt import (

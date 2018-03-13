@@ -12,10 +12,11 @@ from typing import List, Tuple
 from .i18n import _  # keep that first
 from .args import parse_args, PikaurArgs
 from .core import (
-    PackageSource, CmdTaskWorker,
+    PackageSource,
     interactive_spawn, running_as_root, remove_dir,
 )
 from .async import SingleTaskExecutor, MultipleTasksExecutor
+from .async_cmd import CmdTaskWorker
 from .pprint import (
     color_line, bold_line,
     print_status_message,

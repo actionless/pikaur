@@ -9,9 +9,10 @@ from abc import ABCMeta, abstractmethod
 from .config import VERSION
 from .pprint import print_status_message
 from .core import DataType
+from .async import TaskResult
 
 
-class NetworkTaskResult(DataType, metaclass=ABCMeta):
+class NetworkTaskResult(TaskResult, DataType, metaclass=ABCMeta):
     return_code: int = None
     headers: Dict[str, str] = None
 

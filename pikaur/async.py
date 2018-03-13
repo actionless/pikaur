@@ -19,6 +19,10 @@ def get_event_loop() -> asyncio.AbstractEventLoop:
     return loop
 
 
+class TaskResult():
+    pass
+
+
 class TaskWorker(metaclass=ABCMeta):
 
     @abstractmethod

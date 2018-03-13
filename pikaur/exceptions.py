@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, List
 
-from .core import DataType, TaskResult
+from .core import DataType
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
-    from .build import PackageBuild
-    from .version import VersionMatcher
+    from .build import PackageBuild  # noqa
+    from .version import VersionMatcher  # noqa
+    from .async import TaskResult  # noqa
 
 
 class PackagesNotFoundInAUR(DataType, Exception):
@@ -19,7 +20,7 @@ class BuildError(Exception):
 
 class CloneError(DataType, Exception):
     build: 'PackageBuild' = None
-    result: TaskResult = None
+    result: 'TaskResult' = None
 
 
 class DependencyError(Exception):

@@ -4,10 +4,11 @@ import platform
 from typing import List, Union, Dict
 
 from .core import (
-    DataType, CmdTaskWorker, CmdTaskResult,
-    ConfigReader, isolate_root_cmd, remove_dir, running_as_root,
+    DataType, ConfigReader,
+    isolate_root_cmd, remove_dir, running_as_root,
 )
 from .async import MultipleTasksExecutor, SingleTaskExecutor
+from .async_cmd import CmdTaskWorker, CmdTaskResult
 from .i18n import _
 from .version import get_package_name_and_version_matcher_from_depend_line
 from .config import (

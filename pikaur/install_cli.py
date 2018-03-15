@@ -11,7 +11,9 @@ from .aur import find_aur_packages
 from .aur_deps import find_aur_deps
 from .i18n import _
 from .pacman import (
-    find_repo_packages, PackageDB, OFFICIAL_REPOS, PacmanConfig,
+    OFFICIAL_REPOS, ASK_BITS,
+    PackageDB, PacmanConfig,
+    find_repo_packages,
 )
 from .package_update import PackageUpdate, get_remote_package_version
 from .exceptions import (
@@ -547,7 +549,7 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--sync',
-                        '--ask=127',
+                        f'--ask={ASK_BITS}',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
                         'sysupgrade',
@@ -626,7 +628,7 @@ class InstallPackagesCLI():
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        '--ask=127',
+                        f'--ask={ASK_BITS}',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'asdeps',
@@ -653,7 +655,7 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--upgrade',
-                        '--ask=127',
+                        f'--ask={ASK_BITS}',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'sync',

@@ -36,6 +36,7 @@ from .async_cmd import CmdTaskWorker
 from .replacements import (
     find_replacements,
 )
+from .conflicts import find_conflicts
 from .prompt import (
     ask_to_continue, retry_interactive_command,
     retry_interactive_command_or_exit,
@@ -52,6 +53,8 @@ def exclude_ignored_packages(package_names: List[str], args: PikaurArgs) -> List
 
 
 class InstallPackagesCLI():
+    # @TODO: refactor this warning:
+    # pylint: disable=too-many-public-methods
 
     args: PikaurArgs = None
     repo_packages: List[pyalpm.Package] = None
@@ -80,6 +83,7 @@ class InstallPackagesCLI():
         self.get_package_builds()
         # @TODO: ask to install optdepends (?)
         if not args.downloadonly:
+            self.ask_about_package_conflicts()
             self.ask_about_package_replacements()
         self.review_build_files()
 
@@ -360,6 +364,36 @@ class InstallPackagesCLI():
     def ask_to_continue(self, text: str = None, default_yes=True) -> bool:
         return ask_to_continue(text, default_yes, args=self.args)
 
+    def ask_about_package_conflicts(self) -> None:
+        print(_('looking for conflicting packages...'))
+        conflict_result = find_conflicts(
+            self.repo_packages, self.aur_packages_names
+        )
+        if not conflict_result:
+            return
+        all_new_packages_names = self.repo_packages_names + self.aur_packages_names
+        for new_pkg_name, new_pkg_conflicts in conflict_result.items():
+            for pkg_conflict in new_pkg_conflicts:
+                if pkg_conflict in all_new_packages_names:
+                    print(color_line(
+                        _("New packages '{new}' and '{other}' are in conflict.").format(
+                            new=new_pkg_name, other=pkg_conflict),
+                        9))
+                    sys.exit(1)
+        for new_pkg_name, new_pkg_conflicts in conflict_result.items():
+            for pkg_conflict in new_pkg_conflicts:
+                print('{} {}'.format(
+                    color_line(_("warning:"), 11),
+                    _("New package '{new}' conflicts with installed '{installed}'.").format(
+                        new=new_pkg_name, installed=pkg_conflict)
+                ))
+                answer = self.ask_to_continue('{} {}'.format(
+                    color_line('::', 11),
+                    _("Do you want to remove '{installed}'?").format(installed=pkg_conflict)
+                ), default_yes=False)
+                if not answer:
+                    sys.exit(1)
+
     def ask_about_package_replacements(self) -> None:
         package_replacements = find_replacements()
         for repo_pkg_name, installed_pkgs_names in package_replacements.items():
@@ -513,7 +547,7 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--sync',
-                        '--ask=no',
+                        '--ask=127',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
                         'sysupgrade',
@@ -592,7 +626,7 @@ class InstallPackagesCLI():
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        '--ask=no',
+                        '--ask=127',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'asdeps',
@@ -619,7 +653,7 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--upgrade',
-                        '--ask=no',
+                        '--ask=127',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'sync',

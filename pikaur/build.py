@@ -277,7 +277,7 @@ class PackageBuild(DataType):
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        '--ask=0',
+                        '--ask=127',
                     ] + reconstruct_args(args, ignore_args=[
                         'upgrade',
                         'asdeps',
@@ -359,7 +359,7 @@ class PackageBuild(DataType):
                     'makepkg',
                     '--syncdeps',
                     '--rmdeps',
-                    # '--ask=0',
+                    # '--ask=127',
                 ] + (['--noconfirm'] if args.noconfirm else []) + makepkg_args,
                 cwd=self.build_dir
             ),

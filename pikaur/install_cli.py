@@ -512,7 +512,7 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--sync',
-                        '--ask=no',
+                        '--ask=0',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
                         'sysupgrade',
@@ -591,7 +591,7 @@ class InstallPackagesCLI():
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        '--ask=no',
+                        '--ask=0',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'asdeps',
@@ -618,7 +618,7 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--upgrade',
-                        '--ask=no',
+                        '--ask=0',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'sync',

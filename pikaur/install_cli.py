@@ -369,8 +369,6 @@ class InstallPackagesCLI():
             self.repo_packages, self.aur_packages_names
         )
         if not conflict_result:
-            self.aur_packages_conflicts = []
-            self.repo_packages_conflicts = []
             return
         all_new_packages_names = self.repo_packages_names + self.aur_packages_names
         for new_pkg_name, new_pkg_conflicts in conflict_result.items():

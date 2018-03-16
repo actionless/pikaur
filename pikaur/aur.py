@@ -154,8 +154,7 @@ def find_aur_packages(
     return json_results, not_found_packages
 
 
-def get_repo_url(package_name: str) -> str:
-    package_base_name = find_aur_packages([package_name])[0][0].packagebase
+def get_repo_url(package_base_name: str) -> str:
     return f'https://aur.archlinux.org/{package_base_name}.git'
 
 

@@ -14,7 +14,7 @@ from .version import get_package_name_and_version_matcher_from_depend_line
 from .config import (
     CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_DIR,
 )
-from .aur import get_repo_url
+from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB, ASK_BITS
 from .args import reconstruct_args, PikaurArgs
 from .pprint import color_line, bold_line
@@ -88,6 +88,23 @@ class SrcInfo():
             srcinfo_file.write(result.stdout)
 
 
+class PackageBaseSrcInfo(SrcInfo):
+
+    def __init__(self, repo_path: str) -> None:
+        # pylint: disable=super-init-not-called
+        self.path = os.path.join(
+            repo_path,
+            '.SRCINFO'
+        )
+        self.repo_path = repo_path
+
+        self._common_lines = []
+        self._package_lines = []
+        with open_file(self.path) as srcinfo_file:
+            for line in srcinfo_file.readlines():
+                self._common_lines.append(line)
+
+
 class MakepkgConfig(ConfigReader):
     default_config_path: str = "/etc/makepkg.conf"  # type: ignore
 
@@ -97,29 +114,34 @@ class PackageBuild(DataType):
     clone = False
     pull = False
 
-    package_name: str = None
+    package_base: str = None
+    package_names: List[str] = None
 
     repo_path: str = None
     build_dir: str = None
     package_dir: str = None
-    built_package_path: str = None
+    built_packages_paths: Dict[str, str] = None
 
     already_installed: bool = None
     failed: bool = None
-    built_package_installed = False
+    reviewed = False
+    built_packages_installed: Dict[str, bool] = None
 
     new_deps_to_install: List[str] = None
     new_make_deps_to_install: List[str] = None
     built_deps_to_install: Dict[str, str] = None
 
-    def __init__(self, package_name: str) -> None:  # pylint: disable=super-init-not-called
-        self.package_name = package_name
+    def __init__(self, package_names: List[str]) -> None:  # pylint: disable=super-init-not-called
+        self.package_names = package_names
+        self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
 
         self.repo_path = os.path.join(CACHE_ROOT, AUR_REPOS_CACHE_DIR,
-                                      self.package_name)
+                                      self.package_base)
         self.build_dir = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR,
-                                      self.package_name)
+                                      self.package_base)
         self.package_dir = os.path.join(CACHE_ROOT, PACKAGE_CACHE_DIR)
+        self.built_packages_paths = {}
+        self.built_packages_installed = {}
 
         if os.path.exists(self.repo_path):
             # pylint: disable=simplifiable-if-statement
@@ -135,7 +157,7 @@ class PackageBuild(DataType):
         return CmdTaskWorker([
             'git',
             'clone',
-            get_repo_url(self.package_name),
+            get_repo_url(self.package_base),
             self.repo_path,
         ])
 
@@ -226,15 +248,15 @@ class PackageBuild(DataType):
 
     @property
     def version_already_installed(self) -> bool:
-        already_installed = False
-        if (
-                self.package_name in PackageDB.get_local_dict().keys()
-        ) and (
-            self.last_installed_hash == self.current_hash
-        ):
-            already_installed = True
-        self.already_installed = already_installed
-        return already_installed
+        self.already_installed = min([
+            (
+                pkg_name in PackageDB.get_local_dict().keys()
+            ) and (
+                self.last_installed_hash == self.current_hash
+            )
+            for pkg_name in self.package_names
+        ])
+        return self.already_installed
 
     @property
     def all_deps_to_install(self) -> List[str]:
@@ -252,25 +274,25 @@ class PackageBuild(DataType):
             if dep not in all_package_builds:
                 continue
             package_build = all_package_builds[dep]
-            if package_build.failed:
-                self.failed = True
-                raise DependencyError()
-            if not package_build.built_package_path:
-                raise DependencyNotBuiltYet()
-            if not package_build.built_package_installed:
-                self.built_deps_to_install[
-                    package_build.package_name
-                ] = package_build.built_package_path
-            if dep in self.new_make_deps_to_install:
-                self.new_make_deps_to_install.remove(dep)
-            if dep in self.new_deps_to_install:
-                self.new_deps_to_install.remove(dep)
+            for pkg_name in package_build.package_names:
+                if package_build.failed:
+                    self.failed = True
+                    raise DependencyError()
+                if not package_build.built_packages_paths.get(pkg_name):
+                    raise DependencyNotBuiltYet()
+                if not package_build.built_packages_installed.get(pkg_name):
+                    self.built_deps_to_install[pkg_name] = \
+                        package_build.built_packages_paths[pkg_name]
+                if dep in self.new_make_deps_to_install:
+                    self.new_make_deps_to_install.remove(dep)
+                if dep in self.new_deps_to_install:
+                    self.new_deps_to_install.remove(dep)
 
         if self.built_deps_to_install:
             print('{} {}:'.format(
                 color_line('::', 13),
                 _("Installing already built dependencies for {}").format(
-                    bold_line(self.package_name))
+                    bold_line(', '.join(self.package_names)))
             ))
             if retry_interactive_command(
                     [
@@ -289,7 +311,7 @@ class PackageBuild(DataType):
                     ]) + list(self.built_deps_to_install.values()),
             ):
                 for pkg_name in self.built_deps_to_install:
-                    all_package_builds[pkg_name].built_package_installed = True
+                    all_package_builds[pkg_name].built_packages_installed[pkg_name] = True
             else:
                 self.failed = True
                 raise DependencyError()
@@ -306,24 +328,27 @@ class PackageBuild(DataType):
                              cwd=self.build_dir),
             cwd=self.build_dir
         )).execute().stdout.splitlines()
-        full_pkg_name = full_pkg_names[0]
-        if len(full_pkg_names) > 1:
-            arch = platform.machine()
-            for pkg_name in full_pkg_names:
-                if arch in pkg_name and self.package_name in pkg_name:
-                    full_pkg_name = pkg_name
-        built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
-        if not os.path.exists(built_package_path):
-            return
-        if dest_dir == self.build_dir:
-            new_package_path = os.path.join(self.package_dir, full_pkg_name+pkg_ext)
-            if not os.path.exists(self.package_dir):
-                os.makedirs(self.package_dir)
-            if os.path.exists(new_package_path):
-                os.remove(new_package_path)
-            shutil.move(built_package_path, self.package_dir)
-            built_package_path = new_package_path
-        self.built_package_path = built_package_path
+        full_pkg_names.sort(key=len)
+        for pkg_name in self.package_names:
+            full_pkg_name = full_pkg_names[0]
+            if len(full_pkg_names) > 1:
+                arch = platform.machine()
+                for each_filename in full_pkg_names:
+                    if arch in each_filename and pkg_name in each_filename:
+                        full_pkg_name = each_filename
+                        break
+            built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
+            if not os.path.exists(built_package_path):
+                return
+            if dest_dir == self.build_dir:
+                new_package_path = os.path.join(self.package_dir, full_pkg_name+pkg_ext)
+                if not os.path.exists(self.package_dir):
+                    os.makedirs(self.package_dir)
+                if os.path.exists(new_package_path):
+                    os.remove(new_package_path)
+                shutil.move(built_package_path, self.package_dir)
+                built_package_path = new_package_path
+            self.built_packages_paths[pkg_name] = built_package_path
 
     def build(
             self, args: PikaurArgs, all_package_builds: Dict[str, 'PackageBuild']
@@ -341,7 +366,7 @@ class PackageBuild(DataType):
             remove_dir(self.build_dir)
         shutil.copytree(self.repo_path, self.build_dir)
 
-        src_info = SrcInfo(self.repo_path, self.package_name)
+        src_info = PackageBaseSrcInfo(self.repo_path)
         make_deps = src_info.get_makedepends()
         __, self.new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = src_info.get_depends()
@@ -375,18 +400,27 @@ class PackageBuild(DataType):
 
 
 def clone_pkgbuilds_git_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
-    package_builds = {
-        package_name: PackageBuild(package_name)
-        for package_name in package_names
+    aur_pkgs, _ = find_aur_packages(package_names)
+    packages_bases: Dict[str, List[str]] = {}
+    for aur_pkg in aur_pkgs:
+        packages_bases.setdefault(aur_pkg.packagebase, []).append(aur_pkg.name)
+    package_builds_by_base = {
+        pkgbase: PackageBuild(pkg_names)
+        for pkgbase, pkg_names in packages_bases.items()
+    }
+    package_builds_by_name = {
+        pkg_name: package_builds_by_base[pkgbase]
+        for pkgbase, pkg_names in packages_bases.items()
+        for pkg_name in pkg_names
     }
     results = MultipleTasksExecutor({
-        repo_status.package_name: repo_status.create_task_worker()
-        for repo_status in package_builds.values()
+        pkgbase: repo_status.create_task_worker()
+        for pkgbase, repo_status in package_builds_by_base.items()
     }).execute()
     for package_name, result in results.items():
         if result.return_code > 0:
             raise CloneError(
-                build=package_builds[package_name],
+                build=package_builds_by_name[package_name],
                 result=result
             )
-    return package_builds
+    return package_builds_by_name

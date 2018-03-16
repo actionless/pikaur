@@ -21,7 +21,7 @@ from .exceptions import (
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
 )
 from .build import (
-    SrcInfo, PackageBuild,
+    SrcInfo, PackageBaseSrcInfo, PackageBuild,
     clone_pkgbuilds_git_repos,
 )
 from .pprint import (
@@ -63,7 +63,7 @@ class InstallPackagesCLI():
     repo_packages_names: List[str] = None  # @TODO: remove me
     aur_packages_names: List[str] = None
     aur_deps_names: List[str] = None
-    package_builds: Dict[str, PackageBuild] = None
+    package_builds_by_name: Dict[str, PackageBuild] = None
     failed_to_build: List[str] = None
     transactions: Dict[str, Dict[str, List[str]]] = None
 
@@ -100,9 +100,13 @@ class InstallPackagesCLI():
             self.install_aur_packages()
 
         # save git hash of last sucessfully installed package
-        if self.package_builds:
-            for package_build in self.package_builds.values():
-                if package_build.built_package_path:
+        if self.package_builds_by_name:
+            package_builds_by_base = {
+                pkgbuild.package_base: pkgbuild
+                for pkgbuild in self.package_builds_by_name.values()
+            }
+            for package_build in package_builds_by_base.values():
+                if len(package_build.built_packages_paths) == len(package_build.package_names):
                     if not args.downloadonly:
                         package_build.update_last_installed_file()
                     remove_dir(package_build.build_dir)
@@ -322,11 +326,12 @@ class InstallPackagesCLI():
 
     def get_package_builds(self) -> None:
         if not self.all_aur_packages_names:
-            self.package_builds = {}
+            self.package_builds_by_name = {}
             return
         while self.all_aur_packages_names:
             try:
-                self.package_builds = clone_pkgbuilds_git_repos(self.all_aur_packages_names)
+                self.package_builds_by_name = \
+                    clone_pkgbuilds_git_repos(self.all_aur_packages_names)
                 break
             except CloneError as err:
                 package_build = err.build
@@ -334,7 +339,7 @@ class InstallPackagesCLI():
                     _("Can't clone '{name}' in '{path}' from AUR:")
                     if package_build.clone else
                     _("Can't pull '{name}' in '{path}' from AUR:")).format(
-                        name=package_build.package_name,
+                        name=', '.join(package_build.package_names),
                         path=package_build.repo_path
                     ), 9))
                 print(err.result)
@@ -356,10 +361,11 @@ class InstallPackagesCLI():
                 elif answer == _("r"):
                     remove_dir(package_build.repo_path)
                 elif answer == _("s"):
-                    if package_build.package_name in self.aur_packages_names:
-                        self.aur_packages_names.remove(package_build.package_name)
-                    else:
-                        self.aur_deps_names.remove(package_build.package_name)
+                    for pkg_name in package_build.package_names:
+                        if pkg_name in self.aur_packages_names:
+                            self.aur_packages_names.remove(pkg_name)
+                        else:
+                            self.aur_deps_names.remove(pkg_name)
                 else:
                     sys.exit(1)
 
@@ -417,7 +423,7 @@ class InstallPackagesCLI():
                 color_line('::', 11),
                 _("Skipping review of {file} for {name} package ({flag})").format(
                     file=filename,
-                    name=package_build.package_name,
+                    name=', '.join(package_build.package_names),
                     flag=(self.args.noedit and '--noedit') or
                     (self.args.noconfirm and '--noconfirm')),
             ))
@@ -426,7 +432,7 @@ class InstallPackagesCLI():
                 _("Do you want to {edit} {file} for {name} package?").format(
                     edit=bold_line(_("edit")),
                     file=filename,
-                    name=bold_line(package_build.package_name),
+                    name=bold_line(', '.join(package_build.package_names)),
                 ),
                 default_yes=not package_build.is_installed
         ):
@@ -442,19 +448,24 @@ class InstallPackagesCLI():
         return False
 
     def review_build_files(self) -> None:
-        for pkg_name in self.all_aur_packages_names:
-            repo_status = self.package_builds[pkg_name]
+        for repo_status in self.package_builds_by_name.values():
+            if repo_status.reviewed:
+                continue
             if self.args.needed and repo_status.version_already_installed:
                 print(
                     '{} {}'.format(
                         color_line(_("warning:"), 11),
-                        _("{name} is up to date -- skipping").format(name=pkg_name)))
+                        _("{name} AUR repository is up to date -- skipping").format(
+                            name=repo_status.package_base
+                        )
+                    )
+                )
                 return
             if repo_status.build_files_updated and not self.args.noconfirm:
                 if self.ask_to_continue(
                         _("Do you want to see build files {diff} for {name} package?").format(
                             diff=bold_line(_("diff")),
-                            name=bold_line(pkg_name)
+                            name=bold_line(', '.join(repo_status.package_names))
                         )
                 ):
                     interactive_spawn([
@@ -465,15 +476,17 @@ class InstallPackagesCLI():
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
                     ])
-            src_info = SrcInfo(repo_status.repo_path, pkg_name)
+            src_info = PackageBaseSrcInfo(repo_status.repo_path)
 
             if self.get_editor():
                 if self.ask_to_edit_file('PKGBUILD', repo_status):
                     src_info.regenerate()
                     # @TODO: recompute AUR deps
-                install_file_name = src_info.get_install_script()
-                if install_file_name:
-                    self.ask_to_edit_file(install_file_name, repo_status)
+                for pkg_name in repo_status.package_names:
+                    install_src_info = SrcInfo(repo_status.repo_path, pkg_name)
+                    install_file_name = install_src_info.get_install_script()
+                    if install_file_name:
+                        self.ask_to_edit_file(install_file_name, repo_status)
 
             arch = platform.machine()
             supported_archs = src_info.get_values('arch')
@@ -486,11 +499,12 @@ class InstallPackagesCLI():
                     color_line(':: error:', 9),
                     _("{name} can't be built on the current arch ({arch}). "
                       "Supported: {suparch}").format(
-                          name=bold_line(pkg_name),
+                          name=bold_line(', '.join(repo_status.package_names)),
                           arch=arch,
                           suparch=', '.join(supported_archs))
                 ))
                 sys.exit(1)
+            repo_status.reviewed = True
 
     def build_packages(self) -> None:
         failed_to_build = []
@@ -502,32 +516,35 @@ class InstallPackagesCLI():
                 index = 0
 
             pkg_name = packages_to_be_built[index]
-            repo_status = self.package_builds[pkg_name]
+            repo_status = self.package_builds_by_name[pkg_name]
             if self.args.needed and repo_status.already_installed:
                 packages_to_be_built.remove(pkg_name)
                 continue
 
             try:
-                repo_status.build(self.args, self.package_builds)
+                repo_status.build(self.args, self.package_builds_by_name)
             except (BuildError, DependencyError) as exc:
                 print(exc)
                 print(color_line(_("Can't build '{name}'.").format(name=pkg_name), 9))
-                failed_to_build.append(pkg_name)
                 # if not self.ask_to_continue():
                 #     sys.exit(1)
-                packages_to_be_built.remove(pkg_name)
+                for _pkg_name in repo_status.package_names:
+                    failed_to_build.append(_pkg_name)
+                    packages_to_be_built.remove(_pkg_name)
             except DependencyNotBuiltYet:
                 index += 1
-                deps_fails_counter.setdefault(pkg_name, 0)
-                deps_fails_counter[pkg_name] += 1
-                if deps_fails_counter[pkg_name] > len(self.all_aur_packages_names):
-                    print('{} {}'.format(
-                        color_line(":: " + _("error:"), 9),
-                        _("Dependency cycle detected between {}").format(deps_fails_counter)
-                    ))
-                    sys.exit(1)
+                for _pkg_name in repo_status.package_names:
+                    deps_fails_counter.setdefault(_pkg_name, 0)
+                    deps_fails_counter[_pkg_name] += 1
+                    if deps_fails_counter[_pkg_name] > len(self.all_aur_packages_names):
+                        print('{} {}'.format(
+                            color_line(":: " + _("error:"), 9),
+                            _("Dependency cycle detected between {}").format(deps_fails_counter)
+                        ))
+                        sys.exit(1)
             else:
-                packages_to_be_built.remove(pkg_name)
+                for _pkg_name in repo_status.package_names:
+                    packages_to_be_built.remove(_pkg_name)
 
         self.failed_to_build = failed_to_build
 
@@ -616,10 +633,10 @@ class InstallPackagesCLI():
 
     def install_new_aur_deps(self) -> None:
         new_aur_deps_to_install = [
-            self.package_builds[pkg_name].built_package_path
+            self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
             for pkg_name in self.aur_deps_names
-            if self.package_builds[pkg_name].built_package_path and
-            not self.package_builds[pkg_name].built_package_installed
+            if self.package_builds_by_name[pkg_name].built_packages_paths.get(pkg_name) and
+            not self.package_builds_by_name[pkg_name].built_packages_installed.get(pkg_name)
         ]
         if new_aur_deps_to_install:
             if not retry_interactive_command(
@@ -645,9 +662,10 @@ class InstallPackagesCLI():
 
     def install_aur_packages(self) -> None:
         aur_packages_to_install = [
-            self.package_builds[pkg_name].built_package_path
+            self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
             for pkg_name in self.aur_packages_names
-            if self.package_builds[pkg_name].built_package_path
+            if self.package_builds_by_name[pkg_name].built_packages_paths.get(pkg_name) and
+            not self.package_builds_by_name[pkg_name].built_packages_installed.get(pkg_name)
         ]
         if aur_packages_to_install:
             if not retry_interactive_command(

@@ -5,7 +5,7 @@ from typing import List, Union, Dict
 
 from .core import (
     DataType, ConfigReader,
-    isolate_root_cmd, remove_dir, running_as_root,
+    isolate_root_cmd, remove_dir, running_as_root, open_file,
 )
 from .async import MultipleTasksExecutor, SingleTaskExecutor
 from .async_cmd import CmdTaskWorker, CmdTaskResult
@@ -41,7 +41,7 @@ class SrcInfo():
         self._common_lines = []
         self._package_lines = []
         destination = self._common_lines
-        with open(self.path) as srcinfo_file:
+        with open_file(self.path) as srcinfo_file:
             for line in srcinfo_file.readlines():
                 if line.startswith('pkgname ='):
                     if line.split('=')[1].strip() == package_name:
@@ -79,7 +79,7 @@ class SrcInfo():
         return self._get_depends('depends')
 
     def regenerate(self) -> None:
-        with open(self.path, 'w') as srcinfo_file:
+        with open_file(self.path, 'w') as srcinfo_file:
             result = SingleTaskExecutor(
                 CmdTaskWorker(isolate_root_cmd(['makepkg', '--printsrcinfo'],
                                                cwd=self.repo_path),
@@ -191,7 +191,7 @@ class PackageBuild(DataType):
     @property
     def last_installed_hash(self) -> Union[str, None]:
         if self.is_installed:
-            with open(self.last_installed_file_path) as last_installed_file:
+            with open_file(self.last_installed_file_path) as last_installed_file:
                 return last_installed_file.readlines()[0].strip()
         return None
 
@@ -216,7 +216,7 @@ class PackageBuild(DataType):
 
     @property
     def current_hash(self) -> str:
-        with open(
+        with open_file(
             os.path.join(
                 self.repo_path,
                 '.git/refs/heads/master'

@@ -2,7 +2,8 @@ import os
 import configparser
 from typing import Union
 
-from .core import running_as_root
+from .core import running_as_root, open_file
+
 
 VERSION = '0.8-dev'
 
@@ -66,7 +67,7 @@ def write_config(config: configparser.ConfigParser = None) -> None:
     if need_write:
         if not os.path.exists(_CONFIG_ROOT):
             os.makedirs(_CONFIG_ROOT)
-        with open(CONFIG_PATH, 'w') as configfile:
+        with open_file(CONFIG_PATH, 'w') as configfile:
             config.write(configfile)
 
 
@@ -96,7 +97,7 @@ class PikaurConfig():
             cls._config = configparser.ConfigParser()
             if not os.path.exists(CONFIG_PATH):
                 write_config()
-            cls._config.read(CONFIG_PATH)
+            cls._config.read(CONFIG_PATH, encoding='utf-8')
             write_config(config=cls._config)
         return cls._config
 

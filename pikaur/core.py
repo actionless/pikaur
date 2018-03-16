@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import enum
+import codecs
 from typing import Dict, Any, List, Iterable
 
 
@@ -123,3 +124,7 @@ def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[List[Any]]:
             index = 0
     if result:
         yield result
+
+
+def open_file(file_path: str, mode='r', encoding='utf-8'):
+    return codecs.open(file_path, mode, encoding=encoding)

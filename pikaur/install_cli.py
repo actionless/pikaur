@@ -31,7 +31,7 @@ from .pprint import (
 )
 from .core import (
     PackageSource,
-    interactive_spawn, remove_dir,
+    interactive_spawn, remove_dir, open_file,
 )
 from .async import SingleTaskExecutor
 from .async_cmd import CmdTaskWorker
@@ -250,12 +250,12 @@ class InstallPackagesCLI():
     def manual_package_selection(self, text: str) -> List[str]:
         selected_packages = []
         with NamedTemporaryFile() as tmp_file:
-            with open(tmp_file.name, 'w') as write_file:
+            with open_file(tmp_file.name, 'w') as write_file:
                 write_file.write(text)
             interactive_spawn(
                 self.get_editor() + [tmp_file.name, ]
             )
-            with open(tmp_file.name, 'r') as read_file:
+            with open_file(tmp_file.name, 'r') as read_file:
                 for line in read_file.readlines():
                     line = line.lstrip()
                     if not line:

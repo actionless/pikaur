@@ -138,7 +138,7 @@ class InstallPackagesCLI():
             )
         )
         if not self.ask_to_continue(_("Do you want to proceed without editing?")):
-            sys.exit(2)
+            sys.exit(125)
         return None
 
     def exclude_ignored_packages(self, packages: List[str]) -> None:
@@ -180,7 +180,7 @@ class InstallPackagesCLI():
                         _("Dependencies missing for {}").format(exc.wanted_by))
                 ))
             print_not_found_packages(exc.packages)
-            sys.exit(1)
+            sys.exit(131)
         except DependencyVersionMismatch as exc:
             print(color_line(_("Version mismatch:"), 11))
             print(_("{what} depends on: '{dep}'\n found in '{location}': '{version}'").format(
@@ -189,7 +189,7 @@ class InstallPackagesCLI():
                 location=exc.location,
                 version=exc.version_found,
             ))
-            sys.exit(1)
+            sys.exit(131)
 
     def _get_repo_pkgs_updates(self) -> Tuple[List[PackageUpdate], List[PackageUpdate]]:
         local_pkgs = PackageDB.get_local_dict()
@@ -320,7 +320,7 @@ class InstallPackagesCLI():
                     self.install_prompt()
                     break
                 else:
-                    sys.exit(1)
+                    sys.exit(125)
             else:
                 break
 
@@ -367,7 +367,7 @@ class InstallPackagesCLI():
                         else:
                             self.aur_deps_names.remove(pkg_name)
                 else:
-                    sys.exit(1)
+                    sys.exit(125)
 
     def ask_to_continue(self, text: str = None, default_yes=True) -> bool:
         return ask_to_continue(text, default_yes, args=self.args)
@@ -387,7 +387,7 @@ class InstallPackagesCLI():
                         _("New packages '{new}' and '{other}' are in conflict.").format(
                             new=new_pkg_name, other=pkg_conflict),
                         9))
-                    sys.exit(1)
+                    sys.exit(131)
         for new_pkg_name, new_pkg_conflicts in conflict_result.items():
             for pkg_conflict in new_pkg_conflicts:
                 print('{} {}'.format(
@@ -400,7 +400,7 @@ class InstallPackagesCLI():
                     _("Do you want to remove '{installed}'?").format(installed=pkg_conflict)
                 ), default_yes=False)
                 if not answer:
-                    sys.exit(1)
+                    sys.exit(125)
 
     def ask_about_package_replacements(self) -> None:
         package_replacements = find_replacements()
@@ -503,7 +503,7 @@ class InstallPackagesCLI():
                           arch=arch,
                           suparch=', '.join(supported_archs))
                 ))
-                sys.exit(1)
+                sys.exit(95)
             repo_status.reviewed = True
 
     def build_packages(self) -> None:
@@ -527,7 +527,7 @@ class InstallPackagesCLI():
                 print(exc)
                 print(color_line(_("Can't build '{name}'.").format(name=pkg_name), 9))
                 # if not self.ask_to_continue():
-                #     sys.exit(1)
+                #     sys.exit(125)
                 for _pkg_name in repo_status.package_names:
                     failed_to_build.append(_pkg_name)
                     packages_to_be_built.remove(_pkg_name)
@@ -541,7 +541,7 @@ class InstallPackagesCLI():
                             color_line(":: " + _("error:"), 9),
                             _("Dependency cycle detected between {}").format(deps_fails_counter)
                         ))
-                        sys.exit(1)
+                        sys.exit(131)
             else:
                 for _pkg_name in repo_status.package_names:
                     packages_to_be_built.remove(_pkg_name)
@@ -576,7 +576,7 @@ class InstallPackagesCLI():
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_repo_transaction()
-                    sys.exit(1)
+                    sys.exit(125)
 
     def _save_transaction(
             self,
@@ -657,7 +657,7 @@ class InstallPackagesCLI():
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
-                    sys.exit(1)
+                    sys.exit(125)
             self.save_aur_transaction(new_aur_deps_to_install)
 
     def install_aur_packages(self) -> None:
@@ -684,5 +684,5 @@ class InstallPackagesCLI():
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
-                    sys.exit(1)
+                    sys.exit(125)
             self.save_aur_transaction(aur_packages_to_install)

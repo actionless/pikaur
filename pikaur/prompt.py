@@ -49,4 +49,4 @@ def retry_interactive_command(cmd_args: List[str], **kwargs) -> bool:
 def retry_interactive_command_or_exit(cmd_args: List[str], **kwargs) -> None:
     if not retry_interactive_command(cmd_args, **kwargs):
         if not ask_to_continue(default_yes=False):
-            sys.exit(1)
+            sys.exit(125)

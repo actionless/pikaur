@@ -268,7 +268,7 @@ def main() -> None:
             color_line('::', 9),
             _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         ))
-        sys.exit(1)
+        sys.exit(65)
 
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
@@ -277,6 +277,7 @@ def main() -> None:
     except KeyboardInterrupt:
         sys.exit(130)
     except BrokenPipeError:
+        # @TODO: should it be 32?
         sys.exit(0)
 
 

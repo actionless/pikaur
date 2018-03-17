@@ -99,7 +99,7 @@ msgid "Failed to build following packages:"
 msgstr "Не удалось собрать данные пакеты:"
 
 #: pikaur/pprint.py:64
-msgid "Following packages can not be found in AUR:"
+msgid "Following packages cannot be found in AUR:"
 msgstr "Данные пакеты не могут быть найдены в AUR:"
 
 #: pikaur/aur.py:310

@@ -66,7 +66,7 @@ def print_status_message(message='') -> None:
 def print_not_found_packages(not_found_packages: List[str]) -> None:
     print("{} {}".format(
         color_line(':: ' + _("warning:"), 11),
-        bold_line(_("Following packages can not be found in AUR:")),
+        bold_line(_("Following packages cannot be found in AUR:")),
     ))
     for package in not_found_packages:
         print(format_paragraph(package))

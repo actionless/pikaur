@@ -279,6 +279,7 @@ class PackageBuild(DataType):
             # @TODO: check if dep is Provided by built package
             if dep not in all_package_builds:
                 continue
+            # @TODO: check package version?
             package_build = all_package_builds[dep]
             for pkg_name in package_build.package_names:
                 if package_build.failed:

@@ -1,7 +1,7 @@
 import os
 import shutil
 import platform
-from typing import List, Union, Dict
+from typing import List, Union, Dict, Tuple
 
 from .core import (
     DataType, ConfigReader,
@@ -10,7 +10,7 @@ from .core import (
 from .async import MultipleTasksExecutor, SingleTaskExecutor
 from .async_cmd import CmdTaskWorker, CmdTaskResult
 from .i18n import _
-from .version import get_package_name_and_version_matcher_from_depend_line
+from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
 from .config import (
     CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_DIR,
 )
@@ -60,17 +60,23 @@ class SrcInfo():
                     values.append(line.strip().split(prefix)[1])
         return values
 
+    def get_value(self, field: str) -> List[str]:
+        return self.get_values(field)[0]
+
     def get_install_script(self) -> str:
         values = self.get_values('install')
         if values:
             return values[0]
         return None
 
-    def _get_depends(self, field: str) -> List[str]:
-        return [
-            get_package_name_and_version_matcher_from_depend_line(dep)[0]
-            for dep in self.get_values(field)
-        ]
+    def _get_depends(self, field: str) -> List[Tuple[str, VersionMatcher]]:
+        dependencies = []
+        src_info_pkgname = self.get_value('pkgname')
+        for dep in self.get_values(field):
+            pkg_name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
+            if pkg_name != src_info_pkgname:
+                dependencies.append((pkg_name, version_matcher))
+        return dependencies
 
     def get_makedepends(self) -> List[str]:
         return self._get_depends('makedepends')
@@ -367,9 +373,9 @@ class PackageBuild(DataType):
         shutil.copytree(self.repo_path, self.build_dir)
 
         src_info = PackageBaseSrcInfo(self.repo_path)
-        make_deps = src_info.get_makedepends()
+        make_deps = [pkg_name for pkg_name, _vm in src_info.get_makedepends()]
         __, self.new_make_deps_to_install = find_local_packages(make_deps)
-        new_deps = src_info.get_depends()
+        new_deps = [pkg_name for pkg_name, _vm in src_info.get_depends()]
         __, self.new_deps_to_install = find_local_packages(new_deps)
 
         self._install_built_deps(args, all_package_builds)

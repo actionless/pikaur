@@ -186,7 +186,7 @@ def cli_print_help(args: PikaurArgs) -> None:
     if args.sync or args.query:
         pikaur_options_help += [
             ('', '--repo', _("query packages from repository only")),
-            ('', '--aur', _("query packages from AUR only")),
+            ('-a', '--aur', _("query packages from AUR only")),
         ]
     print(''.join([
         '\n',

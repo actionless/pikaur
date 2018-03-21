@@ -46,11 +46,11 @@ class PikaurArgumentParser(argparse.ArgumentParser):
         )
 
 
-PIKAUR_LONG_OPTS = (
-    'noedit',
-    'namesonly',
-    'repo',
-    'aur',
+PIKAUR_OPTS = (
+    (None, 'noedit'),
+    (None, 'namesonly'),
+    (None, 'repo'),
+    ('a', 'aur'),
 )
 
 
@@ -76,14 +76,16 @@ def parse_args(args: List[str]) -> PikaurArgs:
             ('R', 'remove'),
             ('T', 'deptest'),
             ('U', 'upgrade'),
-    ):
-        parser.add_argument('-'+letter, '--'+opt, action='store_true')
-
-    for opt in (
-            'noconfirm',
-            'needed',
-    ) + PIKAUR_LONG_OPTS:
-        parser.add_argument('--'+opt, action='store_true')
+            #
+            (None, 'noconfirm'),
+            (None, 'needed'),
+    ) + PIKAUR_OPTS:
+        if letter and opt:
+            parser.add_argument('-'+letter, '--'+opt, action='store_true')
+        elif opt:
+            parser.add_argument('--'+opt, action='store_true')
+        elif letter:
+            parser.add_argument('-'+letter, action='store_true')
 
     parser.add_argument('--ignore', action='append')
     parser.add_argument('positional', nargs='*')
@@ -106,7 +108,11 @@ def parse_args(args: List[str]) -> PikaurArgs:
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> List[str]:
     if not ignore_args:
         ignore_args = []
-    ignore_args += [opt.replace('-', '_') for opt in PIKAUR_LONG_OPTS]
+    for letter, opt in PIKAUR_OPTS:
+        if letter:
+            ignore_args.append(letter)
+        if opt:
+            ignore_args.append(opt.replace('-', '_'))
     reconstructed_args = {
         f'--{key}' if len(key) > 1 else f'-{key}': value
         for key, value in parsed_args.__dict__.items()

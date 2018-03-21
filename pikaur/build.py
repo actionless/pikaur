@@ -60,7 +60,7 @@ class SrcInfo():
                     values.append(line.strip().split(prefix)[1])
         return values
 
-    def get_value(self, field: str) -> List[str]:
+    def get_value(self, field: str) -> str:
         return self.get_values(field)[0]
 
     def get_install_script(self) -> str:
@@ -78,10 +78,10 @@ class SrcInfo():
                 dependencies.append((pkg_name, version_matcher))
         return dependencies
 
-    def get_makedepends(self) -> List[str]:
+    def get_makedepends(self) -> List[Tuple[str, VersionMatcher]]:
         return self._get_depends('makedepends')
 
-    def get_depends(self) -> List[str]:
+    def get_depends(self) -> List[Tuple[str, VersionMatcher]]:
         return self._get_depends('depends')
 
     def regenerate(self) -> None:

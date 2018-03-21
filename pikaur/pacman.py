@@ -206,7 +206,7 @@ class PackageDB(PackageDBCommon):
                             (
                                 not names_only or search_query in pkg.name
                             ) and (
-                                not exact_match or search_query == pkg.name
+                                not exact_match or search_query in ([pkg.name, ] + pkg.groups)
                             )
                     ):
                         result[pkg.name] = pkg
@@ -233,7 +233,8 @@ def find_repo_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Packag
     for package_name in package_names:
         search_results = PackageDB.search_repo(package_name, exact_match=True)
         if search_results:
-            pacman_packages.append(search_results[0])
+            for search_result in search_results:
+                pacman_packages.append(search_result)
         else:
             not_found_packages.append(package_name)
     return pacman_packages, not_found_packages

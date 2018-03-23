@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import enum
 import codecs
-from typing import Dict, Any, List, Iterable, Tuple
+from typing import Dict, Any, List, Iterable, Tuple, Union
 
 
 NOT_FOUND_ATOM = object()
@@ -55,17 +55,21 @@ def open_file(file_path: str, mode='r', encoding='utf-8'):
     return codecs.open(file_path, mode, encoding=encoding)
 
 
+CONFIG_VALUE_TYPE = Union[str, List[str]]
+CONFIG_FORMAT = Dict[str, CONFIG_VALUE_TYPE]
+
+
 class ConfigReader():
 
     comment_prefixes = ('#', ';')
 
-    _cached_config: Dict[str, Dict[str, str]] = None
+    _cached_config: Dict[str, CONFIG_FORMAT] = None
     default_config_path: str = None
     list_fields: List[str] = []
     ignored_fields: List[str] = []
 
     @classmethod
-    def _parse_line(cls, line: str) -> Tuple[str, str]:
+    def _parse_line(cls, line: str) -> Tuple[str, CONFIG_VALUE_TYPE]:
         blank = (None, None, )
         if line.startswith(' '):
             return blank
@@ -95,7 +99,7 @@ class ConfigReader():
         return key, value
 
     @classmethod
-    def get_config(cls, config_path: str = None) -> Dict[str, str]:
+    def get_config(cls, config_path: str = None) -> CONFIG_FORMAT:
         config_path = config_path or cls.default_config_path
         if not cls._cached_config:
             cls._cached_config = {}

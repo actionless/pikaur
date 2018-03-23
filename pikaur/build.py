@@ -346,7 +346,7 @@ class PackageBuild(DataType):
                         break
             built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
             if not os.path.exists(built_package_path):
-                return
+                BuildError(_("{} does not exist on the filesystem.").format(built_package_path))
             if dest_dir == self.build_dir:
                 new_package_path = os.path.join(self.package_dir, full_pkg_name+pkg_ext)
                 if not os.path.exists(self.package_dir):

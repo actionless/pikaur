@@ -57,12 +57,12 @@ def open_file(file_path: str, mode='r', encoding='utf-8'):
 
 class ConfigReader():
 
+    comment_prefixes = ('#', ';')
+
     _cached_config: Dict[str, Dict[str, str]] = None
     default_config_path: str = None
     list_fields: List[str] = []
     ignored_fields: List[str] = []
-
-    comment_prefixes = ('#', ';')
 
     @classmethod
     def _parse_line(cls, line: str) -> Tuple[str, str]:
@@ -82,6 +82,16 @@ class ConfigReader():
 
         if key in cls.ignored_fields:
             return blank
+
+        if value:
+            value = value.strip('"').strip("'")
+        else:
+            return key, value
+
+        if key in cls.list_fields:
+            list_value = value.split()
+            return key, list_value
+
         return key, value
 
     @classmethod
@@ -102,14 +112,7 @@ class ConfigReader():
 
     @classmethod
     def get(cls, key: str, fallback: Any = None, config_path: str = None) -> Any:
-        value = cls.get_config(config_path=config_path).get(key)
-        if value:
-            value = value.strip('"').strip("'")
-        else:
-            return fallback
-        if key in cls.list_fields:
-            return value.split()
-        return value
+        return cls.get_config(config_path=config_path).get(key) or fallback
 
 
 def remove_dir(dir_path: str) -> None:

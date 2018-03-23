@@ -52,6 +52,10 @@ class DataType():
         super().__setattr__(key, value)
 
 
+def open_file(file_path: str, mode='r', encoding='utf-8'):
+    return codecs.open(file_path, mode, encoding=encoding)
+
+
 class ConfigReader():
 
     _cached_config: Dict[str, configparser.SectionProxy] = None
@@ -84,7 +88,7 @@ class ConfigReader():
                 strict=False,
                 inline_comment_prefixes=('#', ';')
             )
-            with open(config_path) as config_file:
+            with open_file(config_path) as config_file:
                 config_string = '\n'.join(['[all]'] + [
                     line for line in config_file.readlines()
                     if cls._approve_line_for_parsing(line)
@@ -124,7 +128,3 @@ def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[List[Any]]:
             index = 0
     if result:
         yield result
-
-
-def open_file(file_path: str, mode='r', encoding='utf-8'):
-    return codecs.open(file_path, mode, encoding=encoding)

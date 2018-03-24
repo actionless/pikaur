@@ -21,7 +21,6 @@ from .pprint import (
     color_line, bold_line,
     print_status_message,
     pretty_format_upgradeable,
-    print_not_found_packages,
     print_version,
 )
 from .pacman import PacmanColorTaskWorker
@@ -33,7 +32,7 @@ from .package_update import (
 from .prompt import retry_interactive_command_or_exit, ask_to_continue
 from .config import CACHE_ROOT, BUILD_CACHE_DIR
 
-from .install_cli import InstallPackagesCLI, exclude_ignored_packages
+from .install_cli import InstallPackagesCLI
 from .search_cli import cli_search_packages
 
 

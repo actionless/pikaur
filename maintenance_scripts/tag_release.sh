@@ -42,6 +42,7 @@ git push origin HEAD
 sed \
 	-e 's|pkgname=pikaur-git|pkgname=pikaur|' \
 	-e 's|"$pkgname::git+https://github.com/actionless/pikaur.git#branch=master"|"$pkgname-$pkgver.tar.gz"::https://github.com/actionless/pikaur/archive/"$pkgver".tar.gz|' \
+	-e "s|conflicts=('pikaur')|conflicts=('pikaur-git')|" \
 	-e '/pkgver() {/,+5 d' \
 	PKGBUILD > "${aur_repo_dir}"/PKGBUILD
 # shellcheck disable=SC2164

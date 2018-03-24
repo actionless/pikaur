@@ -21,6 +21,7 @@ depends=(
 	'sudo'
 	'fakeroot'
 )
+conflicts=('pikaur')
 
 pkgver() {
 	cd "${srcdir}/${pkgname}" || exit 2

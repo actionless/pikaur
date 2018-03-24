@@ -88,10 +88,11 @@ def find_aur_devel_updates(
     return aur_updates
 
 
-def get_aur_updates(
-        args: PikaurArgs,
-        package_names: List[str]
-) -> Tuple[List[PackageUpdate], List[str]]:
+def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
+    package_names = find_packages_not_from_repo()
+    print_status_message(_n("Reading AUR package info...",
+                            "Reading AUR packages info...",
+                            len(package_names)))
     aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
     local_packages = PackageDB.get_local_dict()
     aur_updates = []
@@ -121,14 +122,6 @@ def get_aur_updates(
                 package_ttl_days=devel_packages_expiration
             )
     return aur_updates, not_found_aur_pkgs
-
-
-def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
-    package_names = find_packages_not_from_repo()
-    print_status_message(_n("Reading AUR package info...",
-                            "Reading AUR packages info...",
-                            len(package_names)))
-    return get_aur_updates(args, package_names)
 
 
 def get_remote_package_version(new_pkg_name: str) -> Union[str, None]:

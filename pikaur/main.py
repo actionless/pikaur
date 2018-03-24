@@ -111,7 +111,9 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
     if all_package_names:
         cli_install_packages(
             args=args,
-            packages=all_package_names,
+            packages=list(set([
+                u.Name for u in repo_packages_updates
+            ] + args.positional)),
         )
     else:
         print('\n{} {}'.format(
@@ -140,7 +142,7 @@ def cli_info_packages(args: PikaurArgs) -> None:
                 value = ', '.join(value)
             pkg_info_lines.append('{key:24}: {value}'.format(
                 key=bold_line(key), value=value))
-        print('\n'.join(pkg_info_lines) + ('\n' if i+1 < num_found else ''))
+        print('\n'.join(pkg_info_lines) + ('\n' if i + 1 < num_found else ''))
 
 
 def cli_clean_packages_cache(args: PikaurArgs) -> None:

@@ -180,7 +180,7 @@ class InstallPackagesCLI():
 
         self.repo_packages_updates, self.thirdparty_repo_packages_updates = \
             self._get_repo_pkgs_updates()
-        self._get_aur_updates(aur_packages_names)
+        self.get_aur_pkgs_info(aur_packages_names)
         if not (self.repo_packages or self.aur_updates):
             print('{} {}'.format(
                 color_line('::', 10),
@@ -193,7 +193,7 @@ class InstallPackagesCLI():
         try:
             print(_("Resolving AUR dependencies..."))
             self.aur_deps_names = find_aur_deps(self.aur_packages_names)
-            self._get_aur_deps()
+            self.get_aur_deps_info()
         except PackagesNotFoundInAUR as exc:
             if exc.wanted_by:
                 print("{} {}".format(
@@ -233,7 +233,7 @@ class InstallPackagesCLI():
                 thirdparty_repo_packages_updates.append(pkg)
         return repo_packages_updates, thirdparty_repo_packages_updates
 
-    def _get_aur_updates(self, aur_packages_names: List[str]):
+    def get_aur_pkgs_info(self, aur_packages_names: List[str]):
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
             aur_pkg.name: aur_pkg
@@ -260,7 +260,7 @@ class InstallPackagesCLI():
         self.aur_packages_names = list(aur_updates.keys())
         self.aur_updates = list(aur_updates.values())
 
-    def _get_aur_deps(self):
+    def get_aur_deps_info(self):
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
             aur_pkg.name: aur_pkg

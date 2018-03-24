@@ -23,16 +23,20 @@ depends=(
 )
 
 pkgver() {
-	cd "${srcdir}/${pkgname}" || exit 1
+	cd "${srcdir}/${pkgname}" || exit 2
 	set -o pipefail
 	git describe | sed 's/^v//;s/-/+/g' || echo 0.0.1
 }
 
-package() {
-	cd "${srcdir}/${pkgname}" || exit 1
+build() {
+	cd "${srcdir}/${pkgname}" || exit 2
 	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
 	python setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
 	make
+}
+
+package() {
+	cd "${srcdir}/${pkgname}" || exit 2
 	for lang in fr ru; do
 		install -Dm644 "locale/${lang}.mo" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"
 	done

@@ -74,52 +74,23 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
         retry_interactive_command_or_exit(
             ['sudo', 'pacman', '--sync', '--refresh']
         )
-    ignore = args.ignore or []
 
-    repo_packages_updates: List[PackageUpdate] = []
     if not args.aur:
         print('{} {}'.format(
             color_line('::', 12),
             bold_line(_("Starting full system upgrade..."))
         ))
-        repo_packages_updates = [
-            pkg for pkg in find_repo_updates()
-            if pkg.Name not in ignore
-        ]
 
-    aur_updates: List[PackageUpdate] = []
     if not args.repo:
         print('{} {}'.format(
             color_line('::', 12),
             bold_line(_("Starting full AUR upgrade..."))
         ))
-        aur_updates, not_found_aur_pkgs = find_aur_updates(args)
-        exclude_ignored_packages(not_found_aur_pkgs, args)
-        if not_found_aur_pkgs:
-            print_not_found_packages(sorted(not_found_aur_pkgs))
-        aur_updates = [
-            pkg for pkg in aur_updates
-            if pkg.Name not in ignore
-        ]
 
-    all_upgradeable_package_names = [
-        u.Name for u in repo_packages_updates
-    ] + [
-        u.Name for u in aur_updates
-    ]
-    all_package_names = list(set(all_upgradeable_package_names + args.positional))
-    if all_package_names:
-        cli_install_packages(
-            args=args,
-            packages=list(set([
-                u.Name for u in repo_packages_updates
-            ] + args.positional)),
-        )
-    else:
-        print('\n{} {}'.format(
-            color_line('::', 10),
-            bold_line(_("Already up-to-date."))
-        ))
+    cli_install_packages(
+        args=args,
+        packages=args.positional,
+    )
 
 
 def cli_info_packages(args: PikaurArgs) -> None:

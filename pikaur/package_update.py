@@ -52,6 +52,7 @@ def find_repo_updates() -> List[PackageUpdate]:
                 New_Version=repo_pkg.version,
                 Current_Version=local_pkg.version,
                 Description=repo_pkg.desc,
+                Repository=repo_pkg.db.name,
             )
         )
     return repo_packages_updates

@@ -16,7 +16,8 @@ from .pacman import (
     find_repo_packages,
 )
 from .package_update import (
-    PackageUpdate, get_remote_package_version, find_aur_updates,
+    PackageUpdate, get_remote_package_version,
+    find_aur_updates, find_repo_updates,
 )
 from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
@@ -37,9 +38,6 @@ from .core import (
 )
 from .async import SingleTaskExecutor
 from .async_cmd import CmdTaskWorker
-from .replacements import (
-    find_replacements,
-)
 from .conflicts import find_conflicts
 from .prompt import (
     ask_to_continue, retry_interactive_command,
@@ -47,12 +45,17 @@ from .prompt import (
 )
 
 
+def package_is_ignored(package_name: str, args: PikaurArgs) -> bool:
+    if package_name in (args.ignore or []) + PacmanConfig().options.get('IgnorePkg', []):
+        return True
+
+
 def exclude_ignored_packages(package_names: List[str], args: PikaurArgs) -> List[str]:
     excluded_pkgs = []
-    for ignored_pkg in (args.ignore or []) + PacmanConfig().options.get('IgnorePkg', []):
-        if ignored_pkg in package_names:
-            package_names.remove(ignored_pkg)
-            excluded_pkgs.append(ignored_pkg)
+    for pkg_name in package_names[:]:
+        if package_is_ignored(pkg_name, args=args):
+            package_names.remove(pkg_name)
+            excluded_pkgs.append(pkg_name)
     return excluded_pkgs
 
 
@@ -90,7 +93,6 @@ class InstallPackagesCLI():
         # @TODO: ask to install optdepends (?)
         if not args.downloadonly:
             self.ask_about_package_conflicts()
-            self.ask_about_package_replacements()
         self.review_build_files()
 
         # get sudo for further questions (command should do nothing):
@@ -176,24 +178,33 @@ class InstallPackagesCLI():
         self.repo_packages, aur_packages_names = find_repo_packages(
             self.install_package_names
         )
+        if self.args.aur:
+            self.repo_packages = []
+        if self.args.repo:
+            aur_packages_names = []
         self.repo_packages_names = [pkg.name for pkg in self.repo_packages]
 
-        self.repo_packages_updates, self.thirdparty_repo_packages_updates = \
-            self._get_repo_pkgs_updates()
+        self.get_repo_pkgs_info()
         self.get_aur_pkgs_info(aur_packages_names)
-        if not (self.repo_packages or self.aur_updates):
-            print('{} {}'.format(
-                color_line('::', 10),
-                _("Nothing to do."),
-            ))
+        if not (self.repo_packages_updates or self.thirdparty_repo_packages_updates or self.aur_updates):
+            if self.args.sysupgrade:
+                self._install_repo_packages([])
+                print('{} {}'.format(
+                    color_line('::', 11),
+                    _("Already up-to-date."),
+                ))
+            else:
+                print('{} {}'.format(
+                    color_line('::', 10),
+                    _("Nothing to do."),
+                ))
             sys.exit(0)
 
-        if not self.aur_packages_names:
-            return
         try:
-            print(_("Resolving AUR dependencies..."))
-            self.aur_deps_names = find_aur_deps(self.aur_packages_names)
-            self.get_aur_deps_info()
+            if self.aur_packages_names:
+                print(_("Resolving AUR dependencies..."))
+            aur_deps_names = find_aur_deps(self.aur_packages_names)
+            self.get_aur_deps_info(aur_deps_names)
         except PackagesNotFoundInAUR as exc:
             if exc.wanted_by:
                 print("{} {}".format(
@@ -213,37 +224,56 @@ class InstallPackagesCLI():
             ))
             sys.exit(131)
 
-    def _get_repo_pkgs_updates(self) -> Tuple[List[PackageUpdate], List[PackageUpdate]]:
+    def get_repo_pkgs_info(self) -> Tuple[List[PackageUpdate], List[PackageUpdate]]:
         local_pkgs = PackageDB.get_local_dict()
-        repo_packages_updates = []
-        thirdparty_repo_packages_updates = []
+        repo_packages_updates = {
+            upd.Name: upd for upd in find_repo_updates()
+        } if self.args.sysupgrade else {}
+
         for repo_pkg in self.repo_packages:
             pkg_name = repo_pkg.name
+            if pkg_name in repo_packages_updates:
+                continue
             local_pkg = local_pkgs.get(pkg_name)
-            pkg = PackageUpdate(
+            repo_packages_updates[pkg_name] = PackageUpdate(
                 Name=pkg_name,
                 Current_Version=local_pkg.version if local_pkg else ' ',
                 New_Version=repo_pkg.version,
                 Description=repo_pkg.desc,
                 Repository=repo_pkg.db.name
             )
-            if repo_pkg.db.name in OFFICIAL_REPOS:
-                repo_packages_updates.append(pkg)
+
+        repo_packages_installinfo = []
+        thirdparty_repo_packages_installinfo = []
+        for pkg_name, pkg_update in repo_packages_updates.items():
+            if pkg_name in self.manually_excluded_packages_names or package_is_ignored(pkg_name, args=self.args):
+                continue
+            if pkg_update.Repository in OFFICIAL_REPOS:
+                repo_packages_installinfo.append(pkg_update)
             else:
-                thirdparty_repo_packages_updates.append(pkg)
-        return repo_packages_updates, thirdparty_repo_packages_updates
+                thirdparty_repo_packages_installinfo.append(pkg_update)
+        self.repo_packages_updates = repo_packages_installinfo
+        self.thirdparty_repo_packages_updates = thirdparty_repo_packages_installinfo
 
     def get_aur_pkgs_info(self, aur_packages_names: List[str]):
         local_pkgs = PackageDB.get_local_dict()
+        aur_pkg_list, not_found_aur_pkgs = find_aur_packages(aur_packages_names)
+        if not_found_aur_pkgs:
+            print_not_found_packages(sorted(not_found_aur_pkgs))
+            sys.exit(6)
         aur_pkgs = {
             aur_pkg.name: aur_pkg
-            for aur_pkg in find_aur_packages(
-                aur_packages_names
-            )[0]
+            for aur_pkg in aur_pkg_list
         }
-        aur_updates = {
-            upd.Name: upd for upd in find_aur_updates(args=self.args)[0]
-        } if self.args.sysupgrade else {}
+        aur_updates = {}
+        if self.args.sysupgrade:
+            aur_updates_list, not_found_aur_pkgs = find_aur_updates(self.args)
+            exclude_ignored_packages(not_found_aur_pkgs, self.args)
+            if not_found_aur_pkgs:
+                print_not_found_packages(sorted(not_found_aur_pkgs))
+            aur_updates = {
+                upd.Name: upd for upd in aur_updates_list
+            }
         for pkg_name, aur_pkg in aur_pkgs.items():
             if pkg_name in aur_updates:
                 continue
@@ -255,21 +285,21 @@ class InstallPackagesCLI():
                 Description=aur_pkg.desc
             )
         for pkg_name in list(aur_updates.keys())[:]:
-            if pkg_name in self.manually_excluded_packages_names:
+            if pkg_name in self.manually_excluded_packages_names or package_is_ignored(pkg_name, args=self.args):
                 del aur_updates[pkg_name]
         self.aur_packages_names = list(aur_updates.keys())
         self.aur_updates = list(aur_updates.values())
 
-    def get_aur_deps_info(self):
+    def get_aur_deps_info(self, aur_deps_names: List[str]):
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
             aur_pkg.name: aur_pkg
             for aur_pkg in find_aur_packages(
-                self.aur_deps_names
+                aur_deps_names
             )[0]
         }
         aur_deps = []
-        for pkg_name in self.aur_deps_names:
+        for pkg_name in aur_deps_names:
             aur_pkg = aur_pkgs[pkg_name]
             local_pkg = local_pkgs.get(pkg_name)
             aur_deps.append(PackageUpdate(
@@ -278,6 +308,7 @@ class InstallPackagesCLI():
                 New_Version=aur_pkg.version,
                 Description=aur_pkg.desc
             ))
+        self.aur_deps_names = aur_deps_names
         self.aur_deps = aur_deps
 
     def manual_package_selection(self):
@@ -312,6 +343,8 @@ class InstallPackagesCLI():
             pkg_name = pkg_update.Name
             if pkg_name not in selected_packages:
                 self.manually_excluded_packages_names.append(pkg_name)
+                if pkg_name in self.install_package_names:
+                    self.install_package_names.remove(pkg_name)
 
     def install_prompt(self) -> None:
 
@@ -439,21 +472,6 @@ class InstallPackagesCLI():
                 ), default_yes=False)
                 if not answer:
                     sys.exit(125)
-
-    def ask_about_package_replacements(self) -> None:
-        package_replacements = find_replacements()
-        for repo_pkg_name, installed_pkgs_names in package_replacements.items():
-            for installed_pkg_name in installed_pkgs_names:
-                if self.ask_to_continue(
-                        '{} {}'.format(
-                            color_line('::', 11),
-                            _("New package '{new}' replaces installed '{installed}' "
-                              "Proceed?").format(
-                                  new=bold_line(repo_pkg_name),
-                                  installed=bold_line(installed_pkg_name))
-                        ), default_yes=False
-                ):
-                    self.repo_packages_names.append(repo_pkg_name)
 
     def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
         if self.args.noedit or self.args.noconfirm:
@@ -599,6 +617,10 @@ class InstallPackagesCLI():
 
     def _install_repo_packages(self, packages_to_be_installed: List[str]) -> None:
         if self.repo_packages_names:
+            extra_args = []
+            for excluded_pkg_name in self.manually_excluded_packages_names:
+                extra_args.append('--ignore')
+                extra_args.append(excluded_pkg_name)
             if not retry_interactive_command(
                     [
                         'sudo',
@@ -607,10 +629,9 @@ class InstallPackagesCLI():
                         f'--ask={ASK_BITS}',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
-                        'sysupgrade',
                         'refresh',
                         'ignore',
-                    ]) + packages_to_be_installed,
+                    ]) + packages_to_be_installed + extra_args,
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_repo_transaction()

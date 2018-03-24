@@ -636,7 +636,7 @@ class InstallPackagesCLI():
             )
 
     def _install_repo_packages(self, packages_to_be_installed: List[str]) -> None:
-        if self.repo_packages_names:
+        if self.repo_packages_names or self.args.sysupgrade:
             extra_args = []
             for excluded_pkg_name in self.manually_excluded_packages_names:
                 extra_args.append('--ignore')

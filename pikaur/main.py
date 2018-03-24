@@ -53,7 +53,7 @@ init_readline()
 def cli_print_upgradeable(args: PikaurArgs) -> None:
     updates: List[PackageUpdate] = []
     if not args.repo:
-        aur_updates, _not_found_aur_pkgs = find_aur_updates()
+        aur_updates, _not_found_aur_pkgs = find_aur_updates(args)
         updates += aur_updates
     if not args.aur:
         updates += find_repo_updates()
@@ -93,7 +93,7 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
             color_line('::', 12),
             bold_line(_("Starting full AUR upgrade..."))
         ))
-        aur_updates, not_found_aur_pkgs = find_aur_updates()
+        aur_updates, not_found_aur_pkgs = find_aur_updates(args)
         exclude_ignored_packages(not_found_aur_pkgs, args)
         if not_found_aur_pkgs:
             print_not_found_packages(sorted(not_found_aur_pkgs))
@@ -178,15 +178,16 @@ def cli_print_help(args: PikaurArgs) -> None:
         'options:', '\n' + _("Common pacman options:")
     )
     pikaur_options_help: List[Tuple[str, str, str]] = []
+    if args.sync or args.query:
+        pikaur_options_help += [
+            ('-a', '--aur', _("query packages from AUR only")),
+            ('', '--repo', _("query packages from repository only")),
+        ]
     if args.sync:
         pikaur_options_help += [
             ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
             ('', '--namesonly', _("search only in package names")),
-        ]
-    if args.sync or args.query:
-        pikaur_options_help += [
-            ('', '--repo', _("query packages from repository only")),
-            ('-a', '--aur', _("query packages from AUR only")),
+            ('', '--devel', _("sysupgrade '-git' and other dev packages older than 1 day")),
         ]
     print(''.join([
         '\n',
@@ -194,7 +195,7 @@ def cli_print_help(args: PikaurArgs) -> None:
         '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
         '\n'.join([
             '{:>5} {:<16} {}'.format(
-                short_opt or '', long_opt or '', descr
+                short_opt and (short_opt + ',') or '', long_opt or '', descr
             )
             for short_opt, long_opt, descr in pikaur_options_help
         ])

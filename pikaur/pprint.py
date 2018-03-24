@@ -86,7 +86,7 @@ def pretty_format_upgradeable(
 
     def pretty_format(pkg_update: 'PackageUpdate') -> Tuple[str, str]:
         common_version, difference_size = get_common_version(
-            pkg_update.Current_Version, pkg_update.New_Version
+            pkg_update.Current_Version or '', pkg_update.New_Version or ''
         )
         color_config = PikaurConfig().colors
         version_color: int = color_config.get('Version')  # type: ignore
@@ -97,26 +97,37 @@ def pretty_format_upgradeable(
             difference_size,
             pkg_update.Name
         )
+
         pkg_name = _bold_line(pkg_update.Name)
         pkg_len = len(pkg_update.Name)
+
+        days_old = ''
+        if pkg_update.devel_pkg_age_days:
+            days_old = ' ' + _('({} days old)').format(pkg_update.devel_pkg_age_days)
+
         if (print_repo or verbose) and pkg_update.Repository:
             pkg_name = '{}{}'.format(
                 _color_line(pkg_update.Repository + '/', 13),
                 pkg_name
             )
             pkg_len += len(pkg_update.Repository) + 1
+
         return (
-            template or ' {pkg_name}{spacing} {current_version}{spacing2} -> {new_version}{verbose}'
+            template or (
+                ' {pkg_name}{spacing}'
+                ' {current_version}{spacing2} -> {new_version}{days_old}{verbose}'
+            )
         ).format(
             pkg_name=pkg_name,
+            days_old=days_old,
             current_version=_color_line(common_version, version_color) +
             _color_line(
-                get_version_diff(pkg_update.Current_Version, common_version),
+                get_version_diff(pkg_update.Current_Version or '', common_version),
                 old_color
             ),
             new_version=_color_line(common_version, version_color) +
             _color_line(
-                get_version_diff(pkg_update.New_Version, common_version),
+                get_version_diff(pkg_update.New_Version or '', common_version),
                 new_color
             ),
             spacing=' ' * (column_width - pkg_len),

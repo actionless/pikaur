@@ -15,7 +15,10 @@ from .pacman import (
     PackageDB, PacmanConfig,
     find_repo_packages,
 )
-from .package_update import PackageUpdate, get_remote_package_version
+from .package_update import (
+    PackageUpdate,
+    get_remote_package_version, get_aur_updates,
+)
 from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
@@ -211,26 +214,6 @@ class InstallPackagesCLI():
                 thirdparty_repo_packages_updates.append(pkg)
         return repo_packages_updates, thirdparty_repo_packages_updates
 
-    def _get_aur_updates(self) -> List[PackageUpdate]:
-        local_pkgs = PackageDB.get_local_dict()
-        aur_pkgs = {
-            aur_pkg.name: aur_pkg
-            for aur_pkg in find_aur_packages(
-                self.aur_packages_names
-            )[0]
-        }
-        aur_updates = []
-        for pkg_name in self.aur_packages_names:
-            aur_pkg = aur_pkgs[pkg_name]
-            local_pkg = local_pkgs.get(pkg_name)
-            aur_updates.append(PackageUpdate(
-                Name=pkg_name,
-                Current_Version=local_pkg.version if local_pkg else ' ',
-                New_Version=aur_pkg.version,
-                Description=aur_pkg.desc
-            ))
-        return aur_updates
-
     def _get_aur_deps(self) -> List[PackageUpdate]:
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
@@ -274,7 +257,10 @@ class InstallPackagesCLI():
     def install_prompt(self) -> None:
         repo_packages_updates, thirdparty_repo_packages_updates = \
             self._get_repo_pkgs_updates()
-        aur_updates = self._get_aur_updates()
+        aur_updates, _not_found_pkgs = get_aur_updates(
+            args=self.args,
+            package_names=self.aur_packages_names
+        )
         aur_deps = self._get_aur_deps()
 
         def _print_sysupgrade(verbose=False) -> None:

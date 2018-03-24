@@ -51,6 +51,7 @@ PIKAUR_OPTS = (
     (None, 'namesonly'),
     (None, 'repo'),
     ('a', 'aur'),
+    (None, 'devel'),
 )
 
 

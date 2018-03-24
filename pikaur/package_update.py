@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Union, Tuple
 
 import pyalpm
@@ -6,8 +7,19 @@ from .core import DataType
 from .i18n import _n
 from .version import compare_versions
 from .pacman import PackageDB, find_packages_not_from_repo
-from .aur import find_aur_packages
+from .aur import AURPackageInfo, find_aur_packages
 from .pprint import print_status_message
+from .args import PikaurArgs
+from .config import PikaurConfig
+
+
+DEVEL_PKGS_POSTFIXES = (
+    '-git',
+    '-svn',
+    '-bzr',
+    '-hg',
+    '-cvs',
+)
 
 
 class PackageUpdate(DataType):
@@ -17,6 +29,7 @@ class PackageUpdate(DataType):
     New_Version: str = None
     Description: str = None
     Repository: str = None
+    devel_pkg_age_days: int = None
 
     def __repr__(self) -> str:
         return (
@@ -44,27 +57,78 @@ def find_repo_updates() -> List[PackageUpdate]:
     return repo_packages_updates
 
 
-def find_aur_updates() -> Tuple[List[PackageUpdate], List[str]]:
-    package_names = find_packages_not_from_repo()
+def find_aur_devel_updates(
+        aur_pkgs_info: List[AURPackageInfo],
+        package_ttl_days: int
+) -> List[PackageUpdate]:
     local_packages = PackageDB.get_local_dict()
-    print_status_message(_n("Reading AUR package info...",
-                            "Reading AUR packages info...",
-                            len(package_names)))
-    aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
+    now = datetime.now()
     aur_updates = []
-    for result in aur_pkgs_info:
-        pkg_name = result.name
-        aur_version = result.version
+    for aur_pkg in sorted(aur_pkgs_info, key=lambda x: x.name):
+        pkg_name = aur_pkg.name
+        is_devel_pkg = False
+        for devel_pkg_postfix in DEVEL_PKGS_POSTFIXES:
+            if pkg_name.endswith(devel_pkg_postfix):
+                is_devel_pkg = True
+        if not is_devel_pkg:
+            continue
+        local_pkg = local_packages[pkg_name]
+        pkg_install_datetime = datetime.fromtimestamp(
+            local_pkg.installdate
+        )
+        pkg_age_days = (now - pkg_install_datetime).days
+        if pkg_age_days >= package_ttl_days:
+            aur_updates.append(PackageUpdate(
+                Name=pkg_name,
+                Current_Version=local_pkg.version,
+                New_Version='devel',
+                Description=aur_pkg.desc,
+                devel_pkg_age_days=pkg_age_days
+            ))
+    return aur_updates
+
+
+def get_aur_updates(
+        args: PikaurArgs,
+        package_names: List[str]
+) -> Tuple[List[PackageUpdate], List[str]]:
+    aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
+    local_packages = PackageDB.get_local_dict()
+    aur_updates = []
+    aur_pkgs_up_to_date = []
+    for aur_pkg in aur_pkgs_info:
+        pkg_name = aur_pkg.name
+        aur_version = aur_pkg.version
         current_version = local_packages[pkg_name].version
-        compare_result = compare_versions(current_version, aur_version)
-        if compare_result < 0:
+        compare_aur_pkg = compare_versions(current_version, aur_version)
+        if compare_aur_pkg < 0:
             aur_updates.append(PackageUpdate(
                 Name=pkg_name,
                 New_Version=aur_version,
                 Current_Version=current_version,
-                Description=result.desc
+                Description=aur_pkg.desc
             ))
+        else:
+            aur_pkgs_up_to_date.append(aur_pkg)
+    if aur_pkgs_up_to_date:
+        sync_config = PikaurConfig().sync
+        devel_packages_expiration: int = sync_config.get('DevelPkgsExpiration')  # type: ignore
+        if args.devel:
+            devel_packages_expiration = 1
+        if devel_packages_expiration > -1:
+            aur_updates += find_aur_devel_updates(
+                aur_pkgs_up_to_date,
+                package_ttl_days=devel_packages_expiration
+            )
     return aur_updates, not_found_aur_pkgs
+
+
+def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
+    package_names = find_packages_not_from_repo()
+    print_status_message(_n("Reading AUR package info...",
+                            "Reading AUR packages info...",
+                            len(package_names)))
+    return get_aur_updates(args, package_names)
 
 
 def get_remote_package_version(new_pkg_name: str) -> Union[str, None]:

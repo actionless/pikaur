@@ -32,6 +32,10 @@ _CONFIG_SCHEMA = {
             'type': 'bool',
             'default': 'no',
         },
+        'DevelPkgsExpiration': {
+            'type': 'int',
+            'default': '-1',
+        },
     },
     'colors': {
         'Version': {

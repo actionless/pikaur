@@ -5,7 +5,7 @@ from typing import Union
 from .core import running_as_root, open_file
 
 
-VERSION = '0.9-dev'
+VERSION = '0.9.1-dev'
 
 if running_as_root():
     CACHE_ROOT = '/var/cache/pikaur'

@@ -16,12 +16,12 @@ AUR_REPOS_CACHE_DIR = 'aur_repos'
 BUILD_CACHE_DIR = 'build'
 PACKAGE_CACHE_DIR = 'pkg'
 
-_CONFIG_ROOT = os.environ.get(
+CONFIG_ROOT = os.environ.get(
     "XDG_CONFIG_HOME",
     os.path.join(os.environ.get("HOME"), ".config/")
 )
 CONFIG_PATH = os.path.join(
-    _CONFIG_ROOT,
+    CONFIG_ROOT,
     "pikaur.conf"
 )
 
@@ -65,8 +65,8 @@ def write_config(config: configparser.ConfigParser = None) -> None:
                 config[section_name][option_name] = option_schema['default']
                 need_write = True
     if need_write:
-        if not os.path.exists(_CONFIG_ROOT):
-            os.makedirs(_CONFIG_ROOT)
+        if not os.path.exists(CONFIG_ROOT):
+            os.makedirs(CONFIG_ROOT)
         with open_file(CONFIG_PATH, 'w') as configfile:
             config.write(configfile)
 

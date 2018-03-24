@@ -1,7 +1,7 @@
 import os
 import shutil
 import platform
-from typing import List, Union, Dict, Tuple
+from typing import List, Union, Dict, Tuple, Any, Optional
 
 from .core import (
     DataType, ConfigReader,
@@ -13,6 +13,7 @@ from .i18n import _
 from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
 from .config import (
     CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_DIR,
+    CONFIG_ROOT,
 )
 from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB, ASK_BITS
@@ -111,8 +112,33 @@ class PackageBaseSrcInfo(SrcInfo):
                 self._common_lines.append(line)
 
 
-class MakepkgConfig(ConfigReader):
-    default_config_path: str = "/etc/makepkg.conf"  # type: ignore
+class MakepkgConfig():
+
+    _user_makepkg_path = "unset"
+
+    @classmethod
+    def get_user_makepkg_path(cls) -> Optional[str]:
+        if cls._user_makepkg_path == 'unset':
+            possible_paths = [
+                os.path.expanduser('~/.makepkg.conf'),
+                os.path.join(CONFIG_ROOT, "pacman/makepkg.conf"),
+            ]
+            config_path = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    config_path = path
+            cls._user_makepkg_path = config_path
+        return cls._user_makepkg_path
+
+    @classmethod
+    def get(cls, key: str, fallback: Any = None, config_path: str = None) -> Any:
+        value = ConfigReader.get(key, fallback, config_path="/etc/makepkg.conf")
+        if cls.get_user_makepkg_path():
+            print(cls.get_user_makepkg_path())
+            value = ConfigReader.get(key, value, config_path=cls.get_user_makepkg_path())
+        if config_path:
+            value = ConfigReader.get(key, value, config_path=config_path)
+        return value
 
 
 class PackageBuild(DataType):
@@ -325,9 +351,8 @@ class PackageBuild(DataType):
 
     def _set_built_package_path(self) -> None:
         dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)
-        pkg_ext = MakepkgConfig.get('PKGEXT', '.pkg.tar.xz')
         pkg_ext = MakepkgConfig.get(
-            'PKGEXT', pkg_ext,
+            'PKGEXT', '.pkg.tar.xz',
             config_path=os.path.join(self.build_dir, 'PKGBUILD')
         )
         full_pkg_names = SingleTaskExecutor(CmdTaskWorker(

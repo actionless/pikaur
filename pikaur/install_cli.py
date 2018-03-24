@@ -60,6 +60,28 @@ def exclude_ignored_packages(package_names: List[str], args: PikaurArgs) -> List
     return excluded_pkgs
 
 
+def print_ignored_package(package_name):
+    current = PackageDB.get_local_dict().get(package_name)
+    current_version = current.version if current else ''
+    new_version = get_remote_package_version(package_name)
+    print('{} {}'.format(
+        color_line('::', 11),
+        _("Ignoring package {}").format(
+            pretty_format_upgradeable(
+                [PackageUpdate(
+                    Name=package_name,
+                    Current_Version=current_version,
+                    New_Version=new_version or ''
+                )],
+                template=(
+                    "{pkg_name} ({current_version} => {new_version})"
+                    if current_version else
+                    "{pkg_name} {new_version}"
+                )
+            ))
+    ))
+
+
 class InstallPackagesCLI():
     # @TODO: refactor this warning:
     # pylint: disable=too-many-public-methods,too-many-instance-attributes
@@ -151,27 +173,10 @@ class InstallPackagesCLI():
     def exclude_ignored_packages(self) -> None:
         ignored_packages = exclude_ignored_packages(self.install_package_names, self.args)
         for package_name in ignored_packages:
-            current = PackageDB.get_local_dict().get(package_name)
-            current_version = current.version if current else ''
-            new_version = get_remote_package_version(package_name)
-            print('{} {}'.format(
-                color_line('::', 11),
-                _("Ignoring package {}").format(
-                    pretty_format_upgradeable(
-                        [PackageUpdate(
-                            Name=package_name,
-                            Current_Version=current_version,
-                            New_Version=new_version or ''
-                        )],
-                        template=(
-                            "{pkg_name} ({current_version} => {new_version})"
-                            if current_version else
-                            "{pkg_name} {new_version}"
-                        )
-                    ))
-            ))
+            print_ignored_package(package_name)
         for package_name in self.manually_excluded_packages_names:
             if package_name in self.install_package_names:
+                print_ignored_package(package_name)
                 self.install_package_names.remove(package_name)
 
     def get_all_packages_info(self) -> None:
@@ -256,6 +261,7 @@ class InstallPackagesCLI():
             ) or (
                 package_is_ignored(pkg_name, args=self.args)
             ):
+                print_ignored_package(pkg_name)
                 continue
             if pkg_update.Repository in OFFICIAL_REPOS:
                 repo_packages_installinfo.append(pkg_update)
@@ -299,6 +305,7 @@ class InstallPackagesCLI():
             ) or (
                 package_is_ignored(pkg_name, args=self.args)
             ):
+                print_ignored_package(pkg_name)
                 del aur_updates_install_info[pkg_name]
         self.aur_packages_names = list(aur_updates_install_info.keys())
         self.aur_updates_install_info = list(aur_updates_install_info.values())

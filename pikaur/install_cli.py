@@ -42,7 +42,7 @@ from .async_cmd import CmdTaskWorker
 from .conflicts import find_conflicts
 from .prompt import (
     ask_to_continue, retry_interactive_command,
-    retry_interactive_command_or_exit,
+    retry_interactive_command_or_exit, get_input,
 )
 
 
@@ -381,12 +381,14 @@ class InstallPackagesCLI():
 
         def _confirm_sysupgrade(verbose=False) -> str:
             _print_sysupgrade(verbose=verbose)
-            answer = input('{} {}\n{} {}\n> '.format(
+            prompt = '{} {}\n{} {}\n>>'.format(
                 color_line('::', 12),
-                bold_line(_("Proceed with installation? [Y/n]")),
+                bold_line('Proceed with installation? [Y/n] '),
                 color_line('::', 12),
-                bold_line(_("[v]iew package detail   [m]anually select packages"))
-            ))
+                bold_line('[v]iew package detail   [m]anually select packages'))
+
+            answer = get_input(prompt, 'Ynvm')
+
             return answer
 
         if self.args.noconfirm:
@@ -439,15 +441,17 @@ class InstallPackagesCLI():
                 if self.args.noconfirm:
                     answer = _("a")
                 else:
-                    answer = input('{} {}\n{}\n{}\n{}\n{}\n> '.format(
+                    prompt = '{} {}\n{}\n{}\n{}\n{}\n> '.format(
                         color_line('::', 11),
-                        _("Try recovering?"),
-                        _("[c] git checkout -- '*'"),
-                        # _("[c] git checkout -- '*' ; git clean -f -d -x"),
-                        _("[r] remove dir and clone again"),
-                        _("[s] skip this package"),
-                        _("[a] abort"),
-                    ))
+                        'Try recovering?',
+                        "[c] git checkout -- '*'",
+                        # "[c] git checkout -- '*' ; git clean -f -d -x",
+                        '[r] remove dir and clone again',
+                        '[s] skip this package',
+                        '[a] abort')
+
+                    answer = get_input(prompt, 'crsA')
+
                 answer = answer.lower()[0]
                 if answer == _("c"):
                     package_build.git_reset_changed()

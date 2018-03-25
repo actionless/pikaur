@@ -1,26 +1,71 @@
 import sys
+import tty
 from typing import Callable, List
 
 from .core import interactive_spawn
 from .i18n import _
 from .pprint import color_line, print_status_message
-from .args import PikaurArgs
+
+REQUIRE_PRESS_ENTER = True  # TODO Load this from config file
 
 
-def ask_to_continue(text: str = None, default_yes=True, args: PikaurArgs = None) -> bool:
-    if text is None:
-        text = _("Do you want to proceed?")
-    if args and args.noconfirm and default_yes:
-        print_status_message('{} {}'.format(text, _("[Y]es (--noconfirm)")))
-        return True
-    answer = input('{} {} '.format(text, _("[Y/n]") if default_yes else _("[y/N]")))
-    if default_yes:
-        if answer and answer.lower()[0] != _("y"):
-            return False
+def get_answer(question, answers='Yn'):
+    '''
+    Function displays a question and reads a single character
+    from STDIN as an answer. Then returns the character as lower character.
+    Valid answers are passed as 'answers' variable (the default is in capital).
+    Invalid answer will return an empty string.
+    '''
+
+    default = ' '
+
+    for letter in answers:
+        if letter.isupper():
+            default = letter.lower()
+            break
+
+    if not sys.stdin.isatty():
+        return default
+
+    print(question, flush=True, end=" ")
+    previous_tty_settings = tty.tcgetattr(sys.stdin.fileno())
+    try:
+        tty.setraw(sys.stdin.fileno())
+        answer = sys.stdin.read(1).lower()
+
+        # Exit when CRTL+C or CTRL+D
+        if ord(answer) == 3 or ord(answer) == 4:
+            sys.exit(1)
+        # Default when Enter
+        if ord(answer) == 13:
+            answer = default
+            return default
+        if answer in answers:
+            return answer
+        return ' '
+    except Exception:
+        return ' '
+    finally:
+        tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)
+        sys.stdout.write('{}\r\n'.format(answer))
+        tty.tcdrain(sys.stdin.fileno())
+
+
+def get_input(prompt: str, answers: str=None):
+    if REQUIRE_PRESS_ENTER:
+        answer = input(prompt).lower()
     else:
-        if not answer or answer.lower()[0] != _("y"):
-            return False
-    return True
+        answer = get_answer(prompt, answers=answers)
+
+    return answer
+
+
+def ask_to_continue(text='Do you want to proceed?', default_yes=True):
+    prompt = text + (' [Y/n] ' if default_yes else ' [y/N] ')
+    answers = 'Yn' if default_yes else 'yN'
+
+    answer = get_input(prompt, answers)
+    return answer == 'y'
 
 
 def ask_to_retry_decorator(fun: Callable) -> Callable:

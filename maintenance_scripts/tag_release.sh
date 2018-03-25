@@ -25,6 +25,7 @@ git tag -a "${new_version}" -f
 echo "[configm push to pikaur git repo?]"
 read -r
 git push origin HEAD
+git push origin "${new_version}"
 
 
 cp PKGBUILD "${aur_dev_repo_dir}"/PKGBUILD
@@ -43,6 +44,7 @@ sed \
 	-e 's|pkgname=pikaur-git|pkgname=pikaur|' \
 	-e 's|"$pkgname::git+https://github.com/actionless/pikaur.git#branch=master"|"$pkgname-$pkgver.tar.gz"::https://github.com/actionless/pikaur/archive/"$pkgver".tar.gz|' \
 	-e "s|conflicts=('pikaur')|conflicts=('pikaur-git')|" \
+	-e 's|cd "${srcdir}/${pkgname}"|cd "${srcdir}/${pkgname}-${pkgver}"|' \
 	-e '/pkgver() {/,+5 d' \
 	PKGBUILD > "${aur_repo_dir}"/PKGBUILD
 # shellcheck disable=SC2164

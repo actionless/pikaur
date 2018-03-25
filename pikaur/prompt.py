@@ -29,7 +29,7 @@ def read_answer_from_tty(question: str, answers: str = 'Yn') -> str:
         return default
 
     print(question, flush=True, end=" ")
-    previous_tty_settings = tty.tcgetattr(sys.stdin.fileno())
+    previous_tty_settings = tty.tcgetattr(sys.stdin.fileno())  # type: ignore
     try:
         tty.setraw(sys.stdin.fileno())
         answer = sys.stdin.read(1).lower()
@@ -47,9 +47,9 @@ def read_answer_from_tty(question: str, answers: str = 'Yn') -> str:
     except Exception:
         return ' '
     finally:
-        tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)
+        tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)  # type: ignore
         sys.stdout.write('{}\r\n'.format(answer))
-        tty.tcdrain(sys.stdin.fileno())
+        tty.tcdrain(sys.stdin.fileno())  # type: ignore
 
 
 def get_input(prompt: str, answers=None) -> str:
@@ -77,7 +77,6 @@ def ask_to_continue(text: str = None, default_yes: bool = True, args: PikaurArgs
 
 
 def ask_to_retry_decorator(fun: Callable) -> Callable:
-
     def decorated(*args, **kwargs):
         while True:
             result = fun(*args, **kwargs)

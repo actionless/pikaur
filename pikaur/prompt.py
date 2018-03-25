@@ -10,7 +10,7 @@ from .i18n import _
 from .pprint import color_line, print_status_message
 
 
-def get_answer(question: str, answers: str='Yn') -> str:
+def read_answer_from_tty(question: str, answers='Yn') -> str:
     '''
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
@@ -52,11 +52,11 @@ def get_answer(question: str, answers: str='Yn') -> str:
         tty.tcdrain(sys.stdin.fileno())
 
 
-def get_input(prompt: str, answers: str=None) -> str:
+def get_input(prompt: str, answers=None) -> str:
     if PikaurConfig().ui.get('RequireEnterConfirm'):
         answer = input(prompt).lower()
     else:
-        answer = get_answer(prompt, answers=answers)
+        answer = read_answer_from_tty(prompt, answers=answers)
 
     return answer
 

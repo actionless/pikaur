@@ -53,7 +53,7 @@ def get_answer(question: str, answers: str='Yn') -> str:
 
 
 def get_input(prompt: str, answers: str=None) -> str:
-    if PikaurConfig().misc.get('RequireEnterConfirm'):
+    if PikaurConfig().ui.get('RequireEnterConfirm'):
         answer = input(prompt).lower()
     else:
         answer = get_answer(prompt, answers=answers)

@@ -2,9 +2,8 @@ import sys
 import tty
 from typing import Callable, List
 
-from pikaur.config import PikaurConfig
-
-from pikaur.args import PikaurArgs
+from .args import PikaurArgs
+from .config import PikaurConfig
 
 from .core import interactive_spawn
 from .i18n import _

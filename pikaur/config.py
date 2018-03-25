@@ -60,7 +60,7 @@ _CONFIG_SCHEMA = {
     'misc': {
         'RequireEnterConfirm': {
             'type': 'bool',
-            'default': 'no'
+            'default': 'yes'
         }
     }
 }

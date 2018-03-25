@@ -18,7 +18,7 @@ Inspired by `pacaur`, `yaourt` and `yay`.
 ### Installation
 
 ```sh
-git clone https://github.com/actionless/pikaur.git
+git clone https://aur.archlinux.org/pikaur.git
 cd pikaur
 makepkg -fsri
 ```

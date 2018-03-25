@@ -1,7 +1,11 @@
 import sys
-from typing import List, Any
+from typing import List, Any, Tuple
 
 from . import argparse as argparse  # pylint: disable=no-name-in-module
+
+from .i18n import _
+from .async import SingleTaskExecutor
+from .async_cmd import CmdTaskWorker
 
 
 class PikaurArgs(argparse.Namespace):
@@ -46,6 +50,39 @@ class PikaurArgumentParser(argparse.ArgumentParser):
         )
 
 
+def cli_print_help(args: PikaurArgs) -> None:
+    pacman_help = SingleTaskExecutor(CmdTaskWorker(
+        ['pacman', ] + args.raw,
+    )).execute().stdout.replace(
+        'pacman', 'pikaur'
+    ).replace(
+        'options:', '\n' + _("Common pacman options:")
+    )
+    pikaur_options_help: List[Tuple[str, str, str]] = []
+    if args.sync or args.query:
+        pikaur_options_help += [
+            ('-a', '--aur', _("query packages from AUR only")),
+            ('', '--repo', _("query packages from repository only")),
+        ]
+    if args.sync:
+        pikaur_options_help += [
+            ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
+            ('', '--namesonly', _("search only in package names")),
+            ('', '--devel', _("sysupgrade '-git' and other dev packages older than 1 day")),
+        ]
+    print(''.join([
+        '\n',
+        pacman_help,
+        '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
+        '\n'.join([
+            '{:>5} {:<16} {}'.format(
+                short_opt and (short_opt + ',') or '', long_opt or '', descr
+            )
+            for short_opt, long_opt, descr in pikaur_options_help
+        ])
+    ]))
+
+
 PIKAUR_OPTS = (
     (None, 'noedit'),
     (None, 'namesonly'),
@@ -82,11 +119,11 @@ def parse_args(args: List[str]) -> PikaurArgs:
             (None, 'needed'),
     ) + PIKAUR_OPTS:
         if letter and opt:
-            parser.add_argument('-'+letter, '--'+opt, action='store_true')
+            parser.add_argument('-' + letter, '--' + opt, action='store_true')
         elif opt:
-            parser.add_argument('--'+opt, action='store_true')
+            parser.add_argument('--' + opt, action='store_true')
         elif letter:
-            parser.add_argument('-'+letter, action='store_true')
+            parser.add_argument('-' + letter, action='store_true')
 
     parser.add_argument('--ignore', action='append')
     parser.add_argument('positional', nargs='*')

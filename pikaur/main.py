@@ -7,33 +7,51 @@ import readline
 import signal
 import subprocess
 from datetime import datetime
-from typing import List, Tuple
+from typing import List
 
 from .i18n import _  # keep that first
-from .args import parse_args, PikaurArgs, reconstruct_args
+from .args import (
+    PikaurArgs,
+    parse_args, reconstruct_args, cli_print_help
+)
 from .core import (
     PackageSource,
     interactive_spawn, running_as_root, remove_dir,
 )
-from .async import SingleTaskExecutor, MultipleTasksExecutor
-from .async_cmd import CmdTaskWorker
+from .async import (
+    SingleTaskExecutor, MultipleTasksExecutor,
+)
+from .async_cmd import (
+    CmdTaskWorker,
+)
 from .pprint import (
     color_line, bold_line,
     print_status_message,
     pretty_format_upgradeable,
     print_version,
 )
-from .pacman import PacmanColorTaskWorker
-from .aur import AURTaskWorkerInfo
+from .pacman import (
+    PacmanColorTaskWorker,
+)
+from .aur import (
+    AURTaskWorkerInfo,
+)
 from .package_update import (
     PackageUpdate,
     find_repo_updates, find_aur_updates,
 )
-from .prompt import retry_interactive_command_or_exit, ask_to_continue
-from .config import CACHE_ROOT, BUILD_CACHE_DIR
-
-from .install_cli import InstallPackagesCLI
-from .search_cli import cli_search_packages
+from .prompt import (
+    retry_interactive_command_or_exit, ask_to_continue,
+)
+from .config import (
+    CACHE_ROOT, BUILD_CACHE_DIR,
+)
+from .install_cli import (
+    InstallPackagesCLI,
+)
+from .search_cli import (
+    cli_search_packages,
+)
 
 
 def init_readline() -> None:
@@ -139,39 +157,6 @@ def cli_print_version(args: PikaurArgs) -> None:
         ['pacman', '--version', ],
     )).execute().stdout.splitlines()[1].strip(' .-')
     print_version(pacman_version, quiet=args.quiet)
-
-
-def cli_print_help(args: PikaurArgs) -> None:
-    pacman_help = SingleTaskExecutor(CmdTaskWorker(
-        ['pacman', ] + args.raw,
-    )).execute().stdout.replace(
-        'pacman', 'pikaur'
-    ).replace(
-        'options:', '\n' + _("Common pacman options:")
-    )
-    pikaur_options_help: List[Tuple[str, str, str]] = []
-    if args.sync or args.query:
-        pikaur_options_help += [
-            ('-a', '--aur', _("query packages from AUR only")),
-            ('', '--repo', _("query packages from repository only")),
-        ]
-    if args.sync:
-        pikaur_options_help += [
-            ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
-            ('', '--namesonly', _("search only in package names")),
-            ('', '--devel', _("sysupgrade '-git' and other dev packages older than 1 day")),
-        ]
-    print(''.join([
-        '\n',
-        pacman_help,
-        '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
-        '\n'.join([
-            '{:>5} {:<16} {}'.format(
-                short_opt and (short_opt + ',') or '', long_opt or '', descr
-            )
-            for short_opt, long_opt, descr in pikaur_options_help
-        ])
-    ]))
 
 
 def cli_entry_point() -> None:

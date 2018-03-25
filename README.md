@@ -6,7 +6,7 @@ Inspired by `pacaur`, `yaourt` and `yay`.
 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
-* [Configuration](#configuration "")
+* [Config file](#configuration "")
 * [Directories](#directories "")
 * [FAQ](#faq "")
 * [Contributing](#contributing "")
@@ -79,7 +79,7 @@ terminal colors, from 0 to 15
 
 ### FAQ
 
-##### How to avoid of automatically importing GPG keys?
+##### How to avoid manually importing GPG keys?
 
 It's recommended to control the keys manually. However if you know what you doing, `keyserver-options auto-key-retrieve` GPG option will automatically import GPG keys.
 

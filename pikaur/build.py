@@ -367,7 +367,10 @@ class PackageBuild(DataType):
             if len(full_pkg_names) > 1:
                 arch = platform.machine()
                 for each_filename in full_pkg_names:
-                    if arch in each_filename and pkg_name in each_filename:
+                    if pkg_name in each_filename and (
+                            each_filename.endswith(arch) or
+                            each_filename.endswith('-any')
+                    ):
                         full_pkg_name = each_filename
                         break
             built_package_path = os.path.join(dest_dir, full_pkg_name + pkg_ext)

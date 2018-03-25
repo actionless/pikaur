@@ -10,7 +10,7 @@ from .i18n import _
 from .pprint import color_line, print_status_message
 
 
-def read_answer_from_tty(question: str, answers='Yn') -> str:
+def read_answer_from_tty(question: str, answers: str = 'Yn') -> str:
     '''
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
@@ -61,7 +61,7 @@ def get_input(prompt: str, answers=None) -> str:
     return answer
 
 
-def ask_to_continue(text: str=None, default_yes: bool=True, args: PikaurArgs=None) -> bool:
+def ask_to_continue(text: str = None, default_yes: bool = True, args: PikaurArgs = None) -> bool:
     if text is None:
         text = _('Do you want to proceed?')
 

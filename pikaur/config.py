@@ -36,6 +36,8 @@ _CONFIG_SCHEMA = {
             'type': 'int',
             'default': '-1',
         },
+    },
+    'build': {
         'KeepBuildDir': {
             'type': 'bool',
             'default': 'no',

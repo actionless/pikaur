@@ -52,6 +52,9 @@ when doing sysupgrade count all devel (-git, -svn, -bzr, -hg, -cvs) packages old
 0 means always upgrade.
 Passing `--devel` argument will override this option to 1.
 
+
+#### [build]
+
 ##### KeepBuildDir (default: no)
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
 

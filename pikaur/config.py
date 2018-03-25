@@ -56,6 +56,12 @@ _CONFIG_SCHEMA = {
             'type': 'int',
             'default': '9',
         },
+    },
+    'misc': {
+        'RequireEnterConfirm': {
+            'type': 'bool',
+            'default': 'no'
+        }
     }
 }
 

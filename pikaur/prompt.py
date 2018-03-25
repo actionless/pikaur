@@ -2,13 +2,13 @@ import sys
 import tty
 from typing import Callable, List
 
+from pikaur.config import PikaurConfig
+
 from pikaur.args import PikaurArgs
 
 from .core import interactive_spawn
 from .i18n import _
 from .pprint import color_line, print_status_message
-
-REQUIRE_PRESS_ENTER = False  # TODO Load this from config file
 
 
 def get_answer(question, answers='Yn'):
@@ -54,7 +54,7 @@ def get_answer(question, answers='Yn'):
 
 
 def get_input(prompt: str, answers: str=None):
-    if REQUIRE_PRESS_ENTER:
+    if PikaurConfig().misc.get('RequireEnterConfirm'):
         answer = input(prompt).lower()
     else:
         answer = get_answer(prompt, answers=answers)

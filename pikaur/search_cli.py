@@ -85,8 +85,8 @@ def print_package_search_results(
 ) -> None:
 
     def get_sort_key(pkg: AURPackageInfo) -> float:
-        if getattr(pkg, "numvotes", None):
-            return (pkg.numvotes + 0.1) * (pkg.popularity + 0.1)
+        if getattr(pkg, "numvotes", None) is not None:
+            return (pkg.numvotes + 1) * (pkg.popularity + 1)
         return 1
 
     local_pkgs_names = local_pkgs_versions.keys()
@@ -119,7 +119,7 @@ def print_package_search_results(
                     installed = color_line(_("[installed]") + ' ', 14)
 
             rating = ''
-            if getattr(package, "numvotes", None):
+            if getattr(package, "numvotes", None) is not None:
                 rating = color_line('({}, {:.2f})'.format(
                     package.numvotes,
                     package.popularity

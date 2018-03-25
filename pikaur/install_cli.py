@@ -383,9 +383,9 @@ class InstallPackagesCLI():
             _print_sysupgrade(verbose=verbose)
             prompt = '{} {}\n{} {}\n>>'.format(
                 color_line('::', 12),
-                bold_line('Proceed with installation? [Y/n] '),
+                bold_line(_('Proceed with installation? [Y/n] ')),
                 color_line('::', 12),
-                bold_line('[v]iew package detail   [m]anually select packages'))
+                bold_line(_('[v]iew package detail   [m]anually select packages')))
 
             answer = get_input(prompt, 'Ynvm')
 
@@ -443,12 +443,12 @@ class InstallPackagesCLI():
                 else:
                     prompt = '{} {}\n{}\n{}\n{}\n{}\n> '.format(
                         color_line('::', 11),
-                        'Try recovering?',
-                        "[c] git checkout -- '*'",
-                        # "[c] git checkout -- '*' ; git clean -f -d -x",
-                        '[r] remove dir and clone again',
-                        '[s] skip this package',
-                        '[a] abort')
+                        _("Try recovering?"),
+                        _("[c] git checkout -- '*'"),
+                        # _("[c] git checkout -- '*' ; git clean -f -d -x"),
+                        _("[r] remove dir and clone again"),
+                        _("[s] skip this package"),
+                        _("[a] abort"))
 
                     answer = get_input(prompt, 'crsA')
 

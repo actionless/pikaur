@@ -2,11 +2,13 @@ import sys
 import tty
 from typing import Callable, List
 
+from pikaur.args import PikaurArgs
+
 from .core import interactive_spawn
 from .i18n import _
 from .pprint import color_line, print_status_message
 
-REQUIRE_PRESS_ENTER = True  # TODO Load this from config file
+REQUIRE_PRESS_ENTER = False  # TODO Load this from config file
 
 
 def get_answer(question, answers='Yn'):
@@ -60,7 +62,10 @@ def get_input(prompt: str, answers: str=None):
     return answer
 
 
-def ask_to_continue(text='Do you want to proceed?', default_yes=True):
+def ask_to_continue(text='Do you want to proceed?', default_yes=True, args: PikaurArgs=None) -> bool:
+    if args and args.noconfirm and default_yes:
+        print_status_message('{} {}'.format(text, _("[Y]es (--noconfirm)")))
+
     prompt = text + (' [Y/n] ' if default_yes else ' [y/N] ')
     answers = 'Yn' if default_yes else 'yN'
 

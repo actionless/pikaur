@@ -61,7 +61,7 @@ _CONFIG_SCHEMA = {
             'default': '9',
         },
     },
-    'misc': {
+    'ui': {
         'RequireEnterConfirm': {
             'type': 'bool',
             'default': 'yes'

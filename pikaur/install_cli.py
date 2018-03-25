@@ -6,6 +6,7 @@ from typing import List, Dict, Union
 
 import pyalpm
 
+from .config import PikaurConfig
 from .args import reconstruct_args, PikaurArgs
 from .aur import find_aur_packages
 from .aur_deps import find_aur_deps
@@ -138,7 +139,8 @@ class InstallPackagesCLI():
                 if len(package_build.built_packages_paths) == len(package_build.package_names):
                     if not args.downloadonly:
                         package_build.update_last_installed_file()
-                    remove_dir(package_build.build_dir)
+                    if not PikaurConfig().sync.get('KeepBuildDir'):
+                        remove_dir(package_build.build_dir)
 
         if self.failed_to_build_package_names:
             print('\n'.join(

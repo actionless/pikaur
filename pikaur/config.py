@@ -36,6 +36,10 @@ _CONFIG_SCHEMA = {
             'type': 'int',
             'default': '-1',
         },
+        'KeepBuildDir': {
+            'type': 'bool',
+            'default': 'no',
+        },
     },
     'colors': {
         'Version': {

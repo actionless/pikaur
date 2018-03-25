@@ -12,6 +12,7 @@ from .async_cmd import CmdTaskWorker, CmdTaskResult
 from .i18n import _
 from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
 from .config import (
+    PikaurConfig,
     CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_DIR,
     CONFIG_ROOT,
 )
@@ -369,11 +370,11 @@ class PackageBuild(DataType):
                     if arch in each_filename and pkg_name in each_filename:
                         full_pkg_name = each_filename
                         break
-            built_package_path = os.path.join(dest_dir, full_pkg_name+pkg_ext)
+            built_package_path = os.path.join(dest_dir, full_pkg_name + pkg_ext)
             if not os.path.exists(built_package_path):
                 BuildError(_("{} does not exist on the filesystem.").format(built_package_path))
             if dest_dir == self.build_dir:
-                new_package_path = os.path.join(self.package_dir, full_pkg_name+pkg_ext)
+                new_package_path = os.path.join(self.package_dir, full_pkg_name + pkg_ext)
                 if not os.path.exists(self.package_dir):
                     os.makedirs(self.package_dir)
                 if os.path.exists(new_package_path):
@@ -394,7 +395,7 @@ class PackageBuild(DataType):
             # it needs to recursively chown it to the correct user
             os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
 
-        if os.path.exists(self.build_dir):
+        if os.path.exists(self.build_dir) and not PikaurConfig().sync.get('KeepBuildDir'):
             remove_dir(self.build_dir)
         shutil.copytree(self.repo_path, self.build_dir)
 

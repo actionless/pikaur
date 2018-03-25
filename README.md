@@ -40,6 +40,7 @@ python3 ./pikaur.py -Syu
 
 ~/.config/pikaur.conf
 
+
 #### [sync]
 
 ##### AlwaysShowPkgOrigin (default: no)
@@ -50,6 +51,10 @@ when doing sysupgrade count all devel (-git, -svn, -bzr, -hg, -cvs) packages old
 -1 disables this.
 0 means always upgrade.
 Passing `--devel` argument will override this option to 1.
+
+##### KeepBuildDir (default: no)
+don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
+
 
 #### [colors]
 

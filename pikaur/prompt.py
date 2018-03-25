@@ -61,7 +61,10 @@ def get_input(prompt: str, answers: str=None) -> str:
     return answer
 
 
-def ask_to_continue(text: str='Do you want to proceed?', default_yes: bool=True, args: PikaurArgs=None) -> bool:
+def ask_to_continue(text: str, default_yes: bool=True, args: PikaurArgs=None) -> bool:
+    if text is None:
+        text = 'Do you want to proceed?'
+
     if args and args.noconfirm and default_yes:
         print_status_message('{} {}'.format(text, _("[Y]es (--noconfirm)")))
 

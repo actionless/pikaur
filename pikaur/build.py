@@ -32,26 +32,30 @@ class SrcInfo():
     _package_lines: List[str] = None
     path: str = None
     repo_path: str = None
+    package_name: str = None
 
-    def __init__(self, repo_path: str, package_name: str) -> None:
-        self.path = os.path.join(
-            repo_path,
-            '.SRCINFO'
-        )
-        self.repo_path = repo_path
-
+    def load_config(self) -> None:
         self._common_lines = []
         self._package_lines = []
         destination = self._common_lines
         with open_file(self.path) as srcinfo_file:
             for line in srcinfo_file.readlines():
                 if line.startswith('pkgname ='):
-                    if line.split('=')[1].strip() == package_name:
+                    if line.split('=')[1].strip() == self.package_name:
                         destination = self._package_lines
                     else:
                         destination = []
                 else:
                     destination.append(line)
+
+    def __init__(self, repo_path: str, package_name: str = None) -> None:
+        self.path = os.path.join(
+            repo_path,
+            '.SRCINFO'
+        )
+        self.repo_path = repo_path
+        self.package_name = package_name
+        self.load_config()
 
     def get_values(self, field: str) -> List[str]:
         prefix = field + ' = '
@@ -94,18 +98,12 @@ class SrcInfo():
                               cwd=self.repo_path)
             ).execute()
             srcinfo_file.write(result.stdout)
+        self.load_config()
 
 
 class PackageBaseSrcInfo(SrcInfo):
 
-    def __init__(self, repo_path: str) -> None:
-        # pylint: disable=super-init-not-called
-        self.path = os.path.join(
-            repo_path,
-            '.SRCINFO'
-        )
-        self.repo_path = repo_path
-
+    def load_config(self) -> None:
         self._common_lines = []
         self._package_lines = []
         with open_file(self.path) as srcinfo_file:

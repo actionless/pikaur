@@ -77,10 +77,10 @@ class SrcInfo():
 
     def _get_depends(self, field: str) -> List[Tuple[str, VersionMatcher]]:
         dependencies = []
-        src_info_pkgname = self.get_value('pkgname')
+        src_info_pkgnames = self.get_values('pkgname')
         for dep in self.get_values(field):
             pkg_name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
-            if pkg_name != src_info_pkgname:
+            if pkg_name not in src_info_pkgnames:
                 dependencies.append((pkg_name, version_matcher))
         return dependencies
 

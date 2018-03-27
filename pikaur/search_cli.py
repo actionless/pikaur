@@ -4,7 +4,7 @@ from typing import Any, Dict, Tuple, List, Iterable, Union
 
 import pyalpm
 
-from .core import DataType, PackageSource
+from .core import DataType, PackageSource, return_exception
 from .async import MultipleTasksExecutor
 from .i18n import _
 from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
@@ -16,6 +16,7 @@ from .aur import (
 from .args import PikaurArgs
 
 
+@return_exception
 def package_search_worker(args: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     index = args['index']
     result: Any = None
@@ -38,7 +39,7 @@ def package_search_worker(args: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     elif index == PackageSource.AUR:
         if args['queries']:
             result = MultipleTasksExecutor({
-                str(PackageSource.AUR)+search_word: AURTaskWorkerSearch(search_query=search_word)
+                str(PackageSource.AUR) + search_word: AURTaskWorkerSearch(search_query=search_word)
                 for search_word in args['queries']
             }).execute()
             if args['namesonly']:
@@ -188,6 +189,10 @@ def cli_search_packages(args: PikaurArgs) -> None:
             args=args
         )
     if not REPO_ONLY:
+        for _key, result in result[PackageSource.AUR].items():
+            if isinstance(result, Exception):
+                print('AUR returned error: {}'.format(result))
+                sys.exit(121)
         aur_result = join_search_results([
             r for k, r in result[PackageSource.AUR].items()
         ])

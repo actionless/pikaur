@@ -8,6 +8,7 @@ from .async import SingleTaskExecutor, MultipleTasksExecutorPool, TaskWorker
 from .async_net import (
     https_client_task, NetworkTaskResultJSON, NetworkTaskResultGzip
 )
+from .exceptions import AURError
 
 
 AUR_HOST = 'aur.archlinux.org'
@@ -56,6 +57,8 @@ class AURTaskWorker(TaskWorker):
         )
         if not isinstance(raw_result, NetworkTaskResultJSON):
             raise RuntimeError
+        if 'error' in raw_result.json:
+            raise AURError(raw_result.json['error'])
         return [
             AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
             for aur_json in raw_result.json.get('results', [])

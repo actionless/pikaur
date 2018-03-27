@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import enum
 import codecs
-from typing import Dict, Any, List, Iterable, Tuple, Union
+from typing import Dict, Any, List, Iterable, Tuple, Union, Callable
 
 
 NOT_FOUND_ATOM = object()
@@ -64,7 +64,7 @@ class ConfigReader():
     comment_prefixes = ('#', ';')
 
     _cached_config: Dict[str, CONFIG_FORMAT] = None
-    default_config_path: str = None
+    default_config_path: str = None  # noqa
     list_fields: List[str] = []
     ignored_fields: List[str] = []
 
@@ -138,3 +138,12 @@ def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[List[Any]]:
             index = 0
     if result:
         yield result
+
+
+def return_exception(fun: Callable) -> Callable:
+    def decorator(*args, **kwargs):
+        try:
+            return fun(*args, **kwargs)
+        except Exception as exc:
+            return exc
+    return decorator

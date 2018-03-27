@@ -85,7 +85,10 @@ class MultipleTasksExecutor(object):
     def create_process_done_callback(self, cmd_id: str) -> Callable[[asyncio.Task], None]:
 
         def _process_done_callback(future: asyncio.Task) -> None:
-            result = future.result()
+            try:
+                result = future.result()
+            except Exception as exc:
+                result = exc
             self.results[cmd_id] = result
             if len(self.results) == len(self.cmds):
                 self.export_results = self.mark_executor_done(self.executor_id)

@@ -16,7 +16,7 @@ from .args import (
 )
 from .core import (
     PackageSource,
-    interactive_spawn, running_as_root, remove_dir,
+    interactive_spawn, running_as_root, remove_dir, open_file,
 )
 from .async import (
     SingleTaskExecutor, MultipleTasksExecutor,
@@ -65,6 +65,20 @@ def init_readline() -> None:
 
 
 init_readline()
+
+
+def init_output_encoding() -> None:
+    for attr in ('stdout', 'stderr'):
+        setattr(
+            sys, attr,
+            open_file(
+                getattr(sys, attr).fileno(),
+                mode='w', buffering=0
+            )
+        )
+
+
+init_output_encoding()
 
 
 def cli_print_upgradeable(args: PikaurArgs) -> None:

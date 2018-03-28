@@ -51,8 +51,8 @@ class DataType():
         super().__setattr__(key, value)
 
 
-def open_file(file_path: str, mode='r', encoding='utf-8'):
-    return codecs.open(file_path, mode, encoding=encoding)
+def open_file(file_path: str, mode='r', encoding='utf-8', **kwargs):
+    return codecs.open(file_path, mode, encoding=encoding, **kwargs)
 
 
 CONFIG_VALUE_TYPE = Union[str, List[str]]

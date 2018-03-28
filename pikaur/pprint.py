@@ -61,7 +61,6 @@ def format_paragraph(line: str) -> str:
 
 def print_status_message(message='') -> None:
     sys.stderr.write(f'{message}\n')
-    sys.stderr.flush()
 
 
 def print_not_found_packages(not_found_packages: List[str]) -> None:
@@ -260,14 +259,12 @@ class ProgressBar(object):
         sys.stderr.write(message)
         sys.stderr.write(self.LEFT_DECORATION + self.EMPTY * width + self.RIGHT_DECORATION)
         sys.stderr.write(f'{(chr(27))}[\bb' * (width + len(self.RIGHT_DECORATION)))
-        sys.stderr.flush()
 
     def update(self) -> None:
         self.index += 1
         if self.index / self.print_ratio > self.progress:
             self.progress += 1
             sys.stderr.write(self.FULL)
-            sys.stderr.flush()
 
     def __enter__(self) -> Callable:
         return self.update

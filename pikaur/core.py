@@ -88,7 +88,7 @@ def detect_bom_type(file_path: str) -> str:
 def open_file(
         file_path: str, mode='r', encoding: str = None, **kwargs
 ) -> codecs.StreamReaderWriter:
-    if encoding is None:
+    if encoding is None and (mode and 'r' in mode):
         encoding = detect_bom_type(file_path)
     return codecs.open(
         file_path, mode, encoding=encoding, errors='ignore', **kwargs

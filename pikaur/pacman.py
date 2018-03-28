@@ -1,4 +1,3 @@
-import enum
 from typing import List, Dict, Tuple, Iterable
 
 from pycman.config import PacmanConfig as PycmanConfig

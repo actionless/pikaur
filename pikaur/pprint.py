@@ -51,9 +51,9 @@ def format_paragraph(line: str) -> str:
 
     return '\n'.join([
         ' '.join(
-            [(PADDING-1)*' ', ] +
+            [(PADDING - 1) * ' ', ] +
             words +
-            [(PADDING-1)*' ', ],
+            [(PADDING - 1) * ' ', ],
         )
         for words in result
     ])
@@ -222,19 +222,19 @@ def print_version(pacman_version: str, quiet=False) -> None:
         print(f'Pikaur v{VERSION}')
         print(pacman_version)
     else:
-        sys.stdout.buffer.write((r"""
+        sys.stdout.write(r"""
       /:}               _
      /--1             / :}
     /   |           / `-/
    |  ,  --------  /   /
-   |'                 Y      Pikaur v"""+VERSION+r"""
+   |'                 Y      Pikaur v""" + VERSION + r"""
   /                   l      (C) 2018 Pikaur development team
   l  /       \        l      Licensed under GPLv3
   j  ●   .   ●        l
- { )  ._,.__,   , -.  {      """+pacman_version+r"""
+ { )  ._,.__,   , -.  {      """ + pacman_version + r"""
   У    \  _/     ._/   \
 
-""").encode())
+""")
 
 
 class ProgressBar(object):

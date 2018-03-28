@@ -189,9 +189,9 @@ def cli_search_packages(args: PikaurArgs) -> None:
             args=args
         )
     if not REPO_ONLY:
-        for _key, result in result[PackageSource.AUR].items():
-            if isinstance(result, Exception):
-                print('AUR returned error: {}'.format(result))
+        for _key, query_result in result[PackageSource.AUR].items():
+            if isinstance(query_result, Exception):
+                print('AUR returned error: {}'.format(query_result))
                 sys.exit(121)
         aur_result = join_search_results([
             r for k, r in result[PackageSource.AUR].items()

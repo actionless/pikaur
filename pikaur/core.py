@@ -55,25 +55,28 @@ def detect_bom_type(file_path: str) -> str:
     """
     returns file encoding string for open() function
     https://stackoverflow.com/a/44295590/1850190
-
-    EXAMPLE:
-        bom = bomtype(file_path)
-        open(file, encoding=bom, errors='ignore')
     """
 
-    f = open(file_path, 'rb')
-    b = f.read(4)
-    f.close()
+    with open(file_path, 'rb') as test_file:
+        first_bytes = test_file.read(4)
 
-    if (b[0:3] == b'\xef\xbb\xbf'):
+    if first_bytes[0:3] == b'\xef\xbb\xbf':
         return "utf8"
 
     # Python automatically detects endianess if utf-16 bom is present
     # write endianess generally determined by endianess of CPU
-    if ((b[0:2] == b'\xfe\xff') or (b[0:2] == b'\xff\xfe')):
+    if (
+            first_bytes[0:2] == b'\xfe\xff'
+    ) or (
+        first_bytes[0:2] == b'\xff\xfe'
+    ):
         return "utf16"
 
-    if ((b[0:5] == b'\xfe\xff\x00\x00') or (b[0:5] == b'\x00\x00\xff\xfe')):
+    if (
+            first_bytes[0:5] == b'\xfe\xff\x00\x00'
+    ) or (
+        first_bytes[0:5] == b'\x00\x00\xff\xfe'
+    ):
         return "utf32"
 
     # If BOM is not provided, then assume its the codepage
@@ -82,10 +85,14 @@ def detect_bom_type(file_path: str) -> str:
     # For the United States its: cp1252
 
 
-def open_file(file_path: str, mode='r', encoding=None, **kwargs):
+def open_file(
+        file_path: str, mode='r', encoding: str = None, **kwargs
+) -> codecs.StreamReaderWriter:
     if encoding is None:
         encoding = detect_bom_type(file_path)
-    return codecs.open(file_path, mode, encoding=encoding, **kwargs)
+    return codecs.open(
+        file_path, mode, encoding=encoding, errors='ignore', **kwargs
+    )
 
 
 CONFIG_VALUE_TYPE = Union[str, List[str]]

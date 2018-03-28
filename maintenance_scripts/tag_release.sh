@@ -49,6 +49,7 @@ sed \
 	PKGBUILD > "${aur_repo_dir}"/PKGBUILD
 # shellcheck disable=SC2164
 cd "${aur_repo_dir}"
+updpkgsums
 makepkg --printsrcinfo > .SRCINFO
 git add PKGBUILD .SRCINFO
 git commit -m "update to ${new_version}"

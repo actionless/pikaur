@@ -8,6 +8,7 @@ import signal
 import subprocess
 from datetime import datetime
 from typing import List
+import codecs
 
 from .i18n import _  # keep that first
 from .args import (
@@ -16,7 +17,7 @@ from .args import (
 )
 from .core import (
     PackageSource,
-    interactive_spawn, running_as_root, remove_dir, open_file,
+    interactive_spawn, running_as_root, remove_dir,
 )
 from .async import (
     SingleTaskExecutor, MultipleTasksExecutor,
@@ -71,9 +72,9 @@ def init_output_encoding() -> None:
     for attr in ('stdout', 'stderr'):
         setattr(
             sys, attr,
-            open_file(
+            codecs.open(
                 getattr(sys, attr).fileno(),
-                mode='w', buffering=0
+                mode='w', buffering=0, encoding='utf-8'
             )
         )
 

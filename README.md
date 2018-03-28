@@ -68,7 +68,7 @@ terminal colors, from 0 to 15
 ##### VersionDiffNew (default: 9)
 
 
-#### [UI]
+#### [ui]
 
 #### RequireEnterConfirm (default: yes)
 require enter key to be pressed when answering questions.

@@ -201,10 +201,6 @@ class InstallPackagesCLI():
         ):
             if self.args.sysupgrade:
                 self._install_repo_packages([])
-                print('{} {}'.format(
-                    color_line('::', 11),
-                    _("Already up-to-date."),
-                ))
             else:
                 print('{} {}'.format(
                     color_line('::', 10),

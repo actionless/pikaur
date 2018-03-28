@@ -17,19 +17,6 @@ from .version import (
 from .pprint import print_status_message
 
 
-class AlpmQuestions(enum.IntEnum):
-    INSTALL_IGNOREPKG = (1 << 0)
-    REPLACE_PKG = (1 << 1)
-    CONFLICT_PKG = (1 << 2)
-    CORRUPTED_PKG = (1 << 3)
-    REMOVE_PKGS = (1 << 4)
-    SELECT_PROVIDER = (1 << 5)
-    IMPORT_KEY = (1 << 6)
-
-
-ASK_BITS = AlpmQuestions.CONFLICT_PKG + AlpmQuestions.REMOVE_PKGS
-
-
 OFFICIAL_REPOS = (
     'testing',
     'core',

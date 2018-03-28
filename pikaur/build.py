@@ -17,7 +17,7 @@ from .config import (
     CONFIG_ROOT,
 )
 from .aur import get_repo_url, find_aur_packages
-from .pacman import find_local_packages, PackageDB, ASK_BITS
+from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args, PikaurArgs
 from .pprint import color_line, bold_line
 from .prompt import retry_interactive_command
@@ -332,7 +332,6 @@ class PackageBuild(DataType):
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        f'--ask={ASK_BITS}',
                     ] + reconstruct_args(args, ignore_args=[
                         'upgrade',
                         'asdeps',
@@ -419,7 +418,6 @@ class PackageBuild(DataType):
                     'makepkg',
                     '--syncdeps',
                     '--rmdeps',
-                    # f'--ask={ASK_BITS}',
                 ] + (['--noconfirm'] if args.noconfirm else []) + makepkg_args,
                 cwd=self.build_dir
             ),

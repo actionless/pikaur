@@ -12,7 +12,7 @@ from .aur import find_aur_packages
 from .aur_deps import find_aur_deps
 from .i18n import _
 from .pacman import (
-    OFFICIAL_REPOS, ASK_BITS,
+    OFFICIAL_REPOS,
     PackageDB, PacmanConfig,
     find_repo_packages,
 )
@@ -652,7 +652,6 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--sync',
-                        f'--ask={ASK_BITS}',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
                         'refresh',
@@ -730,7 +729,6 @@ class InstallPackagesCLI():
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        f'--ask={ASK_BITS}',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'asdeps',
@@ -758,7 +756,6 @@ class InstallPackagesCLI():
                         'sudo',
                         'pacman',
                         '--upgrade',
-                        f'--ask={ASK_BITS}',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'sync',

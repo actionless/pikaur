@@ -91,19 +91,11 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
         retry_interactive_command_or_exit(
             ['sudo', 'pacman', '--sync', '--refresh']
         )
-
-    if not args.aur:
-        print('{} {}'.format(
-            color_line('::', 12),
-            bold_line(_("Starting full system upgrade..."))
-        ))
-
     if not args.repo:
         print('{} {}'.format(
             color_line('::', 12),
             bold_line(_("Starting full AUR upgrade..."))
         ))
-
     cli_install_packages(
         args=args,
         packages=args.positional,

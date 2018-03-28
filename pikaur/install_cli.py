@@ -180,6 +180,13 @@ class InstallPackagesCLI():
                 print_ignored_package(package_name)
                 self.install_package_names.remove(package_name)
 
+    def exlude_already_uptodate(self) -> None:
+        if self.args.needed:
+            repo_updates = find_repo_updates()
+            for package_name in list(self.repo_packages_dict.keys())[:]:
+                if package_name not in repo_updates:
+                    del self.repo_packages_dict[package_name]
+
     def get_all_packages_info(self) -> None:
         self.exclude_ignored_packages()
         repo_packages, aur_packages_names = find_repo_packages(
@@ -190,6 +197,7 @@ class InstallPackagesCLI():
         if self.args.repo:
             aur_packages_names = []
         self.repo_packages_dict = {pkg.name: pkg for pkg in repo_packages}
+        self.exlude_already_uptodate()
 
         self.get_repo_pkgs_info()
         self.get_aur_pkgs_info(aur_packages_names)

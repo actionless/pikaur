@@ -91,8 +91,7 @@ class InstallPackagesCLI():
     install_package_names: List[str] = None
     manually_excluded_packages_names: List[str] = None
 
-    repo_packages: List[pyalpm.Package] = None
-    repo_packages_names: List[str] = None  # @TODO: remove me
+    repo_packages_dict: Dict[str, pyalpm.Package] = None
     aur_packages_names: List[str] = None
     aur_deps_names: List[str] = None
     # @TODO: join together these two blocks into only 4 properties
@@ -183,14 +182,14 @@ class InstallPackagesCLI():
 
     def get_all_packages_info(self) -> None:
         self.exclude_ignored_packages()
-        self.repo_packages, aur_packages_names = find_repo_packages(
+        repo_packages, aur_packages_names = find_repo_packages(
             self.install_package_names
         )
         if self.args.aur:
-            self.repo_packages = []
+            self.repo_packages_dict = {}
         if self.args.repo:
             aur_packages_names = []
-        self.repo_packages_names = [pkg.name for pkg in self.repo_packages]
+        self.repo_packages_dict = {pkg.name: pkg for pkg in repo_packages}
 
         self.get_repo_pkgs_info()
         self.get_aur_pkgs_info(aur_packages_names)
@@ -238,7 +237,7 @@ class InstallPackagesCLI():
             upd.Name: upd for upd in find_repo_updates()
         } if self.args.sysupgrade else {}
 
-        for repo_pkg in self.repo_packages:
+        for repo_pkg in self.repo_packages_dict.values():
             pkg_name = repo_pkg.name
             if pkg_name in repo_packages_install_info:
                 continue
@@ -468,11 +467,11 @@ class InstallPackagesCLI():
     def ask_about_package_conflicts(self) -> None:
         print(_('looking for conflicting packages...'))
         conflict_result = find_conflicts(
-            self.repo_packages, self.aur_packages_names
+            list(self.repo_packages_dict.values()), self.aur_packages_names
         )
         if not conflict_result:
             return
-        all_new_packages_names = self.repo_packages_names + self.aur_packages_names
+        all_new_packages_names = list(self.repo_packages_dict.keys()) + self.aur_packages_names
         for new_pkg_name, new_pkg_conflicts in conflict_result.items():
             for pkg_conflict in new_pkg_conflicts:
                 if pkg_conflict in all_new_packages_names:
@@ -638,7 +637,7 @@ class InstallPackagesCLI():
             )
 
     def _install_repo_packages(self, packages_to_be_installed: List[str]) -> None:
-        if self.repo_packages_names or self.args.sysupgrade:
+        if list(self.repo_packages_dict.keys()) or self.args.sysupgrade:
             extra_args = []
             for excluded_pkg_name in self.manually_excluded_packages_names:
                 extra_args.append('--ignore')
@@ -708,8 +707,8 @@ class InstallPackagesCLI():
         self._revert_transaction(PackageSource.AUR)
 
     def install_repo_packages(self) -> None:
-        self._install_repo_packages(self.repo_packages_names)
-        self.save_repo_transaction(self.repo_packages_names)
+        self._install_repo_packages(list(self.repo_packages_dict.keys()))
+        self.save_repo_transaction(list(self.repo_packages_dict.keys()))
 
     def install_new_aur_deps(self) -> None:
         new_aur_deps_to_install = [

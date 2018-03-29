@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Pikaur\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-28 18:56-0300\n"
-"PO-Revision-Date: 2018-03-28 22:14-0300\n"
+"PO-Revision-Date: 2018-03-29 18:13-0300\n"
 "Last-Translator: Alexandre Lopes\n"
 "Language-Team: pt_BR\n"
 "Language: pt_BR\n"
@@ -183,7 +183,7 @@ msgstr "Ignorando a revisão de {file} para o pacote {name} ({flag})"
 
 #: pikaur/main.py:112
 msgid "Starting full AUR upgrade..."
-msgstr "Começando a atualização completa do AUR ..."
+msgstr "Iniciando a atualização completa do AUR ..."
 
 #: pikaur/pprint.py:182
 msgid "Third-party repository package will be installed:"

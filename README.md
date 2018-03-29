@@ -33,12 +33,11 @@ python3 ./pikaur.py -Syu
 
 
 ### Diretórios
-
 ```sh
-~ / .cache / pikaur /
-Aur── aur_repos / # manter lá aur repos; mostre o diff ao atualizar
-Last └── last_installed.txt # aur repo hash do último pacote instalado com sucesso
-Build── diretório build / # build (removido após a construção bem-sucedida)
-P── pkg / # construiu diretório de pacotes
-~ / .config / pikaur.conf # arquivo de configuração
+~/.cache/pikaur/
+├── aur_repos/  # keep there aur repos; show diff when updating
+│   └── last_installed.txt  # aur repo hash of last successfully installed package
+├── build/  # build directory (removed after successfull build)
+└── pkg/  # built packages directory
+~/.config/pikaur.conf  # config file
 ```

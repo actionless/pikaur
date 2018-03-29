@@ -41,7 +41,7 @@ def read_answer_from_tty(question: str, answers: str = 'Yn') -> str:
         if ord(answer) == 13:
             answer = default
             return default
-        if answer in answers:
+        if answer in answers.lower():
             return answer
         return ' '
     except Exception:

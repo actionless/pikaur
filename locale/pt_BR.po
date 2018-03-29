@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Pikaur\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-28 18:56-0300\n"
-"PO-Revision-Date: 2018-03-28 21:16-0300\n"
+"PO-Revision-Date: 2018-03-28 22:14-0300\n"
 "Last-Translator: Alexandre Lopes\n"
 "Language-Team: pt_BR\n"
 "Language: pt_BR\n"
@@ -231,7 +231,7 @@ msgstr "[s] pule este pacote"
 
 #: pikaur/install_cli.py:391
 msgid "[v]iew package detail   [m]anually select packages"
-msgstr "[v]er detalhe do pacote ou selecionar pacotes [m]anualmente"
+msgstr "[v]er detalhe do pacote   selecionar pacotes [m]anualmente"
 
 #: pikaur/install_cli.py:445
 msgid "a"

@@ -12,7 +12,6 @@ Inspirado por `pacaur`,` yaourt` e `yay`.
 * [Contribuindo](#contribuindo "")
 * - [Traduções](#traduções "")
 
-! [Screenshot] (https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
 
 ### Instalação

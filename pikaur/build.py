@@ -17,7 +17,7 @@ from .config import (
     CONFIG_ROOT,
 )
 from .aur import get_repo_url, find_aur_packages
-from .pacman import find_local_packages, PackageDB, ASK_BITS
+from .pacman import find_local_packages, PackageDB
 from .args import reconstruct_args, PikaurArgs
 from .pprint import color_line, bold_line
 from .prompt import retry_interactive_command
@@ -32,26 +32,30 @@ class SrcInfo():
     _package_lines: List[str] = None
     path: str = None
     repo_path: str = None
+    package_name: str = None
 
-    def __init__(self, repo_path: str, package_name: str) -> None:
-        self.path = os.path.join(
-            repo_path,
-            '.SRCINFO'
-        )
-        self.repo_path = repo_path
-
+    def load_config(self) -> None:
         self._common_lines = []
         self._package_lines = []
         destination = self._common_lines
         with open_file(self.path) as srcinfo_file:
             for line in srcinfo_file.readlines():
                 if line.startswith('pkgname ='):
-                    if line.split('=')[1].strip() == package_name:
+                    if line.split('=')[1].strip() == self.package_name:
                         destination = self._package_lines
                     else:
                         destination = []
                 else:
                     destination.append(line)
+
+    def __init__(self, repo_path: str, package_name: str = None) -> None:
+        self.path = os.path.join(
+            repo_path,
+            '.SRCINFO'
+        )
+        self.repo_path = repo_path
+        self.package_name = package_name
+        self.load_config()
 
     def get_values(self, field: str) -> List[str]:
         prefix = field + ' = '
@@ -73,10 +77,10 @@ class SrcInfo():
 
     def _get_depends(self, field: str) -> List[Tuple[str, VersionMatcher]]:
         dependencies = []
-        src_info_pkgname = self.get_value('pkgname')
+        src_info_pkgnames = self.get_values('pkgname')
         for dep in self.get_values(field):
             pkg_name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
-            if pkg_name != src_info_pkgname:
+            if pkg_name not in src_info_pkgnames:
                 dependencies.append((pkg_name, version_matcher))
         return dependencies
 
@@ -94,18 +98,12 @@ class SrcInfo():
                               cwd=self.repo_path)
             ).execute()
             srcinfo_file.write(result.stdout)
+        self.load_config()
 
 
 class PackageBaseSrcInfo(SrcInfo):
 
-    def __init__(self, repo_path: str) -> None:
-        # pylint: disable=super-init-not-called
-        self.path = os.path.join(
-            repo_path,
-            '.SRCINFO'
-        )
-        self.repo_path = repo_path
-
+    def load_config(self) -> None:
         self._common_lines = []
         self._package_lines = []
         with open_file(self.path) as srcinfo_file:
@@ -334,7 +332,6 @@ class PackageBuild(DataType):
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                        f'--ask={ASK_BITS}',
                     ] + reconstruct_args(args, ignore_args=[
                         'upgrade',
                         'asdeps',
@@ -367,7 +364,10 @@ class PackageBuild(DataType):
             if len(full_pkg_names) > 1:
                 arch = platform.machine()
                 for each_filename in full_pkg_names:
-                    if arch in each_filename and pkg_name in each_filename:
+                    if pkg_name in each_filename and (
+                            each_filename.endswith(arch) or
+                            each_filename.endswith('-any')
+                    ):
                         full_pkg_name = each_filename
                         break
             built_package_path = os.path.join(dest_dir, full_pkg_name + pkg_ext)
@@ -418,7 +418,6 @@ class PackageBuild(DataType):
                     'makepkg',
                     '--syncdeps',
                     '--rmdeps',
-                    # f'--ask={ASK_BITS}',
                 ] + (['--noconfirm'] if args.noconfirm else []) + makepkg_args,
                 cwd=self.build_dir
             ),

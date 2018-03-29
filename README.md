@@ -1,6 +1,6 @@
 # pikaur
 
-AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction.
+AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all with minimal user interaction.
 
 Inspired by `pacaur`, `yaourt` and `yay`.
 
@@ -47,7 +47,7 @@ python3 ./pikaur.py -Syu
 when installing new packages show their repository name even if they are coming from one of the official Arch Linux repositories.
 
 ##### DevelPkgsExpiration (default: -1)
-when doing sysupgrade count all devel (-git, -svn, -bzr, -hg, -cvs) packages older when N days as being upgradeable.
+when doing sysupgrade count all devel (-git, -svn, -bzr, -hg, -cvs) packages older than N days as being upgradeable.
 -1 disables this.
 0 means always upgrade.
 Passing `--devel` argument will override this option to 1.
@@ -68,7 +68,7 @@ terminal colors, from 0 to 15
 ##### VersionDiffNew (default: 9)
 
 
-#### [UI]
+#### [ui]
 
 #### RequireEnterConfirm (default: yes)
 require enter key to be pressed when answering questions.

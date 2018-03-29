@@ -8,6 +8,7 @@ import signal
 import subprocess
 from datetime import datetime
 from typing import List
+import codecs
 
 from .i18n import _  # keep that first
 from .args import (
@@ -67,6 +68,20 @@ def init_readline() -> None:
 init_readline()
 
 
+def init_output_encoding() -> None:
+    for attr in ('stdout', 'stderr'):
+        setattr(
+            sys, attr,
+            codecs.open(
+                getattr(sys, attr).fileno(),
+                mode='w', buffering=0, encoding='utf-8'
+            )
+        )
+
+
+init_output_encoding()
+
+
 def cli_print_upgradeable(args: PikaurArgs) -> None:
     updates: List[PackageUpdate] = []
     if not args.repo:
@@ -91,19 +106,11 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
         retry_interactive_command_or_exit(
             ['sudo', 'pacman', '--sync', '--refresh']
         )
-
-    if not args.aur:
-        print('{} {}'.format(
-            color_line('::', 12),
-            bold_line(_("Starting full system upgrade..."))
-        ))
-
     if not args.repo:
         print('{} {}'.format(
             color_line('::', 12),
             bold_line(_("Starting full AUR upgrade..."))
         ))
-
     cli_install_packages(
         args=args,
         packages=args.positional,

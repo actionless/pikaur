@@ -44,3 +44,7 @@ class DependencyVersionMismatch(DataType, Exception):
 
 class DependencyNotBuiltYet(Exception):
     pass
+
+
+class AURError(Exception):
+    pass

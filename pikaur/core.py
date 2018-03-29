@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import enum
 import codecs
-from typing import Dict, Any, List, Iterable, Tuple, Union
+from typing import Dict, Any, List, Iterable, Tuple, Union, Callable
 
 
 NOT_FOUND_ATOM = object()
@@ -51,8 +51,48 @@ class DataType():
         super().__setattr__(key, value)
 
 
-def open_file(file_path: str, mode='r', encoding='utf-8'):
-    return codecs.open(file_path, mode, encoding=encoding)
+def detect_bom_type(file_path: str) -> str:
+    """
+    returns file encoding string for open() function
+    https://stackoverflow.com/a/44295590/1850190
+    """
+
+    with open(file_path, 'rb') as test_file:
+        first_bytes = test_file.read(4)
+
+    if first_bytes[0:3] == b'\xef\xbb\xbf':
+        return "utf8"
+
+    # Python automatically detects endianess if utf-16 bom is present
+    # write endianess generally determined by endianess of CPU
+    if (
+            first_bytes[0:2] == b'\xfe\xff'
+    ) or (
+        first_bytes[0:2] == b'\xff\xfe'
+    ):
+        return "utf16"
+
+    if (
+            first_bytes[0:5] == b'\xfe\xff\x00\x00'
+    ) or (
+        first_bytes[0:5] == b'\x00\x00\xff\xfe'
+    ):
+        return "utf32"
+
+    # If BOM is not provided, then assume its the codepage
+    #     used by your operating system
+    return "cp1252"
+    # For the United States its: cp1252
+
+
+def open_file(
+        file_path: str, mode='r', encoding: str = None, **kwargs
+) -> codecs.StreamReaderWriter:
+    if encoding is None and (mode and 'r' in mode):
+        encoding = detect_bom_type(file_path)
+    return codecs.open(
+        file_path, mode, encoding=encoding, errors='ignore', **kwargs
+    )
 
 
 CONFIG_VALUE_TYPE = Union[str, List[str]]
@@ -64,7 +104,7 @@ class ConfigReader():
     comment_prefixes = ('#', ';')
 
     _cached_config: Dict[str, CONFIG_FORMAT] = None
-    default_config_path: str = None
+    default_config_path: str = None  # noqa
     list_fields: List[str] = []
     ignored_fields: List[str] = []
 
@@ -138,3 +178,12 @@ def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[List[Any]]:
             index = 0
     if result:
         yield result
+
+
+def return_exception(fun: Callable) -> Callable:
+    def decorator(*args, **kwargs):
+        try:
+            return fun(*args, **kwargs)
+        except Exception as exc:
+            return exc
+    return decorator

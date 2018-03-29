@@ -5,12 +5,16 @@ from typing import Union
 from .core import running_as_root, open_file
 
 
-VERSION = '0.9.1-dev'
+VERSION = '0.9.2-dev'
 
+_USER_CACHE_HOME = os.environ.get(
+    "XDG_CACHE_HOME",
+    os.path.join(os.environ.get("HOME"), ".cache/")
+)
 if running_as_root():
     CACHE_ROOT = '/var/cache/pikaur'
 else:
-    CACHE_ROOT = os.path.expanduser('~/.cache/pikaur/')
+    CACHE_ROOT = os.path.join(_USER_CACHE_HOME, 'pikaur/')
 
 AUR_REPOS_CACHE_DIR = 'aur_repos'
 BUILD_CACHE_DIR = 'build'

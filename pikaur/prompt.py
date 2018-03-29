@@ -57,7 +57,6 @@ def get_input(prompt: str, answers=None) -> str:
         answer = input(prompt).lower()
     else:
         answer = read_answer_from_tty(prompt, answers=answers)
-
     return answer
 
 
@@ -73,7 +72,7 @@ def ask_to_continue(text: str = None, default_yes: bool = True, args: PikaurArgs
     answers = 'Yn' if default_yes else 'yN'
 
     answer = get_input(prompt, answers)
-    return answer == 'y'
+    return (answer == 'y') or (default_yes and answer == '')
 
 
 def ask_to_retry_decorator(fun: Callable) -> Callable:

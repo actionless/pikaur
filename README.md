@@ -4,10 +4,10 @@ Auxiliar do AUR com dependências mínimas. Revise todos os PKGBUILDs de uma só
 
 Inspirado por `pacaur`,` yaourt` e `yay`.
 
-* [Instalação] (# instalação "")
-* [Executar sem instalação] (# run-without-installation "")
-* [Config file] (# configuration "")
-* [Diretórios] (# diretórios "")
+* [Instalação]
+* [Executar sem instalação]
+* [Config file]
+* [Diretórios]
 
 
 

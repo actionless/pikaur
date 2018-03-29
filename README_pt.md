@@ -4,6 +4,15 @@ Auxiliar do AUR com dependências mínimas. Revise todos os PKGBUILDs de uma só
 
 Inspirado por `pacaur`,` yaourt` e `yay`.
 
+* [Instalação](#instalação "")
+* [Executar sem instalação](#executar-sem-instalação "")
+* [Arquivo de configurações](#configuração "")
+* [Diretórios](#diretórios "")
+* [Pertuntas Frequentes](#perguntas-frequentes "")
+* [Contribuindo](#contribuindo "")
+* - [Traduções](#traduções "")
+
+! [Screenshot] (https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
 
 ### Instalação
@@ -26,18 +35,73 @@ python3 ./pikaur.py -Syu
 ```
 
 
+
 ### Configuração
 
 ~ / .config / pikaur.conf
 
 
+#### [sincronizar]
+
+##### AlwaysShowPkgOrigin (default: no)
+Ao instalar novos pacotes, mostre seu nome de repositório mesmo que eles estejam vindo de um dos repositórios oficiais do Arch Linux.
+
+##### DevelPkgsExpiration (default: -1)
+Ao fazer o sysupgrade, conte todos os pacotes de devel (-git, -svn, -bzr, -hg, -cvs) com mais de N dias como atualizáveis.
+-1 desativa isso.
+0 significa sempre atualizar.
+Passar o argumento `--devel` substituirá esta opção por 1.
+
+
+#### [build]
+
+##### KeepBuildDir (default: no)
+não remova o diretório `~ / .cache / pikaur / build / $ {PACKAGE_NAME}` entre as compilações.
+
+
+#### [cores]
+
+cores de terminal, de 0 a 15
+
+##### Version (padrão: 10)
+##### VersionDiffOld (padrão: 11)
+##### VersionDiffNew (padrão: 9)
+
+
+#### [ui]
+
+#### RequireEnterConfirm (padrão: yes)
+requer a tecla enter para ser pressionada ao responder perguntas.
+
+
 
 ### Diretórios
+
 ```sh
-~/.cache/pikaur/
-├── aur_repos/  # keep there aur repos; show diff when updating
-│   └── last_installed.txt  # aur repo hash of last successfully installed package
-├── build/  # build directory (removed after successfull build)
-└── pkg/  # built packages directory
-~/.config/pikaur.conf  # config file
+~ / .cache / pikaur /
+|── aur_repos / # manter lá aur repos; mostre o diff ao atualizar
+|    |── last_installed.txt # aur repo hash do último pacote instalado com sucesso
+|── diretório build / # build (removido após a construção bem-sucedida)
+|── pkg / # construiu diretório de pacotes
+~ / .config / pikaur.conf # arquivo de configuração
+```
+
+### Perguntas Frequentes
+
+##### Como evitar a importação manual de chaves GPG?
+
+É recomendado controlar as chaves manualmente. No entanto, se você souber o que está fazendo, a opção GPG `keyserver-options auto-key-retrieve` irá importar automaticamente as chaves GPG.
+
+
+### Contribuindo
+
+#### Traduções
+
+Para começar a trabalhar em um novo idioma, diga "es" (espanhol), adicione-o ao
+Variável `Makefile`` LANGS` e execute `make`. Então traduza `locale / es.po` usando
+seu editor de PO favorito. Executar `make` toda vez que as strings de código do Python mudarem
+ou o `.po` é modificado.
+
+Uma vez feito, não se esqueça de distribuir o novo idioma adicionando-o ao
+`PKGBUILD`` package () `.
 ```

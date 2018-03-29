@@ -1,50 +1,48 @@
 # pikaur
 
-AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all with minimal user interaction.
+Auxiliar do AUR com dependências mínimas. Revise todos os PKGBUILDs de uma só vez e, em seguida, construa todos eles com o mínimo de interação do usuário.
 
-Inspired by `pacaur`, `yaourt` and `yay`.
+Inspirado por `pacaur`,` yaourt` e `yay`.
 
-* [Installation](#installation "")
-* [Run without installation](#run-without-installation "")
-* [Config file](#configuration "")
-* [Directories](#directories "")
-
-![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
+* [Instalação] (# instalação "")
+* [Executar sem instalação] (# run-without-installation "")
+* [Config file] (# configuration "")
+* [Diretórios] (# diretórios "")
 
 
-### Installation
 
-```sh
+### Instalação
+
+`` `sh
 git clone https://aur.archlinux.org/pikaur.git
 cd pikaur
 makepkg -fsri
-```
+`` `
 
 
-### Run without installation
+### Executar sem instalação
 
-```sh
+`` `sh
 git clone https://github.com/actionless/pikaur.git
 cd pikaur
 python3 ./pikaur.py -Ss AUR_PACKAGE_NAME
 python3 ./pikaur.py -S AUR_PACKAGE_NAME
 python3 ./pikaur.py -Syu
-```
+`` `
 
 
-### Configuration
+### Configuração
 
-~/.config/pikaur.conf
+~ / .config / pikaur.conf
 
 
 
-### Directories
+### Diretórios
 
-```sh
-~/.cache/pikaur/
-├── aur_repos/  # keep there aur repos; show diff when updating
-│   └── last_installed.txt  # aur repo hash of last successfully installed package
-├── build/  # build directory (removed after successfull build)
-└── pkg/  # built packages directory
-~/.config/pikaur.conf  # config file
-```
+`` `sh
+~ / .cache / pikaur /
+Aur── aur_repos / # manter lá aur repos; mostre o diff ao atualizar
+Last └── last_installed.txt # aur repo hash do último pacote instalado com sucesso
+Build── diretório build / # build (removido após a construção bem-sucedida)
+P── pkg / # construiu diretório de pacotes
+~ / .config / pikaur.conf # arquivo de configuração

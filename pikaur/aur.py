@@ -1,17 +1,11 @@
-import asyncio
+import gzip
 import json
-from urllib.parse import urlencode, quote
-# from urllib import parse
-from typing import List, Dict, Awaitable, Tuple, Union, Any
-from urllib import request
+from multiprocessing.pool import ThreadPool
+from urllib import parse, request
+from urllib.parse import quote
+from typing import List, Dict, Tuple, Union, Any
 
-
-from .i18n import _
 from .core import DataType, get_chunks
-from .async import SingleTaskExecutor, MultipleTasksExecutorPool, TaskWorker
-from .async_net import (
-    https_client_task, NetworkTaskResultJSON, NetworkTaskResultGzip
-)
 from .exceptions import AURError
 
 
@@ -52,94 +46,72 @@ class AURPackageInfo(DataType):
         super().__init__(**kwargs)
 
 
-class AURTaskWorker(TaskWorker):
-    uri: str = None
-    params: str = None
-
-    async def aur_client_task(self, loop: asyncio.AbstractEventLoop) -> List[AURPackageInfo]:
-        raw_result = await https_client_task(
-            loop, AUR_HOST, self.uri, result_class=NetworkTaskResultJSON
-        )
-        if not isinstance(raw_result, NetworkTaskResultJSON):
-            raise RuntimeError
-        if 'error' in raw_result.json:
-            raise AURError(raw_result.json['error'])
-        return [
-            AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
-            for aur_json in raw_result.json.get('results', [])
-        ]
-
-    def get_task(self, loop: asyncio.AbstractEventLoop) -> Awaitable[List[AURPackageInfo]]:
-        self.uri = f'/rpc/?{self.params}'
-        return self.aur_client_task(loop)
-
-
-def construct_aur_rpc_url(params: Dict[str, Union[str, int]]) -> str:
-    uri = f'/rpc/?{urlencode(params)}'
-    url = AUR_BASE_URL + uri
-    return url
-
-
 def get_json_from_url(url: str) -> Dict[str, Any]:
     raw_result = request.urlopen(url)
     result_bytes = raw_result.read()
     result_json = json.loads(result_bytes.decode('utf-8'))
+    if 'error' in result_json:
+        raise AURError(result_json['error'])
     return result_json
 
 
-def aur_search_name_desc(search_query: str) -> List[AURPackageInfo]:
-    params = {
-        'v': 5,
-        'type': 'search',
-        'arg': search_query,
-        'by': 'name-desc'
-    }
-    url = construct_aur_rpc_url(params)
-    result_json = get_json_from_url(url)
-    if 'error' in result_json:
-        raise AURError(result_json['error'])
+def get_gzip_from_url(url: str) -> str:
+    raw_result = request.urlopen(url)
+    result_bytes = raw_result.read()
+    decompressed_bytes_response = gzip.decompress(result_bytes)
+    text_response = decompressed_bytes_response.decode('utf-8')
+    return text_response
+
+
+def construct_aur_rpc_url_from_uri(uri: str) -> str:
+    url = AUR_BASE_URL + '/rpc/?' + uri
+    return url
+
+
+def construct_aur_rpc_url_from_params(params: Dict[str, Union[str, int]]) -> str:
+    uri = parse.urlencode(params)
+    return construct_aur_rpc_url_from_uri(uri)
+
+
+def aur_rpc_search_name_desc(search_query: str) -> List[AURPackageInfo]:
+    result_json = get_json_from_url(
+        construct_aur_rpc_url_from_params({
+            'v': 5,
+            'type': 'search',
+            'arg': search_query,
+            'by': 'name-desc'
+        })
+    )
     return [
         AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
         for aur_json in result_json.get('results', [])
     ]
 
 
-class AURTaskWorkerInfo(AURTaskWorker):
+def aur_rpc_info(search_queries: List[str]) -> List[AURPackageInfo]:
+    uri = parse.urlencode({
+        'v': 5,
+        'type': 'info',
+    })
+    for package in search_queries:
+        uri += '&arg[]=' + quote(package)
+    result_json = get_json_from_url(
+        construct_aur_rpc_url_from_uri(uri)
+    )
+    return [
+        AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
+        for aur_json in result_json.get('results', [])
+    ]
 
-    def __init__(self, packages: List[str]) -> None:
-        self.params = urlencode({
-            'v': 5,
-            'type': 'info',
-        })
-        for package in packages:
-            self.params += '&arg[]=' + quote(package)
 
-
-class AURTaskWorkerList(TaskWorker):
-
-    uri = '/packages.gz'
-
-    async def aur_client_task(self, loop: asyncio.AbstractEventLoop) -> List[str]:
-        raw_result = await https_client_task(
-            loop, AUR_HOST, self.uri, result_class=NetworkTaskResultGzip
-        )
-        if not isinstance(raw_result, NetworkTaskResultGzip):
-            raise RuntimeError
-        return [
-            pkg_name for pkg_name in raw_result.text.split('\n')
-            if pkg_name
-        ][1:]
-
-    def get_task(self, loop: asyncio.AbstractEventLoop) -> Awaitable[List[str]]:
-        return self.aur_client_task(loop)
+def aur_web_packages_list():
+    return get_gzip_from_url(AUR_BASE_URL + '/packages.gz').splitlines()[1:]
 
 
 _AUR_PKGS_FIND_CACHE: Dict[str, AURPackageInfo] = {}
 
 
-def find_aur_packages(
-        package_names: List[str], enable_progressbar=False
-) -> Tuple[List[AURPackageInfo], List[str]]:
+def find_aur_packages(package_names: List[str]) -> Tuple[List[AURPackageInfo], List[str]]:
 
     # @TODO: return only packages for the current architecture
     package_names = list(package_names)[:]
@@ -151,19 +123,9 @@ def find_aur_packages(
             package_names.remove(package_name)
 
     if package_names:
-        results = MultipleTasksExecutorPool(
-            {
-                str(_id): AURTaskWorkerInfo(packages=packages_chunk)
-                for _id, packages_chunk in enumerate(
-                    # get_chunks(package_names, chunk_size=100)
-                    get_chunks(package_names, chunk_size=200)
-                )
-            },
-            pool_size=8,
-            enable_progressbar=enable_progressbar
-        ).execute()
-
-        for result in results.values():
+        with ThreadPool() as pool:
+            results = pool.map(aur_rpc_info, get_chunks(package_names, chunk_size=200))
+        for result in results:
             for aur_pkg in result:
                 _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg
                 json_results.append(aur_pkg)
@@ -191,14 +153,9 @@ _AUR_PKGS_LIST_CACHE: List[str] = None
 def get_all_aur_names() -> List[str]:
     global _AUR_PKGS_LIST_CACHE  # pylint: disable=global-statement
     if not _AUR_PKGS_LIST_CACHE:
-        _AUR_PKGS_LIST_CACHE = SingleTaskExecutor(
-            AURTaskWorkerList()
-        ).execute()
+        _AUR_PKGS_LIST_CACHE = aur_web_packages_list()
     return _AUR_PKGS_LIST_CACHE
 
 
 def get_all_aur_packages() -> List[AURPackageInfo]:
-    return find_aur_packages(
-        get_all_aur_names(),
-        enable_progressbar=_("Getting ALL AUR info") + " "
-    )[0]
+    return find_aur_packages(get_all_aur_names())[0]

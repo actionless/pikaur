@@ -6,9 +6,10 @@ import sys
 import readline
 import signal
 import subprocess
+import codecs
 from datetime import datetime
 from typing import List
-import codecs
+from multiprocessing.pool import ThreadPool
 
 from .i18n import _  # keep that first
 from .args import (
@@ -20,7 +21,7 @@ from .core import (
     interactive_spawn, running_as_root, remove_dir,
 )
 from .async import (
-    SingleTaskExecutor, MultipleTasksExecutor,
+    SingleTaskExecutor,
 )
 from .async_cmd import (
     CmdTaskWorker,
@@ -32,10 +33,10 @@ from .pprint import (
     print_version,
 )
 from .pacman import (
-    PacmanColorTaskWorker,
+    PACMAN_COLOR_ARGS,
 )
 from .aur import (
-    AURTaskWorkerInfo,
+    aur_rpc_info,
 )
 from .package_update import (
     PackageUpdate,
@@ -117,17 +118,33 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
     )
 
 
+def _info_packages_thread_repo(
+        raw_args: List[str]
+) -> str:
+    return interactive_spawn(
+        PACMAN_COLOR_ARGS + raw_args,
+        stderr=subprocess.DEVNULL,
+        stdout=subprocess.PIPE
+    ).stdout_text
+
+
 def cli_info_packages(args: PikaurArgs) -> None:
-    result = MultipleTasksExecutor({
-        str(PackageSource.REPO): PacmanColorTaskWorker(args.raw),
-        str(PackageSource.AUR): AURTaskWorkerInfo(
-            packages=args.positional or []
-        ),
-    }).execute()
-    aur_pkgs = result[str(PackageSource.AUR)]
+    with ThreadPool() as pool:
+        requests = {}
+        requests[PackageSource.AUR] = pool.apply_async(aur_rpc_info, (args.positional or [], ))
+        requests[PackageSource.REPO] = pool.apply_async(_info_packages_thread_repo, (args.raw, ))
+        pool.close()
+        pool.join()
+        result = {
+            key: value.get()
+            for key, value in requests.items()
+        }
+
+    if result[PackageSource.REPO]:
+        print(result[PackageSource.REPO], end='')
+
+    aur_pkgs = result[PackageSource.AUR]
     num_found = len(aur_pkgs)
-    if result[str(PackageSource.REPO)].stdout:
-        print(result[str(PackageSource.REPO)].stdout, end='\n' if aur_pkgs else '')
     for i, aur_pkg in enumerate(aur_pkgs):
         pkg_info_lines = []
         for key, value in aur_pkg.__dict__.items():

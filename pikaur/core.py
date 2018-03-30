@@ -15,8 +15,19 @@ class PackageSource(enum.Enum):
     LOCAL = enum.auto()
 
 
-def interactive_spawn(cmd: List[str], **kwargs) -> subprocess.Popen:
-    process = subprocess.Popen(cmd, **kwargs)
+class InteractiveSpawn(subprocess.Popen):
+
+    stdout_text: str = None
+    stderr_text: str = None
+
+    def communicate(self, _input=None, _timeout=None):
+        stdout, stderr = super().communicate(_input, _timeout)
+        self.stdout_text = stdout.decode('utf-8') if stdout else None
+        self.stderr_text = stderr.decode('utf-8') if stderr else None
+
+
+def interactive_spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
+    process = InteractiveSpawn(cmd, **kwargs)
     process.communicate()
     return process
 

@@ -8,7 +8,6 @@ from .core import (
     DataType,
     PackageSource,
 )
-from .async_cmd import CmdTaskWorker
 from .version import (
     get_package_name_and_version_matcher_from_depend_line,
     VersionMatcher,
@@ -26,31 +25,13 @@ OFFICIAL_REPOS = (
     'multilib',
 )
 
+PACMAN_COLOR_ARGS = ['pacman', '--color=always']
+
 
 class PacmanConfig(PycmanConfig):
 
     def __init__(self):
         super().__init__('/etc/pacman.conf')
-
-
-class PacmanTaskWorker(CmdTaskWorker):
-
-    def __init__(self, args: List[str]) -> None:
-        super().__init__(
-            [
-                "pacman",
-            ] + args
-        )
-
-
-class PacmanColorTaskWorker(PacmanTaskWorker):
-
-    def __init__(self, args: List[str]) -> None:
-        super().__init__(
-            [
-                "--color=always",
-            ] + args
-        )
 
 
 class ProvidedDependency(DataType):

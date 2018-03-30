@@ -70,7 +70,7 @@ terminal colors, from 0 to 15
 
 #### [ui]
 
-#### RequireEnterConfirm (default: yes)
+##### RequireEnterConfirm (default: yes)
 require enter key to be pressed when answering questions.
 
 

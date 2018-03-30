@@ -4,16 +4,18 @@ from typing import Any, Dict, Tuple, List, Iterable, Union
 
 import pyalpm
 
-from .core import DataType, PackageSource, return_exception
-from .async import MultipleTasksExecutor
 from .i18n import _
+from .core import DataType, PackageSource, return_exception
 from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
 from .pacman import PackageDB
-from .aur import (
-    AURTaskWorkerSearch, AURPackageInfo,
-    get_all_aur_packages, get_all_aur_names,
-)
+from .aur import AURPackageInfo, aur_search_name_desc, get_all_aur_packages, get_all_aur_names
 from .args import PikaurArgs
+
+
+@return_exception
+def aur_thread_worker(search_word):
+    result = aur_search_name_desc(search_word)
+    return search_word, result
 
 
 @return_exception
@@ -38,10 +40,13 @@ def package_search_worker(args: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
 
     elif index == PackageSource.AUR:
         if args['queries']:
-            result = MultipleTasksExecutor({
-                str(PackageSource.AUR) + search_word: AURTaskWorkerSearch(search_query=search_word)
-                for search_word in args['queries']
-            }).execute()
+            with ThreadPool() as pool:
+                result = {}
+                for thread_result in pool.map(aur_thread_worker, args['queries']):
+                    if isinstance(thread_result, Exception):
+                        return index, {PackageSource.AUR: thread_result}
+                    query, query_result = thread_result
+                    result[query] = query_result
             if args['namesonly']:
                 for subindex, subresult in result.items():
                     result[subindex] = [

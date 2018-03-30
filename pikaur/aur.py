@@ -1,6 +1,10 @@
 import asyncio
+import json
 from urllib.parse import urlencode, quote
-from typing import List, Dict, Awaitable, Tuple
+# from urllib import parse
+from typing import List, Dict, Awaitable, Tuple, Union, Any
+from urllib import request
+
 
 from .i18n import _
 from .core import DataType, get_chunks
@@ -12,6 +16,7 @@ from .exceptions import AURError
 
 
 AUR_HOST = 'aur.archlinux.org'
+AUR_BASE_URL = 'https://' + AUR_HOST
 
 
 class AURPackageInfo(DataType):
@@ -69,15 +74,34 @@ class AURTaskWorker(TaskWorker):
         return self.aur_client_task(loop)
 
 
-class AURTaskWorkerSearch(AURTaskWorker):
+def construct_aur_rpc_url(params: Dict[str, Union[str, int]]) -> str:
+    uri = f'/rpc/?{urlencode(params)}'
+    url = AUR_BASE_URL + uri
+    return url
 
-    def __init__(self, search_query: str) -> None:
-        self.params = urlencode({
-            'v': 5,
-            'type': 'search',
-            'arg': search_query,
-            'by': 'name-desc'
-        })
+
+def get_json_from_url(url: str) -> Dict[str, Any]:
+    raw_result = request.urlopen(url)
+    result_bytes = raw_result.read()
+    result_json = json.loads(result_bytes.decode('utf-8'))
+    return result_json
+
+
+def aur_search_name_desc(search_query: str) -> List[AURPackageInfo]:
+    params = {
+        'v': 5,
+        'type': 'search',
+        'arg': search_query,
+        'by': 'name-desc'
+    }
+    url = construct_aur_rpc_url(params)
+    result_json = get_json_from_url(url)
+    if 'error' in result_json:
+        raise AURError(result_json['error'])
+    return [
+        AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
+        for aur_json in result_json.get('results', [])
+    ]
 
 
 class AURTaskWorkerInfo(AURTaskWorker):

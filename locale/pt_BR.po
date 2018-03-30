@@ -314,8 +314,8 @@ msgstr "y"
 
 #: pikaur/install_cli.py:543
 #, python-brace-format
-msgid "{name} AUR repository is up to date -- skipping"
-msgstr "{name} O repositório AUR está atualizado -- ignorando"
+msgid "{name} AUR repository is up to date - skipping"
+msgstr "{name} O repositório AUR está atualizado - ignorando"
 
 #: pikaur/install_cli.py:585
 #, python-brace-format

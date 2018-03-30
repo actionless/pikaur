@@ -540,7 +540,7 @@ class InstallPackagesCLI():
                 print(
                     '{} {}'.format(
                         color_line(_("warning:"), 11),
-                        _("{name} AUR repository is up to date -- skipping").format(
+                        _("{name} AUR repository is up to date - skipping").format(
                             name=repo_status.package_base
                         )
                     )

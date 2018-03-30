@@ -206,16 +206,3 @@ class SingleTaskExecutor():
     async def execute_async(self) -> Any:
         multi_result = await self._multi_executor.execute_async()
         return multi_result[self._id]
-
-
-def create_worker_from_task(task: asyncio.Task) -> TaskWorker:
-
-    class StubWorker(TaskWorker):
-        def get_task(self, _loop=None) -> Awaitable[Any]:
-            return task
-
-    return StubWorker()
-
-
-def execute_task(task: asyncio.Task) -> Any:
-    return SingleTaskExecutor(create_worker_from_task(task)).execute()

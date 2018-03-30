@@ -336,8 +336,8 @@ msgstr ""
 
 #: pikaur/install_cli.py:471
 #, python-brace-format
-msgid "{name} is up to date -- skipping"
-msgstr "{name} уже обновлён -- пропуск"
+msgid "{name} is up to date - skipping"
+msgstr "{name} уже обновлён - пропуск"
 
 #: pikaur/install_cli.py:201
 #, python-brace-format

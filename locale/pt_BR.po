@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-28 18:56-0300\n"
-"PO-Revision-Date: 2018-03-28 22:14-0300\n"
+"POT-Creation-Date: 2018-03-30 10:46-0300\n"
+"PO-Revision-Date: 2018-03-30 10:47-0300\n"
 "Last-Translator: Alexandre Lopes\n"
 "Language-Team: pt_BR\n"
 "Language: pt_BR\n"
@@ -53,7 +53,7 @@ msgstr "O comando '{}' falhou em executar."
 
 #: pikaur/args.py:59
 msgid "Common pacman options:"
-msgstr "Opções comuns de pacman:"
+msgstr "Opções comuns do pacman:"
 
 #: pikaur/install_cli.py:228
 msgid "Dependencies missing for {}"
@@ -140,21 +140,21 @@ msgstr "Opções específicas do Pikaur:"
 
 #: pikaur/install_cli.py:389
 msgid "Proceed with installation? [Y/n] "
-msgstr "Continuar com a instalação? [Y / n] "
+msgstr "Continuar com a instalação? [Y/n] "
 
 #: pikaur/package_update.py:94
 msgid "Reading AUR package info..."
 msgid_plural "Reading AUR packages info..."
-msgstr[0] "Lendo informações do pacote AUR ..."
+msgstr[0] "Lendo informações do pacote AUR..."
 msgstr[1] "Lendo informações dos pacotes AUR ..."
 
 #: pikaur/pacman.py:167
 msgid "Reading local package database..."
-msgstr "Lendo o banco de dados de pacotes local ..."
+msgstr "Lendo o banco de dados de pacotes local..."
 
 #: pikaur/pacman.py:211
 msgid "Reading repository package databases..."
-msgstr "Lendo bancos de dados de pacotes do repositório ..."
+msgstr "Lendo bancos de dados de pacotes do repositório..."
 
 #: pikaur/pprint.py:170
 msgid "Repository package will be installed:"
@@ -164,17 +164,17 @@ msgstr[1] "Pacotes de repositório serão instalados:"
 
 #: pikaur/install_cli.py:220
 msgid "Resolving AUR dependencies..."
-msgstr "Resolvendo dependências do AUR ..."
+msgstr "Resolvendo dependências do AUR..."
 
 #: pikaur/install_cli.py:702
 #, python-brace-format
 msgid "Reverting {target} transaction..."
-msgstr "Revertendo a transação {target} ..."
+msgstr "Revertendo a transação {target}..."
 
 #: pikaur/search_cli.py:145
 #, python-brace-format
 msgid "Searching... [{bar}]"
-msgstr "Pesquisando ... [{bar}]"
+msgstr "Procurando... [{bar}]"
 
 #: pikaur/install_cli.py:509
 #, python-brace-format
@@ -183,7 +183,7 @@ msgstr "Ignorando a revisão de {file} para o pacote {name} ({flag})"
 
 #: pikaur/main.py:112
 msgid "Starting full AUR upgrade..."
-msgstr "Começando a atualização completa do AUR ..."
+msgstr "Iniciando a atualização completa do AUR..."
 
 #: pikaur/pprint.py:182
 msgid "Third-party repository package will be installed:"
@@ -193,7 +193,7 @@ msgstr[1] "Pacotes de repositórios de terceiros serão instalados:"
 
 #: pikaur/install_cli.py:449
 msgid "Try recovering?"
-msgstr "Tente se recuperar?"
+msgstr "Tente recuperar?"
 
 #: pikaur/install_cli.py:233
 msgid "Version mismatch:"
@@ -201,7 +201,7 @@ msgstr "Incompatibilidade de versão:"
 
 #: pikaur/prompt.py:68
 msgid "[Y]es (--noconfirm)"
-msgstr "[Y] es (- não confirmam)"
+msgstr "[Y]es (--noconfirm)"
 
 #: pikaur/install_cli.py:454
 msgid "[a] abort"
@@ -209,7 +209,7 @@ msgstr "[a] abortar"
 
 #: pikaur/install_cli.py:450
 msgid "[c] git checkout -- '*'"
-msgstr "[c] git checkout - '*'"
+msgstr "[c] git checkout --'*'"
 
 #: pikaur/search_cli.py:115
 #, python-brace-format
@@ -259,7 +259,7 @@ msgstr "erro:"
 
 #: pikaur/install_cli.py:476
 msgid "looking for conflicting packages..."
-msgstr "procurando pacotes conflitantes ..."
+msgstr "procurando pacotes conflitantes..."
 
 #: pikaur/install_cli.py:410
 msgid "m"
@@ -272,7 +272,7 @@ msgstr "nenhum editor encontrado. Tente definir $VISUAL ou $EDITOR."
 #: pikaur/main.py:234
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
-"pikaur requer systemd> = 235 (usuários dinâmicos) para ser executado como "
+"pikaur requer systemd >= 235 (usuários dinâmicos) para ser executado como "
 "root."
 
 #: pikaur/args.py:64

@@ -90,8 +90,7 @@ class InstallPackagesCLI():
     manually_excluded_packages_names: List[str] = None
 
     repo_packages_by_name: Dict[str, pyalpm.Package] = None
-    aur_packages_names: List[str] = None
-    aur_deps_names: List[str] = None
+    aur_deps_relations: Dict[str, List[str]] = None
     # @TODO: join together these two blocks into only 4 properties
     repo_packages_install_info: List[PackageUpdate] = None
     thirdparty_repo_packages_install_info: List[PackageUpdate] = None
@@ -144,10 +143,22 @@ class InstallPackagesCLI():
                 [color_line(_("Failed to build following packages:"), 9), ] +
                 self.failed_to_build_package_names
             ))
+            sys.exit(1)
+
+    @property
+    def aur_packages_names(self) -> List[str]:
+        return list(self.aur_deps_relations.keys())
+
+    @property
+    def aur_deps_names(self) -> List[str]:
+        _aur_deps_names: List[str] = []
+        for deps in self.aur_deps_relations.values():
+            _aur_deps_names += deps
+        return list(set(_aur_deps_names))
 
     @property
     def all_aur_packages_names(self) -> List[str]:
-        return self.aur_packages_names + self.aur_deps_names
+        return list(set(self.aur_packages_names + self.aur_deps_names))
 
     def get_editor(self) -> Union[List[str], None]:
         editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
@@ -212,10 +223,7 @@ class InstallPackagesCLI():
             sys.exit(0)
 
         try:
-            if self.aur_packages_names:
-                print(_("Resolving AUR dependencies..."))
-            aur_deps_names = find_aur_deps(self.aur_packages_names)
-            self.get_aur_deps_info(aur_deps_names)
+            self.get_aur_deps_info()
         except PackagesNotFoundInAUR as exc:
             if exc.wanted_by:
                 print("{} {}".format(
@@ -308,10 +316,16 @@ class InstallPackagesCLI():
             ):
                 print_ignored_package(pkg_name)
                 del aur_updates_install_info[pkg_name]
-        self.aur_packages_names = list(aur_updates_install_info.keys())
         self.aur_updates_install_info = list(aur_updates_install_info.values())
 
-    def get_aur_deps_info(self, aur_deps_names: List[str]):
+    def get_aur_deps_info(self):
+        aur_pkgs_names = list(set([pu.Name for pu in self.aur_updates_install_info]))
+        if aur_pkgs_names:
+            print(_("Resolving AUR dependencies..."))
+        self.aur_deps_relations = find_aur_deps(aur_pkgs_names)
+        for package_update in self.aur_updates_install_info:
+            self.aur_deps_relations.setdefault(package_update.Name, [])
+        aur_deps_names = self.aur_deps_names
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
             aur_pkg.name: aur_pkg
@@ -329,7 +343,6 @@ class InstallPackagesCLI():
                 New_Version=aur_pkg.version,
                 Description=aur_pkg.desc
             ))
-        self.aur_deps_names = aur_deps_names
         self.aur_deps_install_info = aur_deps_install_info
 
     def manual_package_selection(self):
@@ -414,6 +427,25 @@ class InstallPackagesCLI():
             else:
                 break
 
+    def discard_aur_package(
+            self, canceled_pkg_name: str, already_discarded: List[str] = None
+    ) -> None:
+        already_discarded = (already_discarded or []) + [canceled_pkg_name]
+        packages_to_be_removed = []
+        for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
+            if canceled_pkg_name in aur_deps + [aur_pkg_name]:
+                for pkg_name in aur_deps + [aur_pkg_name]:
+                    if pkg_name not in already_discarded:
+                        self.discard_aur_package(pkg_name, already_discarded)
+                    pkg_build = self.package_builds_by_name.get(pkg_name)
+                    if pkg_build and pkg_build.built_packages_installed and \
+                       pkg_build.built_packages_installed.get(pkg_name):
+                        packages_to_be_removed.append(pkg_name)
+                if aur_pkg_name in self.aur_deps_relations:
+                    del self.aur_deps_relations[aur_pkg_name]
+        if packages_to_be_removed:
+            self._remove_packages(list(set(packages_to_be_removed)))
+
     def get_package_builds(self) -> None:
         if not self.all_aur_packages_names:
             self.package_builds_by_name = {}
@@ -458,11 +490,8 @@ class InstallPackagesCLI():
                 elif answer == _("r"):
                     remove_dir(package_build.repo_path)
                 elif answer == _("s"):
-                    for pkg_name in package_build.package_names:
-                        if pkg_name in self.aur_packages_names:
-                            self.aur_packages_names.remove(pkg_name)
-                        else:
-                            self.aur_deps_names.remove(pkg_name)
+                    for skip_pkg_name in package_build.package_names:
+                        self.discard_aur_package(skip_pkg_name)
                 else:
                     sys.exit(125)
 
@@ -612,7 +641,10 @@ class InstallPackagesCLI():
                 #     sys.exit(125)
                 for _pkg_name in repo_status.package_names:
                     failed_to_build_package_names.append(_pkg_name)
-                    packages_to_be_built.remove(_pkg_name)
+                    self.discard_aur_package(_pkg_name)
+                    for remaining_aur_pkg_name in packages_to_be_built[:]:
+                        if remaining_aur_pkg_name not in self.all_aur_packages_names:
+                            packages_to_be_built.remove(remaining_aur_pkg_name)
             except DependencyNotBuiltYet:
                 index += 1
                 for _pkg_name in repo_status.package_names:

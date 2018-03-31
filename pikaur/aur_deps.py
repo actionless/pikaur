@@ -160,31 +160,35 @@ def find_missing_deps_for_aur_pkg(
     return not_found_local_pkgs
 
 
-def find_aur_deps(package_names: List[str]) -> List[str]:
+def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:
+    new_aur_deps: List[str] = []
+    result_aur_deps: Dict[str, List[str]] = {}
 
     iter_package_names = package_names[:]
-    new_aur_deps: List[str] = []
     while iter_package_names:
         all_deps_for_aur_packages = {}
         aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(iter_package_names)
         if not_found_aur_pkgs:
             raise PackagesNotFoundInAUR(packages=not_found_aur_pkgs)
-        for result in aur_pkgs_info:
-            aur_pkg_deps = get_aur_pkg_deps_and_version_matchers(result)
+        for aur_pkg in aur_pkgs_info:
+            aur_pkg_deps = get_aur_pkg_deps_and_version_matchers(aur_pkg)
             if aur_pkg_deps:
-                all_deps_for_aur_packages[result.name] = aur_pkg_deps
+                all_deps_for_aur_packages[aur_pkg.name] = aur_pkg_deps
 
         not_found_local_pkgs: List[str] = []
         for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():
-            not_found_local_pkgs += find_missing_deps_for_aur_pkg(
+            non_local_pkgs = find_missing_deps_for_aur_pkg(
                 aur_pkg_name=aur_pkg_name,
                 aur_pkgs_info=aur_pkgs_info,
                 version_matchers=deps_for_aur_package,
             )
+            not_found_local_pkgs += non_local_pkgs
+            for dep_pkg_name in non_local_pkgs:
+                result_aur_deps.setdefault(aur_pkg_name, []).append(dep_pkg_name)
         iter_package_names = []
         for pkg_name in not_found_local_pkgs:
             if pkg_name not in new_aur_deps and pkg_name not in package_names:
                 new_aur_deps.append(pkg_name)
                 iter_package_names.append(pkg_name)
 
-    return new_aur_deps
+    return result_aur_deps

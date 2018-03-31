@@ -1,13 +1,14 @@
 import os
 import shutil
 import platform
+from multiprocessing.pool import ThreadPool
 from typing import List, Union, Dict, Tuple, Any, Optional
 
 from .core import (
     DataType, ConfigReader,
-    isolate_root_cmd, remove_dir, running_as_root, open_file,
+    isolate_root_cmd, remove_dir, running_as_root, open_file, spawn,
 )
-from .async import MultipleTasksExecutor, SingleTaskExecutor
+from .async import SingleTaskExecutor
 from .async_cmd import CmdTaskWorker, CmdTaskResult
 from .i18n import _
 from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
@@ -184,24 +185,6 @@ class PackageBuild(DataType):
             os.makedirs(self.repo_path)
             self.clone = True
 
-    def create_clone_task_worker(self) -> CmdTaskWorker:
-        return CmdTaskWorker([
-            'git',
-            'clone',
-            get_repo_url(self.package_base),
-            self.repo_path,
-        ])
-
-    def create_pull_task_worker(self) -> CmdTaskWorker:
-        return CmdTaskWorker([
-            'git',
-            '-C',
-            self.repo_path,
-            'pull',
-            'origin',
-            'master'
-        ])
-
     def git_reset_changed(self) -> CmdTaskResult:
         return SingleTaskExecutor(CmdTaskWorker([
             'git',
@@ -223,11 +206,23 @@ class PackageBuild(DataType):
             '-x'
         ])).execute()
 
-    def create_task_worker(self) -> CmdTaskWorker:
+    def get_task_command(self) -> CmdTaskWorker:
         if self.pull:
-            return self.create_pull_task_worker()
+            return [
+                'git',
+                '-C',
+                self.repo_path,
+                'pull',
+                'origin',
+                'master'
+            ]
         elif self.clone:
-            return self.create_clone_task_worker()
+            return [
+                'git',
+                'clone',
+                get_repo_url(self.package_base),
+                self.repo_path,
+            ]
         return NotImplemented
 
     @property
@@ -445,12 +440,19 @@ def clone_pkgbuilds_git_repos(package_names: List[str]) -> Dict[str, PackageBuil
         for pkgbase, pkg_names in packages_bases.items()
         for pkg_name in pkg_names
     }
-    results = MultipleTasksExecutor({
-        pkgbase: repo_status.create_task_worker()
-        for pkgbase, repo_status in package_builds_by_base.items()
-    }).execute()
+    with ThreadPool() as pool:
+        requests = {
+            key: pool.apply_async(spawn, (repo_status.get_task_command(), ))
+            for key, repo_status in package_builds_by_name.items()
+        }
+        pool.close()
+        pool.join()
+        results = {
+            key: value.get()
+            for key, value in requests.items()
+        }
     for package_name, result in results.items():
-        if result.return_code > 0:
+        if result.returncode > 0:
             raise CloneError(
                 build=package_builds_by_name[package_name],
                 result=result

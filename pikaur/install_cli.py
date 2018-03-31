@@ -440,7 +440,8 @@ class InstallPackagesCLI():
                     ),
                     9
                 ))
-                print(err.result)
+                print(err.result.stdout_text)
+                print(err.result.stderr_text)
                 if self.args.noconfirm:
                     answer = _("a")
                 else:

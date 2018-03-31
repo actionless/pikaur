@@ -32,6 +32,10 @@ def interactive_spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
     return process
 
 
+def spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
+    return interactive_spawn(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+
+
 def running_as_root() -> bool:
     return os.geteuid() == 0
 

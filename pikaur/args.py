@@ -4,8 +4,7 @@ from typing import List, Any, Tuple
 from . import argparse as argparse  # pylint: disable=no-name-in-module
 
 from .i18n import _
-from .async import SingleTaskExecutor
-from .async_cmd import CmdTaskWorker
+from .core import spawn
 
 
 class PikaurArgs(argparse.Namespace):
@@ -51,9 +50,9 @@ class PikaurArgumentParser(argparse.ArgumentParser):
 
 
 def cli_print_help(args: PikaurArgs) -> None:
-    pacman_help = SingleTaskExecutor(CmdTaskWorker(
+    pacman_help = spawn(
         ['pacman', ] + args.raw,
-    )).execute().stdout.replace(
+    ).stdout_text.replace(
         'pacman', 'pikaur'
     ).replace(
         'options:', '\n' + _("Common pacman options:")

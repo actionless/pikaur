@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     # pylint: disable=unused-import
     from .build import PackageBuild  # noqa
     from .version import VersionMatcher  # noqa
-    from .async import TaskResult  # noqa
+    from .core import InteractiveSpawn  # noqa
 
 
 class PackagesNotFoundInAUR(DataType, Exception):
@@ -20,7 +20,7 @@ class BuildError(Exception):
 
 class CloneError(DataType, Exception):
     build: 'PackageBuild' = None
-    result: 'TaskResult' = None
+    result: 'InteractiveSpawn' = None
 
 
 class DependencyError(Exception):

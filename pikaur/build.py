@@ -206,7 +206,7 @@ class PackageBuild(DataType):
             '-x'
         ])).execute()
 
-    def get_task_command(self) -> CmdTaskWorker:
+    def get_task_command(self) -> List[str]:
         if self.pull:
             return [
                 'git',

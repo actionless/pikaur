@@ -223,7 +223,7 @@ class InstallPackagesCLI():
             sys.exit(0)
 
         try:
-            self.get_aur_deps_info(all_aur_packages_names)
+            self.get_aur_deps_info()
         except PackagesNotFoundInAUR as exc:
             if exc.wanted_by:
                 print("{} {}".format(
@@ -316,11 +316,12 @@ class InstallPackagesCLI():
                 del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
 
-    def get_aur_deps_info(self, aur_packages_names: List[str]):
-        if aur_packages_names:
+    def get_aur_deps_info(self):
+        all_aur_packages_names = [info.Name for info in self.aur_updates_install_info]
+        if all_aur_packages_names:
             print(_("Resolving AUR dependencies..."))
-        self.aur_deps_relations = find_aur_deps(aur_packages_names)
-        for aur_pkg_name in aur_packages_names:
+        self.aur_deps_relations = find_aur_deps(all_aur_packages_names)
+        for aur_pkg_name in all_aur_packages_names:
             self.aur_deps_relations.setdefault(aur_pkg_name, [])
         aur_deps_names = self.aur_deps_names
         local_pkgs = PackageDB.get_local_dict()

@@ -6,10 +6,9 @@ from typing import List, Union, Dict, Tuple, Any, Optional
 
 from .core import (
     DataType, ConfigReader,
-    isolate_root_cmd, remove_dir, running_as_root, open_file, spawn,
+    isolate_root_cmd, remove_dir, running_as_root, open_file,
+    spawn, interactive_spawn, InteractiveSpawn,
 )
-from .async import SingleTaskExecutor
-from .async_cmd import CmdTaskWorker, CmdTaskResult
 from .i18n import _
 from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
 from .config import (
@@ -93,12 +92,13 @@ class SrcInfo():
 
     def regenerate(self) -> None:
         with open_file(self.path, 'w') as srcinfo_file:
-            result = SingleTaskExecutor(
-                CmdTaskWorker(isolate_root_cmd(['makepkg', '--printsrcinfo'],
-                                               cwd=self.repo_path),
-                              cwd=self.repo_path)
-            ).execute()
-            srcinfo_file.write(result.stdout)
+            result = spawn(
+                isolate_root_cmd(
+                    ['makepkg', '--printsrcinfo'],
+                    cwd=self.repo_path
+                ), cwd=self.repo_path
+            )
+            srcinfo_file.write(result.stdout_text)
         self.load_config()
 
 
@@ -185,18 +185,18 @@ class PackageBuild(DataType):
             os.makedirs(self.repo_path)
             self.clone = True
 
-    def git_reset_changed(self) -> CmdTaskResult:
-        return SingleTaskExecutor(CmdTaskWorker([
+    def git_reset_changed(self) -> InteractiveSpawn:
+        return interactive_spawn([
             'git',
             '-C',
             self.repo_path,
             'checkout',
             '--',
             "*"
-        ])).execute()
+        ])
 
-    def git_clean(self) -> CmdTaskResult:
-        return SingleTaskExecutor(CmdTaskWorker([
+    def git_clean(self) -> InteractiveSpawn:
+        return interactive_spawn([
             'git',
             '-C',
             self.repo_path,
@@ -204,7 +204,7 @@ class PackageBuild(DataType):
             '-f',
             '-d',
             '-x'
-        ])).execute()
+        ])
 
     def get_task_command(self) -> List[str]:
         if self.pull:
@@ -348,11 +348,11 @@ class PackageBuild(DataType):
             'PKGEXT', '.pkg.tar.xz',
             config_path=os.path.join(self.build_dir, 'PKGBUILD')
         )
-        full_pkg_names = SingleTaskExecutor(CmdTaskWorker(
+        full_pkg_names = spawn(
             isolate_root_cmd(['makepkg', '--packagelist'],
                              cwd=self.build_dir),
             cwd=self.build_dir
-        )).execute().stdout.splitlines()
+        ).stdout_text.splitlines()
         full_pkg_names.sort(key=len)
         for pkg_name in self.package_names:
             full_pkg_name = full_pkg_names[0]
@@ -385,7 +385,7 @@ class PackageBuild(DataType):
         if running_as_root():
             # Let systemd-run setup the directories and symlinks
             true_cmd = isolate_root_cmd(['true'])
-            SingleTaskExecutor(CmdTaskWorker(true_cmd)).execute()
+            spawn(true_cmd)
             # Chown the private CacheDirectory to root to signal systemd that
             # it needs to recursively chown it to the correct user
             os.chown(os.path.realpath(CACHE_ROOT), 0, 0)

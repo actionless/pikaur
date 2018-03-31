@@ -35,10 +35,8 @@ from .pprint import (
 )
 from .core import (
     PackageSource,
-    interactive_spawn, remove_dir, open_file,
+    spawn, interactive_spawn, remove_dir, open_file,
 )
-from .async import SingleTaskExecutor
-from .async_cmd import CmdTaskWorker
 from .conflicts import find_conflicts
 from .prompt import (
     ask_to_continue, retry_interactive_command,
@@ -156,10 +154,8 @@ class InstallPackagesCLI():
         if editor_line:
             return editor_line.split(' ')
         for editor in ('vim', 'nano', 'mcedit', 'edit'):
-            result = SingleTaskExecutor(
-                CmdTaskWorker(['which', editor])
-            ).execute()
-            if result.return_code == 0:
+            result = spawn(['which', editor])
+            if result.returncode == 0:
                 return [editor, ]
         print(
             '{} {}'.format(

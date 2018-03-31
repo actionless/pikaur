@@ -18,13 +18,7 @@ from .args import (
 )
 from .core import (
     PackageSource,
-    interactive_spawn, running_as_root, remove_dir,
-)
-from .async import (
-    SingleTaskExecutor,
-)
-from .async_cmd import (
-    CmdTaskWorker,
+    spawn, interactive_spawn, running_as_root, remove_dir,
 )
 from .pprint import (
     color_line, bold_line,
@@ -177,9 +171,9 @@ def cli_clean_packages_cache(args: PikaurArgs) -> None:
 
 
 def cli_print_version(args: PikaurArgs) -> None:
-    pacman_version = SingleTaskExecutor(CmdTaskWorker(
+    pacman_version = spawn(
         ['pacman', '--version', ],
-    )).execute().stdout.splitlines()[1].strip(' .-')
+    ).stdout_text.splitlines()[1].strip(' .-')
     print_version(pacman_version, quiet=args.quiet)
 
 

@@ -10,7 +10,14 @@ from .i18n import _
 from .pprint import color_line, print_status_message
 
 
-def read_answer_from_tty(question: str, answers: str = 'Yn') -> str:
+Y = _('y')
+N = _('n')
+
+Y_UP = Y.upper()
+N_UP = N.upper()
+
+
+def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
     '''
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
@@ -68,8 +75,8 @@ def ask_to_continue(text: str = None, default_yes: bool = True, args: PikaurArgs
         print_status_message('{} {}'.format(text, _("[Y]es (--noconfirm)")))
         return True
 
-    prompt = text + (' [Y/n] ' if default_yes else ' [y/N] ')
-    answers = 'Yn' if default_yes else 'yN'
+    prompt = text + (' [%s/%s] ' % (Y_UP, N) if default_yes else ' [%s/%s] ' % (Y, N_UP))
+    answers = Y_UP + N if default_yes else Y + N_UP
 
     answer = get_input(prompt, answers)
     return (answer == 'y') or (default_yes and answer == '')

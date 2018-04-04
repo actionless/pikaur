@@ -38,7 +38,7 @@ build() {
 package() {
 	cd "${srcdir}/${pkgname}" || exit 2
 	python setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
-	for lang in fr ru pt; do
+	for lang in fr ru pt de; do
 		install -Dm644 "locale/${lang}.mo" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"
 	done
 	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"

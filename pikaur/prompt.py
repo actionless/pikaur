@@ -79,7 +79,7 @@ def ask_to_continue(text: str = None, default_yes: bool = True, args: PikaurArgs
     answers = Y_UP + N if default_yes else Y + N_UP
 
     answer = get_input(prompt, answers)
-    return (answer == 'y') or (default_yes and answer == '')
+    return (answer == Y) or (default_yes and answer == '')
 
 
 def ask_to_retry_decorator(fun: Callable) -> Callable:

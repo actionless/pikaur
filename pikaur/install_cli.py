@@ -25,7 +25,7 @@ from .exceptions import (
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
 )
 from .build import (
-    SrcInfo, PackageBuild,
+    PackageBuild,
     clone_pkgbuilds_git_repos,
 )
 from .pprint import (
@@ -42,6 +42,7 @@ from .prompt import (
     ask_to_continue, retry_interactive_command,
     retry_interactive_command_or_exit, get_input,
 )
+from .srcinfo import SrcInfo
 
 
 def package_is_ignored(package_name: str, args: PikaurArgs) -> bool:

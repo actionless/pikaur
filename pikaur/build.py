@@ -57,14 +57,18 @@ class SrcInfo():
         self.package_name = package_name
         self.load_config()
 
-    def get_values(self, field: str) -> List[str]:
+    def get_values(self, field: str, lines: List[str] = None) -> List[str]:
         prefix = field + ' = '
         values = []
-        for lines in (self._common_lines, self._package_lines):
-            for line in lines:
-                if line.strip().startswith(prefix):
-                    values.append(line.strip().split(prefix)[1])
+        if lines is None:
+            lines = self._common_lines + self._package_lines
+        for line in lines:
+            if line.strip().startswith(prefix):
+                values.append(line.strip().split(prefix)[1])
         return values
+
+    def get_pkgbase_values(self, field: str) -> List[str]:
+        return self.get_values(field, self._common_lines)
 
     def get_value(self, field: str) -> str:
         return self.get_values(field)[0]
@@ -77,11 +81,9 @@ class SrcInfo():
 
     def _get_depends(self, field: str) -> List[Tuple[str, VersionMatcher]]:
         dependencies = []
-        src_info_pkgnames = self.get_values('pkgname')
-        for dep in self.get_values(field):
+        for dep in self.get_pkgbase_values(field):
             pkg_name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
-            if pkg_name not in src_info_pkgnames:
-                dependencies.append((pkg_name, version_matcher))
+            dependencies.append((pkg_name, version_matcher))
         return dependencies
 
     def get_makedepends(self) -> List[Tuple[str, VersionMatcher]]:
@@ -100,16 +102,6 @@ class SrcInfo():
             )
             srcinfo_file.write(result.stdout_text)
         self.load_config()
-
-
-class PackageBaseSrcInfo(SrcInfo):
-
-    def load_config(self) -> None:
-        self._common_lines = []
-        self._package_lines = []
-        with open_file(self.path) as srcinfo_file:
-            for line in srcinfo_file.readlines():
-                self._common_lines.append(line)
 
 
 class MakepkgConfig():
@@ -394,7 +386,7 @@ class PackageBuild(DataType):
             remove_dir(self.build_dir)
         shutil.copytree(self.repo_path, self.build_dir)
 
-        src_info = PackageBaseSrcInfo(self.repo_path)
+        src_info = SrcInfo(self.repo_path)
         make_deps = [pkg_name for pkg_name, _vm in src_info.get_makedepends()]
         __, self.new_make_deps_to_install = find_local_packages(make_deps)
         new_deps = [pkg_name for pkg_name, _vm in src_info.get_depends()]

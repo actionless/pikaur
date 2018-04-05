@@ -25,7 +25,7 @@ from .exceptions import (
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
 )
 from .build import (
-    SrcInfo, PackageBaseSrcInfo, PackageBuild,
+    SrcInfo, PackageBuild,
     clone_pkgbuilds_git_repos,
 )
 from .pprint import (
@@ -584,7 +584,7 @@ class InstallPackagesCLI():
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
                     ])
-            src_info = PackageBaseSrcInfo(repo_status.repo_path)
+            src_info = SrcInfo(repo_status.repo_path)
 
             if self.get_editor():
                 if self.ask_to_edit_file('PKGBUILD', repo_status):

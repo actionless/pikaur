@@ -22,7 +22,7 @@ sed -i -e "s/    version='.*',/    version='${new_version}',/g" setup.py
 git commit -am "chore: bump version to ${new_version}" || true
 git tag -a "${new_version}" -f
 
-echo "[configm push to pikaur git repo?]"
+echo "[confirm push to pikaur git repo?]"
 read -r
 git push origin HEAD
 git push origin "${new_version}"

@@ -86,27 +86,39 @@ class InstallPackagesCLI():
     # @TODO: refactor this warning:
     # pylint: disable=too-many-public-methods,too-many-instance-attributes
 
+    # User input
     args: PikaurArgs = None
     install_package_names: List[str] = None
     manually_excluded_packages_names: List[str] = None
 
+    # computed package lists:
     repo_packages_by_name: Dict[str, pyalpm.Package] = None
     aur_deps_relations: Dict[str, List[str]] = None
+    # pkgbuilds from cloned aur repos:
+    package_builds_by_name: Dict[str, PackageBuild] = None
 
+    # Packages' install info
+    # @TODO: refactor this and related methods into separate class InstallPrompt?
     repo_packages_install_info: List[PackageUpdate] = None
     thirdparty_repo_packages_install_info: List[PackageUpdate] = None
     aur_updates_install_info: List[PackageUpdate] = None
     aur_deps_install_info: List[PackageUpdate] = None
 
-    package_builds_by_name: Dict[str, PackageBuild] = None
-    failed_to_build_package_names: List[str] = None
+    # Installation results
+    # transactions by PackageSource(AUR/repo), direction(removed/installed):
     transactions: Dict[str, Dict[str, List[str]]] = None
+    # AUR packages which failed to build:
+    # @TODO: refactor to store in transactions
+    failed_to_build_package_names: List[str] = None
 
     def __init__(self, args: PikaurArgs, packages: List[str] = None) -> None:
         self.args = args
         self.install_package_names = packages or args.positional
-
         self.manually_excluded_packages_names = []
+        self.install_packages()
+
+    def install_packages(self):
+        args = self.args
         self.get_all_packages_info()
         self.install_prompt()
 

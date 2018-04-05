@@ -1,3 +1,4 @@
+import os
 import gzip
 import json
 from multiprocessing.pool import ThreadPool
@@ -46,9 +47,30 @@ class AURPackageInfo(DataType):
         super().__init__(**kwargs)
 
 
+def read_bytes_from_url(url: str) -> bytes:
+    req = request.Request(url)
+    last_proxy_params: Tuple[str, str] = None
+    for proxy_env_var in ('http_proxy', 'https_proxy'):
+        if proxy_env_var not in os.environ:
+            continue
+        try:
+            proxy_url = parse.urlparse(os.environ[proxy_env_var])
+        except Exception:
+            pass
+        else:
+            last_proxy_params = (
+                proxy_url.netloc or proxy_url.path,
+                proxy_url.scheme or proxy_env_var.split('_')[0]
+            )
+    if last_proxy_params:
+        req.set_proxy(*last_proxy_params)
+    response = request.urlopen(req)
+    result_bytes = response.read()
+    return result_bytes
+
+
 def get_json_from_url(url: str) -> Dict[str, Any]:
-    raw_result = request.urlopen(url)
-    result_bytes = raw_result.read()
+    result_bytes = read_bytes_from_url(url)
     result_json = json.loads(result_bytes.decode('utf-8'))
     if 'error' in result_json:
         raise AURError(result_json['error'])
@@ -56,8 +78,7 @@ def get_json_from_url(url: str) -> Dict[str, Any]:
 
 
 def get_gzip_from_url(url: str) -> str:
-    raw_result = request.urlopen(url)
-    result_bytes = raw_result.read()
+    result_bytes = read_bytes_from_url(url)
     decompressed_bytes_response = gzip.decompress(result_bytes)
     text_response = decompressed_bytes_response.decode('utf-8')
     return text_response

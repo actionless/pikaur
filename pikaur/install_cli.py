@@ -26,7 +26,7 @@ from .exceptions import (
 )
 from .build import (
     PackageBuild,
-    clone_pkgbuilds_git_repos,
+    clone_aur_repos,
 )
 from .pprint import (
     color_line, bold_line,
@@ -451,7 +451,7 @@ class InstallPackagesCLI():
         while self.all_aur_packages_names:
             try:
                 self.package_builds_by_name = \
-                    clone_pkgbuilds_git_repos(self.all_aur_packages_names)
+                    clone_aur_repos(self.all_aur_packages_names)
                 break
             except CloneError as err:
                 package_build = err.build

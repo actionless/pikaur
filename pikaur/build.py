@@ -340,7 +340,7 @@ class PackageBuild(DataType):
             self._set_built_package_path()
 
 
-def clone_pkgbuilds_git_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
+def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
     aur_pkgs, _ = find_aur_packages(package_names)
     packages_bases: Dict[str, List[str]] = {}
     for aur_pkg in aur_pkgs:
@@ -361,14 +361,11 @@ def clone_pkgbuilds_git_repos(package_names: List[str]) -> Dict[str, PackageBuil
         }
         pool.close()
         pool.join()
-        results = {
-            key: value.get()
-            for key, value in requests.items()
-        }
-    for package_name, result in results.items():
-        if result.returncode > 0:
-            raise CloneError(
-                build=package_builds_by_name[package_name],
-                result=result
-            )
+        for package_name, request in requests.items():
+            result = request.get()
+            if result.returncode > 0:
+                raise CloneError(
+                    build=package_builds_by_name[package_name],
+                    result=result
+                )
     return package_builds_by_name

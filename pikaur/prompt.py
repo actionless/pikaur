@@ -98,6 +98,6 @@ def retry_interactive_command(cmd_args: List[str], args: PikaurArgs, **kwargs) -
 
 
 def retry_interactive_command_or_exit(cmd_args: List[str], args: PikaurArgs, **kwargs) -> None:
-    if not retry_interactive_command(cmd_args, **kwargs):
+    if not retry_interactive_command(cmd_args, args=args, **kwargs):
         if not ask_to_continue(args=args, default_yes=False):
             sys.exit(125)

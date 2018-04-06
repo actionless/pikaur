@@ -99,7 +99,8 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
 def cli_upgrade_packages(args: PikaurArgs) -> None:
     if args.refresh:
         retry_interactive_command_or_exit(
-            ['sudo', 'pacman', '--sync', '--refresh']
+            ['sudo', 'pacman', '--sync', '--refresh'],
+            args=args
         )
     if not args.repo:
         print('{} {}'.format(
@@ -157,7 +158,7 @@ def cli_clean_packages_cache(args: PikaurArgs) -> None:
         build_cache = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
         if os.path.exists(build_cache):
             print('\n' + _("Build directory: {}").format(build_cache))
-            if ask_to_continue('{} {}'.format(
+            if ask_to_continue(args=args, text='{} {}'.format(
                     color_line('::', 12),
                     _("Do you want to remove all files?")
             )):

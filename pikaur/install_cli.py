@@ -98,7 +98,8 @@ class InstallPackagesCLI():
     package_builds_by_name: Dict[str, PackageBuild] = None
 
     # Packages' install info
-    # @TODO: refactor this and related methods into separate class InstallPrompt? (PackageSelection?)
+    # @TODO: refactor this and related methods
+    #        into separate class InstallPrompt? (PackageSelection?)
     repo_packages_install_info: List[PackageUpdate] = None
     thirdparty_repo_packages_install_info: List[PackageUpdate] = None
     aur_updates_install_info: List[PackageUpdate] = None
@@ -506,7 +507,7 @@ class InstallPackagesCLI():
                     sys.exit(125)
 
     def ask_to_continue(self, text: str = None, default_yes=True) -> bool:
-        return ask_to_continue(text, default_yes, args=self.args)
+        return ask_to_continue(text=text, default_yes=default_yes, args=self.args)
 
     def ask_about_package_conflicts(self) -> None:
         print(_('looking for conflicting packages...'))
@@ -681,6 +682,7 @@ class InstallPackagesCLI():
                     'pacman',
                     '-Rs',
                 ] + packages_to_be_removed,
+                args=self.args
             )
 
     def _install_repo_packages(self, packages_to_be_installed: List[str]) -> None:

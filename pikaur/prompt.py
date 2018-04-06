@@ -67,13 +67,16 @@ def get_input(prompt: str, answers=None) -> str:
     return answer
 
 
-def ask_to_continue(text: str = None, default_yes: bool = True, args: PikaurArgs = None) -> bool:
+def ask_to_continue(args: PikaurArgs, text: str = None, default_yes: bool = True) -> bool:
     if text is None:
         text = _('Do you want to proceed?')
 
-    if args and args.noconfirm and default_yes:
-        print_status_message('{} {}'.format(text, _("[Y]es (--noconfirm)")))
-        return True
+    if args.noconfirm:
+        print_status_message('{} {}'.format(
+            text,
+            _("[Y]es (--noconfirm)") if default_yes else _("[N]o (--noconfirm)")
+        ))
+        return default_yes
 
     prompt = text + (' [%s/%s] ' % (Y_UP, N) if default_yes else ' [%s/%s] ' % (Y, N_UP))
     answers = Y_UP + N if default_yes else Y + N_UP
@@ -104,7 +107,7 @@ def retry_interactive_command(cmd_args: List[str], **kwargs) -> bool:
     return good
 
 
-def retry_interactive_command_or_exit(cmd_args: List[str], **kwargs) -> None:
+def retry_interactive_command_or_exit(cmd_args: List[str], args: PikaurArgs, **kwargs) -> None:
     if not retry_interactive_command(cmd_args, **kwargs):
-        if not ask_to_continue(default_yes=False):
+        if not ask_to_continue(args=args, default_yes=False):
             sys.exit(125)

@@ -404,7 +404,7 @@ class InstallPackagesCLI():
 
         def _confirm_sysupgrade(verbose=False) -> str:
             _print_sysupgrade(verbose=verbose)
-            prompt = '{} {}\n{} {}\n>>'.format(
+            prompt = '{} {}\n{} {}\n>> '.format(
                 color_line('::', 12),
                 bold_line(_('Proceed with installation? [Y/n] ')),
                 color_line('::', 12),

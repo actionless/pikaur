@@ -98,7 +98,7 @@ class InstallPackagesCLI():
     package_builds_by_name: Dict[str, PackageBuild] = None
 
     # Packages' install info
-    # @TODO: refactor this and related methods into separate class InstallPrompt?
+    # @TODO: refactor this and related methods into separate class InstallPrompt? (PackageSelection?)
     repo_packages_install_info: List[PackageUpdate] = None
     thirdparty_repo_packages_install_info: List[PackageUpdate] = None
     aur_updates_install_info: List[PackageUpdate] = None

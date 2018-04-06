@@ -334,15 +334,30 @@ class InstallPackagesCLI():
         all_aur_packages_names = [info.Name for info in self.aur_updates_install_info]
         if all_aur_packages_names:
             print(_("Resolving AUR dependencies..."))
-        self.aur_deps_relations = find_aur_deps(all_aur_packages_names)
-        aur_deps_names = self.aur_deps_names
-        local_pkgs = PackageDB.get_local_dict()
+        try:
+            self.aur_deps_relations = find_aur_deps(all_aur_packages_names)
+        except DependencyVersionMismatch as e:
+            if e.location is not PackageSource.LOCAL:
+                raise(e)
+            # if local package is too old
+            # let's see if a newer one can be found in AUR:
+            pkg_name = e.depends_on
+            aur_pkg_list, not_found_aur_pkgs = find_aur_packages([pkg_name, ])
+            if not_found_aur_pkgs:
+                raise(e)
+            # start over computing deps and include just found AUR package:
+            self.install_package_names.append(pkg_name)
+            self.get_all_packages_info()
+            return
+        # prepare install info (PackageUpdate objects)
+        # for all the AUR packages which gonna be built:
+        self.aur_deps_install_info = []
         aur_pkgs = {
             aur_pkg.name: aur_pkg
             for aur_pkg in find_aur_packages(self.aur_deps_names)[0]
         }
-        self.aur_deps_install_info = []
-        for pkg_name in aur_deps_names:
+        local_pkgs = PackageDB.get_local_dict()
+        for pkg_name in self.aur_deps_names:
             aur_pkg = aur_pkgs[pkg_name]
             local_pkg = local_pkgs.get(pkg_name)
             self.aur_deps_install_info.append(PackageUpdate(

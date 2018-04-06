@@ -249,6 +249,7 @@ class PackageBuild(DataType):
                         'refresh',
                         'downloadonly',
                     ]) + list(self.built_deps_to_install.values()),
+                    args=args
             ):
                 for pkg_name in self.built_deps_to_install:
                     all_package_builds[pkg_name].built_packages_installed[pkg_name] = True
@@ -330,7 +331,8 @@ class PackageBuild(DataType):
                 ] + (['--noconfirm'] if args.noconfirm else []) + makepkg_args,
                 cwd=self.build_dir
             ),
-            cwd=self.build_dir
+            cwd=self.build_dir,
+            args=args
         )
 
         if not build_succeeded:

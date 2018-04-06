@@ -701,6 +701,7 @@ class InstallPackagesCLI():
                         'refresh',
                         'ignore',
                     ]) + packages_to_be_installed + extra_args,
+                    args=self.args
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_repo_transaction()
@@ -782,6 +783,7 @@ class InstallPackagesCLI():
                         'refresh',
                         'ignore',
                     ]) + new_aur_deps_to_install,
+                    args=self.args
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
@@ -808,6 +810,7 @@ class InstallPackagesCLI():
                         'refresh',
                         'ignore',
                     ]) + aur_packages_to_install,
+                    args=self.args
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()

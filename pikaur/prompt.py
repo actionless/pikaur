@@ -1,6 +1,6 @@
 import sys
 import tty
-from typing import Callable, List
+from typing import List
 
 from .args import PikaurArgs
 from .config import PikaurConfig
@@ -85,26 +85,16 @@ def ask_to_continue(args: PikaurArgs, text: str = None, default_yes: bool = True
     return (answer == Y) or (default_yes and answer == '')
 
 
-def ask_to_retry_decorator(fun: Callable) -> Callable:
-    def decorated(*args, **kwargs):
-        while True:
-            result = fun(*args, **kwargs)
-            if result:
-                return result
-            if not ask_to_continue(_("Do you want to retry?")):
-                return None
-
-    return decorated
-
-
-@ask_to_retry_decorator
-def retry_interactive_command(cmd_args: List[str], **kwargs) -> bool:
-    good = interactive_spawn(cmd_args, **kwargs).returncode == 0
-    if not good:
+def retry_interactive_command(cmd_args: List[str], args: PikaurArgs, **kwargs) -> bool:
+    while True:
+        good = interactive_spawn(cmd_args, **kwargs).returncode == 0
+        if good:
+            return good
         print_status_message(color_line(_("Command '{}' failed to execute.").format(
             ' '.join(cmd_args)
         ), 9))
-    return good
+        if not ask_to_continue(text=_("Do you want to retry?"), args=args):
+            return False
 
 
 def retry_interactive_command_or_exit(cmd_args: List[str], args: PikaurArgs, **kwargs) -> None:

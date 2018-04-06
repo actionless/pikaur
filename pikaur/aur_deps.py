@@ -181,7 +181,10 @@ def find_missing_deps_for_aur_pkg(
 
 def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:
     new_aur_deps: List[str] = []
-    result_aur_deps: Dict[str, List[str]] = {}
+    result_aur_deps: Dict[str, List[str]] = {
+        aur_pkg_name: []
+        for aur_pkg_name in package_names
+    }
 
     iter_package_names = package_names[:]
     while iter_package_names:

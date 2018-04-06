@@ -335,15 +335,11 @@ class InstallPackagesCLI():
         if all_aur_packages_names:
             print(_("Resolving AUR dependencies..."))
         self.aur_deps_relations = find_aur_deps(all_aur_packages_names)
-        for aur_pkg_name in all_aur_packages_names:
-            self.aur_deps_relations.setdefault(aur_pkg_name, [])
         aur_deps_names = self.aur_deps_names
         local_pkgs = PackageDB.get_local_dict()
         aur_pkgs = {
             aur_pkg.name: aur_pkg
-            for aur_pkg in find_aur_packages(
-                aur_deps_names
-            )[0]
+            for aur_pkg in find_aur_packages(self.aur_deps_names)[0]
         }
         self.aur_deps_install_info = []
         for pkg_name in aur_deps_names:

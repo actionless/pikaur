@@ -106,20 +106,39 @@ def find_missing_deps_for_aur_pkg(
         aur_pkgs_info: List[AURPackageInfo]
 ) -> List[str]:
     # repo pkgs
-    not_found_deps = check_deps_versions(
+    not_found_repo_pkgs = check_deps_versions(
         aur_pkg_name=aur_pkg_name,
         deps_pkg_names=version_matchers.keys(),
         version_matchers=version_matchers,
         source=PackageSource.REPO
     )
 
-    if not not_found_deps:
+    if not not_found_repo_pkgs:
+        return []
+
+    # check versions of explicitly chosen AUR packages which could be deps:
+    for aur_pkg in aur_pkgs_info:
+        pkg_name = aur_pkg.name
+        if pkg_name not in not_found_repo_pkgs:
+            continue
+        version_matcher = version_matchers[pkg_name]
+        if not version_matcher(aur_pkg.version):
+            raise DependencyVersionMismatch(
+                version_found=aur_pkg.version,
+                dependency_line=version_matcher.line,
+                who_depends=aur_pkg_name,
+                depends_on=pkg_name,
+                location=PackageSource.AUR
+            )
+        not_found_repo_pkgs.remove(pkg_name)
+
+    if not not_found_repo_pkgs:
         return []
 
     # local pkgs
     not_found_local_pkgs = check_deps_versions(
         aur_pkg_name=aur_pkg_name,
-        deps_pkg_names=not_found_deps,
+        deps_pkg_names=not_found_repo_pkgs,
         version_matchers=version_matchers,
         source=PackageSource.LOCAL
     )
@@ -133,11 +152,11 @@ def find_missing_deps_for_aur_pkg(
     # @TODO: find packages Provided by AUR packages
     if not_found_aur_deps:
         problem_packages_names = []
-        for result in aur_pkgs_info:
-            deps = get_aur_pkg_deps_and_version_matchers(result).keys()
+        for aur_pkg in aur_pkgs_info:
+            deps = get_aur_pkg_deps_and_version_matchers(aur_pkg).keys()
             for not_found_pkg in not_found_aur_deps:
                 if not_found_pkg in deps:
-                    problem_packages_names.append(result.name)
+                    problem_packages_names.append(aur_pkg.name)
                     break
         raise PackagesNotFoundInAUR(
             packages=not_found_aur_deps,

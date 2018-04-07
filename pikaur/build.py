@@ -305,7 +305,9 @@ class PackageBuild(DataType):
             # it needs to recursively chown it to the correct user
             os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
 
-        if os.path.exists(self.build_dir) and not PikaurConfig().build.get('KeepBuildDir'):
+        if os.path.exists(self.build_dir) and not (
+                args.keepbuild or PikaurConfig().build.get('KeepBuildDir')
+        ):
             remove_dir(self.build_dir)
         shutil.copytree(self.repo_path, self.build_dir)
 

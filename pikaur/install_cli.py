@@ -149,7 +149,7 @@ class InstallPackagesCLI():
                 if len(package_build.built_packages_paths) == len(package_build.package_names):
                     if not args.downloadonly:
                         package_build.update_last_installed_file()
-                    if not PikaurConfig().build.get('KeepBuildDir'):
+                    if not (args.keepbuild or PikaurConfig().build.get('KeepBuildDir')):
                         remove_dir(package_build.build_dir)
 
         if self.failed_to_build_package_names:

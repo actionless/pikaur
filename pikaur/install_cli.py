@@ -132,9 +132,9 @@ class InstallPackagesCLI():
         # get sudo for further questions (command should do nothing):
         interactive_spawn(['sudo', 'pacman', '-T'])
 
-        self.build_packages()
-
         self.install_repo_packages()
+
+        self.build_packages()
         if not args.downloadonly:
             self.install_new_aur_deps()
             self.install_aur_packages()

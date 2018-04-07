@@ -93,7 +93,11 @@ def retry_interactive_command(cmd_args: List[str], args: PikaurArgs, **kwargs) -
         print_status_message(color_line(_("Command '{}' failed to execute.").format(
             ' '.join(cmd_args)
         ), 9))
-        if not ask_to_continue(text=_("Do you want to retry?"), args=args):
+        if not ask_to_continue(
+                text=_("Do you want to retry?"),
+                args=args,
+                default_yes=not args.noconfirm
+        ):
             return False
 
 

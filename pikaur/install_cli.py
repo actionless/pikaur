@@ -537,6 +537,8 @@ class InstallPackagesCLI():
                         9))
                     sys.exit(131)
         for new_pkg_name, new_pkg_conflicts in conflict_result.items():
+            if new_pkg_name in self.repo_packages_by_name:
+                continue
             for pkg_conflict in new_pkg_conflicts:
                 print('{} {}'.format(
                     color_line(_("warning:"), 11),

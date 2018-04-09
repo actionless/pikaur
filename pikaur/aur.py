@@ -8,6 +8,7 @@ from typing import List, Dict, Tuple, Union, Any
 
 from .core import DataType, get_chunks
 from .exceptions import AURError
+from .progressbar import ThreadSafeProgressBar
 
 
 AUR_HOST = 'aur.archlinux.org'
@@ -125,6 +126,21 @@ def aur_rpc_info(search_queries: List[str]) -> List[AURPackageInfo]:
     ]
 
 
+def aur_rpc_info_with_progress(
+        args: Tuple[List[str], int, bool]
+) -> List[AURPackageInfo]:
+    search_queries, progressbar_length, with_progressbar = args
+    result = aur_rpc_info(search_queries)
+    if with_progressbar:
+        progressbar_id = 'change_me_to_uuid_or_so'  # @TODO:
+        progressbar = ThreadSafeProgressBar.get(
+            progressbar_id=progressbar_id,
+            progressbar_length=progressbar_length
+        )
+        progressbar.update()
+    return result
+
+
 def aur_web_packages_list():
     return get_gzip_from_url(AUR_BASE_URL + '/packages.gz').splitlines()[1:]
 
@@ -132,7 +148,9 @@ def aur_web_packages_list():
 _AUR_PKGS_FIND_CACHE: Dict[str, AURPackageInfo] = {}
 
 
-def find_aur_packages(package_names: List[str]) -> Tuple[List[AURPackageInfo], List[str]]:
+def find_aur_packages(
+        package_names: List[str], with_progressbar=False
+) -> Tuple[List[AURPackageInfo], List[str]]:
 
     # @TODO: return only packages for the current architecture
     package_names = list(package_names)[:]
@@ -145,7 +163,11 @@ def find_aur_packages(package_names: List[str]) -> Tuple[List[AURPackageInfo], L
 
     if package_names:
         with ThreadPool() as pool:
-            results = pool.map(aur_rpc_info, get_chunks(package_names, chunk_size=200))
+            search_chunks = list(get_chunks(package_names, chunk_size=200))
+            results = pool.map(aur_rpc_info_with_progress, [
+                (chunk, len(search_chunks), with_progressbar, )
+                for chunk in search_chunks
+            ])
         for result in results:
             for aur_pkg in result:
                 _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg
@@ -179,4 +201,4 @@ def get_all_aur_names() -> List[str]:
 
 
 def get_all_aur_packages() -> List[AURPackageInfo]:
-    return find_aur_packages(get_all_aur_names())[0]
+    return find_aur_packages(get_all_aur_names(), with_progressbar=True)[0]

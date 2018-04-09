@@ -1,5 +1,6 @@
 import sys
-from typing import Callable
+from threading import Lock
+from typing import Callable, Dict
 
 from .pprint import get_term_width
 
@@ -38,3 +39,22 @@ class ProgressBar(object):
 
     def __exit__(self, *exc_details) -> None:
         sys.stderr.write('\n')
+
+
+class ThreadSafeProgressBar(object):
+
+    _progressbar_storage: Dict[str, ProgressBar] = {}
+    _progressbar_lock = Lock()
+
+    @classmethod
+    def get(cls, progressbar_id: str, progressbar_length: int) -> ProgressBar:
+        if progressbar_id not in cls._progressbar_storage:
+            cls._progressbar_lock.acquire()
+            if progressbar_id not in cls._progressbar_storage:
+                print()
+                cls._progressbar_storage[progressbar_id] = ProgressBar(
+                    length=progressbar_length,
+                    message="Synchronizing AUR database... "
+                )
+            cls._progressbar_lock.release()
+        return cls._progressbar_storage[progressbar_id]

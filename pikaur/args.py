@@ -42,6 +42,11 @@ class PikaurArgumentParser(argparse.ArgumentParser):
 
     def parse_pikaur_args(self, raw_args: List[str]) -> PikaurArgs:
         parsed_args, unknown_args = self.parse_known_args(raw_args)
+        for arg in unknown_args[:]:
+            if arg.startswith('-'):
+                continue
+            unknown_args.remove(arg)
+            parsed_args.positional.append(arg)
         return PikaurArgs.from_namespace(
             namespace=parsed_args,
             unknown_args=unknown_args,

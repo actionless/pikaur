@@ -186,7 +186,7 @@ def cli_search_packages(args: PikaurArgs) -> None:
             else []
         ))
     result = dict(results)
-    for index, subresult in result.items():
+    for subresult in result.values():
         if isinstance(subresult, Exception):
             raise subresult
     if not args.quiet:

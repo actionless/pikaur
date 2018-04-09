@@ -44,7 +44,7 @@ def package_search_thread_aur(args: Dict[str, Any]) -> Dict[str, Any]:
             for subindex, subresult in result.items():
                 result[subindex] = [
                     pkg for pkg in subresult
-                    if subindex.split(str(PackageSource.AUR))[1] in pkg.name
+                    if subindex in pkg.name
                 ]
     else:
         if args['quiet']:

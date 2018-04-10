@@ -224,6 +224,8 @@ class InstallPackagesCLI():
             for package_name in list(self.repo_packages_by_name.keys())[:]:
                 if package_name not in repo_updates:
                     del self.repo_packages_by_name[package_name]
+                    if package_name in self.install_package_names:
+                        self.install_package_names.remove(package_name)
                     print_package_uptodate(package_name, PackageSource.REPO)
 
     def get_all_packages_info(self) -> None:

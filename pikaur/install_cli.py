@@ -82,6 +82,21 @@ def print_ignored_package(package_name):
     ))
 
 
+def print_package_uptodate(package_name: str, package_source: PackageSource) -> None:
+    print(
+        '{} {}'.format(
+            color_line(_("warning:"), 11),
+            _("{name} {version} {package_source} package is up to date - skipping").format(
+                name=package_name,
+                version=bold_line(
+                    PackageDB.get_local_dict()[package_name].version
+                ),
+                package_source=package_source.name
+            )
+        )
+    )
+
+
 class InstallPackagesCLI():
     # @TODO: refactor this warning:
     # pylint: disable=too-many-public-methods,too-many-instance-attributes
@@ -209,6 +224,7 @@ class InstallPackagesCLI():
             for package_name in list(self.repo_packages_by_name.keys())[:]:
                 if package_name not in repo_updates:
                     del self.repo_packages_by_name[package_name]
+                    print_package_uptodate(package_name, PackageSource.REPO)
 
     def get_all_packages_info(self) -> None:
         self.exclude_ignored_packages()
@@ -591,17 +607,7 @@ class InstallPackagesCLI():
             if self.args.needed and repo_status.version_already_installed:
                 for package_name in repo_status.package_names:
                     self.install_package_names.remove(package_name)
-                    print(
-                        '{} {}'.format(
-                            color_line(_("warning:"), 11),
-                            _("{name} {version} AUR package is up to date - skipping").format(
-                                name=package_name,
-                                version=bold_line(
-                                    PackageDB.get_local_dict()[package_name].version
-                                )
-                            )
-                        )
-                    )
+                    print_package_uptodate(package_name, PackageSource.AUR)
                 return
             if repo_status.build_files_updated and not self.args.noconfirm:
                 if self.ask_to_continue(

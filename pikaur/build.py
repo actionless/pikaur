@@ -331,8 +331,9 @@ class PackageBuild(DataType):
         ):
             remove_dir(self.build_dir)
         if not os.path.exists(self.build_dir):
-            os.makedirs(self.build_dir)
-        copy_tree(self.repo_path, self.build_dir)
+            shutil.copytree(self.repo_path, self.build_dir)
+        else:
+            copy_tree(self.repo_path, self.build_dir)
 
     def build(
             self, args: PikaurArgs, all_package_builds: Dict[str, 'PackageBuild']

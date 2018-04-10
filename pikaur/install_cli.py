@@ -128,6 +128,8 @@ class InstallPackagesCLI():
         if not args.downloadonly:
             self.ask_about_package_conflicts()
         self.review_build_files()
+        if not (self.install_package_names or self.args.sysupgrade):
+            return
 
         # get sudo for further questions (command should do nothing):
         interactive_spawn(['sudo', 'pacman', '-T'])

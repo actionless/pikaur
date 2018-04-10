@@ -590,11 +590,13 @@ class InstallPackagesCLI():
                 print(
                     '{} {}'.format(
                         color_line(_("warning:"), 11),
-                        _("{name} AUR repository is up to date - skipping").format(
+                        _("{name} AUR package is up to date - skipping").format(
                             name=repo_status.package_base
                         )
                     )
                 )
+                for package_name in repo_status.package_names:
+                    self.install_package_names.remove(package_name)
                 return
             if repo_status.build_files_updated and not self.args.noconfirm:
                 if self.ask_to_continue(

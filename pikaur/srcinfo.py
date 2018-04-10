@@ -16,6 +16,8 @@ class SrcInfo():
     def load_config(self) -> None:
         self._common_lines = []
         self._package_lines = []
+        if not os.path.exists(self.path):
+            return
         destination = self._common_lines
         with open_file(self.path) as srcinfo_file:
             for line in srcinfo_file.readlines():

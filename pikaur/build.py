@@ -330,6 +330,8 @@ class PackageBuild(DataType):
                 (args and args.keepbuild) or PikaurConfig().build.get('KeepBuildDir')
         ):
             remove_dir(self.build_dir)
+        if not os.path.exists(self.build_dir):
+            os.makedirs(self.build_dir)
         copy_tree(self.repo_path, self.build_dir)
 
     def build(

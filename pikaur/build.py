@@ -1,6 +1,7 @@
 import os
 import shutil
 import platform
+from distutils.dir_util import copy_tree
 from multiprocessing.pool import ThreadPool
 from typing import List, Union, Dict, Any, Optional
 
@@ -293,10 +294,7 @@ class PackageBuild(DataType):
                 built_package_path = new_package_path
             self.built_packages_paths[pkg_name] = built_package_path
 
-    def build(
-            self, args: PikaurArgs, all_package_builds: Dict[str, 'PackageBuild']
-    ) -> None:
-
+    def prepare_build_destination(self, args: PikaurArgs = None) -> None:
         if running_as_root():
             # Let systemd-run setup the directories and symlinks
             true_cmd = isolate_root_cmd(['true'])
@@ -306,10 +304,15 @@ class PackageBuild(DataType):
             os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
 
         if os.path.exists(self.build_dir) and not (
-                args.keepbuild or PikaurConfig().build.get('KeepBuildDir')
+                (args and args.keepbuild) or PikaurConfig().build.get('KeepBuildDir')
         ):
             remove_dir(self.build_dir)
-        shutil.copytree(self.repo_path, self.build_dir)
+        copy_tree(self.repo_path, self.build_dir)
+
+    def build(
+            self, args: PikaurArgs, all_package_builds: Dict[str, 'PackageBuild']
+    ) -> None:
+        self.prepare_build_destination(args)
 
         src_info = SrcInfo(self.repo_path)
         make_deps = [pkg_name for pkg_name, _vm in src_info.get_makedepends()]

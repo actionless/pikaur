@@ -22,6 +22,15 @@ DEVEL_PKGS_POSTFIXES = (
 )
 
 
+def is_devel_pkg(pkg_name: str) -> bool:
+    result = False
+    for devel_pkg_postfix in DEVEL_PKGS_POSTFIXES:
+        if pkg_name.endswith(devel_pkg_postfix):
+            result = True
+            break
+    return result
+
+
 class PackageUpdate(DataType):
     # @TODO: use lowercase properties
     Name: str = None
@@ -67,11 +76,7 @@ def find_aur_devel_updates(
     aur_updates = []
     for aur_pkg in sorted(aur_pkgs_info, key=lambda x: x.name):
         pkg_name = aur_pkg.name
-        is_devel_pkg = False
-        for devel_pkg_postfix in DEVEL_PKGS_POSTFIXES:
-            if pkg_name.endswith(devel_pkg_postfix):
-                is_devel_pkg = True
-        if not is_devel_pkg:
+        if not is_devel_pkg(pkg_name):
             continue
         local_pkg = local_packages[pkg_name]
         pkg_install_datetime = datetime.fromtimestamp(

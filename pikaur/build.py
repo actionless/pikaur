@@ -10,7 +10,7 @@ from .core import (
     isolate_root_cmd, remove_dir, running_as_root, open_file,
     spawn, interactive_spawn, InteractiveSpawn,
 )
-from .i18n import _
+from .i18n import _, _n
 from .config import (
     PikaurConfig,
     CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_DIR,
@@ -25,6 +25,8 @@ from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
 )
 from .srcinfo import SrcInfo
+from .package_update import is_devel_pkg
+from .version import compare_versions
 
 
 class MakepkgConfig():
@@ -189,14 +191,35 @@ class PackageBuild(DataType):
 
     @property
     def version_already_installed(self) -> bool:
-        self.already_installed = min([
-            (
-                pkg_name in PackageDB.get_local_dict().keys()
-            ) and (
-                self.last_installed_hash == self.current_hash
-            )
-            for pkg_name in self.package_names
-        ])
+        if self.already_installed is None:
+            local_db = PackageDB.get_local_dict()
+            if is_devel_pkg(self.package_base):
+                print()
+                print('{} {}:'.format(
+                    color_line('::', 15),
+                    _n(
+                        "Downloading the latest sources for a devel package {}",
+                        "Downloading the latest sources for devel packages {}",
+                        len(self.package_names)
+                    ).format(
+                        bold_line(', '.join(self.package_names))
+                    )
+                ))
+                self.prepare_build_destination()
+                retry_interactive_command(
+                    ['makepkg', '--nobuild'],
+                    cwd=self.build_dir,
+                    args=None
+                )
+                SrcInfo(self.build_dir).regenerate()
+            self.already_installed = min([
+                compare_versions(
+                    local_db[pkg_name].version,
+                    SrcInfo(self.build_dir, pkg_name).get_value('pkgver')
+                ) == 0
+                if pkg_name in local_db else False
+                for pkg_name in self.package_names
+            ])
         return self.already_installed
 
     @property

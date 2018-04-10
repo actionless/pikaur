@@ -180,6 +180,7 @@ def cli_print_version(args: PikaurArgs) -> None:
 
 def cli_entry_point() -> None:
     # pylint: disable=too-many-branches
+    # @TODO: parse args right in the .args module
     raw_args = sys.argv[1:]
     args = parse_args(raw_args)
 

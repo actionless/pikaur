@@ -98,7 +98,8 @@ PIKAUR_OPTS = (
 )
 
 
-def parse_args(args: List[str]) -> PikaurArgs:
+def parse_args(args: List[str] = None) -> PikaurArgs:
+    args = args or sys.argv[1:]
     parser = PikaurArgumentParser(prog=sys.argv[0], add_help=False)
 
     for letter, opt in (

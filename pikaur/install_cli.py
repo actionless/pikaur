@@ -672,7 +672,7 @@ class InstallPackagesCLI():
                 continue
 
             try:
-                repo_status.build(self.args, self.package_builds_by_name)
+                repo_status.build(self.package_builds_by_name)
             except (BuildError, DependencyError) as exc:
                 print(exc)
                 print(color_line(_("Can't build '{name}'.").format(name=pkg_name), 9))

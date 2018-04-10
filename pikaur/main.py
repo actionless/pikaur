@@ -180,9 +180,9 @@ def cli_print_version(args: PikaurArgs) -> None:
 
 def cli_entry_point() -> None:
     # pylint: disable=too-many-branches
-    # @TODO: parse args right in the .args module
-    raw_args = sys.argv[1:]
-    args = parse_args(raw_args)
+    # @TODO: import pikaur.args module instead of passing them as function arg
+    args = parse_args()
+    raw_args = args.raw
 
     not_implemented_in_pikaur = False
     require_sudo = True

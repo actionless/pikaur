@@ -18,7 +18,7 @@ from .config import (
 )
 from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB
-from .args import reconstruct_args, PikaurArgs
+from .args import PikaurArgs, reconstruct_args, parse_args
 from .pprint import color_line, bold_line
 from .prompt import retry_interactive_command
 from .exceptions import (
@@ -80,7 +80,10 @@ class PackageBuild(DataType):
     new_make_deps_to_install: List[str] = None
     built_deps_to_install: Dict[str, str] = None
 
+    args: PikaurArgs = None
+
     def __init__(self, package_names: List[str]) -> None:  # pylint: disable=super-init-not-called
+        self.args = parse_args()
         self.package_names = package_names
         self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
 
@@ -209,7 +212,7 @@ class PackageBuild(DataType):
                 retry_interactive_command(
                     ['makepkg', '--nobuild'],
                     cwd=self.build_dir,
-                    args=None
+                    args=self.args
                 )
                 SrcInfo(self.build_dir).regenerate()
             self.already_installed = min([
@@ -228,7 +231,6 @@ class PackageBuild(DataType):
 
     def _install_built_deps(
             self,
-            args: PikaurArgs,
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
 
@@ -265,7 +267,7 @@ class PackageBuild(DataType):
                         'pacman',
                         '--upgrade',
                         '--asdeps',
-                    ] + reconstruct_args(args, ignore_args=[
+                    ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',
                         'asdeps',
                         'sync',
@@ -273,7 +275,7 @@ class PackageBuild(DataType):
                         'refresh',
                         'downloadonly',
                     ]) + list(self.built_deps_to_install.values()),
-                    args=args
+                    args=self.args
             ):
                 for pkg_name in self.built_deps_to_install:
                     all_package_builds[pkg_name].built_packages_installed[pkg_name] = True
@@ -317,7 +319,7 @@ class PackageBuild(DataType):
                 built_package_path = new_package_path
             self.built_packages_paths[pkg_name] = built_package_path
 
-    def prepare_build_destination(self, args: PikaurArgs = None) -> None:
+    def prepare_build_destination(self) -> None:
         if running_as_root():
             # Let systemd-run setup the directories and symlinks
             true_cmd = isolate_root_cmd(['true'])
@@ -327,7 +329,7 @@ class PackageBuild(DataType):
             os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
 
         if os.path.exists(self.build_dir) and not (
-                (args and args.keepbuild) or PikaurConfig().build.get('KeepBuildDir')
+                self.args.keepbuild or PikaurConfig().build.get('KeepBuildDir')
         ):
             remove_dir(self.build_dir)
         if not os.path.exists(self.build_dir):
@@ -336,9 +338,9 @@ class PackageBuild(DataType):
             copy_tree(self.repo_path, self.build_dir)
 
     def build(
-            self, args: PikaurArgs, all_package_builds: Dict[str, 'PackageBuild']
+            self, all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
-        self.prepare_build_destination(args)
+        self.prepare_build_destination()
 
         src_info = SrcInfo(self.repo_path)
         make_deps = [pkg_name for pkg_name, _vm in src_info.get_makedepends()]
@@ -346,10 +348,10 @@ class PackageBuild(DataType):
         new_deps = [pkg_name for pkg_name, _vm in src_info.get_depends()]
         __, self.new_deps_to_install = find_local_packages(new_deps)
 
-        self._install_built_deps(args, all_package_builds)
+        self._install_built_deps(all_package_builds)
 
         makepkg_args = []
-        if not args.needed:
+        if not self.args.needed:
             makepkg_args.append('--force')
 
         print()
@@ -359,11 +361,11 @@ class PackageBuild(DataType):
                     'makepkg',
                     '--syncdeps',
                     '--rmdeps',
-                ] + (['--noconfirm'] if args.noconfirm else []) + makepkg_args,
+                ] + (['--noconfirm'] if self.args.noconfirm else []) + makepkg_args,
                 cwd=self.build_dir
             ),
             cwd=self.build_dir,
-            args=args
+            args=self.args
         )
 
         if not build_succeeded:

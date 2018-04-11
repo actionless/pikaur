@@ -18,7 +18,6 @@ depends=(
 	'pyalpm'
 	'python-setuptools'
 	'git'
-	'sudo'
 	'fakeroot'
 )
 conflicts=('pikaur')

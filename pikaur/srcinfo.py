@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import List, Dict
 
 from .core import open_file, spawn, isolate_root_cmd
 from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
@@ -60,17 +60,17 @@ class SrcInfo():
             return values[0]
         return None
 
-    def _get_depends(self, field: str) -> List[Tuple[str, VersionMatcher]]:
-        dependencies = []
+    def _get_depends(self, field: str) -> Dict[str, VersionMatcher]:
+        dependencies: Dict[str, VersionMatcher] = {}
         for dep in self.get_pkgbase_values(field):
             pkg_name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
-            dependencies.append((pkg_name, version_matcher))
+            dependencies[pkg_name] = version_matcher
         return dependencies
 
-    def get_makedepends(self) -> List[Tuple[str, VersionMatcher]]:
+    def get_makedepends(self) -> Dict[str, VersionMatcher]:
         return self._get_depends('makedepends')
 
-    def get_depends(self) -> List[Tuple[str, VersionMatcher]]:
+    def get_depends(self) -> Dict[str, VersionMatcher]:
         return self._get_depends('depends')
 
     def regenerate(self) -> None:

@@ -332,36 +332,30 @@ class PackageBuild(DataType):
         else:
             copy_tree(self.repo_path, self.build_dir)
 
+    def _get_deps(self) -> None:
+        src_info = SrcInfo(self.repo_path)
+        self.new_deps_to_install = []
+        self.new_make_deps_to_install = []
+        for new_deps_version_matchers, deps_destination in (
+                (src_info.get_depends(), self.new_deps_to_install),
+                (src_info.get_makedepends(), self.new_make_deps_to_install),
+        ):
+            installed_deps, new_deps_to_install = find_local_packages(
+                new_deps_version_matchers.keys()
+            )
+            new_deps_to_install += [
+                pkg.name
+                for pkg in installed_deps
+                if not new_deps_version_matchers[pkg.name](pkg.version)
+            ]
+            deps_destination += new_deps_to_install
+
     def build(
             self, all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
+
         self.prepare_build_destination()
-        src_info = SrcInfo(self.repo_path)
-
-        make_deps_version_matchers = {
-            pkg_name: vm for pkg_name, vm in src_info.get_makedepends()
-        }
-        installed_make_deps, self.new_make_deps_to_install = find_local_packages(
-            make_deps_version_matchers.keys()
-        )
-        self.new_make_deps_to_install += [
-            pkg.name
-            for pkg in installed_make_deps
-            if not make_deps_version_matchers[pkg.name](pkg.version)
-        ]
-
-        new_deps_version_matchers = {
-            pkg_name: vm for pkg_name, vm in src_info.get_depends()
-        }
-        installed_deps, self.new_deps_to_install = find_local_packages(
-            new_deps_version_matchers.keys()
-        )
-        self.new_deps_to_install += [
-            pkg.name
-            for pkg in installed_deps
-            if not new_deps_version_matchers[pkg.name](pkg.version)
-        ]
-
+        self._get_deps()
         self._install_built_deps(all_package_builds)
 
         makepkg_args = []

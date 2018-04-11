@@ -225,21 +225,16 @@ class PackageBuild(DataType):
             ])
         return self.already_installed
 
-    @property
-    def all_deps_to_install(self) -> List[str]:
-        return self.new_make_deps_to_install + self.new_deps_to_install
-
     def _install_built_deps(
             self,
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
 
         self.built_deps_to_install = {}
-        for dep in self.all_deps_to_install:
+        for dep in self.new_make_deps_to_install + self.new_deps_to_install:
             # @TODO: check if dep is Provided by built package
             if dep not in all_package_builds:
                 continue
-            # @TODO: check package version?
             package_build = all_package_builds[dep]
             for pkg_name in package_build.package_names:
                 if package_build.failed:
@@ -341,12 +336,31 @@ class PackageBuild(DataType):
             self, all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
         self.prepare_build_destination()
-
         src_info = SrcInfo(self.repo_path)
-        make_deps = [pkg_name for pkg_name, _vm in src_info.get_makedepends()]
-        __, self.new_make_deps_to_install = find_local_packages(make_deps)
-        new_deps = [pkg_name for pkg_name, _vm in src_info.get_depends()]
-        __, self.new_deps_to_install = find_local_packages(new_deps)
+
+        make_deps_version_matchers = {
+            pkg_name: vm for pkg_name, vm in src_info.get_makedepends()
+        }
+        installed_make_deps, self.new_make_deps_to_install = find_local_packages(
+            make_deps_version_matchers.keys()
+        )
+        self.new_make_deps_to_install += [
+            pkg.name
+            for pkg in installed_make_deps
+            if not make_deps_version_matchers[pkg.name](pkg.version)
+        ]
+
+        new_deps_version_matchers = {
+            pkg_name: vm for pkg_name, vm in src_info.get_depends()
+        }
+        installed_deps, self.new_deps_to_install = find_local_packages(
+            new_deps_version_matchers.keys()
+        )
+        self.new_deps_to_install += [
+            pkg.name
+            for pkg in installed_deps
+            if not new_deps_version_matchers[pkg.name](pkg.version)
+        ]
 
         self._install_built_deps(all_package_builds)
 

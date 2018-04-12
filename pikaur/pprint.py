@@ -17,16 +17,16 @@ PADDING = 4
 def color_line(line: str, color_number: int) -> str:
     result = ''
     if color_number >= 8:
-        result += "\033[1m"
+        result += "\033[0;1m"
         color_number -= 8
     result += f"\033[03{color_number}m{line}"
     # reset font:
-    result += "\033[0m"
+    result += "\033[0;0m"
     return result
 
 
 def bold_line(line: str) -> str:
-    return f'\033[1m{line}\033[0m'
+    return f'\033[0;1m{line}\033[0m'
 
 
 def get_term_width() -> int:

@@ -1,10 +1,12 @@
 import sys
+from datetime import datetime
 from multiprocessing.pool import ThreadPool
 from typing import Any, Dict, Tuple, List, Iterable, Union
 
 import pyalpm
 
 from .i18n import _
+from .config import PikaurConfig
 from .core import DataType, PackageSource, return_exception
 from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
 from .pacman import PackageDB
@@ -138,10 +140,22 @@ def print_package_search_results(
                     package.popularity
                 ), 3)
 
+            color_config = PikaurConfig().colors
+            version_color: int = color_config.get('Version')  # type: ignore
+            version = package.version
+
+            if getattr(package, "outofdate", None) is not None:
+                version_color: int = color_config.get('VersionDiffOld')  # type: ignore
+                version = "{} [{}: {}]".format(
+                    package.version,
+                    _("outofdate"),
+                    datetime.fromtimestamp(package.outofdate).strftime('%Y/%m/%d')
+                )
+
             print("{}{} {} {}{}{}".format(
                 repo,
                 bold_line(pkg_name),
-                color_line(package.version, 10),
+                color_line(version, version_color),
                 groups,
                 installed,
                 rating

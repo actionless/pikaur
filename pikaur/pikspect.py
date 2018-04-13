@@ -112,9 +112,12 @@ def input_reader(
 @handle_exception_in_thread
 def communicator(proc: subprocess.Popen) -> None:
     proc.communicate()
-    termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
-    termios.tcdrain(sys.stderr.fileno())
-    termios.tcdrain(sys.stdout.fileno())
+    if sys.stdin.isatty():
+        termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
+    if sys.stderr.isatty():
+        termios.tcdrain(sys.stderr.fileno())
+    if sys.stdout.isatty():
+        termios.tcdrain(sys.stdout.fileno())
 
 
 def pikspect(
@@ -123,10 +126,13 @@ def pikspect(
         default_questions=DEFAULT_QUESTIONS,
         **kwargs
 ) -> subprocess.Popen:
-    old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
-    tty.setcbreak(sys.stdin.fileno())
-    tty.setcbreak(sys.stderr.fileno())
-    tty.setcbreak(sys.stdout.fileno())
+    if sys.stdin.isatty():
+        old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        tty.setcbreak(sys.stdin.fileno())
+    if sys.stderr.isatty():
+        tty.setcbreak(sys.stderr.fileno())
+    if sys.stdout.isatty():
+        tty.setcbreak(sys.stdout.fileno())
 
     pty_master, pty_slave = pty.openpty()
     pty_master2, pty_slave2 = pty.openpty()
@@ -161,7 +167,8 @@ def pikspect(
             pool.close()
             communicate_task.get()
             pool.terminate()
-    termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, old_tcattrs)
+    if sys.stdin.isatty():
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, old_tcattrs)
     return proc
 
 

@@ -8,6 +8,7 @@ from .config import PikaurConfig
 from .core import interactive_spawn
 from .i18n import _
 from .pprint import color_line, print_status_message
+from .pikspect import pikspect as pikspect_spawn
 
 
 Y = _('y')
@@ -85,9 +86,18 @@ def ask_to_continue(args: PikaurArgs, text: str = None, default_yes: bool = True
     return (answer == Y) or (default_yes and answer == '')
 
 
-def retry_interactive_command(cmd_args: List[str], args: PikaurArgs, **kwargs) -> bool:
+def retry_interactive_command(
+        cmd_args: List[str],
+        args: PikaurArgs,
+        pikspect=False,
+        **kwargs
+) -> bool:
     while True:
-        good = interactive_spawn(cmd_args, **kwargs).returncode == 0
+        good = None
+        if ('pacman' in cmd_args or pikspect):
+            good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
+        else:
+            good = interactive_spawn(cmd_args, **kwargs).returncode == 0
         if good:
             return good
         print_status_message(color_line(_("Command '{}' failed to execute.").format(

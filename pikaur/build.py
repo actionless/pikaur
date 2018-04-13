@@ -17,7 +17,7 @@ from .config import (
     CONFIG_ROOT,
 )
 from .aur import get_repo_url, find_aur_packages
-from .pacman import find_local_packages, PackageDB
+from .pacman import find_local_packages, PackageDB, PACMAN_COLOR_ARGS
 from .args import PikaurArgs, reconstruct_args, parse_args
 from .pprint import color_line, bold_line
 from .prompt import retry_interactive_command
@@ -259,7 +259,7 @@ class PackageBuild(DataType):
             if retry_interactive_command(
                     [
                         'sudo',
-                        'pacman',
+                    ] + PACMAN_COLOR_ARGS + [
                         '--upgrade',
                         '--asdeps',
                     ] + reconstruct_args(self.args, ignore_args=[
@@ -373,7 +373,8 @@ class PackageBuild(DataType):
                 cwd=self.build_dir
             ),
             cwd=self.build_dir,
-            args=self.args
+            args=self.args,
+            pikspect=True
         )
 
         if not build_succeeded:

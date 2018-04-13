@@ -65,13 +65,15 @@ init_readline()
 
 def init_output_encoding() -> None:
     for attr in ('stdout', 'stderr'):
+        real_stream = getattr(sys, attr)
         setattr(
             sys, attr,
             codecs.open(
-                getattr(sys, attr).fileno(),
+                real_stream.fileno(),
                 mode='w', buffering=0, encoding='utf-8'
             )
         )
+        getattr(sys, attr).buffer = real_stream.buffer
 
 
 init_output_encoding()

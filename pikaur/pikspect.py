@@ -7,6 +7,9 @@ import gettext
 import io
 import termios
 import select
+import shutil
+import struct
+import fcntl
 from multiprocessing.pool import ThreadPool
 from typing import List, Tuple, Callable, Any
 from threading import Lock
@@ -120,12 +123,19 @@ def communicator(proc: subprocess.Popen) -> None:
         termios.tcdrain(sys.stdout.fileno())
 
 
+def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
+    term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
+    fcntl.ioctl(file_descriptor, termios.TIOCSWINSZ, term_geometry_struct)
+
+
 def pikspect(
         cmd: List[str],
         default_answer=DEFAULT_ANSWER,
         default_questions=DEFAULT_QUESTIONS,
         **kwargs
 ) -> subprocess.Popen:
+
+    real_term_geometry = shutil.get_terminal_size((80, 80))
     if sys.stdin.isatty():
         old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
         tty.setcbreak(sys.stdin.fileno())
@@ -138,8 +148,12 @@ def pikspect(
     pty_master2, pty_slave2 = pty.openpty()
     with ThreadPool() as pool:
         with open(pty_master, 'w') as pty_in:
-
             pty_out = open(pty_master2, 'rb')
+            set_terminal_geometry(
+                pty_out.fileno(),
+                columns=real_term_geometry.columns,
+                rows=real_term_geometry.lines
+            )
 
             if 'sudo' in cmd:
                 subprocess.run(isolate_root_cmd(['sudo', '-v']))

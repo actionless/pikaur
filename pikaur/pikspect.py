@@ -5,9 +5,12 @@ import pty
 import traceback
 import gettext
 import io
+import termios
+import select
 from multiprocessing.pool import ThreadPool
 from typing import List, Tuple, Callable, Any
 from threading import Lock
+from time import sleep
 
 from .core import isolate_root_cmd
 from .pprint import bold_line
@@ -55,7 +58,7 @@ def output_handler(
 ) -> None:
     historic_output = b''
     while True:
-        if proc.returncode:
+        if proc.returncode is not None:
             break
         output = proc_output_reader.read(1)
         if not output:
@@ -81,11 +84,26 @@ def input_reader(
         lock: Lock
 ) -> None:
     while True:
-        if proc.returncode:
+        if proc.returncode is not None:
             break
-        char = sys.stdin.read(1)
+        char = None
+
+        while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+            line = sys.stdin.read(1)
+            if line:
+                char = line
+                break
+            else:
+                return
+        else:
+            sleep(0.1)
+            continue
+
         lock.acquire()
-        pty_in.write(char)
+        try:
+            pty_in.write(char)
+        except ValueError:
+            return
         sys.stdout.write(char)
         sys.stdout.flush()
         lock.release()
@@ -94,6 +112,9 @@ def input_reader(
 @handle_exception_in_thread
 def communicator(proc: subprocess.Popen) -> None:
     proc.communicate()
+    termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
+    termios.tcdrain(sys.stderr.fileno())
+    termios.tcdrain(sys.stdout.fileno())
 
 
 def pikspect(
@@ -102,6 +123,7 @@ def pikspect(
         default_questions=DEFAULT_QUESTIONS,
         **kwargs
 ) -> subprocess.Popen:
+    old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
     tty.setcbreak(sys.stdin.fileno())
     tty.setcbreak(sys.stderr.fileno())
     tty.setcbreak(sys.stdout.fileno())
@@ -139,7 +161,7 @@ def pikspect(
             pool.close()
             communicate_task.get()
             pool.terminate()
-
+    termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, old_tcattrs)
     return proc
 
 

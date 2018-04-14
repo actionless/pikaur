@@ -329,7 +329,7 @@ class PackageBuild(DataType):
             copy_tree(self.repo_path, self.build_dir)
 
     def _get_deps(self) -> None:
-        src_info = SrcInfo(self.repo_path)
+        src_info = SrcInfo(self.build_dir)
         self.new_deps_to_install = []
         self.new_make_deps_to_install = []
         for new_deps_version_matchers, deps_destination in (

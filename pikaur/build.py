@@ -13,7 +13,7 @@ from .core import (
 from .i18n import _, _n
 from .config import (
     PikaurConfig,
-    CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_PATH,
+    CACHE_ROOT, AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
     CONFIG_ROOT,
 )
 from .aur import get_repo_url, find_aur_packages
@@ -86,10 +86,8 @@ class PackageBuild(DataType):
         self.package_names = package_names
         self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
 
-        self.repo_path = os.path.join(CACHE_ROOT, AUR_REPOS_CACHE_DIR,
-                                      self.package_base)
-        self.build_dir = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR,
-                                      self.package_base)
+        self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
+        self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
         self.built_packages_paths = {}
         self.built_packages_installed = {}
 

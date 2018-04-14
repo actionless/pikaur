@@ -251,13 +251,24 @@ class PackageBuild(DataType):
                 if dep in self.new_deps_to_install:
                     self.new_deps_to_install.remove(dep)
 
-        if self.built_deps_to_install:
-            print('{} {}:'.format(
-                color_line('::', 13),
-                _("Installing already built dependencies for {}").format(
-                    bold_line(', '.join(self.package_names)))
-            ))
-            if retry_interactive_command(
+        if not self.built_deps_to_install:
+            return
+
+        print('{} {}:'.format(
+            color_line('::', 13),
+            _("Installing already built dependencies for {}").format(
+                bold_line(', '.join(self.package_names)))
+        ))
+
+        local_packages = PackageDB.get_local_dict()
+        explicitly_installed_deps = []
+        for dep_name in self.built_deps_to_install:
+            if dep_name in local_packages and local_packages[dep_name].reason == 0:
+                explicitly_installed_deps.append(dep_name)
+
+        result1 = True
+        if len(explicitly_installed_deps) < len(self.built_deps_to_install):
+            result1 = retry_interactive_command(
                     [
                         'sudo',
                     ] + PACMAN_COLOR_ARGS + [
@@ -270,14 +281,39 @@ class PackageBuild(DataType):
                         'sysupgrade',
                         'refresh',
                         'downloadonly',
-                    ]) + list(self.built_deps_to_install.values()),
+                    ]) + [
+                        path for name, path in self.built_deps_to_install.items()
+                        if name not in explicitly_installed_deps
+                    ],
                     args=self.args
-            ):
-                for pkg_name in self.built_deps_to_install:
-                    all_package_builds[pkg_name].built_packages_installed[pkg_name] = True
-            else:
-                self.failed = True
-                raise DependencyError()
+            )
+        result2 = True
+        if explicitly_installed_deps:
+            result2 = retry_interactive_command(
+                    [
+                        'sudo',
+                    ] + PACMAN_COLOR_ARGS + [
+                        '--upgrade',
+                    ] + reconstruct_args(self.args, ignore_args=[
+                        'upgrade',
+                        'asdeps',
+                        'sync',
+                        'sysupgrade',
+                        'refresh',
+                        'downloadonly',
+                    ]) + [
+                        path for name, path in self.built_deps_to_install.items()
+                        if name in explicitly_installed_deps
+                    ],
+                    args=self.args
+            )
+
+        if result1 and result2:
+            for pkg_name in self.built_deps_to_install:
+                all_package_builds[pkg_name].built_packages_installed[pkg_name] = True
+        else:
+            self.failed = True
+            raise DependencyError()
 
     def _set_built_package_path(self) -> None:
         dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)

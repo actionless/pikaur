@@ -5,6 +5,7 @@ from typing import List, TYPE_CHECKING, Tuple
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
 from .i18n import _, _n
+from .args import PikaurArgs, parse_args
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
@@ -14,7 +15,19 @@ if TYPE_CHECKING:
 PADDING = 4
 
 
+def color_enabled(args: PikaurArgs = None) -> bool:
+    if not args:
+        args = parse_args()
+    if args.color == 'never':
+        return False
+    if args.color == 'always' or (sys.stderr.isatty() and sys.stdout.isatty()):
+        return True
+    return False
+
+
 def color_line(line: str, color_number: int) -> str:
+    if not color_enabled():
+        return line
     result = ''
     if color_number >= 8:
         result += "\033[0;1m"
@@ -26,6 +39,8 @@ def color_line(line: str, color_number: int) -> str:
 
 
 def bold_line(line: str) -> str:
+    if not color_enabled():
+        return line
     return f'\033[0;1m{line}\033[0m'
 
 
@@ -34,6 +49,8 @@ def get_term_width() -> int:
 
 
 def format_paragraph(line: str) -> str:
+    if not color_enabled():
+        return PADDING * ' ' + line
     term_width = get_term_width()
     max_line_width = term_width - PADDING * 2
 

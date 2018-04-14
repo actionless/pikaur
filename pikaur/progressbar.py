@@ -2,7 +2,7 @@ import sys
 from threading import Lock
 from typing import Callable, Dict
 
-from .pprint import get_term_width
+from .pprint import get_term_width, color_enabled
 
 
 class ProgressBar(object):
@@ -25,14 +25,16 @@ class ProgressBar(object):
         )
         self.print_ratio = length / width
         sys.stderr.write(message)
-        sys.stderr.write(self.LEFT_DECORATION + self.EMPTY * width + self.RIGHT_DECORATION)
-        sys.stderr.write(f'{(chr(27))}[\bb' * (width + len(self.RIGHT_DECORATION)))
+        if color_enabled():
+            sys.stderr.write(self.LEFT_DECORATION + self.EMPTY * width + self.RIGHT_DECORATION)
+            sys.stderr.write(f'{(chr(27))}[\bb' * (width + len(self.RIGHT_DECORATION)))
 
     def update(self) -> None:
         self.index += 1
         if self.index / self.print_ratio > self.progress:
             self.progress += 1
-            sys.stderr.write(self.FULL)
+            if color_enabled():
+                sys.stderr.write(self.FULL)
 
     def __enter__(self) -> Callable:
         return self.update

@@ -13,7 +13,7 @@ from .version import (
     get_package_name_and_version_matcher_from_depend_line,
     VersionMatcher,
 )
-from .pprint import print_status_message
+from .pprint import print_status_message, color_enabled
 from .args import PikaurArgs
 
 
@@ -29,9 +29,9 @@ OFFICIAL_REPOS = (
 
 
 def get_pacman_command(args: PikaurArgs) -> List[str]:
-    if (sys.stderr.isatty() and sys.stdout.isatty()) or args.color == 'always':
+    if color_enabled(args):
         return ['pacman', '--color=always']
-    return ['pacman', ]
+    return ['pacman', '--color=never']
 
 
 class PacmanConfig(PycmanConfig):

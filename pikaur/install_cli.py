@@ -12,8 +12,8 @@ from .aur import find_aur_packages
 from .aur_deps import find_aur_deps
 from .i18n import _
 from .pacman import (
-    OFFICIAL_REPOS, PACMAN_COLOR_ARGS,
-    PackageDB, PacmanConfig,
+    OFFICIAL_REPOS,
+    PackageDB, PacmanConfig, get_pacman_command,
     find_repo_packages,
 )
 from .package_update import (
@@ -711,7 +711,7 @@ class InstallPackagesCLI():
             retry_interactive_command_or_exit(
                 [
                     'sudo',
-                ] + PACMAN_COLOR_ARGS + [
+                ] + get_pacman_command(self.args) + [
                     '-Rs',
                 ] + packages_to_be_removed,
                 args=self.args
@@ -726,7 +726,7 @@ class InstallPackagesCLI():
             if not retry_interactive_command(
                     [
                         'sudo',
-                    ] + PACMAN_COLOR_ARGS + [
+                    ] + get_pacman_command(self.args) + [
                         '--sync',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
@@ -804,7 +804,7 @@ class InstallPackagesCLI():
             if not retry_interactive_command(
                     [
                         'sudo',
-                    ] + PACMAN_COLOR_ARGS + [
+                    ] + get_pacman_command(self.args) + [
                         '--upgrade',
                         '--asdeps',
                     ] + reconstruct_args(self.args, ignore_args=[
@@ -833,7 +833,7 @@ class InstallPackagesCLI():
             if not retry_interactive_command(
                     [
                         'sudo',
-                    ] + PACMAN_COLOR_ARGS + [
+                    ] + get_pacman_command(self.args) + [
                         '--upgrade',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'upgrade',

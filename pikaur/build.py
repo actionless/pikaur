@@ -18,7 +18,7 @@ from .config import (
     CONFIG_ROOT,
 )
 from .aur import get_repo_url, find_aur_packages
-from .pacman import find_local_packages, PackageDB, PACMAN_COLOR_ARGS
+from .pacman import find_local_packages, PackageDB, get_pacman_command
 from .args import PikaurArgs, reconstruct_args, parse_args
 from .pprint import color_line, bold_line
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit, ask_to_continue
@@ -273,7 +273,7 @@ class PackageBuild(DataType):
             result1 = retry_interactive_command(
                 [
                     'sudo',
-                ] + PACMAN_COLOR_ARGS + [
+                ] + get_pacman_command(self.args) + [
                     '--upgrade',
                     '--asdeps',
                 ] + reconstruct_args(self.args, ignore_args=[
@@ -294,7 +294,7 @@ class PackageBuild(DataType):
             result2 = retry_interactive_command(
                 [
                     'sudo',
-                ] + PACMAN_COLOR_ARGS + [
+                ] + get_pacman_command(self.args) + [
                     '--upgrade',
                 ] + reconstruct_args(self.args, ignore_args=[
                     'upgrade',
@@ -403,7 +403,7 @@ class PackageBuild(DataType):
         retry_interactive_command_or_exit(
             [
                 'sudo',
-            ] + PACMAN_COLOR_ARGS + [
+            ] + get_pacman_command(self.args) + [
                 '--sync',
                 '--asdeps',
             ] + reconstruct_args(self.args, ignore_args=[
@@ -445,7 +445,7 @@ class PackageBuild(DataType):
         retry_interactive_command_or_exit(
             [
                 'sudo',
-            ] + PACMAN_COLOR_ARGS + [
+            ] + get_pacman_command(self.args) + [
                 '--remove',
             ] + list(deps_packages_installed),
             args=self.args

@@ -27,11 +27,9 @@ OFFICIAL_REPOS = (
     'multilib',
 )
 
-PACMAN_COLOR_ARGS = ['pacman', '--color=always']
-
 
 def get_pacman_command(args: PikaurArgs) -> List[str]:
-    if sys.stderr.isatty() or args.color == 'always':
+    if (sys.stderr.isatty() and sys.stdout.isatty()) or args.color == 'always':
         return ['pacman', '--color=always']
     return ['pacman', ]
 

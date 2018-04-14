@@ -27,7 +27,7 @@ from .pprint import (
     print_version,
 )
 from .pacman import (
-    PACMAN_COLOR_ARGS,
+    get_pacman_command,
 )
 from .aur import (
     aur_rpc_info,
@@ -100,7 +100,10 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
 
 def cli_upgrade_packages(args: PikaurArgs) -> None:
     if args.refresh:
-        pacman_args = ['sudo',] + PACMAN_COLOR_ARGS + ['--sync'] + ['--refresh'] * args.refresh
+        pacman_args = (
+            ['sudo',] + get_pacman_command(args) +
+            ['--sync'] + ['--refresh'] * args.refresh
+        )
         retry_interactive_command_or_exit(
             pacman_args, args=args
         )
@@ -116,10 +119,10 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
 
 
 def _info_packages_thread_repo(
-        raw_args: List[str]
+        args: PikaurArgs
 ) -> str:
     return interactive_spawn(
-        PACMAN_COLOR_ARGS + raw_args,
+        get_pacman_command(args) + args.raw,
         stderr=subprocess.DEVNULL,
         stdout=subprocess.PIPE
     ).stdout_text
@@ -129,7 +132,7 @@ def cli_info_packages(args: PikaurArgs) -> None:
     with ThreadPool() as pool:
         requests = {}
         requests[PackageSource.AUR] = pool.apply_async(aur_rpc_info, (args.positional or [], ))
-        requests[PackageSource.REPO] = pool.apply_async(_info_packages_thread_repo, (args.raw, ))
+        requests[PackageSource.REPO] = pool.apply_async(_info_packages_thread_repo, (args, ))
         pool.close()
         pool.join()
         result = {

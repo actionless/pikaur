@@ -54,6 +54,13 @@ class PackageDBCommon():
     _provided_dict_cache: Dict[PackageSource, Dict[str, List[ProvidedDependency]]] = {}
 
     @classmethod
+    def discard_local_cache(cls) -> None:
+        if cls._packages_list_cache.get(PackageSource.LOCAL):
+            del cls._packages_list_cache[PackageSource.LOCAL]
+        if cls._packages_dict_cache.get(PackageSource.LOCAL):
+            del cls._packages_dict_cache[PackageSource.LOCAL]
+
+    @classmethod
     def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.REPO):
             cls._packages_list_cache[PackageSource.REPO] = list(
@@ -136,6 +143,11 @@ class PackageDB(PackageDBCommon):
         if not cls._alpm_handle:
             cls._alpm_handle = PacmanConfig().initialize_alpm()
         return cls._alpm_handle
+
+    @classmethod
+    def discard_local_cache(cls) -> None:
+        super().discard_local_cache()
+        cls._alpm_handle = None
 
     @classmethod
     def search_local(cls, search_query: str) -> List[pyalpm.Package]:

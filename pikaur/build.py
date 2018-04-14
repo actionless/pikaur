@@ -1,9 +1,10 @@
 import os
+import sys
 import shutil
 import platform
 from distutils.dir_util import copy_tree
 from multiprocessing.pool import ThreadPool
-from typing import List, Union, Dict, Any, Optional
+from typing import List, Union, Dict, Any, Optional, Set
 
 from .core import (
     DataType, ConfigReader,
@@ -20,7 +21,7 @@ from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB, PACMAN_COLOR_ARGS
 from .args import PikaurArgs, reconstruct_args, parse_args
 from .pprint import color_line, bold_line
-from .prompt import retry_interactive_command
+from .prompt import retry_interactive_command, retry_interactive_command_or_exit, ask_to_continue
 from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
 )
@@ -206,7 +207,7 @@ class PackageBuild(DataType):
                 ))
                 self.prepare_build_destination()
                 retry_interactive_command(
-                    ['makepkg', '--nobuild'],
+                    isolate_root_cmd(['makepkg', '--nobuild'], cwd=self.build_dir),
                     cwd=self.build_dir,
                     args=self.args
                 )
@@ -221,13 +222,17 @@ class PackageBuild(DataType):
             ])
         return self.already_installed
 
+    @property
+    def all_deps_to_install(self):
+        return self.new_make_deps_to_install + self.new_deps_to_install
+
     def _install_built_deps(
             self,
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
 
         self.built_deps_to_install = {}
-        for dep in self.new_make_deps_to_install + self.new_deps_to_install:
+        for dep in self.all_deps_to_install:
             # @TODO: check if dep is Provided by built package
             if dep not in all_package_builds:
                 continue
@@ -346,6 +351,67 @@ class PackageBuild(DataType):
             ]
             deps_destination += new_deps_to_install
 
+    def _install_repo_deps(self) -> Set[str]:
+        if not self.all_deps_to_install:
+            return set()
+        # @TODO: use lock file?
+        local_packages_before = set(PackageDB.get_local_dict().keys())
+        print('{} {}:'.format(
+            color_line('::', 13),
+            _("Installing repository dependencies for {}").format(
+                bold_line(', '.join(self.package_names)))
+        ))
+        retry_interactive_command_or_exit(
+            [
+                'sudo',
+            ] + PACMAN_COLOR_ARGS + [
+                '--sync',
+                '--asdeps',
+            ] + reconstruct_args(self.args, ignore_args=[
+                'upgrade',
+                'asdeps',
+                'sync',
+                'sysupgrade',
+                'refresh',
+                'downloadonly',
+            ]) + self.all_deps_to_install,
+            args=self.args
+        )
+        return local_packages_before
+
+    def _remove_repo_deps(self, local_packages_before: Set[str]) -> None:
+        if not self.all_deps_to_install:
+            return
+        PackageDB.discard_local_cache()
+        local_packages_after = set(PackageDB.get_local_dict().keys())
+
+        deps_packages_installed = local_packages_after.difference(local_packages_before)
+        deps_packages_removed = local_packages_before.difference(local_packages_after)
+        if deps_packages_removed:
+            print('{} {}:'.format(
+                color_line(':: error', 9),
+                _("Failed to remove installed dependencies, packages inconsistency: {}").format(
+                    bold_line(', '.join(deps_packages_removed)))
+            ))
+            if not ask_to_continue(args=self.args):
+                sys.exit(125)
+        if not deps_packages_installed:
+            return
+
+        print('{} {}:'.format(
+            color_line('::', 13),
+            _("Removing installed repository dependencies for {}").format(
+                bold_line(', '.join(self.package_names)))
+        ))
+        retry_interactive_command_or_exit(
+            [
+                'sudo',
+            ] + PACMAN_COLOR_ARGS + [
+                '--remove',
+            ] + list(deps_packages_installed),
+            args=self.args
+        )
+
     def build(
             self, all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
@@ -353,6 +419,7 @@ class PackageBuild(DataType):
         self.prepare_build_destination()
         self._get_deps()
         self._install_built_deps(all_package_builds)
+        local_packages_before = self._install_repo_deps()
 
         makepkg_args = []
         if not self.args.needed:
@@ -363,15 +430,15 @@ class PackageBuild(DataType):
             isolate_root_cmd(
                 [
                     'makepkg',
-                    '--syncdeps',
-                    '--rmdeps',
-                ] + (['--noconfirm'] if self.args.noconfirm else []) + makepkg_args,
+                ] + makepkg_args,
                 cwd=self.build_dir
             ),
             cwd=self.build_dir,
             args=self.args,
-            pikspect=True
         )
+        print()
+
+        self._remove_repo_deps(local_packages_before)
 
         if not build_succeeded:
             self.failed = True

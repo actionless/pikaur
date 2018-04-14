@@ -14,7 +14,6 @@ from multiprocessing.pool import ThreadPool
 from typing import List, Tuple, Callable, Any
 from time import sleep
 
-from .core import isolate_root_cmd
 from .pprint import bold_line
 
 PACMAN_TRANSLATION = gettext.translation('pacman', fallback=True)
@@ -152,7 +151,7 @@ def pikspect(
             )
 
             if 'sudo' in cmd:
-                subprocess.run(isolate_root_cmd(['sudo', '-v']))
+                subprocess.run(['sudo', '-v'])
             proc = subprocess.Popen(
                 cmd,
                 stdin=pty_slave,

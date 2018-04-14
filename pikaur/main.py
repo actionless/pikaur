@@ -245,13 +245,6 @@ def check_systemd_dynamic_users() -> bool:
 
 
 def main() -> None:
-    if running_as_root():
-        print_status_message("{} {}".format(
-            color_line('::', 9),
-            _("don't run me as root."),
-        ))
-        sys.exit(65)
-    # @TODO: either fix this or remove:
     if running_as_root() and not check_systemd_dynamic_users():
         print_status_message("{} {}".format(
             color_line('::', 9),

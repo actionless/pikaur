@@ -100,7 +100,7 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
 
 def cli_upgrade_packages(args: PikaurArgs) -> None:
     if args.refresh:
-        pacman_args = ['sudo', 'pacman', '--sync'] + ['--refresh'] * args.refresh
+        pacman_args = ['sudo',] + PACMAN_COLOR_ARGS + ['--sync'] + ['--refresh'] * args.refresh
         retry_interactive_command_or_exit(
             pacman_args, args=args
         )

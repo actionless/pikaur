@@ -46,6 +46,10 @@ _CONFIG_SCHEMA = {
             'type': 'bool',
             'default': 'no',
         },
+        'NoEdit': {
+            'type': 'bool',
+            'default': 'no',
+        },
     },
     'colors': {
         'Version': {

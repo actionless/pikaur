@@ -59,6 +59,9 @@ Passing `--devel` argument will override this option to 1.
 ##### KeepBuildDir (default: no)
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
 
+##### NoEdit (default: no)
+don't prompt to edit PKGBUILD and install files.
+
 
 #### [colors]
 

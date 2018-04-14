@@ -355,6 +355,7 @@ class PackageBuild(DataType):
         if not self.all_deps_to_install:
             return set()
         # @TODO: use lock file?
+        PackageDB.discard_local_cache()
         local_packages_before = set(PackageDB.get_local_dict().keys())
         print('{} {}:'.format(
             color_line('::', 13),

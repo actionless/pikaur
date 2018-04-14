@@ -139,6 +139,11 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     ):
         parser.add_letter_andor_opt(action='count', letter=letter, opt=opt)
 
+    for letter, opt in (
+            (None, 'color'),
+    ):
+        parser.add_letter_andor_opt(action=None, letter=letter, opt=opt)
+
     parser.add_argument('--ignore', action='append')
     parser.add_argument('positional', nargs='*')
 

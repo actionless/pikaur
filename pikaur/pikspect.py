@@ -26,10 +26,10 @@ def _p(msg: str) -> str:
 
 DEFAULT_QUESTIONS = [
     bold_line(" {} {} ".format(message, _p('[Y/n]')))
-    for message in (
+    for message in [
         _p('Proceed with installation?'),
         _p('Do you want to remove these packages?'),
-    )
+    ]
 ]
 DEFAULT_ANSWER = _p("Y")
 
@@ -58,13 +58,14 @@ def output_handler(
         default_questions: Tuple[str],
 ) -> None:
     historic_output = b''
+    max_question_length = max([len(q) for q in default_questions]) + 10
     while True:
         if proc.returncode is not None:
             break
         output = proc_output_reader.read(1)
         if not output:
             break
-        historic_output = historic_output[-50:] + output
+        historic_output = historic_output[-max_question_length:] + output
 
         sys.stdout.buffer.write(output)
         sys.stdout.buffer.flush()

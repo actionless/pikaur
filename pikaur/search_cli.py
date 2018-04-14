@@ -8,7 +8,10 @@ import pyalpm
 from .i18n import _
 from .config import PikaurConfig
 from .core import DataType, PackageSource, return_exception
-from .pprint import color_line, bold_line, format_paragraph, pretty_format_repo_name
+from .pprint import (
+    color_line, bold_line, format_paragraph, pretty_format_repo_name,
+    print_status_message,
+)
 from .pacman import PackageDB
 from .aur import AURPackageInfo, aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names
 from .args import PikaurArgs
@@ -219,7 +222,7 @@ def cli_search_packages(args: PikaurArgs) -> None:
     if not REPO_ONLY:
         for _key, query_result in result[PackageSource.AUR].items():
             if isinstance(query_result, Exception):
-                print('AUR returned error: {}'.format(query_result))
+                print_status_message('AUR returned error: {}'.format(query_result))
                 sys.exit(121)
         aur_result = join_search_results([
             r for k, r in result[PackageSource.AUR].items()

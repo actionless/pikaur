@@ -31,7 +31,7 @@ from .build import (
 from .pprint import (
     color_line, bold_line,
     pretty_format_sysupgrade, pretty_format_upgradeable,
-    print_not_found_packages,
+    print_not_found_packages, print_status_message,
 )
 from .core import (
     PackageSource,
@@ -64,7 +64,7 @@ def print_ignored_package(package_name):
     current = PackageDB.get_local_dict().get(package_name)
     current_version = current.version if current else ''
     new_version = get_remote_package_version(package_name)
-    print('{} {}'.format(
+    print_status_message('{} {}'.format(
         color_line('::', 11),
         _("Ignoring package {}").format(
             pretty_format_upgradeable(
@@ -83,7 +83,7 @@ def print_ignored_package(package_name):
 
 
 def print_package_uptodate(package_name: str, package_source: PackageSource) -> None:
-    print(
+    print_status_message(
         '{} {}'.format(
             color_line(_("warning:"), 11),
             _("{name} {version} {package_source} package is up to date - skipping").format(
@@ -170,7 +170,7 @@ class InstallPackagesCLI():
                         remove_dir(package_build.build_dir)
 
         if self.failed_to_build_package_names:
-            print('\n'.join(
+            print_status_message('\n'.join(
                 [color_line(_("Failed to build following packages:"), 9), ] +
                 self.failed_to_build_package_names
             ))
@@ -199,7 +199,7 @@ class InstallPackagesCLI():
             result = spawn(['which', editor])
             if result.returncode == 0:
                 return [editor, ]
-        print(
+        print_status_message(
             '{} {}'.format(
                 color_line('error:', 9),
                 _("no editor found. Try setting $VISUAL or $EDITOR.")
@@ -260,7 +260,7 @@ class InstallPackagesCLI():
             self.get_aur_deps_info()
         except PackagesNotFoundInAUR as exc:
             if exc.wanted_by:
-                print("{} {}".format(
+                print_status_message("{} {}".format(
                     color_line(':: error:', 9),
                     bold_line(
                         _("Dependencies missing for {}").format(exc.wanted_by))
@@ -268,13 +268,15 @@ class InstallPackagesCLI():
             print_not_found_packages(exc.packages)
             sys.exit(131)
         except DependencyVersionMismatch as exc:
-            print(color_line(_("Version mismatch:"), 11))
-            print(_("{what} depends on: '{dep}'\n found in '{location}': '{version}'").format(
-                what=bold_line(exc.who_depends),
-                dep=exc.dependency_line,
-                location=exc.location,
-                version=exc.version_found,
-            ))
+            print_status_message(color_line(_("Version mismatch:"), 11))
+            print_status_message(
+                _("{what} depends on: '{dep}'\n found in '{location}': '{version}'").format(
+                    what=bold_line(exc.who_depends),
+                    dep=exc.dependency_line,
+                    location=exc.location,
+                    version=exc.version_found,
+                )
+            )
             sys.exit(131)
 
     def get_repo_pkgs_info(self):
@@ -499,7 +501,7 @@ class InstallPackagesCLI():
                 break
             except CloneError as err:
                 package_build = err.build
-                print(color_line(
+                print_status_message(color_line(
                     (
                         _("Can't clone '{name}' in '{path}' from AUR:")
                         if package_build.clone else
@@ -510,8 +512,8 @@ class InstallPackagesCLI():
                     ),
                     9
                 ))
-                print(err.result.stdout_text)
-                print(err.result.stderr_text)
+                print_status_message(err.result.stdout_text)
+                print_status_message(err.result.stderr_text)
                 if self.args.noconfirm:
                     answer = _("a")
                 else:
@@ -551,7 +553,7 @@ class InstallPackagesCLI():
         for new_pkg_name, new_pkg_conflicts in conflict_result.items():
             for pkg_conflict in new_pkg_conflicts:
                 if pkg_conflict in all_new_packages_names:
-                    print(color_line(
+                    print_status_message(color_line(
                         _("New packages '{new}' and '{other}' are in conflict.").format(
                             new=new_pkg_name, other=pkg_conflict),
                         9))
@@ -560,7 +562,7 @@ class InstallPackagesCLI():
             if new_pkg_name in self.repo_packages_by_name:
                 continue
             for pkg_conflict in new_pkg_conflicts:
-                print('{} {}'.format(
+                print_status_message('{} {}'.format(
                     color_line(_("warning:"), 11),
                     _("New package '{new}' conflicts with installed '{installed}'.").format(
                         new=new_pkg_name, installed=pkg_conflict)
@@ -574,7 +576,7 @@ class InstallPackagesCLI():
 
     def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
         if self.args.noedit or self.args.noconfirm:
-            print('{} {}'.format(
+            print_status_message('{} {}'.format(
                 color_line('::', 11),
                 _("Skipping review of {file} for {name} package ({flag})").format(
                     file=filename,
@@ -645,7 +647,7 @@ class InstallPackagesCLI():
             ) and (
                 arch not in supported_archs
             ):
-                print("{} {}".format(
+                print_status_message("{} {}".format(
                     color_line(':: error:', 9),
                     _("{name} can't be built on the current arch ({arch}). "
                       "Supported: {suparch}").format(
@@ -674,8 +676,10 @@ class InstallPackagesCLI():
             try:
                 repo_status.build(self.package_builds_by_name)
             except (BuildError, DependencyError) as exc:
-                print(exc)
-                print(color_line(_("Can't build '{name}'.").format(name=pkg_name), 9))
+                print_status_message(exc)
+                print_status_message(
+                    color_line(_("Can't build '{name}'.").format(name=pkg_name), 9)
+                )
                 # if not self.ask_to_continue():
                 #     sys.exit(125)
                 for _pkg_name in repo_status.package_names:
@@ -690,7 +694,7 @@ class InstallPackagesCLI():
                     deps_fails_counter.setdefault(_pkg_name, 0)
                     deps_fails_counter[_pkg_name] += 1
                     if deps_fails_counter[_pkg_name] > len(self.all_aur_packages_names):
-                        print('{} {}'.format(
+                        print_status_message('{} {}'.format(
                             color_line(":: " + _("error:"), 9),
                             _("Dependency cycle detected between {}").format(deps_fails_counter)
                         ))
@@ -767,8 +771,8 @@ class InstallPackagesCLI():
         target_transaction = self.transactions.get(str(target))
         if not target_transaction:
             return
-        print('{} {}'.format(
-            color_line('::', 9),
+        print_status_message('{} {}'.format(
+            color_line(':: warning', 9),
             _("Reverting {target} transaction...").format(target=target)
         ))
         removed = target_transaction.get('removed')

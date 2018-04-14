@@ -59,8 +59,10 @@ def format_paragraph(line: str) -> str:
     ])
 
 
-def print_status_message(message='') -> None:
-    sys.stderr.write(f'{message}\n')
+def print_status_message(message='', end='\n', flush=False) -> None:
+    sys.stderr.write(f'{message}{end}')
+    if flush:
+        sys.stderr.flush()
 
 
 def print_not_found_packages(not_found_packages: List[str]) -> None:

@@ -52,7 +52,6 @@ class MakepkgConfig():
     def get(cls, key: str, fallback: Any = None, config_path: str = None) -> Any:
         value = ConfigReader.get(key, fallback, config_path="/etc/makepkg.conf")
         if cls.get_user_makepkg_path():
-            print(cls.get_user_makepkg_path())
             value = ConfigReader.get(key, value, config_path=cls.get_user_makepkg_path())
         if config_path:
             value = ConfigReader.get(key, value, config_path=config_path)
@@ -194,7 +193,6 @@ class PackageBuild(DataType):
         if self.already_installed is None:
             local_db = PackageDB.get_local_dict()
             if is_devel_pkg(self.package_base):
-                print()
                 print('{} {}:'.format(
                     color_line('::', 15),
                     _n(
@@ -226,11 +224,10 @@ class PackageBuild(DataType):
     def all_deps_to_install(self):
         return self.new_make_deps_to_install + self.new_deps_to_install
 
-    def _install_built_deps(
+    def _get_built_deps(
             self,
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
-
         self.built_deps_to_install = {}
         for dep in self.all_deps_to_install:
             # @TODO: check if dep is Provided by built package
@@ -251,6 +248,11 @@ class PackageBuild(DataType):
                 if dep in self.new_deps_to_install:
                     self.new_deps_to_install.remove(dep)
 
+    def _install_built_deps(
+            self,
+            all_package_builds: Dict[str, 'PackageBuild']
+    ) -> None:
+
         if not self.built_deps_to_install:
             return
 
@@ -269,43 +271,43 @@ class PackageBuild(DataType):
         result1 = True
         if len(explicitly_installed_deps) < len(self.built_deps_to_install):
             result1 = retry_interactive_command(
-                    [
-                        'sudo',
-                    ] + PACMAN_COLOR_ARGS + [
-                        '--upgrade',
-                        '--asdeps',
-                    ] + reconstruct_args(self.args, ignore_args=[
-                        'upgrade',
-                        'asdeps',
-                        'sync',
-                        'sysupgrade',
-                        'refresh',
-                        'downloadonly',
-                    ]) + [
-                        path for name, path in self.built_deps_to_install.items()
-                        if name not in explicitly_installed_deps
-                    ],
-                    args=self.args
+                [
+                    'sudo',
+                ] + PACMAN_COLOR_ARGS + [
+                    '--upgrade',
+                    '--asdeps',
+                ] + reconstruct_args(self.args, ignore_args=[
+                    'upgrade',
+                    'asdeps',
+                    'sync',
+                    'sysupgrade',
+                    'refresh',
+                    'downloadonly',
+                ]) + [
+                    path for name, path in self.built_deps_to_install.items()
+                    if name not in explicitly_installed_deps
+                ],
+                args=self.args
             )
         result2 = True
         if explicitly_installed_deps:
             result2 = retry_interactive_command(
-                    [
-                        'sudo',
-                    ] + PACMAN_COLOR_ARGS + [
-                        '--upgrade',
-                    ] + reconstruct_args(self.args, ignore_args=[
-                        'upgrade',
-                        'asdeps',
-                        'sync',
-                        'sysupgrade',
-                        'refresh',
-                        'downloadonly',
-                    ]) + [
-                        path for name, path in self.built_deps_to_install.items()
-                        if name in explicitly_installed_deps
-                    ],
-                    args=self.args
+                [
+                    'sudo',
+                ] + PACMAN_COLOR_ARGS + [
+                    '--upgrade',
+                ] + reconstruct_args(self.args, ignore_args=[
+                    'upgrade',
+                    'asdeps',
+                    'sync',
+                    'sysupgrade',
+                    'refresh',
+                    'downloadonly',
+                ]) + [
+                    path for name, path in self.built_deps_to_install.items()
+                    if name in explicitly_installed_deps
+                ],
+                args=self.args
             )
 
         if result1 and result2:
@@ -455,13 +457,13 @@ class PackageBuild(DataType):
 
         self.prepare_build_destination()
         self._get_deps()
+        self._get_built_deps(all_package_builds)
         self._install_built_deps(all_package_builds)
         local_packages_before = self._install_repo_deps()
 
         makepkg_args = []
         if not self.args.needed:
             makepkg_args.append('--force')
-
         print()
         build_succeeded = retry_interactive_command(
             isolate_root_cmd(

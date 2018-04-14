@@ -36,7 +36,7 @@ def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
     if not sys.stdin.isatty():
         return default
 
-    print(question, flush=True, end=" ")
+    print_status_message(question, flush=True, end=" ")
     previous_tty_settings = tty.tcgetattr(sys.stdin.fileno())  # type: ignore
     try:
         tty.setraw(sys.stdin.fileno())

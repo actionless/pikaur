@@ -1,3 +1,4 @@
+import sys
 from typing import List, Dict, Tuple, Iterable
 
 from pycman.config import PacmanConfig as PycmanConfig
@@ -13,6 +14,7 @@ from .version import (
     VersionMatcher,
 )
 from .pprint import print_status_message
+from .args import PikaurArgs
 
 
 OFFICIAL_REPOS = (
@@ -26,6 +28,12 @@ OFFICIAL_REPOS = (
 )
 
 PACMAN_COLOR_ARGS = ['pacman', '--color=always']
+
+
+def get_pacman_command(args: PikaurArgs) -> List[str]:
+    if sys.stderr.isatty() or args.color == 'always':
+        return ['pacman', '--color=always']
+    return ['pacman', ]
 
 
 class PacmanConfig(PycmanConfig):

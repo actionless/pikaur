@@ -14,7 +14,7 @@ from multiprocessing.pool import ThreadPool
 from typing import List, Tuple, Callable, Any
 from time import sleep
 
-from .pprint import bold_line
+from .pprint import bold_line, print_status_message
 
 PACMAN_TRANSLATION = gettext.translation('pacman', fallback=True)
 
@@ -41,7 +41,7 @@ def handle_exception_in_thread(fun: Callable) -> Callable:
         # except OSError:
         # pass
         except Exception as exc:
-            print('Error in the thread:')
+            print_status_message('Error in the thread:')
             traceback.print_exc()
             raise exc
 
@@ -75,7 +75,7 @@ def output_handler(
                 pty_in.write(default_answer + '\n')
                 historic_output = b''
                 break
-    print('output handler exiting')
+    print_status_message('output handler exiting')
 
 
 @handle_exception_in_thread

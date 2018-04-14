@@ -172,7 +172,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
         f'--{key}' if len(key) > 1 else f'-{key}': value
         for key, value in parsed_args.__dict__.items()
         if value
-        if key not in ignore_args + ['raw', 'unknown_args', 'positional']
+        if key not in ignore_args + ['raw', 'unknown_args', 'positional', 'color']
     }
     return list(set(
         list(reconstructed_args.keys()) + parsed_args.unknown_args

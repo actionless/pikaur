@@ -464,7 +464,7 @@ class PackageBuild(DataType):
         makepkg_args = []
         if not self.args.needed:
             makepkg_args.append('--force')
-        if not color_enabled:
+        if not color_enabled():
             makepkg_args.append('--nocolor')
         print()
         build_succeeded = retry_interactive_command(

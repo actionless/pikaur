@@ -20,7 +20,7 @@ from .config import (
 from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB, get_pacman_command
 from .args import PikaurArgs, reconstruct_args, parse_args
-from .pprint import color_line, bold_line
+from .pprint import color_line, bold_line, color_enabled
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit, ask_to_continue
 from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
@@ -464,6 +464,8 @@ class PackageBuild(DataType):
         makepkg_args = []
         if not self.args.needed:
             makepkg_args.append('--force')
+        if not color_enabled:
+            makepkg_args.append('--nocolor')
         print()
         build_succeeded = retry_interactive_command(
             isolate_root_cmd(
@@ -474,6 +476,7 @@ class PackageBuild(DataType):
             ),
             cwd=self.build_dir,
             args=self.args,
+            pikspect=True,
         )
         print()
 

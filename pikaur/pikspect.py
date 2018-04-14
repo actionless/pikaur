@@ -69,7 +69,7 @@ def output_handler(
         sys.stdout.buffer.write(output)
         sys.stdout.buffer.flush()
         for question in default_questions:
-            if historic_output.rstrip().endswith(question.encode('utf-8')):
+            if historic_output.endswith(question.encode('utf-8')):
                 sys.stdout.write(default_answer + '\n')
                 sys.stdout.flush()
                 pty_in.write(default_answer + '\n')

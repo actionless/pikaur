@@ -53,6 +53,14 @@ class PikaurArgumentParser(argparse.ArgumentParser):
             raw_args=raw_args
         )
 
+    def add_letter_andor_opt(self, action: str, letter: str = None, opt: str = None) -> None:
+        if letter and opt:
+            self.add_argument('-' + letter, '--' + opt, action=action)
+        elif opt:
+            self.add_argument('--' + opt, action=action)
+        elif letter:
+            self.add_argument('-' + letter, action=action)
+
 
 def cli_print_help(args: PikaurArgs) -> None:
     pacman_help = spawn(
@@ -104,14 +112,12 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
 
     for letter, opt in (
             ('S', 'sync'),
-            ('c', 'clean'),
             ('g', 'groups'),
             ('i', 'info'),
             ('w', 'downloadonly'),
             ('q', 'quiet'),
             ('s', 'search'),
             ('u', 'sysupgrade'),
-            ('y', 'refresh'),
             #
             ('h', 'help'),
             ('V', 'version'),
@@ -125,12 +131,13 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
             (None, 'noconfirm'),
             (None, 'needed'),
     ) + PIKAUR_OPTS:
-        if letter and opt:
-            parser.add_argument('-' + letter, '--' + opt, action='store_true')
-        elif opt:
-            parser.add_argument('--' + opt, action='store_true')
-        elif letter:
-            parser.add_argument('-' + letter, action='store_true')
+        parser.add_letter_andor_opt(action='store_true', letter=letter, opt=opt)
+
+    for letter, opt in (
+            ('y', 'refresh'),
+            ('c', 'clean'),
+    ):
+        parser.add_letter_andor_opt(action='count', letter=letter, opt=opt)
 
     parser.add_argument('--ignore', action='append')
     parser.add_argument('positional', nargs='*')
@@ -139,9 +146,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
 
     # print("ARGPARSE:")
     # print(parsed_args)
-    # print(dir(parsed_args))
     # print(f'args = {args}')
-    # print(reconstructed_args)
     # print(unknown_args)
     # print(reconstruct_args(parsed_args))
     # print(reconstruct_args(parsed_args, ignore_args=['sync']))

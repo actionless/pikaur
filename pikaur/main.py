@@ -40,7 +40,7 @@ from .prompt import (
     retry_interactive_command_or_exit, ask_to_continue,
 )
 from .config import (
-    CACHE_ROOT, BUILD_CACHE_DIR,
+    BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
 )
 from .install_cli import (
     InstallPackagesCLI,
@@ -100,9 +100,9 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
 
 def cli_upgrade_packages(args: PikaurArgs) -> None:
     if args.refresh:
+        pacman_args = ['sudo', 'pacman', '--sync'] + ['--refresh'] * args.refresh
         retry_interactive_command_or_exit(
-            ['sudo', 'pacman', '--sync', '--refresh'],
-            args=args
+            pacman_args, args=args
         )
     if not args.repo:
         print('{} {}'.format(
@@ -156,15 +156,17 @@ def cli_info_packages(args: PikaurArgs) -> None:
 
 def cli_clean_packages_cache(args: PikaurArgs) -> None:
     if not args.repo:
-        # @TODO: flush ~/.cache/pikaur/pkg on -Scc
-        build_cache = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
-        if os.path.exists(build_cache):
-            print('\n' + _("Build directory: {}").format(build_cache))
-            if ask_to_continue(args=args, text='{} {}'.format(
-                    color_line('::', 12),
-                    _("Do you want to remove all files?")
-            )):
-                remove_dir(build_cache)
+        for directory, message, minimal_clean_level in (
+                 (BUILD_CACHE_PATH, "Build directory", 1, ),
+                 (PACKAGE_CACHE_PATH, "Packages directory", 2, ),
+        ):
+            if minimal_clean_level <= args.clean and os.path.exists(directory):
+                print('\n' + _("{}: {}").format(message, directory))
+                if ask_to_continue(args=args, text='{} {}'.format(
+                        color_line('::', 12),
+                        _("Do you want to remove all files?")
+                )):
+                    remove_dir(directory)
     if not args.aur:
         sys.exit(
             interactive_spawn(

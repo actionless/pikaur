@@ -25,13 +25,12 @@ def _p(msg: str) -> str:
     return PACMAN_TRANSLATION.gettext(msg)
 
 
-QUESTION_MESSAGES = (
-    _p('Proceed with installation?'),
-    _p('Do you want to remove these packages?'),
-)
 DEFAULT_QUESTIONS = [
     bold_line(" {} {} ".format(message, _p('[Y/n]')))
-    for message in QUESTION_MESSAGES
+    for message in (
+        _p('Proceed with installation?'),
+        _p('Do you want to remove these packages?'),
+    )
 ]
 DEFAULT_ANSWER = _p("Y")
 

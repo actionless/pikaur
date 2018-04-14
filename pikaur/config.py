@@ -16,12 +16,9 @@ if running_as_root():
 else:
     CACHE_ROOT = os.path.join(_USER_CACHE_HOME, 'pikaur/')
 
-AUR_REPOS_CACHE_DIR = 'aur_repos'
-BUILD_CACHE_DIR = 'build'
-PACKAGE_CACHE_DIR = 'pkg'
-AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, AUR_REPOS_CACHE_DIR)
-BUILD_CACHE_PATH = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR)
-PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, PACKAGE_CACHE_DIR)
+AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
+BUILD_CACHE_PATH = os.path.join(CACHE_ROOT, 'build')
+PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, 'pkg')
 
 CONFIG_ROOT = os.environ.get(
     "XDG_CONFIG_HOME",

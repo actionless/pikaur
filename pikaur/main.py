@@ -157,8 +157,8 @@ def cli_info_packages(args: PikaurArgs) -> None:
 def cli_clean_packages_cache(args: PikaurArgs) -> None:
     if not args.repo:
         for directory, message, minimal_clean_level in (
-                 (BUILD_CACHE_PATH, "Build directory", 1, ),
-                 (PACKAGE_CACHE_PATH, "Packages directory", 2, ),
+                (BUILD_CACHE_PATH, "Build directory", 1, ),
+                (PACKAGE_CACHE_PATH, "Packages directory", 2, ),
         ):
             if minimal_clean_level <= args.clean and os.path.exists(directory):
                 print('\n' + _("{}: {}").format(message, directory))

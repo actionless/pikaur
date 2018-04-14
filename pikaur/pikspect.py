@@ -12,7 +12,6 @@ import struct
 import fcntl
 from multiprocessing.pool import ThreadPool
 from typing import List, Tuple, Callable, Any
-from threading import Lock
 from time import sleep
 
 from .core import isolate_root_cmd
@@ -83,7 +82,6 @@ def output_handler(
 def input_reader(
         proc: subprocess.Popen,
         pty_in: io.TextIOWrapper,
-        lock: Lock
 ) -> None:
     while True:
         if proc.returncode is not None:
@@ -101,14 +99,12 @@ def input_reader(
             sleep(0.1)
             continue
 
-        lock.acquire()
         try:
             pty_in.write(char)
         except ValueError:
             return
         sys.stdout.write(char)
         sys.stdout.flush()
-        lock.release()
 
 
 @handle_exception_in_thread
@@ -173,7 +169,6 @@ def pikspect(
             pool.apply_async(input_reader, (
                 proc,
                 pty_in,
-                Lock(),
             ))
             communicate_task = pool.apply_async(communicator, (proc, ))
 

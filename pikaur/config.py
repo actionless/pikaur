@@ -20,6 +20,8 @@ AUR_REPOS_CACHE_DIR = 'aur_repos'
 BUILD_CACHE_DIR = 'build'
 PACKAGE_CACHE_DIR = 'pkg'
 
+PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, PACKAGE_CACHE_DIR)
+
 CONFIG_ROOT = os.environ.get(
     "XDG_CONFIG_HOME",
     os.path.join(os.environ.get("HOME"), ".config/")

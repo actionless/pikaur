@@ -13,7 +13,7 @@ from .core import (
 from .i18n import _, _n
 from .config import (
     PikaurConfig,
-    CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_DIR,
+    CACHE_ROOT, AUR_REPOS_CACHE_DIR, BUILD_CACHE_DIR, PACKAGE_CACHE_PATH,
     CONFIG_ROOT,
 )
 from .aur import get_repo_url, find_aur_packages
@@ -68,7 +68,6 @@ class PackageBuild(DataType):
 
     repo_path: str = None
     build_dir: str = None
-    package_dir: str = None
     built_packages_paths: Dict[str, str] = None
 
     already_installed: bool = None
@@ -91,7 +90,6 @@ class PackageBuild(DataType):
                                       self.package_base)
         self.build_dir = os.path.join(CACHE_ROOT, BUILD_CACHE_DIR,
                                       self.package_base)
-        self.package_dir = os.path.join(CACHE_ROOT, PACKAGE_CACHE_DIR)
         self.built_packages_paths = {}
         self.built_packages_installed = {}
 
@@ -305,12 +303,12 @@ class PackageBuild(DataType):
             if not os.path.exists(built_package_path):
                 BuildError(_("{} does not exist on the filesystem.").format(built_package_path))
             if dest_dir == self.build_dir:
-                new_package_path = os.path.join(self.package_dir, full_pkg_name + pkg_ext)
-                if not os.path.exists(self.package_dir):
-                    os.makedirs(self.package_dir)
+                new_package_path = os.path.join(PACKAGE_CACHE_PATH, full_pkg_name + pkg_ext)
+                if not os.path.exists(PACKAGE_CACHE_PATH):
+                    os.makedirs(PACKAGE_CACHE_PATH)
                 if os.path.exists(new_package_path):
                     os.remove(new_package_path)
-                shutil.move(built_package_path, self.package_dir)
+                shutil.move(built_package_path, PACKAGE_CACHE_PATH)
                 built_package_path = new_package_path
             self.built_packages_paths[pkg_name] = built_package_path
 

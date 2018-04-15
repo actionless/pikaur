@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-04-14 09:24+0200\n"
-"PO-Revision-Date: 2018-04-07 14:35+0200\n"
+"PO-Revision-Date: 2018-04-15 11:08+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -93,8 +93,8 @@ msgstr "{edit} {file} für Paket {name}?"
 #: pikaur/build.py:199
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Download des neusten Sourcecodes für Entwicklerpaket {}"
+msgstr[1] "Download der neusten Sourcecodes für Entwicklerpakete {}"
 
 #: pikaur/install_cli.py:174
 msgid "Failed to build following packages:"
@@ -102,7 +102,7 @@ msgstr "Der Bau folgender Pakete ist fehlgeschlagen:"
 
 #: pikaur/build.py:432
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
-msgstr ""
+msgstr "Konnte die installierte Abhängigkeit nicht entfernen, Inkonsistenz: {}"
 
 #: pikaur/pprint.py:88
 msgid "Following packages cannot be found in AUR:"
@@ -114,12 +114,11 @@ msgstr "Ignoriere Paket {}"
 
 #: pikaur/build.py:261
 msgid "Installing already built dependencies for {}"
-msgstr "Installiere bereits gebaute Abhängigkeit für {}"
+msgstr "Installiere bereits gebaute Abhängigkeiten für {}"
 
 #: pikaur/build.py:400
-#, fuzzy
 msgid "Installing repository dependencies for {}"
-msgstr "Installiere bereits gebaute Abhängigkeit für {}"
+msgstr "Installiere Repository-Abhängigkeiten für {}"
 
 #: pikaur/pprint.py:223
 msgid "New dependency will be installed from AUR:"
@@ -166,9 +165,8 @@ msgid "Reading repository package databases..."
 msgstr "Lese Repository-Paketdatenbank..."
 
 #: pikaur/build.py:442
-#, fuzzy
 msgid "Removing installed repository dependencies for {}"
-msgstr "Installiere bereits gebaute Abhängigkeit für {}"
+msgstr "Entferne installierte Repository-Abhängigkeiten für {}"
 
 #: pikaur/pprint.py:189
 msgid "Repository package will be installed:"
@@ -249,7 +247,7 @@ msgstr "[u] Paket überspringen"
 
 #: pikaur/install_cli.py:444
 msgid "[v]iew package detail   [m]anually select packages"
-msgstr "[P]aketdetails anzeigen [m]anuell selektierte Pakete"
+msgstr "[P]aketdetails anzeigen, Pakete [m]anuell auswählen"
 
 #: pikaur/install_cli.py:518
 msgid "a"
@@ -298,7 +296,7 @@ msgstr "Kein Editor gefunden. Versuchen Sie $VISUAL oder $EDITOR zu setzen."
 
 #: pikaur/search_cli.py:154
 msgid "outofdate"
-msgstr ""
+msgstr "veraltet"
 
 #: pikaur/main.py:254
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
@@ -351,9 +349,10 @@ msgstr ""
 "Unterstützt wird: {suparch}"
 
 #: pikaur/install_cli.py:89
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
-msgstr "AUR-Repository {name} ist aktuell - überspringe"
+msgstr ""
+"{name} {version} {package_source} Paket ist aktuell - wird übersprungen"
 
 #: pikaur/install_cli.py:273
 #, python-brace-format
@@ -370,7 +369,7 @@ msgstr "{} existiert nicht im Dateisystem."
 
 #: pikaur/main.py:167
 msgid "{}: {}"
-msgstr ""
+msgstr "{}: {}"
 
 #~ msgid "Build directory: {}"
 #~ msgstr "Build-Verzeichnis: {}"

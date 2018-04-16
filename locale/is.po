@@ -1,0 +1,364 @@
+# Icelandic translations for PACKAGE package.
+# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-16 18:27+0000\n"
+"PO-Revision-Date: 2018-04-16 18:27+0000\n"
+"Last-Translator: Andri Viðar Tryggvason (andri@arivarton.com)\n"
+"Language-Team: none\n"
+"Language: is\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: pikaur/pprint.py:124
+msgid "({} days old)"
+msgstr "({} dagar gamall)"
+
+#: pikaur/pprint.py:212
+msgid "AUR package will be installed:"
+msgid_plural "AUR packages will be installed:"
+msgstr[0] "AUR pakki verður sett upp:"
+msgstr[1] "AUR pakkar verða settir upp:"
+
+#: pikaur/install_cli.py:682
+#, python-brace-format
+msgid "Can't build '{name}'."
+msgstr "Get ekki smíðað '{name}'."
+
+#: pikaur/install_cli.py:506
+#, python-brace-format
+msgid "Can't clone '{name}' in '{path}' from AUR:"
+msgstr "Get ekki klónað '{name}' í '{path}' frá AUR:"
+
+#: pikaur/install_cli.py:508
+#, python-brace-format
+msgid "Can't pull '{name}' in '{path}' from AUR:"
+msgstr "Get ekki togað '{name}' í '{path}' frá AUR:"
+
+#: pikaur/prompt.py:103
+msgid "Command '{}' failed to execute."
+msgstr "Inning af skipun '{}' mistókst."
+
+#: pikaur/args.py:71
+msgid "Common pacman options:"
+msgstr "Algengir pacman valkostir:"
+
+#: pikaur/install_cli.py:266
+msgid "Dependencies missing for {}"
+msgstr "Ákvæði vantar fyrir {}"
+
+#: pikaur/install_cli.py:700
+msgid "Dependency cycle detected between {}"
+msgstr "Ákvæðis hringbraut uppgötvað á milli {}"
+
+#: pikaur/install_cli.py:208
+msgid "Do you want to proceed without editing?"
+msgstr "Vilt þú halda áfram án þess að ritvinna?"
+
+#: pikaur/prompt.py:73
+msgid "Do you want to proceed?"
+msgstr "Vilt þú halda áfram?"
+
+#: pikaur/install_cli.py:572
+#, python-brace-format
+msgid "Do you want to remove '{installed}'?"
+msgstr "Vilt þú fjarlægja '{installed}'?"
+
+#: pikaur/main.py:170
+msgid "Do you want to remove all files?"
+msgstr "Vilt þú fjarlægja allar skrár?"
+
+#: pikaur/prompt.py:107
+msgid "Do you want to retry?"
+msgstr "Vilt þú reyna aftur?"
+
+#: pikaur/install_cli.py:619
+#, python-brace-format
+msgid "Do you want to see build files {diff} for {name} package?"
+msgstr "Vilt þú sjá smíðaskrá {diff} fyrir {name} pakkan?"
+
+#: pikaur/install_cli.py:590
+#, python-brace-format
+msgid "Do you want to {edit} {file} for {name} package?"
+msgstr "Vilt þú {edit} {file} fyrir {name} pakkan?"
+
+#: pikaur/build.py:199
+msgid "Downloading the latest sources for a devel package {}"
+msgid_plural "Downloading the latest sources for devel packages {}"
+msgstr[0] "Niðurhleðsla af frumkóta í gángi fyrir devel pakkan {}"
+msgstr[1] "Niðurhleðsla af frumkóta í gángi fyrir devel pakka {}"
+
+#: pikaur/install_cli.py:174
+msgid "Failed to build following packages:"
+msgstr "Mistókst að smíða eftirfarandi pakka:"
+
+#: pikaur/build.py:432
+msgid "Failed to remove installed dependencies, packages inconsistency: {}"
+msgstr "Mistókst að fjarlægja uppsett ákvæði, pakka ósamræmi: {}"
+
+#: pikaur/pprint.py:88
+msgid "Following packages cannot be found in AUR:"
+msgstr "Eftirfarandi pakkar finnast ekki í AUR:"
+
+#: pikaur/install_cli.py:69
+msgid "Ignoring package {}"
+msgstr "Sé framhjá pakka {}"
+
+#: pikaur/build.py:261
+msgid "Installing already built dependencies for {}"
+msgstr "Set upp smíðuð ákvæði fyrir {}"
+
+#: pikaur/build.py:400
+msgid "Installing repository dependencies for {}"
+msgstr "Set upp gagnahírslu ákvæði fyrir {}"
+
+#: pikaur/pprint.py:223
+msgid "New dependency will be installed from AUR:"
+msgid_plural "New dependencies will be installed from AUR:"
+msgstr[0] "Nýtt ákvæði verður uppsett frá AUR:"
+msgstr[1] "Ný ákvæði verða uppsett frá AUR:"
+
+#: pikaur/install_cli.py:567
+#, python-brace-format
+msgid "New package '{new}' conflicts with installed '{installed}'."
+msgstr "Nýr pakki '{new}' rekst á upsettan pakka '{installed}'."
+
+#: pikaur/install_cli.py:557
+#, python-brace-format
+msgid "New packages '{new}' and '{other}' are in conflict."
+msgstr "Nýir pakkar '{new}' og '{other}' eru í árekstri."
+
+#: pikaur/install_cli.py:255
+msgid "Nothing to do."
+msgstr "Ekkert að gera."
+
+#: pikaur/args.py:89
+msgid "Pikaur-specific options:"
+msgstr "Pikaur bundnir valkostir:"
+
+#: pikaur/install_cli.py:442
+msgid "Proceed with installation? [Y/n] "
+msgstr "Halda áfram með upsettjíngu? [J/n] "
+
+#: pikaur/package_update.py:99
+msgid "Reading AUR package info..."
+msgid_plural "Reading AUR packages info..."
+msgstr[0] "Les AUR pakka upplýsingu..."
+msgstr[1] "Les AUR pakka upplýsingar..."
+
+#: pikaur/pacman.py:165
+msgid "Reading local package database..."
+msgstr "Les staðvært pakkasafn..."
+
+#: pikaur/pacman.py:209
+msgid "Reading repository package databases..."
+msgstr "Les gagnahírt pakkasafn..."
+
+#: pikaur/build.py:442
+msgid "Removing installed repository dependencies for {}"
+msgstr "Fjarlægir uppsetta gagnahirslu ákvæði fyrir {}"
+
+#: pikaur/pprint.py:189
+msgid "Repository package will be installed:"
+msgid_plural "Repository packages will be installed:"
+msgstr[0] "Gagnahirslu pakki verður uppsettur:"
+msgstr[1] "Gagnahirslu pakkar verða uppsettir:"
+
+#: pikaur/install_cli.py:358
+msgid "Resolving AUR dependencies..."
+msgstr "Leysir AUR ákvæði..."
+
+#: pikaur/install_cli.py:777
+#, python-brace-format
+msgid "Reverting {target} transaction..."
+msgstr "Sný {target} hreyfingu..."
+
+#: pikaur/search_cli.py:175
+#, python-brace-format
+msgid "Searching... [{bar}]"
+msgstr "Leitra... [{bar}]"
+
+#: pikaur/install_cli.py:582
+#, python-brace-format
+msgid "Skipping review of {file} for {name} package ({flag})"
+msgstr "Hleyp yfir könnun af {file} fyrir {name} pakka ({flag})"
+
+#: pikaur/main.py:113
+msgid "Starting full AUR upgrade..."
+msgstr "Byrja heila AUR uppfærslu..."
+
+#: pikaur/pprint.py:201
+msgid "Third-party repository package will be installed:"
+msgid_plural "Third-party repository packages will be installed:"
+msgstr[0] "Þriðja aðila gagnahírtur pakki verður uppsett:"
+msgstr[1] "Þriðja aðila gagnahírtir pakkar verða uppsettir:"
+
+#: pikaur/install_cli.py:522
+msgid "Try recovering?"
+msgstr "Prufa að endurétta?"
+
+#: pikaur/install_cli.py:271
+msgid "Version mismatch:"
+msgstr "Útgáfu misræmi:"
+
+#: pikaur/prompt.py:78
+msgid "[N]o (--noconfirm)"
+msgstr "[N]ei (--noconfirm)"
+
+#: pikaur/prompt.py:78
+msgid "[Y]es (--noconfirm)"
+msgstr "[J]á (--noconfirm)"
+
+#: pikaur/install_cli.py:527
+msgid "[a] abort"
+msgstr "[s] slíta vinnslu"
+
+#: pikaur/install_cli.py:523
+msgid "[c] git checkout -- '*'"
+msgstr "[c] git checkout -- '*'"
+
+#: pikaur/search_cli.py:133
+#, python-brace-format
+msgid "[installed: {version}]"
+msgstr "[upsett: {version}]"
+
+#: pikaur/search_cli.py:137
+msgid "[installed]"
+msgstr "[uppsett]"
+
+#. _("[c] git checkout -- '*' ; git clean -f -d -x"),
+#: pikaur/install_cli.py:525
+msgid "[r] remove dir and clone again"
+msgstr "[f] fjarlægja efnisskrá og klóna aftur"
+
+#: pikaur/install_cli.py:526
+msgid "[s] skip this package"
+msgstr "[h] hoppa yfir pakka"
+
+#: pikaur/install_cli.py:444
+msgid "[v]iew package detail   [m]anually select packages"
+msgstr "[s]oða pakka upplýsingar   [v]elja pakka handvirkt"
+
+#: pikaur/install_cli.py:518
+msgid "a"
+msgstr "s"
+
+#: pikaur/install_cli.py:532
+msgid "c"
+msgstr "c"
+
+#: pikaur/install_cli.py:620
+msgid "diff"
+msgstr "munir"
+
+#: pikaur/args.py:81
+msgid "don't prompt to edit PKGBUILDs and other build files"
+msgstr "Ekki kveðja fyrir að ritvinna PKGBUILD og aðra smíðaskrár"
+
+#: pikaur/args.py:84
+msgid "don't remove build dir after the build"
+msgstr "ekki fjarlægja smíðaskrá eftir smíði"
+
+#: pikaur/install_cli.py:591
+msgid "edit"
+msgstr "Ritvinna"
+
+#: pikaur/install_cli.py:699
+msgid "error:"
+msgstr "Villa"
+
+#: pikaur/install_cli.py:546
+msgid "looking for conflicting packages..."
+msgstr "leita eftir pakka sem eru í árekstri..."
+
+#: pikaur/install_cli.py:463
+msgid "m"
+msgstr "v"
+
+#: pikaur/prompt.py:15
+msgid "n"
+msgstr "n"
+
+#: pikaur/install_cli.py:205
+msgid "no editor found. Try setting $VISUAL or $EDITOR."
+msgstr "enging ritill fundinn. Prufaðu að skrá $VISUAL eða $EDITOR."
+
+#: pikaur/search_cli.py:154
+msgid "outofdate"
+msgstr ""
+
+#: pikaur/main.py:254
+msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
+msgstr "pikaur krefst þess að systemd >= 235 (dynamic users) verði innað sem root."
+
+#: pikaur/args.py:76
+msgid "query packages from AUR only"
+msgstr "bara fyrirspurja pakka frá AUR"
+
+#: pikaur/args.py:77
+msgid "query packages from repository only"
+msgstr "bara fyrirspurja pakka frá gagnahírslu"
+
+#: pikaur/install_cli.py:534
+msgid "r"
+msgstr "f"
+
+#: pikaur/install_cli.py:536
+msgid "s"
+msgstr "h"
+
+#: pikaur/args.py:82
+msgid "search only in package names"
+msgstr "leita bara í pakka nöfnum"
+
+#: pikaur/args.py:83
+msgid "sysupgrade '-git' and other dev packages older than 1 day"
+msgstr ""
+
+#: pikaur/install_cli.py:461
+msgid "v"
+msgstr "s"
+
+#: pikaur/install_cli.py:88 pikaur/install_cli.py:566 pikaur/pprint.py:87
+msgid "warning:"
+msgstr "viðvörun:"
+
+#: pikaur/install_cli.py:459 pikaur/prompt.py:14
+msgid "y"
+msgstr "j"
+
+#: pikaur/install_cli.py:653
+#, python-brace-format
+msgid ""
+"{name} can't be built on the current arch ({arch}). Supported: {suparch}"
+msgstr ""
+"{name} getur ekki smíðast á þessari högund ({arch}). Annast í: {suparch}"
+
+#: pikaur/install_cli.py:89
+#, python-brace-format
+msgid "{name} {version} {package_source} package is up to date - skipping"
+msgstr "{name} {version} {package_source} pakki er uppfærður - hoppa yfir"
+
+#: pikaur/install_cli.py:273
+#, python-brace-format
+msgid ""
+"{what} depends on: '{dep}'\n"
+" found in '{location}': '{version}'"
+msgstr ""
+"{what} krefst: '{dep}'\n"
+" fannst í '{location}': '{version}'"
+
+#: pikaur/build.py:345
+msgid "{} does not exist on the filesystem."
+msgstr "{} er ekki til í skráakerfi."
+
+#: pikaur/main.py:167
+msgid "{}: {}"
+msgstr "{}: {}"

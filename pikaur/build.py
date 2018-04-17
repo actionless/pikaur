@@ -70,7 +70,7 @@ class PackageBuild(DataType):
     build_dir: str = None
     built_packages_paths: Dict[str, str] = None
 
-    already_installed: bool = None
+    _already_installed: bool = None
     failed: bool = None
     reviewed = False
     built_packages_installed: Dict[str, bool] = None
@@ -190,7 +190,7 @@ class PackageBuild(DataType):
 
     @property
     def version_already_installed(self) -> bool:
-        if self.already_installed is None:
+        if self._already_installed is None:
             local_db = PackageDB.get_local_dict()
             if is_devel_pkg(self.package_base):
                 print('{} {}:'.format(
@@ -210,7 +210,7 @@ class PackageBuild(DataType):
                     args=self.args
                 )
                 SrcInfo(self.build_dir).regenerate()
-            self.already_installed = min([
+            self._already_installed = min([
                 compare_versions(
                     local_db[pkg_name].version,
                     SrcInfo(self.build_dir, pkg_name).get_value('pkgver')
@@ -218,7 +218,7 @@ class PackageBuild(DataType):
                 if pkg_name in local_db else False
                 for pkg_name in self.package_names
             ])
-        return self.already_installed
+        return self._already_installed
 
     @property
     def all_deps_to_install(self):

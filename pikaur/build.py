@@ -372,7 +372,6 @@ class PackageBuild(DataType):
         self.new_deps_to_install = []
         self.new_make_deps_to_install = []
         src_info = SrcInfo(self.build_dir)
-        local_pkgs_by_name = PackageDB.get_local_dict()
         local_provided_pkgs = PackageDB.get_local_provided_dict()
         for new_deps_version_matchers, deps_destination in (
                 (src_info.get_depends(), self.new_deps_to_install),

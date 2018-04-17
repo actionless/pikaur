@@ -443,7 +443,7 @@ class PackageBuild(DataType):
             ))
             if not ask_to_continue(args=self.args):
                 sys.exit(125)
-        if not (deps_packages_installed and self.args.downloadonly):
+        if not deps_packages_installed:
             return
 
         print('{} {}:'.format(

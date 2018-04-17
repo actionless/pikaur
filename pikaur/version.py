@@ -116,10 +116,8 @@ def get_common_version(version1: str, version2: str) -> Tuple[str, int]:
 
 
 def get_version_diff(version: str, common_version: str) -> str:
-    new_version_postfix = version
-    if common_version != '':
-        _new_version_postfix = version.split(
-            common_version
-        )[1:]
-        new_version_postfix = common_version.join(_new_version_postfix)
-    return new_version_postfix
+    if common_version == '':
+        return version
+    return common_version.join(
+        version.split(common_version)[1:]
+    )

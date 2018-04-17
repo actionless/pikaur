@@ -370,18 +370,18 @@ class PackageBuild(DataType):
         copy_tree(self.repo_path, self.build_dir)
 
     def _get_deps(self) -> None:
-        self.new_deps_to_install = []
-        self.new_make_deps_to_install = []
         src_info = SrcInfo(self.build_dir)
         local_provided_pkgs = PackageDB.get_local_provided_dict()
+        self.new_deps_to_install = []
+        new_make_deps_to_install = []
+        new_check_deps_to_install = []
         for new_deps_version_matchers, deps_destination in (
                 (
                     src_info.get_depends(), self.new_deps_to_install
                 ), (
-                    list(set(
-                        src_info.get_makedepends() + src_info.get_checkdepends()
-                    )),
-                    self.new_make_deps_to_install
+                    src_info.get_makedepends(), new_make_deps_to_install,
+                ), (
+                    src_info.get_checkdepends(), new_check_deps_to_install,
                 ),
         ):
             # find deps satisfied explicitly:
@@ -404,6 +404,7 @@ class PackageBuild(DataType):
                 if not new_deps_version_matchers[pkg.name](pkg.version)
             ]
             deps_destination += new_deps_to_install
+        self.new_make_deps_to_install = list(set(new_make_deps_to_install + new_check_deps_to_install))
 
     def _install_repo_deps(self) -> Set[str]:
         if not self.all_deps_to_install:

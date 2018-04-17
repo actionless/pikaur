@@ -613,7 +613,7 @@ class InstallPackagesCLI():
                 for package_name in repo_status.package_names:
                     self.install_package_names.remove(package_name)
                     print_package_uptodate(package_name, PackageSource.AUR)
-                return
+                continue
             if repo_status.build_files_updated and not self.args.noconfirm:
                 if self.ask_to_continue(
                         _("Do you want to see build files {diff} for {name} package?").format(
@@ -670,8 +670,9 @@ class InstallPackagesCLI():
 
             pkg_name = packages_to_be_built[index]
             repo_status = self.package_builds_by_name[pkg_name]
-            if self.args.needed and repo_status.already_installed:
+            if self.args.needed and repo_status.version_already_installed:
                 packages_to_be_built.remove(pkg_name)
+                print_package_uptodate(pkg_name, PackageSource.AUR)
                 continue
 
             try:

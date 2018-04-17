@@ -673,8 +673,9 @@ class InstallPackagesCLI():
             pkg_name = packages_to_be_built[index]
             repo_status = self.package_builds_by_name[pkg_name]
             if self.args.needed and repo_status.version_already_installed:
-                packages_to_be_built.remove(pkg_name)
                 print_package_uptodate(pkg_name, PackageSource.AUR)
+                self.discard_aur_package(pkg_name)
+                packages_to_be_built.remove(pkg_name)
                 continue
 
             try:

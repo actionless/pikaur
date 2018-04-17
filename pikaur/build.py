@@ -277,14 +277,7 @@ class PackageBuild(DataType):
                 ] + get_pacman_command(self.args) + [
                     '--upgrade',
                     '--asdeps',
-                ] + reconstruct_args(self.args, ignore_args=[
-                    'upgrade',
-                    'asdeps',
-                    'sync',
-                    'sysupgrade',
-                    'refresh',
-                    'downloadonly',
-                ]) + [
+                ] + [
                     path for name, path in self.built_deps_to_install.items()
                     if name not in explicitly_installed_deps
                 ],
@@ -297,14 +290,7 @@ class PackageBuild(DataType):
                     'sudo',
                 ] + get_pacman_command(self.args) + [
                     '--upgrade',
-                ] + reconstruct_args(self.args, ignore_args=[
-                    'upgrade',
-                    'asdeps',
-                    'sync',
-                    'sysupgrade',
-                    'refresh',
-                    'downloadonly',
-                ]) + [
+                ] + [
                     path for name, path in self.built_deps_to_install.items()
                     if name in explicitly_installed_deps
                 ],
@@ -423,14 +409,7 @@ class PackageBuild(DataType):
             ] + get_pacman_command(self.args) + [
                 '--sync',
                 '--asdeps',
-            ] + reconstruct_args(self.args, ignore_args=[
-                'upgrade',
-                'asdeps',
-                'sync',
-                'sysupgrade',
-                'refresh',
-                'downloadonly',
-            ]) + self.all_deps_to_install,
+            ] + self.all_deps_to_install,
             args=self.args
         )
         return local_packages_before

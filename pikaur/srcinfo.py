@@ -51,8 +51,11 @@ class SrcInfo():
     def get_pkgbase_values(self, field: str) -> List[str]:
         return self.get_values(field, self._common_lines)
 
-    def get_value(self, field: str) -> str:
-        return self.get_values(field)[0]
+    def get_value(self, field: str, fallback: str = None) -> str:
+        value = self.get_values(field)[0]
+        if value is None:
+            value = fallback
+        return value
 
     def get_install_script(self) -> str:
         values = self.get_values('install')
@@ -75,6 +78,16 @@ class SrcInfo():
 
     def get_checkdepends(self) -> Dict[str, VersionMatcher]:
         return self._get_depends('checkdepends')
+
+    def get_version(self) -> str:
+        epoch = self.get_value('epoch')
+        version = self.get_value('pkgver')
+        release = self.get_value('pkgrel')
+        return '{}{}-{}'.format(
+            (epoch + ':') if epoch else '',
+            version,
+            release
+        )
 
     def regenerate(self) -> None:
         with open_file(self.path, 'w') as srcinfo_file:

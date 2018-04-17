@@ -214,7 +214,7 @@ class PackageBuild(DataType):
             self._already_installed = min([
                 compare_versions(
                     local_db[pkg_name].version,
-                    SrcInfo(self.build_dir, pkg_name).get_value('pkgver')
+                    SrcInfo(self.build_dir, pkg_name).get_version()
                 ) == 0
                 if pkg_name in local_db else False
                 for pkg_name in self.package_names

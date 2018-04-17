@@ -48,7 +48,7 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
         'systemd-run', '--pipe', '--wait',
         '-p', 'DynamicUser=yes',
         '-p', 'CacheDirectory=pikaur',
-        '-E', 'HOME=/var/cache/private/pikaur',
+        '-E', 'HOME=/tmp',
     ]
     if cwd is not None:
         base_root_isolator += ['-p', 'WorkingDirectory=' + cwd]

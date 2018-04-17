@@ -474,6 +474,8 @@ class InstallPackagesCLI():
     def discard_aur_package(
             self, canceled_pkg_name: str, already_discarded: List[str] = None
     ) -> None:
+        if canceled_pkg_name in self.install_package_names:
+            self.install_package_names.remove(canceled_pkg_name)
         already_discarded = (already_discarded or []) + [canceled_pkg_name]
         packages_to_be_removed = []
         for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
@@ -611,9 +613,8 @@ class InstallPackagesCLI():
                 continue
             if self.args.needed and repo_status.version_already_installed:
                 for package_name in repo_status.package_names:
-                    if package_name in self.install_package_names:
-                        self.install_package_names.remove(package_name)
-                        print_package_uptodate(package_name, PackageSource.AUR)
+                    print_package_uptodate(package_name, PackageSource.AUR)
+                    self.discard_aur_package(package_name)
                 continue
             if repo_status.build_files_updated and not self.args.noconfirm:
                 if self.ask_to_continue(

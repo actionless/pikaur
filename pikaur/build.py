@@ -375,8 +375,14 @@ class PackageBuild(DataType):
         src_info = SrcInfo(self.build_dir)
         local_provided_pkgs = PackageDB.get_local_provided_dict()
         for new_deps_version_matchers, deps_destination in (
-                (src_info.get_depends(), self.new_deps_to_install),
-                (src_info.get_makedepends(), self.new_make_deps_to_install),
+                (
+                    src_info.get_depends(), self.new_deps_to_install
+                ), (
+                    list(set(
+                        src_info.get_makedepends() + src_info.get_checkdepends()
+                    )),
+                    self.new_make_deps_to_install
+                ),
         ):
             # find deps satisfied explicitly:
             installed_deps, new_deps_to_install = find_local_packages(

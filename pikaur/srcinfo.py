@@ -73,6 +73,9 @@ class SrcInfo():
     def get_depends(self) -> Dict[str, VersionMatcher]:
         return self._get_depends('depends')
 
+    def get_checkdepends(self) -> Dict[str, VersionMatcher]:
+        return self._get_depends('checkdepends')
+
     def regenerate(self) -> None:
         with open_file(self.path, 'w') as srcinfo_file:
             result = spawn(

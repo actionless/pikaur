@@ -193,7 +193,7 @@ class PackageBuild(DataType):
         if self._already_installed is None:
             local_db = PackageDB.get_local_dict()
             if is_devel_pkg(self.package_base):
-                print('{} {}:'.format(
+                print('\n{} {}:'.format(
                     color_line('::', 15),
                     _n(
                         "Downloading the latest sources for a devel package {}",

@@ -18,7 +18,7 @@ from .config import (
 )
 from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB, get_pacman_command
-from .args import PikaurArgs, reconstruct_args, parse_args
+from .args import PikaurArgs, parse_args
 from .pprint import color_line, bold_line, color_enabled
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit, ask_to_continue
 from .exceptions import (
@@ -205,7 +205,12 @@ class PackageBuild(DataType):
                 ))
                 self.prepare_build_destination()
                 retry_interactive_command(
-                    isolate_root_cmd(['makepkg', '--nobuild', '--noprepare', '--nocheck', '--nodeps'], cwd=self.build_dir),
+                    isolate_root_cmd(
+                        [
+                            'makepkg', '--nobuild', '--noprepare', '--nocheck', '--nodeps'
+                        ],
+                        cwd=self.build_dir
+                    ),
                     cwd=self.build_dir,
                     args=self.args,
                     pikspect=True,
@@ -359,8 +364,8 @@ class PackageBuild(DataType):
         src_info = SrcInfo(self.build_dir)
         local_provided_pkgs = PackageDB.get_local_provided_dict()
         self.new_deps_to_install = []
-        new_make_deps_to_install = []
-        new_check_deps_to_install = []
+        new_make_deps_to_install: List[str] = []
+        new_check_deps_to_install: List[str] = []
         for new_deps_version_matchers, deps_destination in (
                 (
                     src_info.get_depends(), self.new_deps_to_install
@@ -390,7 +395,9 @@ class PackageBuild(DataType):
                 if not new_deps_version_matchers[pkg.name](pkg.version)
             ]
             deps_destination += new_deps_to_install
-        self.new_make_deps_to_install = list(set(new_make_deps_to_install + new_check_deps_to_install))
+        self.new_make_deps_to_install = list(set(
+            new_make_deps_to_install + new_check_deps_to_install
+        ))
 
     def _install_repo_deps(self) -> Set[str]:
         if not self.all_deps_to_install:

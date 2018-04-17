@@ -611,8 +611,9 @@ class InstallPackagesCLI():
                 continue
             if self.args.needed and repo_status.version_already_installed:
                 for package_name in repo_status.package_names:
-                    self.install_package_names.remove(package_name)
-                    print_package_uptodate(package_name, PackageSource.AUR)
+                    if package_name in self.install_package_names:
+                        self.install_package_names.remove(package_name)
+                        print_package_uptodate(package_name, PackageSource.AUR)
                 continue
             if repo_status.build_files_updated and not self.args.noconfirm:
                 if self.ask_to_continue(

@@ -2,7 +2,6 @@ import os
 import sys
 import shutil
 import platform
-from distutils.dir_util import copy_tree
 from multiprocessing.pool import ThreadPool
 from typing import List, Union, Dict, Any, Optional, Set
 
@@ -28,6 +27,7 @@ from .exceptions import (
 from .srcinfo import SrcInfo
 from .package_update import is_devel_pkg
 from .version import compare_versions
+from .core import just_copy_damn_tree as copy_tree
 
 
 class MakepkgConfig():
@@ -366,10 +366,7 @@ class PackageBuild(DataType):
                 self.args.keepbuild or PikaurConfig().build.get('KeepBuildDir')
         ):
             remove_dir(self.build_dir)
-        if not os.path.exists(self.build_dir):
-            shutil.copytree(self.repo_path, self.build_dir)
-        else:
-            copy_tree(self.repo_path, self.build_dir)
+        copy_tree(self.repo_path, self.build_dir)
 
     def _get_deps(self) -> None:
         self.new_deps_to_install = []

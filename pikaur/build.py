@@ -205,7 +205,7 @@ class PackageBuild(DataType):
                 ))
                 self.prepare_build_destination()
                 retry_interactive_command(
-                    isolate_root_cmd(['makepkg', '--nobuild', '-rs'], cwd=self.build_dir),
+                    isolate_root_cmd(['makepkg', '--nobuild', '--noprepare', '--nocheck', '--nodeps'], cwd=self.build_dir),
                     cwd=self.build_dir,
                     args=self.args,
                     pikspect=True,

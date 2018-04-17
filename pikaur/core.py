@@ -44,9 +44,12 @@ def running_as_root() -> bool:
 def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     if not running_as_root():
         return cmd
-    base_root_isolator = ['systemd-run', '--pipe', '--wait',
-                          '-p', 'DynamicUser=yes',
-                          '-p', 'CacheDirectory=pikaur']
+    base_root_isolator = [
+        'systemd-run', '--pipe', '--wait',
+        '-p', 'DynamicUser=yes',
+        '-p', 'CacheDirectory=pikaur',
+        '-E', 'HOME=/var/cache/private/pikaur',
+    ]
     if cwd is not None:
         base_root_isolator += ['-p', 'WorkingDirectory=' + cwd]
     return base_root_isolator + cmd

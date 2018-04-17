@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-16 18:27+0000\n"
+"POT-Creation-Date: 2018-04-17 13:26+0000\n"
 "PO-Revision-Date: 2018-04-16 18:27+0000\n"
 "Last-Translator: Andri Viðar Tryggvason (andri@arivarton.com)\n"
 "Language-Team: none\n"
@@ -15,7 +15,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: pikaur/pprint.py:124
 msgid "({} days old)"
@@ -99,7 +99,7 @@ msgstr[1] "Niðurhleðsla af frumkóta í gángi fyrir devel pakka {}"
 msgid "Failed to build following packages:"
 msgstr "Mistókst að smíða eftirfarandi pakka:"
 
-#: pikaur/build.py:432
+#: pikaur/build.py:441
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr "Mistókst að fjarlægja uppsett ákvæði, pakka ósamræmi: {}"
 
@@ -115,7 +115,7 @@ msgstr "Sé framhjá pakka {}"
 msgid "Installing already built dependencies for {}"
 msgstr "Set upp smíðuð ákvæði fyrir {}"
 
-#: pikaur/build.py:400
+#: pikaur/build.py:409
 msgid "Installing repository dependencies for {}"
 msgstr "Set upp gagnahírslu ákvæði fyrir {}"
 
@@ -161,7 +161,7 @@ msgstr "Les staðvært pakkasafn..."
 msgid "Reading repository package databases..."
 msgstr "Les gagnahírt pakkasafn..."
 
-#: pikaur/build.py:442
+#: pikaur/build.py:451
 msgid "Removing installed repository dependencies for {}"
 msgstr "Fjarlægir uppsetta gagnahirslu ákvæði fyrir {}"
 
@@ -256,11 +256,11 @@ msgstr "c"
 
 #: pikaur/install_cli.py:620
 msgid "diff"
-msgstr "munir"
+msgstr "Breytingar"
 
 #: pikaur/args.py:81
 msgid "don't prompt to edit PKGBUILDs and other build files"
-msgstr "Ekki kveðja fyrir að ritvinna PKGBUILD og aðra smíðaskrár"
+msgstr "ekki kveðja fyrir að ritvinna PKGBUILD og aðra smíðaskrár"
 
 #: pikaur/args.py:84
 msgid "don't remove build dir after the build"
@@ -272,7 +272,7 @@ msgstr "Ritvinna"
 
 #: pikaur/install_cli.py:699
 msgid "error:"
-msgstr "Villa"
+msgstr "Villa:"
 
 #: pikaur/install_cli.py:546
 msgid "looking for conflicting packages..."
@@ -288,15 +288,16 @@ msgstr "n"
 
 #: pikaur/install_cli.py:205
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
-msgstr "enging ritill fundinn. Prufaðu að skrá $VISUAL eða $EDITOR."
+msgstr "engin ritill fundinn. Prufaðu að skrá $VISUAL eða $EDITOR."
 
 #: pikaur/search_cli.py:154
 msgid "outofdate"
-msgstr ""
+msgstr "Úrelt"
 
 #: pikaur/main.py:254
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
-msgstr "pikaur krefst þess að systemd >= 235 (dynamic users) verði innað sem root."
+msgstr ""
+"pikaur krefst þess að systemd >= 235 (dynamic users) verði innað sem root."
 
 #: pikaur/args.py:76
 msgid "query packages from AUR only"
@@ -320,7 +321,7 @@ msgstr "leita bara í pakka nöfnum"
 
 #: pikaur/args.py:83
 msgid "sysupgrade '-git' and other dev packages older than 1 day"
-msgstr ""
+msgstr "sysupgrade '-git' og aðrir dev pakkar eru eldri enn 1 dagur"
 
 #: pikaur/install_cli.py:461
 msgid "v"
@@ -328,7 +329,7 @@ msgstr "s"
 
 #: pikaur/install_cli.py:88 pikaur/install_cli.py:566 pikaur/pprint.py:87
 msgid "warning:"
-msgstr "viðvörun:"
+msgstr "Viðvörun:"
 
 #: pikaur/install_cli.py:459 pikaur/prompt.py:14
 msgid "y"

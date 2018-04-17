@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-14 09:24+0200\n"
+"POT-Creation-Date: 2018-04-17 13:26+0000\n"
 "PO-Revision-Date: 2018-03-30 10:47-0300\n"
 "Last-Translator: Alexandre Lopes\n"
 "Language-Team: pt\n"
@@ -100,7 +100,7 @@ msgstr[1] ""
 msgid "Failed to build following packages:"
 msgstr "Falha ao criar os seguintes pacotes:"
 
-#: pikaur/build.py:432
+#: pikaur/build.py:441
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr ""
 
@@ -116,7 +116,7 @@ msgstr "Ignorando o pacote {}"
 msgid "Installing already built dependencies for {}"
 msgstr "Instalando dependências já construídas para {}"
 
-#: pikaur/build.py:400
+#: pikaur/build.py:409
 #, fuzzy
 msgid "Installing repository dependencies for {}"
 msgstr "Instalando dependências já construídas para {}"
@@ -163,7 +163,7 @@ msgstr "Lendo o banco de dados de pacotes local..."
 msgid "Reading repository package databases..."
 msgstr "Lendo bancos de dados de pacotes do repositório..."
 
-#: pikaur/build.py:442
+#: pikaur/build.py:451
 #, fuzzy
 msgid "Removing installed repository dependencies for {}"
 msgstr "Instalando dependências já construídas para {}"

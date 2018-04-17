@@ -1,6 +1,6 @@
 # pikaur
 
-AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all with minimal user interaction.
+AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction.
 
 Inspired by `pacaur`, `yaourt` and `yay`.
 

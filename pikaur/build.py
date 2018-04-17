@@ -205,9 +205,10 @@ class PackageBuild(DataType):
                 ))
                 self.prepare_build_destination()
                 retry_interactive_command(
-                    isolate_root_cmd(['makepkg', '--nobuild'], cwd=self.build_dir),
+                    isolate_root_cmd(['makepkg', '--nobuild', '-rs'], cwd=self.build_dir),
                     cwd=self.build_dir,
-                    args=self.args
+                    args=self.args,
+                    pikspect=True,
                 )
                 SrcInfo(self.build_dir).regenerate()
             self._already_installed = min([

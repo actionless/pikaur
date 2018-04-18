@@ -16,7 +16,6 @@ md5sums=(
 )
 depends=(
 	'pyalpm'
-	'python-setuptools'
 	'git'
 	'fakeroot'
 )

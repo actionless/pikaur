@@ -489,6 +489,7 @@ class InstallPackagesCLI():
                     if pkg_build and pkg_build.built_packages_installed and \
                        pkg_build.built_packages_installed.get(pkg_name):
                         packages_to_be_removed.append(pkg_name)
+                        del pkg_build.built_packages_installed[pkg_name]
                 if aur_pkg_name in self.aur_deps_relations:
                     del self.aur_deps_relations[aur_pkg_name]
         if packages_to_be_removed:

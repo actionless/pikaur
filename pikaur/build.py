@@ -192,6 +192,7 @@ class PackageBuild(DataType):
     def version_already_installed(self) -> bool:
         if self._already_installed is None:
             local_db = PackageDB.get_local_dict()
+            src_info_dir = self.repo_path
             if is_devel_pkg(self.package_base):
                 print('\n{} {}:'.format(
                     color_line('::', 15),
@@ -215,11 +216,12 @@ class PackageBuild(DataType):
                     args=self.args,
                     pikspect=True,
                 )
-                SrcInfo(self.build_dir).regenerate()
+                src_info_dir = self.build_dir
+                SrcInfo(src_info_dir).regenerate()
             self._already_installed = min([
                 compare_versions(
                     local_db[pkg_name].version,
-                    SrcInfo(self.build_dir, pkg_name).get_version()
+                    SrcInfo(src_info_dir, pkg_name).get_version()
                 ) == 0
                 if pkg_name in local_db else False
                 for pkg_name in self.package_names

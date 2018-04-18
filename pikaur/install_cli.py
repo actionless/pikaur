@@ -307,6 +307,8 @@ class InstallPackagesCLI():
                 package_is_ignored(pkg_name, args=self.args)
             ):
                 print_ignored_package(pkg_name)
+                if pkg_name not in self.manually_excluded_packages_names:
+                    self.manually_excluded_packages_names.append(pkg_name)
                 continue
             if pkg_update.Repository in OFFICIAL_REPOS:
                 self.repo_packages_install_info.append(pkg_update)

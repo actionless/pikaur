@@ -1,0 +1,369 @@
+# Danish translations for PACKAGE package.
+# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-17 13:26+0000\n"
+"PO-Revision-Date: 2018-04-20 01:17+0200\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+"Last-Translator: \n"
+"Language: da\n"
+
+#: pikaur/pprint.py:124
+msgid "({} days old)"
+msgstr "({}  dage gammelt)"
+
+#: pikaur/pprint.py:212
+msgid "AUR package will be installed:"
+msgid_plural "AUR packages will be installed:"
+msgstr[0] "AUR pakke som vil blive installeret:"
+msgstr[1] "AUR pakker som vil blive installeret:"
+
+#: pikaur/install_cli.py:682
+#, python-brace-format
+msgid "Can't build '{name}'."
+msgstr "Kan ikke bygge '{name}'."
+
+#: pikaur/install_cli.py:506
+#, python-brace-format
+msgid "Can't clone '{name}' in '{path}' from AUR:"
+msgstr "Kan ikke klone '{name}' i '{path}' fra AUR:"
+
+#: pikaur/install_cli.py:508
+#, python-brace-format
+msgid "Can't pull '{name}' in '{path}' from AUR:"
+msgstr "Kan ikke hente '{name}' i '{path}' fra AUR:"
+
+#: pikaur/prompt.py:103
+msgid "Command '{}' failed to execute."
+msgstr "Kommando '{}' mislykkedes."
+
+#: pikaur/args.py:71
+msgid "Common pacman options:"
+msgstr "Fælles pacman muligheder:"
+
+#: pikaur/install_cli.py:266
+msgid "Dependencies missing for {}"
+msgstr "Afhængigheder mangler for {}"
+
+#: pikaur/install_cli.py:700
+msgid "Dependency cycle detected between {}"
+msgstr "Afhængighedscyklus opdaget mellem {}"
+
+#: pikaur/install_cli.py:208
+msgid "Do you want to proceed without editing?"
+msgstr "Vil du fortsætte uden at redigere?"
+
+#: pikaur/prompt.py:73
+msgid "Do you want to proceed?"
+msgstr "Vil du fortsætte?"
+
+#: pikaur/install_cli.py:572
+#, python-brace-format
+msgid "Do you want to remove '{installed}'?"
+msgstr "Vil du fjerne  '{installed}'?"
+
+#: pikaur/main.py:170
+msgid "Do you want to remove all files?"
+msgstr "Vil du fjerne all filer?"
+
+#: pikaur/prompt.py:107
+msgid "Do you want to retry?"
+msgstr "Vil du prøve igen?"
+
+#: pikaur/install_cli.py:619
+#, python-brace-format
+msgid "Do you want to see build files {diff} for {name} package?"
+msgstr "Vil du se bygfiler {diff} for pakken {name}"
+
+#: pikaur/install_cli.py:590
+#, python-brace-format
+msgid "Do you want to {edit} {file} for {name} package?"
+msgstr "Vil du {edit} {file} for pakken {name}?"
+
+#: pikaur/build.py:199
+msgid "Downloading the latest sources for a devel package {}"
+msgid_plural "Downloading the latest sources for devel packages {}"
+msgstr[0] "Henter den nyeste kildekode for devel pakke {}"
+msgstr[1] "Henter den nyeste kildekode for devel pakker{}"
+
+#: pikaur/install_cli.py:174
+msgid "Failed to build following packages:"
+msgstr "At bygge følgende pakker mislykkedes:"
+
+#: pikaur/build.py:441
+msgid "Failed to remove installed dependencies, packages inconsistency: {}"
+msgstr "Det lykkedes ikke at fjerne installerede afhængigheder, inkonsekvens for pakker: {}"
+
+#: pikaur/pprint.py:88
+msgid "Following packages cannot be found in AUR:"
+msgstr "Følgende pakker kunne ikke findes i  AUR:"
+
+#: pikaur/install_cli.py:69
+msgid "Ignoring package {}"
+msgstr "Ignorer pakken {}"
+
+#: pikaur/build.py:261
+msgid "Installing already built dependencies for {}"
+msgstr "Installere allerede bygget afhængigheder for {}"
+
+#: pikaur/build.py:409
+msgid "Installing repository dependencies for {}"
+msgstr "installere repository afhængigheder for {}"
+
+#: pikaur/pprint.py:223
+msgid "New dependency will be installed from AUR:"
+msgid_plural "New dependencies will be installed from AUR:"
+msgstr[0] "Ny afhængighed vil blive installeret fra AUR:"
+msgstr[1] "Nye afhængigheder vil blive installeret fra AUR:"
+
+#: pikaur/install_cli.py:567
+#, python-brace-format
+msgid "New package '{new}' conflicts with installed '{installed}'."
+msgstr "Ny pakke '{new}' konflikter med installeret pakke '{installed}'."
+
+#: pikaur/install_cli.py:557
+#, python-brace-format
+msgid "New packages '{new}' and '{other}' are in conflict."
+msgstr "Nye pakker '{new}' og '{other}' er i konflikt."
+
+#: pikaur/install_cli.py:255
+msgid "Nothing to do."
+msgstr "Ingenting at lave."
+
+#: pikaur/args.py:89
+msgid "Pikaur-specific options:"
+msgstr "Pikaur-specifikke muligheder:"
+
+#: pikaur/install_cli.py:442
+msgid "Proceed with installation? [Y/n] "
+msgstr "Fortsæt med installationen? [J/n] "
+
+#: pikaur/package_update.py:99
+msgid "Reading AUR package info..."
+msgid_plural "Reading AUR packages info..."
+msgstr[0] "Læser AUR-pakkeoplysninger..."
+msgstr[1] "Læser AUR-pakkeoplysninger..."
+
+#: pikaur/pacman.py:165
+msgid "Reading local package database..."
+msgstr "Læser lokal pakkedatabase..."
+
+#: pikaur/pacman.py:209
+msgid "Reading repository package databases..."
+msgstr "Læser repository pakkedatabaser ..."
+
+#: pikaur/build.py:451
+msgid "Removing installed repository dependencies for {}"
+msgstr "Fjerner installeret repository afhængigheder for {}"
+
+#: pikaur/pprint.py:189
+msgid "Repository package will be installed:"
+msgid_plural "Repository packages will be installed:"
+msgstr[0] "Repository pakke vil blive installeret:"
+msgstr[1] "Repository pakker vil blive installeret:"
+
+#: pikaur/install_cli.py:358
+msgid "Resolving AUR dependencies..."
+msgstr "Løser AUR afhængigheder..."
+
+#: pikaur/install_cli.py:777
+#, python-brace-format
+msgid "Reverting {target} transaction..."
+msgstr "Gendannelse af {target} transaktionen..."
+
+#: pikaur/search_cli.py:175
+#, python-brace-format
+msgid "Searching... [{bar}]"
+msgstr "Søger... [{bar}]"
+
+#: pikaur/install_cli.py:582
+#, python-brace-format
+msgid "Skipping review of {file} for {name} package ({flag})"
+msgstr "Springer over gennemgang af {file} til pakken {name} ({flag})"
+
+#: pikaur/main.py:113
+msgid "Starting full AUR upgrade..."
+msgstr "Begynder fuld AUR upgradering..."
+
+#: pikaur/pprint.py:201
+msgid "Third-party repository package will be installed:"
+msgid_plural "Third-party repository packages will be installed:"
+msgstr[0] "Tredjeparts repository pakke vil blive installeret:"
+msgstr[1] "Tredjeparts repository pakker vil blive installeret:"
+
+#: pikaur/install_cli.py:522
+msgid "Try recovering?"
+msgstr "Prøv at gendanne?"
+
+#: pikaur/install_cli.py:271
+msgid "Version mismatch:"
+msgstr "Versions uoverensstemmelse:"
+
+#: pikaur/prompt.py:78
+msgid "[N]o (--noconfirm)"
+msgstr "[N]ej (--noconfirm)"
+
+#: pikaur/prompt.py:78
+msgid "[Y]es (--noconfirm)"
+msgstr "[J]a (--noconfirm)"
+
+#: pikaur/install_cli.py:527
+msgid "[a] abort"
+msgstr "[a] afbryd"
+
+#: pikaur/install_cli.py:523
+msgid "[c] git checkout -- '*'"
+msgstr "[c] git checkout -- '*'"
+
+#: pikaur/search_cli.py:133
+#, python-brace-format
+msgid "[installed: {version}]"
+msgstr "[installeret: {version}]"
+
+#: pikaur/search_cli.py:137
+msgid "[installed]"
+msgstr "[installeret]"
+
+#. _("[c] git checkout -- '*' ; git clean -f -d -x"),
+#: pikaur/install_cli.py:525
+msgid "[r] remove dir and clone again"
+msgstr "[f] fjern mappe og klon igen"
+
+#: pikaur/install_cli.py:526
+msgid "[s] skip this package"
+msgstr "[s] spring denne pakke over"
+
+#: pikaur/install_cli.py:444
+msgid "[v]iew package detail   [m]anually select packages"
+msgstr "[s]e pakke detaljer  [m]anuelt vælg pakker"
+
+#: pikaur/install_cli.py:518
+msgid "a"
+msgstr "a"
+
+#: pikaur/install_cli.py:532
+msgid "c"
+msgstr "c"
+
+#: pikaur/install_cli.py:620
+msgid "diff"
+msgstr "forskelle"
+
+#: pikaur/args.py:81
+msgid "don't prompt to edit PKGBUILDs and other build files"
+msgstr "spørg ikke om at redigere PKGBUILDs og andre bygfiler"
+
+#: pikaur/args.py:84
+msgid "don't remove build dir after the build"
+msgstr "fjern ikke bygmappen efter byg"
+
+#: pikaur/install_cli.py:591
+msgid "edit"
+msgstr "rediger"
+
+#: pikaur/install_cli.py:699
+msgid "error:"
+msgstr "fejl:"
+
+#: pikaur/install_cli.py:546
+msgid "looking for conflicting packages..."
+msgstr "leder efter pakker der konflikter med hinanden..."
+
+#: pikaur/install_cli.py:463
+msgid "m"
+msgstr "m"
+
+#: pikaur/prompt.py:15
+msgid "n"
+msgstr "n"
+
+#: pikaur/install_cli.py:205
+msgid "no editor found. Try setting $VISUAL or $EDITOR."
+msgstr "intet tekstredigeringsprogram fundet. Prøv at sætte $VISUAL eller $EDITOR."
+
+#: pikaur/search_cli.py:154
+msgid "outofdate"
+msgstr "forældet"
+
+#: pikaur/main.py:254
+msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
+msgstr "pikaur kræver systemd >= 235 (dynamic users) for at køre som root."
+
+#: pikaur/args.py:76
+msgid "query packages from AUR only"
+msgstr "forespørg kun pakker fra AUR"
+
+#: pikaur/args.py:77
+msgid "query packages from repository only"
+msgstr "forespørg kun pakker fra repository"
+
+#: pikaur/install_cli.py:534
+msgid "r"
+msgstr "f"
+
+#: pikaur/install_cli.py:536
+msgid "s"
+msgstr "s"
+
+#: pikaur/args.py:82
+msgid "search only in package names"
+msgstr "søg kun i pakkenavne"
+
+#: pikaur/args.py:83
+msgid "sysupgrade '-git' and other dev packages older than 1 day"
+msgstr "sysupgrade '-git' og andre dev pakker ældre end 1 dag"
+
+#: pikaur/install_cli.py:461
+msgid "v"
+msgstr "s"
+
+#: pikaur/install_cli.py:88 pikaur/install_cli.py:566 pikaur/pprint.py:87
+msgid "warning:"
+msgstr "advarsel:"
+
+#: pikaur/install_cli.py:459 pikaur/prompt.py:14
+msgid "y"
+msgstr "j"
+
+#: pikaur/install_cli.py:653
+#, python-brace-format
+msgid "{name} can't be built on the current arch ({arch}). Supported: {suparch}"
+msgstr "{name} kan ikke bygge på denne arkitektur ({arch}). Understøtted: {suparch}"
+
+#: pikaur/install_cli.py:89
+#, python-brace-format
+msgid "{name} {version} {package_source} package is up to date - skipping"
+msgstr "{name} {version} {package_source} pakken er opdateret - springer over"
+
+#: pikaur/install_cli.py:273
+#, python-brace-format
+msgid ""
+"{what} depends on: '{dep}'\n"
+" found in '{location}': '{version}'"
+msgstr ""
+"{what} afhænger af: '{dep}'\n"
+" fundet i '{location}': '{version}'"
+
+#: pikaur/build.py:345
+msgid "{} does not exist on the filesystem."
+msgstr "{} eksistere ikke på filsystemet."
+
+#: pikaur/main.py:167
+msgid "{}: {}"
+msgstr "{}: {}"
+
+msgid "Build directory: {}"
+msgstr "Bygmappe: {}"
+
+msgid "don't run me as root."
+msgstr "kør mig ikke som root."

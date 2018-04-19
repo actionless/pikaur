@@ -106,7 +106,7 @@ def get_common_version(version1: str, version2: str) -> Tuple[str, int]:
             split_version(version1),
             split_version(version2)
     ):
-        if compare_versions(block1, block2) == 0:
+        if compare_versions(block1, block2) == 0 and block1 == block2:
             common_string += block1
             if block1 not in VERSION_SEPARATORS:
                 common_length += 1

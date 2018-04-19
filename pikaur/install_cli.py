@@ -743,7 +743,7 @@ class InstallPackagesCLI():
                         '--sync',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
-                        # 'refresh',
+                        'refresh',
                         'ignore',
                     ]) + packages_to_be_installed + extra_args,
                     args=self.args

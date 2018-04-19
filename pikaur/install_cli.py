@@ -219,14 +219,17 @@ class InstallPackagesCLI():
                 self.install_package_names.remove(package_name)
 
     def exlude_already_uptodate(self) -> None:
-        if self.args.needed:
-            repo_updates = find_repo_updates()
-            for package_name in list(self.repo_packages_by_name.keys())[:]:
-                if package_name not in repo_updates:
-                    del self.repo_packages_by_name[package_name]
-                    if package_name in self.install_package_names:
-                        self.install_package_names.remove(package_name)
-                    print_package_uptodate(package_name, PackageSource.REPO)
+        if not self.args.needed:
+            return
+        repo_updates = find_repo_updates()
+        local_pkgs = PackageDB.get_local_dict()
+        for package_name in list(self.repo_packages_by_name.keys())[:]:
+            if package_name in repo_updates or package_name not in local_pkgs:
+                continue
+            del self.repo_packages_by_name[package_name]
+            if package_name in self.install_package_names:
+                self.install_package_names.remove(package_name)
+            print_package_uptodate(package_name, PackageSource.REPO)
 
     def get_all_packages_info(self) -> None:
         self.exclude_ignored_packages()

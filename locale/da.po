@@ -20,7 +20,7 @@ msgstr ""
 
 #: pikaur/pprint.py:124
 msgid "({} days old)"
-msgstr "({}  dage gammelt)"
+msgstr "({} dage gammelt)"
 
 #: pikaur/pprint.py:212
 msgid "AUR package will be installed:"

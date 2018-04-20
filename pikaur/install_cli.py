@@ -448,7 +448,7 @@ class InstallPackagesCLI():
                 color_line('::', 12),
                 bold_line(_('[v]iew package detail   [m]anually select packages')))
 
-            answer = get_input(prompt, 'Ynvm')
+            answer = get_input(prompt,  _('y').upper() + _('n') + _('v') + _('m'))
 
             return answer
 
@@ -534,7 +534,7 @@ class InstallPackagesCLI():
                         _("[s] skip this package"),
                         _("[a] abort"))
 
-                    answer = get_input(prompt, 'crsA')
+                    answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
 
                 answer = answer.lower()[0]
                 if answer == _("c"):

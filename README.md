@@ -108,6 +108,3 @@ To start working on a new language, say 'es' (Spanish), add it to the
 `Makefile` `LANGS` variable and run `make`. Then translate `locale/es.po` using
 your favorite PO editor. Run `make` every time the Python code strings change
 or the `.po` is modified.
-
-Once done, don't forget to distribute the new language by adding it to the
-`PKGBUILD` `package()`.

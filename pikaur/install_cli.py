@@ -448,7 +448,7 @@ class InstallPackagesCLI():
                 color_line('::', 12),
                 bold_line(_('[v]iew package detail   [m]anually select packages')))
 
-            answer = get_input(prompt,  _('y').upper() + _('n') + _('v') + _('m'))
+            answer = get_input(prompt, _('y').upper() + _('n') + _('v') + _('m'))
 
             return answer
 

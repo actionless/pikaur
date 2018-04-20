@@ -246,7 +246,7 @@ msgstr "[a] bu paketi atla"
 
 #: pikaur/install_cli.py:449
 msgid "[v]iew package detail   [m]anually select packages"
-msgstr "paket detaylarını [g]öster   paketleri [e]lle seç"
+msgstr "paket detaylarını [g]öster   paketleri elle se[ç]"
 
 #: pikaur/install_cli.py:526
 msgid "a"
@@ -282,7 +282,7 @@ msgstr "çakışan paketlere bakılıyor..."
 
 #: pikaur/install_cli.py:468
 msgid "m"
-msgstr "e"
+msgstr "ç"
 
 #: pikaur/prompt.py:15
 msgid "n"

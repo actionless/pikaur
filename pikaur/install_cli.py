@@ -36,6 +36,9 @@ from .core import (
     PackageSource,
     spawn, interactive_spawn, remove_dir, open_file,
 )
+from .replacements import (
+    find_replacements,
+)
 from .conflicts import find_conflicts
 from .prompt import (
     ask_to_continue, retry_interactive_command,
@@ -141,6 +144,7 @@ class InstallPackagesCLI():
         # @TODO: ask to install optdepends (?)
         if not args.downloadonly:
             self.ask_about_package_conflicts()
+            self.ask_about_package_replacements()
         self.review_build_files()
         if not (self.install_package_names or self.args.sysupgrade):
             return
@@ -496,6 +500,9 @@ class InstallPackagesCLI():
                     del self.aur_deps_relations[aur_pkg_name]
         if packages_to_be_removed:
             self._remove_packages(list(set(packages_to_be_removed)))
+        for pkg_name in already_discarded:
+            if pkg_name in list(self.package_builds_by_name.keys()):
+                del self.package_builds_by_name[pkg_name]
 
     def get_package_builds(self) -> None:
         if not self.all_aur_packages_names:
@@ -582,6 +589,22 @@ class InstallPackagesCLI():
                 ), default_yes=False)
                 if not answer:
                     sys.exit(125)
+
+    def ask_about_package_replacements(self) -> None:
+        package_replacements = find_replacements()
+        for repo_pkg_name, installed_pkgs_names in package_replacements.items():
+            for installed_pkg_name in installed_pkgs_names:
+                if self.ask_to_continue(
+                        '{} {}'.format(
+                            color_line('::', 11),
+                            _("New package '{new}' replaces installed '{installed}' "
+                              "Proceed?").format(
+                                  new=bold_line(repo_pkg_name),
+                                  installed=bold_line(installed_pkg_name))
+                        )
+                ):
+                    if installed_pkg_name in self.all_aur_packages_names:
+                        self.discard_aur_package(installed_pkg_name)
 
     def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
         noedit = self.args.noedit or PikaurConfig().build.get('NoEdit')

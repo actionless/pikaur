@@ -1,7 +1,6 @@
 import os
 import sys
 import shutil
-import platform
 from multiprocessing.pool import ThreadPool
 from typing import List, Union, Dict, Any, Optional, Set
 
@@ -326,7 +325,7 @@ class PackageBuild(DataType):
         for pkg_name in self.package_names:
             full_pkg_name = full_pkg_names[0]
             if len(full_pkg_names) > 1:
-                arch = platform.machine()
+                arch = MakepkgConfig.get('CARCH')
                 for each_filename in full_pkg_names:
                     if pkg_name in each_filename and (
                             each_filename.endswith(arch) or

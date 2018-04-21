@@ -1,4 +1,3 @@
-import platform
 import sys
 import os
 from tempfile import NamedTemporaryFile
@@ -25,7 +24,7 @@ from .exceptions import (
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
 )
 from .build import (
-    PackageBuild,
+    PackageBuild, MakepkgConfig,
     clone_aur_repos,
 )
 from .pprint import (
@@ -651,7 +650,7 @@ class InstallPackagesCLI():
                     if install_file_name:
                         self.ask_to_edit_file(install_file_name, repo_status)
 
-            arch = platform.machine()
+            arch = MakepkgConfig.get('CARCH')
             supported_archs = src_info.get_values('arch')
             if supported_archs and (
                     'any' not in supported_archs

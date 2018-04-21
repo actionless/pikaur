@@ -328,8 +328,7 @@ class PackageBuild(DataType):
                 arch = MakepkgConfig.get('CARCH')
                 for each_filename in full_pkg_names:
                     if pkg_name in each_filename and (
-                            each_filename.endswith(arch) or
-                            each_filename.endswith('-any')
+                            each_filename.endswith(arch) or each_filename.endswith('-any')
                     ):
                         full_pkg_name = each_filename
                         break

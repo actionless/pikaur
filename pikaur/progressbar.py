@@ -20,8 +20,7 @@ class ProgressBar(object):
     def __init__(self, length: int, message='') -> None:
         self.message = message
         width = (
-            get_term_width() - len(message) -
-            len(self.LEFT_DECORATION) - len(self.RIGHT_DECORATION)
+            get_term_width() - len(message) - len(self.LEFT_DECORATION) - len(self.RIGHT_DECORATION)
         )
         self.print_ratio = length / width
         sys.stderr.write(message)

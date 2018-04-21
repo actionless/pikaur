@@ -1,4 +1,3 @@
-import os
 import gzip
 import json
 from multiprocessing.pool import ThreadPool
@@ -50,21 +49,6 @@ class AURPackageInfo(DataType):
 
 def read_bytes_from_url(url: str) -> bytes:
     req = request.Request(url)
-    last_proxy_params: Tuple[str, str] = None
-    for proxy_env_var in ('http_proxy', 'https_proxy'):
-        if proxy_env_var not in os.environ:
-            continue
-        try:
-            proxy_url = parse.urlparse(os.environ[proxy_env_var])
-        except Exception:
-            pass
-        else:
-            last_proxy_params = (
-                proxy_url.netloc or proxy_url.path,
-                proxy_url.scheme or proxy_env_var.split('_')[0]
-            )
-    if last_proxy_params:
-        req.set_proxy(*last_proxy_params)
     response = request.urlopen(req)
     result_bytes = response.read()
     return result_bytes

@@ -638,7 +638,7 @@ class InstallPackagesCLI():
         return False
 
     def review_build_files(self) -> None:
-        for repo_status in self.package_builds_by_name.values():
+        for repo_status in list(self.package_builds_by_name.values()):
             if repo_status.reviewed:
                 continue
             if self.args.needed and repo_status.version_already_installed:

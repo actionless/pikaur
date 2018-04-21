@@ -1,4 +1,3 @@
-import os
 import gzip
 import json
 from multiprocessing.pool import ThreadPool

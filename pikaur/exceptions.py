@@ -48,3 +48,10 @@ class DependencyNotBuiltYet(Exception):
 
 class AURError(Exception):
     pass
+
+
+class SysExit(Exception):
+    code: int = None
+
+    def __init__(self, code: int) -> None:
+        self.code = code

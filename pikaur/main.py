@@ -48,6 +48,9 @@ from .install_cli import (
 from .search_cli import (
     cli_search_packages,
 )
+from .exceptions import (
+    SysExit
+)
 
 
 def init_readline() -> None:
@@ -263,6 +266,8 @@ def main() -> None:
     except BrokenPipeError:
         # @TODO: should it be 32?
         sys.exit(0)
+    except SysExit as exc:
+        sys.exit(exc.code)
 
 
 if __name__ == '__main__':

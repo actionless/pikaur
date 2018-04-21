@@ -72,7 +72,9 @@ def output_handler(
             if historic_output.endswith(question.encode('utf-8')):
                 sys.stdout.write(default_answer + '\n')
                 sys.stdout.flush()
-                pty_in.write(default_answer + '\n')
+                pty_in.write(default_answer)
+                sleep(0.1)
+                pty_in.write('\n')
                 historic_output = b''
                 break
     print_status_message('output handler exiting')

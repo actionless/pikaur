@@ -1,5 +1,6 @@
 import sys
 import shutil
+from threading import Lock
 from typing import List, TYPE_CHECKING, Tuple
 
 from .config import VERSION, PikaurConfig
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 
 
 PADDING = 4
+PRINT_LOCK = Lock()
 
 
 def color_enabled(args: PikaurArgs = None) -> bool:
@@ -76,10 +78,27 @@ def format_paragraph(line: str) -> str:
     ])
 
 
+class PrintLock(object):
+
+    def __enter__(self) -> None:
+        PRINT_LOCK.acquire()
+
+    def __exit__(self, *exc_details) -> None:
+        PRINT_LOCK.release()
+
+
+def print_stdout(message='', end='\n', flush=False) -> None:
+    with PrintLock():
+        sys.stdout.write(f'{message}{end}')
+        if flush:
+            sys.stdout.flush()
+
+
 def print_status_message(message='', end='\n', flush=False) -> None:
-    sys.stderr.write(f'{message}{end}')
-    if flush:
-        sys.stderr.flush()
+    with PrintLock():
+        sys.stderr.write(f'{message}{end}')
+        if flush:
+            sys.stderr.flush()
 
 
 def print_not_found_packages(not_found_packages: List[str]) -> None:

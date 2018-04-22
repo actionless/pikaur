@@ -7,6 +7,7 @@ import readline
 import signal
 import subprocess
 import codecs
+import shutil
 from datetime import datetime
 from typing import List
 from multiprocessing.pool import ThreadPool
@@ -250,16 +251,29 @@ def check_systemd_dynamic_users() -> bool:
     return version >= 235
 
 
-def main() -> None:
+def check_runtime_deps():
     if running_as_root() and not check_systemd_dynamic_users():
         print_status_message("{} {}".format(
             color_line('::', 9),
             _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         ))
         sys.exit(65)
+    for dep_bin in [
+            "fakeroot",
+    ] + (['sudo'] if not running_as_root() else []):
+        if not shutil.which(dep_bin):
+            print_status_message("{} '{}' {}.".format(
+                color_line(':: ' + _('error') + ':', 9),
+                bold_line(dep_bin),
+                "executable not found"
+            ))
+            sys.exit(2)
+
+
+def main() -> None:
+    check_runtime_deps()
 
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-
     try:
         cli_entry_point()
     except KeyboardInterrupt:

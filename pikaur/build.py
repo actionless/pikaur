@@ -7,7 +7,8 @@ from typing import List, Union, Dict, Any, Optional, Set
 from .core import (
     DataType, ConfigReader,
     isolate_root_cmd, remove_dir, running_as_root, open_file,
-    spawn, interactive_spawn, InteractiveSpawn,
+    spawn, interactive_spawn, InteractiveSpawn, sudo,
+    just_copy_damn_tree as copy_tree,
 )
 from .i18n import _, _n
 from .config import (
@@ -27,7 +28,6 @@ from .exceptions import (
 from .srcinfo import SrcInfo
 from .package_update import is_devel_pkg
 from .version import compare_versions
-from .core import just_copy_damn_tree as copy_tree
 from .pikspect import pikspect
 
 
@@ -287,28 +287,27 @@ class PackageBuild(DataType):
         result1 = True
         if len(explicitly_installed_deps) < len(self.built_deps_to_install):
             result1 = retry_interactive_command(
-                [
-                    'sudo',
-                ] + get_pacman_command(self.args) + [
-                    '--upgrade',
-                    '--asdeps',
-                ] + [
-                    path for name, path in self.built_deps_to_install.items()
-                    if name not in explicitly_installed_deps
-                ],
-                args=self.args
+                sudo(
+                    get_pacman_command(self.args) + [
+                        '--upgrade',
+                        '--asdeps',
+                    ] + [
+                        path for name, path in self.built_deps_to_install.items()
+                        if name not in explicitly_installed_deps
+                    ],
+                ), args=self.args
             )
         result2 = True
         if explicitly_installed_deps:
             result2 = retry_interactive_command(
-                [
-                    'sudo',
-                ] + get_pacman_command(self.args) + [
-                    '--upgrade',
-                ] + [
-                    path for name, path in self.built_deps_to_install.items()
-                    if name in explicitly_installed_deps
-                ],
+                sudo(
+                    get_pacman_command(self.args) + [
+                        '--upgrade',
+                    ] + [
+                        path for name, path in self.built_deps_to_install.items()
+                        if name in explicitly_installed_deps
+                    ]
+                ),
                 args=self.args
             )
 
@@ -420,13 +419,12 @@ class PackageBuild(DataType):
                 bold_line(', '.join(self.package_names)))
         ))
         retry_interactive_command_or_exit(
-            [
-                'sudo',
-            ] + get_pacman_command(self.args) + [
-                '--sync',
-                '--asdeps',
-            ] + self.all_deps_to_install,
-            args=self.args
+            sudo(
+                get_pacman_command(self.args) + [
+                    '--sync',
+                    '--asdeps',
+                ] + self.all_deps_to_install
+            ), args=self.args
         )
         return local_packages_before
 
@@ -455,12 +453,11 @@ class PackageBuild(DataType):
                 bold_line(', '.join(self.package_names)))
         ))
         retry_interactive_command_or_exit(
-            [
-                'sudo',
-            ] + get_pacman_command(self.args) + [
-                '--remove',
-            ] + list(deps_packages_installed),
-            args=self.args
+            sudo(
+                get_pacman_command(self.args) + [
+                    '--remove',
+                ] + list(deps_packages_installed)
+            ), args=self.args
         )
 
     def build(

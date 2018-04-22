@@ -35,7 +35,7 @@ from .pprint import (
 )
 from .core import (
     PackageSource,
-    spawn, interactive_spawn, remove_dir, open_file,
+    spawn, interactive_spawn, remove_dir, open_file, sudo,
 )
 from .replacements import (
     find_replacements,
@@ -172,7 +172,7 @@ class InstallPackagesCLI():
             return
 
         # get sudo for further questions (command should do nothing):
-        interactive_spawn(['sudo', 'pacman', '-T'])
+        interactive_spawn(sudo(['pacman', '-T']))
 
         self.install_repo_packages()
 
@@ -763,12 +763,11 @@ class InstallPackagesCLI():
         # pylint: disable=no-self-use
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
-                [
-                    'sudo',
-                ] + get_pacman_command(self.args) + [
-                    '-Rs',
-                ] + packages_to_be_removed,
-                args=self.args
+                sudo(
+                    get_pacman_command(self.args) + [
+                        '-Rs',
+                    ] + packages_to_be_removed
+                ), args=self.args
             )
 
     def _install_repo_packages(self, packages_to_be_installed: List[str]) -> None:
@@ -778,16 +777,15 @@ class InstallPackagesCLI():
                 extra_args.append('--ignore')
                 extra_args.append(excluded_pkg_name)
             if not retry_interactive_command(
-                    [
-                        'sudo',
-                    ] + get_pacman_command(self.args) + [
-                        '--sync',
-                    ] + reconstruct_args(self.args, ignore_args=[
-                        'sync',
-                        'refresh',
-                        'ignore',
-                    ]) + packages_to_be_installed + extra_args,
-                    args=self.args
+                    sudo(
+                        get_pacman_command(self.args) + [
+                            '--sync',
+                        ] + reconstruct_args(self.args, ignore_args=[
+                            'sync',
+                            'refresh',
+                            'ignore',
+                        ]) + packages_to_be_installed + extra_args
+                    ), args=self.args
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_repo_transaction()
@@ -856,20 +854,19 @@ class InstallPackagesCLI():
         ]
         if new_aur_deps_to_install:
             if not retry_interactive_command(
-                    [
-                        'sudo',
-                    ] + get_pacman_command(self.args) + [
-                        '--upgrade',
-                        '--asdeps',
-                    ] + reconstruct_args(self.args, ignore_args=[
-                        'upgrade',
-                        'asdeps',
-                        'sync',
-                        'sysupgrade',
-                        'refresh',
-                        'ignore',
-                    ]) + new_aur_deps_to_install,
-                    args=self.args
+                    sudo(
+                        get_pacman_command(self.args) + [
+                            '--upgrade',
+                            '--asdeps',
+                        ] + reconstruct_args(self.args, ignore_args=[
+                            'upgrade',
+                            'asdeps',
+                            'sync',
+                            'sysupgrade',
+                            'refresh',
+                            'ignore',
+                        ]) + new_aur_deps_to_install
+                    ), args=self.args
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
@@ -885,18 +882,17 @@ class InstallPackagesCLI():
         ]
         if aur_packages_to_install:
             if not retry_interactive_command(
-                    [
-                        'sudo',
-                    ] + get_pacman_command(self.args) + [
-                        '--upgrade',
-                    ] + reconstruct_args(self.args, ignore_args=[
-                        'upgrade',
-                        'sync',
-                        'sysupgrade',
-                        'refresh',
-                        'ignore',
-                    ]) + aur_packages_to_install,
-                    args=self.args
+                    sudo(
+                        get_pacman_command(self.args) + [
+                            '--upgrade',
+                        ] + reconstruct_args(self.args, ignore_args=[
+                            'upgrade',
+                            'sync',
+                            'sysupgrade',
+                            'refresh',
+                            'ignore',
+                        ]) + aur_packages_to_install
+                    ), args=self.args
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()

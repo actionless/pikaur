@@ -55,6 +55,12 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     return base_root_isolator + cmd
 
 
+def sudo(cmd: List[str]) -> List[str]:
+    if running_as_root():
+        return cmd
+    return ['sudo', ] + cmd
+
+
 class DataType():
 
     def __init__(self, **kwargs) -> None:
@@ -182,7 +188,7 @@ def remove_dir(dir_path: str) -> None:
     try:
         shutil.rmtree(dir_path)
     except PermissionError:
-        interactive_spawn(['sudo', 'rm', '-rf', dir_path])
+        interactive_spawn(sudo(['rm', '-rf', dir_path]))
 
 
 def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[List[Any]]:

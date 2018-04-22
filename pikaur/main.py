@@ -18,7 +18,7 @@ from .args import (
 )
 from .core import (
     PackageSource,
-    spawn, interactive_spawn, running_as_root, remove_dir,
+    spawn, interactive_spawn, running_as_root, remove_dir, sudo,
 )
 from .pprint import (
     color_line, bold_line,
@@ -103,9 +103,9 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
 
 def cli_upgrade_packages(args: PikaurArgs) -> None:
     if args.refresh:
-        pacman_args = (
-            ['sudo', ] + get_pacman_command(args) + ['--sync'] + ['--refresh'] * args.refresh
-        )
+        pacman_args = (sudo(
+            get_pacman_command(args) + ['--sync'] + ['--refresh'] * args.refresh
+        ))
         retry_interactive_command_or_exit(
             pacman_args, args=args
         )
@@ -175,9 +175,9 @@ def cli_clean_packages_cache(args: PikaurArgs) -> None:
                     remove_dir(directory)
     if not args.aur:
         sys.exit(
-            interactive_spawn(
-                ['sudo', 'pacman', ] + reconstruct_args(args, ['--repo'])
-            ).returncode
+            interactive_spawn(sudo(
+                ['pacman', ] + reconstruct_args(args, ['--repo'])
+            )).returncode
         )
 
 
@@ -232,7 +232,7 @@ def cli_entry_point() -> None:
     if not_implemented_in_pikaur:
         if require_sudo and raw_args:
             sys.exit(
-                interactive_spawn(['sudo', 'pacman', ] + raw_args).returncode
+                interactive_spawn(sudo(['pacman', ] + raw_args)).returncode
             )
         sys.exit(
             interactive_spawn(['pacman', ] + raw_args).returncode

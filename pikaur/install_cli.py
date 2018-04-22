@@ -713,7 +713,7 @@ class InstallPackagesCLI():
             except (BuildError, DependencyError) as exc:
                 print_status_message(exc)
                 print_status_message(
-                    color_line(_("Can't build '{name}'.").format(name=pkg_name), 9)
+                    color_line(_("Can't build '{name}'.").format(name=pkg_name) + '\n', 9)
                 )
                 # if not self.ask_to_continue():
                 #     sys.exit(125)

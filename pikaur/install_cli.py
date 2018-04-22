@@ -1,6 +1,7 @@
 import sys
 import os
 from tempfile import NamedTemporaryFile
+from multiprocessing.pool import ThreadPool
 from typing import List, Dict, Union
 
 import pyalpm
@@ -658,7 +659,20 @@ class InstallPackagesCLI():
             return True
         return False
 
+    def _preload_latest_sources(self) -> None:
+        with ThreadPool() as pool:
+            threads = []
+            for repo_status in self.package_builds_by_name.values():
+                threads.append(
+                    pool.apply_async(getattr, (repo_status, 'version_already_installed'))
+                )
+            pool.close()
+            for thread in threads:
+                thread.get()
+
     def review_build_files(self) -> None:
+        if self.args.needed or self.args.devel:
+            self._preload_latest_sources()
         for repo_status in list(self.package_builds_by_name.values()):
             if repo_status.reviewed:
                 continue

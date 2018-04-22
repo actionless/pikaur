@@ -18,15 +18,17 @@ from .config import (
 from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB, get_pacman_command
 from .args import PikaurArgs, parse_args
-from .pprint import color_line, bold_line, color_enabled
+from .pprint import color_line, bold_line, color_enabled, print_stdout
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit, ask_to_continue
 from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
+    SysExit,
 )
 from .srcinfo import SrcInfo
 from .package_update import is_devel_pkg
 from .version import compare_versions
 from .core import just_copy_damn_tree as copy_tree
+from .pikspect import pikspect
 
 
 class MakepkgConfig():
@@ -193,7 +195,7 @@ class PackageBuild(DataType):
             local_db = PackageDB.get_local_dict()
             src_info_dir = self.repo_path
             if is_devel_pkg(self.package_base):
-                print('\n{} {}:'.format(
+                print_stdout('{} {}:'.format(
                     color_line('::', 15),
                     _n(
                         "Downloading the latest sources for a devel package {}",
@@ -204,7 +206,7 @@ class PackageBuild(DataType):
                     )
                 ))
                 self.prepare_build_destination()
-                retry_interactive_command(
+                pkgver_result = pikspect(
                     isolate_root_cmd(
                         [
                             'makepkg', '--nobuild', '--noprepare', '--nocheck', '--nodeps'
@@ -212,9 +214,16 @@ class PackageBuild(DataType):
                         cwd=self.build_dir
                     ),
                     cwd=self.build_dir,
-                    args=self.args,
-                    pikspect=True,
+                    print_output=False,
+                    save_output=True
                 )
+                if pkgver_result.returncode != 0:
+                    sys.stdout.buffer.write(pkgver_result.saved_bytes)
+                    sys.stdout.buffer.flush()
+                    if not ask_to_continue(
+                            args=self.args, default_yes=False
+                    ):
+                        raise SysExit(125)
                 src_info_dir = self.build_dir
                 SrcInfo(src_info_dir).regenerate()
             self._already_installed = min([

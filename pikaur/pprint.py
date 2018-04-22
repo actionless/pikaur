@@ -125,15 +125,25 @@ def pretty_format_upgradeable(
         common_version, difference_size = get_common_version(
             pkg_update.Current_Version or '', pkg_update.New_Version or ''
         )
-        color_config = PikaurConfig().colors
+        user_config = PikaurConfig()
+        color_config = user_config.colors
         version_color: int = color_config.get('Version')  # type: ignore
         old_color: int = color_config.get('VersionDiffOld')  # type: ignore
         new_color: int = color_config.get('VersionDiffNew')  # type: ignore
         column_width = min(int(get_term_width() / 2.5), 37)
+
         sort_by = '{:03d}{}'.format(
             difference_size,
             pkg_update.Name
         )
+        user_chosen_sorting = user_config.sync.get('UpgradeSorting')
+        if user_chosen_sorting == 'pkgname':
+            sort_by = pkg_update.Name
+        elif user_chosen_sorting == 'repo':
+            sort_by = '{}{}'.format(
+                pkg_update.Repository,
+                pkg_update.Name
+            )
 
         pkg_name = _bold_line(pkg_update.Name)
         pkg_len = len(pkg_update.Name)

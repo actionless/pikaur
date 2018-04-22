@@ -40,6 +40,10 @@ _CONFIG_SCHEMA = {
             'type': 'int',
             'default': '-1',
         },
+        'UpgradeSorting': {
+            'type': 'str',
+            'default': 'versiondiff'
+        },
     },
     'build': {
         'KeepBuildDir': {
@@ -69,7 +73,7 @@ _CONFIG_SCHEMA = {
         'RequireEnterConfirm': {
             'type': 'bool',
             'default': 'yes'
-        }
+        },
     }
 }
 

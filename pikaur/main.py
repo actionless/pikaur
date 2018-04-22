@@ -30,7 +30,7 @@ from .pacman import (
     get_pacman_command,
 )
 from .aur import (
-    aur_rpc_info,
+    find_aur_packages, get_all_aur_names,
 )
 from .package_update import (
     PackageUpdate,
@@ -131,9 +131,10 @@ def _info_packages_thread_repo(
 
 
 def cli_info_packages(args: PikaurArgs) -> None:
+    aur_pkg_names = args.positional or get_all_aur_names()
     with ThreadPool() as pool:
         requests = {}
-        requests[PackageSource.AUR] = pool.apply_async(aur_rpc_info, (args.positional or [], ))
+        requests[PackageSource.AUR] = pool.apply_async(find_aur_packages, (aur_pkg_names, ))
         requests[PackageSource.REPO] = pool.apply_async(_info_packages_thread_repo, (args, ))
         pool.close()
         pool.join()
@@ -145,7 +146,7 @@ def cli_info_packages(args: PikaurArgs) -> None:
     if result[PackageSource.REPO]:
         print(result[PackageSource.REPO], end='')
 
-    aur_pkgs = result[PackageSource.AUR]
+    aur_pkgs = result[PackageSource.AUR][0]
     num_found = len(aur_pkgs)
     for i, aur_pkg in enumerate(aur_pkgs):
         pkg_info_lines = []

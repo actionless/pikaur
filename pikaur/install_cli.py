@@ -99,6 +99,27 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
     )
 
 
+def _check_pkg_arch(pkgbuild):
+    src_info = SrcInfo(pkgbuild.repo_path)
+    arch = MakepkgConfig.get('CARCH')
+    supported_archs = src_info.get_values('arch')
+    if supported_archs and (
+            'any' not in supported_archs
+    ) and (
+        arch not in supported_archs
+    ):
+        print_status_message("{} {}".format(
+            color_line(':: error:', 9),
+            _("{name} can't be built on the current arch ({arch}). "
+              "Supported: {suparch}").format(
+                  name=bold_line(', '.join(pkgbuild.package_names)),
+                  arch=arch,
+                  suparch=', '.join(supported_archs))
+        ))
+        sys.exit(95)
+    pkgbuild.reviewed = True
+
+
 class InstallPackagesCLI():
     # @TODO: refactor this warning:
     # pylint: disable=too-many-public-methods,too-many-instance-attributes
@@ -673,23 +694,7 @@ class InstallPackagesCLI():
                     if install_file_name:
                         self.ask_to_edit_file(install_file_name, repo_status)
 
-            arch = MakepkgConfig.get('CARCH')
-            supported_archs = src_info.get_values('arch')
-            if supported_archs and (
-                    'any' not in supported_archs
-            ) and (
-                arch not in supported_archs
-            ):
-                print_status_message("{} {}".format(
-                    color_line(':: error:', 9),
-                    _("{name} can't be built on the current arch ({arch}). "
-                      "Supported: {suparch}").format(
-                          name=bold_line(', '.join(repo_status.package_names)),
-                          arch=arch,
-                          suparch=', '.join(supported_archs))
-                ))
-                sys.exit(95)
-            repo_status.reviewed = True
+            _check_pkg_arch(repo_status)
 
     def build_packages(self) -> None:
         failed_to_build_package_names = []

@@ -54,6 +54,10 @@ _CONFIG_SCHEMA = {
             'type': 'bool',
             'default': 'no',
         },
+        'NoDiff': {
+            'type': 'bool',
+            'default': 'no',
+        }
     },
     'colors': {
         'Version': {

@@ -82,6 +82,7 @@ def cli_print_help(args: PikaurArgs) -> None:
             ('', '--namesonly', _("search only in package names")),
             ('', '--devel', _("sysupgrade '-git' and other dev packages older than 1 day")),
             ('-k', '--keepbuild', _("don't remove build dir after the build")),
+            ('', '--nodiff', _("don't prompt to show the build files diff")),
         ]
     print(''.join([
         '\n',
@@ -103,6 +104,7 @@ PIKAUR_OPTS = (
     ('a', 'aur'),
     (None, 'devel'),
     ('k', 'keepbuild'),
+    (None, 'nodiff')
 )
 
 

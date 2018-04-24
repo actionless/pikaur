@@ -65,6 +65,8 @@ don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the build
 ##### NoEdit (default: no)
 don't prompt to edit PKGBUILD and install files.
 
+##### NoDiff (default: no)
+don't prompt to show the build files diff.
 
 #### [colors]
 

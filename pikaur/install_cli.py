@@ -682,7 +682,8 @@ class InstallPackagesCLI():
                     self.discard_aur_package(package_name)
                 continue
             if repo_status.build_files_updated and not self.args.noconfirm:
-                if self.ask_to_continue(
+                nodiff = self.args.nodiff or PikaurConfig().build.get('NoDiff')
+                if not nodiff and self.ask_to_continue(
                         _("Do you want to see build files {diff} for {name} package?").format(
                             diff=bold_line(_("diff")),
                             name=bold_line(', '.join(repo_status.package_names))

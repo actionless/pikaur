@@ -12,6 +12,7 @@ import fcntl
 import uuid
 import os
 import multiprocessing
+import signal
 from time import sleep
 from typing import List, Tuple, Union
 
@@ -149,6 +150,7 @@ class NestedTerminal():
             tty.setcbreak(sys.stderr.fileno())
         if sys.stdout.isatty():
             tty.setcbreak(sys.stdout.fileno())
+        signal.signal(signal.SIGINT, self.__exit__)
         return real_term_geometry
 
     def __exit__(self, *exc_details) -> None:

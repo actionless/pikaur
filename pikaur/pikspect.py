@@ -12,9 +12,8 @@ import fcntl
 import uuid
 import os
 import multiprocessing
-import signal
 from time import sleep
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 from .core import DataType
 from .pprint import bold_line, PrintLock, print_stdout
@@ -39,6 +38,23 @@ DEFAULT_ANSWER = _p("Y")
 
 
 SMALL_TIMEOUT = 0.1
+
+
+_old_tcattrs = None
+if sys.stdin.isatty():
+    _old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+
+
+def restore_tty(*whatever):
+    global _old_tcattrs
+    if sys.stderr.isatty():
+        termios.tcdrain(sys.stderr.fileno())
+    if sys.stdout.isatty():
+        termios.tcdrain(sys.stdout.fileno())
+    if sys.stdin.isatty():
+        termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
+    if _old_tcattrs:
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, _old_tcattrs)
 
 
 class PikspectPopen(subprocess.Popen):
@@ -139,28 +155,18 @@ def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None
 
 class NestedTerminal():
 
-    old_tcattrs: List[Union[int, List[bytes]]] = None
-
     def __enter__(self) -> os.terminal_size:
         real_term_geometry = shutil.get_terminal_size((80, 80))
         if sys.stdin.isatty():
-            self.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
             tty.setcbreak(sys.stdin.fileno())
         if sys.stderr.isatty():
             tty.setcbreak(sys.stderr.fileno())
         if sys.stdout.isatty():
             tty.setcbreak(sys.stdout.fileno())
-        signal.signal(signal.SIGINT, self.__exit__)
         return real_term_geometry
 
     def __exit__(self, *exc_details) -> None:
-        if sys.stderr.isatty():
-            termios.tcdrain(sys.stderr.fileno())
-        if sys.stdout.isatty():
-            termios.tcdrain(sys.stdout.fileno())
-        if sys.stdin.isatty():
-            termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, self.old_tcattrs)
+        restore_tty()
 
 
 # pylint: disable=too-many-locals

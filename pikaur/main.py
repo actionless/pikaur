@@ -52,6 +52,9 @@ from .search_cli import (
 from .exceptions import (
     SysExit
 )
+from .pikspect import (
+    restore_tty
+)
 
 
 def init_readline() -> None:
@@ -270,10 +273,17 @@ def check_runtime_deps():
             sys.exit(2)
 
 
+def handle_sig_int(*whatever):
+    print_status_message("\n\nCanceled by user (SIGINT)")
+    restore_tty()
+    sys.exit(125)
+
+
 def main() -> None:
     check_runtime_deps()
 
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    signal.signal(signal.SIGINT, handle_sig_int)
     try:
         cli_entry_point()
     except KeyboardInterrupt:

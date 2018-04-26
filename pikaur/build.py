@@ -195,7 +195,7 @@ class PackageBuild(DataType):
             local_db = PackageDB.get_local_dict()
             src_info_dir = self.repo_path
             if is_devel_pkg(self.package_base):
-                print_stdout('{} {}:'.format(
+                print_stdout('{} {}...'.format(
                     color_line('::', 15),
                     _n(
                         "Downloading the latest sources for a devel package {}",

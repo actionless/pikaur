@@ -24,10 +24,8 @@ from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
 )
-from .build import (
-    PackageBuild, MakepkgConfig,
-    clone_aur_repos,
-)
+from .build import PackageBuild, clone_aur_repos
+from .makepkg_config import MakepkgConfig
 from .pprint import (
     color_line, bold_line,
     pretty_format_sysupgrade, pretty_format_upgradeable,
@@ -37,9 +35,7 @@ from .core import (
     PackageSource,
     spawn, interactive_spawn, remove_dir, open_file, sudo,
 )
-from .replacements import (
-    find_replacements,
-)
+from .replacements import find_replacements
 from .conflicts import find_conflicts
 from .prompt import (
     ask_to_continue, retry_interactive_command,

@@ -40,21 +40,28 @@ DEFAULT_ANSWER = _p("Y")
 SMALL_TIMEOUT = 0.1
 
 
-_old_tcattrs = None
-if sys.stdin.isatty():
-    _old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+class TTYRestore():
+
+    old_tcattrs = None
+
+    @classmethod
+    def save(cls):
+        if sys.stdin.isatty():
+            cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+
+    @classmethod
+    def restore(cls, *_whatever):
+        if sys.stderr.isatty():
+            termios.tcdrain(sys.stderr.fileno())
+        if sys.stdout.isatty():
+            termios.tcdrain(sys.stdout.fileno())
+        if sys.stdin.isatty():
+            termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
+        if cls.old_tcattrs:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, cls.old_tcattrs)
 
 
-def restore_tty(*whatever):
-    global _old_tcattrs
-    if sys.stderr.isatty():
-        termios.tcdrain(sys.stderr.fileno())
-    if sys.stdout.isatty():
-        termios.tcdrain(sys.stdout.fileno())
-    if sys.stdin.isatty():
-        termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
-    if _old_tcattrs:
-        termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, _old_tcattrs)
+TTYRestore.save()
 
 
 class PikspectPopen(subprocess.Popen):
@@ -166,7 +173,7 @@ class NestedTerminal():
         return real_term_geometry
 
     def __exit__(self, *exc_details) -> None:
-        restore_tty()
+        TTYRestore.restore()
 
 
 # pylint: disable=too-many-locals

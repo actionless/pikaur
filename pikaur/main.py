@@ -53,7 +53,7 @@ from .exceptions import (
     SysExit
 )
 from .pikspect import (
-    restore_tty
+    TTYRestore
 )
 
 
@@ -273,9 +273,9 @@ def check_runtime_deps():
             sys.exit(2)
 
 
-def handle_sig_int(*whatever):
+def handle_sig_int(*_whatever):
     print_status_message("\n\nCanceled by user (SIGINT)")
-    restore_tty()
+    TTYRestore.restore()
     sys.exit(125)
 
 

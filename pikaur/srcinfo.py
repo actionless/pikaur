@@ -3,6 +3,10 @@ from typing import List, Dict
 
 from .core import open_file, spawn, isolate_root_cmd
 from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
+from .makepkg_config import MakepkgConfig
+
+
+CARCH = MakepkgConfig.get('CARCH')
 
 
 class SrcInfo():
@@ -66,7 +70,7 @@ class SrcInfo():
 
     def _get_depends(self, field: str) -> Dict[str, VersionMatcher]:
         dependencies: Dict[str, VersionMatcher] = {}
-        for dep in self.get_pkgbase_values(field):
+        for dep in self.get_pkgbase_values(field) + self.get_pkgbase_values(f'{field}_{CARCH}'):
             pkg_name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
             dependencies[pkg_name] = version_matcher
         return dependencies

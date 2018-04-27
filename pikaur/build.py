@@ -2,10 +2,10 @@ import os
 import sys
 import shutil
 from multiprocessing.pool import ThreadPool
-from typing import List, Union, Dict, Any, Optional, Set
+from typing import List, Union, Dict, Set
 
 from .core import (
-    DataType, ConfigReader,
+    DataType,
     isolate_root_cmd, remove_dir, running_as_root, open_file,
     spawn, interactive_spawn, InteractiveSpawn, sudo,
     just_copy_damn_tree as copy_tree,
@@ -14,7 +14,6 @@ from .i18n import _, _n
 from .config import (
     PikaurConfig,
     CACHE_ROOT, AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
-    CONFIG_ROOT,
 )
 from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB, get_pacman_command

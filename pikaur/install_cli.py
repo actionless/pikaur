@@ -1,5 +1,6 @@
 import sys
 import os
+import hashlib
 from tempfile import NamedTemporaryFile
 from multiprocessing.pool import ThreadPool
 from typing import List, Dict, Union
@@ -115,6 +116,19 @@ def _check_pkg_arch(pkgbuild):
         ))
         sys.exit(95)
     pkgbuild.reviewed = True
+
+
+def hash_file(filename):
+    md5 = hashlib.md5()
+    with open(filename, 'rb') as file:
+        eof = False
+        while not eof:
+            data = file.read(1024)
+            if data:
+                md5.update(data)
+            else:
+                eof = True
+    return md5.hexdigest()
 
 
 class InstallPackagesCLI():
@@ -644,15 +658,16 @@ class InstallPackagesCLI():
                 ),
                 default_yes=not package_build.is_installed
         ):
-            interactive_spawn(
-                self.get_editor() + [
-                    os.path.join(
-                        package_build.repo_path,
-                        filename
-                    )
-                ]
+            full_filename = os.path.join(
+                package_build.repo_path,
+                filename
             )
-            return True
+            old_hash = hash_file(full_filename)
+            interactive_spawn(
+                self.get_editor() + [full_filename]
+            )
+            new_hash = hash_file(full_filename)
+            return old_hash != new_hash
         return False
 
     def _preload_latest_sources(self) -> None:

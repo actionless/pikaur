@@ -81,6 +81,7 @@ complete -c $progname -n "not $noopt" -l hookdir -d 'Hook file directory'
 complete -c $progname -n "not $noopt" -l logfile -d 'Specify alternative log file'
 complete -c $progname -n "not $noopt" -l noconfirm -d 'Bypass any question' -f
 complete -c $progname -n "not $noopt" -l noedit -d 'Bypass editing PKGBUILDs' -f
+complete -c $progname -n "not $noopt" -l edit -d 'Edit PKGBUILDs' -f
 complete -c $progname -n "not $noopt" -l namesonly -d 'Search only in package names' -f
 
 # Transaction options (sync, remove, upgrade)

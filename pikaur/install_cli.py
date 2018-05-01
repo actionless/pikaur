@@ -639,7 +639,7 @@ class InstallPackagesCLI():
                         self.discard_aur_package(installed_pkg_name)
 
     def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
-        noedit = self.args.noedit or PikaurConfig().build.get('NoEdit')
+        noedit = not self.args.edit and (self.args.noedit or PikaurConfig().build.get('NoEdit'))
         if noedit or self.args.noconfirm:
             print_status_message('{} {}'.format(
                 color_line('::', 11),

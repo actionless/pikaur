@@ -96,7 +96,10 @@ def get_aur_pkg_deps_and_version_matchers(aur_pkg: AURPackageInfo) -> Dict[str, 
     deps = {}
     for dep in (aur_pkg.depends or []) + (aur_pkg.makedepends or []) + (aur_pkg.checkdepends or []):
         name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
-        deps[name] = version_matcher
+        if name not in deps:
+            deps[name] = version_matcher
+        else:
+            deps[name].add_version_matcher(version_matcher)
     return deps
 
 

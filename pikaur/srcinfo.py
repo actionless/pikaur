@@ -72,7 +72,10 @@ class SrcInfo():
         dependencies: Dict[str, VersionMatcher] = {}
         for dep in self.get_values(field) + self.get_values(f'{field}_{CARCH}'):
             pkg_name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
-            dependencies[pkg_name] = version_matcher
+            if pkg_name not in dependencies:
+                dependencies[pkg_name] = version_matcher
+            else:
+                dependencies[pkg_name].add_version_matcher(version_matcher)
         return dependencies
 
     def get_makedepends(self) -> Dict[str, VersionMatcher]:

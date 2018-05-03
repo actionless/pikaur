@@ -20,14 +20,23 @@ def compare_versions(version1: str, version2: str) -> int:
 class VersionMatcher():
 
     def __call__(self, version: str) -> int:
-        result = self.version_matcher(version)
-        # print(f"dep:{self.line} found:{version} result:{result}")
-        return result
+        return min([
+            version_matcher(version)
+            for version_matcher in self.version_matchers
+        ])
 
     def __init__(self, matcher_func: Callable[[str], int], version: str, depend_line: str) -> None:
-        self.version_matcher = matcher_func
+        self.version_matchers = [matcher_func]
         self.version = version
         self.line = depend_line
+
+    def add_version_matcher(self, version_matcher: 'VersionMatcher') -> None:
+        self.version_matchers.append(version_matcher.version_matchers[0])
+        self.line += ',' + version_matcher.line
+        if self.version:
+            self.version += ',' + version_matcher.version
+        else:
+            self.version = version_matcher.version
 
 
 # pylint: disable=invalid-name

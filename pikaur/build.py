@@ -341,40 +341,41 @@ class PackageBuild(DataType):
         copy_tree(self.repo_path, self.build_dir)
 
     def _get_deps(self) -> None:
-        src_info = SrcInfo(self.build_dir)
         local_provided_pkgs = PackageDB.get_local_provided_dict()
         self.new_deps_to_install = []
         new_make_deps_to_install: List[str] = []
         new_check_deps_to_install: List[str] = []
-        for new_deps_version_matchers, deps_destination in (
-                (
-                    src_info.get_depends(), self.new_deps_to_install
-                ), (
-                    src_info.get_makedepends(), new_make_deps_to_install,
-                ), (
-                    src_info.get_checkdepends(), new_check_deps_to_install,
-                ),
-        ):
-            # find deps satisfied explicitly:
-            installed_deps, new_deps_to_install = find_local_packages(
-                new_deps_version_matchers.keys()
-            )
-            # find deps satisfied via provided packages:
-            for dep_name in new_deps_to_install[:]:
-                if dep_name not in local_provided_pkgs:
-                    continue
-                # and check version of each candidate:
-                for provided_by in local_provided_pkgs[dep_name]:
-                    if new_deps_version_matchers[dep_name](provided_by.package.version):
-                        new_deps_to_install.remove(dep_name)
-                        break
-            # check also versions of explicitly satisfied deps:
-            new_deps_to_install += [
-                pkg.name
-                for pkg in installed_deps
-                if not new_deps_version_matchers[pkg.name](pkg.version)
-            ]
-            deps_destination += new_deps_to_install
+        for package_name in self.package_names:
+            src_info = SrcInfo(self.build_dir, package_name=package_name)
+            for new_deps_version_matchers, deps_destination in (
+                    (
+                        src_info.get_depends(), self.new_deps_to_install
+                    ), (
+                        src_info.get_makedepends(), new_make_deps_to_install,
+                    ), (
+                        src_info.get_checkdepends(), new_check_deps_to_install,
+                    ),
+            ):
+                # find deps satisfied explicitly:
+                installed_deps, new_deps_to_install = find_local_packages(
+                    new_deps_version_matchers.keys()
+                )
+                # find deps satisfied via provided packages:
+                for dep_name in new_deps_to_install[:]:
+                    if dep_name not in local_provided_pkgs:
+                        continue
+                    # and check version of each candidate:
+                    for provided_by in local_provided_pkgs[dep_name]:
+                        if new_deps_version_matchers[dep_name](provided_by.package.version):
+                            new_deps_to_install.remove(dep_name)
+                            break
+                # check also versions of explicitly satisfied deps:
+                new_deps_to_install += [
+                    pkg.name
+                    for pkg in installed_deps
+                    if not new_deps_version_matchers[pkg.name](pkg.version)
+                ]
+                deps_destination += new_deps_to_install
         self.new_make_deps_to_install = list(set(
             new_make_deps_to_install + new_check_deps_to_install
         ))

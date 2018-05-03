@@ -286,8 +286,6 @@ def main() -> None:
     signal.signal(signal.SIGINT, handle_sig_int)
     try:
         cli_entry_point()
-    except KeyboardInterrupt:
-        sys.exit(130)
     except BrokenPipeError:
         # @TODO: should it be 32?
         sys.exit(0)

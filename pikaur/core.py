@@ -4,7 +4,9 @@ import subprocess
 import enum
 import codecs
 from distutils.dir_util import copy_tree
-from typing import Dict, Any, List, Iterable, Tuple, Union, Callable
+from typing import (
+    Dict, Any, List, Iterable, Tuple, Union, Callable, Optional,
+)
 
 
 NOT_FOUND_ATOM = object()
@@ -18,8 +20,8 @@ class PackageSource(enum.Enum):
 
 class InteractiveSpawn(subprocess.Popen):
 
-    stdout_text: str = None
-    stderr_text: str = None
+    stdout_text: str
+    stderr_text: str
 
     def communicate(self, _input=None, _timeout=None):
         stdout, stderr = super().communicate(_input, _timeout)
@@ -68,7 +70,11 @@ class DataType():
             setattr(self, key, value)
 
     def __setattr__(self, key: str, value: Any) -> None:
-        if getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM:
+        if (
+                self.__annotations__.get(key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM  # pylint: disable=no-member
+        ) and (
+            getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
+        ):
             raise TypeError(
                 f"'{self.__class__.__name__}' does "
                 f"not have attribute '{key}'"
@@ -115,12 +121,14 @@ def open_file(
 ) -> codecs.StreamReaderWriter:
     if encoding is None and (mode and 'r' in mode):
         encoding = detect_bom_type(file_path)
+    if encoding:
+        kwargs['encoding'] = encoding
     return codecs.open(
-        file_path, mode, encoding=encoding, errors='ignore', **kwargs
+        file_path, mode, errors='ignore', **kwargs
     )
 
 
-CONFIG_VALUE_TYPE = Union[str, List[str]]
+CONFIG_VALUE_TYPE = Union[None, str, List[str]]
 CONFIG_FORMAT = Dict[str, CONFIG_VALUE_TYPE]
 
 
@@ -128,13 +136,13 @@ class ConfigReader():
 
     comment_prefixes = ('#', ';')
 
-    _cached_config: Dict[str, CONFIG_FORMAT] = None
-    default_config_path: str = None  # noqa
+    _cached_config: Optional[Dict[str, CONFIG_FORMAT]] = None
+    default_config_path: str
     list_fields: List[str] = []
     ignored_fields: List[str] = []
 
     @classmethod
-    def _parse_line(cls, line: str) -> Tuple[str, CONFIG_VALUE_TYPE]:
+    def _parse_line(cls, line: str) -> Tuple[Optional[str], CONFIG_VALUE_TYPE]:
         blank = (None, None, )
         if line.startswith(' '):
             return blank

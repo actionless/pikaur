@@ -66,18 +66,18 @@ TTYRestore.save()
 
 class PikspectPopen(subprocess.Popen):
 
-    saved_bytes: bytes = None
+    saved_bytes: bytes
 
 
 class PikspectTaskData(DataType):
-    proc: PikspectPopen = None
-    pty_out: io.BytesIO = None
-    pty_in: io.TextIOWrapper = None
-    default_answer: str = None
-    default_questions: Tuple[str] = None
-    print_output: bool = None
-    save_output: bool = None
-    task_id: uuid.UUID = None
+    proc: PikspectPopen
+    pty_out: io.BytesIO
+    pty_in: io.TextIOWrapper
+    default_answer: str
+    default_questions: Tuple[str]
+    print_output: bool
+    save_output: bool
+    task_id: uuid.UUID
 
 
 @handle_exception_in_thread

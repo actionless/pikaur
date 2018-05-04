@@ -10,8 +10,8 @@ if TYPE_CHECKING:
 
 
 class PackagesNotFoundInAUR(DataType, Exception):
-    packages: List[str] = None
-    wanted_by: str = None
+    packages: List[str]
+    wanted_by: str
 
 
 class BuildError(Exception):
@@ -19,8 +19,8 @@ class BuildError(Exception):
 
 
 class CloneError(DataType, Exception):
-    build: 'PackageBuild' = None
-    result: 'InteractiveSpawn' = None
+    build: 'PackageBuild'
+    result: 'InteractiveSpawn'
 
 
 class DependencyError(Exception):
@@ -28,13 +28,13 @@ class DependencyError(Exception):
 
 
 class DependencyVersionMismatch(DataType, Exception):
-    version_found: str = None
-    dependency_line: str = None
-    who_depends: str = None
-    depends_on: str = None
-    location: str = None
+    version_found: str
+    dependency_line: str
+    who_depends: str
+    depends_on: str
+    location: str
 
-    version_matcher: 'VersionMatcher' = None
+    version_matcher: 'VersionMatcher'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -51,7 +51,7 @@ class AURError(Exception):
 
 
 class SysExit(Exception):
-    code: int = None
+    code: int
 
     def __init__(self, code: int) -> None:
         self.code = code

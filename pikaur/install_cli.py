@@ -3,7 +3,7 @@ import os
 import hashlib
 from tempfile import NamedTemporaryFile
 from multiprocessing.pool import ThreadPool
-from typing import List, Dict, Union
+from typing import List, Dict, Optional
 
 import pyalpm
 
@@ -136,35 +136,38 @@ class InstallPackagesCLI():
     # pylint: disable=too-many-public-methods,too-many-instance-attributes
 
     # User input
-    args: PikaurArgs = None
-    install_package_names: List[str] = None
-    manually_excluded_packages_names: List[str] = None
+    args: PikaurArgs
+    install_package_names: List[str]
+    manually_excluded_packages_names: List[str]
 
     # computed package lists:
-    repo_packages_by_name: Dict[str, pyalpm.Package] = None
-    aur_deps_relations: Dict[str, List[str]] = None
+    repo_packages_by_name: Dict[str, pyalpm.Package]
+    aur_deps_relations: Dict[str, List[str]]
     # pkgbuilds from cloned aur repos:
-    package_builds_by_name: Dict[str, PackageBuild] = None
+    package_builds_by_name: Dict[str, PackageBuild]
 
     # Packages' install info
     # @TODO: refactor this and related methods
     #        into separate class InstallPrompt? (PackageSelection?)
-    repo_packages_install_info: List[PackageUpdate] = None
-    thirdparty_repo_packages_install_info: List[PackageUpdate] = None
-    aur_updates_install_info: List[PackageUpdate] = None
-    aur_deps_install_info: List[PackageUpdate] = None
+    repo_packages_install_info: List[PackageUpdate]
+    thirdparty_repo_packages_install_info: List[PackageUpdate]
+    aur_updates_install_info: List[PackageUpdate]
+    aur_deps_install_info: List[PackageUpdate]
 
     # Installation results
     # transactions by PackageSource(AUR/repo), direction(removed/installed):
-    transactions: Dict[str, Dict[str, List[str]]] = None
+    transactions: Dict[str, Dict[str, List[str]]]
     # AUR packages which failed to build:
     # @TODO: refactor to store in transactions
-    failed_to_build_package_names: List[str] = None
+    failed_to_build_package_names: List[str]
 
     def __init__(self, args: PikaurArgs, packages: List[str] = None) -> None:
         self.args = args
         self.install_package_names = packages or args.positional
+
         self.manually_excluded_packages_names = []
+        self.transactions = {}
+
         self.install_packages()
 
     def install_packages(self):
@@ -226,7 +229,7 @@ class InstallPackagesCLI():
     def all_aur_packages_names(self) -> List[str]:
         return list(set(self.aur_packages_names + self.aur_deps_names))
 
-    def get_editor(self) -> Union[List[str], None]:
+    def get_editor(self) -> Optional[List[str]]:
         editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
         if editor_line:
             return editor_line.split(' ')
@@ -430,6 +433,9 @@ class InstallPackagesCLI():
             ))
 
     def manual_package_selection(self):
+        editor_cmd = self.get_editor()
+        if not editor_cmd:
+            return
         text = pretty_format_sysupgrade(
             self.repo_packages_install_info,
             self.thirdparty_repo_packages_install_info,
@@ -441,7 +447,7 @@ class InstallPackagesCLI():
             with open_file(tmp_file.name, 'w') as write_file:
                 write_file.write(text)
             interactive_spawn(
-                self.get_editor() + [tmp_file.name, ]
+                editor_cmd + [tmp_file.name, ]
             )
             with open_file(tmp_file.name, 'r') as read_file:
                 for line in read_file.readlines():
@@ -639,6 +645,9 @@ class InstallPackagesCLI():
                         self.discard_aur_package(installed_pkg_name)
 
     def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
+        editor_cmd = self.get_editor()
+        if not editor_cmd:
+            return False
         noedit = not self.args.edit and (self.args.noedit or PikaurConfig().build.get('NoEdit'))
         if noedit or self.args.noconfirm:
             print_status_message('{} {}'.format(
@@ -664,7 +673,7 @@ class InstallPackagesCLI():
             )
             old_hash = hash_file(full_filename)
             interactive_spawn(
-                self.get_editor() + [full_filename]
+                editor_cmd + [full_filename]
             )
             new_hash = hash_file(full_filename)
             return old_hash != new_hash
@@ -692,7 +701,13 @@ class InstallPackagesCLI():
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_aur_package(package_name)
                 continue
-            if repo_status.build_files_updated and not self.args.noconfirm:
+            if (
+                    repo_status.build_files_updated
+            ) and (
+                repo_status.last_installed_hash
+            ) and (
+                not self.args.noconfirm
+            ):
                 nodiff = self.args.nodiff or PikaurConfig().build.get('NoDiff')
                 if not nodiff and self.ask_to_continue(
                         _("Do you want to see build files {diff} for {name} package?").format(
@@ -710,10 +725,9 @@ class InstallPackagesCLI():
                     ])
             src_info = SrcInfo(repo_status.repo_path)
 
-            if self.get_editor():
-                if self.ask_to_edit_file('PKGBUILD', repo_status):
-                    src_info.regenerate()
-                    # @TODO: recompute AUR deps
+            if self.ask_to_edit_file('PKGBUILD', repo_status):
+                src_info.regenerate()
+                # @TODO: recompute AUR deps
                 for pkg_name in repo_status.package_names:
                     install_src_info = SrcInfo(repo_status.repo_path, pkg_name)
                     install_file_name = install_src_info.get_install_script()
@@ -809,8 +823,6 @@ class InstallPackagesCLI():
             removed: List[str] = None,
             installed: List[str] = None
     ) -> None:
-        if not self.transactions:
-            self.transactions = {}
         target_transaction = self.transactions.setdefault(str(target), {})
         if removed:
             for pkg_name in removed:

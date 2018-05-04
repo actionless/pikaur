@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime
 from multiprocessing.pool import ThreadPool
-from typing import Any, Dict, Tuple, List, Iterable, Union
+from typing import Any, Dict, Tuple, List, Iterable, Union, Set
 
 import pyalpm
 
@@ -15,6 +15,7 @@ from .pprint import (
 from .pacman import PackageDB
 from .aur import AURPackageInfo, aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names
 from .args import PikaurArgs
+from .exceptions import AURError
 
 
 @return_exception
@@ -82,7 +83,7 @@ def package_search_thread_router(args: Dict[str, Any]) -> Tuple[str, Dict[str, A
 
 
 def join_search_results(all_aur_results: List[List[AURPackageInfo]]) -> Iterable[AURPackageInfo]:
-    aur_pkgs_nameset = None
+    aur_pkgs_nameset: Set[str] = set()
     for search_results in all_aur_results:
         new_aur_pkgs_nameset = set([result.name for result in search_results])
         if aur_pkgs_nameset:
@@ -221,9 +222,11 @@ def cli_search_packages(args: PikaurArgs) -> None:
         )
     if not REPO_ONLY:
         for _key, query_result in result[PackageSource.AUR].items():
-            if isinstance(query_result, Exception):
+            if isinstance(query_result, AURError):
                 print_status_message('AUR returned error: {}'.format(query_result))
                 sys.exit(121)
+            if isinstance(query_result, Exception):
+                raise query_result
         aur_result = join_search_results([
             r for k, r in result[PackageSource.AUR].items()
         ])

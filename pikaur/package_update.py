@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Union, Tuple
+from typing import List, Tuple, Optional
 
 import pyalpm
 
@@ -33,12 +33,12 @@ def is_devel_pkg(pkg_name: str) -> bool:
 
 class PackageUpdate(DataType):
     # @TODO: use lowercase properties
-    Name: str = None
-    Current_Version: str = None
-    New_Version: str = None
-    Description: str = None
-    Repository: str = None
-    devel_pkg_age_days: int = None
+    Name: str
+    Current_Version: str
+    New_Version: str
+    Description: str
+    Repository: str
+    devel_pkg_age_days: Optional[int] = None
 
     def __repr__(self) -> str:
         return (
@@ -130,7 +130,7 @@ def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
     return aur_updates, not_found_aur_pkgs
 
 
-def get_remote_package_version(new_pkg_name: str) -> Union[str, None]:
+def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
     repo_info = PackageDB.get_repo_dict().get(new_pkg_name)
     if repo_info:
         return repo_info.version

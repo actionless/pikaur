@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from .core import open_file, spawn, isolate_root_cmd
 from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
@@ -11,11 +11,11 @@ CARCH = MakepkgConfig.get('CARCH')
 
 class SrcInfo():
 
-    _common_lines: List[str] = None
-    _package_lines: List[str] = None
-    path: str = None
-    repo_path: str = None
-    package_name: str = None
+    _common_lines: List[str]
+    _package_lines: List[str]
+    path: str
+    repo_path: str
+    package_name: Optional[str]
 
     def load_config(self) -> None:
         self._common_lines = []
@@ -55,14 +55,14 @@ class SrcInfo():
     def get_pkgbase_values(self, field: str) -> List[str]:
         return self.get_values(field, self._common_lines)
 
-    def get_value(self, field: str, fallback: str = None) -> str:
+    def get_value(self, field: str, fallback: str = None) -> Optional[str]:
         values = self.get_values(field)
         value = values[0] if values else None
         if value is None:
             value = fallback
         return value
 
-    def get_install_script(self) -> str:
+    def get_install_script(self) -> Optional[str]:
         values = self.get_values('install')
         if values:
             return values[0]

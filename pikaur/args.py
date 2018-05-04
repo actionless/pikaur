@@ -8,8 +8,8 @@ from .core import spawn
 
 
 class PikaurArgs(argparse.Namespace):
-    unknown_args: List[str] = None
-    raw: List[str] = None
+    unknown_args: List[str]
+    raw: List[str]
 
     def __getattr__(self, name: str) -> Any:
         """
@@ -53,7 +53,7 @@ class PikaurArgumentParser(argparse.ArgumentParser):
             raw_args=raw_args
         )
 
-    def add_letter_andor_opt(self, action: str, letter: str = None, opt: str = None) -> None:
+    def add_letter_andor_opt(self, action: str = None, letter: str = None, opt: str = None) -> None:
         if letter and opt:
             self.add_argument('-' + letter, '--' + opt, action=action)
         elif opt:

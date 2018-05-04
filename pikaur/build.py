@@ -2,7 +2,7 @@ import os
 import sys
 import shutil
 from multiprocessing.pool import ThreadPool
-from typing import List, Union, Dict, Set
+from typing import List, Union, Dict, Set, Optional
 
 from .core import (
     DataType,
@@ -36,23 +36,23 @@ class PackageBuild(DataType):
     clone = False
     pull = False
 
-    package_base: str = None
-    package_names: List[str] = None
+    package_base: str
+    package_names: List[str]
 
-    repo_path: str = None
-    build_dir: str = None
-    built_packages_paths: Dict[str, str] = None
+    repo_path: str
+    build_dir: str
+    built_packages_paths: Dict[str, str]
 
-    _already_installed: bool = None
-    failed: bool = None
+    _already_installed: Optional[bool] = None
+    failed: Optional[bool] = None
     reviewed = False
-    built_packages_installed: Dict[str, bool] = None
+    built_packages_installed: Dict[str, bool]
 
-    new_deps_to_install: List[str] = None
-    new_make_deps_to_install: List[str] = None
-    built_deps_to_install: Dict[str, str] = None
+    new_deps_to_install: List[str]
+    new_make_deps_to_install: List[str]
+    built_deps_to_install: Dict[str, str]
 
-    args: PikaurArgs = None
+    args: PikaurArgs
 
     def __init__(self, package_names: List[str]) -> None:  # pylint: disable=super-init-not-called
         self.args = parse_args()

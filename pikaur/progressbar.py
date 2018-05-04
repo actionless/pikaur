@@ -7,8 +7,8 @@ from .pprint import get_term_width, color_enabled
 
 class ProgressBar(object):
 
-    message: str = None
-    print_ratio: float = None
+    message: str
+    print_ratio: float
     index = 0
     progress = 0
 

@@ -7,7 +7,7 @@ from .config import CONFIG_ROOT
 
 class MakepkgConfig():
 
-    _user_makepkg_path = "unset"
+    _user_makepkg_path: Optional[str] = "unset"
 
     @classmethod
     def get_user_makepkg_path(cls) -> Optional[str]:
@@ -16,7 +16,7 @@ class MakepkgConfig():
                 os.path.expanduser('~/.makepkg.conf'),
                 os.path.join(CONFIG_ROOT, "pacman/makepkg.conf"),
             ]
-            config_path = None
+            config_path: Optional[str] = None
             for path in possible_paths:
                 if os.path.exists(path):
                     config_path = path

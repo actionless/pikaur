@@ -70,6 +70,7 @@ def find_conflicting_with_new_pkgs(
                 ) and (
                     new_pkg_name != conflict_pkg_name
                 ) and (
+                    not conflict_version_matcher or
                     conflict_version_matcher(get_remote_package_version(installed_pkg_name))
                 ):
                     new_pkgs_conflicts.setdefault(new_pkg_name, []).append(conflict_pkg_name)
@@ -81,6 +82,7 @@ def find_conflicting_with_new_pkgs(
                     ) and (
                         new_pkg_name != installed_pkg_name
                     ) and (
+                        not conflict_version_matcher or
                         conflict_version_matcher(
                             provided_pkg.version_matcher.version or
                             get_remote_package_version(installed_pkg_name)

@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Iterable
+from typing import List, Dict, Tuple, Iterable, Optional
 
 from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
@@ -40,9 +40,9 @@ class PacmanConfig(PycmanConfig):
 
 
 class ProvidedDependency(DataType):
-    name: str = None
-    package: pyalpm.Package = None
-    version_matcher: VersionMatcher = None
+    name: str
+    package: pyalpm.Package
+    version_matcher: VersionMatcher
 
     def __repr__(self) -> str:
         return (
@@ -141,7 +141,7 @@ class RepositoryNotFound(Exception):
 
 class PackageDB(PackageDBCommon):
 
-    _alpm_handle: pyalpm.Handle = None
+    _alpm_handle: Optional[pyalpm.Handle] = None
 
     @classmethod
     def get_alpm_handle(cls) -> pyalpm.Handle:

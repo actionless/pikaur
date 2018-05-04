@@ -1,4 +1,4 @@
-from typing import Callable, Tuple, List
+from typing import Callable, Tuple, List, Optional
 
 import pyalpm
 
@@ -19,13 +19,17 @@ def compare_versions(version1: str, version2: str) -> int:
 
 class VersionMatcher():
 
-    def __call__(self, version: str) -> int:
+    def __call__(self, version: Optional[str]) -> int:
+        if not version:
+            return True
         return min([
             version_matcher(version)
             for version_matcher in self.version_matchers
         ])
 
-    def __init__(self, matcher_func: Callable[[str], int], version: str, depend_line: str) -> None:
+    def __init__(
+            self, matcher_func: Callable[[str], int], version: Optional[str], depend_line: str
+    ) -> None:
         self.version_matchers = [matcher_func]
         self.version = version
         self.line = depend_line
@@ -34,7 +38,8 @@ class VersionMatcher():
         self.version_matchers.append(version_matcher.version_matchers[0])
         self.line += ',' + version_matcher.line
         if self.version:
-            self.version += ',' + version_matcher.version
+            if version_matcher.version:
+                self.version += ',' + version_matcher.version
         else:
             self.version = version_matcher.version
 
@@ -44,19 +49,28 @@ def get_package_name_and_version_matcher_from_depend_line(
         depend_line: str
 ) -> Tuple[str, VersionMatcher]:
 
-    version: str = None
+    version: Optional[str] = None
 
-    def get_version() -> str:
+    def get_version() -> Optional[str]:
         return version
 
     def cmp_lt(v: str) -> int:
-        return compare_versions(v, get_version()) < 0
+        self_version = get_version()
+        if not self_version:
+            return cmp_default(v)
+        return compare_versions(v, self_version) < 0
 
     def cmp_gt(v: str) -> int:
-        return compare_versions(v, get_version()) > 0
+        self_version = get_version()
+        if not self_version:
+            return cmp_default(v)
+        return compare_versions(v, self_version) > 0
 
     def cmp_eq(v: str) -> int:
-        return compare_versions(v, get_version()) == 0
+        self_version = get_version()
+        if not self_version:
+            return cmp_default(v)
+        return compare_versions(v, self_version) == 0
 
     def cmp_le(v: str) -> int:
         return cmp_eq(v) or cmp_lt(v)
@@ -68,7 +82,7 @@ def get_package_name_and_version_matcher_from_depend_line(
         _v = v  # hello, mypy  # noqa
         return 1
 
-    cond = None
+    cond: Optional[str] = None
     version_matcher = cmp_default
     for test_cond, matcher in (
             ('>=', cmp_ge),

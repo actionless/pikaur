@@ -1,6 +1,6 @@
 import os
 import configparser
-from typing import Union
+from typing import Union, Optional
 
 from .core import running_as_root, open_file
 
@@ -9,7 +9,7 @@ VERSION = '0.10.1-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",
-    os.path.join(os.environ.get("HOME"), ".cache/")
+    os.path.join(os.environ["HOME"], ".cache/")
 )
 if running_as_root():
     CACHE_ROOT = '/var/cache/pikaur'
@@ -22,7 +22,7 @@ PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, 'pkg')
 
 CONFIG_ROOT = os.environ.get(
     "XDG_CONFIG_HOME",
-    os.path.join(os.environ.get("HOME"), ".config/")
+    os.path.join(os.environ["HOME"], ".config/")
 )
 CONFIG_PATH = os.path.join(
     CONFIG_ROOT,
@@ -105,7 +105,7 @@ def write_config(config: configparser.ConfigParser = None) -> None:
 
 class PikaurConfigSection():
 
-    section: configparser.SectionProxy = None
+    section: configparser.SectionProxy
 
     def __init__(self, section: configparser.SectionProxy) -> None:
         self.section = section
@@ -121,7 +121,7 @@ class PikaurConfigSection():
 
 class PikaurConfig():
 
-    _config: configparser.ConfigParser = None
+    _config: Optional[configparser.ConfigParser] = None
 
     @classmethod
     def get_config(cls) -> configparser.ConfigParser:

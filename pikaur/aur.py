@@ -15,31 +15,31 @@ AUR_BASE_URL = 'https://' + AUR_HOST
 
 
 class AURPackageInfo(DataType):
-    name: str = None
-    version: str = None
-    desc: str = None
-    numvotes: int = None
-    popularity: float = None
-    depends: List[str] = None
-    makedepends: List[str] = None
-    conflicts: List[str] = None
-    replaces: List[str] = None
+    name: str
+    version: str
+    desc: str
+    numvotes: int
+    popularity: float
+    depends: List[str] = []
+    makedepends: List[str] = []
+    optdepends: List[str] = []
+    checkdepends: List[str] = []
+    conflicts: List[str] = []
+    replaces: List[str] = []
+    provides: List[str] = []
 
-    id: str = None  # pylint: disable=invalid-name
-    packagebaseid: str = None
-    packagebase: str = None
-    url: str = None
-    outofdate: int = None
-    maintainer: str = None
-    firstsubmitted: int = None
-    lastmodified: int = None
-    urlpath: str = None
-    optdepends: List[str] = None
-    provides: List[str] = None
-    license: str = None
-    keywords: List[str] = None
-    groups: List[str] = None
-    checkdepends: List[str] = None
+    id: str  # pylint: disable=invalid-name
+    packagebaseid: str
+    packagebase: str
+    url: str
+    outofdate: int
+    maintainer: str
+    firstsubmitted: int
+    lastmodified: int
+    urlpath: str
+    license: str
+    keywords: List[str]
+    groups: List[str]
 
     def __init__(self, **kwargs):
         if 'description' in kwargs:
@@ -154,8 +154,8 @@ def find_aur_packages(
             ])
         for result in results:
             for aur_pkg in result:
-                _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg
-                json_results.append(aur_pkg)
+                _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg  # type: ignore
+                json_results.append(aur_pkg)  # type: ignore
 
     found_aur_packages = [
         result.name for result in json_results
@@ -174,7 +174,7 @@ def get_repo_url(package_base_name: str) -> str:
     return f'https://aur.archlinux.org/{package_base_name}.git'
 
 
-_AUR_PKGS_LIST_CACHE: List[str] = None
+_AUR_PKGS_LIST_CACHE: List[str]
 
 
 def get_all_aur_names() -> List[str]:

@@ -37,7 +37,7 @@ class PackageUpdate(DataType):
     Current_Version: str
     New_Version: str
     Description: str
-    Repository: str
+    Repository: Optional[str] = None
     devel_pkg_age_days: Optional[int] = None
 
     def __repr__(self) -> str:

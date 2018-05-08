@@ -187,7 +187,8 @@ class InstallPackagesCLI():
         # get sudo for further questions (command should do nothing):
         interactive_spawn(sudo(['pacman', '-T']))
 
-        self.install_repo_packages()
+        if not self.args.aur:
+            self.install_repo_packages()
 
         self.build_packages()
         if not args.downloadonly:
@@ -281,8 +282,13 @@ class InstallPackagesCLI():
         self.repo_packages_by_name = {pkg.name: pkg for pkg in repo_packages}
         self.exlude_already_uptodate()
 
-        self.get_repo_pkgs_info()
-        self.get_aur_pkgs_info(all_aur_packages_names)
+        self.repo_packages_install_info = []
+        self.thirdparty_repo_packages_install_info = []
+        if not self.args.aur:
+            self.get_repo_pkgs_info()
+        self.aur_updates_install_info = []
+        if not self.args.repo:
+            self.get_aur_pkgs_info(all_aur_packages_names)
         if not (
                 self.repo_packages_install_info or
                 self.thirdparty_repo_packages_install_info or
@@ -339,8 +345,6 @@ class InstallPackagesCLI():
                 Repository=repo_pkg.db.name
             )
 
-        self.repo_packages_install_info = []
-        self.thirdparty_repo_packages_install_info = []
         for pkg_name, pkg_update in repo_packages_install_info_by_name.items():
             if (
                     pkg_name in self.manually_excluded_packages_names

@@ -271,6 +271,12 @@ class InstallPackagesCLI():
             print_package_uptodate(package_name, PackageSource.REPO)
 
     def get_all_packages_info(self) -> None:
+        """
+        Retrieve info (`PackageUpdate` objects) of packages
+        which are going to be installed/upgraded and their dependencies
+        """
+
+        # deal with package names which user explicitly wants to install
         self.exclude_ignored_packages()
         repo_packages, all_aur_packages_names = find_repo_packages(
             self.install_package_names
@@ -282,13 +288,20 @@ class InstallPackagesCLI():
         self.repo_packages_by_name = {pkg.name: pkg for pkg in repo_packages}
         self.exlude_already_uptodate()
 
+        # retrieve PackageUpdate objects for repo packages to be installed
+        # and their upgrades if --sysupgrade was passed
         self.repo_packages_install_info = []
         self.thirdparty_repo_packages_install_info = []
         if not self.args.aur:
             self.get_repo_pkgs_info()
+
+        # retrieve PackageUpdate objects for AUR packages to be installed
+        # and their upgrades if --sysupgrade was passed
         self.aur_updates_install_info = []
         if not self.args.repo:
             self.get_aur_pkgs_info(all_aur_packages_names)
+
+        # check if we really need to build/install anything
         if not (
                 self.repo_packages_install_info or
                 self.thirdparty_repo_packages_install_info or
@@ -303,6 +316,8 @@ class InstallPackagesCLI():
                 ))
             sys.exit(0)
 
+        # try to find AUR deps for AUR packages
+        # if some exception wasn't handled inside -- just write message and exit
         try:
             self.get_aur_deps_info()
         except PackagesNotFoundInAUR as exc:

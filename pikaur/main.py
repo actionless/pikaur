@@ -127,6 +127,7 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
 def _info_packages_thread_repo(
         args: PikaurArgs
 ) -> str:
+    # @TODO: don't use PIPE here
     return interactive_spawn(
         get_pacman_command(args) + args.raw,
         stderr=subprocess.DEVNULL,

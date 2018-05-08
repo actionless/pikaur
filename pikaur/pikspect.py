@@ -152,7 +152,9 @@ def user_input_reader(task_data: PikspectTaskData) -> None:
 
 @handle_exception_in_thread
 def communicator(task_data: PikspectTaskData) -> None:
-    task_data.proc.communicate()
+    # @TODO: wip #161
+    # task_data.proc.communicate()
+    task_data.proc.wait()
 
 
 def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:

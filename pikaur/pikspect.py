@@ -12,6 +12,7 @@ import fcntl
 import uuid
 import os
 import multiprocessing
+from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import List, Tuple
 
@@ -220,7 +221,7 @@ def pikspect(
                 save_output=save_output,
                 task_id=task_id
             )
-            with multiprocessing.pool.ThreadPool() as pool:
+            with ThreadPool() as pool:
                 output_task = pool.apply_async(cmd_output_handler, (task_data, ))
                 pool.apply_async(user_input_reader, (task_data, ))
                 communicate_task = pool.apply_async(communicator, (task_data, ))

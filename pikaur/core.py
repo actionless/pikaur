@@ -224,12 +224,6 @@ def return_exception(fun: Callable) -> Callable:
 
 def just_copy_damn_tree(from_path, to_path):
     if not os.path.exists(to_path):
-        shutil.copytree(
-            from_path, to_path,
-            symlinks=True
-        )
+        shutil.copytree(from_path, to_path, symlinks=True)
     else:
-        copy_tree(
-            from_path, to_path,
-            preserve_symlinks=True, update=True
-        )
+        copy_tree(from_path, to_path, preserve_symlinks=True)

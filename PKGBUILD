@@ -23,7 +23,7 @@ conflicts=('pikaur')
 pkgver() {
 	cd "${srcdir}/${pkgname}" || exit 2
 	set -o pipefail
-	git describe | sed 's/^v//;s/-/+/g' || echo 0.0.1
+	git describe --long | sed 's/\([^-]*-g\)/r\1/;s/-/./g' || echo 0.0.1
 }
 
 build() {

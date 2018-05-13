@@ -174,7 +174,7 @@ def get_repo_url(package_base_name: str) -> str:
     return f'https://aur.archlinux.org/{package_base_name}.git'
 
 
-_AUR_PKGS_LIST_CACHE: List[str]
+_AUR_PKGS_LIST_CACHE: List[str] = []
 
 
 def get_all_aur_names() -> List[str]:

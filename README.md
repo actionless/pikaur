@@ -106,6 +106,13 @@ path to pacman executable.
 
 ### FAQ
 
+##### How to upgrade all the dev (-git) packages at once?
+
+`pikaur -Syu --devel --needed --keepbuild`
+
+`--needed` option will make sure what the same package version won't be rebuilt again
+and `--keepbuild` option will help to avoid re-downloading whole git repo of each installed dev package.
+
 ##### How to avoid manually importing GPG keys?
 
 It's recommended to control the keys manually. However if you know what you doing, `keyserver-options auto-key-retrieve` GPG option will automatically import GPG keys.

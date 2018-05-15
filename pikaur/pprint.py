@@ -136,7 +136,7 @@ def pretty_format_upgradeable(
             difference_size,
             pkg_update.Name
         )
-        user_chosen_sorting = user_config.sync.get('UpgradeSorting')
+        user_chosen_sorting = user_config.sync.UpgradeSorting
         if user_chosen_sorting == 'pkgname':
             sort_by = pkg_update.Name
         elif user_chosen_sorting == 'repo':
@@ -222,7 +222,7 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
         result.append(pretty_format_upgradeable(
             repo_packages_updates,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
         ))
     if thirdparty_repo_packages_updates:
         result.append('\n{} {}'.format(

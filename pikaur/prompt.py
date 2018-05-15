@@ -61,7 +61,7 @@ def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
 
 
 def get_input(prompt: str, answers=None) -> str:
-    if PikaurConfig().ui.get('RequireEnterConfirm'):
+    if PikaurConfig().ui.get_bool('RequireEnterConfirm'):
         answer = input(prompt).lower()
     else:
         answer = read_answer_from_tty(prompt, answers=answers)

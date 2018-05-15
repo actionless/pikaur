@@ -335,7 +335,7 @@ class PackageBuild(DataType):
             os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
 
         if os.path.exists(self.build_dir) and not (
-                self.args.keepbuild or PikaurConfig().build.get('KeepBuildDir')
+                self.args.keepbuild or PikaurConfig().build.get_bool('KeepBuildDir')
         ):
             remove_dir(self.build_dir)
         copy_tree(self.repo_path, self.build_dir)

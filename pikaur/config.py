@@ -120,30 +120,22 @@ class PikaurConfigSection():
     def __getattr__(self, attr) -> str:
         return self.get_str(attr)
 
-    def get(self, key: str, *args) -> _CONFIG_TYPES:
-        section = self.section
-        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') == 'bool':
-            return section.getboolean(key)
-        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') == 'int':
-            return section.getint(key)
-        return section.get(key, *args)
-
     def get_str(self, key: str, *args) -> str:
         section = self.section
         if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'str':
-            raise TypeError()
+            raise TypeError(f"{key} is not 'str'")
         return section.get(key, *args)
 
     def get_int(self, key: str) -> int:
         section = self.section
         if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'int':
-            raise TypeError()
+            raise TypeError(f"{key} is not 'int'")
         return section.getint(key)
 
     def get_bool(self, key: str) -> bool:
         section = self.section
         if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'bool':
-            raise TypeError()
+            raise TypeError(f"{key} is not 'bool'")
         return section.getboolean(key)
 
 

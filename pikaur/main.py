@@ -42,6 +42,7 @@ from .prompt import (
 )
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
+    PikaurConfig,
 )
 from .install_cli import (
     InstallPackagesCLI,
@@ -181,14 +182,14 @@ def cli_clean_packages_cache(args: PikaurArgs) -> None:
     if not args.aur:
         sys.exit(
             interactive_spawn(sudo(
-                ['pacman', ] + reconstruct_args(args, ['--repo'])
+                [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args, ['--repo'])
             )).returncode
         )
 
 
 def cli_print_version(args: PikaurArgs) -> None:
     pacman_version = spawn(
-        ['pacman', '--version', ],
+        [PikaurConfig().misc.PacmanPath, '--version', ],
     ).stdout_text.splitlines()[1].strip(' .-')
     print_version(pacman_version, quiet=args.quiet)
 
@@ -237,10 +238,10 @@ def cli_entry_point() -> None:
     if not_implemented_in_pikaur:
         if require_sudo and raw_args:
             sys.exit(
-                interactive_spawn(sudo(['pacman', ] + raw_args)).returncode
+                interactive_spawn(sudo([PikaurConfig().misc.PacmanPath, ] + raw_args)).returncode
             )
         sys.exit(
-            interactive_spawn(['pacman', ] + raw_args).returncode
+            interactive_spawn([PikaurConfig().misc.PacmanPath, ] + raw_args).returncode
         )
 
 

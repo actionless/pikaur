@@ -5,6 +5,7 @@ from . import argparse as argparse  # pylint: disable=no-name-in-module
 
 from .i18n import _
 from .core import spawn
+from .config import PikaurConfig
 
 
 class PikaurArgs(argparse.Namespace):
@@ -64,7 +65,7 @@ class PikaurArgumentParser(argparse.ArgumentParser):
 
 def cli_print_help(args: PikaurArgs) -> None:
     pacman_help = spawn(
-        ['pacman', ] + args.raw,
+        [PikaurConfig().misc.PacmanPath, ] + args.raw,
     ).stdout_text.replace(
         'pacman', 'pikaur'
     ).replace(

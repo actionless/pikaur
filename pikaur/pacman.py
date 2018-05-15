@@ -14,6 +14,7 @@ from .version import (
 )
 from .pprint import print_status_message, color_enabled
 from .args import PikaurArgs
+from .config import PikaurConfig
 
 
 OFFICIAL_REPOS = (
@@ -28,9 +29,10 @@ OFFICIAL_REPOS = (
 
 
 def get_pacman_command(args: PikaurArgs) -> List[str]:
+    pacman_path = PikaurConfig().misc.PacmanPath
     if color_enabled(args):
-        return ['pacman', '--color=always']
-    return ['pacman', '--color=never']
+        return [pacman_path, '--color=always']
+    return [pacman_path, '--color=never']
 
 
 class PacmanConfig(PycmanConfig):

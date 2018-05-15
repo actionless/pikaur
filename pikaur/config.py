@@ -1,4 +1,5 @@
 import os
+import sys
 import configparser
 from typing import Union
 
@@ -78,7 +79,13 @@ _CONFIG_SCHEMA = {
             'type': 'bool',
             'default': 'yes'
         },
-    }
+    },
+    'misc': {
+        'PacmanPath': {
+            'type': 'str',
+            'default': 'pacman'
+        },
+    },
 }
 
 
@@ -140,7 +147,15 @@ class PikaurConfig():
                 write_config()
             cls._config.read(CONFIG_PATH, encoding='utf-8')
             write_config(config=cls._config)
+            cls.validate_config()
         return cls._config
+
+    @classmethod
+    def validate_config(cls) -> None:
+        pacman_path = cls._config['misc']['PacmanPath']
+        if pacman_path == 'pikaur' or pacman_path.endswith('/pikaur'):
+            print("BAM! I am a shell bomb.")
+            sys.exit(1)
 
     def __getattr__(self, attr: str) -> PikaurConfigSection:
         return PikaurConfigSection(self.get_config()[attr])

@@ -185,7 +185,7 @@ class InstallPackagesCLI():
             return
 
         # get sudo for further questions (command should do nothing):
-        interactive_spawn(sudo(['pacman', '-T']))
+        interactive_spawn(sudo([PikaurConfig().misc.PacmanPath, '-T']))
 
         if not self.args.aur:
             self.install_repo_packages()

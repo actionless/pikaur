@@ -83,6 +83,12 @@ terminal colors, from 0 to 15
 require enter key to be pressed when answering questions.
 
 
+#### [misc]
+
+##### PacmanPath (default: pacman)
+path to pacman executable.
+
+
 
 
 

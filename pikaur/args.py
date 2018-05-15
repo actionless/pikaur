@@ -82,7 +82,7 @@ def cli_print_help(args: PikaurArgs) -> None:
             ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
             ('', '--edit', _("prompt to edit PKGBUILDs and other build files")),
             ('', '--namesonly', _("search only in package names")),
-            ('', '--devel', _("sysupgrade '-git' and other dev packages older than 1 day")),
+            ('', '--devel', _("always sysupgrade '-git', '-svn' and other dev packages")),
             ('-k', '--keepbuild', _("don't remove build dir after the build")),
             ('', '--nodiff', _("don't prompt to show the build files diff")),
         ]

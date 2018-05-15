@@ -1,6 +1,6 @@
 import os
 import configparser
-from typing import Union, Optional
+from typing import Union
 
 from .core import running_as_root, open_file
 
@@ -110,6 +110,9 @@ class PikaurConfigSection():
     def __init__(self, section: configparser.SectionProxy) -> None:
         self.section = section
 
+    def __getattr__(self, attr) -> str:
+        return self.get_str(attr)
+
     def get(self, key: str, *args) -> _CONFIG_TYPES:
         section = self.section
         if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') == 'bool':
@@ -118,14 +121,20 @@ class PikaurConfigSection():
             return section.getint(key)
         return section.get(key, *args)
 
+    def get_str(self, key: str, *args) -> str:
+        section = self.section
+        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'str':
+            raise TypeError()
+        return section.get(key, *args)
+
 
 class PikaurConfig():
 
-    _config: Optional[configparser.ConfigParser] = None
+    _config: configparser.ConfigParser
 
     @classmethod
     def get_config(cls) -> configparser.ConfigParser:
-        if not cls._config:
+        if not getattr(cls, '_config', None):
             cls._config = configparser.ConfigParser()
             if not os.path.exists(CONFIG_PATH):
                 write_config()

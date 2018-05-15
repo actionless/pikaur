@@ -223,7 +223,11 @@ def return_exception(fun: Callable) -> Callable:
 
 
 def just_copy_damn_tree(from_path, to_path):
-    if not os.path.exists(to_path):
-        shutil.copytree(from_path, to_path, symlinks=True)
-    else:
-        copy_tree(from_path, to_path, preserve_symlinks=True)
+    if os.path.exists(to_path):
+        try:
+            copy_tree(from_path, to_path, preserve_symlinks=True)
+        except FileNotFoundError:
+            remove_dir(to_path)
+        else:
+            return
+    shutil.copytree(from_path, to_path, symlinks=True)

@@ -127,9 +127,9 @@ def pretty_format_upgradeable(
         )
         user_config = PikaurConfig()
         color_config = user_config.colors
-        version_color: int = color_config.get('Version')  # type: ignore
-        old_color: int = color_config.get('VersionDiffOld')  # type: ignore
-        new_color: int = color_config.get('VersionDiffNew')  # type: ignore
+        version_color = color_config.get_int('Version')
+        old_color = color_config.get_int('VersionDiffOld')
+        new_color = color_config.get_int('VersionDiffNew')
         column_width = min(int(get_term_width() / 2.5), 37)
 
         sort_by = '{:03d}{}'.format(

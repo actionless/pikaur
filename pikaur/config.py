@@ -134,6 +134,18 @@ class PikaurConfigSection():
             raise TypeError()
         return section.get(key, *args)
 
+    def get_int(self, key: str) -> int:
+        section = self.section
+        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'int':
+            raise TypeError()
+        return section.getint(key)
+
+    def get_bool(self, key: str) -> bool:
+        section = self.section
+        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'bool':
+            raise TypeError()
+        return section.getboolean(key)
+
 
 class PikaurConfig():
 

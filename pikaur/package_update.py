@@ -119,7 +119,7 @@ def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
             aur_pkgs_up_to_date.append(aur_pkg)
     if aur_pkgs_up_to_date:
         sync_config = PikaurConfig().sync
-        devel_packages_expiration: int = sync_config.get('DevelPkgsExpiration')  # type: ignore
+        devel_packages_expiration = sync_config.get_int('DevelPkgsExpiration')
         if args.devel:
             devel_packages_expiration = 0
         if devel_packages_expiration > -1:

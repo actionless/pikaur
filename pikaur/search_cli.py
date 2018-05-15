@@ -145,11 +145,11 @@ def print_package_search_results(
                 ), 3)
 
             color_config = PikaurConfig().colors
-            version_color: int = color_config.get('Version')  # type: ignore
+            version_color = color_config.get_int('Version')
             version = package.version
 
             if getattr(package, "outofdate", None) is not None:
-                version_color: int = color_config.get('VersionDiffOld')  # type: ignore
+                version_color = color_config.get_int('VersionDiffOld')
                 version = "{} [{}: {}]".format(
                     package.version,
                     _("outofdate"),

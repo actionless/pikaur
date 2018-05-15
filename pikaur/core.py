@@ -3,6 +3,7 @@ import shutil
 import subprocess
 import enum
 import codecs
+import distutils
 from distutils.dir_util import copy_tree
 from typing import (
     Dict, Any, List, Iterable, Tuple, Union, Callable, Optional,
@@ -226,7 +227,7 @@ def just_copy_damn_tree(from_path, to_path):
     if os.path.exists(to_path):
         try:
             copy_tree(from_path, to_path, preserve_symlinks=True)
-        except FileNotFoundError:
+        except (FileNotFoundError, distutils.errors.DistutilsFileError):
             remove_dir(to_path)
         else:
             return

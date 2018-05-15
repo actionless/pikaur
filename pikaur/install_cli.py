@@ -667,7 +667,9 @@ class InstallPackagesCLI():
         editor_cmd = self.get_editor()
         if not editor_cmd:
             return False
-        noedit = not self.args.edit and (self.args.noedit or PikaurConfig().build.get_bool('NoEdit'))
+        noedit = not self.args.edit and (
+            self.args.noedit or PikaurConfig().build.get_bool('NoEdit')
+        )
         if noedit or self.args.noconfirm:
             print_status_message('{} {}'.format(
                 color_line('::', 11),

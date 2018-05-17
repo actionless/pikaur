@@ -117,6 +117,10 @@ and `--keepbuild` option will help to avoid re-downloading whole git repo of eac
 
 It's recommended to control the keys manually. However if you know what you doing, `keyserver-options auto-key-retrieve` GPG option will automatically import GPG keys.
 
+##### How to override default build directory
+
+Set `BUILDDIR` in `makepkg.conf`.
+
 
 ### Contributing
 

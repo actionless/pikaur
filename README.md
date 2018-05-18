@@ -119,7 +119,8 @@ It's recommended to control the keys manually. However if you know what you doin
 
 ##### How to override default source directory, build directory or built package destination?
 
-Set `SRCDEST`, `BUILDDIR` and `PKGDEST` accordingly in `makepkg.conf`.
+Set `SRCDEST`, `BUILDDIR` or `PKGDEST` accordingly in `makepkg.conf`.
+
 For more info see `makepkg` documentation.
 
 

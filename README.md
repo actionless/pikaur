@@ -4,7 +4,9 @@ AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build t
 
 Inspired by `pacaur`, `yaourt` and `yay`.
 
-Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--noconfirm` and so) it just interactively tells pacman what to do. If pacman will ask some unexpected question user will be just able to answer it manually. Also if some `pacman` or `makepkg` operation failed for irrelevant reason (like timed out `sudo` prompt) pikaur will suggest to restart the operation and instead of failing the whole transaction you could also skip the failed operation. 
+Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--noconfirm` and so) it just interactively tells pacman what to do. If pacman will ask some unexpected question user will be just able to answer it manually.
+
+If some `pacman` or `makepkg` operation failed for irrelevant reason (like timed out `sudo` prompt) pikaur will suggest to restart the operation and instead of failing the whole transaction you could also skip the failed operation.
 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")

@@ -8,6 +8,8 @@ Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--
 
 If some `pacman` or `makepkg` operation failed for irrelevant reason (like timed out `sudo` prompt) pikaur will suggest to restart the operation and instead of failing the whole transaction you could also skip the failed operation.
 
+Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or has been altered it via [M]anual package selection).
+
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
 * [Config file](#configuration "")

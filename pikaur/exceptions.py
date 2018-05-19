@@ -34,7 +34,7 @@ class DependencyVersionMismatch(DataType, Exception):
     depends_on: str
     location: str
 
-    version_matcher: 'VersionMatcher'
+    version_matcher: 'VersionMatcher' = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

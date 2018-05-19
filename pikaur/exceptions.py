@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from .core import DataType
 
@@ -34,7 +34,7 @@ class DependencyVersionMismatch(DataType, Exception):
     depends_on: str
     location: str
 
-    version_matcher: 'VersionMatcher' = None
+    version_matcher: Optional['VersionMatcher'] = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

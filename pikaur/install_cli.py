@@ -140,6 +140,8 @@ class InstallPackagesCLI():
     install_package_names: List[str]
     manually_excluded_packages_names: List[str]
     resolved_conflicts: List[List[str]]
+    accepted_replacements: List[List[str]]
+    declined_replacements: List[List[str]]
 
     # computed package lists:
     repo_packages_by_name: Dict[str, pyalpm.Package]
@@ -168,6 +170,9 @@ class InstallPackagesCLI():
 
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
+        self.accepted_replacements = []
+        self.declined_replacements = []
+
         self.transactions = {}
 
         self.install_packages()
@@ -650,6 +655,8 @@ class InstallPackagesCLI():
         package_replacements = find_replacements()
         for repo_pkg_name, installed_pkgs_names in package_replacements.items():
             for installed_pkg_name in installed_pkgs_names:
+                new_pkg = PackageDB.search_repo(repo_pkg_name, exact_match=True)[0]
+                new_pkg_repo_name = new_pkg.db.name
                 if self.ask_to_continue(
                         '{} {}'.format(
                             color_line('::', 11),
@@ -661,6 +668,13 @@ class InstallPackagesCLI():
                 ):
                     if installed_pkg_name in self.all_aur_packages_names:
                         self.discard_aur_package(installed_pkg_name)
+                    self.accepted_replacements.append([
+                        repo_pkg_name, new_pkg_repo_name, installed_pkg_name
+                    ])
+                else:
+                    self.declined_replacements.append([
+                        repo_pkg_name, new_pkg_repo_name, installed_pkg_name
+                    ])
 
     def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
         editor_cmd = self.get_editor()
@@ -831,7 +845,11 @@ class InstallPackagesCLI():
                             'refresh',
                             'ignore',
                         ]) + packages_to_be_installed + extra_args
-                    ), args=self.args, conflicts=self.resolved_conflicts,
+                    ),
+                    args=self.args,
+                    conflicts=self.resolved_conflicts,
+                    accepted_replacements=self.accepted_replacements,
+                    declined_replacements=self.declined_replacements,
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_repo_transaction()
@@ -910,7 +928,11 @@ class InstallPackagesCLI():
                             'refresh',
                             'ignore',
                         ]) + new_aur_deps_to_install
-                    ), args=self.args, conflicts=self.resolved_conflicts,
+                    ),
+                    args=self.args,
+                    conflicts=self.resolved_conflicts,
+                    accepted_replacements=self.accepted_replacements,
+                    declined_replacements=self.declined_replacements,
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
@@ -936,7 +958,11 @@ class InstallPackagesCLI():
                             'refresh',
                             'ignore',
                         ]) + aur_packages_to_install
-                    ), args=self.args, conflicts=self.resolved_conflicts,
+                    ),
+                    args=self.args,
+                    conflicts=self.resolved_conflicts,
+                    accepted_replacements=self.accepted_replacements,
+                    declined_replacements=self.declined_replacements,
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()

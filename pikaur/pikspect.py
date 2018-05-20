@@ -14,7 +14,7 @@ import os
 import multiprocessing
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 from .core import DataType
 from .pprint import bold_line, PrintLock, print_stdout
@@ -28,14 +28,20 @@ def _p(msg: str) -> str:
     return PACMAN_TRANSLATION.gettext(msg)
 
 
-DEFAULT_QUESTIONS = [
-    bold_line(" {} {} ".format(message, _p('[Y/n]')))
-    for message in [
-        _p('Proceed with installation?'),
-        _p('Do you want to remove these packages?'),
-    ]
-]
-DEFAULT_ANSWER = _p("Y")
+Y = _p("Y")
+N = _p("N")
+
+
+DEFAULT_QUESTIONS: Dict[str, List[str]] = {
+    Y: [
+        bold_line(" {} {} ".format(message, _p('[Y/n]')))
+        for message in [
+            _p('Proceed with installation?'),
+            _p('Do you want to remove these packages?'),
+        ]
+    ],
+    N: [],
+}
 
 
 SMALL_TIMEOUT = 0.1
@@ -74,8 +80,7 @@ class PikspectTaskData(DataType):
     proc: PikspectPopen
     pty_out: io.BytesIO
     pty_in: io.TextIOWrapper
-    default_answer: str
-    default_questions: Tuple[str]
+    default_questions: Dict[str, Tuple[str]]
     print_output: bool
     save_output: bool
     task_id: uuid.UUID
@@ -84,11 +89,18 @@ class PikspectTaskData(DataType):
 @handle_exception_in_thread
 def cmd_output_handler(task_data: PikspectTaskData) -> None:
     historic_output: List[bytes] = []
-    max_question_length = max([len(q) for q in task_data.default_questions]) + 10
-    default_questions_bytes = [
-        [chr(char).encode('utf-8') for char in question.encode('utf-8')]
-        for question in task_data.default_questions
-    ]
+    max_question_length = max([
+        len(q)
+        for answer, questions in task_data.default_questions.items()
+        for q in questions
+    ]) + 10
+    default_questions_bytes: Dict[str, List[List[bytes]]] = {
+        answer: [
+            [chr(char).encode('utf-8') for char in question.encode('utf-8')]
+            for question in questions
+        ]
+        for answer, questions in task_data.default_questions.items()
+    }
     while True:
         # if proc.returncode is not None:
             # break
@@ -103,23 +115,24 @@ def cmd_output_handler(task_data: PikspectTaskData) -> None:
                 sys.stdout.buffer.flush()
         if task_data.save_output:
             ThreadSafeBytesStorage.add_bytes(task_data.task_id, output)
-        for question in default_questions_bytes:
-            if len(historic_output) < len(question) or (
-                    historic_output[-len(question):] != question
-            ):
-                continue
-            if task_data.print_output:
-                print_stdout(task_data.default_answer + '\n')
-            with PrintLock():
-                if task_data.save_output:
-                    ThreadSafeBytesStorage.add_bytes(
-                        task_data.task_id, task_data.default_answer.encode('utf-8') + b'\n'
-                    )
-                task_data.pty_in.write(task_data.default_answer)
-                sleep(SMALL_TIMEOUT)
-                task_data.pty_in.write('\n')
-            historic_output = []
-            break
+        for answer, questions in default_questions_bytes.items():
+            for question in questions:
+                if len(historic_output) < len(question) or (
+                        historic_output[-len(question):] != question
+                ):
+                    continue
+                if task_data.print_output:
+                    print_stdout(answer + '\n')
+                with PrintLock():
+                    if task_data.save_output:
+                        ThreadSafeBytesStorage.add_bytes(
+                            task_data.task_id, answer.encode('utf-8') + b'\n'
+                        )
+                    task_data.pty_in.write(answer)
+                    sleep(SMALL_TIMEOUT)
+                    task_data.pty_in.write('\n')
+                historic_output = []
+                break
 
 
 @handle_exception_in_thread
@@ -182,18 +195,23 @@ class NestedTerminal():
 # pylint: disable=too-many-locals,too-many-arguments
 def pikspect(
         cmd: List[str],
-        default_answer=DEFAULT_ANSWER,
-        default_questions=DEFAULT_QUESTIONS,
         print_output=True,
         save_output=True,
+        default_questions: Dict[str, List[str]] = None,
         conflicts: List[List[str]] = None,
+        accepted_replacements: List[List[str]] = None,
+        declined_replacements: List[List[str]] = None,
         **kwargs
 ) -> PikspectPopen:
 
-    extra_questions: List[str] = []
+    if not default_questions:
+        default_questions = {}
+        default_questions.update(DEFAULT_QUESTIONS)
+
+    extra_questions: Dict[str, List[str]] = {Y: [], N: []}
 
     if conflicts:
-        extra_questions += [
+        extra_questions[Y] += [
             bold_line(" {} {} ".format(message, _p('[y/N]')))
             for message in [
                 _p('%s and %s are in conflict. Remove %s?') % (new_pkg, old_pkg, old_pkg)
@@ -201,8 +219,23 @@ def pikspect(
             ]
         ]
 
-    if extra_questions:
-        default_questions = default_questions + extra_questions
+    for answer, replacements in (
+            (Y, accepted_replacements),
+            (N, declined_replacements),
+    ):
+        if not replacements:
+            continue
+        extra_questions[answer] += [
+            bold_line(" {} {} ".format(message, _p('[Y/n]')))
+            for message in [
+                _p('Replace %s with %s/%s?') % (old_pkg, new_pkg_repo, new_pkg)
+                for new_pkg, new_pkg_repo, old_pkg in replacements
+            ]
+        ]
+
+    for answer in (Y, N):
+        if extra_questions[answer]:
+            default_questions[answer] = default_questions[answer] + extra_questions[answer]
 
     task_id = uuid.uuid4()
 
@@ -230,7 +263,6 @@ def pikspect(
                 proc=proc,
                 pty_out=pty_out,
                 pty_in=pty_in,
-                default_answer=default_answer,
                 default_questions=default_questions,
                 print_output=print_output,
                 save_output=save_output,

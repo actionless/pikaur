@@ -22,12 +22,13 @@ def find_replacements() -> Dict[str, List[str]]:
         for replace_pkg_name in replace_list:
             if (replace_pkg_name in all_local_pkgs_names) and (
                     (pkg_name not in all_repo_pkg_names) or (
-                        replace_pkg_name not in all_repo_pkg_names  # or
-                        # PackageDB.get_repo_priority(
-                        #     all_repo_pkgs_info[replace_pkg_name].db.name
-                        # ) <= PackageDB.get_repo_priority(
-                        #     all_repo_pkgs_info[pkg_name].db.name
-                        # )
+                        replace_pkg_name not in all_repo_pkg_names or (
+                            PackageDB.get_repo_priority(
+                                PackageDB.search_repo(replace_pkg_name, exact_match=True)[0].db.name
+                            ) <= PackageDB.get_repo_priority(
+                                PackageDB.search_repo(pkg_name, exact_match=True)[0].db.name
+                            )
+                        )
                     )
             ):
                 new_pkgs_replaces.setdefault(pkg_name, []).append(replace_pkg_name)

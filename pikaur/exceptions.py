@@ -56,3 +56,11 @@ class SysExit(Exception):
     def __init__(self, code: int) -> None:
         self.code = code
         super().__init__(f"Exit code: {code}")
+
+
+class IncompatibleArguments(Exception):
+    pass
+
+
+class MissingArgument(Exception):
+    pass

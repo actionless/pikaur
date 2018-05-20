@@ -3,9 +3,10 @@ from typing import List, Any, Tuple
 
 from . import argparse as argparse  # pylint: disable=no-name-in-module
 
-from .i18n import _
+from .i18n import _, _n
 from .core import spawn
 from .config import PikaurConfig
+from .exceptions import MissingArgument, IncompatibleArguments
 
 
 class PikaurArgs(argparse.Namespace):
@@ -111,6 +112,14 @@ PIKAUR_OPTS = (
 )
 
 
+def validate_args(args: PikaurArgs) -> None:
+    if args.query:
+        if not args.sysupgrade:
+            for arg_name in ('aur', 'repo'):
+                if getattr(args, arg_name):
+                    raise MissingArgument('sysupgrade', arg_name)
+
+
 def parse_args(args: List[str] = None) -> PikaurArgs:
     args = args or sys.argv[1:]
     parser = PikaurArgumentParser(prog=sys.argv[0], add_help=False)
@@ -162,6 +171,25 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     # print(reconstruct_args(parsed_args, ignore_args=['sync']))
     # sys.exit(0)
 
+    try:
+        validate_args(parsed_args)
+    except IncompatibleArguments as exc:
+        print(_(":: error: options {} can't be used together.").format(
+            ", ".join([f"'--{opt}'" for opt in exc.args])
+        ))
+        sys.exit(1)
+    except MissingArgument as exc:
+        print(
+            _n(
+                ":: error: option {} can't be used without {}.",
+                ":: error: options {} can't be used without {}.",
+                len(exc.args[1:])
+            ).format(
+                ", ".join([f"'--{opt}'" for opt in exc.args[1:]]),
+                f"'--{exc.args[0]}'"
+            )
+        )
+        sys.exit(1)
     return parsed_args
 
 

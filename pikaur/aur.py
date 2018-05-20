@@ -79,12 +79,18 @@ def construct_aur_rpc_url_from_params(params: Dict[str, Union[str, int]]) -> str
     return construct_aur_rpc_url_from_uri(uri)
 
 
+def strip_aur_repo_name(pkg_name: str) -> str:
+    if pkg_name.startswith('aur/'):
+        pkg_name = ''.join(pkg_name.split('aur/'))
+    return pkg_name
+
+
 def aur_rpc_search_name_desc(search_query: str) -> List[AURPackageInfo]:
     result_json = get_json_from_url(
         construct_aur_rpc_url_from_params({
             'v': 5,
             'type': 'search',
-            'arg': search_query,
+            'arg': strip_aur_repo_name(search_query),
             'by': 'name-desc'
         })
     )
@@ -100,7 +106,7 @@ def aur_rpc_info(search_queries: List[str]) -> List[AURPackageInfo]:
         'type': 'info',
     })
     for package in search_queries:
-        uri += '&arg[]=' + quote(package)
+        uri += '&arg[]=' + quote(strip_aur_repo_name(package))
     result_json = get_json_from_url(
         construct_aur_rpc_url_from_uri(uri)
     )

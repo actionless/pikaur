@@ -8,7 +8,7 @@ Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--
 
 If some `pacman` or `makepkg` operation failed for irrelevant reason (like timed out `sudo` prompt) pikaur will suggest to restart the operation and instead of failing the whole transaction you could also skip the failed operation.
 
-The following pacman operations are extended by AUR capabilities:
+The following pacman operations are extended with AUR capabilities:
 
 * `-S`
 * `-Ss`

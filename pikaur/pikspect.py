@@ -179,15 +179,30 @@ class NestedTerminal():
         TTYRestore.restore()
 
 
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-locals,too-many-arguments
 def pikspect(
         cmd: List[str],
         default_answer=DEFAULT_ANSWER,
         default_questions=DEFAULT_QUESTIONS,
         print_output=True,
         save_output=True,
+        conflicts: List[List[str]] = None,
         **kwargs
 ) -> PikspectPopen:
+
+    extra_questions: List[str] = []
+
+    if conflicts:
+        extra_questions += [
+            bold_line(" {} {} ".format(message, _p('[y/N]')))
+            for message in [
+                _p('%s and %s are in conflict. Remove %s?') % (new_pkg, old_pkg, old_pkg)
+                for new_pkg, old_pkg in conflicts
+            ]
+        ]
+
+    if extra_questions:
+        default_questions = default_questions + extra_questions
 
     task_id = uuid.uuid4()
 

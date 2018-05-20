@@ -139,6 +139,7 @@ class InstallPackagesCLI():
     args: PikaurArgs
     install_package_names: List[str]
     manually_excluded_packages_names: List[str]
+    resolved_conflicts: List[List[str]]
 
     # computed package lists:
     repo_packages_by_name: Dict[str, pyalpm.Package]
@@ -166,6 +167,7 @@ class InstallPackagesCLI():
         self.install_package_names = packages or args.positional
 
         self.manually_excluded_packages_names = []
+        self.resolved_conflicts = []
         self.transactions = {}
 
         self.install_packages()
@@ -630,10 +632,6 @@ class InstallPackagesCLI():
                         9))
                     sys.exit(131)
         for new_pkg_name, new_pkg_conflicts in conflict_result.items():
-            # @TODO: remove this after implementing pikspect for package conflicts
-            if new_pkg_name in self.repo_packages_by_name:
-                continue
-            ##########################
             for pkg_conflict in new_pkg_conflicts:
                 print_status_message('{} {}'.format(
                     color_line(_("warning:"), 11),
@@ -646,6 +644,7 @@ class InstallPackagesCLI():
                 ), default_yes=False)
                 if not answer:
                     sys.exit(125)
+                self.resolved_conflicts.append([new_pkg_name, pkg_conflict])
 
     def ask_about_package_replacements(self) -> None:
         package_replacements = find_replacements()
@@ -832,7 +831,7 @@ class InstallPackagesCLI():
                             'refresh',
                             'ignore',
                         ]) + packages_to_be_installed + extra_args
-                    ), args=self.args
+                    ), args=self.args, conflicts=self.resolved_conflicts,
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_repo_transaction()
@@ -911,7 +910,7 @@ class InstallPackagesCLI():
                             'refresh',
                             'ignore',
                         ]) + new_aur_deps_to_install
-                    ), args=self.args
+                    ), args=self.args, conflicts=self.resolved_conflicts,
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
@@ -937,7 +936,7 @@ class InstallPackagesCLI():
                             'refresh',
                             'ignore',
                         ]) + aur_packages_to_install
-                    ), args=self.args
+                    ), args=self.args, conflicts=self.resolved_conflicts,
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()

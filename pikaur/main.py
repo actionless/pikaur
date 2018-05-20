@@ -99,7 +99,10 @@ def cli_print_upgradeable(args: PikaurArgs) -> None:
             pkg_update.Name for pkg_update in updates
         ]))
     else:
-        print(pretty_format_upgradeable(updates))
+        print(pretty_format_upgradeable(
+            updates,
+            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+        ))
 
 
 def cli_install_packages(args, packages: List[str] = None) -> None:

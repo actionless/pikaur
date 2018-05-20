@@ -158,6 +158,12 @@ def pretty_format_upgradeable(
                 pkg_name
             )
             pkg_len += len(pkg_update.Repository) + 1
+        elif print_repo:
+            pkg_name = '{}{}'.format(
+                _color_line('aur/', 9),
+                pkg_name
+            )
+            pkg_len += len('aur/')
 
         return (
             template or (

@@ -8,6 +8,17 @@ Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--
 
 If some `pacman` or `makepkg` operation failed for irrelevant reason (like timed out `sudo` prompt) pikaur will suggest to restart the operation and instead of failing the whole transaction you could also skip the failed operation.
 
+The following pacman operations are extended by AUR capabilities:
+
+* `-S`
+* `-Ss`
+* `-Si`
+* `-Su` / `-Syu`
+* `-Sc` / `-Scc`
+* `-Qu`
+
+Also see `pikaur -Sh` and `pikaur -Qh` for pikaur-specific flags.
+
 Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or has been altered it via [M]anual package selection).
 
 * [Installation](#installation "")

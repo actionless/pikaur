@@ -12,7 +12,7 @@ from .pprint import (
     color_line, bold_line, format_paragraph, pretty_format_repo_name,
     print_status_message,
 )
-from .pacman import PackageDB
+from .pacman import PackageDB, get_pkg_id
 from .aur import AURPackageInfo, aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names
 from .args import PikaurArgs
 from .exceptions import AURError
@@ -82,18 +82,20 @@ def package_search_thread_router(args: Dict[str, Any]) -> Tuple[str, Dict[str, A
     return index, result
 
 
-def join_search_results(all_aur_results: List[List[AURPackageInfo]]) -> Iterable[AURPackageInfo]:
+def join_search_results(
+        all_aur_results: List[List[Union[AURPackageInfo, pyalpm.Package]]]
+) -> Iterable[Union[AURPackageInfo, pyalpm.Package]]:
     aur_pkgs_nameset: Set[str] = set()
     for search_results in all_aur_results:
-        new_aur_pkgs_nameset = set([result.name for result in search_results])
+        new_aur_pkgs_nameset = set([get_pkg_id(result) for result in search_results])
         if aur_pkgs_nameset:
             aur_pkgs_nameset = aur_pkgs_nameset.intersection(new_aur_pkgs_nameset)
         else:
             aur_pkgs_nameset = new_aur_pkgs_nameset
     return {
-        result.name: result
+        get_pkg_id(result): result
         for result in all_aur_results[0]
-        if result.name in aur_pkgs_nameset
+        if get_pkg_id(result) in aur_pkgs_nameset
     }.values()
 
 

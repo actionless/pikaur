@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Iterable, Optional
+from typing import List, Dict, Tuple, Iterable, Optional, Union, TYPE_CHECKING
 
 from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
@@ -15,6 +15,9 @@ from .version import (
 from .pprint import print_status_message, color_enabled
 from .args import PikaurArgs
 from .config import PikaurConfig
+if TYPE_CHECKING:
+    # pylint: disable=unused-import
+    from .aur import AURPackageInfo  # noqa
 
 
 OFFICIAL_REPOS = (
@@ -53,6 +56,12 @@ class ProvidedDependency(DataType):
         )
 
 
+def get_pkg_id(pkg: Union['AURPackageInfo', pyalpm.Package]) -> str:
+    if isinstance(pkg, pyalpm.Package):
+        return f"{pkg.db.name}/{pkg.name}"
+    return f"aur/{pkg.name}"
+
+
 class PackageDBCommon():
 
     _packages_list_cache: Dict[PackageSource, List[pyalpm.Package]] = {}
@@ -87,7 +96,7 @@ class PackageDBCommon():
     def get_repo_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:
         if not cls._packages_dict_cache.get(PackageSource.REPO):
             cls._packages_dict_cache[PackageSource.REPO] = {
-                pkg.name: pkg
+                get_pkg_id(pkg): pkg
                 for pkg in cls.get_repo_list(quiet=quiet)
             }
         return cls._packages_dict_cache[PackageSource.REPO]
@@ -135,6 +144,14 @@ class PackageDBCommon():
     @classmethod
     def get_local_provided_dict(cls) -> Dict[str, List[ProvidedDependency]]:
         return cls._get_provided_dict(PackageSource.LOCAL)
+
+    @classmethod
+    def get_repo_pkgnames(cls):
+        return [pkg.name for pkg in cls.get_repo_list()]
+
+    @classmethod
+    def get_local_pkgnames(cls):
+        return [pkg.name for pkg in cls.get_local_list()]
 
 
 class RepositoryNotFound(Exception):
@@ -195,7 +212,7 @@ class PackageDB(PackageDBCommon):
                                 not exact_match or search_query in ([pkg.name, ] + pkg.groups)
                             )
                     ):
-                        result[pkg.name] = pkg
+                        result[get_pkg_id(pkg)] = pkg
         return result
 
     @classmethod
@@ -239,8 +256,8 @@ def find_local_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Packa
 
 
 def find_packages_not_from_repo() -> List[str]:
-    local_pkg_names = PackageDB.get_local_dict().keys()
-    repo_pkg_names = PackageDB.get_repo_dict().keys()
+    local_pkg_names = PackageDB.get_local_pkgnames()
+    repo_pkg_names = PackageDB.get_repo_pkgnames()
     not_found_packages = []
     for pkg_name in local_pkg_names:
         if pkg_name not in repo_pkg_names:

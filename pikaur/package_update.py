@@ -131,9 +131,9 @@ def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
 
 
 def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
-    repo_info = PackageDB.get_repo_dict().get(new_pkg_name)
+    repo_info = PackageDB.search_repo(new_pkg_name, exact_match=True)
     if repo_info:
-        return repo_info.version
+        return repo_info[0].version
     aur_packages, _not_found = find_aur_packages([new_pkg_name])
     if aur_packages:
         return aur_packages[0].version

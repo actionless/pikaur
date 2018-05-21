@@ -19,6 +19,7 @@ DEVEL_PKGS_POSTFIXES = (
     '-bzr',
     '-hg',
     '-cvs',
+    '-nightly',
 )
 
 

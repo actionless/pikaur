@@ -25,7 +25,7 @@ def find_replacements() -> Dict[str, List[str]]:
                         replace_pkg_name not in all_repo_pkg_names or (
                             PackageDB.get_repo_priority(
                                 PackageDB.find_one_repo(replace_pkg_name).db.name
-                            ) <= PackageDB.get_repo_priority(
+                            ) >= PackageDB.get_repo_priority(
                                 PackageDB.find_one_repo(pkg_name).db.name
                             )
                         )

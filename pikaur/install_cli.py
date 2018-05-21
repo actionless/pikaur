@@ -178,7 +178,12 @@ class InstallPackagesCLI():
         self.accepted_replacements = []
         self.declined_replacements = []
 
+        self.repo_packages_by_name = {}
+        self.aur_deps_relations = {}
+        self.package_builds_by_name = {}
+
         self.transactions = {}
+        self.failed_to_build_package_names = []
 
         self.install_packages()
 
@@ -621,7 +626,6 @@ class InstallPackagesCLI():
 
     def get_package_builds(self) -> None:
         if not self.all_aur_packages_names:
-            self.package_builds_by_name = {}
             return
         while self.all_aur_packages_names:
             try:

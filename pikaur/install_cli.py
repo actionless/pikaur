@@ -869,7 +869,9 @@ class InstallPackagesCLI():
                     get_pacman_command(self.args) + [
                         '-Rs',
                     ] + packages_to_be_removed
-                ), args=self.args
+                ),
+                args=self.args,
+                pikspect=True,
             )
 
     def _install_repo_packages(self, packages_to_be_installed: List[str]) -> None:
@@ -889,6 +891,7 @@ class InstallPackagesCLI():
                         ]) + packages_to_be_installed + extra_args
                     ),
                     args=self.args,
+                    pikspect=True,
                     conflicts=self.resolved_conflicts,
                     accepted_replacements=self.accepted_replacements,
                     declined_replacements=self.declined_replacements,
@@ -972,6 +975,7 @@ class InstallPackagesCLI():
                         ]) + new_aur_deps_to_install
                     ),
                     args=self.args,
+                    pikspect=True,
                     conflicts=self.resolved_conflicts,
                     accepted_replacements=self.accepted_replacements,
                     declined_replacements=self.declined_replacements,
@@ -1002,6 +1006,7 @@ class InstallPackagesCLI():
                         ]) + aur_packages_to_install
                     ),
                     args=self.args,
+                    pikspect=True,
                     conflicts=self.resolved_conflicts,
                     accepted_replacements=self.accepted_replacements,
                     declined_replacements=self.declined_replacements,

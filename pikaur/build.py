@@ -267,7 +267,9 @@ class PackageBuild(DataType):
                         path for name, path in self.built_deps_to_install.items()
                         if name not in explicitly_installed_deps
                     ],
-                ), args=self.args
+                ),
+                args=self.args,
+                pikspect=True,
             )
         result2 = True
         if explicitly_installed_deps:
@@ -280,7 +282,8 @@ class PackageBuild(DataType):
                         if name in explicitly_installed_deps
                     ]
                 ),
-                args=self.args
+                args=self.args,
+                pikspect=True,
             )
 
         if result1 and result2:
@@ -397,7 +400,9 @@ class PackageBuild(DataType):
                     '--sync',
                     '--asdeps',
                 ] + self.all_deps_to_install
-            ), args=self.args
+            ),
+            args=self.args,
+            pikspect=True,
         )
         return local_packages_before
 
@@ -430,7 +435,9 @@ class PackageBuild(DataType):
                 get_pacman_command(self.args) + [
                     '--remove',
                 ] + list(deps_packages_installed)
-            ), args=self.args
+            ),
+            args=self.args,
+            pikspect=True,
         )
 
     def build(

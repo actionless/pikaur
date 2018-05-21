@@ -94,7 +94,7 @@ def retry_interactive_command(
 ) -> bool:
     while True:
         good = None
-        if (PikaurConfig().misc.PacmanPath in cmd_args or pikspect):
+        if pikspect:
             good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
         else:
             good = interactive_spawn(cmd_args, **kwargs).returncode == 0

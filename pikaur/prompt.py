@@ -1,13 +1,14 @@
 import sys
 import tty
-from typing import List
+from string import printable
+from typing import List, Optional
 
 from .args import PikaurArgs
 from .config import PikaurConfig
 
 from .core import interactive_spawn
 from .i18n import _
-from .pprint import color_line, print_status_message
+from .pprint import color_line, print_status_message, get_term_width
 from .pikspect import pikspect as pikspect_spawn
 
 
@@ -60,9 +61,46 @@ def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
         tty.tcdrain(sys.stdin.fileno())  # type: ignore
 
 
+def range_printable(text: str, start: int = 0, end: Optional[int] = None) -> str:
+    if not end:
+        end = len(text)
+
+    result = ''
+    counter = 0
+    escape_seq = False
+    for char in text:
+        if counter >= start:
+            result += char
+        if not escape_seq and char in printable:
+            counter += 1
+        elif escape_seq:
+            if char == 'm':
+                escape_seq = False
+        else:
+            escape_seq = True
+        if counter == end:
+            break
+    return result
+
+
+def split_last_line(text: str) -> str:
+    all_lines = text.split('\n')
+    n_lines = len(all_lines)
+    last_line = all_lines[n_lines - 1]
+    term_width = get_term_width()
+    if len(last_line) < term_width:
+        return text
+    prev_lines = all_lines[:n_lines - 1]
+    last_line = "{}\n{}".format(
+        range_printable(last_line, 0, term_width),
+        range_printable(last_line, term_width)
+    )
+    return '\n'.join(prev_lines + [last_line])
+
+
 def get_input(prompt: str, answers=None) -> str:
     if PikaurConfig().ui.get_bool('RequireEnterConfirm'):
-        answer = input(prompt).lower()
+        answer = input(split_last_line(prompt)).lower()
     else:
         answer = read_answer_from_tty(prompt, answers=answers)
     return answer

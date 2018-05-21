@@ -64,42 +64,6 @@ class PikaurArgumentParser(argparse.ArgumentParser):
             self.add_argument('-' + letter, action=action)
 
 
-def cli_print_help(args: PikaurArgs) -> None:
-    pacman_help = spawn(
-        [PikaurConfig().misc.PacmanPath, ] + args.raw,
-    ).stdout_text.replace(
-        'pacman', 'pikaur'
-    ).replace(
-        'options:', '\n' + _("Common pacman options:")
-    )
-    pikaur_options_help: List[Tuple[str, str, str]] = []
-    if args.sync or args.query:
-        pikaur_options_help += [
-            ('-a', '--aur', _("query packages from AUR only")),
-            ('', '--repo', _("query packages from repository only")),
-        ]
-    if args.sync:
-        pikaur_options_help += [
-            ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
-            ('', '--edit', _("prompt to edit PKGBUILDs and other build files")),
-            ('', '--namesonly', _("search only in package names")),
-            ('', '--devel', _("always sysupgrade '-git', '-svn' and other dev packages")),
-            ('-k', '--keepbuild', _("don't remove build dir after the build")),
-            ('', '--nodiff', _("don't prompt to show the build files diff")),
-        ]
-    print(''.join([
-        '\n',
-        pacman_help,
-        '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
-        '\n'.join([
-            '{:>5} {:<16} {}'.format(
-                short_opt and (short_opt + ',') or '', long_opt or '', descr
-            )
-            for short_opt, long_opt, descr in pikaur_options_help
-        ])
-    ]))
-
-
 PIKAUR_OPTS = (
     (None, 'noedit'),
     (None, 'edit'),
@@ -210,3 +174,40 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
     return list(set(
         list(reconstructed_args.keys()) + parsed_args.unknown_args
     ))
+
+
+def cli_print_help(args: PikaurArgs) -> None:
+    pikaur_long_opts = [l for s, l in PIKAUR_OPTS]
+    pacman_help = spawn(
+        [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args, ignore_args=pikaur_long_opts),
+    ).stdout_text.replace(
+        'pacman', 'pikaur'
+    ).replace(
+        'options:', '\n' + _("Common pacman options:")
+    )
+    pikaur_options_help: List[Tuple[str, str, str]] = []
+    if args.sync or args.query:
+        pikaur_options_help += [
+            ('-a', '--aur', _("query packages from AUR only")),
+            ('', '--repo', _("query packages from repository only")),
+        ]
+    if args.sync:
+        pikaur_options_help += [
+            ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
+            ('', '--edit', _("prompt to edit PKGBUILDs and other build files")),
+            ('', '--namesonly', _("search only in package names")),
+            ('', '--devel', _("always sysupgrade '-git', '-svn' and other dev packages")),
+            ('-k', '--keepbuild', _("don't remove build dir after the build")),
+            ('', '--nodiff', _("don't prompt to show the build files diff")),
+        ]
+    print(''.join([
+        '\n',
+        pacman_help,
+        '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
+        '\n'.join([
+            '{:>5} {:<16} {}'.format(
+                short_opt and (short_opt + ',') or '', long_opt or '', descr
+            )
+            for short_opt, long_opt, descr in pikaur_options_help
+        ])
+    ]))

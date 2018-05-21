@@ -72,6 +72,7 @@ class DataType():
 
     def __setattr__(self, key: str, value: Any) -> None:
         if (
+                not getattr(self, "__annotations__", None) or
                 self.__annotations__.get(key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM  # pylint: disable=no-member
         ) and (
             getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM

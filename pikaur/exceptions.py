@@ -9,6 +9,11 @@ if TYPE_CHECKING:
     from .core import InteractiveSpawn  # noqa
 
 
+class PackagesNotFoundInRepo(DataType, Exception):
+    packages: List[str]
+    wanted_by: str
+
+
 class PackagesNotFoundInAUR(DataType, Exception):
     packages: List[str]
     wanted_by: str

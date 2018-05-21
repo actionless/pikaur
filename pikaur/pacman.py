@@ -15,6 +15,8 @@ from .version import (
 from .pprint import print_status_message, color_enabled
 from .args import PikaurArgs
 from .config import PikaurConfig
+from .exceptions import PackagesNotFoundInRepo
+
 if TYPE_CHECKING:
     # pylint: disable=unused-import
     from .aur import AURPackageInfo  # noqa
@@ -220,6 +222,13 @@ class PackageDB(PackageDBCommon):
         return list(
             cls.search_repo_dict(*args, **kwargs).values()
         )
+
+    @classmethod
+    def find_one_repo(cls, pkg_name) -> pyalpm.Package:
+        pkgs = cls.search_repo(search_query=pkg_name, exact_match=True)
+        if not pkgs:
+            raise PackagesNotFoundInRepo(packages=[pkg_name])
+        return pkgs[0]
 
     @classmethod
     def get_repo_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:

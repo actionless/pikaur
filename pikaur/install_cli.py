@@ -306,12 +306,13 @@ class InstallPackagesCLI():
         self.new_repo_deps_install_info = []
         self.thirdparty_repo_packages_install_info = []
         self.new_thirdparty_repo_deps_install_info = []
+        self.aur_updates_install_info = []
+        self.aur_deps_install_info = []
         if not self.args.aur:
             self.get_repo_pkgs_info()
 
         # retrieve PackageUpdate objects for AUR packages to be installed
         # and their upgrades if --sysupgrade was passed
-        self.aur_updates_install_info = []
         if not self.args.repo:
             self.get_aur_pkgs_info(all_aur_packages_names)
 
@@ -491,7 +492,6 @@ class InstallPackagesCLI():
             return
         # prepare install info (PackageUpdate objects)
         # for all the AUR packages which gonna be built:
-        self.aur_deps_install_info = []
         aur_pkgs = {
             aur_pkg.name: aur_pkg
             for aur_pkg in find_aur_packages(self.aur_deps_names)[0]

@@ -25,6 +25,7 @@ from .package_update import (
 from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
+    PackagesNotFoundInRepo,
 )
 from .build import PackageBuild, clone_aur_repos
 from .makepkg_config import MakepkgConfig
@@ -354,6 +355,8 @@ class InstallPackagesCLI():
             )
             sys.exit(131)
 
+        self.get_repo_deps_info()
+
     def get_repo_pkgs_info(self):
         local_pkgs = PackageDB.get_local_dict()
         repo_packages_install_info_by_name = {
@@ -387,17 +390,20 @@ class InstallPackagesCLI():
                 self.repo_packages_install_info.append(pkg_update)
             else:
                 self.thirdparty_repo_packages_install_info.append(pkg_update)
-        self.get_repo_deps_info()
 
     def get_repo_deps_info(self):
         local_pkg_names = PackageDB.get_local_pkgnames()
         local_provided_names = PackageDB.get_local_provided_dict().keys()
         new_dep_names = []
         for pkg_info in (
-                self.repo_packages_install_info + self.thirdparty_repo_packages_install_info
+                self.repo_packages_install_info + self.thirdparty_repo_packages_install_info +
+                self.aur_updates_install_info + self.aur_deps_install_info
         ):
             pkg_name = pkg_info.Name
-            pkg = self.repo_packages_by_name.get(pkg_name, PackageDB.find_one_repo(pkg_name))
+            try:
+                pkg = self.repo_packages_by_name.get(pkg_name, PackageDB.find_one_repo(pkg_name))
+            except PackagesNotFoundInRepo:
+                pkg = find_aur_packages([pkg_name])[0][0]
             for dep_line in pkg.depends:
                 dep_name, _vm = get_package_name_and_version_matcher_from_depend_line(dep_line)
                 if (
@@ -408,7 +414,10 @@ class InstallPackagesCLI():
                     dep_name in new_dep_names
                 ):
                     continue
-                dep_pkg = PackageDB.find_one_repo(dep_name)
+                try:
+                    dep_pkg = PackageDB.find_one_repo(dep_name)
+                except PackagesNotFoundInRepo:
+                    continue
                 dep_install_info = PackageUpdate(
                     Name=dep_name,
                     Current_Version=' ',

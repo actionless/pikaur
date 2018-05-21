@@ -706,7 +706,7 @@ class InstallPackagesCLI():
         package_replacements = find_replacements()
         for repo_pkg_name, installed_pkgs_names in package_replacements.items():
             for installed_pkg_name in installed_pkgs_names:
-                new_pkg = PackageDB.search_repo(repo_pkg_name, exact_match=True)[0]
+                new_pkg = PackageDB.find_one_repo(repo_pkg_name)
                 new_pkg_repo_name = new_pkg.db.name
                 if self.ask_to_continue(
                         '{} {}'.format(

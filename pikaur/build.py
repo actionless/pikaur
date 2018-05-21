@@ -286,6 +286,8 @@ class PackageBuild(DataType):
                 pikspect=True,
             )
 
+        PackageDB.discard_local_cache()
+
         if result1 and result2:
             for pkg_name in self.built_deps_to_install:
                 all_package_builds[pkg_name].built_packages_installed[pkg_name] = True
@@ -404,6 +406,7 @@ class PackageBuild(DataType):
             args=self.args,
             pikspect=True,
         )
+        PackageDB.discard_local_cache()
         return local_packages_before
 
     def _remove_repo_deps(self, local_packages_before: Set[str]) -> None:
@@ -439,6 +442,7 @@ class PackageBuild(DataType):
             args=self.args,
             pikspect=True,
         )
+        PackageDB.discard_local_cache()
 
     def build(
             self, all_package_builds: Dict[str, 'PackageBuild']

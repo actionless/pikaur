@@ -886,6 +886,7 @@ class InstallPackagesCLI():
                 args=self.args,
                 pikspect=True,
             )
+            PackageDB.discard_local_cache()
 
     def _install_repo_packages(self, packages_to_be_installed: List[str]) -> None:
         if list(self.repo_packages_by_name.keys()) or self.args.sysupgrade:
@@ -912,6 +913,7 @@ class InstallPackagesCLI():
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_repo_transaction()
                     sys.exit(125)
+            PackageDB.discard_local_cache()
 
     def _save_transaction(
             self,
@@ -996,6 +998,7 @@ class InstallPackagesCLI():
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
                     sys.exit(125)
+            PackageDB.discard_local_cache()
             self.save_aur_transaction(new_aur_deps_to_install)
 
     def install_aur_packages(self) -> None:
@@ -1027,4 +1030,5 @@ class InstallPackagesCLI():
                 if not self.ask_to_continue(default_yes=False):
                     self.revert_aur_transaction()
                     sys.exit(125)
+            PackageDB.discard_local_cache()
             self.save_aur_transaction(aur_packages_to_install)

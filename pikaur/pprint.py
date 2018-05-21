@@ -241,7 +241,8 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
         ))
         result.append(pretty_format_upgradeable(
             new_repo_deps,
-            verbose=verbose, color=color, print_repo=False
+            verbose=verbose, color=color,
+            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
         ))
     if thirdparty_repo_packages_updates:
         result.append('\n{} {}'.format(
@@ -263,7 +264,8 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
         ))
         result.append(pretty_format_upgradeable(
             new_thirdparty_repo_deps,
-            verbose=verbose, color=color, print_repo=False
+            verbose=verbose, color=color,
+            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
         ))
     if aur_updates:
         result.append('\n{} {}'.format(

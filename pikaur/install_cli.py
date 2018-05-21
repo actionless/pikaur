@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 import sys
 import os
 import hashlib
@@ -43,6 +44,7 @@ from .prompt import (
     retry_interactive_command_or_exit, get_input,
 )
 from .srcinfo import SrcInfo
+from .version import get_package_name_and_version_matcher_from_depend_line
 
 
 def package_is_ignored(package_name: str, args: PikaurArgs) -> bool:
@@ -153,7 +155,9 @@ class InstallPackagesCLI():
     # @TODO: refactor this and related methods
     #        into separate class InstallPrompt? (PackageSelection?)
     repo_packages_install_info: List[PackageUpdate]
+    new_repo_deps_install_info: List[PackageUpdate]
     thirdparty_repo_packages_install_info: List[PackageUpdate]
+    new_thirdparty_repo_deps_install_info: List[PackageUpdate]
     aur_updates_install_info: List[PackageUpdate]
     aur_deps_install_info: List[PackageUpdate]
 
@@ -298,7 +302,9 @@ class InstallPackagesCLI():
         # retrieve PackageUpdate objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed
         self.repo_packages_install_info = []
+        self.new_repo_deps_install_info = []
         self.thirdparty_repo_packages_install_info = []
+        self.new_thirdparty_repo_deps_install_info = []
         if not self.args.aur:
             self.get_repo_pkgs_info()
 
@@ -381,6 +387,40 @@ class InstallPackagesCLI():
                 self.repo_packages_install_info.append(pkg_update)
             else:
                 self.thirdparty_repo_packages_install_info.append(pkg_update)
+        self.get_repo_deps_info()
+
+    def get_repo_deps_info(self):
+        local_pkg_names = PackageDB.get_local_pkgnames()
+        local_provided_names = PackageDB.get_local_provided_dict().keys()
+        new_dep_names = []
+        for pkg_info in (
+                self.repo_packages_install_info + self.thirdparty_repo_packages_install_info
+        ):
+            pkg_name = pkg_info.Name
+            pkg = self.repo_packages_by_name.get(pkg_name, PackageDB.find_one_repo(pkg_name))
+            for dep_line in pkg.depends:
+                dep_name, _vm = get_package_name_and_version_matcher_from_depend_line(dep_line)
+                if (
+                        dep_name in local_pkg_names
+                ) or (
+                    dep_name in local_provided_names
+                ) or (
+                    dep_name in new_dep_names
+                ):
+                    continue
+                dep_pkg = PackageDB.find_one_repo(dep_name)
+                dep_install_info = PackageUpdate(
+                    Name=dep_name,
+                    Current_Version=' ',
+                    New_Version=dep_pkg.version,
+                    Description=dep_pkg.desc,
+                    Repository=dep_pkg.db.name
+                )
+                if dep_install_info.Repository in OFFICIAL_REPOS:
+                    self.new_repo_deps_install_info.append(dep_install_info)
+                else:
+                    self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
+                new_dep_names.append(dep_name)
 
     def get_aur_pkgs_info(self, aur_packages_names: List[str]):
         local_pkgs = PackageDB.get_local_dict()
@@ -500,10 +540,12 @@ class InstallPackagesCLI():
 
         def _print_sysupgrade(verbose=False) -> None:
             print(pretty_format_sysupgrade(
-                self.repo_packages_install_info,
-                self.thirdparty_repo_packages_install_info,
-                self.aur_updates_install_info,
-                self.aur_deps_install_info,
+                repo_packages_updates=self.repo_packages_install_info,
+                new_repo_deps=self.new_repo_deps_install_info,
+                thirdparty_repo_packages_updates=self.thirdparty_repo_packages_install_info,
+                new_thirdparty_repo_deps=None,
+                aur_updates=self.aur_updates_install_info,
+                new_aur_deps=self.aur_deps_install_info,
                 verbose=verbose
             ))
 

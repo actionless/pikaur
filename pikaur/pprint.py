@@ -204,7 +204,9 @@ def pretty_format_upgradeable(
 
 def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
         repo_packages_updates: List['PackageUpdate'] = None,
+        new_repo_deps: List['PackageUpdate'] = None,
         thirdparty_repo_packages_updates: List['PackageUpdate'] = None,
+        new_thirdparty_repo_deps: List['PackageUpdate'] = None,
         aur_updates: List['PackageUpdate'] = None,
         new_aur_deps: List['PackageUpdate'] = None,
         verbose=False, color=True
@@ -230,6 +232,17 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
             verbose=verbose, color=color,
             print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
         ))
+    if new_repo_deps:
+        result.append('\n{} {}'.format(
+            _color_line('::', 11),
+            _bold_line(_n("New dependency will be installed from repository:",
+                          "New dependencies will be installed from repository:",
+                          len(new_repo_deps)))
+        ))
+        result.append(pretty_format_upgradeable(
+            new_repo_deps,
+            verbose=verbose, color=color, print_repo=False
+        ))
     if thirdparty_repo_packages_updates:
         result.append('\n{} {}'.format(
             _color_line('::', 12),
@@ -240,6 +253,17 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
         result.append(pretty_format_upgradeable(
             thirdparty_repo_packages_updates,
             verbose=verbose, color=color, print_repo=True
+        ))
+    if new_thirdparty_repo_deps:
+        result.append('\n{} {}'.format(
+            _color_line('::', 11),
+            _bold_line(_n("New dependency will be installed from third-party repository:",
+                          "New dependencies will be installed from third-party repository:",
+                          len(new_thirdparty_repo_deps)))
+        ))
+        result.append(pretty_format_upgradeable(
+            new_thirdparty_repo_deps,
+            verbose=verbose, color=color, print_repo=False
         ))
     if aur_updates:
         result.append('\n{} {}'.format(

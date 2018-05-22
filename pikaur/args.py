@@ -72,9 +72,7 @@ PIKAUR_OPTS = (
     ('a', 'aur'),
     (None, 'devel'),
     ('k', 'keepbuild'),
-    (None, 'nodiff'),
-
-    (None, 'preserve_native_pacman'),
+    (None, 'nodiff')
 )
 
 

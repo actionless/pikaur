@@ -1,4 +1,4 @@
-LANGS := fr ru pt de is tr da
+LANGS := fr ru pt de is tr da nl
 
 LOCALEDIR := locale
 POTFILE := $(LOCALEDIR)/pikaur.pot

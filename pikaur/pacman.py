@@ -198,12 +198,12 @@ class PackageDB(PackageDBCommon):
         return repos.index(repo_name)
 
     @classmethod
-    def search_repo_dict(
+    def search_repo(
             cls, search_query, db_name: str = None, names_only=False, exact_match=False
-    ) -> Dict[str, pyalpm.Package]:
+    ) -> List[pyalpm.Package]:
         if '/' in search_query:
             db_name, search_query = search_query.split('/')
-        result = {}
+        result = []
         for sync_db in reversed(cls.get_alpm_handle().get_syncdbs()):
             if not db_name or db_name == sync_db.name:
                 for pkg in sync_db.search(search_query):
@@ -214,14 +214,8 @@ class PackageDB(PackageDBCommon):
                                 not exact_match or search_query in ([pkg.name, ] + pkg.groups)
                             )
                     ):
-                        result[get_pkg_id(pkg)] = pkg
+                        result.append(pkg)
         return result
-
-    @classmethod
-    def search_repo(cls, *args, **kwargs) -> List[pyalpm.Package]:
-        return list(
-            cls.search_repo_dict(*args, **kwargs).values()
-        )
 
     @classmethod
     def find_one_repo(cls, pkg_name) -> pyalpm.Package:
@@ -235,7 +229,10 @@ class PackageDB(PackageDBCommon):
         if not cls._packages_dict_cache.get(PackageSource.REPO):
             if not quiet:
                 print_status_message(_("Reading repository package databases..."))
-            cls._packages_dict_cache[PackageSource.REPO] = cls.search_repo_dict('')
+            repo_dict = {}
+            for pkg in cls.search_repo(search_query=''):
+                repo_dict[get_pkg_id(pkg)] = pkg
+            cls._packages_dict_cache[PackageSource.REPO] = repo_dict
         return cls._packages_dict_cache[PackageSource.REPO]
 
 
@@ -243,7 +240,9 @@ def find_repo_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Packag
     pacman_packages = []
     not_found_packages = []
     for package_name in package_names:
-        search_results = PackageDB.search_repo(package_name, exact_match=True)
+        search_results = PackageDB.search_repo(
+            search_query=package_name, exact_match=True
+        )
         if search_results:
             for search_result in search_results:
                 pacman_packages.append(search_result)

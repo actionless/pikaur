@@ -11,6 +11,7 @@ from .aur import AURPackageInfo, find_aur_packages
 from .pprint import print_status_message
 from .args import PikaurArgs
 from .config import PikaurConfig
+from .exceptions import PackagesNotFoundInRepo
 
 
 DEVEL_PKGS_POSTFIXES = (
@@ -132,10 +133,12 @@ def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
 
 
 def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
-    repo_info = PackageDB.search_repo(new_pkg_name, exact_match=True)
-    if repo_info:
+    try:
+        repo_info = PackageDB.find_one_repo(new_pkg_name)
+    except PackagesNotFoundInRepo:
+        aur_packages, _not_found = find_aur_packages([new_pkg_name])
+        if aur_packages:
+            return aur_packages[0].version
+        return None
+    else:
         return repo_info[0].version
-    aur_packages, _not_found = find_aur_packages([new_pkg_name])
-    if aur_packages:
-        return aur_packages[0].version
-    return None

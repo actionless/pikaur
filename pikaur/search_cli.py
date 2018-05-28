@@ -27,9 +27,9 @@ def aur_thread_worker(search_word):
 @return_exception
 def package_search_thread_repo(index: str, args: Dict[str, Any]) -> Tuple[str, List[Any]]:
     if args['query']:
-        result = list(reversed(PackageDB.search_repo(
+        result = PackageDB.search_repo(
             args['query'], names_only=args['namesonly']
-        )))
+        )
         index = ' '.join((args['index'], args['query'], ))
     else:
         result = PackageDB.get_repo_list(quiet=True)

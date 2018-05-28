@@ -215,7 +215,7 @@ class PackageDB(PackageDBCommon):
                             )
                     ):
                         result.append(pkg)
-        return result
+        return list(reversed(result))
 
     @classmethod
     def find_one_repo(cls, pkg_name) -> pyalpm.Package:
@@ -225,29 +225,26 @@ class PackageDB(PackageDBCommon):
         return pkgs[0]
 
     @classmethod
-    def get_repo_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:
-        if not cls._packages_dict_cache.get(PackageSource.REPO):
+    def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
+        if not cls._packages_list_cache.get(PackageSource.REPO):
             if not quiet:
                 print_status_message(_("Reading repository package databases..."))
-            repo_dict = {}
-            for pkg in cls.search_repo(search_query=''):
-                repo_dict[get_pkg_id(pkg)] = pkg
-            cls._packages_dict_cache[PackageSource.REPO] = repo_dict
-        return cls._packages_dict_cache[PackageSource.REPO]
+            cls._packages_list_cache[PackageSource.REPO] = cls.search_repo(
+                search_query=''
+            )
+        return cls._packages_list_cache[PackageSource.REPO]
 
 
 def find_repo_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     pacman_packages = []
     not_found_packages = []
     for package_name in package_names:
-        search_results = PackageDB.search_repo(
-            search_query=package_name, exact_match=True
-        )
-        if search_results:
-            for search_result in search_results:
-                pacman_packages.append(search_result)
-        else:
+        try:
+            pkg = PackageDB.find_one_repo(package_name)
+        except PackagesNotFoundInRepo:
             not_found_packages.append(package_name)
+        else:
+            pacman_packages.append(pkg)
     return pacman_packages, not_found_packages
 
 

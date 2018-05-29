@@ -307,7 +307,8 @@ class PackageBuild(DataType):
             pkg_path = pkg_paths[0]
             if len(pkg_paths) > 1:
                 arch = MakepkgConfig.get('CARCH')
-                for each_filename in pkg_paths:
+                for each_path in pkg_paths:
+                    each_filename = os.path.basename(each_path)
                     if pkg_name in each_filename and (
                             (f'-{arch}.' in each_filename) or ('-any.' in each_filename)
                     ):

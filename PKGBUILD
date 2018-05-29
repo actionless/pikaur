@@ -15,6 +15,7 @@ md5sums=(
 	"SKIP"
 )
 depends=(
+	'pacman>=5.1'
 	'pyalpm'
 	'git'
 )

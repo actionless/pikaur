@@ -297,38 +297,34 @@ class PackageBuild(DataType):
 
     def _set_built_package_path(self) -> None:
         dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)
-        pkg_ext = MakepkgConfig.get(
-            'PKGEXT', '.pkg.tar.xz',
-            config_path=os.path.join(self.build_dir, 'PKGBUILD')
-        )
-        full_pkg_names = spawn(
+        pkg_paths = spawn(
             isolate_root_cmd(['makepkg', '--packagelist'],
                              cwd=self.build_dir),
             cwd=self.build_dir
         ).stdout_text.splitlines()
-        full_pkg_names.sort(key=len)
+        pkg_paths.sort(key=len)
         for pkg_name in self.package_names:
-            full_pkg_name = full_pkg_names[0]
-            if len(full_pkg_names) > 1:
+            pkg_path = pkg_paths[0]
+            if len(pkg_paths) > 1:
                 arch = MakepkgConfig.get('CARCH')
-                for each_filename in full_pkg_names:
+                for each_filename in pkg_paths:
                     if pkg_name in each_filename and (
                             each_filename.endswith(arch) or each_filename.endswith('-any')
                     ):
-                        full_pkg_name = each_filename
+                        pkg_path = each_filename
                         break
-            built_package_path = os.path.join(dest_dir, full_pkg_name + pkg_ext)
-            if not os.path.exists(built_package_path):
-                BuildError(_("{} does not exist on the filesystem.").format(built_package_path))
+            if not os.path.exists(pkg_path):
+                BuildError(_("{} does not exist on the filesystem.").format(pkg_path))
             if dest_dir == self.build_dir:
-                new_package_path = os.path.join(PACKAGE_CACHE_PATH, full_pkg_name + pkg_ext)
+                pkg_filename = os.path.basename(pkg_path)
+                new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
                 if not os.path.exists(PACKAGE_CACHE_PATH):
                     os.makedirs(PACKAGE_CACHE_PATH)
                 if os.path.exists(new_package_path):
                     os.remove(new_package_path)
-                shutil.move(built_package_path, PACKAGE_CACHE_PATH)
-                built_package_path = new_package_path
-            self.built_packages_paths[pkg_name] = built_package_path
+                shutil.move(pkg_path, PACKAGE_CACHE_PATH)
+                pkg_path = new_package_path
+            self.built_packages_paths[pkg_name] = pkg_path
 
     def prepare_build_destination(self) -> None:
         if running_as_root():

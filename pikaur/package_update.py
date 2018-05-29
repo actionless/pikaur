@@ -141,4 +141,4 @@ def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
             return aur_packages[0].version
         return None
     else:
-        return repo_info[0].version
+        return repo_info.version

@@ -318,6 +318,8 @@ class PackageBuild(DataType):
                 BuildError(_("{} does not exist on the filesystem.").format(pkg_path))
             if dest_dir == self.build_dir:
                 pkg_filename = os.path.basename(pkg_path)
+                if pkg_path == pkg_filename:
+                    pkg_path = os.path.join(dest_dir, pkg_path)
                 new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
                 if not os.path.exists(PACKAGE_CACHE_PATH):
                     os.makedirs(PACKAGE_CACHE_PATH)

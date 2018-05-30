@@ -10,12 +10,13 @@ If some `pacman` or `makepkg` operation failed for irrelevant reason (like timed
 
 The following pacman operations are extended with AUR capabilities:
 
-* `-S`
-* `-Ss`
-* `-Si`
-* `-Su` / `-Syu`
-* `-Sc` / `-Scc`
-* `-Qu`
+* `-S` (build AUR packages, `--needed`, `--ignore` and `--noconfirm` are supported as in pacman, other args are just bypassed to it)
+* `-Sw` (build AUR packages but not install)
+* `-Ss` (search or list all AUR packages, `-q` also supported)
+* `-Si` (package info)
+* `-Su` / `-Syu` (sysupgrade)
+* `-Sc` / `-Scc` (build dir /built packages cache clean)
+* `-Qu` (query upgradeable, `-q` supported)
 
 Also see `pikaur -Sh` and `pikaur -Qh` for pikaur-specific flags.
 

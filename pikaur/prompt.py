@@ -1,14 +1,13 @@
 import sys
 import tty
-from string import printable
-from typing import List, Optional
+from typing import List
 
 from .args import PikaurArgs
 from .config import PikaurConfig
 
 from .core import interactive_spawn
 from .i18n import _
-from .pprint import color_line, print_status_message, get_term_width
+from .pprint import color_line, print_status_message, get_term_width, range_printable
 from .pikspect import pikspect as pikspect_spawn
 
 
@@ -59,27 +58,6 @@ def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
         tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)  # type: ignore
         sys.stdout.write('{}\r\n'.format(answer))
         tty.tcdrain(sys.stdin.fileno())  # type: ignore
-
-
-def range_printable(text: str, start: int = 0, end: Optional[int] = None) -> str:
-    if not end:
-        end = len(text)
-
-    result = ''
-    counter = 0
-    escape_seq = False
-    for char in text:
-        if counter >= start:
-            result += char
-        if not escape_seq and char in printable:
-            counter += 1
-        elif escape_seq and char == 'm':
-            escape_seq = False
-        else:
-            escape_seq = True
-        if counter >= end:
-            break
-    return result
 
 
 def split_last_line(text: str) -> str:

@@ -142,6 +142,16 @@ Set `SRCDEST`, `BUILDDIR` or `PKGDEST` accordingly in `makepkg.conf`.
 
 For more info see `makepkg` documentation.
 
+##### Hot to clean old or uninstalled AUR packages in ~/.cache/pikaur/pkg?
+
+This is the part from a pacman-hook (paccache-clear.hook). For both official and AUR packages, the last 3 packages are kept if the package is still installed, and one package is kept if the package is uninstalled.
+
+```
+Exec = /usr/bin/env bash -c "/usr/bin/paccache -vrk3; /usr/bin/paccache -vruk1; /usr/bin/paccache --cachedir PATH/TO/.cache/pikaur/pkg/ -vrk3; /usr/bin/paccache --cachedir PATH/TO/.cache/pikaur/pkg/ -vruk1"
+```
+
+Change the numbers, and you are good to go.
+
 
 ### Contributing
 

@@ -32,7 +32,7 @@ class News(object):
         if self._is_new(self._last_online_news(xml_feed)):
             self._print_news(xml_feed)
 
-    def _get_rss_feed(self):
+    def _get_rss_feed(self) -> str:
         try:
             http_response: HTTPResponse = urllib.request.urlopen(
                 self.URL + self.DIR
@@ -103,7 +103,7 @@ class News(object):
                         # no more news
                         return
 
-    # noinspection PyUnboundLocalVariable,PyPep8Naming
+    # noinspection PyUnboundLocalVariable
     @staticmethod
     def _print_one_entry(news_entry: xml.etree.ElementTree.Element) -> None:
         child: xml.etree.ElementTree.Element

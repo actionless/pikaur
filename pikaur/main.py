@@ -28,7 +28,7 @@ from .pprint import (
     print_version,
 )
 from .pacman import (
-    get_pacman_command,
+    get_pacman_command, refresh_pkg_db,
 )
 from .aur import (
     find_aur_packages, get_all_aur_names,
@@ -38,7 +38,7 @@ from .package_update import (
     find_repo_updates, find_aur_updates,
 )
 from .prompt import (
-    retry_interactive_command_or_exit, ask_to_continue,
+    ask_to_continue,
 )
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
@@ -110,13 +110,7 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
 
 
 def cli_upgrade_packages(args: PikaurArgs) -> None:
-    if args.refresh:
-        pacman_args = (sudo(
-            get_pacman_command(args) + ['--sync'] + ['--refresh'] * args.refresh
-        ))
-        retry_interactive_command_or_exit(
-            pacman_args, args=args
-        )
+    refresh_pkg_db(args)
     if not args.repo:
         print('{} {}'.format(
             color_line('::', 12),

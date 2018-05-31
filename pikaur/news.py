@@ -6,7 +6,7 @@ import os
 from http.client import HTTPResponse
 from html.parser import HTMLParser
 
-from typing import TextIO
+from typing import TextIO, Union
 
 from pikaur.config import CACHE_ROOT
 from pikaur.pprint import color_line, format_paragraph, print_stdout
@@ -17,34 +17,41 @@ from pikaur.pprint import color_line, format_paragraph, print_stdout
 # TODO get initial date (if dat-file not present) from last installed local package from the repo
 
 class News(object):
-    _last_seen_news: str
     URL = 'https://www.archlinux.org'
     DIR = '/feeds/news/'
 
     def __init__(self) -> None:
         self._last_seen_news = self._get_last_seen_news()
+        self._news_feed = self._get_rss_feed()
 
-    def check_news(self) -> None:
-        rss_feed = self._get_rss_feed()
-        if not rss_feed:  # could not get data
+    def print_latest(self) -> None:
+        if not self._is_new(self._last_online_news(self._news_feed)):
             return
-        xml_feed: xml.etree.ElementTree.ElementTree = \
-            xml.etree.ElementTree.fromstring(rss_feed)
-        if self._is_new(self._last_online_news(xml_feed)):
-            self._print_news(xml_feed)
+        news_entry: xml.etree.ElementTree.Element
+        for news_entry in self._news_feed.iter('item'):
+            child: xml.etree.ElementTree.Element
+            for child in news_entry:
+                if 'pubDate' in child.tag:
+                    if self._is_new(child.text):
+                        self._print_one_entry(news_entry)
+                    else:
+                        # no more news
+                        return
 
-    def _get_rss_feed(self) -> str:
+    def _get_rss_feed(self) -> Union[xml.etree.ElementTree.ElementTree, None]:
         try:
             http_response: HTTPResponse = urllib.request.urlopen(
                 self.URL + self.DIR
             )
         except urllib.error.URLError:
             print_stdout('Could not fetch archlinux.org news')
-            return ''
+            return
         str_response: str = ''
         for line in http_response:
             str_response += line.decode('UTF-8').strip()
-        return str_response
+        if not str_response:  # could not get data
+            return
+        return xml.etree.ElementTree.fromstring(str_response)
 
     @staticmethod
     def _last_online_news(xml_feed: xml.etree.ElementTree.ElementTree) -> str:
@@ -92,18 +99,6 @@ class News(object):
         )
         return last_online_news_date > last_seen_news_date
 
-    def _print_news(self, xml_feed: xml.etree.ElementTree.ElementTree):
-        news_entry: xml.etree.ElementTree.Element
-        for news_entry in xml_feed.iter('item'):
-            child: xml.etree.ElementTree.Element
-            for child in news_entry:
-                if 'pubDate' in child.tag:
-                    if self._is_new(child.text):
-                        self._print_one_entry(news_entry)
-                    else:
-                        # no more news
-                        return
-
     # noinspection PyUnboundLocalVariable
     @staticmethod
     def _print_one_entry(news_entry: xml.etree.ElementTree.Element) -> None:
@@ -148,4 +143,4 @@ def strip_tags(html: object) -> str:
 
 
 if __name__ == '__main__':
-    News().check_news()
+    News().print_latest()

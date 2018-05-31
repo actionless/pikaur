@@ -24,7 +24,7 @@ class News(object):
         self._last_seen_news = self._get_last_seen_news()
 
     def check_news(self) -> None:
-        rss_feed: str = self._get_rss_feed()
+        rss_feed = self._get_rss_feed()
         if len(rss_feed) == 0:  # could not get data
             return
         xml_feed: xml.etree.ElementTree.ElementTree = \

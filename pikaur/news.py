@@ -15,6 +15,7 @@ from pikaur.pprint import color_line, format_paragraph, print_stdout
 
 # TODO internationalization
 # TODO get initial date (if dat-file not present) from last installed local package from the repo
+# TODO get finally rid of those Travis warnings
 
 class News(object):
     URL = 'https://www.archlinux.org'
@@ -116,6 +117,7 @@ class News(object):
         print_stdout(
             format_paragraph(strip_tags(description))
         )
+        print_stdout()
 
 
 class MLStripper(HTMLParser):

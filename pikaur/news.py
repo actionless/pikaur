@@ -78,6 +78,8 @@ class News(object):
         last_seen_news_date = datetime.datetime.strptime(
             self._last_seen_news, '%a, %d %b %Y %H:%M:%S %z'
         )
+        if len(last_online_news) == 0:
+            raise ValueError('The news feed could not be received or parsed.')
         last_online_news_date = datetime.datetime.strptime(
             last_online_news, '%a, %d %b %Y %H:%M:%S %z'
         )

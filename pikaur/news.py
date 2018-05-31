@@ -12,7 +12,11 @@ from pikaur.config import CACHE_ROOT
 # TODO use coloring/bold font from pikaur.pprint
 # TODO internationalization
 # TODO get initial date (if dat-file not present) from last installed local package from the repo
+
 # TODO take max_width from pikaur.pprint.get_term_width()
+# (consult pikaur.pprint.format_paragraph and pikaur.pprint.range_printable)
+
+# TODO consult Travis code analysis report
 
 class News(object):
     URL = 'https://www.archlinux.org'
@@ -60,8 +64,8 @@ class News(object):
         except IOError:
             # if file doesn't exist, this feature was run the first time
             # then we want to see all news from this moment on
-            t = datetime.datetime.utcnow()
-            time_formatted = t.strftime('%a, %d %b %Y %H:%M:%S +0000')
+            now = datetime.datetime.utcnow()
+            time_formatted = now.strftime('%a, %d %b %Y %H:%M:%S +0000')
             try:
                 with open(filename, 'w') as fd:
                     fd.write(time_formatted)
@@ -77,10 +81,7 @@ class News(object):
         last_online_news_date = datetime.datetime.strptime(
             last_online_news, '%a, %d %b %Y %H:%M:%S %z'
         )
-        if last_online_news_date > last_seen_news_date:
-            return True
-        else:
-            return False
+        return last_online_news_date > last_seen_news_date
 
     def _print_news(self, xml_feed):
         for news_entry in xml_feed.getiterator('item'):
@@ -117,17 +118,17 @@ class MLStripper(HTMLParser):
         self.convert_charrefs = True
         self.fed = []
 
-    def handle_data(self, d):
-        self.fed.append(d)
+    def handle_data(self, data):
+        self.fed.append(data)
 
     def get_data(self):
         return ''.join(self.fed)
 
 
 def strip_tags(html):
-    s = MLStripper()
-    s.feed(html)
-    return s.get_data()
+    mlstripper = MLStripper()
+    mlstripper.feed(html)
+    return mlstripper.get_data()
 
 
 def text_wrap(text, max_width=80):

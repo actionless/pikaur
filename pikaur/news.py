@@ -6,17 +6,13 @@ import os
 from html.parser import HTMLParser
 
 from pikaur.config import CACHE_ROOT
+from pikaur.pprint import color_line, format_paragraph
 
 
 # TODO type hints for variables
 # TODO use coloring/bold font from pikaur.pprint
 # TODO internationalization
 # TODO get initial date (if dat-file not present) from last installed local package from the repo
-
-# TODO take max_width from pikaur.pprint.get_term_width()
-# (consult pikaur.pprint.format_paragraph and pikaur.pprint.range_printable)
-
-# TODO consult Travis code analysis report
 
 class News(object):
     URL = 'https://www.archlinux.org'
@@ -103,8 +99,8 @@ class News(object):
                 pubDate = child.text
             if 'description' in child.tag:
                 description = child.text
-        print(title + ' (' + pubDate + ')')
-        print(text_wrap(strip_tags(description)))
+        print(color_line(title, 11) + ' (' + pubDate + ')')
+        print(format_paragraph(strip_tags(description)))
 
 
 class MLStripper(HTMLParser):
@@ -129,27 +125,6 @@ def strip_tags(html):
     mlstripper = MLStripper()
     mlstripper.feed(html)
     return mlstripper.get_data()
-
-
-def text_wrap(text, max_width=80):
-    # we remember all spaces in can_split, and all line breaks in breaks.
-    # if we hit max_width since the most recent break, we add a newline at the
-    # the value saved in breaks.
-    breaks = [0]
-    can_split = 0
-    for pos, char in enumerate(text):
-        if char == ' ':
-            can_split = pos
-        if pos - breaks[-1] > max_width:
-            breaks.append(can_split)
-        pos += 1
-    breaks.append(len(text))
-    new_text = ''
-    for i in range(len(breaks) - 1):
-        start = breaks[i]
-        end = breaks[i + 1]
-        new_text += text[start:end].strip() + '\n'
-    return new_text
 
 
 if __name__ == '__main__':

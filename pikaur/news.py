@@ -50,6 +50,10 @@ class News(object):
             for child in news_entry:
                 if 'pubDate' in child.tag:
                     return child.text
+        # if we get to here, then something went really wrong
+        # no valid news found
+        return ''
+
 
     @staticmethod
     def _get_last_seen_news():

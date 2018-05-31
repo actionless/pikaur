@@ -9,8 +9,8 @@ from html.parser import HTMLParser
 from typing import TextIO
 
 from pikaur.config import CACHE_ROOT
-import pikaur.pprint
-from pikaur.pacman import
+from pikaur.pprint import color_line, format_paragraph, print_stdout
+#from pikaur.pacman import
 
 
 # TODO internationalization
@@ -39,7 +39,7 @@ class News(object):
                 self.URL + self.DIR
             )
         except urllib.error.URLError:
-            pikaur.pprint.print_stdout('Could not fetch archlinux.org news')
+            print_stdout('Could not fetch archlinux.org news')
             return ''
         str_response: str = ''
         for line in http_response:
@@ -78,7 +78,7 @@ class News(object):
                     last_seen_fd.write(time_formatted)
             except IOError:
                 msg: str = 'Could not initialize {}'.format(filename)
-                pikaur.pprint.print_stdout(msg)
+                print_stdout(msg)
             return time_formatted
 
     def _is_new(self, last_online_news: str) -> bool:
@@ -115,11 +115,11 @@ class News(object):
                 pub_date: str = child.text
             if 'description' in child.tag:
                 description: str = child.text
-        pikaur.pprint.print_stdout(
-            pikaur.pprint.color_line(title, 11) + ' (' + pub_date + ')'
+        print_stdout(
+            color_line(title, 11) + ' (' + pub_date + ')'
         )
-        pikaur.pprint.print_stdout(
-            pikaur.pprint.format_paragraph(strip_tags(description))
+        print_stdout(
+            format_paragraph(strip_tags(description))
         )
 
 

@@ -1,7 +1,8 @@
 import sys
 import shutil
 from threading import Lock
-from typing import List, TYPE_CHECKING, Tuple
+from string import printable
+from typing import List, TYPE_CHECKING, Tuple, Optional
 
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
@@ -76,6 +77,27 @@ def format_paragraph(line: str) -> str:
         )
         for words in result
     ])
+
+
+def range_printable(text: str, start: int = 0, end: Optional[int] = None) -> str:
+    if not end:
+        end = len(text)
+
+    result = ''
+    counter = 0
+    escape_seq = False
+    for char in text:
+        if counter >= start:
+            result += char
+        if not escape_seq and char in printable:
+            counter += 1
+        elif escape_seq and char == 'm':
+            escape_seq = False
+        else:
+            escape_seq = True
+        if counter >= end:
+            break
+    return result
 
 
 class PrintLock(object):

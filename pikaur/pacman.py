@@ -16,6 +16,8 @@ from .pprint import print_status_message, color_enabled
 from .args import PikaurArgs
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo
+from .core import sudo
+from .prompt import retry_interactive_command_or_exit
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
@@ -268,3 +270,13 @@ def find_packages_not_from_repo() -> List[str]:
         if pkg_name not in repo_pkg_names:
             not_found_packages.append(pkg_name)
     return not_found_packages
+
+
+def refresh_pkg_db(args: PikaurArgs) -> None:
+    if args.refresh:
+        pacman_args = (sudo(
+            get_pacman_command(args) + ['--sync'] + ['--refresh'] * args.refresh
+        ))
+        retry_interactive_command_or_exit(
+            pacman_args, args=args
+        )

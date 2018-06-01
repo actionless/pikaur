@@ -12,7 +12,7 @@ from .pprint import (
     color_line, bold_line, format_paragraph, pretty_format_repo_name,
     print_status_message,
 )
-from .pacman import PackageDB, get_pkg_id
+from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
 from .aur import AURPackageInfo, aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names
 from .args import PikaurArgs
 from .exceptions import AURError
@@ -170,6 +170,7 @@ def print_package_search_results(
 
 
 def cli_search_packages(args: PikaurArgs) -> None:
+    refresh_pkg_db(args)
     search_query = args.positional or []
     REPO_ONLY = args.repo  # pylint: disable=invalid-name
     AUR_ONLY = args.aur  # pylint: disable=invalid-name

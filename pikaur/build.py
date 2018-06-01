@@ -216,12 +216,22 @@ class PackageBuild(DataType):
             self,
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
+
+        def _mark_dep_resolved(dep: str) -> None:
+            if dep in self.new_make_deps_to_install:
+                self.new_make_deps_to_install.remove(dep)
+            if dep in self.new_deps_to_install:
+                self.new_deps_to_install.remove(dep)
+
         self.built_deps_to_install = {}
         for dep in self.all_deps_to_install:
             # @TODO: check if dep is Provided by built package
             if dep not in all_package_builds:
                 continue
             package_build = all_package_builds[dep]
+            if package_build == self:
+                _mark_dep_resolved(dep)
+                continue
             for pkg_name in package_build.package_names:
                 if package_build.failed:
                     self.failed = True
@@ -231,10 +241,7 @@ class PackageBuild(DataType):
                 if not package_build.built_packages_installed.get(pkg_name):
                     self.built_deps_to_install[pkg_name] = \
                         package_build.built_packages_paths[pkg_name]
-                if dep in self.new_make_deps_to_install:
-                    self.new_make_deps_to_install.remove(dep)
-                if dep in self.new_deps_to_install:
-                    self.new_deps_to_install.remove(dep)
+                _mark_dep_resolved(dep)
 
     def _install_built_deps(
             self,

@@ -49,7 +49,9 @@ from .version import get_package_name_and_version_matcher_from_depend_line
 
 
 def package_is_ignored(package_name: str, args: PikaurArgs) -> bool:
-    if package_name in (args.ignore or []) + PacmanConfig().options.get('IgnorePkg', []):
+    if (
+            package_name in (args.ignore or []) + PacmanConfig().options.get('IgnorePkg', [])
+    ) and package_name not in args.positional:
         return True
     return False
 

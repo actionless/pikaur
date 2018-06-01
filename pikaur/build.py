@@ -217,11 +217,11 @@ class PackageBuild(DataType):
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
 
-        def _mark_dep_resolved(dep):
-                if dep in self.new_make_deps_to_install:
-                    self.new_make_deps_to_install.remove(dep)
-                if dep in self.new_deps_to_install:
-                    self.new_deps_to_install.remove(dep)
+        def _mark_dep_resolved(dep: str) -> None:
+            if dep in self.new_make_deps_to_install:
+                self.new_make_deps_to_install.remove(dep)
+            if dep in self.new_deps_to_install:
+                self.new_deps_to_install.remove(dep)
 
         self.built_deps_to_install = {}
         for dep in self.all_deps_to_install:

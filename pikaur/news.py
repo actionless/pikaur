@@ -3,7 +3,6 @@ import urllib.request
 import urllib.error
 import urllib.response
 import xml.etree.ElementTree
-from xml.etree.ElementTree import ElementTree
 import os
 from http.client import HTTPResponse
 from html.parser import HTMLParser
@@ -19,7 +18,6 @@ from pikaur.pprint import color_line, format_paragraph, print_stdout
 
 # TODO internationalization
 # TODO get initial date (if dat-file not present) from last installed local package from the repo
-# TODO get finally rid of those Travis warnings
 
 class News(object):
     URL = 'https://www.archlinux.org'
@@ -30,9 +28,7 @@ class News(object):
         self._news_feed = self._get_rss_feed()
 
     def print_latest(self) -> None:
-        if not isinstance(self._news_feed, ElementTree):
-            return
-        if not self._is_new(self._last_online_news(self._news_feed)):
+        if not isinstance(self._news_feed, xml.etree.ElementTree.Element):
             return
         news_entry: xml.etree.ElementTree.Element
         for news_entry in self._news_feed.iter('item'):
@@ -59,20 +55,6 @@ class News(object):
         if not str_response:  # could not get data
             return None
         return xml.etree.ElementTree.fromstring(str_response)
-
-    @staticmethod
-    def _last_online_news(xml_feed: xml.etree.ElementTree.ElementTree) -> str:
-        # we find the first 'pubDate' tag, which indicates
-        # the most recent entry
-        news_entry: xml.etree.ElementTree.Element
-        for news_entry in xml_feed.iter('item'):
-            child: xml.etree.ElementTree.Element
-            for child in news_entry:
-                if 'pubDate' in child.tag:
-                    return str(child.text)
-        # if we get to here, then something went really wrong
-        # no valid news found
-        return ''
 
     @staticmethod
     def _get_last_seen_news() -> str:

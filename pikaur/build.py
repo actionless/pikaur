@@ -210,8 +210,7 @@ class PackageBuild(DataType):
 
     @property
     def all_deps_to_install(self):
-        # @TODO: it's still not clear if we need to install non-make deps
-        return self.new_make_deps_to_install  # + self.new_deps_to_install
+        return self.new_make_deps_to_install + self.new_deps_to_install
 
     def _get_built_deps(
             self,

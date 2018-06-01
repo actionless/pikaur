@@ -116,7 +116,7 @@ def cli_upgrade_packages(args: PikaurArgs) -> None:
     news = News()
     with ThreadPool() as pool:
         pool.apply(refresh_pkg_db, [args])
-        pool.apply(news.get_latest)
+        pool.apply(news.fetch_latest)
         pool.close()
         pool.join()
     news.print_news()

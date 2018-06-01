@@ -18,6 +18,7 @@ class News(object):
     URL = 'https://www.archlinux.org'
     DIR = '/feeds/news/'
     CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
+    _news_feed: Union[xml.etree.ElementTree.Element, None]
 
     def __init__(self) -> None:
         self._last_seen_news = self._get_last_seen_news()
@@ -47,22 +48,19 @@ class News(object):
                         # no more news
                         return
 
-    def get_latest(self):
-        self._news_feed = self._get_rss_feed()
-
-    def _get_rss_feed(self) -> Union[xml.etree.ElementTree.Element, None]:
+    def fetch_latest(self) -> None:
         try:
             http_response: Union[HTTPResponse, urllib.response.addinfourl] = \
                 urllib.request.urlopen(self.URL + self.DIR)
         except urllib.error.URLError:
             print_stdout('Could not fetch archlinux.org news')
-            return None
+            return
         str_response: str = ''
         for line in http_response:
             str_response += line.decode('UTF-8').strip()
         if not str_response:  # could not get data
-            return None
-        return xml.etree.ElementTree.fromstring(str_response)
+            return
+        self._news_feed = xml.etree.ElementTree.fromstring(str_response)
 
     def _get_last_seen_news(self) -> str:
         last_seen_fd: TextIO

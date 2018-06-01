@@ -10,31 +10,39 @@ from html.parser import HTMLParser
 from typing import TextIO, Union
 
 from .config import CACHE_ROOT
-from .pprint import color_line, format_paragraph, print_stdout
+from .pprint import color_line, format_paragraph, print_stdout, bold_line
 from .pacman import PackageDB
 
-
-# TODO internationalization
-# TODO get initial date (if dat-file not present) from last installed local package from the repo
 
 class News(object):
     URL = 'https://www.archlinux.org'
     DIR = '/feeds/news/'
+    CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
 
     def __init__(self) -> None:
         self._last_seen_news = self._get_last_seen_news()
         self._news_feed = None
 
     def print_news(self) -> None:
+        # check if we got a valid news feed by checking if we got an xml structure
         if not isinstance(self._news_feed, xml.etree.ElementTree.Element):
             return
         news_entry: xml.etree.ElementTree.Element
+        first_news = True
         for news_entry in self._news_feed.iter('item'):
             child: xml.etree.ElementTree.Element
             for child in news_entry:
                 if 'pubDate' in child.tag:
                     if self._is_new(str(child.text)):
+                        if first_news:
+                            print_stdout(bold_line('There are news from archlinux.org!\n'))
                         self._print_one_entry(news_entry)
+                        # news are in inverse chronological order (newest first).
+                        # if there is something to print, we save this date
+                        # in our cache
+                        if first_news:
+                            self._update_last_seen_news(news_entry)
+                            first_news = False
                     else:
                         # no more news
                         return
@@ -44,9 +52,8 @@ class News(object):
 
     def _get_rss_feed(self) -> Union[xml.etree.ElementTree.Element, None]:
         try:
-            http_response: Union[HTTPResponse, urllib.response.addinfourl] = urllib.request.urlopen(
-                self.URL + self.DIR
-            )
+            http_response: Union[HTTPResponse, urllib.response.addinfourl] = \
+                urllib.request.urlopen(self.URL + self.DIR)
         except urllib.error.URLError:
             print_stdout('Could not fetch archlinux.org news')
             return None
@@ -57,12 +64,10 @@ class News(object):
             return None
         return xml.etree.ElementTree.fromstring(str_response)
 
-    @staticmethod
-    def _get_last_seen_news() -> str:
-        filename: str = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
+    def _get_last_seen_news(self) -> str:
         last_seen_fd: TextIO
         try:
-            with open(filename) as last_seen_fd:
+            with open(self.CACHE_FILE) as last_seen_fd:
                 return last_seen_fd.readline().strip()
         except IOError:
             # if file doesn't exist, this feature was run the first time
@@ -72,10 +77,10 @@ class News(object):
             )
             time_formatted: str = now.strftime('%a, %d %b %Y %H:%M:%S +0000')
             try:
-                with open(filename, 'w') as last_seen_fd:
+                with open(self.CACHE_FILE, 'w') as last_seen_fd:
                     last_seen_fd.write(time_formatted)
             except IOError:
-                msg: str = 'Could not initialize {}'.format(filename)
+                msg: str = 'Could not initialize {}'.format(self.CACHE_FILE)
                 print_stdout(msg)
             return time_formatted
 
@@ -109,8 +114,24 @@ class News(object):
         )
         print_stdout()
 
+    # noinspection PyUnboundLocalVariable
+    def _update_last_seen_news(self, news_entry: xml.etree.ElementTree.Element) -> None:
+        child: xml.etree.ElementTree.Element
+        for child in news_entry:
+            if 'pubDate' in child.tag:
+                pub_date = str(child.text)
+                break
+        try:
+            with open(self.CACHE_FILE, 'w') as last_seen_fd:
+                last_seen_fd.write(pub_date)
+        except IOError:
+            print_stdout('Could not update {}'.format(self.CACHE_FILE))
+
 
 class MLStripper(HTMLParser):
+    """
+    HTMLParser that only removes HTML statements
+    """
     def error(self, message: object) -> None:
         pass
 
@@ -129,7 +150,9 @@ class MLStripper(HTMLParser):
 
 
 def strip_tags(html: str) -> str:
+    """
+    removes HTML tags from a string, returns the plain string
+    """
     mlstripper = MLStripper()
     mlstripper.feed(html)
     return mlstripper.get_data()
-

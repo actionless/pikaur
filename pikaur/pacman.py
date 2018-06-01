@@ -238,11 +238,6 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def get_last_installed_package_date(cls) -> int:
-        #x = sorted(
-        #        [p for p in PackageDB.get_local_list() if p.name in
-        #        [r.name for r in PackageDB.get_repo_list()]],
-        #        key=lambda x: -x.installdate
-        #    )[0].installdate
         repo_names = []
         for repo in PackageDB.get_repo_list():
             repo_names.append(repo.name)

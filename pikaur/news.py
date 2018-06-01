@@ -9,11 +9,9 @@ from html.parser import HTMLParser
 
 from typing import TextIO, Union
 
-from pikaur.config import CACHE_ROOT
-from pikaur.pprint import color_line, format_paragraph, print_stdout
-
-
-# from pikaur.pacman import
+from .config import CACHE_ROOT
+from .pprint import color_line, format_paragraph, print_stdout
+from .pacman import PackageDB
 
 
 # TODO internationalization
@@ -68,8 +66,10 @@ class News(object):
                 return last_seen_fd.readline().strip()
         except IOError:
             # if file doesn't exist, this feature was run the first time
-            # then we want to see all news from this moment on
-            now: datetime.datetime = datetime.datetime.utcnow()
+            # then we get take the date from the last installed package
+            now: datetime.datetime = datetime.datetime.fromtimestamp(
+                PackageDB.get_last_installed_package_date()
+            )
             time_formatted: str = now.strftime('%a, %d %b %Y %H:%M:%S +0000')
             try:
                 with open(filename, 'w') as last_seen_fd:
@@ -133,8 +133,3 @@ def strip_tags(html: str) -> str:
     mlstripper.feed(html)
     return mlstripper.get_data()
 
-
-if __name__ == '__main__':
-    NEWS = News()
-    NEWS.get_latest()
-    NEWS.print_news()

@@ -25,9 +25,9 @@ class News(object):
 
     def __init__(self) -> None:
         self._last_seen_news = self._get_last_seen_news()
-        self._news_feed = self._get_rss_feed()
+        self._news_feed = None
 
-    def print_latest(self) -> None:
+    def print_news(self) -> None:
         if not isinstance(self._news_feed, xml.etree.ElementTree.Element):
             return
         news_entry: xml.etree.ElementTree.Element
@@ -40,6 +40,9 @@ class News(object):
                     else:
                         # no more news
                         return
+
+    def get_latest(self):
+        self._news_feed = self._get_rss_feed()
 
     def _get_rss_feed(self) -> Union[xml.etree.ElementTree.Element, None]:
         try:
@@ -132,4 +135,6 @@ def strip_tags(html: str) -> str:
 
 
 if __name__ == '__main__':
-    News().print_latest()
+    NEWS = News()
+    NEWS.get_latest()
+    NEWS.print_news()

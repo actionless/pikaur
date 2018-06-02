@@ -25,8 +25,8 @@ msgstr ""
 #: pikaur/pprint.py:241
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
-msgstr[0] "Le paquet de l'AUR sera installé :"
-msgstr[1] "Les paquets de l'AUR seront installés :"
+msgstr[0] "Le paquet de l'AUR sera installé:"
+msgstr[1] "Les paquets de l'AUR seront installés:"
 
 #: pikaur/install_cli.py:736
 #, python-brace-format
@@ -36,12 +36,12 @@ msgstr "Impossible de construire '{name}'."
 #: pikaur/install_cli.py:542
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
-msgstr "Impossible de cloner '{name}' dans '{path}' depuis l'AUR :"
+msgstr "Impossible de cloner '{name}' dans '{path}' depuis l'AUR:"
 
 #: pikaur/install_cli.py:544
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
-msgstr "Impossible de rapatrier '{name}' dans '{path}' depuis l'AUR :"
+msgstr "Impossible de rapatrier '{name}' dans '{path}' depuis l'AUR:"
 
 #: pikaur/prompt.py:103
 msgid "Command '{}' failed to execute."
@@ -49,7 +49,7 @@ msgstr "La commande '{}' a échoué."
 
 #: pikaur/args.py:71
 msgid "Common pacman options:"
-msgstr "Options standards de pacman :"
+msgstr "Options standards de pacman:"
 
 #: pikaur/install_cli.py:294
 msgid "Dependencies missing for {}"
@@ -93,20 +93,20 @@ msgstr "{edit} {file} pour le paquet {name} ?"
 #: pikaur/build.py:201
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Télécharger les dernières sources d'un paquet devel {}"
+msgstr[1] "Télécharger les dernières sources pour les paquets devel {}"
 
 #: pikaur/install_cli.py:199
 msgid "Failed to build following packages:"
-msgstr "Impossible de construire les paquets suivants :"
+msgstr "Impossible de construire les paquets suivants:"
 
 #: pikaur/build.py:442
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
-msgstr ""
+msgstr "Échec de la suppression des dépendances installées, incohérence des paquets: {}"
 
 #: pikaur/pprint.py:107
 msgid "Following packages cannot be found in AUR:"
-msgstr "Les paquets suivants sont introuvables dans l'AUR :"
+msgstr "Les paquets suivants sont introuvables dans l'AUR:"
 
 #: pikaur/install_cli.py:72
 msgid "Ignoring package {}"
@@ -123,8 +123,8 @@ msgstr "Installation des dépendances du dépôt pour {}"
 #: pikaur/pprint.py:252
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
-msgstr[0] "La nouvelle dépendance sera installée depuis l'AUR :"
-msgstr[1] "Les nouvelles dépendances seront installées depuis l'AUR :"
+msgstr[0] "La nouvelle dépendance sera installée depuis l'AUR:"
+msgstr[1] "Les nouvelles dépendances seront installées depuis l'AUR:"
 
 #: pikaur/install_cli.py:605
 #, python-brace-format
@@ -151,7 +151,7 @@ msgstr "Rien à faire."
 
 #: pikaur/args.py:90
 msgid "Pikaur-specific options:"
-msgstr "Options spécifiques pikaur :"
+msgstr "Options spécifiques pikaur:"
 
 #: pikaur/install_cli.py:472
 #, fuzzy
@@ -162,7 +162,7 @@ msgstr "Commencer l'installation ? [O/n]"
 #, fuzzy
 msgid "Reading AUR package info..."
 msgid_plural "Reading AUR packages info..."
-msgstr[0] "Lecture des paquets de l'AUR…"
+msgstr[0] "Lecture du paquet de l'AUR…"
 msgstr[1] "Lecture des paquets de l'AUR…"
 
 #: pikaur/pacman.py:165
@@ -181,13 +181,13 @@ msgstr "Installation des dépendances du dépôt pour {}"
 #: pikaur/pprint.py:218
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
-msgstr[0] "Le paquet du dépôt sera installé :"
-msgstr[1] "Les paquets du dépôt seront installés :"
+msgstr[0] "Le paquet du dépôt sera installé:"
+msgstr[1] "Les paquets du dépôt seront installés:"
 
 #: pikaur/install_cli.py:388
 #, fuzzy
 msgid "Resolving AUR dependencies..."
-msgstr "résolution des dépendances…"
+msgstr "Résolution des dépendances…"
 
 #: pikaur/install_cli.py:829
 #, python-brace-format
@@ -211,8 +211,8 @@ msgstr "Démarrage de la mise à jour complète AUR…"
 #: pikaur/pprint.py:230
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
-msgstr[0] "Le paquet de dépôt tiers sera installé :"
-msgstr[1] "Les paquets de dépôt tiers seront installés :"
+msgstr[0] "Le paquet de dépôt tiers sera installé:"
+msgstr[1] "Les paquets de dépôt tiers seront installés:"
 
 #: pikaur/install_cli.py:558
 msgid "Try recovering?"
@@ -220,7 +220,7 @@ msgstr "Essayer de récupérer ?"
 
 #: pikaur/install_cli.py:299
 msgid "Version mismatch:"
-msgstr "Inadéquation des versions :"
+msgstr "Inadéquation des versions:"
 
 #: pikaur/prompt.py:78
 #, fuzzy
@@ -237,7 +237,7 @@ msgstr "[a] annuler"
 
 #: pikaur/install_cli.py:559
 msgid "[c] git checkout -- '*'"
-msgstr "[c] git checkout -- '*'"
+msgstr "[c] vérification de git -- '*'"
 
 #: pikaur/search_cli.py:133
 #, python-brace-format
@@ -284,7 +284,7 @@ msgstr "ne pas demander de modifier les PKGBUILD et autres fichiers de build"
 
 #: pikaur/args.py:84
 msgid "don't remove build dir after the build"
-msgstr ""
+msgstr "ne pas supprimer le répertoire build après la compilation"
 
 # wrong case on purpose
 #: pikaur/install_cli.py:645
@@ -302,7 +302,7 @@ msgstr "erreur :"
 
 #: pikaur/install_cli.py:582
 msgid "looking for conflicting packages..."
-msgstr ""
+msgstr "à la recherche de paquets conflictuels..."
 
 #: pikaur/install_cli.py:476 pikaur/install_cli.py:493
 msgid "m"
@@ -310,7 +310,7 @@ msgstr "m"
 
 #: pikaur/prompt.py:15 pikaur/install_cli.py:476
 msgid "n"
-msgstr ""
+msgstr "n"
 
 #: pikaur/install_cli.py:230
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
@@ -318,7 +318,7 @@ msgstr "pas d'éditeur trouvé. Essayez de définir $VISUAL ou $EDITOR."
 
 #: pikaur/search_cli.py:154
 msgid "outofdate"
-msgstr ""
+msgstr "dépasser la date limite"
 
 #: pikaur/main.py:258
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
@@ -327,11 +327,11 @@ msgstr ""
 
 #: pikaur/args.py:76
 msgid "query packages from AUR only"
-msgstr ""
+msgstr "paquets de requêtes d'AUR uniquement"
 
 #: pikaur/args.py:77
 msgid "query packages from repository only"
-msgstr ""
+msgstr "paquets de requêtes à partir du dépôt uniquement"
 
 #: pikaur/install_cli.py:565 pikaur/install_cli.py:570
 msgid "r"
@@ -347,7 +347,7 @@ msgstr "chercher uniquement dans les noms des paquets"
 
 #: pikaur/args.py:83
 msgid "sysupgrade '-git' and other dev packages older than 1 day"
-msgstr ""
+msgstr "sysupgrade '-git' et autres paquets de développement plus anciens que 1 jour"
 
 #: pikaur/install_cli.py:476 pikaur/install_cli.py:491
 msgid "v"
@@ -355,7 +355,7 @@ msgstr "v"
 
 #: pikaur/install_cli.py:91 pikaur/install_cli.py:604 pikaur/pprint.py:106
 msgid "warning:"
-msgstr "attention :"
+msgstr "attention:"
 
 #: pikaur/prompt.py:14 pikaur/install_cli.py:476 pikaur/install_cli.py:489
 msgid "y"
@@ -380,12 +380,12 @@ msgid ""
 "{what} depends on: '{dep}'\n"
 " found in '{location}': '{version}'"
 msgstr ""
-"{what} dépend de '{dep}'\n"
+"{what} dépend de: '{dep}'\n"
 " trouvé dans '{location}': '{version}'"
 
 #: pikaur/build.py:345
 msgid "{} does not exist on the filesystem."
-msgstr ""
+msgstr "{} n'existe pas sur le système de fichiers."
 
 #: pikaur/main.py:171
 msgid "{}: {}"

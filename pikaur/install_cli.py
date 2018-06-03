@@ -402,7 +402,7 @@ class InstallPackagesCLI():
     def get_repo_deps_info(self, dep_names=None) -> List[str]:
         local_pkg_names = PackageDB.get_local_pkgnames()
         local_provided_names = PackageDB.get_local_provided_dict().keys()
-        new_dep_names = []
+        new_dep_names: List[str] = []
         if dep_names:
             new_dep_names += dep_names
         for pkg_info in (

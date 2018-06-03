@@ -399,13 +399,16 @@ class InstallPackagesCLI():
             else:
                 self.thirdparty_repo_packages_install_info.append(pkg_update)
 
-    def get_repo_deps_info(self):
+    def get_repo_deps_info(self, dep_names=None) -> List[str]:
         local_pkg_names = PackageDB.get_local_pkgnames()
         local_provided_names = PackageDB.get_local_provided_dict().keys()
         new_dep_names = []
+        if dep_names:
+            new_dep_names += dep_names
         for pkg_info in (
                 self.repo_packages_install_info + self.thirdparty_repo_packages_install_info +
-                self.aur_updates_install_info + self.aur_deps_install_info
+                self.aur_updates_install_info + self.aur_deps_install_info +
+                self.new_repo_deps_install_info + self.new_thirdparty_repo_deps_install_info
         ):
             pkg_name = pkg_info.Name
             try:
@@ -415,11 +418,11 @@ class InstallPackagesCLI():
             for dep_line in pkg.depends:
                 dep_name, _vm = get_package_name_and_version_matcher_from_depend_line(dep_line)
                 if (
-                        dep_name in local_pkg_names
+                        dep_name in new_dep_names
+                ) or (
+                    dep_name in local_pkg_names
                 ) or (
                     dep_name in local_provided_names
-                ) or (
-                    dep_name in new_dep_names
                 ):
                     continue
                 try:
@@ -438,6 +441,8 @@ class InstallPackagesCLI():
                 else:
                     self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
                 new_dep_names.append(dep_name)
+                new_dep_names = self.get_repo_deps_info(dep_names=new_dep_names)
+        return new_dep_names
 
     def get_aur_pkgs_info(self, aur_packages_names: List[str]):
         local_pkgs = PackageDB.get_local_dict()

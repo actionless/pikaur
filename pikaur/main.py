@@ -56,6 +56,9 @@ from .exceptions import (
 from .pikspect import (
     TTYRestore
 )
+from .news import (
+    News
+)
 
 
 def init_readline() -> None:
@@ -110,7 +113,13 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
 
 
 def cli_upgrade_packages(args: PikaurArgs) -> None:
-    refresh_pkg_db(args)
+    news = News()
+    with ThreadPool() as pool:
+        pool.apply(refresh_pkg_db, [args])
+        pool.apply(news.fetch_latest)
+        pool.close()
+        pool.join()
+    news.print_news()
     if not args.repo:
         print('{} {}'.format(
             color_line('::', 12),

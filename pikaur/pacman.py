@@ -236,6 +236,18 @@ class PackageDB(PackageDBCommon):
             )
         return cls._packages_list_cache[PackageSource.REPO]
 
+    @classmethod
+    def get_last_installed_package_date(cls) -> int:
+        repo_names = []
+        for repo in PackageDB.get_repo_list():
+            repo_names.append(repo.name)
+        packages = []
+        for package in PackageDB.get_local_list():
+            if package.name in repo_names:
+                packages.append(package)
+        packages_by_date = sorted(packages, key=lambda x: -x.installdate)
+        return int(packages_by_date[0].installdate)
+
 
 def find_repo_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     pacman_packages = []

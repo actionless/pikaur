@@ -3,3 +3,4 @@ __pycache__/
 Dockerfile
 locale/*.mo
 locale/pikaur.pot
+.idea/

@@ -38,7 +38,7 @@ msgstr "No se puede clonar '{name}' en '{path}' desde AUR:"
 #: pikaur/install_cli.py:544
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
-msgstr "No puede repatriar '{name}' a '{path}' desde AUR:"
+msgstr "No puede repatriar {name}' a '{path}' desde AUR:"
 
 #: pikaur/prompt.py:103
 msgid "Command '{}' failed to execute."

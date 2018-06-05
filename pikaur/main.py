@@ -41,7 +41,7 @@ from .prompt import (
     ask_to_continue,
 )
 from .config import (
-    BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
+    BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT,
     PikaurConfig,
 )
 from .install_cli import (
@@ -281,6 +281,11 @@ def check_runtime_deps():
             sys.exit(2)
 
 
+def create_dirs() -> None:
+    if not os.path.exists(CACHE_ROOT):
+        os.makedirs(CACHE_ROOT)
+
+
 def handle_sig_int(*_whatever):
     print_status_message("\n\nCanceled by user (SIGINT)")
     TTYRestore.restore()
@@ -289,6 +294,7 @@ def handle_sig_int(*_whatever):
 
 def main() -> None:
     check_runtime_deps()
+    create_dirs()
 
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     signal.signal(signal.SIGINT, handle_sig_int)

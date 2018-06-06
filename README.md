@@ -29,6 +29,7 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 * [FAQ](#faq "")
 * [Contributing](#contributing "")
 * - [Translations](#translations "")
+* [Authors]
 
 ![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
@@ -168,3 +169,16 @@ To start working on a new language, say 'es' (Spanish), add it to the
 `Makefile` `LANGS` variable and run `make`. Then translate `locale/es.po` using
 your favorite PO editor. Run `make` every time the Python code strings change
 or the `.po` is modified.
+
+
+### Authors
+
+To see the list of authors use this command inside pikaur git repository directory:
+
+```sh
+git log --pretty=tformat:"%an <%ae>" | sort -u
+```
+
+##### Special thanks
+
+@AladW ([aurutils](https://github.com/AladW/aurutils)), @morganamilo ([yay](https://github.com/Jguer/yay)) and [all the other issue contributors](https://github.com/actionless/pikaur/issues?utf8=%E2%9C%93&q=is%3Aissue+-author%3Aactionless) for helping in triaging the bugs and clearing up feature requirements.

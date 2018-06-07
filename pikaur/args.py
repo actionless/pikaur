@@ -177,7 +177,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
 
 
 def cli_print_help(args: PikaurArgs) -> None:
-    pikaur_long_opts = [l for s, l in PIKAUR_OPTS]
+    pikaur_long_opts = [long_opt for _short_opt, long_opt in PIKAUR_OPTS]
     pacman_help = spawn(
         [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args, ignore_args=pikaur_long_opts),
     ).stdout_text.replace(

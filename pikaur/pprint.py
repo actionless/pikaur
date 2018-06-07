@@ -123,10 +123,14 @@ def print_status_message(message='', end='\n', flush=False) -> None:
             sys.stderr.flush()
 
 
-def print_not_found_packages(not_found_packages: List[str]) -> None:
+def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
     print("{} {}".format(
         color_line(':: ' + _("warning:"), 11),
-        bold_line(_("Following packages cannot be found in AUR:")),
+        (
+            bold_line(_("Following packages cannot be found in repositories:"))
+            if repo else
+            bold_line(_("Following packages cannot be found in AUR:"))
+        ),
     ))
     for package in not_found_packages:
         print(format_paragraph(package))

@@ -8,7 +8,6 @@ from .config import PikaurConfig
 from .core import interactive_spawn
 from .i18n import _
 from .pprint import color_line, print_status_message, get_term_width, range_printable
-from .pikspect import pikspect as pikspect_spawn
 
 
 Y = _('y')
@@ -110,6 +109,7 @@ def retry_interactive_command(
     while True:
         good = None
         if pikspect:
+            from .pikspect import pikspect as pikspect_spawn
             good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
         else:
             good = interactive_spawn(cmd_args, **kwargs).returncode == 0

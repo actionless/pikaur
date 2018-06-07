@@ -11,7 +11,7 @@ from .version import (
     get_package_name_and_version_matcher_from_depend_line,
 )
 from .aur import AURPackageInfo, find_aur_packages
-from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch
+from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch, PackagesNotFoundInRepo
 from .core import PackageSource
 
 
@@ -217,3 +217,27 @@ def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:
                 iter_package_names.append(pkg_name)
 
     return result_aur_deps
+
+
+def find_repo_deps_of_aur_pkgs(package_names: List[str]) -> List[str]:
+    local_pkg_names = PackageDB.get_local_pkgnames()
+    local_provided_names = PackageDB.get_local_provided_dict().keys()
+    new_dep_names: List[str] = []
+    for pkg_name in package_names:
+        pkg = find_aur_packages([pkg_name])[0][0]
+        for dep_line in pkg.depends:
+            dep_name, _vm = get_package_name_and_version_matcher_from_depend_line(dep_line)
+            if (
+                    dep_name in new_dep_names
+            ) or (
+                dep_name in local_pkg_names
+            ) or (
+                dep_name in local_provided_names
+            ):
+                continue
+            try:
+                PackageDB.find_one_repo(dep_name)
+            except PackagesNotFoundInRepo:
+                continue
+            new_dep_names.append(dep_name)
+    return new_dep_names

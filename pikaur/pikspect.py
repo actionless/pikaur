@@ -2,8 +2,6 @@ import sys
 import subprocess
 import tty
 import pty
-import gettext
-import io
 import termios
 import select
 import shutil
@@ -11,40 +9,30 @@ import struct
 import fcntl
 import uuid
 import os
+import re
 import multiprocessing
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import List, Tuple, Dict
+from typing import List, Dict, TextIO
 
-from .core import DataType
-from .pprint import bold_line, PrintLock, print_stdout
+from .pacman import (
+    ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE,
+    format_conflicts,
+)
+from .pprint import PrintLock, print_stdout
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
 
 
-PACMAN_TRANSLATION = gettext.translation('pacman', fallback=True)
+Y = ANSWER_Y
+N = ANSWER_N
 
 
-def _p(msg: str) -> str:
-    return PACMAN_TRANSLATION.gettext(msg)
+# MAX_QUESTION_LENGTH = 512
+MAX_QUESTION_LENGTH = 256
 
 
-Y = _p("Y")
-N = _p("N")
-
-
-DEFAULT_QUESTIONS: Dict[str, List[str]] = {
-    Y: [
-        bold_line(" {} {} ".format(message, _p('[Y/n]')))
-        for message in [
-            _p('Proceed with installation?'),
-            _p('Do you want to remove these packages?'),
-        ]
-    ],
-    N: [],
-}
-
-
-SMALL_TIMEOUT = 0.1
+# SMALL_TIMEOUT = 0.1
+SMALL_TIMEOUT = 0.01
 
 
 class TTYRestore():
@@ -73,41 +61,140 @@ TTYRestore.save()
 
 class PikspectPopen(subprocess.Popen):
 
-    saved_bytes: bytes
-
-
-class PikspectTaskData(DataType):
-    proc: PikspectPopen
-    pty_out: io.BytesIO
-    pty_in: io.TextIOWrapper
-    default_questions: Dict[str, Tuple[str]]
     print_output: bool
     save_output: bool
+    capture_input: bool
     task_id: uuid.UUID
+    historic_output: List[bytes]
+    pty_in: TextIO
+    default_questions: Dict[str, List[str]]
+    _re_cache: Dict[str, int]
+
+    def __init__(  # pylint: disable=too-many-arguments
+            self,
+            args: List[str],
+            print_output: bool = True,
+            save_output: bool = True,
+            capture_input: bool = True,
+            default_questions: Dict[str, List[str]] = None,
+            **kwargs
+    ) -> None:
+        self.args = args
+        self.print_output = print_output
+        self.save_output = save_output
+        self.capture_input = capture_input
+        self.default_questions = {}
+        self.historic_output = []
+        self._re_cache = {}
+
+        if default_questions:
+            self.add_answers(default_questions)
+
+        self.task_id = uuid.uuid4()
+        self.pty_user_master, self.pty_user_slave = pty.openpty()
+        self.pty_cmd_master, self.pty_cmd_slave = pty.openpty()
+        self.pty_out = open(self.pty_cmd_master, 'rb')
+
+        super().__init__(
+            args=args,
+            stdin=self.pty_user_slave,
+            stdout=self.pty_cmd_slave,
+            stderr=self.pty_cmd_slave,
+            **kwargs
+        )
+
+    def add_answers(self, extra_questions: Dict[str, List[str]]) -> None:
+        for answer, questions in extra_questions.items():
+            self.default_questions[answer] = self.default_questions.get(answer, []) + questions
+        self.check_questions()
+
+    def get_output_bytes(self) -> bytes:
+        return ThreadSafeBytesStorage.get_bytes_output(self.task_id)
+
+    def get_output(self) -> str:
+        return self.get_output_bytes().decode('utf-8')
+
+    def wait_for_output(self, pattern: str = None, text: str = None) -> bool:
+        if text:
+            pattern = re.escape(text)
+        compiled = self._re_compile(pattern)
+        while self.returncode is None:
+            try:
+                historic_output = b''.join(self.historic_output).decode('utf-8')
+            except UnicodeDecodeError:
+                continue
+            if compiled.search(historic_output):
+                return True
+            sleep(SMALL_TIMEOUT)
+        return False
+
+    def run(self) -> None:
+        with NestedTerminal() as real_term_geometry:
+            set_terminal_geometry(
+                self.pty_out.fileno(),
+                columns=real_term_geometry.columns,
+                rows=real_term_geometry.lines
+            )
+
+            if 'sudo' in self.args:
+                subprocess.run(['sudo', '-v'])
+            with open(self.pty_user_master, 'w') as self.pty_in:
+                with ThreadPool(processes=3) as pool:
+                    output_task = pool.apply_async(cmd_output_handler, (self, ))
+                    pool.apply_async(user_input_reader, (self, ))
+                    communicate_task = pool.apply_async(communicator, (self, ))
+
+                    pool.close()
+                    communicate_task.get()
+                    try:
+                        output_task.get(timeout=SMALL_TIMEOUT)
+                    except multiprocessing.context.TimeoutError:
+                        pass
+                    pool.terminate()
+
+    def _re_compile(self, pattern):
+        if not self._re_cache.get(pattern):
+            self._re_cache[pattern] = re.compile(pattern)
+        return self._re_cache[pattern]
+
+    def check_questions(self):
+        try:
+            historic_output = b''.join(self.historic_output).decode('utf-8')
+        except UnicodeDecodeError:
+            return
+        for answer, questions in self.default_questions.items():
+            for question in questions:
+                if len(historic_output) < len(question) or (
+                        (not self._re_compile(question).search(historic_output))
+                        if '.*' in question else
+                        (historic_output[-len(question):] != question)
+                ):
+                    continue
+                if self.print_output:
+                    print_stdout(answer + '\n')
+                with PrintLock():
+                    if self.save_output:
+                        ThreadSafeBytesStorage.add_bytes(
+                            self.task_id, answer.encode('utf-8') + b'\n'
+                        )
+                    self.pty_in.write(answer)
+                    sleep(SMALL_TIMEOUT)
+                    self.pty_in.write('\n')
+                    # self.pty_in.flush()
+                self.historic_output = []
+                return
 
 
 @handle_exception_in_thread
-def cmd_output_handler(task_data: PikspectTaskData) -> None:
-    historic_output: List[bytes] = []
-    max_question_length = max([
-        len(q)
-        for answer, questions in task_data.default_questions.items()
-        for q in questions
-    ]) + 10
-    default_questions_bytes: Dict[str, List[List[bytes]]] = {
-        answer: [
-            [chr(char).encode('utf-8') for char in question.encode('utf-8')]
-            for question in questions
-        ]
-        for answer, questions in task_data.default_questions.items()
-    }
+def cmd_output_handler(task_data: PikspectPopen) -> None:
+    max_question_length = MAX_QUESTION_LENGTH
     while True:
         # if proc.returncode is not None:
             # break
         output = task_data.pty_out.read(1)
         if not output:
             break
-        historic_output = historic_output[-max_question_length:] + [output, ]
+        task_data.historic_output = task_data.historic_output[-max_question_length:] + [output, ]
 
         if task_data.print_output:
             with PrintLock():
@@ -115,40 +202,26 @@ def cmd_output_handler(task_data: PikspectTaskData) -> None:
                 sys.stdout.buffer.flush()
         if task_data.save_output:
             ThreadSafeBytesStorage.add_bytes(task_data.task_id, output)
-        for answer, questions in default_questions_bytes.items():
-            for question in questions:
-                if len(historic_output) < len(question) or (
-                        historic_output[-len(question):] != question
-                ):
-                    continue
-                if task_data.print_output:
-                    print_stdout(answer + '\n')
-                with PrintLock():
-                    if task_data.save_output:
-                        ThreadSafeBytesStorage.add_bytes(
-                            task_data.task_id, answer.encode('utf-8') + b'\n'
-                        )
-                    task_data.pty_in.write(answer)
-                    sleep(SMALL_TIMEOUT)
-                    task_data.pty_in.write('\n')
-                historic_output = []
-                break
+
+        task_data.check_questions()
 
 
 @handle_exception_in_thread
-def user_input_reader(task_data: PikspectTaskData) -> None:
-    while True:
-        if task_data.proc.returncode is not None:
-            break
+def user_input_reader(task_data: PikspectPopen) -> None:
+    while task_data.returncode is None:
+        if not task_data.capture_input:
+            sleep(SMALL_TIMEOUT)
+            continue
+
         char = None
 
-        while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-            line = sys.stdin.read(1)
+        if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+            # line = sys.stdin.read(1)
+            line = sys.stdin.readline()
             if line:
                 char = line
-                break
             else:
-                return
+                continue
         else:
             sleep(SMALL_TIMEOUT)
             continue
@@ -156,19 +229,19 @@ def user_input_reader(task_data: PikspectTaskData) -> None:
         try:
             with PrintLock():
                 task_data.pty_in.write(char)
-        except ValueError:
-            return
-        if task_data.print_output:
-            print_stdout(char)
+                # print(f'DEBUG({char})')
+        except ValueError as exc:
+            print(exc)
+        # if task_data.print_output:
+            # print_stdout(char, end='', flush=True)
         if task_data.save_output:
             ThreadSafeBytesStorage.add_bytes(task_data.task_id, char.encode('utf-8'))
 
 
 @handle_exception_in_thread
-def communicator(task_data: PikspectTaskData) -> None:
-    # @TODO: wip #161
-    # task_data.proc.communicate()
-    task_data.proc.wait()
+def communicator(task_data: PikspectPopen) -> None:
+    # task_data.communicate()
+    task_data.wait()
 
 
 def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
@@ -197,92 +270,33 @@ def pikspect(
         cmd: List[str],
         print_output=True,
         save_output=True,
-        default_questions: Dict[str, List[str]] = None,
         conflicts: List[List[str]] = None,
-        accepted_replacements: List[List[str]] = None,
-        declined_replacements: List[List[str]] = None,
+        extra_questions: Dict[str, List[str]] = None,
         **kwargs
 ) -> PikspectPopen:
-
-    if not default_questions:
-        default_questions = {}
-        default_questions.update(DEFAULT_QUESTIONS)
-
-    extra_questions: Dict[str, List[str]] = {Y: [], N: []}
-
+    extra_questions = extra_questions or {}
     if conflicts:
-        extra_questions[Y] += [
-            bold_line(" {} {} ".format(message, _p('[y/N]')))
-            for message in [
-                _p('%s and %s are in conflict. Remove %s?') % (new_pkg, old_pkg, old_pkg)
-                for new_pkg, old_pkg in conflicts
-            ]
-        ]
+        extra_questions[Y] = extra_questions.get(Y, []) + format_conflicts(conflicts)
 
-    for answer, replacements in (
-            (Y, accepted_replacements),
-            (N, declined_replacements),
-    ):
-        if not replacements:
-            continue
-        extra_questions[answer] += [
-            bold_line(" {} {} ".format(message, _p('[Y/n]')))
-            for message in [
-                _p('Replace %s with %s/%s?') % (old_pkg, new_pkg_repo, new_pkg)
-                for new_pkg, new_pkg_repo, old_pkg in replacements
-            ]
-        ]
+    default_questions: Dict[str, List[str]] = {
+        Y: [
+            QUESTION_PROCEED,
+            QUESTION_REMOVE,
+        ],
+        N: [],
+    }
 
-    for answer in (Y, N):
-        if extra_questions[answer]:
-            default_questions[answer] = default_questions[answer] + extra_questions[answer]
+    proc = PikspectPopen(
+        cmd,
+        print_output=print_output,
+        save_output=save_output,
+        default_questions=default_questions,
+        **kwargs
+    )
+    if extra_questions:
+        proc.add_answers(extra_questions)
+    proc.run()
 
-    task_id = uuid.uuid4()
-
-    with NestedTerminal() as real_term_geometry:
-        pty_user_master, pty_user_slave = pty.openpty()
-        pty_cmd_master, pty_cmd_slave = pty.openpty()
-        pty_out = open(pty_cmd_master, 'rb')
-        set_terminal_geometry(
-            pty_out.fileno(),
-            columns=real_term_geometry.columns,
-            rows=real_term_geometry.lines
-        )
-
-        if 'sudo' in cmd:
-            subprocess.run(['sudo', '-v'])
-        proc = PikspectPopen(
-            cmd,
-            stdin=pty_user_slave,
-            stdout=pty_cmd_slave,
-            stderr=pty_cmd_slave,
-            **kwargs
-        )
-        with open(pty_user_master, 'w') as pty_in:
-            task_data = PikspectTaskData(
-                proc=proc,
-                pty_out=pty_out,
-                pty_in=pty_in,
-                default_questions=default_questions,
-                print_output=print_output,
-                save_output=save_output,
-                task_id=task_id
-            )
-            with ThreadPool(processes=3) as pool:
-                output_task = pool.apply_async(cmd_output_handler, (task_data, ))
-                pool.apply_async(user_input_reader, (task_data, ))
-                communicate_task = pool.apply_async(communicator, (task_data, ))
-
-                pool.close()
-                communicate_task.get()
-                try:
-                    output_task.get(timeout=SMALL_TIMEOUT)
-                except multiprocessing.context.TimeoutError:
-                    pass
-                pool.terminate()
-
-    if save_output:
-        proc.saved_bytes = ThreadSafeBytesStorage.get_bytes_output(task_id)
     return proc
 
 

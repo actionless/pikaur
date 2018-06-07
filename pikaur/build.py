@@ -190,7 +190,7 @@ class PackageBuild(DataType):
                     save_output=True
                 )
                 if pkgver_result.returncode != 0:
-                    sys.stdout.buffer.write(pkgver_result.saved_bytes)
+                    sys.stdout.buffer.write(pkgver_result.get_output_bytes())
                     sys.stdout.buffer.flush()
                     if not ask_to_continue(
                             args=self.args, default_yes=False

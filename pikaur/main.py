@@ -28,7 +28,7 @@ from .pprint import (
     print_version,
 )
 from .pacman import (
-    get_pacman_command, refresh_pkg_db,
+    get_pacman_command,
 )
 from .aur import (
     find_aur_packages, get_all_aur_names,
@@ -96,7 +96,7 @@ def cli_print_upgradeable(args: PikaurArgs) -> None:
         aur_updates, _not_found_aur_pkgs = find_aur_updates(args)
         updates += aur_updates
     if not args.aur:
-        updates += find_repo_updates()
+        updates += find_repo_updates()  # @TODO: use InstallCli.get_upgradeable_list() instead
     if args.quiet:
         print('\n'.join([
             pkg_update.Name for pkg_update in updates
@@ -115,11 +115,16 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
 def cli_upgrade_packages(args: PikaurArgs) -> None:
     news = News()
     with ThreadPool() as pool:
-        pool.apply(refresh_pkg_db, [args])
+        # pool.apply(refresh_pkg_db, [args])
         pool.apply(news.fetch_latest)
         pool.close()
         pool.join()
     news.print_news()
+    if not args.aur:
+        print('{} {}'.format(
+            color_line('::', 12),
+            bold_line(_("Starting full system upgrade..."))
+        ))
     if not args.repo:
         print('{} {}'.format(
             color_line('::', 12),

@@ -1,3 +1,5 @@
+import gettext
+import re
 from typing import List, Dict, Tuple, Iterable, Optional, Union, TYPE_CHECKING
 
 from pycman.config import PacmanConfig as PycmanConfig
@@ -13,15 +15,23 @@ from .version import (
     VersionMatcher,
 )
 from .pprint import print_status_message, color_enabled
-from .args import PikaurArgs
+from .args import PikaurArgs, parse_args
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo
-from .core import sudo
+from .core import sudo, spawn
 from .prompt import retry_interactive_command_or_exit
+from .pprint import bold_line
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
     from .aur import AURPackageInfo  # noqa
+
+
+PACMAN_TRANSLATION = gettext.translation('pacman', fallback=True)
+
+
+def _p(msg: str) -> str:
+    return PACMAN_TRANSLATION.gettext(msg)
 
 
 OFFICIAL_REPOS = (
@@ -33,6 +43,40 @@ OFFICIAL_REPOS = (
     'multilib-testing',
     'multilib',
 )
+
+
+ANSWER_Y = _p("Y")
+ANSWER_N = _p("N")
+QUESTION_YN_YES = _p("[Y/n]")
+QUESTION_YN_NO = _p("[y/N]")
+
+
+def format_pacman_question(message: str, question=QUESTION_YN_YES) -> str:
+    return bold_line(" {} {} ".format(_p(message), question))
+
+
+MESSAGE_NOTFOUND = (_p("target not found: %s\n") % '').replace('\n', '')
+
+QUESTION_PROCEED = format_pacman_question('Proceed with installation?')
+QUESTION_REMOVE = format_pacman_question('Do you want to remove these packages?')
+QUESTION_CONFLICT = format_pacman_question(
+    '%s and %s are in conflict. Remove %s?', QUESTION_YN_NO
+)
+QUESTION_CONFLICT_VIA_PROVIDED = format_pacman_question(
+    '%s and %s are in conflict (%s). Remove %s?', QUESTION_YN_NO
+)
+
+
+def format_conflicts(conflicts: List[List[str]]) -> List[str]:
+    return [
+        QUESTION_CONFLICT % (new_pkg, old_pkg, old_pkg)
+        for new_pkg, old_pkg in conflicts
+    ] + [
+        (
+            re.escape(QUESTION_CONFLICT_VIA_PROVIDED % (new_pkg, old_pkg, '.*', old_pkg))
+        ).replace(r"\.\*", ".*")
+        for new_pkg, old_pkg in conflicts
+    ]
 
 
 def get_pacman_command(args: PikaurArgs) -> List[str]:
@@ -250,15 +294,20 @@ class PackageDB(PackageDBCommon):
 
 
 def find_repo_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
+    found_package_ids = spawn(
+        get_pacman_command(parse_args()) + ['--sync', '--print-format', '%r/%n'] +
+        list(package_names)
+    ).stdout_text.splitlines()
+    found_package_names = {pkg_id.split('/')[1]: pkg_id for pkg_id in found_package_ids}
+    all_repo_pkgs = PackageDB.get_repo_dict()
+
     pacman_packages = []
     not_found_packages = []
     for package_name in package_names:
-        try:
-            pkg = PackageDB.find_one_repo(package_name)
-        except PackagesNotFoundInRepo:
-            not_found_packages.append(package_name)
+        if package_name in found_package_names:
+            pacman_packages.append(all_repo_pkgs[found_package_names[package_name]])
         else:
-            pacman_packages.append(pkg)
+            not_found_packages.append(package_name)
     return pacman_packages, not_found_packages
 
 

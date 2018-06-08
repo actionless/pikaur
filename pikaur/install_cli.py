@@ -48,7 +48,7 @@ from .prompt import (
     retry_interactive_command_or_exit, get_input,
 )
 from .srcinfo import SrcInfo
-from .pikspect import PikspectPopen, SMALL_TIMEOUT
+from .pikspect import PikspectPopen, SMALL_TIMEOUT, TTYRestore
 from .news import News
 
 
@@ -689,6 +689,8 @@ class InstallPackagesCLI():
                     # self.install_package_names.remove(pkg_name)
 
     def install_prompt(self) -> None:
+
+        TTYRestore.restore()
 
         def _print_sysupgrade(verbose=False) -> None:
             print(pretty_format_sysupgrade(

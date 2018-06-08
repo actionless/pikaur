@@ -212,7 +212,7 @@ class PikspectPopen(subprocess.Popen):
                     self.pty_in.write(answer)
                     sleep(SMALL_TIMEOUT)
                     self.pty_in.write('\n')
-                    # self.pty_in.flush()
+                    self.pty_in.flush()
                 self.historic_output = []
                 break
 

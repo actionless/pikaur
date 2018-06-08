@@ -294,10 +294,13 @@ class PackageDB(PackageDBCommon):
 
 
 def find_repo_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
-    found_package_ids = spawn(
+    found_packages_output = spawn(
         get_pacman_command(parse_args()) + ['--sync', '--print-format', '%r/%n'] +
         list(package_names)
-    ).stdout_text.splitlines()
+    ).stdout_text
+    if not found_packages_output:
+        return [], package_names
+    found_package_ids = found_packages_output.splitlines()
     found_package_names = {pkg_id.split('/')[1]: pkg_id for pkg_id in found_package_ids}
     all_repo_pkgs = PackageDB.get_repo_dict()
 

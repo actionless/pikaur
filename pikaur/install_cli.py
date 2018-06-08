@@ -417,7 +417,7 @@ class InstallPackagesCLI():
         self.new_thirdparty_repo_deps_install_info = []
         self.aur_updates_install_info = []
         self.aur_deps_install_info = []
-        if not self.args.aur and not self.args.noconfirm:
+        if not self.args.aur:
             self.get_repo_pkgs_info()
 
         # retrieve PackageUpdate objects for AUR packages to be installed

@@ -98,9 +98,11 @@ def find_aur_devel_updates(
 
 def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
     package_names = find_packages_not_from_repo()
-    print_stderr(_n("Reading AUR package info...",
-                            "Reading AUR packages info...",
-                            len(package_names)))
+    print_stderr(_n(
+        "Reading AUR package info...",
+        "Reading AUR packages info...",
+        len(package_names)
+    ))
     aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
     local_packages = PackageDB.get_local_dict()
     aur_updates = []

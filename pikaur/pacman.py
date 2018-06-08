@@ -304,8 +304,11 @@ class PackageDB(PackageDBCommon):
         return int(packages_by_date[0].installdate)
 
 
-def get_print_format_output(cmd_args: List[str]) -> List[Tuple[str, str, str]]:
-    result = []
+PRINT_FORMAT_TYPE = List[Tuple[str, str, str]]
+
+
+def get_print_format_output(cmd_args: List[str]) -> PRINT_FORMAT_TYPE:
+    result: PRINT_FORMAT_TYPE = []
     found_packages_output = spawn(
         cmd_args + ['--print-format', '%r/%n']
     ).stdout_text
@@ -324,7 +327,7 @@ def get_print_format_output(cmd_args: List[str]) -> List[Tuple[str, str, str]]:
 
 def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     found_package_names = {}
-    for repo_name, pkg_name, line in get_print_format_output(
+    for _repo_name, pkg_name, line in get_print_format_output(
             get_pacman_command(parse_args()) + ['--sync'] +
             list(package_names)
     ):

@@ -59,7 +59,7 @@ class TTYRestore():
 TTYRestore.save()
 
 
-class PikspectPopen(subprocess.Popen):
+class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attributes
 
     print_output: bool
     save_output: bool

@@ -203,6 +203,8 @@ class InstallPackagesCLI():
         if not self.args.aur:
             if self.args.sysupgrade:
                 self.news = News()
+            if self.args.noconfirm:
+                PackageDB.get_local_dict()
             self.wrap_pacman()
         else:
             self.not_found_repo_pkgs_names = self.args.positional
@@ -258,8 +260,6 @@ class InstallPackagesCLI():
         return result
 
     def wrap_pacman(self) -> None:
-        if self.args.noconfirm:
-            PackageDB.get_local_dict()
         self.proc = PikspectPopen(
             sudo(self.get_pacman_args() + self.args.positional),
             print_output=True,

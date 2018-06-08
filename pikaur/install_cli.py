@@ -268,8 +268,9 @@ class InstallPackagesCLI():
         self.proc.hide_after(PATTERN_MEMBER)
         self.proc.hide_after(PATTERN_MEMBERS)
         self.proc.show_after(QUESTION_SELECTION)
-        self.proc.hide_after(MESSAGE_PACKAGES)
-        self.proc.show_after(QUESTION_PROCEED)
+        if not self.args.noconfirm:
+            self.proc.hide_after(MESSAGE_PACKAGES)
+            self.proc.show_after(QUESTION_PROCEED)
         with ThreadPool(processes=5) as pool:
             self.proc_output_task = pool.apply_async(
                 self.proc.run, ()
@@ -328,7 +329,8 @@ class InstallPackagesCLI():
         self.get_all_packages_info()
         if self.news:
             self.news.print_news()
-        self.install_prompt()
+        if not self.args.noconfirm:
+            self.install_prompt()
 
         self.get_package_builds()
         # @TODO: ask to install optdepends (?)

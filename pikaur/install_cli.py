@@ -48,6 +48,7 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .pikspect import PikspectPopen, SMALL_TIMEOUT
+from .news import News
 
 
 def package_is_ignored(package_name: str, args: PikaurArgs) -> bool:
@@ -173,6 +174,8 @@ class InstallPackagesCLI():
     # @TODO: refactor to store in transactions
     failed_to_build_package_names: List[str]
 
+    news: News = None
+
     def __init__(self, args: PikaurArgs, packages: List[str] = None) -> None:
         self.args = args
         self.install_package_names = packages or []
@@ -190,6 +193,8 @@ class InstallPackagesCLI():
         self.failed_to_build_package_names = []
 
         if not self.args.aur:
+            if self.args.sysupgrade:
+                self.news = News()
             self.wrap_pacman()
         else:
             self.not_found_repo_pkgs_names = self.args.positional
@@ -229,7 +234,7 @@ class InstallPackagesCLI():
             print_output=False,
             capture_input=False,
         )
-        with ThreadPool(processes=4) as pool:
+        with ThreadPool(processes=5) as pool:
             self.proc_output_task = pool.apply_async(
                 self.proc.run, ()
             )
@@ -242,12 +247,16 @@ class InstallPackagesCLI():
             unknown_question_parser_task = pool.apply_async(
                 self.wait_for_unknown_pacman_question, ()
             )
+            news_task = pool.apply_async(
+                self.news.fetch_latest if self.news else lambda: (), ()
+            )
             pool.close()
 
             prompt_found = False
             notfound_pkgs = False
+            news_fetched = False
 
-            while not prompt_found and not notfound_pkgs:
+            while (not prompt_found and not notfound_pkgs) or not news_fetched:
                 for task in (parser_task, unknown_question_parser_task):
                     if not prompt_found:
                         try:
@@ -262,6 +271,13 @@ class InstallPackagesCLI():
                 else:
                     notfound_pkgs = True
 
+                try:
+                    news_task.get(timeout=SMALL_TIMEOUT)
+                except multiprocessing.context.TimeoutError:
+                    pass
+                else:
+                    news_fetched = True
+
             pool.terminate()
 
         self.not_found_repo_pkgs_names = []
@@ -273,13 +289,15 @@ class InstallPackagesCLI():
                     self.args.positional.remove(notfound_pkg_name)
 
     def install_packages(self):
-        args = self.args
         self.get_all_packages_info()
+        if self.news:
+            print_stdout()
+            self.news.print_news()
         self.install_prompt()
 
         self.get_package_builds()
         # @TODO: ask to install optdepends (?)
-        if not args.downloadonly:
+        if not self.args.downloadonly:
             self.ask_about_package_conflicts()
         self.review_build_files()
 
@@ -290,7 +308,7 @@ class InstallPackagesCLI():
             self.install_repo_packages()
 
         self.build_packages()
-        if not args.downloadonly:
+        if not self.args.downloadonly:
             self.install_new_aur_deps()
             self.install_aur_packages()
 
@@ -302,9 +320,9 @@ class InstallPackagesCLI():
             }
             for package_build in package_builds_by_base.values():
                 if len(package_build.built_packages_paths) == len(package_build.package_names):
-                    if not args.downloadonly:
+                    if not self.args.downloadonly:
                         package_build.update_last_installed_file()
-                    if not (args.keepbuild or PikaurConfig().build.get_bool('KeepBuildDir')):
+                    if not (self.args.keepbuild or PikaurConfig().build.get_bool('KeepBuildDir')):
                         remove_dir(package_build.build_dir)
 
         if self.failed_to_build_package_names:

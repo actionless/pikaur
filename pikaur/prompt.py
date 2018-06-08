@@ -7,7 +7,7 @@ from .config import PikaurConfig
 
 from .core import interactive_spawn
 from .i18n import _
-from .pprint import color_line, print_status_message, get_term_width, range_printable
+from .pprint import color_line, print_stderr, get_term_width, range_printable
 
 
 Y = _('y')
@@ -35,7 +35,7 @@ def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
     if not sys.stdin.isatty():
         return default
 
-    print_status_message(question, flush=True, end=" ")
+    print_stderr(question, flush=True, end=" ")
     previous_tty_settings = tty.tcgetattr(sys.stdin.fileno())  # type: ignore
     try:
         tty.setraw(sys.stdin.fileno())
@@ -87,7 +87,7 @@ def ask_to_continue(args: PikaurArgs, text: str = None, default_yes: bool = True
         text = _('Do you want to proceed?')
 
     if args.noconfirm:
-        print_status_message('{} {}'.format(
+        print_stderr('{} {}'.format(
             text,
             _("[Y]es (--noconfirm)") if default_yes else _("[N]o (--noconfirm)")
         ))
@@ -115,7 +115,7 @@ def retry_interactive_command(
             good = interactive_spawn(cmd_args, **kwargs).returncode == 0
         if good:
             return good
-        print_status_message(color_line(_("Command '{}' failed to execute.").format(
+        print_stderr(color_line(_("Command '{}' failed to execute.").format(
             ' '.join(cmd_args)
         ), 9))
         if not ask_to_continue(

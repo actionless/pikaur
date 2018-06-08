@@ -10,7 +10,7 @@ from .config import PikaurConfig
 from .core import DataType, PackageSource, return_exception
 from .pprint import (
     color_line, bold_line, format_paragraph, pretty_format_repo_name,
-    print_status_message,
+    print_stderr,
 )
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
 from .aur import AURPackageInfo, aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names
@@ -226,7 +226,7 @@ def cli_search_packages(args: PikaurArgs) -> None:
     if not REPO_ONLY:
         for _key, query_result in result[PackageSource.AUR].items():
             if isinstance(query_result, AURError):
-                print_status_message('AUR returned error: {}'.format(query_result))
+                print_stderr('AUR returned error: {}'.format(query_result))
                 sys.exit(121)
             if isinstance(query_result, Exception):
                 raise query_result

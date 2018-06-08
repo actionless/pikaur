@@ -23,7 +23,7 @@ from .core import (
 )
 from .pprint import (
     color_line, bold_line,
-    print_status_message,
+    print_stderr,
     pretty_format_upgradeable,
     print_version,
 )
@@ -240,7 +240,7 @@ def check_systemd_dynamic_users() -> bool:
 
 def check_runtime_deps():
     if running_as_root() and not check_systemd_dynamic_users():
-        print_status_message("{} {}".format(
+        print_stderr("{} {}".format(
             color_line('::', 9),
             _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         ))
@@ -249,7 +249,7 @@ def check_runtime_deps():
             "fakeroot",
     ] + (['sudo'] if not running_as_root() else []):
         if not shutil.which(dep_bin):
-            print_status_message("{} '{}' {}.".format(
+            print_stderr("{} '{}' {}.".format(
                 color_line(':: ' + _('error') + ':', 9),
                 bold_line(dep_bin),
                 "executable not found"
@@ -263,7 +263,7 @@ def create_dirs() -> None:
 
 
 def handle_sig_int(*_whatever):
-    print_status_message("\n\nCanceled by user (SIGINT)")
+    print_stderr("\n\nCanceled by user (SIGINT)")
     TTYRestore.restore()
     sys.exit(125)
 

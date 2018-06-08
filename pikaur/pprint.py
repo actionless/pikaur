@@ -116,7 +116,7 @@ def print_stdout(message='', end='\n', flush=False) -> None:
             sys.stdout.flush()
 
 
-def print_status_message(message='', end='\n', flush=False) -> None:
+def print_stderr(message='', end='\n', flush=False) -> None:
     with PrintLock():
         sys.stderr.write(f'{message}{end}')
         if flush:

@@ -8,7 +8,7 @@ from .i18n import _n
 from .version import compare_versions
 from .pacman import PackageDB, find_packages_not_from_repo
 from .aur import AURPackageInfo, find_aur_packages
-from .pprint import print_status_message
+from .pprint import print_stderr
 from .args import PikaurArgs
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo
@@ -98,7 +98,7 @@ def find_aur_devel_updates(
 
 def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
     package_names = find_packages_not_from_repo()
-    print_status_message(_n("Reading AUR package info...",
+    print_stderr(_n("Reading AUR package info...",
                             "Reading AUR packages info...",
                             len(package_names)))
     aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)

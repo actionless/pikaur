@@ -14,7 +14,7 @@ from .version import (
     get_package_name_and_version_matcher_from_depend_line,
     VersionMatcher,
 )
-from .pprint import print_status_message, color_enabled
+from .pprint import print_stderr, color_enabled
 from .args import PikaurArgs, parse_args
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo
@@ -229,7 +229,7 @@ class PackageDB(PackageDBCommon):
     def get_local_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.LOCAL):
             if not quiet:
-                print_status_message(_("Reading local package database..."))
+                print_stderr(_("Reading local package database..."))
             cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local('')
         return cls._packages_list_cache[PackageSource.LOCAL]
 
@@ -274,7 +274,7 @@ class PackageDB(PackageDBCommon):
     def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.REPO):
             if not quiet:
-                print_status_message(_("Reading repository package databases..."))
+                print_stderr(_("Reading repository package databases..."))
             cls._packages_list_cache[PackageSource.REPO] = cls.search_repo(
                 search_query=''
             )

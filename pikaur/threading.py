@@ -3,7 +3,7 @@ import uuid
 from threading import Lock
 from typing import List, Callable, Any, Dict
 
-from .pprint import print_status_message
+from .pprint import print_stderr
 
 
 class ThreadSafeSequentialStorage():
@@ -65,7 +65,7 @@ def handle_exception_in_thread(fun: Callable) -> Callable:
         # except OSError:
         # pass
         except Exception as exc:
-            print_status_message('Error in the thread:')
+            print_stderr('Error in the thread:')
             traceback.print_exc()
             raise exc
 

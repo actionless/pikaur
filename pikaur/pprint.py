@@ -51,6 +51,10 @@ def get_term_width() -> int:
     return shutil.get_terminal_size((80, 80)).columns
 
 
+def purge_line(self):
+    print_stdout('\r' + ' ' * get_term_width() + '\033[1A')
+
+
 def format_paragraph(line: str) -> str:
     if not color_enabled():
         return PADDING * ' ' + line

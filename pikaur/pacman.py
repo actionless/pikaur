@@ -293,7 +293,7 @@ class PackageDB(PackageDBCommon):
         return int(packages_by_date[0].installdate)
 
 
-def find_repo_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
+def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     found_packages_output = spawn(
         get_pacman_command(parse_args()) + ['--sync', '--print-format', '%r/%n'] +
         list(package_names)

@@ -1,4 +1,4 @@
-from typing import List, Dict, Iterable
+from typing import List, Dict
 
 import pyalpm
 
@@ -39,7 +39,7 @@ def find_provided_pkgs(
 
 def check_deps_versions(
         aur_pkg_name: str,
-        deps_pkg_names: Iterable[str],
+        deps_pkg_names: List[str],
         version_matchers: Dict[str, VersionMatcher],
         source: PackageSource
 ) -> List[str]:
@@ -111,7 +111,7 @@ def find_missing_deps_for_aur_pkg(
     # repo pkgs
     not_found_repo_pkgs = check_deps_versions(
         aur_pkg_name=aur_pkg_name,
-        deps_pkg_names=version_matchers.keys(),
+        deps_pkg_names=list(version_matchers.keys()),
         version_matchers=version_matchers,
         source=PackageSource.REPO
     )

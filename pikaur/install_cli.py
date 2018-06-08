@@ -242,6 +242,8 @@ class InstallPackagesCLI():
         return result
 
     def wrap_pacman(self) -> None:
+        if self.args.noconfirm:
+            PackageDB.get_local_dict()
         self.proc = PikspectPopen(
             sudo(self.get_pacman_args() + self.args.positional),
             print_output=False,

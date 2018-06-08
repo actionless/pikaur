@@ -394,7 +394,7 @@ class InstallPackagesCLI():
         # and their upgrades if --sysupgrade was passed
         if not self.args.repo:
             self.get_aur_pkgs_info(self.not_found_repo_pkgs_names)
-        else:
+        elif self.not_found_repo_pkgs_names:
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)
 
         # check if we really need to build/install anything

@@ -325,7 +325,7 @@ class InstallPackagesCLI():
                 if MESSAGE_NOTFOUND in line:
                     notfound_pkg_name = line.split(MESSAGE_NOTFOUND)[1].strip()
                     self.not_found_repo_pkgs_names.append(notfound_pkg_name)
-                    notfound_pkg_name in self.args.positional:
+                    if notfound_pkg_name in self.args.positional:
                         self.args.positional.remove(notfound_pkg_name)
 
     def install_packages(self):

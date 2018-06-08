@@ -504,9 +504,10 @@ class InstallPackagesCLI():
         )
         proc.run()
         for line in proc.get_output().splitlines():
-            if '/' not in line:
-                break
-            repo_name, pkg_name = line.split('/')
+            try:
+                repo_name, pkg_name = line.split('/')
+            except ValueError:
+                raise ValueError(line)
             local_pkg = local_pkgs.get(pkg_name)
             repo_pkg = repo_pkgs[line]
             repo_packages_install_info_by_name[pkg_name] = PackageUpdate(

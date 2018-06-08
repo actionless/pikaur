@@ -309,15 +309,24 @@ def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], 
     ).stdout_text
     if not found_packages_output:
         return [], package_names
-    found_package_ids = found_packages_output.splitlines()
-    found_package_names = {pkg_id.split('/')[1]: pkg_id for pkg_id in found_package_ids}
-    all_repo_pkgs = PackageDB.get_repo_dict()
 
+    found_package_names = {}
+    for line in found_packages_output.splitlines():
+        try:
+            repo_name, pkg_name = line.split('/')
+        except ValueError:
+            raise ValueError(line)
+        else:
+            found_package_names[pkg_name] = line
+
+    all_repo_pkgs = PackageDB.get_repo_dict()
     pacman_packages = []
     not_found_packages = []
     for package_name in package_names:
         if package_name in found_package_names:
-            pacman_packages.append(all_repo_pkgs[found_package_names[package_name]])
+            pacman_packages.append(
+                all_repo_pkgs[found_package_names[package_name]]
+            )
         else:
             not_found_packages.append(package_name)
     return pacman_packages, not_found_packages

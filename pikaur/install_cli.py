@@ -19,7 +19,7 @@ from .pacman import (
     OFFICIAL_REPOS,
     PackageDB, PacmanConfig, get_pacman_command,
     ANSWER_Y, ANSWER_N, QUESTION_YN_YES, QUESTION_YN_NO,
-    QUESTION_PROCEED, MESSAGE_NOTFOUND,
+    QUESTION_PROCEED, MESSAGE_NOTFOUND, QUESTION_SELECTION,
 )
 from .package_update import (
     PackageUpdate, get_remote_package_version,
@@ -175,6 +175,7 @@ class InstallPackagesCLI():
     failed_to_build_package_names: List[str]
 
     news: Optional[News] = None
+    pacman_printback: List[str]
 
     def __init__(self, args: PikaurArgs, packages: List[str] = None) -> None:
         self.args = args
@@ -183,6 +184,7 @@ class InstallPackagesCLI():
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
         self.saved_answers = {}
+        self.pacman_printback = []
 
         self.repo_packages_by_name = {}
         self.aur_deps_relations = {}
@@ -237,8 +239,20 @@ class InstallPackagesCLI():
 
     def wait_for_unknown_pacman_question(self) -> bool:
         result = self.proc.wait_for_output(
-            pattern=f"({re.escape(QUESTION_YN_YES)}|{re.escape(QUESTION_YN_NO)})"
+            pattern="({})".format(
+                "|".join([
+                    re.escape(question) for question in
+                    (QUESTION_YN_YES, QUESTION_YN_NO, QUESTION_SELECTION)
+                ])
+            )
         )
+        output_lines = self.proc.get_output().splitlines()
+        question = output_lines[-1]
+        if QUESTION_SELECTION in question:
+            for line in output_lines:
+                self.pacman_printback.append(line)
+        elif QUESTION_PROCEED not in question:
+            self.pacman_printback.append(question)
         return result
 
     def wrap_pacman(self) -> None:
@@ -1034,9 +1048,9 @@ class InstallPackagesCLI():
             answers = {ANSWER_Y: [QUESTION_PROCEED, ]}
             # answers[ANSWER_Y] += format_conflicts(self.resolved_conflicts)
             self.proc.add_answers(answers)
-            question = self.proc.get_output().splitlines()[-1]
-            if QUESTION_PROCEED not in question:
-                print_stdout(question, end='', flush=True)
+            if self.pacman_printback:
+                print_stdout('\n'.join(self.pacman_printback), end='', flush=True)
+
             self.proc.print_output = True
             self.proc.capture_input = True
             while self.proc.returncode is None:

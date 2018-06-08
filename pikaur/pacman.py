@@ -65,6 +65,7 @@ QUESTION_CONFLICT = format_pacman_question(
 QUESTION_CONFLICT_VIA_PROVIDED = format_pacman_question(
     '%s and %s are in conflict (%s). Remove %s?', QUESTION_YN_NO
 )
+QUESTION_SELECTION = _p("Enter a selection (default=all)") + ": "
 
 
 def format_conflicts(conflicts: List[List[str]]) -> List[str]:

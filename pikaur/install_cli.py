@@ -398,16 +398,16 @@ class InstallPackagesCLI():
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)
 
         # check if we really need to build/install anything
-        # if not (
-                # self.repo_packages_install_info or
-                # self.thirdparty_repo_packages_install_info or
-                # self.aur_updates_install_info
-        # ):
-            # print('{} {}'.format(
-                # color_line('::', 10),
-                # _("Nothing to do."),
-            # ))
-            # sys.exit(0)
+        if not (
+                self.repo_packages_install_info or
+                self.thirdparty_repo_packages_install_info or
+                self.aur_updates_install_info
+        ):
+            print('{} {}'.format(
+                color_line('::', 10),
+                _("Nothing to do."),
+            ))
+            sys.exit(0)
 
         # try to find AUR deps for AUR packages
         # if some exception wasn't handled inside -- just write message and exit

@@ -261,7 +261,7 @@ class NestedTerminal():
             tty.setcbreak(sys.stdout.fileno())
         return real_term_geometry
 
-    def __exit__(self, *exc_details) -> None:
+    def __exit__(self, *_exc_details) -> None:
         TTYRestore.restore()
 
 

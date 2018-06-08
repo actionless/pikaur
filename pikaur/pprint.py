@@ -105,7 +105,7 @@ class PrintLock(object):
     def __enter__(self) -> None:
         PRINT_LOCK.acquire()
 
-    def __exit__(self, *exc_details) -> None:
+    def __exit__(self, *_exc_details) -> None:
         PRINT_LOCK.release()
 
 

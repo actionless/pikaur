@@ -38,7 +38,7 @@ class ProgressBar(object):
     def __enter__(self) -> Callable:
         return self.update
 
-    def __exit__(self, *exc_details) -> None:
+    def __exit__(self, *_exc_details) -> None:
         sys.stderr.write('\n')
 
 

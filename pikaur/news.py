@@ -37,7 +37,9 @@ class News(object):
                 if 'pubDate' in child.tag:
                     if self._is_new(str(child.text)):
                         if first_news:
-                            print_stdout('\n' + bold_line(_('There are news from archlinux.org!')) + '\n')
+                            print_stdout(
+                                '\n' + bold_line(_('There are news from archlinux.org!')) + '\n'
+                            )
                         self._print_one_entry(news_entry)
                         # news are in inverse chronological order (newest first).
                         # if there is something to print, we save this date

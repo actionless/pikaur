@@ -68,7 +68,7 @@ PIKAUR_OPTS = (
     (None, 'noedit'),
     (None, 'edit'),
     (None, 'namesonly'),
-    (None, 'repo'),
+    ('r', 'repo'),
     ('a', 'aur'),
     (None, 'devel'),
     ('k', 'keepbuild'),
@@ -189,7 +189,7 @@ def cli_print_help(args: PikaurArgs) -> None:
     if args.sync or args.query:
         pikaur_options_help += [
             ('-a', '--aur', _("query packages from AUR only")),
-            ('', '--repo', _("query packages from repository only")),
+            ('-r', '--repo', _("query packages from repository only")),
         ]
     if args.sync:
         pikaur_options_help += [

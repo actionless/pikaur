@@ -9,6 +9,7 @@ from html.parser import HTMLParser
 
 from typing import TextIO, Union
 
+from .i18n import _
 from .config import CACHE_ROOT
 from .pprint import color_line, format_paragraph, print_stdout, bold_line
 from .pacman import PackageDB
@@ -36,7 +37,7 @@ class News(object):
                 if 'pubDate' in child.tag:
                     if self._is_new(str(child.text)):
                         if first_news:
-                            print_stdout(bold_line('There are news from archlinux.org!\n'))
+                            print_stdout('\n' + bold_line(_('There are news from archlinux.org!')) + '\n')
                         self._print_one_entry(news_entry)
                         # news are in inverse chronological order (newest first).
                         # if there is something to print, we save this date
@@ -53,7 +54,7 @@ class News(object):
             http_response: Union[HTTPResponse, urllib.response.addinfourl] = \
                 urllib.request.urlopen(self.URL + self.DIR)
         except urllib.error.URLError:
-            print_stdout('Could not fetch archlinux.org news')
+            print_stdout(_('Could not fetch archlinux.org news'))
             return
         str_response: str = ''
         for line in http_response:
@@ -78,7 +79,7 @@ class News(object):
                 with open(self.CACHE_FILE, 'w') as last_seen_fd:
                     last_seen_fd.write(time_formatted)
             except IOError:
-                msg: str = 'Could not initialize {}'.format(self.CACHE_FILE)
+                msg: str = _('Could not initialize {}').format(self.CACHE_FILE)
                 print_stdout(msg)
             return time_formatted
 
@@ -123,7 +124,7 @@ class News(object):
             with open(self.CACHE_FILE, 'w') as last_seen_fd:
                 last_seen_fd.write(pub_date)
         except IOError:
-            print_stdout('Could not update {}'.format(self.CACHE_FILE))
+            print_stdout(_('Could not update {}').format(self.CACHE_FILE))
 
 
 class MLStripper(HTMLParser):

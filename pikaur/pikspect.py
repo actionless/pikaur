@@ -19,7 +19,7 @@ from .pacman import (
     ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE,
     format_conflicts,
 )
-from .pprint import PrintLock, print_stdout
+from .pprint import PrintLock, print_stdout, purge_line, bold_line
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
 
 
@@ -68,6 +68,8 @@ class PikspectPopen(subprocess.Popen):
     historic_output: List[bytes]
     pty_in: TextIO
     default_questions: Dict[str, List[str]]
+    _hide_after: List[str]
+    _show_after: List[str]
     _re_cache: Dict[str, int]
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -86,7 +88,8 @@ class PikspectPopen(subprocess.Popen):
         self.default_questions = {}
         self.historic_output = []
         self._re_cache = {}
-
+        self._hide_after = []
+        self._show_after = []
         if default_questions:
             self.add_answers(default_questions)
 
@@ -128,6 +131,14 @@ class PikspectPopen(subprocess.Popen):
             sleep(SMALL_TIMEOUT)
         return False
 
+    def hide_after(self, pattern):
+        self._hide_after.append(pattern)
+        self.check_questions()
+
+    def show_after(self, pattern):
+        self._show_after.append(pattern)
+        self.check_questions()
+
     def run(self) -> None:
         with NestedTerminal() as real_term_geometry:
             set_terminal_geometry(
@@ -157,18 +168,30 @@ class PikspectPopen(subprocess.Popen):
             self._re_cache[pattern] = re.compile(pattern)
         return self._re_cache[pattern]
 
+    def _match(self, pattern, line):
+        return len(line) >= len(pattern) and (
+            self._re_compile(pattern).search(line)
+            if '.*' in pattern else
+            (pattern in line)
+        )
+
     def check_questions(self):
         try:
             historic_output = b''.join(self.historic_output).decode('utf-8')
         except UnicodeDecodeError:
             return
+
+        for pattern in self._hide_after[:]:
+            if self._match(pattern, historic_output):
+                self.print_output = False
+                self.capture_input = False
+                self._hide_after.remove(pattern)
+                purge_line()
+                print_stdout(bold_line(''))
+
         for answer, questions in self.default_questions.items():
             for question in questions:
-                if len(historic_output) < len(question) or (
-                        (not self._re_compile(question).search(historic_output))
-                        if '.*' in question else
-                        (historic_output[-len(question):] != question)
-                ):
+                if not self._match(question, historic_output):
                     continue
                 if self.print_output:
                     print_stdout(answer + '\n')
@@ -182,7 +205,13 @@ class PikspectPopen(subprocess.Popen):
                     self.pty_in.write('\n')
                     # self.pty_in.flush()
                 self.historic_output = []
-                return
+                break
+
+        for pattern in self._show_after[:]:
+            if self._match(pattern, historic_output):
+                self.print_output = True
+                self.capture_input = True
+                self._show_after.remove(pattern)
 
 
 @handle_exception_in_thread

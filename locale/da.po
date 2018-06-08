@@ -333,7 +333,7 @@ msgid "error:"
 msgstr "fejl:"
 
 #: pikaur/install_cli.py:793
-msgid "looking for conflicting packages..."
+msgid "looking for conflicting AUR packages..."
 msgstr "leder efter pakker der konflikter med hinanden..."
 
 #: pikaur/install_cli.py:688 pikaur/install_cli.py:705

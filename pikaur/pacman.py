@@ -55,7 +55,12 @@ def format_pacman_question(message: str, question=QUESTION_YN_YES) -> str:
     return bold_line(" {} {} ".format(_p(message), question))
 
 
+def create_pacman_pattern(pacman_message: str) -> str:
+    return _p(pacman_message).replace("%d", ".*").replace("%s", ".*").strip()
+
+
 MESSAGE_NOTFOUND = (_p("target not found: %s\n") % '').replace('\n', '')
+MESSAGE_PACKAGES = _p('Packages')
 
 QUESTION_PROCEED = format_pacman_question('Proceed with installation?')
 QUESTION_REMOVE = format_pacman_question('Do you want to remove these packages?')
@@ -65,6 +70,9 @@ QUESTION_CONFLICT = format_pacman_question(
 QUESTION_CONFLICT_VIA_PROVIDED = format_pacman_question(
     '%s and %s are in conflict (%s). Remove %s?', QUESTION_YN_NO
 )
+
+PATTERN_MEMBER = create_pacman_pattern("There is %d member in group %s%s%s:\n")
+PATTERN_MEMBERS = create_pacman_pattern("There are %d members in group %s%s%s:\n")
 QUESTION_SELECTION = _p("Enter a selection (default=all)") + ": "
 
 

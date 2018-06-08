@@ -19,7 +19,8 @@ from .pacman import (
     OFFICIAL_REPOS,
     PackageDB, PacmanConfig, get_pacman_command,
     ANSWER_Y, ANSWER_N, QUESTION_YN_YES, QUESTION_YN_NO,
-    QUESTION_PROCEED, MESSAGE_NOTFOUND, QUESTION_SELECTION,
+    QUESTION_PROCEED, MESSAGE_NOTFOUND, MESSAGE_PACKAGES,
+    PATTERN_MEMBER, PATTERN_MEMBERS, QUESTION_SELECTION,
 )
 from .package_update import (
     PackageUpdate, get_remote_package_version,
@@ -35,7 +36,7 @@ from .makepkg_config import MakepkgConfig
 from .pprint import (
     color_line, bold_line,
     pretty_format_sysupgrade, pretty_format_upgradeable,
-    print_not_found_packages, print_stderr, print_stdout,
+    print_not_found_packages, print_stderr, print_stdout, purge_line,
 )
 from .core import (
     PackageSource,
@@ -194,18 +195,11 @@ class InstallPackagesCLI():
         self.transactions = {}
         self.failed_to_build_package_names = []
 
-        if self.args.sysupgrade:
-            if not args.aur:
-                print('{} {}'.format(
-                    color_line('::', 12),
-                    bold_line(_("Starting full system upgrade..."))
-                ))
-            if not args.repo:
-                print('{} {}'.format(
-                    color_line('::', 12),
-                    bold_line(_("Starting full AUR upgrade..."))
-                ))
-
+        if self.args.sysupgrade and not args.repo:
+            print('{} {}'.format(
+                color_line('::', 12),
+                bold_line(_("Starting full AUR upgrade..."))
+            ))
         if not self.args.aur:
             if self.args.sysupgrade:
                 self.news = News()
@@ -249,10 +243,18 @@ class InstallPackagesCLI():
         output_lines = self.proc.get_output().splitlines()
         question = output_lines[-1]
         if QUESTION_SELECTION in question:
-            for line in output_lines:
-                self.pacman_printback.append(line)
+            new_printback = []
+            for line in reversed(output_lines):
+                new_printback.append(line)
+                if (
+                        (re.compile(PATTERN_MEMBER).search(line)) or
+                        (re.compile(PATTERN_MEMBERS).search(line))
+                ):
+                    break
+            self.pacman_printback += reversed(new_printback)
         elif QUESTION_PROCEED not in question:
             self.pacman_printback.append(question)
+            purge_line()
         return result
 
     def wrap_pacman(self) -> None:
@@ -260,14 +262,19 @@ class InstallPackagesCLI():
             PackageDB.get_local_dict()
         self.proc = PikspectPopen(
             sudo(self.get_pacman_args() + self.args.positional),
-            print_output=False,
-            capture_input=False,
+            print_output=True,
+            capture_input=True,
         )
+        self.proc.hide_after(PATTERN_MEMBER)
+        self.proc.hide_after(PATTERN_MEMBERS)
+        self.proc.show_after(QUESTION_SELECTION)
+        self.proc.hide_after(MESSAGE_PACKAGES)
+        self.proc.show_after(QUESTION_PROCEED)
         with ThreadPool(processes=5) as pool:
             self.proc_output_task = pool.apply_async(
                 self.proc.run, ()
             )
-            parser_task = pool.apply_async(
+            proceed_parser_task = pool.apply_async(
                 self.wait_for_pacman, ()
             )
             notfound_parser_task = pool.apply_async(
@@ -286,7 +293,7 @@ class InstallPackagesCLI():
             news_fetched = False
 
             while (not prompt_found and not notfound_pkgs) or not news_fetched:
-                for task in (parser_task, unknown_question_parser_task):
+                for task in (proceed_parser_task, unknown_question_parser_task):
                     if not prompt_found:
                         try:
                             prompt_found = task.get(timeout=SMALL_TIMEOUT)
@@ -809,8 +816,9 @@ class InstallPackagesCLI():
         return ask_to_continue(text=text, default_yes=default_yes, args=self.args)
 
     def ask_about_package_conflicts(self) -> None:
-        print(_('looking for conflicting packages...'))
-        self.found_conflicts.update(find_aur_conflicts(self.aur_packages_names))
+        if self.aur_packages_names:
+            print(_('looking for conflicting AUR packages...'))
+            self.found_conflicts.update(find_aur_conflicts(self.aur_packages_names))
         if not self.found_conflicts:
             return
         all_new_packages_names = list(self.repo_packages_by_name.keys()) + self.aur_packages_names
@@ -1050,9 +1058,6 @@ class InstallPackagesCLI():
             self.proc.add_answers(answers)
             if self.pacman_printback:
                 print_stdout('\n'.join(self.pacman_printback), end='', flush=True)
-
-            self.proc.print_output = True
-            self.proc.capture_input = True
             while self.proc.returncode is None:
                 try:
                     self.proc_output_task.get(timeout=SMALL_TIMEOUT)

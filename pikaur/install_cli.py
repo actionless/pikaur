@@ -52,23 +52,6 @@ from .pikspect import PikspectPopen, SMALL_TIMEOUT, TTYRestore
 from .news import News
 
 
-def package_is_ignored(package_name: str, args: PikaurArgs) -> bool:
-    if (
-            package_name in (args.ignore or []) + PacmanConfig().options.get('IgnorePkg', [])
-    ) and package_name not in args.positional:
-        return True
-    return False
-
-
-def exclude_ignored_packages(package_names: List[str], args: PikaurArgs) -> List[str]:
-    excluded_pkgs = []
-    for pkg_name in package_names[:]:
-        if package_is_ignored(pkg_name, args=args):
-            package_names.remove(pkg_name)
-            excluded_pkgs.append(pkg_name)
-    return excluded_pkgs
-
-
 def print_ignored_package(package_name):
     current = PackageDB.get_local_dict().get(package_name)
     current_version = current.version if current else ''
@@ -259,7 +242,7 @@ class InstallPackagesCLI():
             purge_line()
         return result
 
-    def wrap_pacman(self) -> None:
+    def wrap_pacman(self) -> None:  # pylint: disable=too-many-branches
         self.proc = PikspectPopen(
             sudo(self.get_pacman_args() + self.args.positional),
             print_output=True,
@@ -322,11 +305,12 @@ class InstallPackagesCLI():
         self.not_found_repo_pkgs_names = []
         if notfound_pkgs:
             for line in self.proc.get_output().splitlines():
-                if MESSAGE_NOTFOUND in line:
-                    notfound_pkg_name = line.split(MESSAGE_NOTFOUND)[1].strip()
-                    self.not_found_repo_pkgs_names.append(notfound_pkg_name)
-                    if notfound_pkg_name in self.args.positional:
-                        self.args.positional.remove(notfound_pkg_name)
+                if MESSAGE_NOTFOUND not in line:
+                    continue
+                notfound_pkg_name = line.split(MESSAGE_NOTFOUND)[1].strip()
+                self.not_found_repo_pkgs_names.append(notfound_pkg_name)
+                if notfound_pkg_name in self.args.positional:
+                    self.args.positional.remove(notfound_pkg_name)
 
     def install_packages(self):
         self.get_all_packages_info()
@@ -405,8 +389,13 @@ class InstallPackagesCLI():
             sys.exit(125)
         return None
 
-    def exclude_ignored_packages(self) -> None:
-        ignored_packages = exclude_ignored_packages(self.install_package_names, self.args)
+    def exclude_ignored_packages(self, package_names: List[str]) -> None:
+        ignored_packages = []
+        for pkg_name in package_names[:]:
+            if self.package_is_ignored(pkg_name):
+                package_names.remove(pkg_name)
+                ignored_packages.append(pkg_name)
+
         for package_name in ignored_packages:
             print_ignored_package(package_name)
         for package_name in self.manually_excluded_packages_names:
@@ -433,7 +422,7 @@ class InstallPackagesCLI():
         """
 
         # deal with package names which user explicitly wants to install
-        self.exclude_ignored_packages()
+        self.exclude_ignored_packages(self.install_package_names)
         self.repo_packages_by_name = {}
         self.exlude_already_uptodate()
 
@@ -515,12 +504,24 @@ class InstallPackagesCLI():
             )
         return repo_packages_install_info_by_name
 
+    def package_is_ignored(self, package_name: str) -> bool:
+        if (
+                package_name in (
+                    (self.args.ignore or []) + PacmanConfig().options.get('IgnorePkg', [])
+                )
+        ) and not (
+            package_name in self.args.positional or
+            package_name in self.not_found_repo_pkgs_names
+        ):
+            return True
+        return False
+
     def get_repo_pkgs_info(self):
         for pkg_name, pkg_update in self.get_upgradeable_list().items():
             if (
                     pkg_name in self.manually_excluded_packages_names
             ) or (
-                package_is_ignored(pkg_name, args=self.args)
+                self.package_is_ignored(pkg_name)
             ):
                 print_ignored_package(pkg_name)
                 if pkg_name not in self.manually_excluded_packages_names:
@@ -587,7 +588,7 @@ class InstallPackagesCLI():
         aur_updates_install_info_by_name: Dict[str, PackageUpdate] = {}
         if self.args.sysupgrade:
             aur_updates_list, not_found_aur_pkgs = find_aur_updates(self.args)
-            exclude_ignored_packages(not_found_aur_pkgs, self.args)
+            self.exclude_ignored_packages(not_found_aur_pkgs)
             if not_found_aur_pkgs:
                 print_not_found_packages(sorted(not_found_aur_pkgs))
             aur_updates_install_info_by_name = {
@@ -607,7 +608,7 @@ class InstallPackagesCLI():
             if (
                     pkg_name in self.manually_excluded_packages_names
             ) or (
-                package_is_ignored(pkg_name, args=self.args)
+                self.package_is_ignored(pkg_name)
             ):
                 print_ignored_package(pkg_name)
                 del aur_updates_install_info_by_name[pkg_name]

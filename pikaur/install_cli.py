@@ -17,10 +17,10 @@ from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .i18n import _
 from .pacman import (
     OFFICIAL_REPOS,
-    PackageDB, PacmanConfig, get_pacman_command,
+    PackageDB, PacmanConfig, get_pacman_command, get_print_format_output,
     ANSWER_Y, ANSWER_N, QUESTION_YN_YES, QUESTION_YN_NO,
-    QUESTION_PROCEED, MESSAGE_NOTFOUND, MESSAGE_PACKAGES,
-    PATTERN_MEMBER, PATTERN_MEMBERS, QUESTION_SELECTION,
+    QUESTION_PROCEED, MESSAGE_NOTFOUND, MESSAGE_PACKAGES, MESSAGE_NOTARGETS,
+    PATTERN_MEMBER, PATTERN_MEMBERS, QUESTION_SELECTION, PATTERN_NOTFOUND,
 )
 from .package_update import (
     PackageUpdate, get_remote_package_version,
@@ -265,6 +265,8 @@ class InstallPackagesCLI():
             print_output=True,
             capture_input=True,
         )
+        self.proc.hide_each_line(PATTERN_NOTFOUND)
+        self.proc.hide_each_line(MESSAGE_NOTARGETS)
         self.proc.hide_after(PATTERN_MEMBER)
         self.proc.hide_after(PATTERN_MEMBERS)
         self.proc.show_after(QUESTION_SELECTION)
@@ -496,19 +498,11 @@ class InstallPackagesCLI():
         local_pkgs = PackageDB.get_local_dict()
         repo_pkgs = PackageDB.get_repo_dict()
         repo_packages_install_info_by_name = {}
-        proc = PikspectPopen(
-            self.get_pacman_args(
-                extra_ignore=['refresh']
-            ) + self.args.positional + extra_pkgs + ["--print-format", "%r/%n"],
-            print_output=False, capture_input=False
-        )
-        proc.run()
-        for line in proc.get_output().splitlines():
-            try:
-                repo_name, pkg_name = line.split('/')
-            except ValueError:
-                print_stderr(line)
-                continue
+        for repo_name, pkg_name, line in get_print_format_output(
+                self.get_pacman_args(
+                    extra_ignore=['refresh']
+                ) + self.args.positional + extra_pkgs + ["--print-format", "%r/%n"],
+        ):
             local_pkg = local_pkgs.get(pkg_name)
             repo_pkg = repo_pkgs[line]
             repo_packages_install_info_by_name[pkg_name] = PackageUpdate(

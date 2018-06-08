@@ -19,7 +19,7 @@ from .pacman import (
     ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE,
     format_conflicts,
 )
-from .pprint import PrintLock, print_stdout, purge_line, bold_line
+from .pprint import PrintLock, print_stdout, purge_line
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
 
 
@@ -70,6 +70,7 @@ class PikspectPopen(subprocess.Popen):
     default_questions: Dict[str, List[str]]
     _hide_after: List[str]
     _show_after: List[str]
+    _hide_each_line: List[str]
     _re_cache: Dict[str, int]
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -90,6 +91,7 @@ class PikspectPopen(subprocess.Popen):
         self._re_cache = {}
         self._hide_after = []
         self._show_after = []
+        self._hide_each_line = []
         if default_questions:
             self.add_answers(default_questions)
 
@@ -139,6 +141,10 @@ class PikspectPopen(subprocess.Popen):
         self._show_after.append(pattern)
         self.check_questions()
 
+    def hide_each_line(self, pattern):
+        self._hide_each_line.append(pattern)
+        self.check_questions()
+
     def run(self) -> None:
         with NestedTerminal() as real_term_geometry:
             set_terminal_geometry(
@@ -181,13 +187,16 @@ class PikspectPopen(subprocess.Popen):
         except UnicodeDecodeError:
             return
 
+        for pattern in self._hide_each_line:
+            if self._match(pattern, historic_output):
+                purge_line()
+
         for pattern in self._hide_after[:]:
             if self._match(pattern, historic_output):
                 self.print_output = False
                 self.capture_input = False
                 self._hide_after.remove(pattern)
                 purge_line()
-                print_stdout(bold_line(''))
 
         for answer, questions in self.default_questions.items():
             for question in questions:

@@ -60,6 +60,7 @@ def create_pacman_pattern(pacman_message: str) -> str:
 
 
 MESSAGE_NOTFOUND = (_p("target not found: %s\n") % '').replace('\n', '')
+MESSAGE_NOTARGETS = _p("no targets specified (use -h for help)\n").replace('\n', '')
 MESSAGE_PACKAGES = _p('Packages')
 
 QUESTION_PROCEED = format_pacman_question('Proceed with installation?')
@@ -73,6 +74,7 @@ QUESTION_CONFLICT_VIA_PROVIDED = format_pacman_question(
 
 PATTERN_MEMBER = create_pacman_pattern("There is %d member in group %s%s%s:\n")
 PATTERN_MEMBERS = create_pacman_pattern("There are %d members in group %s%s%s:\n")
+PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
 QUESTION_SELECTION = _p("Enter a selection (default=all)") + ": "
 
 
@@ -302,15 +304,13 @@ class PackageDB(PackageDBCommon):
         return int(packages_by_date[0].installdate)
 
 
-def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], List[str]]:
+def get_print_format_output(cmd_args: List[str]) -> List[Tuple[str, str, str]]:
+    result = []
     found_packages_output = spawn(
-        get_pacman_command(parse_args()) + ['--sync', '--print-format', '%r/%n'] +
-        list(package_names)
+        cmd_args + ['--print-format', '%r/%n']
     ).stdout_text
     if not found_packages_output:
-        return [], package_names
-
-    found_package_names = {}
+        return result
     for line in found_packages_output.splitlines():
         try:
             repo_name, pkg_name = line.split('/')
@@ -318,7 +318,17 @@ def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], 
             print_stderr(line)
             continue
         else:
-            found_package_names[pkg_name] = line
+            result.append((repo_name, pkg_name, line))
+    return result
+
+
+def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], List[str]]:
+    found_package_names = {}
+    for repo_name, pkg_name, line in get_print_format_output(
+            get_pacman_command(parse_args()) + ['--sync'] +
+            list(package_names)
+    ):
+        found_package_names[pkg_name] = line
 
     all_repo_pkgs = PackageDB.get_repo_dict()
     pacman_packages = []

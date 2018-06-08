@@ -52,7 +52,7 @@ def get_term_width() -> int:
 
 
 def purge_line():
-    print_stdout('\r' + ' ' * (get_term_width()) + '\r' + '\033[1A')
+    print_stdout('\r' + ' ' * (get_term_width()) + '\033[1A' + bold_line('') + '\r')
 
 
 def format_paragraph(line: str) -> str:

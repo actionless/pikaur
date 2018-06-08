@@ -174,7 +174,7 @@ class InstallPackagesCLI():
     # @TODO: refactor to store in transactions
     failed_to_build_package_names: List[str]
 
-    news: News = None
+    news: Optional[News] = None
 
     def __init__(self, args: PikaurArgs, packages: List[str] = None) -> None:
         self.args = args

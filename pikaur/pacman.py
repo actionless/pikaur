@@ -315,7 +315,8 @@ def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], 
         try:
             repo_name, pkg_name = line.split('/')
         except ValueError:
-            raise ValueError(line)
+            print_stderr(line)
+            continue
         else:
             found_package_names[pkg_name] = line
 

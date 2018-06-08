@@ -507,7 +507,8 @@ class InstallPackagesCLI():
             try:
                 repo_name, pkg_name = line.split('/')
             except ValueError:
-                raise ValueError(line)
+                print_stderr(line)
+                continue
             local_pkg = local_pkgs.get(pkg_name)
             repo_pkg = repo_pkgs[line]
             repo_packages_install_info_by_name[pkg_name] = PackageUpdate(

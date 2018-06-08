@@ -198,6 +198,16 @@ class InstallPackagesCLI():
             self.wrap_pacman()
         else:
             self.not_found_repo_pkgs_names = self.args.positional
+        if not args.aur:
+            print('{} {}'.format(
+                color_line('::', 12),
+                bold_line(_("Starting full system upgrade..."))
+            ))
+        if not args.repo:
+            print('{} {}'.format(
+                color_line('::', 12),
+                bold_line(_("Starting full AUR upgrade..."))
+            ))
         self.install_packages()
 
     def get_pacman_args(self, extra_ignore: List[str] = None):
@@ -291,7 +301,6 @@ class InstallPackagesCLI():
     def install_packages(self):
         self.get_all_packages_info()
         if self.news:
-            print_stdout()
             self.news.print_news()
         self.install_prompt()
 

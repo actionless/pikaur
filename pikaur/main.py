@@ -109,23 +109,6 @@ def cli_install_packages(args, packages: List[str] = None) -> None:
     InstallPackagesCLI(args=args, packages=packages)
 
 
-def cli_upgrade_packages(args: PikaurArgs) -> None:
-    if not args.aur:
-        print('{} {}'.format(
-            color_line('::', 12),
-            bold_line(_("Starting full system upgrade..."))
-        ))
-    if not args.repo:
-        print('{} {}'.format(
-            color_line('::', 12),
-            bold_line(_("Starting full AUR upgrade..."))
-        ))
-    cli_install_packages(
-        args=args,
-        packages=args.positional,
-    )
-
-
 def _info_packages_thread_repo(
         args: PikaurArgs
 ) -> str:
@@ -210,15 +193,13 @@ def cli_entry_point() -> None:
         cli_print_version(args)
 
     elif args.sync:
-        if args.sysupgrade:
-            cli_upgrade_packages(args)
-        elif args.search:
+        if args.search:
             cli_search_packages(args)
         elif args.info:
             cli_info_packages(args)
         elif args.clean:
             cli_clean_packages_cache(args)
-        elif '-S' in raw_args or '--sync' in raw_args:
+        elif args.sysupgrade or '-S' in raw_args or '--sync' in raw_args:
             cli_install_packages(args)
         elif args.groups:
             not_implemented_in_pikaur = True

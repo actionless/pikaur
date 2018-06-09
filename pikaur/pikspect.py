@@ -10,7 +10,6 @@ import fcntl
 import uuid
 import os
 import re
-import multiprocessing
 from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import List, Dict, TextIO
@@ -59,6 +58,11 @@ class TTYRestore():
 TTYRestore.save()
 
 
+def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
+    term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
+    fcntl.ioctl(file_descriptor, termios.TIOCSWINSZ, term_geometry_struct)
+
+
 class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attributes
 
     print_output: bool
@@ -72,6 +76,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     _show_after: List[str]
     _hide_each_line: List[str]
     _re_cache: Dict[str, int]
+    _output_done = False
 
     def __init__(  # pylint: disable=too-many-arguments
             self,
@@ -98,7 +103,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         self.task_id = uuid.uuid4()
         self.pty_user_master, self.pty_user_slave = pty.openpty()
         self.pty_cmd_master, self.pty_cmd_slave = pty.openpty()
-        self.pty_out = open(self.pty_cmd_master, 'rb')
 
         super().__init__(
             args=args,
@@ -145,29 +149,39 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         self._hide_each_line.append(pattern)
         self.check_questions()
 
+    @handle_exception_in_thread
+    def communicator_thread(self) -> None:
+        while self.returncode is None:
+            with self._waitpid_lock:
+                if self.returncode is not None:
+                    break  # Another thread waited.
+                (pid, sts) = self._try_wait(0)
+                if pid == self.pid and self._output_done:
+                    self._handle_exitstatus(sts)
+        return self.returncode
+
     def run(self) -> None:
         with NestedTerminal() as real_term_geometry:
-            set_terminal_geometry(
-                self.pty_out.fileno(),
-                columns=real_term_geometry.columns,
-                rows=real_term_geometry.lines
-            )
-
             if 'sudo' in self.args:
                 subprocess.run(['sudo', '-v'])
             with open(self.pty_user_master, 'w') as self.pty_in:
-                with ThreadPool(processes=3) as pool:
-                    output_task = pool.apply_async(cmd_output_handler, (self, ))
-                    pool.apply_async(user_input_reader, (self, ))
-                    communicate_task = pool.apply_async(communicator, (self, ))
+                with open(self.pty_cmd_master, 'rb', buffering=0) as self.pty_out:
+                    set_terminal_geometry(
+                        self.pty_out.fileno(),
+                        columns=real_term_geometry.columns,
+                        rows=real_term_geometry.lines
+                    )
+                    with ThreadPool(processes=3) as pool:
+                        output_task = pool.apply_async(cmd_output_reader, (self, ))
+                        pool.apply_async(user_input_reader, (self, ))
+                        communicate_task = pool.apply_async(self.communicator_thread, ())
+                        pool.close()
 
-                    pool.close()
-                    communicate_task.get()
-                    try:
-                        output_task.get(timeout=SMALL_TIMEOUT)
-                    except multiprocessing.context.TimeoutError:
-                        pass
-                    pool.terminate()
+                        output_task.get()
+                        self._output_done = True
+                        communicate_task.get()
+                        pool.join()
+                        self.pty_out.close()
 
     def _re_compile(self, pattern):
         if not self._re_cache.get(pattern):
@@ -224,24 +238,34 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
 
 @handle_exception_in_thread
-def cmd_output_handler(task_data: PikspectPopen) -> None:
+def cmd_output_reader(task_data: PikspectPopen) -> None:
     max_question_length = MAX_QUESTION_LENGTH
     while True:
-        # if proc.returncode is not None:
-            # break
-        output = task_data.pty_out.read(1)
-        if not output:
-            break
-        task_data.historic_output = task_data.historic_output[-max_question_length:] + [output, ]
 
+        try:
+            selected = select.select([task_data.pty_out, ], [], [], SMALL_TIMEOUT)
+        except ValueError:
+            return
+        else:
+            readers = selected[0]
+        if not readers:
+            if task_data.returncode is not None:
+                break
+            if task_data.historic_output:
+                task_data._output_done = True
+                sleep(SMALL_TIMEOUT)
+            continue
+        pty_reader = readers[0]
+        output = pty_reader.read(1)
+
+        task_data.historic_output = task_data.historic_output[-max_question_length:] + [output, ]
+        task_data.check_questions()
         if task_data.print_output:
             with PrintLock():
                 sys.stdout.buffer.write(output)
                 sys.stdout.buffer.flush()
         if task_data.save_output:
             ThreadSafeBytesStorage.add_bytes(task_data.task_id, output)
-
-        task_data.check_questions()
 
 
 @handle_exception_in_thread
@@ -254,8 +278,7 @@ def user_input_reader(task_data: PikspectPopen) -> None:
         char = None
 
         if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-            # line = sys.stdin.read(1)
-            line = sys.stdin.readline()
+            line = sys.stdin.read(1)
             if line:
                 char = line
             else:
@@ -267,24 +290,12 @@ def user_input_reader(task_data: PikspectPopen) -> None:
         try:
             with PrintLock():
                 task_data.pty_in.write(char)
-                # print(f'DEBUG({char})')
         except ValueError as exc:
             print(exc)
-        # if task_data.print_output:
-            # print_stdout(char, end='', flush=True)
+        if task_data.print_output:
+            print_stdout(char, end='', flush=True)
         if task_data.save_output:
             ThreadSafeBytesStorage.add_bytes(task_data.task_id, char.encode('utf-8'))
-
-
-@handle_exception_in_thread
-def communicator(task_data: PikspectPopen) -> None:
-    # task_data.communicate()
-    task_data.wait()
-
-
-def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
-    term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
-    fcntl.ioctl(file_descriptor, termios.TIOCSWINSZ, term_geometry_struct)
 
 
 class NestedTerminal():
@@ -339,9 +350,4 @@ def pikspect(
 
 
 if __name__ == "__main__":
-    pikspect(
-        [
-            'sudo',
-            'pacman',
-        ] + sys.argv[1:],
-    )
+    pikspect(sys.argv[1:])

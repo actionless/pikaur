@@ -214,7 +214,7 @@ class InstallPackagesCLI():
         return self.proc.wait_for_output(text=QUESTION_PROCEED)
 
     def wait_for_pacman_notfound(self) -> bool:
-        return self.proc.wait_for_output(text=MESSAGE_NOTFOUND)
+        return self.proc.wait_for_output(PATTERN_NOTFOUND)
 
     def wait_for_unknown_pacman_question(self) -> bool:
         result = self.proc.wait_for_output(
@@ -225,6 +225,8 @@ class InstallPackagesCLI():
                 ])
             )
         )
+        if not result:
+            return result
         output_lines = self.proc.get_output().splitlines()
         question = output_lines[-1]
         if QUESTION_SELECTION in question:
@@ -256,54 +258,54 @@ class InstallPackagesCLI():
         if not self.args.noconfirm:
             self.proc.hide_after(MESSAGE_PACKAGES)
             self.proc.show_after(QUESTION_PROCEED)
-        with ThreadPool(processes=5) as pool:
-            self.proc_output_task = pool.apply_async(
-                self.proc.run, ()
-            )
-            proceed_parser_task = pool.apply_async(
-                self.wait_for_pacman, ()
-            )
-            notfound_parser_task = pool.apply_async(
-                self.wait_for_pacman_notfound, ()
-            )
-            unknown_question_parser_task = pool.apply_async(
-                self.wait_for_unknown_pacman_question, ()
-            )
-            news_task = pool.apply_async(
-                self.news.fetch_latest if self.news else lambda: (), ()
-            )
-            pool.close()
+        self.pool = ThreadPool(processes=5)
+        self.proc_output_task = self.pool.apply_async(
+            self.proc.run, ()
+        )
+        proceed_parser_task = self.pool.apply_async(
+            self.wait_for_pacman, ()
+        )
+        notfound_parser_task = self.pool.apply_async(
+            self.wait_for_pacman_notfound, ()
+        )
+        unknown_question_parser_task = self.pool.apply_async(
+            self.wait_for_unknown_pacman_question, ()
+        )
+        news_task = self.pool.apply_async(
+            self.news.fetch_latest if self.news else lambda: (), ()
+        )
+        self.pool.close()
 
-            prompt_found = False
-            notfound_pkgs = False
-            news_fetched = False
+        prompt_found = False
+        notfound_pkgs = False
+        news_fetched = False
 
-            while (not prompt_found and not notfound_pkgs) or not news_fetched:
-                for task in (proceed_parser_task, unknown_question_parser_task):
-                    if not prompt_found:
-                        try:
-                            prompt_found = task.get(timeout=SMALL_TIMEOUT)
-                        except multiprocessing.context.TimeoutError:
-                            pass
+        while (not prompt_found and not notfound_pkgs) or not news_fetched:
+            for task in (proceed_parser_task, unknown_question_parser_task):
+                if not prompt_found:
+                    try:
+                        prompt_found = task.get(timeout=SMALL_TIMEOUT)
+                    except multiprocessing.context.TimeoutError:
+                        pass
 
-                try:
-                    notfound_parser_task.get(timeout=SMALL_TIMEOUT)
-                except multiprocessing.context.TimeoutError:
-                    pass
-                else:
-                    notfound_pkgs = True
+            try:
+                notfound_parser_task.get(timeout=SMALL_TIMEOUT)
+            except multiprocessing.context.TimeoutError:
+                pass
+            else:
+                notfound_pkgs = True
 
-                try:
-                    news_task.get(timeout=SMALL_TIMEOUT)
-                except multiprocessing.context.TimeoutError:
-                    pass
-                else:
-                    news_fetched = True
-
-            pool.terminate()
+            try:
+                news_task.get(timeout=SMALL_TIMEOUT)
+            except multiprocessing.context.TimeoutError:
+                pass
+            else:
+                news_fetched = True
 
         self.not_found_repo_pkgs_names = []
         if notfound_pkgs:
+            self.pool.join()
+            self.pool.terminate()
             for line in self.proc.get_output().splitlines():
                 if MESSAGE_NOTFOUND not in line:
                     continue
@@ -403,18 +405,6 @@ class InstallPackagesCLI():
                 print_ignored_package(package_name)
                 self.install_package_names.remove(package_name)
 
-    def exlude_already_uptodate(self) -> None:
-        if not self.args.needed:
-            return
-        repo_updates = self.get_upgradeable_list()
-        local_pkgs = PackageDB.get_local_dict()
-        for package_name in self.args.positional:
-            if package_name in repo_updates or package_name not in local_pkgs:
-                continue
-            if package_name in self.install_package_names:
-                self.install_package_names.remove(package_name)
-            print_package_uptodate(package_name, PackageSource.REPO)
-
     def get_all_packages_info(self) -> None:
         """
         Retrieve info (`PackageUpdate` objects) of packages
@@ -424,7 +414,6 @@ class InstallPackagesCLI():
         # deal with package names which user explicitly wants to install
         self.exclude_ignored_packages(self.install_package_names)
         self.repo_packages_by_name = {}
-        self.exlude_already_uptodate()
 
         # retrieve PackageUpdate objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed
@@ -1060,15 +1049,12 @@ class InstallPackagesCLI():
             self.proc.add_answers(answers)
             if self.pacman_printback:
                 print_stdout('\n'.join(self.pacman_printback), end='', flush=True)
-            while self.proc.returncode is None:
-                try:
-                    self.proc_output_task.get(timeout=SMALL_TIMEOUT)
-                except multiprocessing.context.TimeoutError:
-                    pass
-                else:
-                    break
+            self.pool.join()
+            self.pool.terminate()
             return
         self.proc.add_answers({ANSWER_N: [QUESTION_PROCEED, ]})
+        self.pool.join()
+        self.pool.terminate()
         extra_args = []
         if not self.args.positional:
             return

@@ -10,9 +10,10 @@ import fcntl
 import uuid
 import os
 import re
+import threading
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import List, Dict, TextIO
+from typing import List, Dict, TextIO, BinaryIO, Callable
 
 from .pacman import (
     ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE,
@@ -63,6 +64,22 @@ def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None
     fcntl.ioctl(file_descriptor, termios.TIOCSWINSZ, term_geometry_struct)
 
 
+class NestedTerminal():
+
+    def __enter__(self) -> os.terminal_size:
+        real_term_geometry = shutil.get_terminal_size((80, 80))
+        if sys.stdin.isatty():
+            tty.setcbreak(sys.stdin.fileno())
+        if sys.stderr.isatty():
+            tty.setcbreak(sys.stderr.fileno())
+        if sys.stdout.isatty():
+            tty.setcbreak(sys.stdout.fileno())
+        return real_term_geometry
+
+    def __exit__(self, *_exc_details) -> None:
+        TTYRestore.restore()
+
+
 class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attributes
 
     print_output: bool
@@ -71,12 +88,17 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     task_id: uuid.UUID
     historic_output: List[bytes]
     pty_in: TextIO
+    pty_out: BinaryIO
     default_questions: Dict[str, List[str]]
     _hide_after: List[str]
     _show_after: List[str]
     _hide_each_line: List[str]
     _re_cache: Dict[str, int]
     _output_done = False
+    # some help for mypy:
+    _waitpid_lock: threading.Lock
+    _try_wait: Callable
+    _handle_exitstatus: Callable
 
     def __init__(  # pylint: disable=too-many-arguments
             self,
@@ -150,7 +172,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         self.check_questions()
 
     @handle_exception_in_thread
-    def communicator_thread(self) -> None:
+    def communicator_thread(self) -> int:
         while self.returncode is None:
             with self._waitpid_lock:
                 if self.returncode is not None:
@@ -172,8 +194,8 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                         rows=real_term_geometry.lines
                     )
                     with ThreadPool(processes=3) as pool:
-                        output_task = pool.apply_async(cmd_output_reader, (self, ))
-                        pool.apply_async(user_input_reader, (self, ))
+                        output_task = pool.apply_async(self.cmd_output_reader_thread, ())
+                        pool.apply_async(self.user_input_reader_thread, ())
                         communicate_task = pool.apply_async(self.communicator_thread, ())
                         pool.close()
 
@@ -236,82 +258,66 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                 self.capture_input = True
                 self._show_after.remove(pattern)
 
+    @handle_exception_in_thread
+    def cmd_output_reader_thread(self) -> None:
+        max_question_length = MAX_QUESTION_LENGTH
+        while True:
 
-@handle_exception_in_thread
-def cmd_output_reader(task_data: PikspectPopen) -> None:
-    max_question_length = MAX_QUESTION_LENGTH
-    while True:
-
-        try:
-            selected = select.select([task_data.pty_out, ], [], [], SMALL_TIMEOUT)
-        except ValueError:
-            return
-        else:
-            readers = selected[0]
-        if not readers:
-            if task_data.returncode is not None:
-                break
-            if task_data.historic_output:
-                task_data._output_done = True
-                sleep(SMALL_TIMEOUT)
-            continue
-        pty_reader = readers[0]
-        output = pty_reader.read(1)
-
-        task_data.historic_output = task_data.historic_output[-max_question_length:] + [output, ]
-        task_data.check_questions()
-        if task_data.print_output:
-            with PrintLock():
-                sys.stdout.buffer.write(output)
-                sys.stdout.buffer.flush()
-        if task_data.save_output:
-            ThreadSafeBytesStorage.add_bytes(task_data.task_id, output)
-
-
-@handle_exception_in_thread
-def user_input_reader(task_data: PikspectPopen) -> None:
-    while task_data.returncode is None:
-        if not task_data.capture_input:
-            sleep(SMALL_TIMEOUT)
-            continue
-
-        char = None
-
-        if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-            line = sys.stdin.read(1)
-            if line:
-                char = line
+            try:
+                selected = select.select([self.pty_out, ], [], [], SMALL_TIMEOUT)
+            except ValueError:
+                return
             else:
+                readers = selected[0]
+            if not readers:
+                if self.returncode is not None:
+                    break
+                if self.historic_output:
+                    self._output_done = True
+                    sleep(SMALL_TIMEOUT)
                 continue
-        else:
-            sleep(SMALL_TIMEOUT)
-            continue
+            pty_reader = readers[0]
+            output = pty_reader.read(1)
 
-        try:
-            with PrintLock():
-                task_data.pty_in.write(char)
-        except ValueError as exc:
-            print(exc)
-        if task_data.print_output:
-            print_stdout(char, end='', flush=True)
-        if task_data.save_output:
-            ThreadSafeBytesStorage.add_bytes(task_data.task_id, char.encode('utf-8'))
+            self.historic_output = (
+                self.historic_output[-max_question_length:] + [output, ]
+            )
+            self.check_questions()
+            if self.print_output:
+                with PrintLock():
+                    sys.stdout.buffer.write(output)
+                    sys.stdout.buffer.flush()
+            if self.save_output:
+                ThreadSafeBytesStorage.add_bytes(self.task_id, output)
 
+    @handle_exception_in_thread
+    def user_input_reader_thread(self) -> None:
+        while self.returncode is None:
+            if not self.capture_input:
+                sleep(SMALL_TIMEOUT)
+                continue
 
-class NestedTerminal():
+            char = None
 
-    def __enter__(self) -> os.terminal_size:
-        real_term_geometry = shutil.get_terminal_size((80, 80))
-        if sys.stdin.isatty():
-            tty.setcbreak(sys.stdin.fileno())
-        if sys.stderr.isatty():
-            tty.setcbreak(sys.stderr.fileno())
-        if sys.stdout.isatty():
-            tty.setcbreak(sys.stdout.fileno())
-        return real_term_geometry
+            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                line = sys.stdin.read(1)
+                if line:
+                    char = line
+                else:
+                    continue
+            else:
+                sleep(SMALL_TIMEOUT)
+                continue
 
-    def __exit__(self, *_exc_details) -> None:
-        TTYRestore.restore()
+            try:
+                with PrintLock():
+                    self.pty_in.write(char)
+            except ValueError as exc:
+                print(exc)
+            if self.print_output:
+                print_stdout(char, end='', flush=True)
+            if self.save_output:
+                ThreadSafeBytesStorage.add_bytes(self.task_id, char.encode('utf-8'))
 
 
 # pylint: disable=too-many-locals,too-many-arguments

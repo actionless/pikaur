@@ -245,7 +245,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                 if not self._match(question, historic_output):
                     continue
                 if self.print_output:
-                    print_stdout(answer + '\n')
+                    print_stdout(answer)
                 with PrintLock():
                     if self.save_output:
                         ThreadSafeBytesStorage.add_bytes(
@@ -292,13 +292,13 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.historic_output = (
                 self.historic_output[-max_question_length:] + [output, ]
             )
-            self.check_questions()
             if self.print_output:
                 with PrintLock():
                     sys.stdout.buffer.write(output)
                     sys.stdout.buffer.flush()
             if self.save_output:
                 ThreadSafeBytesStorage.add_bytes(self.task_id, output)
+            self.check_questions()
 
     @handle_exception_in_thread
     def user_input_reader_thread(self) -> None:

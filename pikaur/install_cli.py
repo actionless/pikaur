@@ -48,7 +48,7 @@ from .prompt import (
     retry_interactive_command_or_exit, get_input,
 )
 from .srcinfo import SrcInfo
-from .pikspect import PikspectPopen, SMALL_TIMEOUT, TTYRestore
+from .pikspect import PikspectPopen, SMALL_TIMEOUT
 from .news import News
 
 
@@ -280,7 +280,7 @@ class InstallPackagesCLI():
         notfound_pkgs = False
         news_fetched = False
 
-        while not (prompt_found or notfound_pkgs) and not news_fetched:
+        while not (prompt_found or notfound_pkgs) or not news_fetched:
             for task in (proceed_parser_task, unknown_question_parser_task):
                 if not prompt_found:
                     try:

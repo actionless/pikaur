@@ -15,18 +15,14 @@ from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch, Packag
 from .core import PackageSource
 
 
-def find_provided_pkgs(
-        pkg_names: List[str],
-        source: PackageSource
+def find_locally_provided_pkgs(
+        pkg_names: List[str]
 ) -> Dict[str, List[ProvidedDependency]]:
 
     provided_by_backrefs: Dict[str, List[ProvidedDependency]] = {}
     if not pkg_names:
         return provided_by_backrefs
-    if source == PackageSource.REPO:
-        provided_dict = PackageDB.get_repo_provided_dict()
-    else:
-        provided_dict = PackageDB.get_local_provided_dict()
+    provided_dict = PackageDB.get_local_provided_dict()
     for provided_name, provided in provided_dict.items():
         for provided_pkg in provided:
             for dep_name in pkg_names:
@@ -58,10 +54,7 @@ def check_deps_versions(
         deps_list, not_found_deps = find_local_packages(deps_pkg_names)
         deps = {dep.name: dep for dep in deps_list}
         # try to find pkgs provided by other pkgs:
-        provided_by_backrefs = find_provided_pkgs(
-            pkg_names=not_found_deps,
-            source=source
-        )
+        provided_by_backrefs = find_locally_provided_pkgs(not_found_deps)
         for dep_name in provided_by_backrefs:
             not_found_deps.remove(dep_name)
         # dep via provided pkg:

@@ -157,11 +157,14 @@ class InstallPackagesCLI():
     # @TODO: refactor to store in transactions
     failed_to_build_package_names: List[str]
 
+    # arch news
+    news: Optional[News] = None
+
+    # pacman wrapping
     pacman_pool: ThreadPool
     pacman_proc: PikspectPopen
     not_found_repo_pkgs_names: List[str]
     pacman_printback: List[str]
-    news: Optional[News] = None
 
     def __init__(self, args: PikaurArgs, packages: List[str] = None) -> None:
         self.args = args

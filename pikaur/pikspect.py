@@ -218,6 +218,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         )
 
     def check_questions(self):
+        # pylint: disable=too-many-branches
         try:
             historic_output = b''.join(self.historic_output).decode('utf-8')
         except UnicodeDecodeError:

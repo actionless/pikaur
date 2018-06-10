@@ -132,7 +132,6 @@ class InstallPackagesCLI():
     install_package_names: List[str]
     manually_excluded_packages_names: List[str]
     resolved_conflicts: List[List[str]]
-    saved_answers: Dict[str, List[str]]
 
     # computed package lists:
     found_conflicts: Dict[str, List[str]]
@@ -158,8 +157,11 @@ class InstallPackagesCLI():
     # @TODO: refactor to store in transactions
     failed_to_build_package_names: List[str]
 
-    news: Optional[News] = None
+    pacman_pool: ThreadPool
+    pacman_proc: PikspectPopen
+    not_found_repo_pkgs_names: List[str]
     pacman_printback: List[str]
+    news: Optional[News] = None
 
     def __init__(self, args: PikaurArgs, packages: List[str] = None) -> None:
         self.args = args
@@ -167,7 +169,6 @@ class InstallPackagesCLI():
 
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
-        self.saved_answers = {}
         self.pacman_printback = []
 
         self.repo_packages_by_name = {}
@@ -177,6 +178,8 @@ class InstallPackagesCLI():
         self.found_conflicts = {}
         self.transactions = {}
         self.failed_to_build_package_names = []
+
+        self.not_found_repo_pkgs_names = []
 
         if self.args.sysupgrade and not args.repo:
             print('{} {}'.format(
@@ -211,13 +214,13 @@ class InstallPackagesCLI():
         ] + extra_ignore) + extra_args
 
     def wait_for_pacman(self):
-        return self.proc.wait_for_output(text=QUESTION_PROCEED)
+        return self.pacman_proc.wait_for_output(text=QUESTION_PROCEED)
 
     def wait_for_pacman_notfound(self) -> bool:
-        return self.proc.wait_for_output(PATTERN_NOTFOUND)
+        return self.pacman_proc.wait_for_output(PATTERN_NOTFOUND)
 
     def wait_for_unknown_pacman_question(self) -> bool:
-        result = self.proc.wait_for_output(
+        result = self.pacman_proc.wait_for_output(
             pattern="({})".format(
                 "|".join([
                     re.escape(question) for question in
@@ -227,7 +230,7 @@ class InstallPackagesCLI():
         )
         if not result:
             return result
-        output_lines = self.proc.get_output().splitlines()
+        output_lines = self.pacman_proc.get_output().splitlines()
         question = output_lines[-1]
         if QUESTION_SELECTION in question:
             new_printback = []
@@ -245,36 +248,36 @@ class InstallPackagesCLI():
         return result
 
     def wrap_pacman(self) -> None:  # pylint: disable=too-many-branches
-        self.proc = PikspectPopen(
+        self.pacman_proc = PikspectPopen(
             sudo(self.get_pacman_args() + self.args.positional),
             print_output=True,
             capture_input=True,
         )
-        self.proc.hide_each_line(PATTERN_NOTFOUND)
-        self.proc.hide_each_line(MESSAGE_NOTARGETS)
-        self.proc.hide_after(PATTERN_MEMBER)
-        self.proc.hide_after(PATTERN_MEMBERS)
-        self.proc.show_after(QUESTION_SELECTION)
+        self.pacman_proc.hide_each_line(PATTERN_NOTFOUND)
+        self.pacman_proc.hide_each_line(MESSAGE_NOTARGETS)
+        self.pacman_proc.hide_after(PATTERN_MEMBER)
+        self.pacman_proc.hide_after(PATTERN_MEMBERS)
+        self.pacman_proc.show_after(QUESTION_SELECTION)
         if not self.args.noconfirm:
-            self.proc.hide_after(MESSAGE_PACKAGES)
-            self.proc.show_after(QUESTION_PROCEED)
-        self.pool = ThreadPool(processes=5)
-        self.proc_output_task = self.pool.apply_async(
-            self.proc.run, ()
+            self.pacman_proc.hide_after(MESSAGE_PACKAGES)
+            self.pacman_proc.show_after(QUESTION_PROCEED)
+        self.pacman_pool = ThreadPool(processes=5)
+        self.pacman_pool.apply_async(
+            self.pacman_proc.run, ()
         )
-        proceed_parser_task = self.pool.apply_async(
+        proceed_parser_task = self.pacman_pool.apply_async(
             self.wait_for_pacman, ()
         )
-        notfound_parser_task = self.pool.apply_async(
+        notfound_parser_task = self.pacman_pool.apply_async(
             self.wait_for_pacman_notfound, ()
         )
-        unknown_question_parser_task = self.pool.apply_async(
+        unknown_question_parser_task = self.pacman_pool.apply_async(
             self.wait_for_unknown_pacman_question, ()
         )
-        news_task = self.pool.apply_async(
+        news_task = self.pacman_pool.apply_async(
             self.news.fetch_latest if self.news else lambda: (), ()
         )
-        self.pool.close()
+        self.pacman_pool.close()
 
         prompt_found = False
         notfound_pkgs = False
@@ -302,11 +305,10 @@ class InstallPackagesCLI():
             else:
                 news_fetched = True
 
-        self.not_found_repo_pkgs_names = []
         if notfound_pkgs:
-            self.pool.join()
-            self.pool.terminate()
-            for line in self.proc.get_output().splitlines():
+            self.pacman_pool.join()
+            self.pacman_pool.terminate()
+            for line in self.pacman_proc.get_output().splitlines():
                 if MESSAGE_NOTFOUND not in line:
                     continue
                 notfound_pkg_name = line.split(MESSAGE_NOTFOUND)[1].strip()
@@ -1038,21 +1040,22 @@ class InstallPackagesCLI():
         self._revert_transaction(PackageSource.AUR)
 
     def install_repo_packages(self) -> None:
+        print_stdout()
         if not (
                 self.manually_excluded_packages_names or
                 self.not_found_repo_pkgs_names
         ):
             answers = {ANSWER_Y: [QUESTION_PROCEED, ]}
             # answers[ANSWER_Y] += format_conflicts(self.resolved_conflicts)
-            self.proc.add_answers(answers)
+            self.pacman_proc.add_answers(answers)
             if self.pacman_printback:
                 print_stdout('\n'.join(self.pacman_printback), end='', flush=True)
-            self.pool.join()
-            self.pool.terminate()
+            self.pacman_pool.join()
+            self.pacman_pool.terminate()
             return
-        self.proc.add_answers({ANSWER_N: [QUESTION_PROCEED, ]})
-        self.pool.join()
-        self.pool.terminate()
+        self.pacman_proc.add_answers({ANSWER_N: [QUESTION_PROCEED, ]})
+        self.pacman_pool.join()
+        self.pacman_pool.terminate()
         extra_args = []
         if not self.args.positional:
             return
@@ -1072,7 +1075,6 @@ class InstallPackagesCLI():
                 args=self.args,
                 pikspect=True,
                 conflicts=self.resolved_conflicts,
-                extra_questions=self.saved_answers,
         ):
             if not self.ask_to_continue(default_yes=False):
                 self.revert_repo_transaction()

@@ -7,7 +7,6 @@ from .pprint import get_term_width, color_enabled
 
 class ProgressBar(object):
 
-    message: str
     print_ratio: float
     index = 0
     progress = 0
@@ -18,7 +17,6 @@ class ProgressBar(object):
     FULL = '#'
 
     def __init__(self, length: int, message='') -> None:
-        self.message = message
         width = (
             get_term_width() - len(message) - len(self.LEFT_DECORATION) - len(self.RIGHT_DECORATION)
         )

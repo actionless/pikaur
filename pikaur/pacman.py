@@ -275,13 +275,6 @@ class PackageDB(PackageDBCommon):
         return list(reversed(result))
 
     @classmethod
-    def find_one_repo(cls, pkg_name) -> pyalpm.Package:
-        pkgs = cls.search_repo(search_query=pkg_name, exact_match=True)
-        if not pkgs:
-            raise PackagesNotFoundInRepo(packages=[pkg_name])
-        return pkgs[0]
-
-    @classmethod
     def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.REPO):
             if not quiet:

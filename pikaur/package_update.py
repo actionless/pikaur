@@ -6,7 +6,7 @@ import pyalpm
 from .core import DataType
 from .i18n import _n
 from .version import compare_versions
-from .pacman import PackageDB, find_packages_not_from_repo
+from .pacman import PackageDB, find_packages_not_from_repo, find_repo_package
 from .aur import AURPackageInfo, find_aur_packages
 from .pprint import print_stderr
 from .args import PikaurArgs
@@ -136,7 +136,7 @@ def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
 
 def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
     try:
-        repo_info = PackageDB.find_one_repo(new_pkg_name)
+        repo_info = find_repo_package(new_pkg_name)
     except PackagesNotFoundInRepo:
         aur_packages, _not_found = find_aur_packages([new_pkg_name])
         if aur_packages:

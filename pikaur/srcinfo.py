@@ -52,9 +52,6 @@ class SrcInfo():
                 values.append(line.strip().split(prefix)[1])
         return values
 
-    def get_pkgbase_values(self, field: str) -> List[str]:
-        return self.get_values(field, self._common_lines)
-
     def get_value(self, field: str, fallback: str = None) -> Optional[str]:
         values = self.get_values(field)
         value = values[0] if values else None

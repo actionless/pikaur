@@ -84,17 +84,6 @@ class PackageBuild(DataType):
             "*"
         ])
 
-    def git_clean(self) -> InteractiveSpawn:
-        return interactive_spawn([
-            'git',
-            '-C',
-            self.repo_path,
-            'clean',
-            '-f',
-            '-d',
-            '-x'
-        ])
-
     def get_task_command(self) -> List[str]:
         if self.pull:
             return [

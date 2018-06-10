@@ -266,7 +266,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                 clear_buffer = True
 
         if clear_buffer:
-            self.historic_output = []
+            self.historic_output = [b'']
 
     @handle_exception_in_thread
     def cmd_output_reader_thread(self) -> None:

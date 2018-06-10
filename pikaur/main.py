@@ -93,7 +93,7 @@ def cli_print_upgradeable(args: PikaurArgs) -> None:
         aur_updates, _not_found_aur_pkgs = find_aur_updates(args)
         updates += aur_updates
     if not args.aur:
-        updates += find_repo_updates()  # @TODO: use InstallCli.get_upgradeable_list() instead
+        updates += find_repo_updates()
     if args.quiet:
         print('\n'.join([
             pkg_update.Name for pkg_update in updates

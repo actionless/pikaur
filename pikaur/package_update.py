@@ -1,12 +1,13 @@
 from datetime import datetime
 from typing import List, Tuple, Optional
 
-import pyalpm
-
 from .core import DataType
 from .i18n import _n
 from .version import compare_versions
-from .pacman import PackageDB, find_packages_not_from_repo, find_repo_package
+from .pacman import (
+    PackageDB, find_repo_package,
+    find_packages_not_from_repo, find_upgradeable_packages,
+)
 from .aur import AURPackageInfo, find_aur_packages
 from .pprint import print_stderr
 from .args import PikaurArgs
@@ -50,13 +51,10 @@ class PackageUpdate(DataType):
 
 
 def find_repo_updates() -> List[PackageUpdate]:
+    all_local_pkgs = PackageDB.get_local_dict()
     repo_packages_updates = []
-    for local_pkg in PackageDB.get_local_list():
-        repo_pkg = pyalpm.sync_newversion(
-            local_pkg, PackageDB.get_alpm_handle().get_syncdbs()
-        )
-        if not repo_pkg:
-            continue
+    for repo_pkg in find_upgradeable_packages():
+        local_pkg = all_local_pkgs[repo_pkg.name]
         repo_packages_updates.append(
             PackageUpdate(
                 Name=local_pkg.name,

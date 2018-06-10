@@ -328,6 +328,16 @@ def find_repo_package(pkg_name: str) -> pyalpm.Package:
     return all_repo_pkgs[results[0][2]]
 
 
+def find_upgradeable_packages() -> List[pyalpm.Package]:
+    all_repo_pkgs = PackageDB.get_repo_dict()
+    results = get_print_format_output(
+        get_pacman_command(parse_args()) + ['--sync', '--sysupgrade']
+    )
+    return [
+        all_repo_pkgs[result[2]] for result in results
+    ]
+
+
 def find_local_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     all_local_pkgs = PackageDB.get_local_dict()
     pacman_packages = []

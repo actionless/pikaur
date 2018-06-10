@@ -213,10 +213,6 @@ class PackageDBCommon():
         return [pkg.name for pkg in cls.get_local_list()]
 
 
-class RepositoryNotFound(Exception):
-    pass
-
-
 class PackageDB(PackageDBCommon):
 
     _alpm_handle: Optional[pyalpm.Handle] = None
@@ -243,16 +239,6 @@ class PackageDB(PackageDBCommon):
                 print_stderr(_("Reading local package database..."))
             cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local('')
         return cls._packages_list_cache[PackageSource.LOCAL]
-
-    @classmethod
-    def get_repo_priority(cls, repo_name: str) -> int:
-        """
-        0 is the highest priority
-        """
-        repos = [r.name for r in cls.get_alpm_handle().get_syncdbs()]
-        if repo_name not in repos:
-            raise RepositoryNotFound(f"'{repo_name}' in {repos}")
-        return repos.index(repo_name)
 
     @classmethod
     def search_repo(

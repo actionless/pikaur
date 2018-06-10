@@ -325,24 +325,26 @@ def get_print_format_output(cmd_args: List[str]) -> PRINT_FORMAT_TYPE:
     return result
 
 
-def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], List[str]]:
-    found_package_names = {}
-    for package_name in package_names:
-        for _repo_name, pkg_name, line in get_print_format_output(
-                get_pacman_command(parse_args()) + ['--sync'] + [package_name]
-        ):
-            found_package_names[pkg_name] = line
-
+def find_repo_package(pkg_name: str) -> pyalpm.Package:
     all_repo_pkgs = PackageDB.get_repo_dict()
+    results = get_print_format_output(
+        get_pacman_command(parse_args()) + ['--sync'] + [pkg_name]
+    )
+    if not results:
+        raise PackagesNotFoundInRepo(packages=[pkg_name])
+    return all_repo_pkgs[results[0][2]]
+
+
+def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     pacman_packages = []
     not_found_packages = []
     for package_name in package_names:
-        if package_name in found_package_names:
-            pacman_packages.append(
-                all_repo_pkgs[found_package_names[package_name]]
-            )
-        else:
+        try:
+            pkg = find_repo_package(package_name)
+        except PackagesNotFoundInRepo:
             not_found_packages.append(package_name)
+        else:
+            pacman_packages.append(pkg)
     return pacman_packages, not_found_packages
 
 

@@ -273,7 +273,7 @@ def main() -> None:
     create_dirs()
 
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    # signal.signal(signal.SIGINT, handle_sig_int)
+    signal.signal(signal.SIGINT, handle_sig_int)
     try:
         cli_entry_point()
     except BrokenPipeError:

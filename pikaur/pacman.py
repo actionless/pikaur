@@ -328,19 +328,6 @@ def find_repo_package(pkg_name: str) -> pyalpm.Package:
     return all_repo_pkgs[results[0][2]]
 
 
-def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], List[str]]:
-    pacman_packages = []
-    not_found_packages = []
-    for package_name in package_names:
-        try:
-            pkg = find_repo_package(package_name)
-        except PackagesNotFoundInRepo:
-            not_found_packages.append(package_name)
-        else:
-            pacman_packages.append(pkg)
-    return pacman_packages, not_found_packages
-
-
 def find_local_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     all_local_pkgs = PackageDB.get_local_dict()
     pacman_packages = []

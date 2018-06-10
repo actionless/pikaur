@@ -51,8 +51,15 @@ def get_term_width() -> int:
     return shutil.get_terminal_size((80, 80)).columns
 
 
+def go_line_up():
+    print_stdout('\033[1A', end='')
+
+
 def purge_line():
-    print_stdout('\r' + ' ' * (get_term_width()) + '\033[1A' + bold_line('') + '\r')
+    print_stdout(
+        '\r' + ' ' * (get_term_width()) + bold_line('') + '\r',
+        flush=True, end='',
+    )
 
 
 def format_paragraph(line: str) -> str:

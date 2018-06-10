@@ -19,7 +19,7 @@ from .pacman import (
     ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE,
     format_conflicts,
 )
-from .pprint import PrintLock, print_stdout, purge_line
+from .pprint import PrintLock, print_stdout, purge_line, go_line_up
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
 
 
@@ -223,9 +223,14 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         except UnicodeDecodeError:
             return
 
+        clear_buffer = False
+
         for pattern in self._hide_each_line:
             if self._match(pattern, historic_output):
                 purge_line()
+                if historic_output[-1] == '\n':
+                    go_line_up()
+                    clear_buffer = True
 
         for pattern in self._hide_after[:]:
             if self._match(pattern, historic_output):
@@ -233,6 +238,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                 self.capture_input = False
                 self._hide_after.remove(pattern)
                 purge_line()
+                clear_buffer = True
 
         for answer, questions in self.default_questions.items():
             for question in questions:
@@ -249,7 +255,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                     sleep(SMALL_TIMEOUT)
                     self.pty_in.write('\n')
                     self.pty_in.flush()
-                self.historic_output = []
+                clear_buffer = True
                 break
 
         for pattern in self._show_after[:]:
@@ -257,6 +263,10 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                 self.print_output = True
                 self.capture_input = True
                 self._show_after.remove(pattern)
+                clear_buffer = True
+
+        if clear_buffer:
+            self.historic_output = []
 
     @handle_exception_in_thread
     def cmd_output_reader_thread(self) -> None:

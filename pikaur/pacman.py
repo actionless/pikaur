@@ -327,11 +327,11 @@ def get_print_format_output(cmd_args: List[str]) -> PRINT_FORMAT_TYPE:
 
 def find_repo_packages(package_names: List[str]) -> Tuple[List[pyalpm.Package], List[str]]:
     found_package_names = {}
-    for _repo_name, pkg_name, line in get_print_format_output(
-            get_pacman_command(parse_args()) + ['--sync'] +
-            list(package_names)
-    ):
-        found_package_names[pkg_name] = line
+    for package_name in package_names:
+        for _repo_name, pkg_name, line in get_print_format_output(
+                get_pacman_command(parse_args()) + ['--sync'] + [package_name]
+        ):
+            found_package_names[pkg_name] = line
 
     all_repo_pkgs = PackageDB.get_repo_dict()
     pacman_packages = []

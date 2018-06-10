@@ -40,7 +40,7 @@ from .pprint import (
 )
 from .core import (
     PackageSource,
-    spawn, interactive_spawn, remove_dir, open_file, sudo,
+    interactive_spawn, remove_dir, open_file, sudo, get_editor,
 )
 from .conflicts import find_aur_conflicts
 from .prompt import (
@@ -376,22 +376,10 @@ class InstallPackagesCLI():
         return list(set(self.aur_packages_names + self.aur_deps_names))
 
     def get_editor(self) -> Optional[List[str]]:
-        editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
-        if editor_line:
-            return editor_line.split(' ')
-        for editor in ('vim', 'nano', 'mcedit', 'edit'):
-            result = spawn(['which', editor])
-            if result.returncode == 0:
-                return [editor, ]
-        print_stderr(
-            '{} {}'.format(
-                color_line('error:', 9),
-                _("no editor found. Try setting $VISUAL or $EDITOR.")
-            )
-        )
-        if not self.ask_to_continue(_("Do you want to proceed without editing?")):
+        editor = get_editor()
+        if not editor and self.ask_to_continue(_("Do you want to proceed without editing?")):
             sys.exit(125)
-        return None
+        return editor
 
     def exclude_ignored_packages(self, package_names: List[str]) -> None:
         ignored_packages = []

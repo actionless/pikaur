@@ -5,7 +5,7 @@ import enum
 import codecs
 import distutils
 from distutils.dir_util import copy_tree
-from typing import Any, List, Iterable, Callable
+from typing import Any, List, Iterable, Callable, Optional
 
 
 NOT_FOUND_ATOM = object()
@@ -167,3 +167,21 @@ def just_copy_damn_tree(from_path, to_path):
         else:
             return
     shutil.copytree(from_path, to_path, symlinks=True)
+
+
+def get_editor() -> Optional[str]:
+    from .pprint import print_stderr, color_line, _
+    editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
+    if editor_line:
+        return editor_line.split(' ')
+    for editor in ('vim', 'nano', 'mcedit', 'edit'):
+        result = spawn(['which', editor])
+        if result.returncode == 0:
+            return [editor, ]
+    print_stderr(
+        '{} {}'.format(
+            color_line('error:', 9),
+            _("no editor found. Try setting $VISUAL or $EDITOR.")
+        )
+    )
+    return None

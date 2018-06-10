@@ -4,13 +4,13 @@ from threading import Lock
 from string import printable
 from typing import List, TYPE_CHECKING, Tuple, Optional
 
+from .i18n import _, _n
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
-from .i18n import _, _n
-from .args import PikaurArgs, parse_args
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
+    from .args import PikaurArgs  # noqa
     from .package_update import PackageUpdate  # noqa
 
 
@@ -18,8 +18,32 @@ PADDING = 4
 PRINT_LOCK = Lock()
 
 
-def color_enabled(args: PikaurArgs = None) -> bool:
+class PrintLock(object):
+
+    def __enter__(self) -> None:
+        PRINT_LOCK.acquire()
+
+    def __exit__(self, *_exc_details) -> None:
+        PRINT_LOCK.release()
+
+
+def print_stdout(message='', end='\n', flush=False) -> None:
+    with PrintLock():
+        sys.stdout.write(f'{message}{end}')
+        if flush:
+            sys.stdout.flush()
+
+
+def print_stderr(message='', end='\n', flush=False) -> None:
+    with PrintLock():
+        sys.stderr.write(f'{message}{end}')
+        if flush:
+            sys.stderr.flush()
+
+
+def color_enabled(args: 'PikaurArgs' = None) -> bool:
     if not args:
+        from .args import parse_args
         args = parse_args()
     if args.color == 'never':
         return False
@@ -109,29 +133,6 @@ def range_printable(text: str, start: int = 0, end: Optional[int] = None) -> str
         if counter >= end:
             break
     return result
-
-
-class PrintLock(object):
-
-    def __enter__(self) -> None:
-        PRINT_LOCK.acquire()
-
-    def __exit__(self, *_exc_details) -> None:
-        PRINT_LOCK.release()
-
-
-def print_stdout(message='', end='\n', flush=False) -> None:
-    with PrintLock():
-        sys.stdout.write(f'{message}{end}')
-        if flush:
-            sys.stdout.flush()
-
-
-def print_stderr(message='', end='\n', flush=False) -> None:
-    with PrintLock():
-        sys.stderr.write(f'{message}{end}')
-        if flush:
-            sys.stderr.flush()
 
 
 def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:

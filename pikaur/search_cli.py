@@ -9,11 +9,14 @@ from .i18n import _
 from .config import PikaurConfig
 from .core import DataType, PackageSource, return_exception
 from .pprint import (
-    color_line, bold_line, format_paragraph, pretty_format_repo_name,
-    print_stderr,
+    color_line, bold_line, format_paragraph, print_stderr,
 )
+from .print_department import pretty_format_repo_name
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
-from .aur import AURPackageInfo, aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names
+from .aur import (
+    AURPackageInfo,
+    aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names,
+)
 from .args import PikaurArgs
 from .exceptions import AURError
 

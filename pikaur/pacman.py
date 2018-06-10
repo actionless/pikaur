@@ -14,13 +14,12 @@ from .version import (
     get_package_name_and_version_matcher_from_depend_line,
     VersionMatcher,
 )
-from .pprint import print_stderr, color_enabled
+from .pprint import print_stderr, color_enabled, bold_line
 from .args import PikaurArgs, parse_args
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo
 from .core import sudo, spawn
 from .prompt import retry_interactive_command_or_exit
-from .pprint import bold_line
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import

@@ -22,10 +22,10 @@ from .core import (
     spawn, interactive_spawn, running_as_root, remove_dir, sudo,
 )
 from .pprint import (
-    color_line, bold_line,
-    print_stderr,
-    pretty_format_upgradeable,
-    print_version,
+    color_line, bold_line, print_stderr,
+)
+from .print_department import (
+    pretty_format_upgradeable, print_version,
 )
 from .pacman import (
     get_pacman_command,

@@ -4,8 +4,6 @@ from typing import List, Any, Tuple
 from . import argparse as argparse  # pylint: disable=no-name-in-module
 
 from .i18n import _, _n
-from .core import spawn
-from .config import PikaurConfig
 from .exceptions import MissingArgument, IncompatibleArguments
 
 
@@ -177,6 +175,9 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
 
 
 def cli_print_help(args: PikaurArgs) -> None:
+    from .core import spawn
+    from .config import PikaurConfig
+
     pikaur_long_opts = [long_opt for _short_opt, long_opt in PIKAUR_OPTS]
     pacman_help = spawn(
         [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args, ignore_args=pikaur_long_opts),

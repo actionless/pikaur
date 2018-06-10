@@ -7,6 +7,9 @@ import distutils
 from distutils.dir_util import copy_tree
 from typing import Any, List, Iterable, Callable, Optional
 
+from .i18n import _
+from .pprint import print_stderr, color_line
+
 
 NOT_FOUND_ATOM = object()
 
@@ -170,7 +173,6 @@ def just_copy_damn_tree(from_path, to_path):
 
 
 def get_editor() -> Optional[List[str]]:
-    from .pprint import print_stderr, color_line, _
     editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
     if editor_line:
         return editor_line.split(' ')

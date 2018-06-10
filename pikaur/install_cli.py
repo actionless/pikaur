@@ -35,8 +35,11 @@ from .build import PackageBuild, clone_aur_repos
 from .makepkg_config import MakepkgConfig
 from .pprint import (
     color_line, bold_line,
+    print_stderr, print_stdout, purge_line,
+)
+from .print_department import (
     pretty_format_sysupgrade, pretty_format_upgradeable,
-    print_not_found_packages, print_stderr, print_stdout, purge_line,
+    print_not_found_packages,
 )
 from .core import (
     PackageSource,

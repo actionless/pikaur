@@ -169,7 +169,7 @@ def just_copy_damn_tree(from_path, to_path):
     shutil.copytree(from_path, to_path, symlinks=True)
 
 
-def get_editor() -> Optional[str]:
+def get_editor() -> Optional[List[str]]:
     from .pprint import print_stderr, color_line, _
     editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
     if editor_line:

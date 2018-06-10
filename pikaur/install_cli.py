@@ -681,8 +681,6 @@ class InstallPackagesCLI():
 
     def install_prompt(self) -> None:
 
-        TTYRestore.restore()
-
         def _print_sysupgrade(verbose=False) -> None:
             print(pretty_format_sysupgrade(
                 repo_packages_updates=self.repo_packages_install_info,

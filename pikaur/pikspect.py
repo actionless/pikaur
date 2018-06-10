@@ -264,7 +264,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                 self.print_output = True
                 self.capture_input = True
                 self._show_after.remove(pattern)
-                clear_buffer = True
 
         if clear_buffer:
             self.historic_output = [b'']
@@ -323,6 +322,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             try:
                 with PrintLock():
                     self.pty_in.write(char)
+                    self.pty_in.flush()
             except ValueError as exc:
                 print(exc)
             if self.print_output:

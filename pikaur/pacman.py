@@ -297,16 +297,20 @@ class PackageDB(PackageDBCommon):
         return int(packages_by_date[0].installdate)
 
 
-PRINT_FORMAT_TYPE = List[Tuple[str, str, str]]
+class PacmanPrint(DataType):
+
+    full_name: str
+    repo: str
+    name: str
 
 
-def get_print_format_output(cmd_args: List[str]) -> PRINT_FORMAT_TYPE:
-    result: PRINT_FORMAT_TYPE = []
+def get_print_format_output(cmd_args: List[str]) -> List[PacmanPrint]:
+    results: List[PacmanPrint] = []
     found_packages_output = spawn(
         cmd_args + ['--print-format', '%r/%n']
     ).stdout_text
     if not found_packages_output:
-        return result
+        return results
     for line in found_packages_output.splitlines():
         try:
             repo_name, pkg_name = line.split('/')
@@ -314,8 +318,12 @@ def get_print_format_output(cmd_args: List[str]) -> PRINT_FORMAT_TYPE:
             print_stderr(line)
             continue
         else:
-            result.append((repo_name, pkg_name, line))
-    return result
+            results.append(PacmanPrint(
+                full_name=line,
+                repo=repo_name,
+                name=pkg_name
+            ))
+    return results
 
 
 def find_repo_package(pkg_name: str) -> pyalpm.Package:
@@ -325,7 +333,7 @@ def find_repo_package(pkg_name: str) -> pyalpm.Package:
     )
     if not results:
         raise PackagesNotFoundInRepo(packages=[pkg_name])
-    return all_repo_pkgs[results[0][2]]
+    return all_repo_pkgs[results[0].full_name]
 
 
 def find_upgradeable_packages() -> List[pyalpm.Package]:
@@ -334,7 +342,7 @@ def find_upgradeable_packages() -> List[pyalpm.Package]:
         get_pacman_command(parse_args()) + ['--sync', '--sysupgrade']
     )
     return [
-        all_repo_pkgs[result[2]] for result in results
+        all_repo_pkgs[result.full_name] for result in results
     ]
 
 

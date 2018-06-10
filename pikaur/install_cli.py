@@ -479,19 +479,20 @@ class InstallPackagesCLI():
         local_pkgs = PackageDB.get_local_dict()
         repo_pkgs = PackageDB.get_repo_dict()
         repo_packages_install_info_by_name = {}
-        for repo_name, pkg_name, line in get_print_format_output(
+        for result in get_print_format_output(
                 self.get_pacman_args(
                     extra_ignore=['refresh']
-                ) + self.args.positional + extra_pkgs + ["--print-format", "%r/%n"],
+                ) + self.args.positional + extra_pkgs,
         ):
+            pkg_name = result.name
             local_pkg = local_pkgs.get(pkg_name)
-            repo_pkg = repo_pkgs[line]
+            repo_pkg = repo_pkgs[result.full_name]
             repo_packages_install_info_by_name[pkg_name] = PackageUpdate(
                 Name=pkg_name,
                 New_Version=repo_pkg.version,
                 Current_Version=local_pkg.version if local_pkg else '',
                 Description=repo_pkg.desc,
-                Repository=repo_name,
+                Repository=result.repo,
             )
         return repo_packages_install_info_by_name
 

@@ -456,7 +456,7 @@ class InstallPackagesCLI():
                 print_stderr("{} {}".format(
                     color_line(':: error:', 9),
                     bold_line(
-                        _("Dependencies missing for {}").format(exc.wanted_by))
+                        _("Dependencies missing for {}").format(', '.join(exc.wanted_by)))
                 ))
             print_not_found_packages(exc.packages)
             sys.exit(131)

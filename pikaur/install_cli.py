@@ -311,9 +311,11 @@ class InstallPackagesCLI():
             else:
                 news_fetched = True
 
-        if notfound_pkgs:
+        if notfound_pkgs or self.args.noconfirm:
             self.pacman_pool.join()
             self.pacman_pool.terminate()
+
+        if notfound_pkgs:
             for line in self.pacman_proc.get_output().splitlines():
                 if MESSAGE_NOTFOUND not in line:
                     continue

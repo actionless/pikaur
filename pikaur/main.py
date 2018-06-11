@@ -8,6 +8,7 @@ import signal
 import subprocess
 import codecs
 import shutil
+import atexit
 from datetime import datetime
 from typing import List
 from multiprocessing.pool import ThreadPool
@@ -262,9 +263,12 @@ def create_dirs() -> None:
         os.makedirs(CACHE_ROOT)
 
 
+def restore_tty():
+    TTYRestore.restore()
+
+
 def handle_sig_int(*_whatever):
     print_stderr("\n\nCanceled by user (SIGINT)")
-    TTYRestore.restore()
     sys.exit(125)
 
 
@@ -272,6 +276,7 @@ def main() -> None:
     check_runtime_deps()
     create_dirs()
 
+    atexit.register(restore_tty)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     signal.signal(signal.SIGINT, handle_sig_int)
     try:

@@ -128,11 +128,21 @@ class PackageDBCommon():
     _provided_dict_cache: Dict[PackageSource, Dict[str, List[ProvidedDependency]]] = {}
 
     @classmethod
+    def _discard_cache(
+            cls, package_source: PackageSource
+    ) -> None:
+        if cls._packages_list_cache.get(package_source):
+            del cls._packages_list_cache[package_source]
+        if cls._packages_dict_cache.get(package_source):
+            del cls._packages_dict_cache[package_source]
+
+    @classmethod
     def discard_local_cache(cls) -> None:
-        if cls._packages_list_cache.get(PackageSource.LOCAL):
-            del cls._packages_list_cache[PackageSource.LOCAL]
-        if cls._packages_dict_cache.get(PackageSource.LOCAL):
-            del cls._packages_dict_cache[PackageSource.LOCAL]
+        cls._discard_cache(PackageSource.LOCAL)
+
+    @classmethod
+    def discard_repo_cache(cls) -> None:
+        cls._discard_cache(PackageSource.REPO)
 
     @classmethod
     def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
@@ -225,6 +235,11 @@ class PackageDB(PackageDBCommon):
     @classmethod
     def discard_local_cache(cls) -> None:
         super().discard_local_cache()
+        cls._alpm_handle = None
+
+    @classmethod
+    def discard_repo_cache(cls) -> None:
+        super().discard_repo_cache()
         cls._alpm_handle = None
 
     @classmethod

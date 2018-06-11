@@ -324,6 +324,9 @@ class InstallPackagesCLI():
                 if notfound_pkg_name in self.args.positional:
                     self.args.positional.remove(notfound_pkg_name)
 
+        if self.args.refresh:
+            PackageDB.discard_repo_cache()
+
     def install_packages(self):
         self.get_all_packages_info()
         if self.news:

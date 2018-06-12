@@ -57,7 +57,7 @@ class TTYRestore():
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
 
     @classmethod
-    def restore(cls, *_whatever):
+    def restore(cls, *_whatever):  # pylint:disable=method-hidden
         cls._restore(cls.old_tcattrs)
 
     def __init__(self):

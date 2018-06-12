@@ -342,7 +342,7 @@ def find_repo_package(pkg_name: str) -> pyalpm.Package:
             return pkg
         if pkg.provides:
             for provided_pkg in pkg.provides:
-                provided_name, version_matcher = \
+                provided_name, _version_matcher = \
                     get_package_name_and_version_matcher_from_depend_line(
                         provided_pkg
                     )

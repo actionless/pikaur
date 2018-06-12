@@ -55,7 +55,17 @@ def format_pacman_question(message: str, question=QUESTION_YN_YES) -> str:
 
 
 def create_pacman_pattern(pacman_message: str) -> str:
-    return _p(pacman_message).replace("%d", ".*").replace("%s", ".*").strip()
+    return _p(pacman_message).replace(
+        "(", r"\("
+    ).replace(
+        ")", r"\)"
+    ).replace(
+        "%d", "(.*)"
+    ).replace(
+        "%s", "(.*)"
+    ).replace(
+        "%zu", "(.*)"
+    ).strip()
 
 
 MESSAGE_NOTFOUND = (_p("target not found: %s\n") % '').replace('\n', '')
@@ -75,6 +85,9 @@ PATTERN_MEMBER = create_pacman_pattern("There is %d member in group %s%s%s:\n")
 PATTERN_MEMBERS = create_pacman_pattern("There are %d members in group %s%s%s:\n")
 PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
 QUESTION_SELECTION = _p("Enter a selection (default=all)") + ": "
+
+PATTERN_PROVIDERS = create_pacman_pattern("There are %zu providers available for %s:\n")
+PATTERN_ENTER_NUMBER = create_pacman_pattern("Enter a number (default=%d)")
 
 
 def format_conflicts(conflicts: List[List[str]]) -> List[str]:
@@ -340,6 +353,7 @@ def find_repo_package(pkg_name: str) -> pyalpm.Package:
     for pkg in found_pkgs:
         if pkg.name == pkg_name:
             return pkg
+    for pkg in found_pkgs:
         if pkg.provides:
             for provided_pkg in pkg.provides:
                 provided_name, _version_matcher = \

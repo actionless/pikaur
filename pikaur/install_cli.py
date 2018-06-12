@@ -21,6 +21,7 @@ from .pacman import (
     ANSWER_Y, ANSWER_N, QUESTION_YN_YES, QUESTION_YN_NO,
     QUESTION_PROCEED, MESSAGE_NOTFOUND, MESSAGE_PACKAGES, MESSAGE_NOTARGETS,
     PATTERN_MEMBER, PATTERN_MEMBERS, QUESTION_SELECTION, PATTERN_NOTFOUND,
+    PATTERN_PROVIDERS, PATTERN_ENTER_NUMBER,
 )
 from .package_update import (
     PackageUpdate, get_remote_package_version,
@@ -135,6 +136,7 @@ class InstallPackagesCLI():
     install_package_names: List[str]
     manually_excluded_packages_names: List[str]
     resolved_conflicts: List[List[str]]
+    chosen_providers: Dict[str, str]
 
     # computed package lists:
     found_conflicts: Dict[str, List[str]]
@@ -175,6 +177,7 @@ class InstallPackagesCLI():
 
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
+        self.chosen_providers = {}
         self.pacman_printback = []
 
         self.repo_packages_by_name = {}
@@ -253,6 +256,40 @@ class InstallPackagesCLI():
             purge_line()
         return result
 
+    def parse_pacman_output(self) -> None:
+        package_need_providers: Optional[str] = None
+        package_providers: Optional[List[str]] = None
+        for line in self.pacman_proc.get_output().splitlines():
+            if MESSAGE_NOTFOUND in line:
+                notfound_pkg_name = line.split(MESSAGE_NOTFOUND)[1].strip()
+                self.not_found_repo_pkgs_names.append(notfound_pkg_name)
+                if notfound_pkg_name in self.args.positional:
+                    self.args.positional.remove(notfound_pkg_name)
+                continue
+            if package_need_providers and re.compile(r"(\d+)\) ").search(line):
+                if not package_providers:
+                    package_providers = []
+                for option in line.split('  '):
+                    if ')' not in option:
+                        continue
+                    pkg_name = option.split(')')[-1].strip()
+                    package_providers.append(pkg_name)
+                continue
+            if package_need_providers and re.compile(PATTERN_ENTER_NUMBER).search(line):
+                choice = int(re.compile(r"(\d+)[^\d]*$").search(line).groups()[0]) - 1
+                chosen_provider = package_providers[choice]
+                self.chosen_providers[package_need_providers] = chosen_provider
+                if package_need_providers in self.args.positional:
+                    self.args.positional.remove(package_need_providers)
+                    self.args.positional.append(chosen_provider)
+                package_need_providers = None
+                package_providers = None
+                continue
+            providers_matched = re.compile(PATTERN_PROVIDERS).search(line)
+            if providers_matched:
+                package_need_providers = providers_matched.groups()[1]
+                continue
+
     def wrap_pacman(self) -> None:  # pylint: disable=too-many-branches
         self.pacman_proc = PikspectPopen(
             sudo(self.get_pacman_args() + self.args.positional),
@@ -315,14 +352,7 @@ class InstallPackagesCLI():
             self.pacman_pool.join()
             self.pacman_pool.terminate()
 
-        if notfound_pkgs:
-            for line in self.pacman_proc.get_output().splitlines():
-                if MESSAGE_NOTFOUND not in line:
-                    continue
-                notfound_pkg_name = line.split(MESSAGE_NOTFOUND)[1].strip()
-                self.not_found_repo_pkgs_names.append(notfound_pkg_name)
-                if notfound_pkg_name in self.args.positional:
-                    self.args.positional.remove(notfound_pkg_name)
+        self.parse_pacman_output()
 
         if self.args.refresh:
             PackageDB.discard_repo_cache()
@@ -424,6 +454,13 @@ class InstallPackagesCLI():
         self.new_thirdparty_repo_deps_install_info = []
         self.aur_updates_install_info = []
         self.aur_deps_install_info = []
+
+        for pkg_name in self.manually_excluded_packages_names:
+            if pkg_name in self.args.positional:
+                self.args.positional.remove(pkg_name)
+            # if pkg_name in self.install_package_names:
+                # self.install_package_names.remove(pkg_name)
+
         if not self.args.aur:
             self.get_repo_pkgs_info()
 
@@ -509,12 +546,8 @@ class InstallPackagesCLI():
                 self.package_is_ignored(pkg_name)
             ):
                 print_ignored_package(pkg_name)
-                if pkg_name not in self.manually_excluded_packages_names:
-                    self.manually_excluded_packages_names.append(pkg_name)
-                if pkg_name in self.args.positional:
-                    self.args.positional.remove(pkg_name)
-                # if pkg_name in self.install_package_names:
-                    # self.install_package_names.remove(pkg_name)
+                # if pkg_name not in self.manually_excluded_packages_names:
+                    # self.manually_excluded_packages_names.append(pkg_name)
                 continue
             if pkg_update.Current_Version == '' and pkg_name not in self.args.positional:
                 if pkg_update.Repository in OFFICIAL_REPOS:

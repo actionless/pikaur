@@ -37,7 +37,7 @@ def find_provided_pkgs(
     return provided_by_backrefs
 
 
-def check_deps_versions(
+def check_deps_versions(  # pylint:disable=too-many-branches
         aur_pkg_name: str,
         deps_pkg_names: List[str],
         version_matchers: Dict[str, VersionMatcher],

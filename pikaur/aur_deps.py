@@ -60,11 +60,14 @@ def check_deps_versions(  # pylint:disable=too-many-branches
 
     # try to find pkgs provided by other pkgs:
     provided_by_backrefs = find_provided_pkgs(
-        pkg_names=not_found_deps,
+        pkg_names=deps_pkg_names,
         source=source
     )
     for dep_name in provided_by_backrefs:
-        not_found_deps.remove(dep_name)
+        if dep_name in not_found_deps:
+            not_found_deps.remove(dep_name)
+        if dep_name in deps:
+            del deps[dep_name]
 
     # check versions of found excplicit deps:
     for dep_name, dep in list(deps.items())[:]:

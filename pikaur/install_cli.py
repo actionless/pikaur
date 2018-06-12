@@ -17,7 +17,7 @@ from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .i18n import _
 from .pacman import (
     OFFICIAL_REPOS,
-    PackageDB, PacmanConfig, get_pacman_command, get_print_format_output,
+    PackageDB, PacmanConfig, get_pacman_command, find_repo_package,
     ANSWER_Y, ANSWER_N, QUESTION_YN_YES, QUESTION_YN_NO,
     QUESTION_PROCEED, MESSAGE_NOTFOUND, MESSAGE_PACKAGES, MESSAGE_NOTARGETS,
     PATTERN_MEMBER, PATTERN_MEMBERS, QUESTION_SELECTION, PATTERN_NOTFOUND,
@@ -476,22 +476,16 @@ class InstallPackagesCLI():
     def get_upgradeable_list(self, extra_pkgs: List[str] = None):
         extra_pkgs = extra_pkgs or []
         local_pkgs = PackageDB.get_local_dict()
-        repo_pkgs = PackageDB.get_repo_dict()
         repo_packages_install_info_by_name = {}
-        for result in get_print_format_output(
-                self.get_pacman_args(
-                    extra_ignore=['refresh']
-                ) + self.args.positional + extra_pkgs,
-        ):
-            pkg_name = result.name
-            local_pkg = local_pkgs.get(pkg_name)
-            repo_pkg = repo_pkgs[result.full_name]
+        for pkg_name in self.args.positional + extra_pkgs:
+            repo_pkg = find_repo_package(pkg_name)
+            local_pkg = local_pkgs.get(repo_pkg.name)
             repo_packages_install_info_by_name[pkg_name] = PackageUpdate(
                 Name=pkg_name,
                 New_Version=repo_pkg.version,
                 Current_Version=local_pkg.version if local_pkg else '',
                 Description=repo_pkg.desc,
-                Repository=result.repo,
+                Repository=repo_pkg.db.name,
             )
         return repo_packages_install_info_by_name
 

@@ -13,7 +13,7 @@ import re
 import threading
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import List, Dict, TextIO, BinaryIO, Callable
+from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
 from .pacman import (
     ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE,
@@ -35,6 +35,9 @@ MAX_QUESTION_LENGTH = 256
 SMALL_TIMEOUT = 0.01
 
 
+TC_ATTRS_TYPE = List[Union[int, List[bytes]]]
+
+
 class TTYRestore():
 
     old_tcattrs = None
@@ -46,7 +49,7 @@ class TTYRestore():
             cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
 
     @classmethod
-    def _restore(cls, what=None):
+    def _restore(cls, what: Optional[TC_ATTRS_TYPE] = None):
         if sys.stderr.isatty():
             termios.tcdrain(sys.stderr.fileno())
         if sys.stdout.isatty():

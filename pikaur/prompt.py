@@ -77,8 +77,10 @@ def split_last_line(text: str) -> str:
 def get_input(prompt: str, answers=None) -> str:
     if PikaurConfig().ui.get_bool('RequireEnterConfirm'):
         from .pikspect import TTYRestore
+        sub_tty = TTYRestore()
         TTYRestore.restore()
         answer = input(split_last_line(prompt)).lower()
+        sub_tty.restore()
     else:
         answer = read_answer_from_tty(prompt, answers=answers)
     return answer

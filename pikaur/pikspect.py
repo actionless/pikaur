@@ -38,6 +38,7 @@ SMALL_TIMEOUT = 0.01
 class TTYRestore():
 
     old_tcattrs = None
+    sub_tty_old_tcattrs = None
 
     @classmethod
     def save(cls):
@@ -45,15 +46,26 @@ class TTYRestore():
             cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
 
     @classmethod
-    def restore(cls, *_whatever):
+    def _restore(cls, what=None):
         if sys.stderr.isatty():
             termios.tcdrain(sys.stderr.fileno())
         if sys.stdout.isatty():
             termios.tcdrain(sys.stdout.fileno())
         if sys.stdin.isatty():
             termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
-        if cls.old_tcattrs:
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, cls.old_tcattrs)
+        if what:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
+
+    @classmethod
+    def restore(cls, *_whatever):
+        cls._restore(cls.old_tcattrs)
+
+    def __init__(self):
+        self.restore = self.restore_new
+        self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+
+    def restore_new(self, *_whatever):
+        self._restore(self.sub_tty_old_tcattrs)
 
 
 TTYRestore.save()

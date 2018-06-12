@@ -44,7 +44,7 @@ from .print_department import (
 )
 from .core import (
     PackageSource,
-    interactive_spawn, remove_dir, open_file, sudo, get_editor,
+    spawn, interactive_spawn, remove_dir, open_file, sudo, get_editor,
 )
 from .conflicts import find_aur_conflicts
 from .prompt import (
@@ -570,19 +570,17 @@ class InstallPackagesCLI():
             pkg_info.Name for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
         ]
         new_dep_names = find_repo_deps_of_aur_pkgs(all_aur_pkg_names)
-        if not new_dep_names:
-            return
 
         repo_pkgs = PackageDB.get_repo_dict()
         local_pkgs = PackageDB.get_local_dict()
-        proc = PikspectPopen(
+        text = spawn(
             self.get_pacman_args(
-                extra_ignore=['refresh', 'sysupgrade']
+                extra_ignore=['refresh']
             ) + new_dep_names + ["--needed", "--print-format", "%r/%n"],
-            print_output=False, capture_input=False
-        )
-        proc.run()
-        for dep_line in proc.get_output().splitlines():
+        ).stdout_text
+        if not text:
+            return
+        for dep_line in text.splitlines():
             dep_pkg = repo_pkgs[dep_line]
             dep_name = dep_line.split('/')[1]
             local_pkg = local_pkgs.get(dep_name)

@@ -326,14 +326,19 @@ def get_print_format_output(cmd_args: List[str]) -> List[PacmanPrint]:
     return results
 
 
-def find_repo_package(pkg_name: str) -> pyalpm.Package:
+def find_repo_packages(pkg_name: str) -> List[pyalpm.Package]:
     all_repo_pkgs = PackageDB.get_repo_dict()
     results = get_print_format_output(
         get_pacman_command(parse_args()) + ['--sync', '--nodeps'] + [pkg_name]
     )
     if not results:
         raise PackagesNotFoundInRepo(packages=[pkg_name])
-    return all_repo_pkgs[results[0].full_name]
+    return [all_repo_pkgs[result.full_name] for result in results]
+
+
+def find_repo_package(pkg_name: str) -> pyalpm.Package:
+    # @TODO: interactively ask for multiple providers and save the answer
+    return find_repo_packages(pkg_name)[0]
 
 
 def find_upgradeable_packages() -> List[pyalpm.Package]:

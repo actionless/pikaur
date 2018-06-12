@@ -275,8 +275,13 @@ class InstallPackagesCLI():
                     pkg_name = option.split(')')[-1].strip()
                     package_providers.append(pkg_name)
                 continue
-            if package_need_providers and re.compile(PATTERN_ENTER_NUMBER).search(line):
-                choice = int(re.compile(r"(\d+)[^\d]*$").search(line).groups()[0]) - 1
+            if package_need_providers and package_providers and (
+                    re.compile(PATTERN_ENTER_NUMBER).search(line)
+            ):
+                match = re.compile(r"(\d+)[^\d]*$").search(line)
+                if not match:
+                    raise Exception(f"Can't parse provided choice from line:\n{line}")
+                choice = int(match.groups()[0]) - 1
                 chosen_provider = package_providers[choice]
                 self.chosen_providers[package_need_providers] = chosen_provider
                 if package_need_providers in self.args.positional:

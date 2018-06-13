@@ -494,7 +494,7 @@ def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
     with ThreadPool() as pool:
         requests = {
             key: pool.apply_async(spawn, (repo_status.get_task_command(), ))
-            for key, repo_status in package_builds_by_name.items()
+            for key, repo_status in package_builds_by_base.items()
         }
         pool.close()
         pool.join()

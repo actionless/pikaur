@@ -530,11 +530,12 @@ class InstallPackagesCLI():
     def _get_repo_pkgs_info(
             self, extra_args: List[str], ignore_args: Optional[List[str]] = None
     ) -> List[PackageUpdate]:
+        ignore_args = ignore_args or []
         repo_pkgs = PackageDB.get_repo_dict()
         local_pkgs = PackageDB.get_local_dict()
         text = spawn(
             self.get_pacman_args(
-                extra_ignore=ignore_args
+                extra_ignore=['refresh'] + ignore_args
             ) + extra_args + ["--print-format", "%r/%n"],
         ).stdout_text
         if not text:
@@ -585,7 +586,7 @@ class InstallPackagesCLI():
         new_dep_names = find_repo_deps_of_aur_pkgs(all_aur_pkg_names)
 
         for dep_install_info in self._get_repo_pkgs_info(
-                ignore_args=['refresh', 'sysupgrade'], extra_args=new_dep_names + ['--needed']
+                ignore_args=['sysupgrade'], extra_args=new_dep_names + ['--needed']
         ):
             if dep_install_info.Repository in OFFICIAL_REPOS:
                 self.new_repo_deps_install_info.append(dep_install_info)

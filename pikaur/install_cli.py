@@ -17,7 +17,7 @@ from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .i18n import _
 from .pacman import (
     OFFICIAL_REPOS,
-    PackageDB, PacmanConfig, get_pacman_command, find_repo_package,
+    PackageDB, PacmanConfig, get_pacman_command,
     ANSWER_Y, ANSWER_N, QUESTION_YN_YES, QUESTION_YN_NO,
     QUESTION_PROCEED, MESSAGE_NOTFOUND, MESSAGE_PACKAGES, MESSAGE_NOTARGETS,
     PATTERN_MEMBER, PATTERN_MEMBERS, QUESTION_SELECTION, PATTERN_NOTFOUND,
@@ -515,22 +515,6 @@ class InstallPackagesCLI():
 
         self.get_repo_deps_info()
 
-    def get_upgradeable_list(self, extra_pkgs: List[str] = None):
-        extra_pkgs = extra_pkgs or []
-        local_pkgs = PackageDB.get_local_dict()
-        repo_packages_install_info_by_name = {}
-        for pkg_name in self.args.positional + extra_pkgs:
-            repo_pkg = find_repo_package(pkg_name)
-            local_pkg = local_pkgs.get(repo_pkg.name)
-            repo_packages_install_info_by_name[pkg_name] = PackageUpdate(
-                Name=pkg_name,
-                New_Version=repo_pkg.version,
-                Current_Version=local_pkg.version if local_pkg else '',
-                Description=repo_pkg.desc,
-                Repository=repo_pkg.db.name,
-            )
-        return repo_packages_install_info_by_name
-
     def package_is_ignored(self, package_name: str) -> bool:
         if (
                 package_name in (
@@ -543,8 +527,36 @@ class InstallPackagesCLI():
             return True
         return False
 
+    def _get_repo_pkgs_info(
+            self, extra_args: List[str], ignore_args: Optional[List[str]] = None
+    ) -> List[PackageUpdate]:
+        repo_pkgs = PackageDB.get_repo_dict()
+        local_pkgs = PackageDB.get_local_dict()
+        text = spawn(
+            self.get_pacman_args(
+                extra_ignore=ignore_args
+            ) + extra_args + ["--print-format", "%r/%n"],
+        ).stdout_text
+        if not text:
+            return []
+        pkg_install_infos = []
+        for line in text.splitlines():
+            pkg = repo_pkgs[line]
+            name = line.split('/')[1]
+            local_pkg = local_pkgs.get(name)
+            install_info = PackageUpdate(
+                Name=name,
+                Current_Version=local_pkg.version if local_pkg else '',
+                New_Version=pkg.version,
+                Description=pkg.desc,
+                Repository=pkg.db.name
+            )
+            pkg_install_infos.append(install_info)
+        return pkg_install_infos
+
     def get_repo_pkgs_info(self):
-        for pkg_name, pkg_update in self.get_upgradeable_list().items():
+        for pkg_update in self._get_repo_pkgs_info(extra_args=self.args.positional):
+            pkg_name = pkg_update.Name
             if (
                     pkg_name in self.manually_excluded_packages_names
             ) or (
@@ -554,6 +566,7 @@ class InstallPackagesCLI():
                 # if pkg_name not in self.manually_excluded_packages_names:
                     # self.manually_excluded_packages_names.append(pkg_name)
                 continue
+
             if pkg_update.Current_Version == '' and pkg_name not in self.args.positional:
                 if pkg_update.Repository in OFFICIAL_REPOS:
                     self.new_repo_deps_install_info.append(pkg_update)
@@ -571,26 +584,9 @@ class InstallPackagesCLI():
         ]
         new_dep_names = find_repo_deps_of_aur_pkgs(all_aur_pkg_names)
 
-        repo_pkgs = PackageDB.get_repo_dict()
-        local_pkgs = PackageDB.get_local_dict()
-        text = spawn(
-            self.get_pacman_args(
-                extra_ignore=['refresh']
-            ) + new_dep_names + ["--needed", "--print-format", "%r/%n"],
-        ).stdout_text
-        if not text:
-            return
-        for dep_line in text.splitlines():
-            dep_pkg = repo_pkgs[dep_line]
-            dep_name = dep_line.split('/')[1]
-            local_pkg = local_pkgs.get(dep_name)
-            dep_install_info = PackageUpdate(
-                Name=dep_name,
-                Current_Version=local_pkg.version if local_pkg else '',
-                New_Version=dep_pkg.version,
-                Description=dep_pkg.desc,
-                Repository=dep_pkg.db.name
-            )
+        for dep_install_info in self._get_repo_pkgs_info(
+                ignore_args=['refresh', 'sysupgrade'], extra_args=new_dep_names + ['--needed']
+        ):
             if dep_install_info.Repository in OFFICIAL_REPOS:
                 self.new_repo_deps_install_info.append(dep_install_info)
             else:

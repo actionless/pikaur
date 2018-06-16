@@ -79,13 +79,14 @@ def pretty_format_upgradeable(
                 pkg_update.Name
             )
 
-        pkg_name = _bold_line(pkg_update.Name)
+        pkg_name = pkg_update.Name
         pkg_len = len(pkg_update.Name)
 
         days_old = ''
         if pkg_update.devel_pkg_age_days:
             days_old = ' ' + _('({} days old)').format(pkg_update.devel_pkg_age_days)
 
+        pkg_name = _bold_line(pkg_name)
         if (print_repo or verbose) and pkg_update.Repository:
             pkg_name = '{}{}'.format(
                 _color_line(pkg_update.Repository + '/', 13),
@@ -98,25 +99,34 @@ def pretty_format_upgradeable(
                 pkg_name
             )
             pkg_len += len('aur/')
+        if pkg_update.provided_by:
+            provided_by = ' ({})'.format(' # '.join([p.package.name for p in pkg_update.provided_by]))
+            pkg_name += provided_by
+            pkg_len += len(provided_by)
 
         return (
             template or (
                 ' {pkg_name}{spacing}'
-                ' {current_version}{spacing2} -> {new_version}{days_old}{verbose}'
+                ' {current_version}{spacing2}{version_separator}{new_version}{days_old}{verbose}'
             )
         ).format(
             pkg_name=pkg_name,
             days_old=days_old,
-            current_version=_color_line(common_version, version_color) +
-            _color_line(
-                get_version_diff(pkg_update.Current_Version or '', common_version),
-                old_color
+            current_version=(
+                _color_line(common_version, version_color) +
+                _color_line(
+                    get_version_diff(pkg_update.Current_Version or '', common_version),
+                    old_color
+                )
             ),
-            new_version=_color_line(common_version, version_color) +
-            _color_line(
-                get_version_diff(pkg_update.New_Version or '', common_version),
-                new_color
+            new_version=(
+                _color_line(common_version, version_color) +
+                _color_line(
+                    get_version_diff(pkg_update.New_Version or '', common_version),
+                    new_color
+                )
             ),
+            version_separator=' -> ' if (pkg_update.Current_Version or pkg_update.New_Version) else '',
             spacing=' ' * (column_width - pkg_len),
             spacing2=' ' * (column_width - len(pkg_update.Current_Version or '') - 18),
             verbose=(

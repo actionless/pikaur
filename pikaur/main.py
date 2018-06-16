@@ -106,8 +106,8 @@ def cli_print_upgradeable(args: PikaurArgs) -> None:
         ))
 
 
-def cli_install_packages(args, packages: List[str] = None) -> None:
-    InstallPackagesCLI(args=args, packages=packages)
+def cli_install_packages(args) -> None:
+    InstallPackagesCLI(args=args)
 
 
 def _info_packages_thread_repo(

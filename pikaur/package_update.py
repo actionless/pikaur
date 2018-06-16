@@ -1,11 +1,13 @@
 from datetime import datetime
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
+
+import pyalpm
 
 from .core import DataType
 from .i18n import _n
 from .version import compare_versions
 from .pacman import (
-    PackageDB, find_repo_package,
+    PackageDB,
     find_packages_not_from_repo, find_upgradeable_packages,
 )
 from .aur import AURPackageInfo, find_aur_packages
@@ -42,6 +44,8 @@ class PackageUpdate(DataType):
     Description: str
     Repository: Optional[str] = None
     devel_pkg_age_days: Optional[int] = None
+    package: Union[pyalpm.Package, AURPackageInfo]
+    provided_by: Optional[List['PackageUpdate']] = None
 
     def __repr__(self) -> str:
         return (
@@ -62,6 +66,7 @@ def find_repo_updates() -> List[PackageUpdate]:
                 Current_Version=local_pkg.version,
                 Description=repo_pkg.desc,
                 Repository=repo_pkg.db.name,
+                package=repo_pkg,
             )
         )
     return repo_packages_updates
@@ -89,7 +94,8 @@ def find_aur_devel_updates(
                 Current_Version=local_pkg.version,
                 New_Version='devel',
                 Description=aur_pkg.desc,
-                devel_pkg_age_days=pkg_age_days
+                devel_pkg_age_days=pkg_age_days,
+                package=aur_pkg,
             ))
     return aur_updates
 
@@ -115,7 +121,8 @@ def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
                 Name=pkg_name,
                 New_Version=aur_version,
                 Current_Version=current_version,
-                Description=aur_pkg.desc
+                Description=aur_pkg.desc,
+                package=aur_pkg,
             ))
         else:
             aur_pkgs_up_to_date.append(aur_pkg)
@@ -134,7 +141,7 @@ def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
 
 def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
     try:
-        repo_info = find_repo_package(new_pkg_name)
+        repo_info = PackageDB.find_repo_package(new_pkg_name)
     except PackagesNotFoundInRepo:
         aur_packages, _not_found = find_aur_packages([new_pkg_name])
         if aur_packages:

@@ -16,11 +16,12 @@ from time import sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
 from .pacman import (
-    ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE,
+    ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE, MESSAGE_PACKAGES,
     format_conflicts,
 )
 from .pprint import PrintLock, print_stdout, purge_line, go_line_up
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
+from .args import parse_args
 
 
 Y = ANSWER_Y
@@ -351,6 +352,7 @@ def pikspect(
         cmd: List[str],
         print_output=True,
         save_output=True,
+        hide_pacman_prompt=False,
         conflicts: List[List[str]] = None,
         extra_questions: Dict[str, List[str]] = None,
         **kwargs
@@ -376,6 +378,10 @@ def pikspect(
     )
     if extra_questions:
         proc.add_answers(extra_questions)
+    if hide_pacman_prompt:
+        if not parse_args().noconfirm:
+            proc.hide_after(MESSAGE_PACKAGES)
+            proc.show_after(QUESTION_PROCEED)
     proc.run()
 
     return proc

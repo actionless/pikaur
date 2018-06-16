@@ -54,22 +54,6 @@ def format_pacman_question(message: str, question=QUESTION_YN_YES) -> str:
     return bold_line(" {} {} ".format(_p(message), question))
 
 
-def create_pacman_pattern(pacman_message: str) -> str:
-    return _p(pacman_message).replace(
-        "(", r"\("
-    ).replace(
-        ")", r"\)"
-    ).replace(
-        "%d", "(.*)"
-    ).replace(
-        "%s", "(.*)"
-    ).replace(
-        "%zu", "(.*)"
-    ).strip()
-
-
-MESSAGE_NOTFOUND = (_p("target not found: %s\n") % '').replace('\n', '')
-MESSAGE_NOTARGETS = _p("no targets specified (use -h for help)\n").replace('\n', '')
 MESSAGE_PACKAGES = _p('Packages')
 
 QUESTION_PROCEED = format_pacman_question('Proceed with installation?')
@@ -80,14 +64,6 @@ QUESTION_CONFLICT = format_pacman_question(
 QUESTION_CONFLICT_VIA_PROVIDED = format_pacman_question(
     '%s and %s are in conflict (%s). Remove %s?', QUESTION_YN_NO
 )
-
-PATTERN_MEMBER = create_pacman_pattern("There is %d member in group %s%s%s:\n")
-PATTERN_MEMBERS = create_pacman_pattern("There are %d members in group %s%s%s:\n")
-PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
-QUESTION_SELECTION = _p("Enter a selection (default=all)") + ": "
-
-PATTERN_PROVIDERS = create_pacman_pattern("There are %zu providers available for %s:\n")
-PATTERN_ENTER_NUMBER = create_pacman_pattern("Enter a number (default=%d)")
 
 
 def format_conflicts(conflicts: List[List[str]]) -> List[str]:
@@ -107,6 +83,13 @@ def get_pacman_command(args: PikaurArgs) -> List[str]:
     if color_enabled(args):
         return [pacman_path, '--color=always']
     return [pacman_path, '--color=never']
+
+
+class PacmanPrint(DataType):
+
+    full_name: str
+    repo: str
+    name: str
 
 
 class PacmanConfig(PycmanConfig):
@@ -243,6 +226,8 @@ class PackageDB(PackageDBCommon):
 
     _alpm_handle: Optional[pyalpm.Handle] = None
 
+    _pacman_find_cache: Dict[str, pyalpm.Package] = {}
+
     @classmethod
     def get_alpm_handle(cls) -> pyalpm.Handle:
         if not cls._alpm_handle:
@@ -258,6 +243,7 @@ class PackageDB(PackageDBCommon):
     def discard_repo_cache(cls) -> None:
         super().discard_repo_cache()
         cls._alpm_handle = None
+        cls._pacman_find_cache = {}
 
     @classmethod
     def search_local(cls, search_query: str) -> List[pyalpm.Package]:
@@ -280,6 +266,22 @@ class PackageDB(PackageDBCommon):
         if repo_name not in repos:
             raise RepositoryNotFound(f"'{repo_name}' in {repos}")
         return repos.index(repo_name)
+
+    @classmethod
+    def _get_provided_dict(
+            cls, package_source: PackageSource
+    ) -> Dict[str, List[ProvidedDependency]]:
+
+        if not cls._provided_dict_cache.get(package_source):
+            provided_pkg_names = super()._get_provided_dict(package_source)
+            if package_source == PackageSource.REPO:
+                for _what_provides, provided_pkg in provided_pkg_names.items():
+                    provided_pkg.sort(key=lambda p: "{}{}".format(
+                        cls.get_repo_priority(p.package.db.name),
+                        p.package.name
+                    ))
+            cls._provided_dict_cache[package_source] = provided_pkg_names
+        return cls._provided_dict_cache[package_source]
 
     @classmethod
     def search_repo(
@@ -323,66 +325,78 @@ class PackageDB(PackageDBCommon):
         packages_by_date = sorted(packages, key=lambda x: -x.installdate)
         return int(packages_by_date[0].installdate)
 
-
-class PacmanPrint(DataType):
-
-    full_name: str
-    repo: str
-    name: str
-
-
-def get_print_format_output(cmd_args: List[str]) -> List[PacmanPrint]:
-    results: List[PacmanPrint] = []
-    found_packages_output = spawn(
-        cmd_args + ['--print-format', '%r/%n']
-    ).stdout_text
-    if not found_packages_output:
+    @classmethod
+    def get_print_format_output(cls, cmd_args: List[str]) -> List[PacmanPrint]:
+        cache_index = ' '.join(cmd_args)
+        cached_pkg = cls._pacman_find_cache.get(cache_index)
+        if cached_pkg:
+            return cached_pkg
+        results: List[PacmanPrint] = []
+        found_packages_output = spawn(
+            cmd_args + ['--print-format', '%r/%n']
+        ).stdout_text
+        if not found_packages_output:
+            return results
+        for line in found_packages_output.splitlines():
+            try:
+                repo_name, pkg_name = line.split('/')
+            except ValueError:
+                print_stderr(line)
+                continue
+            else:
+                results.append(PacmanPrint(
+                    full_name=line,
+                    repo=repo_name,
+                    name=pkg_name
+                ))
+        cls._pacman_find_cache[cache_index] = results
         return results
-    for line in found_packages_output.splitlines():
-        try:
-            repo_name, pkg_name = line.split('/')
-        except ValueError:
-            print_stderr(line)
-            continue
-        else:
-            results.append(PacmanPrint(
-                full_name=line,
-                repo=repo_name,
-                name=pkg_name
-            ))
-    return results
+
+    @classmethod
+    def find_repo_package(cls, pkg_name: str) -> pyalpm.Package:
+        # @TODO: interactively ask for multiple providers and save the answer?
+        all_repo_pkgs = PackageDB.get_repo_dict()
+        results = cls.get_print_format_output(
+            get_pacman_command(parse_args()) + ['--sync'] + [pkg_name]
+        )
+        if not results:
+            raise PackagesNotFoundInRepo(packages=[pkg_name])
+        found_pkgs = [all_repo_pkgs[result.full_name] for result in results]
+        if len(results) == 1:
+            return found_pkgs[0]
+        for pkg in found_pkgs:
+            if pkg.name == pkg_name:
+                return pkg
+        for pkg in found_pkgs:
+            if pkg.provides:
+                for provided_pkg in pkg.provides:
+                    provided_name, _version_matcher = \
+                        get_package_name_and_version_matcher_from_depend_line(
+                            provided_pkg
+                        )
+                    if provided_name == pkg_name:
+                        return pkg
+        raise Exception(f'Failed to find "{pkg_name}" in the output: {found_pkgs}')
 
 
-def find_repo_package(pkg_name: str) -> pyalpm.Package:
-    # @TODO: interactively ask for multiple providers and save the answer?
-    all_repo_pkgs = PackageDB.get_repo_dict()
-    results = get_print_format_output(
-        get_pacman_command(parse_args()) + ['--sync'] + [pkg_name]
-    )
-    if not results:
-        raise PackagesNotFoundInRepo(packages=[pkg_name])
-    found_pkgs = [all_repo_pkgs[result.full_name] for result in results]
-    if len(results) == 1:
-        return found_pkgs[0]
-    for pkg in found_pkgs:
-        if pkg.name == pkg_name:
-            return pkg
-    for pkg in found_pkgs:
-        if pkg.provides:
-            for provided_pkg in pkg.provides:
-                provided_name, _version_matcher = \
-                    get_package_name_and_version_matcher_from_depend_line(
-                        provided_pkg
-                    )
-                if provided_name == pkg_name:
-                    return pkg
-    raise Exception(f'Failed to find "{pkg_name}" in the output: {found_pkgs}')
+def get_upgradeable_package_names() -> List[str]:
+    upgradeable_packages_output = spawn(
+        get_pacman_command(parse_args()) + ['--query', '--upgrades', '--quiet']
+    ).stdout_text
+    if not upgradeable_packages_output:
+        return []
+    return upgradeable_packages_output.splitlines()
 
 
 def find_upgradeable_packages() -> List[pyalpm.Package]:
     all_repo_pkgs = PackageDB.get_repo_dict()
-    results = get_print_format_output(
-        get_pacman_command(parse_args()) + ['--sync', '--sysupgrade']
+
+    pkg_names = get_upgradeable_package_names()
+    if not pkg_names:
+        return []
+
+    results = PackageDB.get_print_format_output(
+        get_pacman_command(parse_args()) + ['--sync'] + pkg_names
     )
     return [
         all_repo_pkgs[result.full_name] for result in results

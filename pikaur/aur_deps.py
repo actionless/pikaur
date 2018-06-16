@@ -4,7 +4,7 @@ import pyalpm
 
 from .pacman import (
     PackageDB, ProvidedDependency,
-    find_local_packages, find_repo_package,
+    find_local_packages,
 )
 from .version import (
     VersionMatcher,
@@ -49,7 +49,7 @@ def check_deps_versions(  # pylint:disable=too-many-branches
     if source == PackageSource.REPO:
         for dep_name in deps_pkg_names:
             try:
-                result = find_repo_package(dep_name)
+                result = PackageDB.find_repo_package(dep_name)
             except PackagesNotFoundInRepo:
                 not_found_deps.append(dep_name)
             else:
@@ -255,7 +255,7 @@ def find_repo_deps_of_aur_pkgs(package_names: List[str]) -> List[str]:
             ):
                 continue
             try:
-                find_repo_package(dep_name)
+                PackageDB.find_repo_package(dep_name)
             except PackagesNotFoundInRepo:
                 continue
             new_dep_names.append(dep_name)

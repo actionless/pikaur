@@ -55,7 +55,7 @@ def pretty_format_upgradeable(
         _color_line = lambda line, color: line  # noqa
         _bold_line = lambda line: line  # noqa
 
-    def pretty_format(pkg_update: 'PackageUpdate') -> Tuple[str, str]:
+    def pretty_format(pkg_update: 'PackageUpdate') -> Tuple[str, str]:  # pylint:disable=too-many-locals
         common_version, difference_size = get_common_version(
             pkg_update.Current_Version or '', pkg_update.New_Version or ''
         )
@@ -99,12 +99,19 @@ def pretty_format_upgradeable(
                 pkg_name
             )
             pkg_len += len('aur/')
+
         if pkg_update.provided_by:
             provided_by = ' ({})'.format(
                 ' # '.join([p.package.name for p in pkg_update.provided_by])
             )
             pkg_name += provided_by
             pkg_len += len(provided_by)
+        if pkg_update.members_of:
+            members_of = ' ({})'.format(
+                ', '.join([g for g in pkg_update.members_of])
+            )
+            pkg_name += members_of
+            pkg_len += len(members_of)
 
         return (
             template or (

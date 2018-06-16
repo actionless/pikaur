@@ -421,10 +421,19 @@ class InstallPackagesCLI():
                 pkg_update.Name = providing_for[0]
                 pkg_update.provided_by = PackageDB.get_repo_provided_dict()[providing_for[0]]
                 pkg_update.New_Version = ''
+
+            groups = pkg_update.package.groups
+            members_of = [
+                gr for gr in groups
+                if gr in self.install_package_names
+            ]
+            if members_of:
+                pkg_update.members_of = members_of
+
             if pkg_update.Current_Version == '' and (
                     (
                         pkg_name not in self.install_package_names
-                    ) and not providing_for
+                    ) and (not providing_for) and (not members_of)
             ):
                 if pkg_update.Repository in OFFICIAL_REPOS:
                     self.new_repo_deps_install_info.append(pkg_update)
@@ -568,7 +577,9 @@ class InstallPackagesCLI():
                         pkg_name = pkg_name.split('#')[0].strip()
                         selected_packages.append(pkg_name)
 
-        for pkg_name in set(selected_packages).difference(pkg_names_before):
+        list_diff = set(selected_packages).difference(pkg_names_before)
+        list_diff.update(selected_packages)
+        for pkg_name in list_diff:
             if strip_aur_repo_name(pkg_name) not in (
                     self.install_package_names + self.not_found_repo_pkgs_names
             ):
@@ -580,6 +591,8 @@ class InstallPackagesCLI():
             self.manually_excluded_packages_names.append(pkg_name)
             if pkg_name in self.install_package_names:
                 self.install_package_names.remove(pkg_name)
+            if pkg_name in self.not_found_repo_pkgs_names:
+                self.not_found_repo_pkgs_names.remove(pkg_name)
 
     def install_prompt(self) -> None:
 

@@ -363,6 +363,26 @@ class InstallPackagesCLI():
                         Repository=pkg.db.name,
                         package=pkg,
                     )
+
+                    provides = install_info.package.provides
+                    providing_for = [
+                        prov.strip('01234567890><=')
+                        for prov in provides
+                        if prov.strip('01234567890><=') in self.install_package_names
+                    ] if provides else []
+                    if providing_for:
+                        install_info.Name = providing_for[0]
+                        install_info.provided_by = PackageDB.get_repo_provided_dict()[providing_for[0]]
+                        install_info.New_Version = ''
+
+                    groups = install_info.package.groups
+                    members_of = [
+                        gr for gr in groups
+                        if gr in self.install_package_names
+                    ]
+                    if members_of:
+                        install_info.members_of = members_of
+
                     pkg_install_infos.append(install_info)
         return pkg_install_infos
 
@@ -411,29 +431,10 @@ class InstallPackagesCLI():
                     # self.manually_excluded_packages_names.append(pkg_name)
                 continue
 
-            provides = pkg_update.package.provides
-            providing_for = [
-                prov.strip('01234567890><=')
-                for prov in provides
-                if prov.strip('01234567890><=') in self.install_package_names
-            ] if provides else []
-            if providing_for:
-                pkg_update.Name = providing_for[0]
-                pkg_update.provided_by = PackageDB.get_repo_provided_dict()[providing_for[0]]
-                pkg_update.New_Version = ''
-
-            groups = pkg_update.package.groups
-            members_of = [
-                gr for gr in groups
-                if gr in self.install_package_names
-            ]
-            if members_of:
-                pkg_update.members_of = members_of
-
             if pkg_update.Current_Version == '' and (
                     (
                         pkg_name not in self.install_package_names
-                    ) and (not providing_for) and (not members_of)
+                    ) and (not pkg_update.provided_by) and (not pkg_update.members_of)
             ):
                 if pkg_update.Repository in OFFICIAL_REPOS:
                     self.new_repo_deps_install_info.append(pkg_update)

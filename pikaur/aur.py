@@ -143,7 +143,7 @@ def find_aur_packages(
 ) -> Tuple[List[AURPackageInfo], List[str]]:
 
     # @TODO: return only packages for the current architecture
-    package_names = list(package_names)[:]
+    package_names = [strip_aur_repo_name(name) for name in package_names]
     json_results = []
     for package_name in package_names[:]:
         aur_pkg = _AUR_PKGS_FIND_CACHE.get(package_name)

@@ -10,7 +10,7 @@ import pyalpm
 
 from .config import PikaurConfig
 from .args import reconstruct_args, PikaurArgs
-from .aur import find_aur_packages
+from .aur import find_aur_packages, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .i18n import _
 from .pacman import (
@@ -551,10 +551,16 @@ class InstallPackagesCLI():
                         # for provided package selection: (mb later for optional deps)
                         pkg_name = pkg_name.split('#')[0].strip()
                         selected_packages.append(pkg_name)
+
         for pkg_name in set(selected_packages).difference(pkg_names_before):
-            if pkg_name not in self.install_package_names + self.not_found_repo_pkgs_names:
+            if strip_aur_repo_name(pkg_name) not in (
+                    self.install_package_names + self.not_found_repo_pkgs_names
+            ):
                 self.install_package_names.append(pkg_name)
-        for pkg_name in pkg_names_before.difference(set(selected_packages)):
+
+        for pkg_name in pkg_names_before.difference(
+                set([strip_aur_repo_name(p) for p in selected_packages])
+        ):
             self.manually_excluded_packages_names.append(pkg_name)
             if pkg_name in self.install_package_names:
                 self.install_package_names.remove(pkg_name)

@@ -345,6 +345,7 @@ class InstallPackagesCLI():
 
         pkg_install_infos = []
         for pkg_name in pkg_names[:]:
+            # @TODO: ThreadPool().map()
             results = PackageDB.get_print_format_output(pacman_args + [pkg_name])
             if not results:
                 self.not_found_repo_pkgs_names.append(pkg_name)

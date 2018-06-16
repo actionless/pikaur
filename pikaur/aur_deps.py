@@ -221,6 +221,7 @@ def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:
 
         not_found_local_pkgs: List[str] = []
         for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():
+            # @TODO: ThreadPool().map()
             non_local_pkgs = find_missing_deps_for_aur_pkg(
                 aur_pkg_name=aur_pkg_name,
                 aur_pkgs_info=aur_pkgs_info,

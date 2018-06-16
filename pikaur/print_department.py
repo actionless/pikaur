@@ -100,7 +100,9 @@ def pretty_format_upgradeable(
             )
             pkg_len += len('aur/')
         if pkg_update.provided_by:
-            provided_by = ' ({})'.format(' # '.join([p.package.name for p in pkg_update.provided_by]))
+            provided_by = ' ({})'.format(
+                ' # '.join([p.package.name for p in pkg_update.provided_by])
+            )
             pkg_name += provided_by
             pkg_len += len(provided_by)
 
@@ -126,7 +128,9 @@ def pretty_format_upgradeable(
                     new_color
                 )
             ),
-            version_separator=' -> ' if (pkg_update.Current_Version or pkg_update.New_Version) else '',
+            version_separator=(
+                ' -> ' if (pkg_update.Current_Version or pkg_update.New_Version) else ''
+            ),
             spacing=' ' * (column_width - pkg_len),
             spacing2=' ' * (column_width - len(pkg_update.Current_Version or '') - 18),
             verbose=(

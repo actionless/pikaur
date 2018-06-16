@@ -352,22 +352,22 @@ def pikspect(
         cmd: List[str],
         print_output=True,
         save_output=True,
+        auto_proceed=True,
         hide_pacman_prompt=False,
         conflicts: List[List[str]] = None,
         extra_questions: Dict[str, List[str]] = None,
         **kwargs
 ) -> PikspectPopen:
-    extra_questions = extra_questions or {}
-    if conflicts:
-        extra_questions[Y] = extra_questions.get(Y, []) + format_conflicts(conflicts)
 
-    default_questions: Dict[str, List[str]] = {
-        Y: [
-            QUESTION_PROCEED,
-            QUESTION_REMOVE,
-        ],
-        N: [],
-    }
+    default_questions: Dict[str, List[str]] = {}
+    if auto_proceed:
+        default_questions = {
+            Y: [
+                QUESTION_PROCEED,
+                QUESTION_REMOVE,
+            ],
+            N: [],
+        }
 
     proc = PikspectPopen(
         cmd,
@@ -376,14 +376,19 @@ def pikspect(
         default_questions=default_questions,
         **kwargs
     )
+
+    extra_questions = extra_questions or {}
+    if conflicts:
+        extra_questions[Y] = extra_questions.get(Y, []) + format_conflicts(conflicts)
     if extra_questions:
         proc.add_answers(extra_questions)
+
     if hide_pacman_prompt:
         if not parse_args().noconfirm:
             proc.hide_after(MESSAGE_PACKAGES)
             proc.show_after(QUESTION_PROCEED)
-    proc.run()
 
+    proc.run()
     return proc
 
 

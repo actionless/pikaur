@@ -110,12 +110,16 @@ def retry_interactive_command(
         pikspect=False,
         **kwargs
 ) -> bool:
+    auto_proceed = True
+    hide_pacman_prompt = False
     while True:
         good = None
-        if pikspect:
+        if pikspect and (auto_proceed or hide_pacman_prompt):
             from .pikspect import pikspect as pikspect_spawn
             good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
         else:
+            if 'conflicts' in kwargs:
+                del kwargs['conflicts']
             good = interactive_spawn(cmd_args, **kwargs).returncode == 0
         if good:
             return good

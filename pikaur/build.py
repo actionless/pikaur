@@ -176,7 +176,8 @@ class PackageBuild(DataType):
                     ),
                     cwd=self.build_dir,
                     print_output=False,
-                    save_output=True
+                    save_output=True,
+                    auto_proceed=False
                 )
                 if pkgver_result.returncode != 0:
                     sys.stdout.buffer.write(pkgver_result.get_output_bytes())

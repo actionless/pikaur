@@ -243,7 +243,7 @@ class InstallPackagesCLI():
         for package_name in ignored_packages:
             print_ignored_package(package_name)
 
-    def get_all_packages_info(self) -> None:
+    def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """
         Retrieve info (`PackageUpdate` objects) of packages
         which are going to be installed/upgraded and their dependencies
@@ -315,6 +315,31 @@ class InstallPackagesCLI():
 
         self.get_repo_deps_info()
 
+        # update package info to show deps in prompt:
+        all_install_infos = (
+            self.repo_packages_install_info +
+            self.thirdparty_repo_packages_install_info +
+            self.new_repo_deps_install_info +
+            self.new_thirdparty_repo_deps_install_info +
+            self.aur_updates_install_info +
+            self.aur_deps_install_info
+        )
+        all_deps_install_infos = (
+            self.new_repo_deps_install_info +
+            self.new_thirdparty_repo_deps_install_info +
+            self.aur_deps_install_info
+        )
+        for dep_install_info in all_deps_install_infos:
+            for pkg_install_info in all_install_infos:
+                for name in (
+                        [dep_install_info.package.name, ] +  # type: ignore
+                        (dep_install_info.package.provides or [])
+                ):
+                    if name in pkg_install_info.package.depends:
+                        if not dep_install_info.required_by:
+                            dep_install_info.required_by = []
+                        dep_install_info.required_by.append(pkg_install_info)
+
     def package_is_ignored(self, package_name: str) -> bool:
         if (
                 package_name in (
@@ -327,7 +352,7 @@ class InstallPackagesCLI():
             return True
         return False
 
-    def _get_repo_pkgs_info(
+    def _get_repo_pkgs_info(  # pylint: disable=too-many-locals
             self, pkg_names: List[str], extra_args: Optional[List[str]] = None
     ) -> List[PackageUpdate]:
         extra_args = extra_args or []
@@ -372,7 +397,10 @@ class InstallPackagesCLI():
                     ] if provides else []
                     if providing_for:
                         install_info.Name = providing_for[0]
-                        install_info.provided_by = PackageDB.get_repo_provided_dict()[providing_for[0]]
+                        install_info.provided_by = [
+                            provided_dep.package for provided_dep in
+                            PackageDB.get_repo_provided_dict()[providing_for[0]]
+                        ]
                         install_info.New_Version = ''
 
                     groups = install_info.package.groups
@@ -492,7 +520,8 @@ class InstallPackagesCLI():
                 Name=pkg_name,
                 Current_Version=local_pkg.version if local_pkg else ' ',
                 New_Version=aur_pkg.version,
-                Description=aur_pkg.desc
+                Description=aur_pkg.desc,
+                package=aur_pkg,
             )
         for pkg_name in list(aur_updates_install_info_by_name.keys())[:]:
             if (

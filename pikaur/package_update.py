@@ -45,7 +45,8 @@ class PackageUpdate(DataType):
     Repository: Optional[str] = None
     devel_pkg_age_days: Optional[int] = None
     package: Union[pyalpm.Package, AURPackageInfo]
-    provided_by: Optional[List['PackageUpdate']] = None
+    provided_by: Optional[List[Union[pyalpm.Package, AURPackageInfo]]] = None
+    required_by: Optional[List['PackageUpdate']] = None
     members_of: Optional[List[str]] = None
 
     def __repr__(self) -> str:

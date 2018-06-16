@@ -100,9 +100,18 @@ def pretty_format_upgradeable(
             )
             pkg_len += len('aur/')
 
+        if pkg_update.required_by:
+            required_by = ' (for {})'.format(
+                ', '.join([p.package.name for p in pkg_update.required_by])
+            )
+            pkg_len += len(required_by)
+            required_by = ' (for {})'.format(
+                ', '.join([_bold_line(p.package.name) for p in pkg_update.required_by])
+            )
+            pkg_name += required_by
         if pkg_update.provided_by:
             provided_by = ' ({})'.format(
-                ' # '.join([p.package.name for p in pkg_update.provided_by])
+                ' # '.join([p.name for p in pkg_update.provided_by])
             )
             pkg_name += provided_by
             pkg_len += len(provided_by)
@@ -138,8 +147,12 @@ def pretty_format_upgradeable(
             version_separator=(
                 ' -> ' if (pkg_update.Current_Version or pkg_update.New_Version) else ''
             ),
-            spacing=' ' * (column_width - pkg_len),
-            spacing2=' ' * (column_width - len(pkg_update.Current_Version or '') - 18),
+            spacing=' ' * max(1, (column_width - pkg_len)),
+            spacing2=' ' * max(1, (
+                column_width - 18 -
+                len(pkg_update.Current_Version or '') -
+                max(-1, (pkg_len - column_width))
+            )),
             verbose=(
                 '' if not (verbose and pkg_update.Description)
                 else f'\n{format_paragraph(pkg_update.Description)}'

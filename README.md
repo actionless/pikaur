@@ -20,6 +20,8 @@ The following pacman operations are extended with AUR capabilities:
 
 Also see `pikaur -Sh` and `pikaur -Qh` for pikaur-specific flags.
 
+By default Pikaur wraps all the pacman arguments accurately.
+
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
 * [Config file](#configuration "")

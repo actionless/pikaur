@@ -389,6 +389,17 @@ class InstallPackagesCLI():
                 self._get_repo_pkgs_info(pkg_names=self.install_package_names) +
                 self.get_upgradeable_repo_pkgs_info()
         ):
+            if pkg_update.Name in [
+                    install_info.Name for install_info in
+                    (
+                        self.repo_packages_install_info +
+                        self.thirdparty_repo_packages_install_info +
+                        self.new_repo_deps_install_info +
+                        self.new_thirdparty_repo_deps_install_info
+                    )
+            ]:
+                continue
+
             pkg_name = pkg_update.Name
             if (
                     pkg_name in self.manually_excluded_packages_names
@@ -434,6 +445,11 @@ class InstallPackagesCLI():
         for dep_install_info in self._get_repo_pkgs_info(
                 pkg_names=new_dep_names, extra_args=['--needed']
         ):
+            if dep_install_info.Name in [
+                    install_info.Name for install_info in
+                    (self.new_repo_deps_install_info + self.new_thirdparty_repo_deps_install_info)
+            ]:
+                continue
             if dep_install_info.Repository in OFFICIAL_REPOS:
                 self.new_repo_deps_install_info.append(dep_install_info)
             else:

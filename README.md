@@ -20,7 +20,7 @@ The following pacman operations are extended with AUR capabilities:
 
 Also see `pikaur -Sh` and `pikaur -Qh` for pikaur-specific flags.
 
-By default Pikaur wraps all the pacman arguments accurately.
+Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or has been altered it via [M]anual package selection).
 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")

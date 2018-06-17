@@ -154,22 +154,6 @@ class InstallInfoFetcher:
                         package=pkg,
                     )
 
-                    provides = install_info.package.provides
-                    providing_for = [
-                        pkg_name for pkg_name in [
-                            VersionMatcher(prov).pkg_name
-                            for prov in provides
-                        ]
-                        if pkg_name in self.install_package_names
-                    ] if provides else []
-                    if providing_for:
-                        install_info.name = providing_for[0]
-                        install_info.provided_by = [
-                            provided_dep.package for provided_dep in
-                            PackageDB.get_repo_provided_dict()[providing_for[0]]
-                        ]
-                        install_info.new_version = ''
-
                     groups = install_info.package.groups
                     members_of = [
                         gr for gr in groups
@@ -341,6 +325,7 @@ class InstallInfoFetcher:
         """
         update packages' install info to show deps in prompt:
         """
+        all_provided_pkgs = PackageDB.get_repo_provided_dict()
         all_install_infos = (
             self.repo_packages_install_info +
             self.thirdparty_repo_packages_install_info +
@@ -354,25 +339,56 @@ class InstallInfoFetcher:
             self.new_thirdparty_repo_deps_install_info +
             self.aur_deps_install_info
         )
+
+        all_requested_pkg_names = self.install_package_names + sum([
+            (
+                ii.package.depends + ii.package.makedepends + ii.package.checkdepends
+            ) if isinstance(ii.package, AURPackageInfo) else (
+                ii.package.depends
+            )
+            for ii in all_install_infos
+        ], [])
+
         for pkg_install_info in all_install_infos:
+
+            provides = pkg_install_info.package.provides
+            providing_for: List[str] = []
+            if provides:
+                providing_for = [
+                    pkg_name for pkg_name in sum([
+                        (lambda vm: [vm.line, vm.pkg_name])(VersionMatcher(prov))
+                        for prov in provides
+                    ], [])
+                    if pkg_name in all_requested_pkg_names
+                ]
+            if providing_for:
+                provided_name = providing_for[0]
+                if provided_name in all_provided_pkgs:
+                    pkg_install_info.name = provided_name
+                    pkg_install_info.provided_by = [
+                        provided_dep.package for provided_dep in
+                        all_provided_pkgs[provided_name]
+                    ]
+                    pkg_install_info.new_version = ''
+
+            pkg_dep_lines = (
+                (
+                    pkg_install_info.package.depends +
+                    pkg_install_info.package.makedepends +
+                    pkg_install_info.package.checkdepends
+                ) if (
+                    isinstance(pkg_install_info.package, AURPackageInfo)
+                ) else pkg_install_info.package.depends
+            )
             for dep_install_info in all_deps_install_infos:
                 for name_and_version in (
                         [dep_install_info.package.name, ] +  # type: ignore
                         (dep_install_info.package.provides or [])
                 ):
                     name = VersionMatcher(name_and_version).pkg_name
-                    dep_lines = (
-                        (
-                            pkg_install_info.package.depends +
-                            pkg_install_info.package.makedepends +
-                            pkg_install_info.package.checkdepends
-                        ) if (
-                            isinstance(pkg_install_info.package, AURPackageInfo)
-                        ) else pkg_install_info.package.depends
-                    )
                     if name in [
                             VersionMatcher(dep_line).pkg_name
-                            for dep_line in dep_lines
+                            for dep_line in pkg_dep_lines
                     ]:
                         if not dep_install_info.required_by:
                             dep_install_info.required_by = []

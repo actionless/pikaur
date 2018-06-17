@@ -373,14 +373,14 @@ class PackageDB(PackageDBCommon):
 
 def find_upgradeable_packages() -> List[pyalpm.Package]:
     all_repo_pkgs = PackageDB.get_repo_dict()
-    all_local_pkgs = PackageDB.get_local_dict()
+    # all_local_pkgs = PackageDB.get_local_dict()
 
     results = PackageDB.get_print_format_output(
         get_pacman_command() + ['--sync', '--sysupgrade']
     )
     return [
         all_repo_pkgs[result.full_name] for result in results
-        if result.name in all_local_pkgs
+        # if result.name in all_local_pkgs
     ]
 
 

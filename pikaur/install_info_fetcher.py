@@ -361,17 +361,18 @@ class InstallInfoFetcher:
                         (dep_install_info.package.provides or [])
                 ):
                     name = VersionMatcher(name_and_version).pkg_name
+                    dep_lines = (
+                        (
+                            pkg_install_info.package.depends +
+                            pkg_install_info.package.makedepends +
+                            pkg_install_info.package.checkdepends
+                        ) if (
+                            isinstance(pkg_install_info.package, AURPackageInfo)
+                        ) else pkg_install_info.package.depends
+                    )
                     if name in [
                             VersionMatcher(dep_line).pkg_name
-                            for dep_line in (
-                                (
-                                    pkg_install_info.package.depends +
-                                    pkg_install_info.package.makedepends +
-                                    pkg_install_info.package.checkdepends
-                                ) if isinstance(
-                                    pkg_install_info.package, AURPackageInfo
-                                ) else pkg_install_info.package.depends
-                            )
+                            for dep_line in dep_lines
                     ]:
                         if not dep_install_info.required_by:
                             dep_install_info.required_by = []

@@ -10,7 +10,7 @@ from .pacman import (
     PackageDB, PacmanConfig,
     find_upgradeable_packages, get_pacman_command,
 )
-from .aur import find_aur_packages
+from .aur import find_aur_packages, AURPackageInfo
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .pprint import print_stdout
 from .args import PikaurArgs, parse_args, reconstruct_args
@@ -126,7 +126,15 @@ class InstallInfoFetcher:
                     name = VersionMatcher(name_and_version).pkg_name
                     if name in [
                             VersionMatcher(dep_line).pkg_name
-                            for dep_line in pkg_install_info.package.depends
+                            for dep_line in (
+                                (
+                                    pkg_install_info.package.depends +
+                                    pkg_install_info.package.makedepends +
+                                    pkg_install_info.package.checkdepends
+                                ) if isinstance(
+                                    pkg_install_info.package, AURPackageInfo
+                                ) else pkg_install_info.package.depends
+                            )
                     ]:
                         if not dep_install_info.required_by:
                             dep_install_info.required_by = []

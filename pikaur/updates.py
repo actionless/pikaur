@@ -36,14 +36,14 @@ def is_devel_pkg(pkg_name: str) -> bool:
 
 def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
     try:
-        repo_info = PackageDB.find_repo_package(new_pkg_name)
+        repo_pkg = PackageDB.find_repo_package(new_pkg_name)
     except PackagesNotFoundInRepo:
         aur_packages, _not_found = find_aur_packages([new_pkg_name])
         if aur_packages:
             return aur_packages[0].version
         return None
     else:
-        return repo_info.version
+        return repo_pkg.version
 
 
 def find_repo_updates() -> List[InstallInfo]:

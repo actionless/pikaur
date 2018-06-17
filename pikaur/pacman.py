@@ -357,6 +357,8 @@ class PackageDB(PackageDBCommon):
         found_pkgs = [all_repo_pkgs[result.full_name] for result in results]
         if len(results) == 1:
             return found_pkgs[0]
+
+        pkg_name = VersionMatcher(pkg_name).pkg_name
         for pkg in found_pkgs:
             if pkg.name == pkg_name:
                 return pkg

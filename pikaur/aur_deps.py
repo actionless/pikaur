@@ -45,7 +45,7 @@ def check_deps_versions(  # pylint:disable=too-many-branches
     if source == PackageSource.REPO:
         for dep_name in deps_pkg_names:
             try:
-                result = PackageDB.find_repo_package(dep_name)
+                result = PackageDB.find_repo_package(version_matchers[dep_name].line)
             except PackagesNotFoundInRepo:
                 not_found_deps.append(dep_name)
             else:
@@ -256,7 +256,9 @@ def find_repo_deps_of_aur_pkgs(package_names: List[str]) -> List[str]:
         for dep_line in pkg.depends:
             dep_name = VersionMatcher(dep_line).pkg_name
             if (
-                    dep_name in new_dep_names
+                    dep_line in new_dep_names
+            ) or (
+                dep_name in new_dep_names
             ) or (
                 dep_name in local_pkg_names
             ) or (
@@ -264,8 +266,8 @@ def find_repo_deps_of_aur_pkgs(package_names: List[str]) -> List[str]:
             ):
                 continue
             try:
-                PackageDB.find_repo_package(dep_name)
+                PackageDB.find_repo_package(dep_line)
             except PackagesNotFoundInRepo:
                 continue
-            new_dep_names.append(dep_name)
+            new_dep_names.append(dep_line)
     return new_dep_names

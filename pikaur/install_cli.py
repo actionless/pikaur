@@ -46,6 +46,7 @@ from .prompt import (
     ask_to_continue, retry_interactive_command,
     retry_interactive_command_or_exit, get_input,
 )
+from .version import get_package_name_and_version_matcher_from_depend_line
 from .srcinfo import SrcInfo
 from .news import News
 
@@ -329,13 +330,19 @@ class InstallPackagesCLI():
             self.new_thirdparty_repo_deps_install_info +
             self.aur_deps_install_info
         )
-        for dep_install_info in all_deps_install_infos:
-            for pkg_install_info in all_install_infos:
-                for name in (
+        for pkg_install_info in all_install_infos:
+            for dep_install_info in all_deps_install_infos:
+                for name_and_version in (
                         [dep_install_info.package.name, ] +  # type: ignore
                         (dep_install_info.package.provides or [])
                 ):
-                    if name in pkg_install_info.package.depends:
+                    name, _vm = get_package_name_and_version_matcher_from_depend_line(
+                        name_and_version
+                    )
+                    if name in [
+                            get_package_name_and_version_matcher_from_depend_line(dep_line)[0]
+                            for dep_line in pkg_install_info.package.depends
+                    ]:
                         if not dep_install_info.required_by:
                             dep_install_info.required_by = []
                         dep_install_info.required_by.append(pkg_install_info)

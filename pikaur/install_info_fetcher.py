@@ -16,6 +16,7 @@ from .pprint import print_stdout
 from .args import PikaurArgs, parse_args, reconstruct_args
 from .exceptions import DependencyVersionMismatch
 from .print_department import print_ignored_package, print_not_found_packages
+from .updates import find_aur_updates
 
 
 class InstallInfoFetcher:
@@ -285,8 +286,6 @@ class InstallInfoFetcher:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
     def get_aur_pkgs_info(self, aur_packages_names: List[str]):
-        from .updates import find_aur_updates
-
         local_pkgs = PackageDB.get_local_dict()
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(aur_packages_names)
         if not_found_aur_pkgs:

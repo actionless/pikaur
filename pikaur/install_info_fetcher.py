@@ -139,7 +139,7 @@ class InstallInfoFetcher:
         all_repo_pkgs = PackageDB.get_repo_dict()
         all_local_pkgs = PackageDB.get_local_dict()
 
-        pacman_args = get_pacman_command(self.args) + [
+        pacman_args = get_pacman_command() + [
             '--sync',
         ] + reconstruct_args(self.args, ignore_args=[
             'sync',

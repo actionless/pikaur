@@ -4,7 +4,14 @@ from typing import List, Any, Tuple
 from . import argparse as argparse  # pylint: disable=no-name-in-module
 
 from .i18n import _, _n
-from .exceptions import MissingArgument, IncompatibleArguments
+
+
+class IncompatibleArguments(Exception):
+    pass
+
+
+class MissingArgument(Exception):
+    pass
 
 
 class PikaurArgs(argparse.Namespace):

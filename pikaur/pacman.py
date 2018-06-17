@@ -9,7 +9,7 @@ from .i18n import _
 from .core import DataType, PackageSource
 from .version import VersionMatcher
 from .pprint import print_stderr, color_enabled, bold_line
-from .args import PikaurArgs, parse_args
+from .args import PikaurArgs
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo
 from .core import sudo, spawn
@@ -72,9 +72,9 @@ def format_conflicts(conflicts: List[List[str]]) -> List[str]:
     ]
 
 
-def get_pacman_command(args: PikaurArgs) -> List[str]:
+def get_pacman_command() -> List[str]:
     pacman_path = PikaurConfig().misc.PacmanPath
-    if color_enabled(args):
+    if color_enabled():
         return [pacman_path, '--color=always']
     return [pacman_path, '--color=never']
 
@@ -349,7 +349,7 @@ class PackageDB(PackageDBCommon):
         # @TODO: interactively ask for multiple providers and save the answer?
         all_repo_pkgs = PackageDB.get_repo_dict()
         results = cls.get_print_format_output(
-            get_pacman_command(parse_args()) + ['--sync'] + [pkg_name]
+            get_pacman_command() + ['--sync'] + [pkg_name]
         )
         if not results:
             raise PackagesNotFoundInRepo(packages=[pkg_name])
@@ -370,7 +370,7 @@ class PackageDB(PackageDBCommon):
 
 def get_upgradeable_package_names() -> List[str]:
     upgradeable_packages_output = spawn(
-        get_pacman_command(parse_args()) + ['--query', '--upgrades', '--quiet']
+        get_pacman_command() + ['--query', '--upgrades', '--quiet']
     ).stdout_text
     if not upgradeable_packages_output:
         return []
@@ -385,7 +385,7 @@ def find_upgradeable_packages() -> List[pyalpm.Package]:
         return []
 
     results = PackageDB.get_print_format_output(
-        get_pacman_command(parse_args()) + ['--sync'] + pkg_names
+        get_pacman_command() + ['--sync'] + pkg_names
     )
     return [
         all_repo_pkgs[result.full_name] for result in results
@@ -417,7 +417,7 @@ def find_packages_not_from_repo() -> List[str]:
 def refresh_pkg_db(args: PikaurArgs) -> None:
     if args.refresh:
         pacman_args = (sudo(
-            get_pacman_command(args) + ['--sync'] + ['--refresh'] * args.refresh
+            get_pacman_command() + ['--sync'] + ['--refresh'] * args.refresh
         ))
         retry_interactive_command_or_exit(
             pacman_args, args=args

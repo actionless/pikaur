@@ -2,16 +2,23 @@ import sys
 import shutil
 from threading import Lock
 from string import printable
-from typing import List, TYPE_CHECKING, Optional
+from typing import List, Optional
 
-
-if TYPE_CHECKING:
-    # pylint: disable=unused-import
-    from .args import PikaurArgs  # noqa
+from .args import parse_args
 
 
 PADDING = 4
 PRINT_LOCK = Lock()
+_ARGS = parse_args()
+
+
+def color_enabled() -> bool:
+    args = _ARGS
+    if args.color == 'never':
+        return False
+    if args.color == 'always' or (sys.stderr.isatty() and sys.stdout.isatty()):
+        return True
+    return False
 
 
 class PrintLock(object):
@@ -35,17 +42,6 @@ def print_stderr(message='', end='\n', flush=False) -> None:
         sys.stderr.write(f'{message}{end}')
         if flush:
             sys.stderr.flush()
-
-
-def color_enabled(args: 'PikaurArgs' = None) -> bool:
-    if not args:
-        from .args import parse_args
-        args = parse_args()
-    if args.color == 'never':
-        return False
-    if args.color == 'always' or (sys.stderr.isatty() and sys.stdout.isatty()):
-        return True
-    return False
 
 
 def color_line(line: str, color_number: int) -> str:

@@ -114,7 +114,7 @@ def _info_packages_thread_repo(
 ) -> str:
     # @TODO: don't use PIPE here
     return interactive_spawn(
-        get_pacman_command(args) + args.raw,
+        get_pacman_command() + args.raw,
         stderr=subprocess.DEVNULL,
         stdout=subprocess.PIPE
     ).stdout_text

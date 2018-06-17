@@ -592,7 +592,7 @@ class InstallPackagesCLI():
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
                 sudo(
-                    get_pacman_command(self.args) + [
+                    get_pacman_command() + [
                         '-Rs',
                     ] + packages_to_be_removed
                 ),
@@ -642,7 +642,7 @@ class InstallPackagesCLI():
             extra_args.append(excluded_pkg_name)
         if not retry_interactive_command(
                 sudo(
-                    get_pacman_command(self.args) + [
+                    get_pacman_command() + [
                         '--sync',
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
@@ -672,7 +672,7 @@ class InstallPackagesCLI():
         if new_aur_deps_to_install:
             if not retry_interactive_command(
                     sudo(
-                        get_pacman_command(self.args) + [
+                        get_pacman_command() + [
                             '--upgrade',
                             '--asdeps',
                         ] + reconstruct_args(self.args, ignore_args=[
@@ -706,7 +706,7 @@ class InstallPackagesCLI():
         if aur_packages_to_install:
             if not retry_interactive_command(
                     sudo(
-                        get_pacman_command(self.args) + [
+                        get_pacman_command() + [
                             '--upgrade',
                         ] + reconstruct_args(self.args, ignore_args=[
                             'upgrade',

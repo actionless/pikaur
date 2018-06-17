@@ -3,14 +3,8 @@ from typing import List, Dict
 
 import pyalpm
 
-from .pacman import (
-    PackageDB, ProvidedDependency,
-    find_local_packages,
-)
-from .version import (
-    VersionMatcher,
-    get_package_name_and_version_matcher_from_depend_line,
-)
+from .pacman import PackageDB, ProvidedDependency, find_local_packages
+from .version import VersionMatcher
 from .aur import AURPackageInfo, find_aur_packages
 from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch, PackagesNotFoundInRepo
 from .core import PackageSource
@@ -112,8 +106,11 @@ def check_deps_versions(  # pylint:disable=too-many-branches
 
 def get_aur_pkg_deps_and_version_matchers(aur_pkg: AURPackageInfo) -> Dict[str, VersionMatcher]:
     deps: Dict[str, VersionMatcher] = {}
-    for dep in (aur_pkg.depends or []) + (aur_pkg.makedepends or []) + (aur_pkg.checkdepends or []):
-        name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
+    for dep_line in (
+            (aur_pkg.depends or []) + (aur_pkg.makedepends or []) + (aur_pkg.checkdepends or [])
+    ):
+        version_matcher = VersionMatcher(dep_line)
+        name = version_matcher.pkg_name
         if name not in deps:
             deps[name] = version_matcher
         else:
@@ -253,7 +250,7 @@ def find_repo_deps_of_aur_pkgs(package_names: List[str]) -> List[str]:
     for pkg_name in package_names:
         pkg = find_aur_packages([pkg_name])[0][0]
         for dep_line in pkg.depends:
-            dep_name, _vm = get_package_name_and_version_matcher_from_depend_line(dep_line)
+            dep_name = VersionMatcher(dep_line).pkg_name
             if (
                     dep_name in new_dep_names
             ) or (

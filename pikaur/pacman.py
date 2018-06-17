@@ -6,14 +6,8 @@ from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
 
 from .i18n import _
-from .core import (
-    DataType,
-    PackageSource,
-)
-from .version import (
-    get_package_name_and_version_matcher_from_depend_line,
-    VersionMatcher,
-)
+from .core import DataType, PackageSource
+from .version import VersionMatcher
 from .pprint import print_stderr, color_enabled, bold_line
 from .args import PikaurArgs, parse_args
 from .config import PikaurConfig
@@ -186,11 +180,9 @@ class PackageDBCommon():
                     else cls.get_repo_list()
             ):
                 if pkg.provides:
-                    for provided_pkg in pkg.provides:
-                        provided_name, version_matcher = \
-                            get_package_name_and_version_matcher_from_depend_line(
-                                provided_pkg
-                            )
+                    for provided_pkg_line in pkg.provides:
+                        version_matcher = VersionMatcher(provided_pkg_line)
+                        provided_name = version_matcher.pkg_name
                         provided_pkg_names.setdefault(provided_name, []).append(
                             ProvidedDependency(
                                 name=provided_name,
@@ -275,8 +267,8 @@ class PackageDB(PackageDBCommon):
         if not cls._provided_dict_cache.get(package_source):
             provided_pkg_names = super()._get_provided_dict(package_source)
             if package_source == PackageSource.REPO:
-                for _what_provides, provided_pkg in provided_pkg_names.items():
-                    provided_pkg.sort(key=lambda p: "{}{}".format(
+                for _what_provides, provided_pkgs in provided_pkg_names.items():
+                    provided_pkgs.sort(key=lambda p: "{}{}".format(
                         cls.get_repo_priority(p.package.db.name),
                         p.package.name
                     ))
@@ -369,11 +361,8 @@ class PackageDB(PackageDBCommon):
                 return pkg
         for pkg in found_pkgs:
             if pkg.provides:
-                for provided_pkg in pkg.provides:
-                    provided_name, _version_matcher = \
-                        get_package_name_and_version_matcher_from_depend_line(
-                            provided_pkg
-                        )
+                for provided_pkg_line in pkg.provides:
+                    provided_name = VersionMatcher(provided_pkg_line).pkg_name
                     if provided_name == pkg_name:
                         return pkg
         raise Exception(f'Failed to find "{pkg_name}" in the output: {found_pkgs}')

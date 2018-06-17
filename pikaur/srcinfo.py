@@ -2,7 +2,7 @@ import os
 from typing import List, Dict, Optional
 
 from .core import open_file, spawn, isolate_root_cmd
-from .version import get_package_name_and_version_matcher_from_depend_line, VersionMatcher
+from .version import VersionMatcher
 from .makepkg_config import MakepkgConfig
 
 
@@ -67,8 +67,9 @@ class SrcInfo():
 
     def _get_depends(self, field: str) -> Dict[str, VersionMatcher]:
         dependencies: Dict[str, VersionMatcher] = {}
-        for dep in self.get_values(field) + self.get_values(f'{field}_{CARCH}'):
-            pkg_name, version_matcher = get_package_name_and_version_matcher_from_depend_line(dep)
+        for dep_line in self.get_values(field) + self.get_values(f'{field}_{CARCH}'):
+            version_matcher = VersionMatcher(dep_line)
+            pkg_name = version_matcher.pkg_name
             if pkg_name not in dependencies:
                 dependencies[pkg_name] = version_matcher
             else:

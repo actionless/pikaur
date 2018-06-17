@@ -2,7 +2,7 @@ from typing import List, Dict
 
 from .pacman import PackageDB
 from .aur import find_aur_packages
-from .version import get_package_name_and_version_matcher_from_depend_line
+from .version import VersionMatcher
 from .package_update import get_remote_package_version
 
 
@@ -43,10 +43,8 @@ def find_conflicting_with_new_pkgs(
     local_provided = PackageDB.get_local_provided_dict()
     new_pkgs_conflicts: Dict[str, List[str]] = {}
     for conflict_line in new_pkg_conflicts_list:
-        conflict_pkg_name, conflict_version_matcher = \
-            get_package_name_and_version_matcher_from_depend_line(
-                conflict_line
-            )
+        conflict_version_matcher = VersionMatcher(conflict_line)
+        conflict_pkg_name = conflict_version_matcher.pkg_name
         if new_pkg_name != conflict_pkg_name:
             for installed_pkg_name in all_pkgs_names:
                 if (
@@ -90,12 +88,9 @@ def find_conflicting_with_local_pkgs(
         if new_pkg_name == local_pkg_name:
             continue
         for conflict_line in local_pkg_conflicts_list:
-            conflict_pkg_name, conflict_version_matcher = \
-                get_package_name_and_version_matcher_from_depend_line(
-                    conflict_line
-                )
+            conflict_version_matcher = VersionMatcher(conflict_line)
             if (
-                    conflict_pkg_name == new_pkg_name
+                    conflict_version_matcher.pkg_name == new_pkg_name
             ) and (
                 local_pkg_name != new_pkg_name
             ) and (

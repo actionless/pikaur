@@ -8,11 +8,11 @@ from typing import List, Dict, Optional
 
 import pyalpm
 
+from .i18n import _
 from .config import PikaurConfig
 from .args import reconstruct_args, PikaurArgs
 from .aur import find_aur_packages, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
-from .i18n import _
 from .pacman import (
     OFFICIAL_REPOS,
     PackageDB, PacmanConfig,
@@ -46,7 +46,7 @@ from .prompt import (
     ask_to_continue, retry_interactive_command,
     retry_interactive_command_or_exit, get_input,
 )
-from .version import get_package_name_and_version_matcher_from_depend_line
+from .version import VersionMatcher
 from .srcinfo import SrcInfo
 from .news import News
 
@@ -336,11 +336,9 @@ class InstallPackagesCLI():
                         [dep_install_info.package.name, ] +  # type: ignore
                         (dep_install_info.package.provides or [])
                 ):
-                    name, _vm = get_package_name_and_version_matcher_from_depend_line(
-                        name_and_version
-                    )
+                    name = VersionMatcher(name_and_version).pkg_name
                     if name in [
-                            get_package_name_and_version_matcher_from_depend_line(dep_line)[0]
+                            VersionMatcher(dep_line).pkg_name
                             for dep_line in pkg_install_info.package.depends
                     ]:
                         if not dep_install_info.required_by:
@@ -408,10 +406,11 @@ class InstallPackagesCLI():
 
                     provides = install_info.package.provides
                     providing_for = [
-                        get_package_name_and_version_matcher_from_depend_line(prov)[0]
-                        for prov in provides
-                        if get_package_name_and_version_matcher_from_depend_line(prov)[0]
-                        in self.install_package_names
+                        pkg_name for pkg_name in [
+                            VersionMatcher(prov).pkg_name
+                            for prov in provides
+                        ]
+                        if pkg_name in self.install_package_names
                     ] if provides else []
                     if providing_for:
                         install_info.name = providing_for[0]

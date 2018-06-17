@@ -22,6 +22,7 @@ class VersionMatcher():
     version: Optional[str] = None
     version_matchers: List[Callable[[str], int]]
     depend_line: str
+    pkg_name: str
 
     def __call__(self, version: Optional[str]) -> int:
         if not version:
@@ -88,14 +89,6 @@ class VersionMatcher():
     def cmp_default(self, version: str) -> int:  # pylint:disable=no-self-use
         _version = version  # hello, mypy  # noqa
         return 1
-
-
-# pylint: disable=invalid-name
-def get_package_name_and_version_matcher_from_depend_line(
-        depend_line: str
-) -> Tuple[str, VersionMatcher]:
-    version_matcher = VersionMatcher(depend_line)
-    return version_matcher.pkg_name, version_matcher
 
 
 def split_version(version: str) -> List[str]:

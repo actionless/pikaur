@@ -321,13 +321,14 @@ class PackageDB(PackageDBCommon):
     def get_print_format_output(cls, cmd_args: List[str]) -> List[PacmanPrint]:
         cache_index = ' '.join(cmd_args)
         cached_pkg = cls._pacman_find_cache.get(cache_index)
-        if cached_pkg:
+        if cached_pkg is not None:
             return cached_pkg
         results: List[PacmanPrint] = []
         found_packages_output = spawn(
             cmd_args + ['--print-format', '%r/%n']
         ).stdout_text
         if not found_packages_output:
+            cls._pacman_find_cache[cache_index] = results
             return results
         for line in found_packages_output.splitlines():
             try:

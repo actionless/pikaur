@@ -34,27 +34,7 @@ class VersionMatcher():
 
     def __init__(self, depend_line: str) -> None:
         self.line = depend_line
-
-        cond: Optional[str] = None
-        version_matcher = self.cmp_default
-        for test_cond, matcher in (
-                ('>=', self.cmp_ge),
-                ('<=', self.cmp_le),
-                ('=', self.cmp_eq),
-                ('>', self.cmp_gt),
-                ('<', self.cmp_lt),
-        ):
-            if test_cond in depend_line:
-                cond = test_cond
-                version_matcher = matcher
-                break
-
-        if cond:
-            self.pkg_name, self.version = depend_line.split(cond)[:2]
-            # print((pkg_name, version))
-        else:
-            self.pkg_name = depend_line
-        self.version_matchers = [version_matcher]
+        self._set_version_matcher_func()
 
     def add_version_matcher(self, version_matcher: 'VersionMatcher') -> None:
         self.version_matchers.append(version_matcher.version_matchers[0])
@@ -65,30 +45,64 @@ class VersionMatcher():
         else:
             self.version = version_matcher.version
 
-    def cmp_lt(self, version: str) -> int:
-        if not self.version:
-            return self.cmp_default(version)
-        return compare_versions(version, self.version) < 0
+    def _set_version_matcher_func(self) -> None:
+        # pylint: disable=invalid-name
 
-    def cmp_gt(self, version: str) -> int:
-        if not self.version:
-            return self.cmp_default(version)
-        return compare_versions(version, self.version) > 0
+        version: Optional[str] = None
 
-    def cmp_eq(self, version: str) -> int:
-        if not self.version:
-            return self.cmp_default(version)
-        return compare_versions(version, self.version) == 0
+        def get_version() -> Optional[str]:
+            return version
 
-    def cmp_le(self, version: str) -> int:
-        return self.cmp_eq(version) or self.cmp_lt(version)
+        def cmp_lt(v: str) -> int:
+            self_version = get_version()
+            if not self_version:
+                return cmp_default(v)
+            return compare_versions(v, self_version) < 0
 
-    def cmp_ge(self, version: str) -> int:
-        return self.cmp_eq(version) or self.cmp_gt(version)
+        def cmp_gt(v: str) -> int:
+            self_version = get_version()
+            if not self_version:
+                return cmp_default(v)
+            return compare_versions(v, self_version) > 0
 
-    def cmp_default(self, version: str) -> int:  # pylint:disable=no-self-use
-        _version = version  # hello, mypy  # noqa
-        return 1
+        def cmp_eq(v: str) -> int:
+            self_version = get_version()
+            if not self_version:
+                return cmp_default(v)
+            return compare_versions(v, self_version) == 0
+
+        def cmp_le(v: str) -> int:
+            return cmp_eq(v) or cmp_lt(v)
+
+        def cmp_ge(v: str) -> int:
+            return cmp_eq(v) or cmp_gt(v)
+
+        def cmp_default(v: str) -> int:
+            _v = v  # hello, mypy  # noqa
+            return 1
+
+        cond: Optional[str] = None
+        version_matcher = cmp_default
+        for test_cond, matcher in (
+                ('>=', cmp_ge),
+                ('<=', cmp_le),
+                ('=', cmp_eq),
+                ('>', cmp_gt),
+                ('<', cmp_lt),
+        ):
+            if test_cond in self.line:
+                cond = test_cond
+                version_matcher = matcher
+                break
+
+        if cond:
+            pkg_name, version = self.line.split(cond)[:2]
+        else:
+            pkg_name = self.line
+
+        self.pkg_name = pkg_name
+        self.version = version
+        self.version_matchers = [version_matcher]
 
 
 def split_version(version: str) -> List[str]:

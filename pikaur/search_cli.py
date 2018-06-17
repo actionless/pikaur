@@ -11,7 +11,7 @@ from .core import DataType, PackageSource, return_exception
 from .pprint import (
     color_line, bold_line, format_paragraph, print_stderr,
 )
-from .print_department import pretty_format_repo_name
+from .print_department import pretty_format_repo_name, GROUP_COLOR
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
 from .aur import (
     AURPackageInfo,
@@ -131,7 +131,7 @@ def print_package_search_results(
 
             groups = ''
             if getattr(package, 'groups', None):
-                groups = color_line('({}) '.format(' '.join(package.groups)), 4)
+                groups = color_line('({}) '.format(' '.join(package.groups)), GROUP_COLOR)
 
             installed = ''
             if pkg_name in local_pkgs_names:

@@ -11,6 +11,9 @@ if TYPE_CHECKING:
     from .package_update import PackageUpdate  # noqa
 
 
+GROUP_COLOR = 4
+
+
 def print_version(pacman_version: str, quiet=False) -> None:
     if quiet:
         print(f'Pikaur v{VERSION}')
@@ -101,26 +104,32 @@ def pretty_format_upgradeable(
             pkg_len += len('aur/')
 
         if pkg_update.required_by:
-            required_by = ' (for {})'.format(
+            required_by = ' ({} {})'.format(
+                _('for'),
                 ', '.join([p.package.name for p in pkg_update.required_by])
             )
             pkg_len += len(required_by)
-            required_by = ' (for {})'.format(
-                ', '.join([_bold_line(p.package.name) for p in pkg_update.required_by])
+            dep_color = 3
+            required_by = ' {} {}{}'.format(
+                _color_line('(' + _('for'), dep_color),
+                _color_line(', ', dep_color).join([
+                    _color_line(p.package.name, dep_color + 8) for p in pkg_update.required_by
+                ]),
+                _color_line(')', dep_color),
             )
             pkg_name += required_by
         if pkg_update.provided_by:
             provided_by = ' ({})'.format(
                 ' # '.join([p.name for p in pkg_update.provided_by])
             )
-            pkg_name += provided_by
             pkg_len += len(provided_by)
+            pkg_name += _color_line(provided_by, 2)
         if pkg_update.members_of:
             members_of = ' ({})'.format(
                 ', '.join([g for g in pkg_update.members_of])
             )
-            pkg_name += members_of
             pkg_len += len(members_of)
+            pkg_name += _color_line(members_of, GROUP_COLOR)
 
         return (
             template or (

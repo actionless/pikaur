@@ -158,10 +158,12 @@ def find_aur_packages(
                 (chunk, len(search_chunks), with_progressbar, )
                 for chunk in search_chunks
             ])
-        for result in results:
-            for aur_pkg in result:
-                _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg  # type: ignore
-                json_results.append(aur_pkg)  # type: ignore
+            pool.close()
+            pool.join()
+            for result in results:
+                for aur_pkg in result:
+                    _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg  # type: ignore
+                    json_results.append(aur_pkg)  # type: ignore
 
     found_aur_packages = [
         result.name for result in json_results

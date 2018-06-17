@@ -49,12 +49,14 @@ def package_search_thread_aur(args: Dict[str, Any]) -> Dict[str, Any]:
                     return {str(PackageSource.AUR): thread_result}
                 query, query_result = thread_result
                 result[query] = query_result
-        if args['namesonly']:
-            for subindex, subresult in result.items():
-                result[subindex] = [
-                    pkg for pkg in subresult
-                    if subindex in pkg.name
-                ]
+            pool.close()
+            pool.join()
+            if args['namesonly']:
+                for subindex, subresult in result.items():
+                    result[subindex] = [
+                        pkg for pkg in subresult
+                        if subindex in pkg.name
+                    ]
     else:
         if args['quiet']:
             class TmpNameType(DataType):
@@ -209,6 +211,8 @@ def cli_search_packages(args: PikaurArgs) -> None:
             ] if not REPO_ONLY
             else []
         ))
+        pool.close()
+        pool.join()
     result = dict(results)
     for subresult in result.values():
         if isinstance(subresult, Exception):

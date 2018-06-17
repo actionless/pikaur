@@ -8,6 +8,7 @@ from .version import VersionMatcher
 from .aur import AURPackageInfo, find_aur_packages
 from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch, PackagesNotFoundInRepo
 from .core import PackageSource
+from .threading import handle_exception_in_thread
 
 
 def find_provided_pkgs(
@@ -118,6 +119,7 @@ def get_aur_pkg_deps_and_version_matchers(aur_pkg: AURPackageInfo) -> Dict[str, 
     return deps
 
 
+@handle_exception_in_thread
 def find_missing_deps_for_aur_pkg(
         aur_pkg_name: str,
         version_matchers: Dict[str, VersionMatcher],
@@ -228,6 +230,8 @@ def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:  # pylint: 
                         aur_pkgs_info,
                     )
                 )
+            pool.close()
+            pool.join()
             for aur_pkg_name, request in all_requests.items():
                 results = request.get()
                 not_found_local_pkgs += results

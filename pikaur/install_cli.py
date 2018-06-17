@@ -489,8 +489,7 @@ class InstallPackagesCLI():
                     pool.apply_async(getattr, (repo_status, 'version_already_installed'))
                 )
             pool.close()
-            for thread in threads:
-                thread.get()
+            pool.join()
 
     def review_build_files(self) -> None:
         if self.args.needed or self.args.devel:

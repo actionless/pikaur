@@ -35,7 +35,7 @@ from .aur import (
     find_aur_packages, get_all_aur_names,
 )
 from .updates import (
-    find_repo_updates, find_aur_updates,
+    find_repo_upgradeable, find_aur_updates,
 )
 from .prompt import (
     ask_to_continue,
@@ -93,7 +93,7 @@ def cli_print_upgradeable(args: PikaurArgs) -> None:
         aur_updates, _not_found_aur_pkgs = find_aur_updates(args)
         updates += aur_updates
     if not args.aur:
-        updates += find_repo_updates()
+        updates += find_repo_upgradeable()
     if args.quiet:
         print('\n'.join([
             pkg_update.name for pkg_update in updates

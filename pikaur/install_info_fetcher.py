@@ -8,7 +8,7 @@ from .version import VersionMatcher
 from .pacman import (
     OFFICIAL_REPOS,
     PackageDB, PacmanConfig,
-    find_upgradeable_packages, get_pacman_command,
+    find_sysupgrade_packages, get_pacman_command,
 )
 from .aur import find_aur_packages, AURPackageInfo
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
@@ -170,7 +170,7 @@ class InstallInfoFetcher:
             return []
         all_local_pkgs = PackageDB.get_local_dict()
         pkg_install_infos = []
-        for pkg in find_upgradeable_packages():
+        for pkg in find_sysupgrade_packages():
             local_pkg = all_local_pkgs.get(pkg.name)
             install_info = InstallInfo(
                 name=pkg.name,

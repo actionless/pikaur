@@ -46,7 +46,7 @@ def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
         return repo_pkg.version
 
 
-def find_repo_updates() -> List[InstallInfo]:
+def find_repo_upgradeable() -> List[InstallInfo]:
     all_local_pkgs = PackageDB.get_local_dict()
     repo_packages_updates = []
     for repo_pkg in find_upgradeable_packages():

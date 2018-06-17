@@ -371,16 +371,40 @@ class PackageDB(PackageDBCommon):
         raise Exception(f'Failed to find "{pkg_name}" in the output: {found_pkgs}')
 
 
+def get_upgradeable_package_names() -> List[str]:
+    upgradeable_packages_output = spawn(
+        get_pacman_command() + ['--query', '--upgrades', '--quiet']
+    ).stdout_text
+    if not upgradeable_packages_output:
+        return []
+    return upgradeable_packages_output.splitlines()
+
+
 def find_upgradeable_packages() -> List[pyalpm.Package]:
     all_repo_pkgs = PackageDB.get_repo_dict()
-    # all_local_pkgs = PackageDB.get_local_dict()
+
+    pkg_names = get_upgradeable_package_names()
+    if not pkg_names:
+        return []
+
+    all_local_pkgs = PackageDB.get_local_dict()
+    results = PackageDB.get_print_format_output(
+        get_pacman_command() + ['--sync'] + pkg_names
+    )
+    return [
+        all_repo_pkgs[result.full_name] for result in results
+        if result.name in all_local_pkgs
+    ]
+
+
+def find_sysupgrade_packages() -> List[pyalpm.Package]:
+    all_repo_pkgs = PackageDB.get_repo_dict()
 
     results = PackageDB.get_print_format_output(
         get_pacman_command() + ['--sync', '--sysupgrade']
     )
     return [
         all_repo_pkgs[result.full_name] for result in results
-        # if result.name in all_local_pkgs
     ]
 
 

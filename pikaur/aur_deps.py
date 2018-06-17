@@ -45,7 +45,10 @@ def check_deps_versions(  # pylint:disable=too-many-branches
     if source == PackageSource.REPO:
         for dep_name in deps_pkg_names:
             try:
-                result = PackageDB.find_repo_package(version_matchers[dep_name].line)
+                # @TODO: find a more common way to split multiple requirements line?
+                result = PackageDB.find_repo_package(
+                    version_matchers[dep_name].line.split(',')[0]
+                )
             except PackagesNotFoundInRepo:
                 not_found_deps.append(dep_name)
             else:

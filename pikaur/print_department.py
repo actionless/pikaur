@@ -2,9 +2,14 @@ import sys
 from typing import List, TYPE_CHECKING, Tuple
 
 from .i18n import _, _n
-from .pprint import color_line, bold_line, format_paragraph, get_term_width
+from .pprint import (
+    print_stderr, color_line, bold_line, format_paragraph, get_term_width,
+)
+from .core import PackageSource
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
+from .pacman import PackageDB
+
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
@@ -272,3 +277,43 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
 
 def pretty_format_repo_name(repo_name: str) -> str:
     return color_line(f'{repo_name}/', len(repo_name) % 5 + 10)
+
+
+def print_ignored_package(package_name):
+    from .package_update import get_remote_package_version, PackageUpdate  # pylint: disable=redefined-outer-name
+
+    current = PackageDB.get_local_dict().get(package_name)
+    current_version = current.version if current else ''
+    new_version = get_remote_package_version(package_name)
+    print_stderr('{} {}'.format(
+        color_line('::', 11),
+        _("Ignoring package {}").format(
+            pretty_format_upgradeable(
+                [PackageUpdate(
+                    name=package_name,
+                    current_version=current_version,
+                    new_version=new_version or '',
+                    package=None,
+                )],
+                template=(
+                    "{pkg_name} ({current_version} => {new_version})"
+                    if current_version else
+                    "{pkg_name} {new_version}"
+                )
+            ))
+    ))
+
+
+def print_package_uptodate(package_name: str, package_source: PackageSource) -> None:
+    print_stderr(
+        '{} {}'.format(
+            color_line(_("warning:"), 11),
+            _("{name} {version} {package_source} package is up to date - skipping").format(
+                name=package_name,
+                version=bold_line(
+                    PackageDB.get_local_dict()[package_name].version
+                ),
+                package_source=package_source.name
+            )
+        )
+    )

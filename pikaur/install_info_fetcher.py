@@ -353,7 +353,7 @@ class InstallInfoFetcher:
 
             provides = pkg_install_info.package.provides
             providing_for: List[str] = []
-            if provides:
+            if provides and pkg_install_info.name not in self.install_package_names:
                 providing_for = [
                     pkg_name for pkg_name in sum([
                         (lambda vm: [vm.line, vm.pkg_name])(VersionMatcher(prov))

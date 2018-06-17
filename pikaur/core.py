@@ -4,6 +4,7 @@ import subprocess
 import enum
 import codecs
 import distutils
+import tempfile
 from distutils.dir_util import copy_tree
 from typing import Any, List, Iterable, Callable, Optional, Union, TYPE_CHECKING
 
@@ -82,7 +83,14 @@ def interactive_spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
 
 
 def spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
-    return interactive_spawn(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+    with tempfile.TemporaryFile() as out_file:
+        with tempfile.TemporaryFile() as err_file:
+            proc = interactive_spawn(cmd, stdout=out_file, stderr=err_file, **kwargs)
+            out_file.seek(0)
+            err_file.seek(0)
+            proc.stdout_text = out_file.read().decode('utf-8')
+            proc.stderr_text = err_file.read().decode('utf-8')
+    return proc
 
 
 def running_as_root() -> bool:

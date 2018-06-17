@@ -112,12 +112,7 @@ def cli_install_packages(args) -> None:
 def _info_packages_thread_repo(
         args: PikaurArgs
 ) -> str:
-    # @TODO: don't use PIPE here
-    return interactive_spawn(
-        get_pacman_command() + args.raw,
-        stderr=subprocess.DEVNULL,
-        stdout=subprocess.PIPE
-    ).stdout_text
+    return spawn(get_pacman_command() + args.raw).stdout_text
 
 
 def cli_info_packages(args: PikaurArgs) -> None:

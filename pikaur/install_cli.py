@@ -59,9 +59,9 @@ def print_ignored_package(package_name):
         _("Ignoring package {}").format(
             pretty_format_upgradeable(
                 [PackageUpdate(
-                    Name=package_name,
-                    Current_Version=current_version,
-                    New_Version=new_version or '',
+                    name=package_name,
+                    current_version=current_version,
+                    new_version=new_version or '',
                     package=None,
                 )],
                 template=(
@@ -381,11 +381,11 @@ class InstallPackagesCLI():
                     pkg = all_repo_pkgs[pkg_print.full_name]
                     local_pkg = all_local_pkgs.get(pkg.name)
                     install_info = PackageUpdate(
-                        Name=pkg.name,
-                        Current_Version=local_pkg.version if local_pkg else '',
-                        New_Version=pkg.version,
-                        Description=pkg.desc,
-                        Repository=pkg.db.name,
+                        name=pkg.name,
+                        current_version=local_pkg.version if local_pkg else '',
+                        new_version=pkg.version,
+                        description=pkg.desc,
+                        repository=pkg.db.name,
                         package=pkg,
                     )
 
@@ -396,12 +396,12 @@ class InstallPackagesCLI():
                         if prov.strip('01234567890><=') in self.install_package_names
                     ] if provides else []
                     if providing_for:
-                        install_info.Name = providing_for[0]
+                        install_info.name = providing_for[0]
                         install_info.provided_by = [
                             provided_dep.package for provided_dep in
                             PackageDB.get_repo_provided_dict()[providing_for[0]]
                         ]
-                        install_info.New_Version = ''
+                        install_info.new_version = ''
 
                     groups = install_info.package.groups
                     members_of = [
@@ -422,11 +422,11 @@ class InstallPackagesCLI():
         for pkg in find_upgradeable_packages():
             local_pkg = all_local_pkgs.get(pkg.name)
             install_info = PackageUpdate(
-                Name=pkg.name,
-                Current_Version=local_pkg.version if local_pkg else '',
-                New_Version=pkg.version,
-                Description=pkg.desc,
-                Repository=pkg.db.name,
+                name=pkg.name,
+                current_version=local_pkg.version if local_pkg else '',
+                new_version=pkg.version,
+                description=pkg.desc,
+                repository=pkg.db.name,
                 package=pkg,
             )
             pkg_install_infos.append(install_info)
@@ -437,8 +437,8 @@ class InstallPackagesCLI():
                 self._get_repo_pkgs_info(pkg_names=self.install_package_names) +
                 self.get_upgradeable_repo_pkgs_info()
         ):
-            if pkg_update.Name in [
-                    install_info.Name for install_info in
+            if pkg_update.name in [
+                    install_info.name for install_info in
                     (
                         self.repo_packages_install_info +
                         self.thirdparty_repo_packages_install_info +
@@ -448,7 +448,7 @@ class InstallPackagesCLI():
             ]:
                 continue
 
-            pkg_name = pkg_update.Name
+            pkg_name = pkg_update.name
             if (
                     pkg_name in self.manually_excluded_packages_names
             ) or (
@@ -459,36 +459,36 @@ class InstallPackagesCLI():
                     # self.manually_excluded_packages_names.append(pkg_name)
                 continue
 
-            if pkg_update.Current_Version == '' and (
+            if pkg_update.current_version == '' and (
                     (
                         pkg_name not in self.install_package_names
                     ) and (not pkg_update.provided_by) and (not pkg_update.members_of)
             ):
-                if pkg_update.Repository in OFFICIAL_REPOS:
+                if pkg_update.repository in OFFICIAL_REPOS:
                     self.new_repo_deps_install_info.append(pkg_update)
                 else:
                     self.new_thirdparty_repo_deps_install_info.append(pkg_update)
                 continue
-            if pkg_update.Repository in OFFICIAL_REPOS:
+            if pkg_update.repository in OFFICIAL_REPOS:
                 self.repo_packages_install_info.append(pkg_update)
             else:
                 self.thirdparty_repo_packages_install_info.append(pkg_update)
 
     def get_repo_deps_info(self) -> None:
         all_aur_pkg_names = [
-            pkg_info.Name for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
+            pkg_info.name for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
         ]
         new_dep_names = find_repo_deps_of_aur_pkgs(all_aur_pkg_names)
 
         for dep_install_info in self._get_repo_pkgs_info(
                 pkg_names=new_dep_names, extra_args=['--needed']
         ):
-            if dep_install_info.Name in [
-                    install_info.Name for install_info in
+            if dep_install_info.name in [
+                    install_info.name for install_info in
                     (self.new_repo_deps_install_info + self.new_thirdparty_repo_deps_install_info)
             ]:
                 continue
-            if dep_install_info.Repository in OFFICIAL_REPOS:
+            if dep_install_info.repository in OFFICIAL_REPOS:
                 self.new_repo_deps_install_info.append(dep_install_info)
             else:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
@@ -510,17 +510,17 @@ class InstallPackagesCLI():
             if not_found_aur_pkgs:
                 print_not_found_packages(sorted(not_found_aur_pkgs))
             aur_updates_install_info_by_name = {
-                upd.Name: upd for upd in aur_updates_list
+                upd.name: upd for upd in aur_updates_list
             }
         for pkg_name, aur_pkg in aur_pkgs.items():
             if pkg_name in aur_updates_install_info_by_name:
                 continue
             local_pkg = local_pkgs.get(pkg_name)
             aur_updates_install_info_by_name[pkg_name] = PackageUpdate(
-                Name=pkg_name,
-                Current_Version=local_pkg.version if local_pkg else ' ',
-                New_Version=aur_pkg.version,
-                Description=aur_pkg.desc,
+                name=pkg_name,
+                current_version=local_pkg.version if local_pkg else ' ',
+                new_version=aur_pkg.version,
+                description=aur_pkg.desc,
                 package=aur_pkg,
             )
         for pkg_name in list(aur_updates_install_info_by_name.keys())[:]:
@@ -534,7 +534,7 @@ class InstallPackagesCLI():
         self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
 
     def get_aur_deps_info(self):
-        all_aur_packages_names = [info.Name for info in self.aur_updates_install_info]
+        all_aur_packages_names = [info.name for info in self.aur_updates_install_info]
         if all_aur_packages_names:
             print_stdout(_("Resolving AUR dependencies..."))
         try:
@@ -563,17 +563,17 @@ class InstallPackagesCLI():
             aur_pkg = aur_pkgs[pkg_name]
             local_pkg = local_pkgs.get(pkg_name)
             self.aur_deps_install_info.append(PackageUpdate(
-                Name=pkg_name,
-                Current_Version=local_pkg.version if local_pkg else ' ',
-                New_Version=aur_pkg.version,
-                Description=aur_pkg.desc,
+                name=pkg_name,
+                current_version=local_pkg.version if local_pkg else ' ',
+                new_version=aur_pkg.version,
+                description=aur_pkg.desc,
                 package=aur_pkg,
             ))
 
     def manual_package_selection(self):
         pkg_names_before = set(
             [
-                update.Name for update in (
+                update.name for update in (
                     self.repo_packages_install_info +
                     self.thirdparty_repo_packages_install_info +
                     self.aur_updates_install_info

@@ -57,7 +57,7 @@ def pretty_format_upgradeable(
 
     def pretty_format(pkg_update: 'PackageUpdate') -> Tuple[str, str]:  # pylint:disable=too-many-locals
         common_version, difference_size = get_common_version(
-            pkg_update.Current_Version or '', pkg_update.New_Version or ''
+            pkg_update.current_version or '', pkg_update.new_version or ''
         )
         user_config = PikaurConfig()
         color_config = user_config.colors
@@ -68,31 +68,31 @@ def pretty_format_upgradeable(
 
         sort_by = '{:03d}{}'.format(
             difference_size,
-            pkg_update.Name
+            pkg_update.name
         )
         user_chosen_sorting = user_config.sync.UpgradeSorting
         if user_chosen_sorting == 'pkgname':
-            sort_by = pkg_update.Name
+            sort_by = pkg_update.name
         elif user_chosen_sorting == 'repo':
             sort_by = '{}{}'.format(
-                pkg_update.Repository,
-                pkg_update.Name
+                pkg_update.repository,
+                pkg_update.name
             )
 
-        pkg_name = pkg_update.Name
-        pkg_len = len(pkg_update.Name)
+        pkg_name = pkg_update.name
+        pkg_len = len(pkg_update.name)
 
         days_old = ''
         if pkg_update.devel_pkg_age_days:
             days_old = ' ' + _('({} days old)').format(pkg_update.devel_pkg_age_days)
 
         pkg_name = _bold_line(pkg_name)
-        if (print_repo or verbose) and pkg_update.Repository:
+        if (print_repo or verbose) and pkg_update.repository:
             pkg_name = '{}{}'.format(
-                _color_line(pkg_update.Repository + '/', 13),
+                _color_line(pkg_update.repository + '/', 13),
                 pkg_name
             )
-            pkg_len += len(pkg_update.Repository) + 1
+            pkg_len += len(pkg_update.repository) + 1
         elif print_repo:
             pkg_name = '{}{}'.format(
                 _color_line('aur/', 9),
@@ -133,29 +133,29 @@ def pretty_format_upgradeable(
             current_version=(
                 _color_line(common_version, version_color) +
                 _color_line(
-                    get_version_diff(pkg_update.Current_Version or '', common_version),
+                    get_version_diff(pkg_update.current_version or '', common_version),
                     old_color
                 )
             ),
             new_version=(
                 _color_line(common_version, version_color) +
                 _color_line(
-                    get_version_diff(pkg_update.New_Version or '', common_version),
+                    get_version_diff(pkg_update.new_version or '', common_version),
                     new_color
                 )
             ),
             version_separator=(
-                ' -> ' if (pkg_update.Current_Version or pkg_update.New_Version) else ''
+                ' -> ' if (pkg_update.current_version or pkg_update.new_version) else ''
             ),
             spacing=' ' * max(1, (column_width - pkg_len)),
             spacing2=' ' * max(1, (
                 column_width - 18 -
-                len(pkg_update.Current_Version or '') -
+                len(pkg_update.current_version or '') -
                 max(-1, (pkg_len - column_width))
             )),
             verbose=(
-                '' if not (verbose and pkg_update.Description)
-                else f'\n{format_paragraph(pkg_update.Description)}'
+                '' if not (verbose and pkg_update.description)
+                else f'\n{format_paragraph(pkg_update.description)}'
             )
         ), sort_by
 

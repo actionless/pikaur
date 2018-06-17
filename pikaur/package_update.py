@@ -37,12 +37,11 @@ def is_devel_pkg(pkg_name: str) -> bool:
 
 
 class PackageUpdate(DataType):
-    # @TODO: use lowercase properties
-    Name: str
-    Current_Version: str
-    New_Version: str
-    Description: str
-    Repository: Optional[str] = None
+    name: str
+    current_version: str
+    new_version: str
+    description: str
+    repository: Optional[str] = None
     devel_pkg_age_days: Optional[int] = None
     package: Union[pyalpm.Package, AURPackageInfo]
     provided_by: Optional[List[Union[pyalpm.Package, AURPackageInfo]]] = None
@@ -51,8 +50,8 @@ class PackageUpdate(DataType):
 
     def __repr__(self) -> str:
         return (
-            f'<{self.__class__.__name__} "{self.Name}" '
-            f'{self.Current_Version} -> {self.New_Version}>'
+            f'<{self.__class__.__name__} "{self.name}" '
+            f'{self.current_version} -> {self.new_version}>'
         )
 
 
@@ -63,11 +62,11 @@ def find_repo_updates() -> List[PackageUpdate]:
         local_pkg = all_local_pkgs[repo_pkg.name]
         repo_packages_updates.append(
             PackageUpdate(
-                Name=local_pkg.name,
-                New_Version=repo_pkg.version,
-                Current_Version=local_pkg.version,
-                Description=repo_pkg.desc,
-                Repository=repo_pkg.db.name,
+                name=local_pkg.name,
+                new_version=repo_pkg.version,
+                current_version=local_pkg.version,
+                description=repo_pkg.desc,
+                repository=repo_pkg.db.name,
                 package=repo_pkg,
             )
         )
@@ -92,10 +91,10 @@ def find_aur_devel_updates(
         pkg_age_days = (now - pkg_install_datetime).days
         if pkg_age_days >= package_ttl_days:
             aur_updates.append(PackageUpdate(
-                Name=pkg_name,
-                Current_Version=local_pkg.version,
-                New_Version='devel',
-                Description=aur_pkg.desc,
+                name=pkg_name,
+                current_version=local_pkg.version,
+                new_version='devel',
+                description=aur_pkg.desc,
                 devel_pkg_age_days=pkg_age_days,
                 package=aur_pkg,
             ))
@@ -120,10 +119,10 @@ def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
         compare_aur_pkg = compare_versions(current_version, aur_version)
         if compare_aur_pkg < 0:
             aur_updates.append(PackageUpdate(
-                Name=pkg_name,
-                New_Version=aur_version,
-                Current_Version=current_version,
-                Description=aur_pkg.desc,
+                name=pkg_name,
+                new_version=aur_version,
+                current_version=current_version,
+                description=aur_pkg.desc,
                 package=aur_pkg,
             ))
         else:

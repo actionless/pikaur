@@ -97,7 +97,7 @@ def cli_print_upgradeable(args: PikaurArgs) -> None:
         updates += find_repo_updates()
     if args.quiet:
         print('\n'.join([
-            pkg_update.Name for pkg_update in updates
+            pkg_update.name for pkg_update in updates
         ]))
     else:
         print(pretty_format_upgradeable(

@@ -25,7 +25,7 @@ from .exceptions import (
     SysExit,
 )
 from .srcinfo import SrcInfo
-from .package_update import is_devel_pkg
+from .updates import is_devel_pkg
 from .version import compare_versions
 from .pikspect import pikspect
 from .makepkg_config import MakepkgConfig

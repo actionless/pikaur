@@ -1,19 +1,15 @@
 import sys
-from typing import List, TYPE_CHECKING, Tuple
+from typing import List, Tuple
 
 from .i18n import _, _n
 from .pprint import (
     print_stderr, color_line, bold_line, format_paragraph, get_term_width,
 )
-from .core import PackageSource
+from .core import PackageSource, InstallInfo
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
 from .pacman import PackageDB
-
-
-if TYPE_CHECKING:
-    # pylint: disable=unused-import
-    from .package_update import PackageUpdate  # noqa
+from .updates import get_remote_package_version
 
 
 GROUP_COLOR = 4
@@ -53,7 +49,7 @@ def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
 
 
 def pretty_format_upgradeable(
-        packages_updates: List['PackageUpdate'],
+        packages_updates: List['InstallInfo'],
         verbose=False, print_repo=False, color=True, template: str = None
 ) -> str:
 
@@ -63,7 +59,7 @@ def pretty_format_upgradeable(
         _color_line = lambda line, color: line  # noqa
         _bold_line = lambda line: line  # noqa
 
-    def pretty_format(pkg_update: 'PackageUpdate') -> Tuple[str, str]:  # pylint:disable=too-many-locals
+    def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, str]:  # pylint:disable=too-many-locals
         common_version, difference_size = get_common_version(
             pkg_update.current_version or '', pkg_update.new_version or ''
         )
@@ -185,12 +181,12 @@ def pretty_format_upgradeable(
 
 
 def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
-        repo_packages_updates: List['PackageUpdate'] = None,
-        new_repo_deps: List['PackageUpdate'] = None,
-        thirdparty_repo_packages_updates: List['PackageUpdate'] = None,
-        new_thirdparty_repo_deps: List['PackageUpdate'] = None,
-        aur_updates: List['PackageUpdate'] = None,
-        new_aur_deps: List['PackageUpdate'] = None,
+        repo_packages_updates: List['InstallInfo'] = None,
+        new_repo_deps: List['InstallInfo'] = None,
+        thirdparty_repo_packages_updates: List['InstallInfo'] = None,
+        new_thirdparty_repo_deps: List['InstallInfo'] = None,
+        aur_updates: List['InstallInfo'] = None,
+        new_aur_deps: List['InstallInfo'] = None,
         verbose=False, color=True
 ) -> str:
 
@@ -280,8 +276,6 @@ def pretty_format_repo_name(repo_name: str) -> str:
 
 
 def print_ignored_package(package_name):
-    from .package_update import get_remote_package_version, PackageUpdate  # pylint: disable=redefined-outer-name
-
     current = PackageDB.get_local_dict().get(package_name)
     current_version = current.version if current else ''
     new_version = get_remote_package_version(package_name)
@@ -289,7 +283,7 @@ def print_ignored_package(package_name):
         color_line('::', 11),
         _("Ignoring package {}").format(
             pretty_format_upgradeable(
-                [PackageUpdate(
+                [InstallInfo(
                     name=package_name,
                     current_version=current_version,
                     new_version=new_version or '',

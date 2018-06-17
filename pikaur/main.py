@@ -19,7 +19,7 @@ from .args import (
     parse_args, reconstruct_args, cli_print_help
 )
 from .core import (
-    PackageSource,
+    PackageSource, InstallInfo,
     spawn, interactive_spawn, running_as_root, remove_dir, sudo,
 )
 from .pprint import (
@@ -34,8 +34,7 @@ from .pacman import (
 from .aur import (
     find_aur_packages, get_all_aur_names,
 )
-from .package_update import (
-    PackageUpdate,
+from .updates import (
     find_repo_updates, find_aur_updates,
 )
 from .prompt import (
@@ -89,7 +88,7 @@ init_output_encoding()
 
 
 def cli_print_upgradeable(args: PikaurArgs) -> None:
-    updates: List[PackageUpdate] = []
+    updates: List[InstallInfo] = []
     if not args.repo:
         aur_updates, _not_found_aur_pkgs = find_aur_updates(args)
         updates += aur_updates

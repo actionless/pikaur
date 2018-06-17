@@ -13,10 +13,10 @@ from .config import PikaurConfig
 from .args import reconstruct_args, PikaurArgs
 from .aur import strip_aur_repo_name
 from .pacman import (
-    PackageDB, PacmanConfig,
+    PackageDB,
     get_pacman_command, refresh_pkg_db,
 )
-from .package_update import InstallInfoFetcher
+from .install_info_fetcher import InstallInfoFetcher
 from .exceptions import (
     PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
@@ -182,7 +182,7 @@ class InstallPackagesCLI():
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """
-        Retrieve info (`PackageUpdate` objects) of packages
+        Retrieve info (`InstallInfo` objects) of packages
         which are going to be installed/upgraded and their dependencies
         """
 
@@ -236,18 +236,6 @@ class InstallPackagesCLI():
                 _("Nothing to do."),
             ))
             sys.exit(0)
-
-    def package_is_ignored(self, package_name: str) -> bool:
-        if (
-                package_name in (
-                    (self.args.ignore or []) + PacmanConfig().options.get('IgnorePkg', [])
-                )
-        ) and not (
-            package_name in self.install_package_names or
-            package_name in self.not_found_repo_pkgs_names
-        ):
-            return True
-        return False
 
     def manual_package_selection(self):
         pkg_names_before = set(

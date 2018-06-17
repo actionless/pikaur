@@ -5,10 +5,15 @@ import enum
 import codecs
 import distutils
 from distutils.dir_util import copy_tree
-from typing import Any, List, Iterable, Callable, Optional
+from typing import Any, List, Iterable, Callable, Optional, Union, TYPE_CHECKING
 
 from .i18n import _
 from .pprint import print_stderr, color_line
+
+if TYPE_CHECKING:
+    # pylint: disable=unused-import
+    import pyalpm  # noqa
+    from .aur import AURPackageInfo  # noqa
 
 
 NOT_FOUND_ATOM = object()
@@ -38,6 +43,25 @@ class PackageSource(enum.Enum):
     REPO = enum.auto()
     AUR = enum.auto()
     LOCAL = enum.auto()
+
+
+class InstallInfo(DataType):
+    name: str
+    current_version: str
+    new_version: str
+    description: str
+    repository: Optional[str] = None
+    devel_pkg_age_days: Optional[int] = None
+    package: Union['pyalpm.Package', 'AURPackageInfo']
+    provided_by: Optional[List[Union['pyalpm.Package', 'AURPackageInfo']]] = None
+    required_by: Optional[List['InstallInfo']] = None
+    members_of: Optional[List[str]] = None
+
+    def __repr__(self) -> str:
+        return (
+            f'<{self.__class__.__name__} "{self.name}" '
+            f'{self.current_version} -> {self.new_version}>'
+        )
 
 
 class InteractiveSpawn(subprocess.Popen):

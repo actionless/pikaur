@@ -1,170 +1,31 @@
 import sys
-from datetime import datetime
 from multiprocessing.pool import ThreadPool
-from typing import List, Tuple, Optional, Union, Dict
+from typing import List, Optional, Dict
 
-import pyalpm
-
-from .i18n import _, _n
-from .core import DataType, PackageSource
-from .version import VersionMatcher, compare_versions
+from .i18n import _
+from .core import PackageSource, InstallInfo
+from .version import VersionMatcher
 from .pacman import (
     OFFICIAL_REPOS,
     PackageDB, PacmanConfig,
-    find_packages_not_from_repo, find_upgradeable_packages, get_pacman_command,
+    find_upgradeable_packages, get_pacman_command,
 )
-from .aur import AURPackageInfo, find_aur_packages
+from .aur import find_aur_packages
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
-from .pprint import print_stderr, print_stdout
+from .pprint import print_stdout
 from .args import PikaurArgs, parse_args, reconstruct_args
-from .config import PikaurConfig
-from .exceptions import PackagesNotFoundInRepo, DependencyVersionMismatch
+from .exceptions import DependencyVersionMismatch
 from .print_department import print_ignored_package, print_not_found_packages
-
-
-DEVEL_PKGS_POSTFIXES = (
-    '-git',
-    '-svn',
-    '-bzr',
-    '-hg',
-    '-cvs',
-    '-nightly',
-)
-
-
-def is_devel_pkg(pkg_name: str) -> bool:
-    result = False
-    for devel_pkg_postfix in DEVEL_PKGS_POSTFIXES:
-        if pkg_name.endswith(devel_pkg_postfix):
-            result = True
-            break
-    return result
-
-
-class PackageUpdate(DataType):
-    name: str
-    current_version: str
-    new_version: str
-    description: str
-    repository: Optional[str] = None
-    devel_pkg_age_days: Optional[int] = None
-    package: Union[pyalpm.Package, AURPackageInfo]
-    provided_by: Optional[List[Union[pyalpm.Package, AURPackageInfo]]] = None
-    required_by: Optional[List['PackageUpdate']] = None
-    members_of: Optional[List[str]] = None
-
-    def __repr__(self) -> str:
-        return (
-            f'<{self.__class__.__name__} "{self.name}" '
-            f'{self.current_version} -> {self.new_version}>'
-        )
-
-
-def find_repo_updates() -> List[PackageUpdate]:
-    all_local_pkgs = PackageDB.get_local_dict()
-    repo_packages_updates = []
-    for repo_pkg in find_upgradeable_packages():
-        local_pkg = all_local_pkgs[repo_pkg.name]
-        repo_packages_updates.append(
-            PackageUpdate(
-                name=local_pkg.name,
-                new_version=repo_pkg.version,
-                current_version=local_pkg.version,
-                description=repo_pkg.desc,
-                repository=repo_pkg.db.name,
-                package=repo_pkg,
-            )
-        )
-    return repo_packages_updates
-
-
-def find_aur_devel_updates(
-        aur_pkgs_info: List[AURPackageInfo],
-        package_ttl_days: int
-) -> List[PackageUpdate]:
-    local_packages = PackageDB.get_local_dict()
-    now = datetime.now()
-    aur_updates = []
-    for aur_pkg in sorted(aur_pkgs_info, key=lambda x: x.name):
-        pkg_name = aur_pkg.name
-        if not is_devel_pkg(pkg_name):
-            continue
-        local_pkg = local_packages[pkg_name]
-        pkg_install_datetime = datetime.fromtimestamp(
-            local_pkg.installdate
-        )
-        pkg_age_days = (now - pkg_install_datetime).days
-        if pkg_age_days >= package_ttl_days:
-            aur_updates.append(PackageUpdate(
-                name=pkg_name,
-                current_version=local_pkg.version,
-                new_version='devel',
-                description=aur_pkg.desc,
-                devel_pkg_age_days=pkg_age_days,
-                package=aur_pkg,
-            ))
-    return aur_updates
-
-
-def find_aur_updates(args: PikaurArgs) -> Tuple[List[PackageUpdate], List[str]]:
-    package_names = find_packages_not_from_repo()
-    print_stderr(_n(
-        "Reading AUR package info...",
-        "Reading AUR packages info...",
-        len(package_names)
-    ))
-    aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
-    local_packages = PackageDB.get_local_dict()
-    aur_updates = []
-    aur_pkgs_up_to_date = []
-    for aur_pkg in aur_pkgs_info:
-        pkg_name = aur_pkg.name
-        aur_version = aur_pkg.version
-        current_version = local_packages[pkg_name].version
-        compare_aur_pkg = compare_versions(current_version, aur_version)
-        if compare_aur_pkg < 0:
-            aur_updates.append(PackageUpdate(
-                name=pkg_name,
-                new_version=aur_version,
-                current_version=current_version,
-                description=aur_pkg.desc,
-                package=aur_pkg,
-            ))
-        else:
-            aur_pkgs_up_to_date.append(aur_pkg)
-    if aur_pkgs_up_to_date:
-        sync_config = PikaurConfig().sync
-        devel_packages_expiration = sync_config.get_int('DevelPkgsExpiration')
-        if args.devel:
-            devel_packages_expiration = 0
-        if devel_packages_expiration > -1:
-            aur_updates += find_aur_devel_updates(
-                aur_pkgs_up_to_date,
-                package_ttl_days=devel_packages_expiration
-            )
-    return aur_updates, not_found_aur_pkgs
-
-
-def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
-    try:
-        repo_info = PackageDB.find_repo_package(new_pkg_name)
-    except PackagesNotFoundInRepo:
-        aur_packages, _not_found = find_aur_packages([new_pkg_name])
-        if aur_packages:
-            return aur_packages[0].version
-        return None
-    else:
-        return repo_info.version
 
 
 class InstallInfoFetcher:
 
-    repo_packages_install_info: List[PackageUpdate]
-    new_repo_deps_install_info: List[PackageUpdate]
-    thirdparty_repo_packages_install_info: List[PackageUpdate]
-    new_thirdparty_repo_deps_install_info: List[PackageUpdate]
-    aur_updates_install_info: List[PackageUpdate]
-    aur_deps_install_info: List[PackageUpdate]
+    repo_packages_install_info: List[InstallInfo]
+    new_repo_deps_install_info: List[InstallInfo]
+    thirdparty_repo_packages_install_info: List[InstallInfo]
+    new_thirdparty_repo_deps_install_info: List[InstallInfo]
+    aur_updates_install_info: List[InstallInfo]
+    aur_deps_install_info: List[InstallInfo]
 
     args: PikaurArgs
     aur_deps_relations: Dict[str, List[str]]
@@ -213,12 +74,12 @@ class InstallInfoFetcher:
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """
-        Retrieve info (`PackageUpdate` objects) of packages
+        Retrieve info (`InstallInfo` objects) of packages
         which are going to be installed/upgraded and their dependencies
         """
 
         self.exclude_ignored_packages(self.install_package_names)
-        # retrieve PackageUpdate objects for repo packages to be installed
+        # retrieve InstallInfo objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed
         self.repo_packages_install_info = []
         self.new_repo_deps_install_info = []
@@ -230,7 +91,7 @@ class InstallInfoFetcher:
         if not self.args.aur:
             self.get_repo_pkgs_info()
 
-        # retrieve PackageUpdate objects for AUR packages to be installed
+        # retrieve InstallInfo objects for AUR packages to be installed
         # and their upgrades if --sysupgrade was passed
         if not self.args.repo:
             self.get_aur_pkgs_info(self.not_found_repo_pkgs_names)
@@ -272,7 +133,7 @@ class InstallInfoFetcher:
 
     def _get_repo_pkgs_info(  # pylint: disable=too-many-locals
             self, pkg_names: List[str], extra_args: Optional[List[str]] = None
-    ) -> List[PackageUpdate]:
+    ) -> List[InstallInfo]:
         extra_args = extra_args or []
         all_repo_pkgs = PackageDB.get_repo_dict()
         all_local_pkgs = PackageDB.get_local_dict()
@@ -308,7 +169,7 @@ class InstallInfoFetcher:
                 for pkg_print in results:
                     pkg = all_repo_pkgs[pkg_print.full_name]
                     local_pkg = all_local_pkgs.get(pkg.name)
-                    install_info = PackageUpdate(
+                    install_info = InstallInfo(
                         name=pkg.name,
                         current_version=local_pkg.version if local_pkg else '',
                         new_version=pkg.version,
@@ -344,14 +205,14 @@ class InstallInfoFetcher:
                     pkg_install_infos.append(install_info)
         return pkg_install_infos
 
-    def get_upgradeable_repo_pkgs_info(self) -> List[PackageUpdate]:
+    def get_upgradeable_repo_pkgs_info(self) -> List[InstallInfo]:
         if not self.args.sysupgrade:
             return []
         all_local_pkgs = PackageDB.get_local_dict()
         pkg_install_infos = []
         for pkg in find_upgradeable_packages():
             local_pkg = all_local_pkgs.get(pkg.name)
-            install_info = PackageUpdate(
+            install_info = InstallInfo(
                 name=pkg.name,
                 current_version=local_pkg.version if local_pkg else '',
                 new_version=pkg.version,
@@ -424,6 +285,8 @@ class InstallInfoFetcher:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
     def get_aur_pkgs_info(self, aur_packages_names: List[str]):
+        from .updates import find_aur_updates
+
         local_pkgs = PackageDB.get_local_dict()
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(aur_packages_names)
         if not_found_aur_pkgs:
@@ -433,7 +296,7 @@ class InstallInfoFetcher:
             aur_pkg.name: aur_pkg
             for aur_pkg in aur_pkg_list
         }
-        aur_updates_install_info_by_name: Dict[str, PackageUpdate] = {}
+        aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         if self.args.sysupgrade:
             aur_updates_list, not_found_aur_pkgs = find_aur_updates(self.args)
             self.exclude_ignored_packages(not_found_aur_pkgs)
@@ -446,7 +309,7 @@ class InstallInfoFetcher:
             if pkg_name in aur_updates_install_info_by_name:
                 continue
             local_pkg = local_pkgs.get(pkg_name)
-            aur_updates_install_info_by_name[pkg_name] = PackageUpdate(
+            aur_updates_install_info_by_name[pkg_name] = InstallInfo(
                 name=pkg_name,
                 current_version=local_pkg.version if local_pkg else ' ',
                 new_version=aur_pkg.version,
@@ -482,7 +345,7 @@ class InstallInfoFetcher:
             self.install_package_names.append(pkg_name)
             self.get_all_packages_info()
             return
-        # prepare install info (PackageUpdate objects)
+        # prepare install info (InstallInfo objects)
         # for all the AUR packages which gonna be built:
         aur_pkgs = {
             aur_pkg.name: aur_pkg
@@ -492,7 +355,7 @@ class InstallInfoFetcher:
         for pkg_name in self.aur_deps_names:
             aur_pkg = aur_pkgs[pkg_name]
             local_pkg = local_pkgs.get(pkg_name)
-            self.aur_deps_install_info.append(PackageUpdate(
+            self.aur_deps_install_info.append(InstallInfo(
                 name=pkg_name,
                 current_version=local_pkg.version if local_pkg else ' ',
                 new_version=aur_pkg.version,

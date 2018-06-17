@@ -3,7 +3,7 @@ from typing import List, Dict
 from .pacman import PackageDB
 from .aur import find_aur_packages
 from .version import VersionMatcher
-from .package_update import get_remote_package_version
+from .updates import get_remote_package_version
 
 
 def get_new_aur_pkgs_conflicts(aur_packages_names: List[str]) -> Dict[str, List[str]]:

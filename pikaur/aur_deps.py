@@ -256,7 +256,9 @@ def find_repo_deps_of_aur_pkgs(package_names: List[str]) -> List[str]:
     new_dep_names: List[str] = []
     for pkg_name in package_names:
         pkg = find_aur_packages([pkg_name])[0][0]
-        for dep_line in pkg.depends:
+        for dep_line in (
+                pkg.depends + pkg.makedepends + pkg.checkdepends
+        ):
             dep_name = VersionMatcher(dep_line).pkg_name
             if (
                     dep_line in new_dep_names

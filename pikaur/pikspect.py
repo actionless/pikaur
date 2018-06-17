@@ -52,9 +52,9 @@ class TTYRestore():
     @classmethod
     def _restore(cls, what: Optional[TC_ATTRS_TYPE] = None):
         if sys.stdout.isatty():
-            termios.tcdrain(sys.stdout.fileno())
-            if sys.stderr.isatty():
-                termios.tcdrain(sys.stderr.fileno())
+            # termios.tcdrain(sys.stdout.fileno())
+            # if sys.stderr.isatty():
+                # termios.tcdrain(sys.stderr.fileno())
             if sys.stdin.isatty():
                 termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
             if what:

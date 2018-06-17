@@ -1,3 +1,4 @@
+from multiprocessing.pool import ThreadPool
 from typing import List, Dict
 
 import pyalpm
@@ -201,7 +202,7 @@ def find_missing_deps_for_aur_pkg(
     return not_found_repo_pkgs
 
 
-def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:
+def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:  # pylint: disable=too-many-locals
     new_aur_deps: List[str] = []
     result_aur_deps: Dict[str, List[str]] = {
         aur_pkg_name: []
@@ -220,16 +221,22 @@ def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:
                 all_deps_for_aur_packages[aur_pkg.name] = aur_pkg_deps
 
         not_found_local_pkgs: List[str] = []
-        for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():
-            # @TODO: ThreadPool().map()
-            non_local_pkgs = find_missing_deps_for_aur_pkg(
-                aur_pkg_name=aur_pkg_name,
-                aur_pkgs_info=aur_pkgs_info,
-                version_matchers=deps_for_aur_package,
-            )
-            not_found_local_pkgs += non_local_pkgs
-            for dep_pkg_name in non_local_pkgs:
-                result_aur_deps.setdefault(aur_pkg_name, []).append(dep_pkg_name)
+        with ThreadPool() as pool:
+            all_requests = {}
+            for aur_pkg_name, deps_for_aur_package in all_deps_for_aur_packages.items():
+                all_requests[aur_pkg_name] = pool.apply_async(
+                    find_missing_deps_for_aur_pkg, (
+                        aur_pkg_name,
+                        deps_for_aur_package,
+                        aur_pkgs_info,
+                    )
+                )
+            for aur_pkg_name, request in all_requests.items():
+                results = request.get()
+                not_found_local_pkgs += results
+                for dep_pkg_name in results:
+                    result_aur_deps.setdefault(aur_pkg_name, []).append(dep_pkg_name)
+
         iter_package_names = []
         for pkg_name in not_found_local_pkgs:
             if pkg_name not in new_aur_deps and pkg_name not in package_names:

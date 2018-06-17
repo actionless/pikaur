@@ -376,9 +376,19 @@ class InstallPackagesCLI():
         ])
 
         pkg_install_infos = []
-        for pkg_name in pkg_names[:]:
-            # @TODO: ThreadPool().map()
-            results = PackageDB.get_print_format_output(pacman_args + [pkg_name])
+        all_results = {}
+        with ThreadPool() as pool:
+            all_requests = {}
+            for pkg_name in pkg_names[:]:
+                all_requests[pkg_name] = pool.apply_async(
+                    PackageDB.get_print_format_output,
+                    (pacman_args + [pkg_name], )
+                )
+            pool.close()
+            pool.join()
+            for pkg_name, request in all_requests.items():
+                all_results[pkg_name] = request.get()
+        for pkg_name, results in all_results.items():
             if not results:
                 self.not_found_repo_pkgs_names.append(pkg_name)
                 if pkg_name in self.install_package_names:
@@ -398,9 +408,10 @@ class InstallPackagesCLI():
 
                     provides = install_info.package.provides
                     providing_for = [
-                        prov.strip('01234567890><=')
+                        get_package_name_and_version_matcher_from_depend_line(prov)[0]
                         for prov in provides
-                        if prov.strip('01234567890><=') in self.install_package_names
+                        if get_package_name_and_version_matcher_from_depend_line(prov)[0]
+                        in self.install_package_names
                     ] if provides else []
                     if providing_for:
                         install_info.name = providing_for[0]

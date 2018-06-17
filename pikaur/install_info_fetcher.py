@@ -80,8 +80,7 @@ class InstallInfoFetcher:
         """
 
         self.exclude_ignored_packages(self.install_package_names)
-        # retrieve InstallInfo objects for repo packages to be installed
-        # and their upgrades if --sysupgrade was passed
+
         self.repo_packages_install_info = []
         self.new_repo_deps_install_info = []
         self.thirdparty_repo_packages_install_info = []
@@ -89,6 +88,8 @@ class InstallInfoFetcher:
         self.aur_updates_install_info = []
         self.aur_deps_install_info = []
 
+        # retrieve InstallInfo objects for repo packages to be installed
+        # and their upgrades if --sysupgrade was passed
         if not self.args.aur:
             self.get_repo_pkgs_info()
 
@@ -101,44 +102,10 @@ class InstallInfoFetcher:
         # if some exception wasn't handled inside -- just write message and exit
         self.get_aur_deps_info()
 
+        # find repo deps for AUR packages
         self.get_repo_deps_info()
 
-        # update package info to show deps in prompt:
-        all_install_infos = (
-            self.repo_packages_install_info +
-            self.thirdparty_repo_packages_install_info +
-            self.new_repo_deps_install_info +
-            self.new_thirdparty_repo_deps_install_info +
-            self.aur_updates_install_info +
-            self.aur_deps_install_info
-        )
-        all_deps_install_infos = (
-            self.new_repo_deps_install_info +
-            self.new_thirdparty_repo_deps_install_info +
-            self.aur_deps_install_info
-        )
-        for pkg_install_info in all_install_infos:
-            for dep_install_info in all_deps_install_infos:
-                for name_and_version in (
-                        [dep_install_info.package.name, ] +  # type: ignore
-                        (dep_install_info.package.provides or [])
-                ):
-                    name = VersionMatcher(name_and_version).pkg_name
-                    if name in [
-                            VersionMatcher(dep_line).pkg_name
-                            for dep_line in (
-                                (
-                                    pkg_install_info.package.depends +
-                                    pkg_install_info.package.makedepends +
-                                    pkg_install_info.package.checkdepends
-                                ) if isinstance(
-                                    pkg_install_info.package, AURPackageInfo
-                                ) else pkg_install_info.package.depends
-                            )
-                    ]:
-                        if not dep_install_info.required_by:
-                            dep_install_info.required_by = []
-                        dep_install_info.required_by.append(pkg_install_info)
+        self.mark_dependent()
 
     def _get_repo_pkgs_info(  # pylint: disable=too-many-locals
             self, pkg_names: List[str], extra_args: Optional[List[str]] = None
@@ -369,3 +336,43 @@ class InstallInfoFetcher:
                 description=aur_pkg.desc,
                 package=aur_pkg,
             ))
+
+    def mark_dependent(self) -> None:
+        """
+        update packages' install info to show deps in prompt:
+        """
+        all_install_infos = (
+            self.repo_packages_install_info +
+            self.thirdparty_repo_packages_install_info +
+            self.new_repo_deps_install_info +
+            self.new_thirdparty_repo_deps_install_info +
+            self.aur_updates_install_info +
+            self.aur_deps_install_info
+        )
+        all_deps_install_infos = (
+            self.new_repo_deps_install_info +
+            self.new_thirdparty_repo_deps_install_info +
+            self.aur_deps_install_info
+        )
+        for pkg_install_info in all_install_infos:
+            for dep_install_info in all_deps_install_infos:
+                for name_and_version in (
+                        [dep_install_info.package.name, ] +  # type: ignore
+                        (dep_install_info.package.provides or [])
+                ):
+                    name = VersionMatcher(name_and_version).pkg_name
+                    if name in [
+                            VersionMatcher(dep_line).pkg_name
+                            for dep_line in (
+                                (
+                                    pkg_install_info.package.depends +
+                                    pkg_install_info.package.makedepends +
+                                    pkg_install_info.package.checkdepends
+                                ) if isinstance(
+                                    pkg_install_info.package, AURPackageInfo
+                                ) else pkg_install_info.package.depends
+                            )
+                    ]:
+                        if not dep_install_info.required_by:
+                            dep_install_info.required_by = []
+                        dep_install_info.required_by.append(pkg_install_info)

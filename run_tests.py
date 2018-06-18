@@ -65,11 +65,11 @@ if WRITE_DB:
     assert_installed('python-pyalsaaudio')
 
     # split aur package with deps from aur (too long to build?)
-    # pikaur('-S zfs-dkms')
-    # assert_installed('zfs-dkms')
-    # assert_installed('zfs-utils')
-    # assert_installed('spl-dkms')
-    # assert_installed('spl-utils')
+    pikaur('-S zfs-dkms')
+    assert_installed('zfs-dkms')
+    assert_installed('zfs-utils')
+    assert_installed('spl-dkms')
+    assert_installed('spl-utils')
 
 
 print('\n\n[OK] All tests passed\n')

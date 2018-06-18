@@ -311,7 +311,7 @@ class InstallPackagesCLI():
                 color_line('::', 12),
                 bold_line(_('Proceed with installation? [Y/n] ')),
                 color_line('::', 12),
-                bold_line(_('[v]iew package detail   [m]anually select packages')))
+                bold_line(_('[v]iew package details   [m]anually select packages')))
 
             answer = get_input(prompt, _('y').upper() + _('n') + _('v') + _('m'))
 

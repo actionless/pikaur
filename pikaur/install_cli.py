@@ -176,7 +176,7 @@ class InstallPackagesCLI():
 
     def get_editor(self) -> Optional[List[str]]:
         editor = get_editor()
-        if not editor and self.ask_to_continue(_("Do you want to proceed without editing?")):
+        if not editor and not self.ask_to_continue(_("Do you want to proceed without editing?")):
             sys.exit(125)
         return editor
 

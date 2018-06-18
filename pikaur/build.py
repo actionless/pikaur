@@ -18,7 +18,7 @@ from .config import (
 from .aur import get_repo_url, find_aur_packages
 from .pacman import find_local_packages, PackageDB, get_pacman_command
 from .args import PikaurArgs, parse_args
-from .pprint import color_line, bold_line, color_enabled, print_stdout
+from .pprint import color_line, bold_line, color_enabled, print_stdout, print_stderr
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit, ask_to_continue
 from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
@@ -241,7 +241,7 @@ class PackageBuild(DataType):
         if not self.built_deps_to_install:
             return
 
-        print('{} {}:'.format(
+        print_stderr('{} {}:'.format(
             color_line('::', 13),
             _("Installing already built dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
@@ -387,7 +387,7 @@ class PackageBuild(DataType):
         # @TODO: use lock file?
         PackageDB.discard_local_cache()
         local_packages_before = set(PackageDB.get_local_dict().keys())
-        print('{} {}:'.format(
+        print_stderr('{} {}:'.format(
             color_line('::', 13),
             _("Installing repository dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
@@ -414,7 +414,7 @@ class PackageBuild(DataType):
         deps_packages_installed = local_packages_after.difference(local_packages_before)
         deps_packages_removed = local_packages_before.difference(local_packages_after)
         if deps_packages_removed:
-            print('{} {}:'.format(
+            print_stderr('{} {}:'.format(
                 color_line(':: error', 9),
                 _("Failed to remove installed dependencies, packages inconsistency: {}").format(
                     bold_line(', '.join(deps_packages_removed)))
@@ -424,7 +424,7 @@ class PackageBuild(DataType):
         if not deps_packages_installed:
             return
 
-        print('{} {}:'.format(
+        print_stderr('{} {}:'.format(
             color_line('::', 13),
             _("Removing installed repository dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
@@ -455,7 +455,11 @@ class PackageBuild(DataType):
             makepkg_args.append('--force')
         if not color_enabled():
             makepkg_args.append('--nocolor')
-        print()
+
+        print_stderr('\n{} {}:'.format(
+            color_line('::', 13),
+            _('Starting the build')
+        ))
         build_succeeded = retry_interactive_command(
             isolate_root_cmd(
                 [

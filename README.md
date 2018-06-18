@@ -1,5 +1,7 @@
 # pikaur
 
+[![Build Status](https://travis-ci.org/actionless/pikaur.svg?branch=master)](https://travis-ci.org/actionless/pikaur) [![Coverage Status](https://coveralls.io/repos/github/actionless/pikaur/badge.svg?branch=master)](https://coveralls.io/github/actionless/pikaur?branch=master)
+
 AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction.
 
 Inspired by `pacaur`, `yaourt` and `yay`.
@@ -29,7 +31,7 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 * [FAQ](#faq "")
 * [Contributing](#contributing "")
 * - [Translations](#translations "")
-* [Authors]
+* [Authors](#authors "")
 
 ![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 

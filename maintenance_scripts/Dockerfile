@@ -5,7 +5,7 @@ RUN useradd -m user && \
     echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-RUN pacman -Syu --noconfirm --needed sudo base-devel git python-pylint flake8
+RUN pacman -Syu --noconfirm --needed sudo base-devel git python-pylint flake8 python-virtualenv
 
 COPY . /opt/app-build/
 RUN chown -R user /opt/app-build/ && \

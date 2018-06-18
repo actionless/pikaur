@@ -4,3 +4,5 @@ Dockerfile
 locale/*.mo
 locale/pikaur.pot
 .idea/
+.coverage
+htmlcov/

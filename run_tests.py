@@ -48,5 +48,12 @@ if WRITE_DB:
     pikaur('-S inxi')
     assert_installed('inxi')
 
+    # split aur package with deps from aur
+    pikaur('-S zfs-dkms')
+    assert_installed('zfs-dkms')
+    assert_installed('zfs-utils')
+    assert_installed('spl-dkms')
+    assert_installed('spl-utils')
+
 
 print('\n\n[OK] All tests passed\n')

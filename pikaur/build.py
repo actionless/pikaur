@@ -233,6 +233,9 @@ class PackageBuild(DataType):
                         package_build.built_packages_paths[pkg_name]
                 _mark_dep_resolved(dep)
 
+    def _get_pacman_command(self) -> List[str]:
+        return get_pacman_command() + (['--noconfirm'] if self.args.noconfirm else [])
+
     def _install_built_deps(
             self,
             all_package_builds: Dict[str, 'PackageBuild']
@@ -257,7 +260,7 @@ class PackageBuild(DataType):
         if len(explicitly_installed_deps) < len(self.built_deps_to_install):
             result1 = retry_interactive_command(
                 sudo(
-                    get_pacman_command() + [
+                    self._get_pacman_command() + [
                         '--upgrade',
                         '--asdeps',
                     ] + [
@@ -272,7 +275,7 @@ class PackageBuild(DataType):
         if explicitly_installed_deps:
             result2 = retry_interactive_command(
                 sudo(
-                    get_pacman_command() + [
+                    self._get_pacman_command() + [
                         '--upgrade',
                     ] + [
                         path for name, path in self.built_deps_to_install.items()
@@ -394,7 +397,7 @@ class PackageBuild(DataType):
         ))
         retry_interactive_command_or_exit(
             sudo(
-                get_pacman_command() + [
+                self._get_pacman_command() + [
                     '--sync',
                     '--asdeps',
                 ] + self.all_deps_to_install
@@ -431,7 +434,7 @@ class PackageBuild(DataType):
         ))
         retry_interactive_command_or_exit(
             sudo(
-                get_pacman_command() + [
+                self._get_pacman_command() + [
                     '--remove',
                 ] + list(deps_packages_installed)
             ),

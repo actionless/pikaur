@@ -1,6 +1,9 @@
 import sys
+# monkey-patch to force always uncolored output:
+from pikaur import pprint
+pprint._ARGS.color = 'never'
 
-from pikaur_test.helpers import pikaur, assert_installed
+from pikaur_test.helpers import pikaur, assert_installed  # noqa
 
 
 WRITE_DB = False
@@ -29,7 +32,7 @@ assert(
 # search aur packages
 assert(
     sorted(
-        pikaur('-Ssq oomox', capture=True).stdout.splitlines()
+        pikaur('-Ssq oomox').stdout.splitlines()
     ) == ['oomox', 'oomox-git']
 )
 

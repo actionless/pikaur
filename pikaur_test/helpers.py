@@ -4,6 +4,7 @@ from typing import Optional
 
 from pikaur.main import main
 from pikaur.core import spawn, DataType
+from pikaur import pprint
 
 
 class CmdResult(DataType):
@@ -13,7 +14,9 @@ class CmdResult(DataType):
     stderr: Optional[str] = None
 
 
-def pikaur(cmd: str, capture=False):
+def pikaur(
+        cmd: str, capture_stdout=True, capture_stderr=False
+) -> CmdResult:
     returncode = None
     stdout_text = None
     stderr_text = None
@@ -29,7 +32,9 @@ def pikaur(cmd: str, capture=False):
     sys.argv = ['pikaur'] + cmd.split(' ') + (
         ['--noconfirm'] if '-S ' in cmd else []
     )
-    print(' '.join(sys.argv))
+    pprint._ARGS.color = 'always'
+    print(pprint.color_line(' => ', 10) + ' '.join(sys.argv))
+    pprint._ARGS.color = 'never'
 
     _real_exit = sys.exit
     sys.exit = fake_exit
@@ -41,8 +46,9 @@ def pikaur(cmd: str, capture=False):
 
             _real_stdout = sys.stdout
             _real_stderr = sys.stderr
-            if capture:
+            if capture_stdout:
                 sys.stdout = out_file
+            if capture_stderr:
                 sys.stderr = err_file
 
             try:

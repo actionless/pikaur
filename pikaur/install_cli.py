@@ -134,7 +134,7 @@ class InstallPackagesCLI():
                 PackageDB.discard_repo_cache()
 
         if self.args.sysupgrade and not args.repo:
-            print_stdout('{} {}'.format(
+            print_stderr('{} {}'.format(
                 color_line('::', 12),
                 bold_line(_("Starting full AUR upgrade..."))
             ))
@@ -417,7 +417,7 @@ class InstallPackagesCLI():
 
     def ask_about_package_conflicts(self) -> None:
         if self.aur_packages_names:
-            print_stdout(_('looking for conflicting AUR packages...'))
+            print_stderr(_('looking for conflicting AUR packages...'))
             self.found_conflicts.update(find_aur_conflicts(self.aur_packages_names))
         if not self.found_conflicts:
             return

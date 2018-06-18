@@ -27,7 +27,7 @@ def pikaur(cmd: str):
         raise FakeExit()
 
     sys.argv = ['pikaur'] + cmd.split(' ') + (
-        ['--noconfirm'] if '-S' in cmd else []
+        ['--noconfirm'] if '-S ' in cmd else []
     )
     print(' '.join(sys.argv))
 

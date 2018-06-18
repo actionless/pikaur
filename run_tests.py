@@ -48,12 +48,28 @@ if WRITE_DB:
     pikaur('-S inxi')
     assert_installed('inxi')
 
-    # split aur package with deps from aur
-    pikaur('-S zfs-dkms')
-    assert_installed('zfs-dkms')
-    assert_installed('zfs-utils')
-    assert_installed('spl-dkms')
-    assert_installed('spl-utils')
+    # aur package with aur dep
+    pikaur('-S pacaur-git')
+    assert_installed('pacaur-git')
+    assert_installed('cower')
+
+    # aur package with manually chosen aur dep (not working by now)
+    # pacman('-Rs pacaur-git cower')
+    # pikaur('-S pacaur-git cower-git')
+    # assert_installed('pacaur-git')
+    # assert_installed('cower-git')
+
+    # 2 split packages
+    pikaur('-S python2-pyalsaaudio python-pyalsaaudio')
+    assert_installed('python2-pyalsaaudio')
+    assert_installed('python-pyalsaaudio')
+
+    # split aur package with deps from aur (too long to build?)
+    # pikaur('-S zfs-dkms')
+    # assert_installed('zfs-dkms')
+    # assert_installed('zfs-utils')
+    # assert_installed('spl-dkms')
+    # assert_installed('spl-utils')
 
 
 print('\n\n[OK] All tests passed\n')

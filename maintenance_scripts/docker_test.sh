@@ -12,15 +12,18 @@ sudo docker build ./ -t pikaur -f ./Dockerfile
 
 sudo docker \
 	container run \
+	--tty \
+	--interactive \
 	--volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro \
-	--detach --tty \
+	--detach \
 	--volume $(readlink -e ./htmlcov/):/opt/app-build/htmlcov \
 	pikaur:latest
 
 container_name=$(sudo docker container ls --quiet --filter ancestor=pikaur:latest)
 sudo docker \
 	container exec \
-	--interactive --tty \
+	--tty \
+	--interactive \
 	${container_name} \
 	sudo \
 		-u user \
@@ -33,10 +36,11 @@ return_code=$?
 
 sudo docker \
 	container kill \
-	${container_name}
+	${container_name} > /dev/null
 
 if [[ "${1:-}" == "--local" ]] && [[ ${return_code} -eq 0 ]] ; then
 	firefox htmlcov/index.html
 fi
 
+echo "Exited with $return_code"
 exit ${return_code}

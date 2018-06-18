@@ -28,7 +28,9 @@ assert(
 
 # search aur packages
 assert(
-    sorted(pikaur('-Ssq oomox').stdout.splitlines()) == ['oomox', 'oomox-git']
+    sorted(
+        pikaur('-Ssq oomox', capture=True).stdout.splitlines()
+    ) == ['oomox', 'oomox-git']
 )
 
 

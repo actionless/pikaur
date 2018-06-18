@@ -13,7 +13,7 @@ class CmdResult(DataType):
     stderr: Optional[str] = None
 
 
-def pikaur(cmd: str):
+def pikaur(cmd: str, capture=False):
     returncode = None
     stdout_text = None
     stderr_text = None
@@ -34,28 +34,29 @@ def pikaur(cmd: str):
     _real_exit = sys.exit
     sys.exit = fake_exit
 
-    with tempfile.TemporaryFile('w+') as out_file:
-        with tempfile.TemporaryFile('w+') as err_file:
+    with tempfile.TemporaryFile('w+', encoding='UTF-8') as out_file:
+        with tempfile.TemporaryFile('w+', encoding='UTF-8') as err_file:
+            out_file.isatty = lambda: False
+            err_file.isatty = lambda: False
 
             _real_stdout = sys.stdout
             _real_stderr = sys.stderr
-            out_file.isatty = lambda: False
-            err_file.isatty = lambda: False
-            sys.stdout = out_file
-            sys.stderr = err_file
+            if capture:
+                sys.stdout = out_file
+                sys.stderr = err_file
 
             try:
                 main()
             except FakeExit:
                 pass
 
+            sys.stdout = _real_stdout
+            sys.stderr = _real_stderr
+
             out_file.seek(0)
             err_file.seek(0)
             stdout_text = out_file.read()
             stderr_text = err_file.read()
-
-            sys.stdout = _real_stdout
-            sys.stderr = _real_stderr
 
     sys.exit = _real_exit
 

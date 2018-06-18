@@ -3,4 +3,4 @@ services:
   - docker
 script:
   - mv ./maintenance_scripts/Dockerfile ./
-  - docker build . -f Dockerfile
+  - ./maintenance_scripts/docker_test.sh --coveralls

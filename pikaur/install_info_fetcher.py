@@ -121,7 +121,8 @@ class InstallInfoFetcher:
             'refresh',
             'ignore',
             'sysupgrade',
-        ])
+            'needed'
+        ]) + extra_args
 
         pkg_install_infos = []
         all_results = {}

@@ -11,7 +11,7 @@ from typing import Any, List, Iterable, Callable, Optional, Union, TYPE_CHECKING
 from .i18n import _
 from .pprint import print_stderr, color_line
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     # pylint: disable=unused-import
     import pyalpm  # noqa
     from .aur import AURPackageInfo  # noqa

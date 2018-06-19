@@ -15,7 +15,7 @@ from .exceptions import PackagesNotFoundInRepo
 from .core import sudo, spawn
 from .prompt import retry_interactive_command_or_exit
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     # pylint: disable=unused-import
     from .aur import AURPackageInfo  # noqa
 

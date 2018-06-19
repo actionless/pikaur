@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 from .core import DataType
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     # pylint: disable=unused-import
     from .build import PackageBuild  # noqa
     from .version import VersionMatcher  # noqa

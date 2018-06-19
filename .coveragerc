@@ -1,5 +1,11 @@
 [report]
-omit = pikaur/argparse.py
+omit =
+    pikaur/argparse.py
+    pikaur/i18n.py
+    pikaur/pprint.py
+    pikaur/print_department.py
+    pikaur/prompt.py
+    pikaur/progressbar.py
 exclude_lines =
     pragma: no cover
     def __repr__

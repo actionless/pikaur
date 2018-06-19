@@ -59,6 +59,8 @@ def pikaur(
             sys.stdout = _real_stdout
             sys.stderr = _real_stderr
 
+            out_file.flush()
+            err_file.flush()
             out_file.seek(0)
             err_file.seek(0)
             stdout_text = out_file.read()

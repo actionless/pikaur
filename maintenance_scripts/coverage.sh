@@ -10,7 +10,7 @@ set -u
 
 pip install coveralls
 
-gpg --recv-keys 1EB2638FF56C0C53  # Dave Reisner, cower
+gpg --recv-keys 1EB2638FF56C0C53 || gpg --recv-keys 1EB2638FF56C0C53 # Dave Reisner, cower
 export PATH="${PATH}:/usr/bin/core_perl"
 
 coverage run --source=pikaur run_tests.py ${2:-}

@@ -40,13 +40,17 @@ assert(
 # tests which are modifying local package DB:
 if WRITE_DB:
 
-    # aur package
+    # aur package with repo deps
     pikaur('-S inxi')
     assert_installed('inxi')
 
-    # repo package
+    # repo package w/o deps
     pikaur('-S nano')
     assert_installed('nano')
+
+    # repo package with deps
+    pikaur('-S flac')
+    assert_installed('flac')
 
     # aur package with aur dep
     pikaur('-S pacaur-git')

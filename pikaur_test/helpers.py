@@ -1,17 +1,49 @@
 import sys
 import tempfile
-from typing import Optional
+from subprocess import Popen
+
+from typing import Optional, List
 
 from pikaur.main import main
-from pikaur.core import spawn, DataType
-from pikaur import pprint
 
 
-class CmdResult(DataType):
+NOT_FOUND_ATOM = object()
 
-    returncode: Optional[int] = None
-    stdout: Optional[str] = None
-    stderr: Optional[str] = None
+
+def spawn(cmd: List[str], **kwargs) -> Popen:
+    with tempfile.TemporaryFile() as out_file:
+        with tempfile.TemporaryFile() as err_file:
+            proc = Popen(cmd, stdout=out_file, stderr=err_file, **kwargs)
+            proc.communicate()
+            out_file.seek(0)
+            err_file.seek(0)
+            proc.stdout_text = out_file.read().decode('utf-8')
+            proc.stderr_text = err_file.read().decode('utf-8')
+            return proc
+
+
+def color_line(line: str, color_number: int) -> str:
+    result = ''
+    if color_number >= 8:
+        result += "\033[0;1m"
+        color_number -= 8
+    result += f"\033[03{color_number}m{line}"
+    # reset font:
+    result += "\033[0;0m"
+    return result
+
+
+class CmdResult:
+
+    def __init__(
+        self,
+        returncode: Optional[int] = None,
+        stdout: Optional[str] = None,
+        stderr: Optional[str] = None
+    ):
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
 
 
 def pikaur(
@@ -32,9 +64,7 @@ def pikaur(
     sys.argv = ['pikaur'] + cmd.split(' ') + (
         ['--noconfirm'] if '-S ' in cmd else []
     )
-    pprint._ARGS.color = 'always'
-    print(pprint.color_line(' => ', 10) + ' '.join(sys.argv))
-    pprint._ARGS.color = 'never'
+    print(color_line('\n => ', 10) + ' '.join(sys.argv))
 
     _real_exit = sys.exit
     sys.exit = fake_exit

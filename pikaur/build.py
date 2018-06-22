@@ -91,8 +91,6 @@ class PackageBuild(DataType):
                 '-C',
                 self.repo_path,
                 'pull',
-                'origin',
-                'master'
             ]
         elif self.clone:
             return [

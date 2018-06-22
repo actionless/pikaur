@@ -91,13 +91,13 @@ class PackageBuild(DataType):
                 '-C',
                 self.repo_path,
                 'pull',
-                'origin',
-                'master'
+                '--depth=1',
             ]
         elif self.clone:
             return [
                 'git',
                 'clone',
+                '--depth=1',
                 get_repo_url(self.package_base),
                 self.repo_path,
             ]

@@ -526,11 +526,11 @@ def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
         }
         pool.close()
         pool.join()
-        for package_name, request in requests.items():
+        for package_base, request in requests.items():
             result = request.get()
             if result.returncode > 0:
                 raise CloneError(
-                    build=package_builds_by_name[package_name],
+                    build=package_builds_by_base[package_base],
                     result=result
                 )
     return package_builds_by_name

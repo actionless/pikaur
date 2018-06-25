@@ -57,7 +57,7 @@ def find_conflicting_with_new_pkgs(
     """
     local_provided = PackageDB.get_local_provided_dict()
     new_pkgs_conflicts: Dict[str, List[str]] = {}
-    for conflict_line in new_pkg_conflicts_list:
+    for conflict_line in new_pkg_conflicts_list:  # pylint: disable=too-many-nested-blocks
         conflict_version_matcher = VersionMatcher(conflict_line)
         conflict_pkg_name = conflict_version_matcher.pkg_name
         if new_pkg_name != conflict_pkg_name:

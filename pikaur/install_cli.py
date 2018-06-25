@@ -555,7 +555,10 @@ class InstallPackagesCLI():
                 continue
 
             try:
-                repo_status.build(self.package_builds_by_name)
+                repo_status.build(
+                    all_package_builds=self.package_builds_by_name,
+                    resolved_conflicts=self.resolved_conflicts
+                )
             except (BuildError, DependencyError) as exc:
                 print_stderr(exc)
                 print_stderr(

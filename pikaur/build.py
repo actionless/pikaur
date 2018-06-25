@@ -53,6 +53,7 @@ class PackageBuild(DataType):
     built_deps_to_install: Dict[str, str]
 
     args: PikaurArgs
+    resolved_conflicts: Optional[List[List[str]]] = None
 
     def __init__(self, package_names: List[str]) -> None:  # pylint: disable=super-init-not-called
         self.args = parse_args()
@@ -270,6 +271,7 @@ class PackageBuild(DataType):
                 ),
                 args=self.args,
                 pikspect=True,
+                conflicts=self.resolved_conflicts,
             )
         result2 = True
         if explicitly_installed_deps:
@@ -284,6 +286,7 @@ class PackageBuild(DataType):
                 ),
                 args=self.args,
                 pikspect=True,
+                conflicts=self.resolved_conflicts,
             )
 
         PackageDB.discard_local_cache()
@@ -404,6 +407,7 @@ class PackageBuild(DataType):
             ),
             args=self.args,
             pikspect=True,
+            conflicts=self.resolved_conflicts,
         )
         PackageDB.discard_local_cache()
         return local_packages_before
@@ -457,8 +461,11 @@ class PackageBuild(DataType):
         PackageDB.discard_local_cache()
 
     def build(
-            self, all_package_builds: Dict[str, 'PackageBuild']
+            self,
+            all_package_builds: Dict[str, 'PackageBuild'],
+            resolved_conflicts: List[List[str]]
     ) -> None:
+        self.resolved_conflicts = resolved_conflicts
 
         self.prepare_build_destination()
         self._get_deps()

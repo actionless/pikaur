@@ -413,9 +413,22 @@ class PackageBuild(DataType):
             return
         PackageDB.discard_local_cache()
         local_packages_after = set(PackageDB.get_local_dict().keys())
+        local_provided_pkgs = PackageDB.get_local_provided_dict()
 
         deps_packages_installed = local_packages_after.difference(local_packages_before)
         deps_packages_removed = local_packages_before.difference(local_packages_after)
+
+        # check if there is diff incosistency because of the package replacement:
+        if deps_packages_removed:
+            for removed_pkg_name in deps_packages_removed[:]:
+                for installed_pkg_name in deps_packages_installed[:]:
+                    if (
+                            removed_pkg_name in local_provided_pkgs
+                    ) and (installed_pkg_name in local_provided_pkgs[removed_pkg_name]):
+                        del deps_packages_installed[installed_pkg_name]
+                        del deps_packages_removed[removed_pkg_name]
+                        continue
+
         if deps_packages_removed:
             print_stderr('{} {}:'.format(
                 color_line(':: error', 9),

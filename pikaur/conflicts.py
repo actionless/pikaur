@@ -2,8 +2,23 @@ from typing import List, Dict
 
 from .pacman import PackageDB
 from .aur import find_aur_packages
+from .aur_deps import find_repo_deps_of_aur_pkgs
 from .version import VersionMatcher
 from .updates import get_remote_package_version
+
+
+def get_new_repo_pkgs_conflicts(repo_packages: List[str]) -> Dict[str, List[str]]:
+    new_pkgs_conflicts_lists = {}
+    for repo_package_name in repo_packages:
+        repo_pkg = PackageDB.find_repo_package(repo_package_name)
+        conflicts: List[str] = []
+        if repo_pkg.conflicts:
+            conflicts += repo_pkg.conflicts
+        if repo_pkg.replaces:
+            conflicts += repo_pkg.replaces
+        if conflicts:
+            new_pkgs_conflicts_lists[repo_package_name] = list(set(conflicts))
+    return new_pkgs_conflicts_lists
 
 
 def get_new_aur_pkgs_conflicts(aur_packages_names: List[str]) -> Dict[str, List[str]]:
@@ -70,9 +85,10 @@ def find_conflicting_with_new_pkgs(
                             get_remote_package_version(installed_pkg_name)
                         )
                     ):
-                        new_pkgs_conflicts.setdefault(new_pkg_name, []).append(
-                            installed_pkg_name
-                        )
+                        new_pkgs_conflicts.setdefault(new_pkg_name, [])
+                        new_pkg_conflicts = new_pkgs_conflicts[new_pkg_name]
+                        if installed_pkg_name not in new_pkg_conflicts:
+                            new_pkg_conflicts.append(installed_pkg_name)
     return new_pkgs_conflicts
 
 
@@ -104,10 +120,16 @@ def find_aur_conflicts(
         aur_packages_names: List[str]
 ) -> Dict[str, List[str]]:
 
+    repo_deps_names = find_repo_deps_of_aur_pkgs(aur_packages_names)
+    all_pkgs_to_be_installed = aur_packages_names + repo_deps_names
+
     all_local_pkgs_info = PackageDB.get_local_dict()
     all_local_pkgs_names = list(all_local_pkgs_info.keys())
 
     new_pkgs_conflicts_lists = {}
+    new_pkgs_conflicts_lists.update(
+        get_new_repo_pkgs_conflicts(repo_deps_names)
+    )
     new_pkgs_conflicts_lists.update(
         get_new_aur_pkgs_conflicts(aur_packages_names)
     )
@@ -118,11 +140,11 @@ def find_aur_conflicts(
         conflicts_result.update(
             find_conflicting_with_new_pkgs(
                 new_pkg_name,
-                all_local_pkgs_names + aur_packages_names,
+                all_local_pkgs_names + all_pkgs_to_be_installed,
                 new_pkg_conflicts_list
             )
         )
-    for new_pkg_name in aur_packages_names:
+    for new_pkg_name in all_pkgs_to_be_installed:
         conflicts_result.update(
             find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_lists)
         )

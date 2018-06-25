@@ -424,13 +424,13 @@ class PackageBuild(DataType):
 
         # check if there is diff incosistency because of the package replacement:
         if deps_packages_removed:
-            for removed_pkg_name in deps_packages_removed[:]:
-                for installed_pkg_name in deps_packages_installed[:]:
+            for removed_pkg_name in list(deps_packages_removed):
+                for installed_pkg_name in list(deps_packages_installed):
                     if (
                             removed_pkg_name in local_provided_pkgs
                     ) and (installed_pkg_name in local_provided_pkgs[removed_pkg_name]):
-                        del deps_packages_installed[installed_pkg_name]
-                        del deps_packages_removed[removed_pkg_name]
+                        deps_packages_installed.remove(installed_pkg_name)
+                        deps_packages_removed.remove(removed_pkg_name)
                         continue
 
         if deps_packages_removed:

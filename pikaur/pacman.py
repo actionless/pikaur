@@ -179,6 +179,13 @@ class PackageDBCommon():
                     cls.get_local_list() if package_source == PackageSource.LOCAL
                     else cls.get_repo_list()
             ):
+                provided_pkg_names.setdefault(pkg.name, []).append(
+                    ProvidedDependency(
+                        name=pkg.name,
+                        package=pkg,
+                        version_matcher=VersionMatcher(pkg.name)
+                    )
+                )
                 if pkg.provides:
                     for provided_pkg_line in pkg.provides:
                         version_matcher = VersionMatcher(provided_pkg_line)
@@ -190,6 +197,9 @@ class PackageDBCommon():
                                 version_matcher=version_matcher
                             )
                         )
+            for what_provides, provided_pkgs in list(provided_pkg_names.items()):
+                if len(provided_pkgs) == 1 and provided_pkgs[0] == what_provides:
+                    del provided_pkg_names[what_provides]
             cls._provided_dict_cache[package_source] = provided_pkg_names
         return cls._provided_dict_cache[package_source]
 

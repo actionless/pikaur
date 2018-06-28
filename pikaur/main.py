@@ -194,7 +194,7 @@ def cli_entry_point() -> None:
             cli_info_packages(args)
         elif args.clean:
             cli_clean_packages_cache(args)
-        elif args.sysupgrade or '-S' in raw_args or '--sync' in raw_args:
+        elif args.sysupgrade or '-S' in raw_args or '-Sy' in raw_args:
             cli_install_packages(args)
         elif args.groups:
             not_implemented_in_pikaur = True

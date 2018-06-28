@@ -35,17 +35,6 @@ class ThreadSafeSequentialStorage():
         lock.release()
 
 
-class ThreadSafeLineStorage(ThreadSafeSequentialStorage):
-
-    @classmethod
-    def add_line(cls, _id: uuid.UUID, line: str) -> None:
-        cls._add_item(_id, line)
-
-    @classmethod
-    def get_output(cls, _id: uuid.UUID) -> str:
-        return '\n'.join(cls._get_storage(_id))
-
-
 class ThreadSafeBytesStorage(ThreadSafeSequentialStorage):
 
     @classmethod

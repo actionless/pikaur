@@ -158,33 +158,12 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     def get_output_bytes(self) -> bytes:
         return ThreadSafeBytesStorage.get_bytes_output(self.task_id)
 
-    def get_output(self) -> str:
-        return self.get_output_bytes().decode('utf-8')
-
-    def wait_for_output(self, pattern: str = None, text: str = None) -> bool:
-        if text:
-            pattern = re.escape(text)
-        compiled = self._re_compile(pattern)
-        while self.returncode is None:
-            try:
-                historic_output = b''.join(self.historic_output).decode('utf-8')
-            except UnicodeDecodeError:
-                continue
-            if compiled.search(historic_output):
-                return True
-            sleep(SMALL_TIMEOUT)
-        return False
-
     def hide_after(self, pattern):
         self._hide_after.append(pattern)
         self.check_questions()
 
     def show_after(self, pattern):
         self._show_after.append(pattern)
-        self.check_questions()
-
-    def hide_each_line(self, pattern):
-        self._hide_each_line.append(pattern)
         self.check_questions()
 
     @handle_exception_in_thread

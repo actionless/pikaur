@@ -6,3 +6,4 @@ locale/pikaur.pot
 .idea/
 .coverage
 htmlcov/
+coverage_env/

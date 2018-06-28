@@ -2,7 +2,7 @@ import sys
 import tempfile
 from subprocess import Popen
 
-from typing import Optional, List
+from typing import Optional, List, NoReturn
 
 from pikaur.main import main
 
@@ -10,10 +10,15 @@ from pikaur.main import main
 NOT_FOUND_ATOM = object()
 
 
-def spawn(cmd: List[str], **kwargs) -> Popen:
+class TestPopen(Popen):
+    stderr_text: Optional[str] = None
+    stdout_text: Optional[str] = None
+
+
+def spawn(cmd: List[str], **kwargs) -> TestPopen:
     with tempfile.TemporaryFile() as out_file:
         with tempfile.TemporaryFile() as err_file:
-            proc = Popen(cmd, stdout=out_file, stderr=err_file, **kwargs)
+            proc = TestPopen(cmd, stdout=out_file, stderr=err_file, **kwargs)
             proc.communicate()
             out_file.seek(0)
             err_file.seek(0)
@@ -36,11 +41,11 @@ def color_line(line: str, color_number: int) -> str:
 class CmdResult:
 
     def __init__(
-        self,
-        returncode: Optional[int] = None,
-        stdout: Optional[str] = None,
-        stderr: Optional[str] = None
-    ):
+            self,
+            returncode: Optional[int] = None,
+            stdout: Optional[str] = None,
+            stderr: Optional[str] = None
+    ) -> None:
         self.returncode = returncode
         self.stdout = stdout
         self.stderr = stderr
@@ -49,14 +54,14 @@ class CmdResult:
 def pikaur(
         cmd: str, capture_stdout=True, capture_stderr=False
 ) -> CmdResult:
-    returncode = None
-    stdout_text = None
-    stderr_text = None
+    returncode: Optional[int] = None
+    stdout_text: Optional[str] = None
+    stderr_text: Optional[str] = None
 
     class FakeExit(Exception):
         pass
 
-    def fake_exit(code):
+    def fake_exit(code: Optional[int] = 0) -> NoReturn:
         nonlocal returncode
         returncode = code
         raise FakeExit()
@@ -67,19 +72,19 @@ def pikaur(
     print(color_line('\n => ', 10) + ' '.join(sys.argv))
 
     _real_exit = sys.exit
-    sys.exit = fake_exit
+    sys.exit = fake_exit  # type: ignore
 
     with tempfile.TemporaryFile('w+', encoding='UTF-8') as out_file:
         with tempfile.TemporaryFile('w+', encoding='UTF-8') as err_file:
-            out_file.isatty = lambda: False
-            err_file.isatty = lambda: False
+            out_file.isatty = lambda: False  # type: ignore
+            err_file.isatty = lambda: False  # type: ignore
 
             _real_stdout = sys.stdout
             _real_stderr = sys.stderr
             if capture_stdout:
-                sys.stdout = out_file
+                sys.stdout = out_file  # type: ignore
             if capture_stderr:
-                sys.stderr = err_file
+                sys.stderr = err_file  # type: ignore
 
             try:
                 main()

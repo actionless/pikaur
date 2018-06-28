@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-pylint pikaur.py pikaur
-mypy --ignore-missing-imports pikaur
-flake8
+flake8 pikaur pikaur.py pikaur_test
+pylint pikaur.py pikaur pikaur_test
+mypy --ignore-missing-imports pikaur.py pikaur_test

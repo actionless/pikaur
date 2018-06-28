@@ -229,6 +229,7 @@ class PackageDB(PackageDBCommon):
     _alpm_handle: Optional[pyalpm.Handle] = None
 
     _pacman_find_cache: Dict[str, pyalpm.Package] = {}
+    _pacman_repo_pkg_present_cache: Dict[str, bool] = {}
 
     @classmethod
     def get_alpm_handle(cls) -> pyalpm.Handle:
@@ -246,6 +247,7 @@ class PackageDB(PackageDBCommon):
         super().discard_repo_cache()
         cls._alpm_handle = None
         cls._pacman_find_cache = {}
+        cls._pacman_repo_pkg_present_cache = {}
 
     @classmethod
     def search_local(cls, search_query: str) -> List[pyalpm.Package]:
@@ -329,7 +331,7 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def get_print_format_output(cls, cmd_args: List[str]) -> List[PacmanPrint]:
-        cache_index = ' '.join(cmd_args)
+        cache_index = ' '.join(sorted(cmd_args))
         cached_pkg = cls._pacman_find_cache.get(cache_index)
         if cached_pkg is not None:
             return cached_pkg
@@ -356,8 +358,36 @@ class PackageDB(PackageDBCommon):
         return results
 
     @classmethod
+    def get_not_found_packages(cls, pkg_names: List[str]) -> List[str]:
+        not_found_pkg_names = []
+        pkg_names_to_check = []
+        for pkg_name in pkg_names:
+            if pkg_name in cls._pacman_repo_pkg_present_cache:
+                if not cls._pacman_repo_pkg_present_cache[pkg_name]:
+                    not_found_pkg_names.append(pkg_name)
+            else:
+                pkg_names_to_check.append(pkg_name)
+
+        if not pkg_names_to_check:
+            return not_found_pkg_names
+
+        results = spawn(
+            get_pacman_command() + ['--sync', '--print-format=%%'] + pkg_names_to_check
+        ).stderr_text.splitlines()
+        new_not_found_pkg_names = [
+            result.split(' ')[-1] for result in results
+        ]
+
+        for pkg_name in pkg_names_to_check:
+            cls._pacman_repo_pkg_present_cache[pkg_name] = pkg_name not in new_not_found_pkg_names
+
+        return not_found_pkg_names + new_not_found_pkg_names
+
+    @classmethod
     def find_repo_package(cls, pkg_name: str) -> pyalpm.Package:
         # @TODO: interactively ask for multiple providers and save the answer?
+        if cls._pacman_repo_pkg_present_cache.get(pkg_name) is False:
+            raise PackagesNotFoundInRepo(packages=[pkg_name])
         all_repo_pkgs = PackageDB.get_repo_dict()
         results = cls.get_print_format_output(
             get_pacman_command() + ['--sync'] + [pkg_name]

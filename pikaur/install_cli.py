@@ -228,6 +228,7 @@ class InstallPackagesCLI():
         # check if we really need to build/install anything
         if not (
                 self.install_info.repo_packages_install_info or
+                self.install_info.new_repo_deps_install_info or
                 self.install_info.thirdparty_repo_packages_install_info or
                 self.install_info.aur_updates_install_info
         ):

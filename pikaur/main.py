@@ -272,7 +272,8 @@ def main() -> None:
 
     atexit.register(restore_tty)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    signal.signal(signal.SIGINT, handle_sig_int)
+    if not parse_args().debug:
+        signal.signal(signal.SIGINT, handle_sig_int)
     try:
         cli_entry_point()
     except BrokenPipeError:

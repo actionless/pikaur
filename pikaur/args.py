@@ -77,7 +77,9 @@ PIKAUR_OPTS = (
     ('a', 'aur'),
     (None, 'devel'),
     ('k', 'keepbuild'),
-    (None, 'nodiff')
+    (None, 'nodiff'),
+
+    (None, 'debug'),
 )
 
 

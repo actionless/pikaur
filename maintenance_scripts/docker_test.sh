@@ -31,7 +31,7 @@ sudo docker \
 			TRAVIS_JOB_ID="$TRAVIS_JOB_ID" \
 			TRAVIS_BRANCH="$TRAVIS_BRANCH" \
 			TRAVIS_PULL_REQUEST="$TRAVIS_PULL_REQUEST" \
-		./maintenance_scripts/coverage.sh ${1:--local} --write-db
+		./maintenance_scripts/ci.sh ${1:--local} --write-db
 return_code=$?
 
 sudo docker \

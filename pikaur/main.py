@@ -11,6 +11,7 @@ import shutil
 import atexit
 from datetime import datetime
 from typing import List
+from time import sleep
 from multiprocessing.pool import ThreadPool
 
 from .i18n import _  # keep that first
@@ -56,6 +57,9 @@ from .exceptions import (
 from .pikspect import (
     TTYRestore
 )
+
+
+SUDO_LOOP_INTERVAL = 1
 
 
 def init_readline() -> None:
@@ -105,8 +109,28 @@ def cli_print_upgradeable(args: PikaurArgs) -> None:
         ))
 
 
+def sudo_loop(once=False) -> None:
+    """
+    get sudo for further questions (command should do nothing)
+    """
+    while True:
+        interactive_spawn(sudo([PikaurConfig().misc.PacmanPath, '-T']))
+        if once:
+            break
+        sleep(SUDO_LOOP_INTERVAL)
+
+
 def cli_install_packages(args) -> None:
-    InstallPackagesCLI(args=args)
+    if running_as_root():
+        InstallPackagesCLI(args=args)
+    else:
+        sudo_loop(once=True)
+        with ThreadPool(processes=2) as pool:
+            install_packages_thread = pool.apply_async(lambda: InstallPackagesCLI(args=args))
+            pool.apply_async(sudo_loop)
+            pool.close()
+            install_packages_thread.get()
+            pool.terminate()
 
 
 def _info_packages_thread_repo(

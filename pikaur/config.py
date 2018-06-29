@@ -6,7 +6,7 @@ from typing import Union
 from .core import running_as_root, open_file
 
 
-VERSION = '0.14.5-dev'
+VERSION = '0.14.6-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",

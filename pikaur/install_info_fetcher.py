@@ -1,4 +1,3 @@
-import sys
 from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Dict
 
@@ -14,7 +13,7 @@ from .aur import find_aur_packages, AURPackageInfo
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .pprint import print_stdout
 from .args import PikaurArgs, parse_args, reconstruct_args
-from .exceptions import DependencyVersionMismatch
+from .exceptions import DependencyVersionMismatch, SysExit
 from .print_department import print_ignored_package, print_not_found_packages
 from .updates import find_aur_updates
 
@@ -250,7 +249,7 @@ class InstallInfoFetcher:
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(aur_packages_names)
         if not_found_aur_pkgs:
             print_not_found_packages(sorted(not_found_aur_pkgs))
-            sys.exit(6)
+            raise SysExit(6)
         aur_pkgs = {
             aur_pkg.name: aur_pkg
             for aur_pkg in aur_pkg_list

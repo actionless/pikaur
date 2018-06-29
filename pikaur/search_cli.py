@@ -18,7 +18,7 @@ from .aur import (
     aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names,
 )
 from .args import PikaurArgs
-from .exceptions import AURError
+from .exceptions import AURError, SysExit
 
 
 @return_exception
@@ -234,7 +234,7 @@ def cli_search_packages(args: PikaurArgs) -> None:
         for _key, query_result in result[PackageSource.AUR].items():
             if isinstance(query_result, AURError):
                 print_stderr('AUR returned error: {}'.format(query_result))
-                sys.exit(121)
+                raise SysExit(121)
             if isinstance(query_result, Exception):
                 raise query_result
         aur_result = join_search_results([

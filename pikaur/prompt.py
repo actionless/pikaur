@@ -8,6 +8,7 @@ from .config import PikaurConfig
 from .core import interactive_spawn
 from .i18n import _
 from .pprint import color_line, print_stderr, get_term_width, range_printable
+from .exceptions import SysExit
 
 
 Y = _('y')
@@ -43,7 +44,7 @@ def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
 
         # Exit when CRTL+C or CTRL+D
         if ord(answer) == 3 or ord(answer) == 4:
-            sys.exit(1)
+            raise SysExit(1)
         # Default when Enter
         if ord(answer) == 13:
             answer = default
@@ -137,4 +138,4 @@ def retry_interactive_command(
 def retry_interactive_command_or_exit(cmd_args: List[str], args: PikaurArgs, **kwargs) -> None:
     if not retry_interactive_command(cmd_args, args=args, **kwargs):
         if not ask_to_continue(args=args, default_yes=False):
-            sys.exit(125)
+            raise SysExit(125)

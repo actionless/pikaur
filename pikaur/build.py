@@ -440,7 +440,7 @@ class PackageBuild(DataType):
                     bold_line(', '.join(deps_packages_removed)))
             ))
             if not ask_to_continue(args=self.args):
-                sys.exit(125)
+                raise SysExit(125)
         if not deps_packages_installed:
             return
 

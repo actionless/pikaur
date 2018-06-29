@@ -129,8 +129,15 @@ def cli_install_packages(args) -> None:
             install_packages_thread = pool.apply_async(lambda: InstallPackagesCLI(args=args))
             pool.apply_async(sudo_loop)
             pool.close()
-            install_packages_thread.get()
-            pool.terminate()
+            catched_exc = None
+            try:
+                install_packages_thread.get()
+            except Exception as exc:
+                catched_exc = exc
+            finally:
+                pool.terminate()
+            if catched_exc:
+                raise catched_exc  # pylint: disable=raising-bad-type
 
 
 def _info_packages_thread_repo(

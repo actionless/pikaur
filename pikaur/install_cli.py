@@ -1,5 +1,4 @@
 # pylint: disable=too-many-lines
-import sys
 import os
 import hashlib
 from multiprocessing.pool import ThreadPool
@@ -61,7 +60,7 @@ def _check_pkg_arch(pkgbuild):
                   arch=arch,
                   suparch=', '.join(supported_archs))
         ))
-        sys.exit(95)
+        raise SysExit(95)
     pkgbuild.reviewed = True
 
 
@@ -177,7 +176,7 @@ class InstallPackagesCLI():
     def get_editor(self) -> Optional[List[str]]:
         editor = get_editor()
         if not editor and not self.ask_to_continue(_("Do you want to proceed without editing?")):
-            sys.exit(125)
+            raise SysExit(125)
         return editor
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
@@ -207,7 +206,7 @@ class InstallPackagesCLI():
                         _("Dependencies missing for {}").format(', '.join(exc.wanted_by)))
                 ))
             print_not_found_packages(exc.packages)
-            sys.exit(131)
+            raise SysExit(131)
         except DependencyVersionMismatch as exc:
             print_stderr(color_line(_("Version mismatch:"), 11))
             print_stderr(
@@ -218,7 +217,7 @@ class InstallPackagesCLI():
                     version=exc.version_found,
                 )
             )
-            sys.exit(131)
+            raise SysExit(131)
         else:
             self.aur_deps_relations = self.install_info.aur_deps_relations
 
@@ -236,7 +235,7 @@ class InstallPackagesCLI():
                 color_line('::', 10),
                 _("Nothing to do."),
             ))
-            sys.exit(0)
+            raise SysExit(0)
 
     def manual_package_selection(self):
         pkg_names_before = set(
@@ -411,7 +410,7 @@ class InstallPackagesCLI():
                     for skip_pkg_name in package_build.package_names:
                         self.discard_aur_package(skip_pkg_name)
                 else:
-                    sys.exit(125)
+                    raise SysExit(125)
 
     def ask_to_continue(self, text: str = None, default_yes=True) -> bool:
         return ask_to_continue(text=text, default_yes=default_yes, args=self.args)
@@ -430,7 +429,7 @@ class InstallPackagesCLI():
                         _("New packages '{new}' and '{other}' are in conflict.").format(
                             new=new_pkg_name, other=pkg_conflict),
                         9))
-                    sys.exit(131)
+                    raise SysExit(131)
         for new_pkg_name, new_pkg_conflicts in self.found_conflicts.items():
             for pkg_conflict in new_pkg_conflicts:
                 answer = self.ask_to_continue('{} {}'.format(
@@ -442,7 +441,7 @@ class InstallPackagesCLI():
                     ))
                 ), default_yes=False)
                 if not answer:
-                    sys.exit(125)
+                    raise SysExit(125)
                 self.resolved_conflicts.append([new_pkg_name, pkg_conflict])
 
     def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
@@ -566,7 +565,7 @@ class InstallPackagesCLI():
                     color_line(_("Can't build '{name}'.").format(name=pkg_name) + '\n', 9)
                 )
                 # if not self.ask_to_continue():
-                #     sys.exit(125)
+                #     raise SysExit(125)
                 for _pkg_name in repo_status.package_names:
                     failed_to_build_package_names.append(_pkg_name)
                     self.discard_aur_package(_pkg_name)
@@ -583,7 +582,7 @@ class InstallPackagesCLI():
                             color_line(":: " + _("error:"), 9),
                             _("Dependency cycle detected between {}").format(deps_fails_counter)
                         ))
-                        sys.exit(131)
+                        raise SysExit(131)
             else:
                 for _pkg_name in repo_status.package_names:
                     packages_to_be_built.remove(_pkg_name)
@@ -659,7 +658,7 @@ class InstallPackagesCLI():
         ):
             if not self.ask_to_continue(default_yes=False):
                 self._revert_transaction(PackageSource.REPO)
-                sys.exit(125)
+                raise SysExit(125)
         PackageDB.discard_local_cache()
         self._save_transaction(
             PackageSource.REPO, installed=self.install_package_names
@@ -693,7 +692,7 @@ class InstallPackagesCLI():
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self._revert_transaction(PackageSource.AUR)
-                    sys.exit(125)
+                    raise SysExit(125)
             PackageDB.discard_local_cache()
             self._save_transaction(
                 PackageSource.AUR, installed=new_aur_deps_to_install
@@ -725,7 +724,7 @@ class InstallPackagesCLI():
             ):
                 if not self.ask_to_continue(default_yes=False):
                     self._revert_transaction(PackageSource.AUR)
-                    sys.exit(125)
+                    raise SysExit(125)
             PackageDB.discard_local_cache()
             self._save_transaction(
                 PackageSource.AUR, installed=aur_packages_to_install
@@ -759,4 +758,4 @@ class InstallPackagesCLI():
                 [color_line(_("Failed to build following packages:"), 9), ] +
                 self.failed_to_build_package_names
             ))
-            sys.exit(1)
+            raise SysExit(1)

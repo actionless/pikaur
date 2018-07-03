@@ -98,7 +98,8 @@ def check_deps_versions(  # pylint:disable=too-many-branches
                     location=source,
                 )
             else:
-                del deps[dep_name]
+                if dep_name in deps:
+                    del deps[dep_name]
                 not_found_deps.append(dep_name)
 
     return not_found_deps

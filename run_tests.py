@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 import sys
 # monkey-patch to force always uncolored output:
 from pikaur import pprint

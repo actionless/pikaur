@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 from typing import Callable, Tuple, List, Optional
 
 import pyalpm

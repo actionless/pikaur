@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 import os
 from typing import List, Dict, Optional
 

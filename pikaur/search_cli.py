@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 import sys
 from datetime import datetime
 from multiprocessing.pool import ThreadPool

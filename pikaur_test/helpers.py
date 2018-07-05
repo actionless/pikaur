@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 import sys
 import tempfile
 from subprocess import Popen
@@ -5,9 +7,6 @@ from subprocess import Popen
 from typing import Optional, List, NoReturn
 
 from pikaur.main import main
-
-
-NOT_FOUND_ATOM = object()
 
 
 class TestPopen(Popen):

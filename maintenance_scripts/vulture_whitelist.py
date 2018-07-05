@@ -1,4 +1,7 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 from vulture.whitelist_utils import Whitelist
+
 
 whitelist = Whitelist()
 

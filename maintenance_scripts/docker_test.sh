@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# This file is licensed under GPLv3, see https://www.gnu.org/licenses/
+
 #set -euo pipefail
 IFS=$'\n\t'
 

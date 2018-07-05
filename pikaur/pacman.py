@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 import gettext
 import re
 from typing import List, Dict, Tuple, Iterable, Optional, Union, TYPE_CHECKING

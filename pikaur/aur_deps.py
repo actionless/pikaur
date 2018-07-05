@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 from multiprocessing.pool import ThreadPool
 from typing import List, Dict
 

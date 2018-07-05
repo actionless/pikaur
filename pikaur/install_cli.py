@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 # pylint: disable=too-many-lines
 import os
 import hashlib

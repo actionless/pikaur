@@ -1,3 +1,5 @@
+""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+
 import gzip
 import json
 from multiprocessing.pool import ThreadPool

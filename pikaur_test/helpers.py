@@ -49,6 +49,13 @@ class CmdResult:
         self.stdout = stdout
         self.stderr = stderr
 
+    def __repr__(self) -> str:
+        return (
+            f'<{self.returncode}>:\n'
+            f'{self.stderr}\n'
+            f'{self.stdout}\n'
+        )
+
 
 def pikaur(
         cmd: str, capture_stdout=True, capture_stderr=False
@@ -122,4 +129,10 @@ def pacman(cmd: str) -> CmdResult:
 def assert_installed(pkg_name: str) -> None:
     assert(
         pacman(f'-Qi {pkg_name}').returncode == 0
+    )
+
+
+def assert_not_installed(pkg_name: str) -> None:
+    assert(
+        pacman(f'-Qi {pkg_name}').returncode == 1
     )

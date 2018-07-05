@@ -5,7 +5,9 @@ import sys
 from pikaur import pprint
 pprint._ARGS.color = 'never'
 
-from pikaur_test.helpers import pikaur, assert_installed  # noqa
+from pikaur_test.helpers import (
+    pikaur, assert_installed, assert_not_installed,
+) # noqa
 
 
 WRITE_DB = False
@@ -64,6 +66,15 @@ if WRITE_DB:
     # pikaur('-S pacaur-git cower-git')
     # assert_installed('pacaur-git')
     # assert_installed('cower-git')
+
+    # 1 split package
+    pikaur('-S python-pyalsaaudio')
+    assert_installed('python-pyalsaaudio')
+    assert_not_installed('python2-pyalsaaudio')
+
+    # package removal (pacman wrapping)
+    pikaur('-Rs python-pyalsaaudio --noconfirm')
+    assert_not_installed('python-pyalsaaudio')
 
     # 2 split packages
     pikaur('-S python2-pyalsaaudio python-pyalsaaudio')

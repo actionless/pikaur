@@ -344,7 +344,7 @@ class PackageBuild(DataType):
                 not self.args.rebuild and
                 len(self.built_packages_paths) == len(self.package_names)
         ):
-            print_stdout("{} {}\n".format(
+            print_stderr("{} {}\n".format(
                 color_line("::", 10),
                 _n(
                     "Package {pkg} is already built. Pass '--rebuild' flag to force the build.",

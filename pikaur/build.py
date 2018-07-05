@@ -326,13 +326,36 @@ class PackageBuild(DataType):
                 BuildError(_("{} does not exist on the filesystem.").format(pkg_path))
             if dest_dir == self.build_dir:
                 new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
-                if not os.path.exists(PACKAGE_CACHE_PATH):
-                    os.makedirs(PACKAGE_CACHE_PATH)
-                if os.path.exists(new_package_path):
-                    os.remove(new_package_path)
-                shutil.move(pkg_path, PACKAGE_CACHE_PATH)
+                if os.path.exists(pkg_path):
+                    if not os.path.exists(PACKAGE_CACHE_PATH):
+                        os.makedirs(PACKAGE_CACHE_PATH)
+                    if os.path.exists(new_package_path):
+                        os.remove(new_package_path)
+                    shutil.move(pkg_path, PACKAGE_CACHE_PATH)
+                elif not os.path.exists(new_package_path):
+                    new_package_path = None  # type: ignore
                 pkg_path = new_package_path
-            self.built_packages_paths[pkg_name] = pkg_path
+            if pkg_path:
+                self.built_packages_paths[pkg_name] = pkg_path
+
+    def check_if_already_built(self) -> bool:
+        self._set_built_package_path()
+        if (
+                not self.args.rebuild and
+                len(self.built_packages_paths) == len(self.package_names)
+        ):
+            print_stdout("{} {}\n".format(
+                color_line("::", 10),
+                _n(
+                    "Package {pkg} is already built. Pass '--rebuild' flag to force the build.",
+                    "Packages {pkg} are already built. Pass '--rebuild' flag to force the build.",
+                    len(self.package_names)
+                ).format(
+                    pkg=bold_line(", ".join(self.package_names))
+                )
+            ))
+            return True
+        return False
 
     def prepare_build_destination(self) -> None:
         if running_as_root():
@@ -470,6 +493,10 @@ class PackageBuild(DataType):
         self.resolved_conflicts = resolved_conflicts
 
         self.prepare_build_destination()
+
+        if self.check_if_already_built():
+            return
+
         self._get_deps()
         self._get_built_deps(all_package_builds)
         self._install_built_deps(all_package_builds)

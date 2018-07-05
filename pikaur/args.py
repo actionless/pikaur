@@ -80,6 +80,7 @@ PIKAUR_OPTS = (
     (None, 'devel'),
     ('k', 'keepbuild'),
     (None, 'nodiff'),
+    (None, 'rebuild'),
 
     (None, 'debug'),
 )
@@ -211,6 +212,7 @@ def cli_print_help(args: PikaurArgs) -> None:
             ('', '--devel', _("always sysupgrade '-git', '-svn' and other dev packages")),
             ('-k', '--keepbuild', _("don't remove build dir after the build")),
             ('', '--nodiff', _("don't prompt to show the build files diff")),
+            ('', '--rebuild', _("always rebuild AUR packages")),
         ]
     print(''.join([
         '\n',

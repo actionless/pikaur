@@ -57,14 +57,14 @@ if WRITE_DB:
     assert_installed('flac')
 
     # aur package with aur dep and custom makepkg flags
-    pikaur('-S pacaur-git --mflags=--skippgpcheck')
-    assert_installed('pacaur-git')
+    pikaur('-S pacaur --mflags=--skippgpcheck')
+    assert_installed('pacaur')
     assert_installed('cower')
 
     # aur package with manually chosen aur dep (not working by now)
-    # pacman('-Rs pacaur-git cower')
-    # pikaur('-S pacaur-git cower-git')
-    # assert_installed('pacaur-git')
+    # pacman('-Rs pacaur cower')
+    # pikaur('-S pacaur cower-git')
+    # assert_installed('pacaur')
     # assert_installed('cower-git')
 
     # 1 split package

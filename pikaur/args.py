@@ -71,7 +71,7 @@ class PikaurArgumentParser(argparse.ArgumentParser):
             self.add_argument('-' + letter, action=action)
 
 
-PIKAUR_OPTS = (
+PIKAUR_BOOL_OPTS = (
     (None, 'noedit'),
     (None, 'edit'),
     (None, 'namesonly'),
@@ -83,6 +83,12 @@ PIKAUR_OPTS = (
     (None, 'rebuild'),
 
     (None, 'debug'),
+)
+
+
+PIKAUR_STR_OPTS = (
+    (None, 'mflags'),
+    (None, 'makepkg-config'),
 )
 
 
@@ -118,7 +124,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
             #
             (None, 'noconfirm'),
             (None, 'needed'),
-    ) + PIKAUR_OPTS:
+    ) + PIKAUR_BOOL_OPTS:
         parser.add_letter_andor_opt(action='store_true', letter=letter, opt=opt)
 
     for letter, opt in (
@@ -129,7 +135,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
 
     for letter, opt in (
             (None, 'color'),
-    ):
+    ) + PIKAUR_STR_OPTS:
         parser.add_letter_andor_opt(action=None, letter=letter, opt=opt)
 
     parser.add_argument('--ignore', action='append')
@@ -170,7 +176,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> List[str]:
     if not ignore_args:
         ignore_args = []
-    for letter, opt in PIKAUR_OPTS:
+    for letter, opt in PIKAUR_BOOL_OPTS + PIKAUR_STR_OPTS:
         if letter:
             ignore_args.append(letter)
         if opt:
@@ -190,7 +196,7 @@ def cli_print_help(args: PikaurArgs) -> None:
     from .core import spawn
     from .config import PikaurConfig
 
-    pikaur_long_opts = [long_opt for _short_opt, long_opt in PIKAUR_OPTS]
+    pikaur_long_opts = [long_opt for _short_opt, long_opt in PIKAUR_BOOL_OPTS + PIKAUR_STR_OPTS]
     pacman_help = spawn(
         [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args, ignore_args=pikaur_long_opts),
     ).stdout_text.replace(
@@ -213,6 +219,8 @@ def cli_print_help(args: PikaurArgs) -> None:
             ('-k', '--keepbuild', _("don't remove build dir after the build")),
             ('', '--nodiff', _("don't prompt to show the build files diff")),
             ('', '--rebuild', _("always rebuild AUR packages")),
+            ('', '--mflags=<string>', _("cli args to pass to makepkg")),
+            ('', '--makepkg-config=<path>', _("path to custom makepkg config")),
         ]
     print(''.join([
         '\n',
@@ -220,7 +228,9 @@ def cli_print_help(args: PikaurArgs) -> None:
         '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
         '\n'.join([
             '{:>5} {:<16} {}'.format(
-                short_opt and (short_opt + ',') or '', long_opt or '', descr
+                short_opt and (short_opt + ',') or '',
+                long_opt or '',
+                descr if ((len(short_opt) + len(long_opt)) < 16) else f"\n{23 * ' '}{descr}"
             )
             for short_opt, long_opt, descr in pikaur_options_help
         ])

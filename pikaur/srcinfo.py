@@ -5,7 +5,7 @@ from typing import List, Dict, Optional
 
 from .core import open_file, spawn, isolate_root_cmd
 from .version import VersionMatcher
-from .makepkg_config import MakepkgConfig
+from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
 
 CARCH = MakepkgConfig.get('CARCH')
@@ -101,7 +101,7 @@ class SrcInfo():
         with open_file(self.path, 'w') as srcinfo_file:
             result = spawn(
                 isolate_root_cmd(
-                    ['makepkg', '--printsrcinfo'],
+                    get_makepkg_cmd() + ['--printsrcinfo'],
                     cwd=self.repo_path
                 ), cwd=self.repo_path
             )

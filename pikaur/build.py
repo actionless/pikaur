@@ -30,7 +30,7 @@ from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .version import compare_versions
 from .pikspect import pikspect
-from .makepkg_config import MakepkgConfig
+from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
 
 class PackageBuild(DataType):
@@ -172,8 +172,8 @@ class PackageBuild(DataType):
                 self.prepare_build_destination()
                 pkgver_result = pikspect(
                     isolate_root_cmd(
-                        [
-                            'makepkg', '--nobuild', '--noprepare', '--nocheck', '--nodeps'
+                        get_makepkg_cmd() + [
+                            '--nobuild', '--noprepare', '--nocheck', '--nodeps'
                         ],
                         cwd=self.build_dir
                     ),
@@ -303,7 +303,7 @@ class PackageBuild(DataType):
     def _set_built_package_path(self) -> None:
         dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)
         pkg_paths = spawn(
-            isolate_root_cmd(['makepkg', '--packagelist'],
+            isolate_root_cmd(get_makepkg_cmd() + ['--packagelist'],
                              cwd=self.build_dir),
             cwd=self.build_dir
         ).stdout_text.splitlines()
@@ -514,9 +514,7 @@ class PackageBuild(DataType):
         ))
         build_succeeded = retry_interactive_command(
             isolate_root_cmd(
-                [
-                    'makepkg',
-                ] + makepkg_args,
+                get_makepkg_cmd() + makepkg_args,
                 cwd=self.build_dir
             ),
             cwd=self.build_dir,

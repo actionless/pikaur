@@ -7,6 +7,7 @@ from typing import (
 
 from .core import open_file
 from .config import CONFIG_ROOT
+from .args import parse_args
 
 
 CONFIG_VALUE_TYPE = Union[None, str, List[str]]
@@ -93,9 +94,19 @@ class MakepkgConfig():
 
     @classmethod
     def get(cls, key: str, fallback: Any = None, config_path: str = None) -> Any:
+        arg_path = parse_args().makepkg_config
         value = ConfigReader.get(key, fallback, config_path="/etc/makepkg.conf")
         if cls.get_user_makepkg_path():
             value = ConfigReader.get(key, value, config_path=cls.get_user_makepkg_path())
+        if arg_path:
+            value = ConfigReader.get(key, value, config_path=arg_path)
         if config_path:
             value = ConfigReader.get(key, value, config_path=config_path)
         return value
+
+
+def get_makepkg_cmd() -> List[str]:
+    args = parse_args()
+    return ['makepkg', ] + (args.mflags or '').split(' ') + (
+        (['--config', args.makepkg_config]) if args.makepkg_config else []
+    )

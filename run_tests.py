@@ -56,8 +56,8 @@ if WRITE_DB:
     pikaur('-S flac')
     assert_installed('flac')
 
-    # aur package with aur dep
-    pikaur('-S pacaur-git')
+    # aur package with aur dep and custom makepkg flags
+    pikaur('-S pacaur-git --mflags=--skippgpcheck')
     assert_installed('pacaur-git')
     assert_installed('cower')
 

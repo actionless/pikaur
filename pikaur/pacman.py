@@ -2,7 +2,9 @@
 
 import gettext
 import re
-from typing import List, Dict, Tuple, Iterable, Optional, Union, TYPE_CHECKING
+from typing import (
+    List, Dict, Tuple, Iterable, Optional, Union, Pattern, TYPE_CHECKING
+)
 
 from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
@@ -50,7 +52,7 @@ def format_pacman_question(message: str, question=QUESTION_YN_YES) -> str:
     return bold_line(" {} {} ".format(_p(message), question))
 
 
-def create_pacman_pattern(pacman_message: str) -> str:
+def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
     return re.compile(
         _p(pacman_message).replace(
             "(", r"\("

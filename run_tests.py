@@ -137,7 +137,12 @@ if WRITE_DB:
     assert_installed('spl-dkms')
     assert_installed('spl-utils')
 
-    for pkg_name in []:
+    for pkg_name in [
+            # double requirements line
+            # pikaur -Si --aur | grep -e \^name -e \^depends | grep -E "(>.*<|<.*>)" -B 1
+            'xfe',  # with doubled repo dep
+            'python2-uncompyle6',  # with doubled aur dep
+    ]:
         pikaur(f'-S {pkg_name} --mflags=--noextract', fake_makepkg=True)
         assert_installed(pkg_name)
 

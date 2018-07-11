@@ -61,6 +61,44 @@ class CmdResult:
         )
 
 
+class InterceptSysOutput():
+
+    stdout_text: str
+    stderr_text: str
+
+    def __init__(self, capture_stdout=True, capture_stderr=False) -> None:
+        self.capture_stdout = capture_stdout
+        self.capture_stderr = capture_stderr
+
+    def __enter__(self) -> 'InterceptSysOutput':
+        self.out_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
+        self.err_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
+        self.out_file.isatty = lambda: False  # type: ignore
+        self.err_file.isatty = lambda: False  # type: ignore
+
+        self._real_stdout = sys.stdout
+        self._real_stderr = sys.stderr
+        if self.capture_stdout:
+            sys.stdout = self.out_file  # type: ignore
+        if self.capture_stderr:
+            sys.stderr = self.err_file  # type: ignore
+
+        return self
+
+    def __exit__(self, *_exc_details) -> None:
+        sys.stdout = self._real_stdout
+        sys.stderr = self._real_stderr
+
+        self.out_file.flush()
+        self.err_file.flush()
+        self.out_file.seek(0)
+        self.err_file.seek(0)
+        self.stdout_text = self.out_file.read()
+        self.stderr_text = self.err_file.read()
+        self.out_file.close()
+        self.err_file.close()
+
+
 def pikaur(
         cmd: str, capture_stdout=True, capture_stderr=False, fake_makepkg=False
 ) -> CmdResult:
@@ -92,32 +130,20 @@ def pikaur(
     _real_exit = sys.exit
     sys.exit = fake_exit  # type: ignore
 
-    with tempfile.TemporaryFile('w+', encoding='UTF-8') as out_file:
-        with tempfile.TemporaryFile('w+', encoding='UTF-8') as err_file:
-            out_file.isatty = lambda: False  # type: ignore
-            err_file.isatty = lambda: False  # type: ignore
+    intercepted: InterceptSysOutput
+    with InterceptSysOutput(
+        capture_stderr=capture_stderr,
+        capture_stdout=capture_stdout
+    ) as _intercepted:
 
-            _real_stdout = sys.stdout
-            _real_stderr = sys.stderr
-            if capture_stdout:
-                sys.stdout = out_file  # type: ignore
-            if capture_stderr:
-                sys.stderr = err_file  # type: ignore
+        try:
+            main()
+        except FakeExit:
+            pass
+        intercepted = _intercepted
 
-            try:
-                main()
-            except FakeExit:
-                pass
-
-            sys.stdout = _real_stdout
-            sys.stderr = _real_stderr
-
-            out_file.flush()
-            err_file.flush()
-            out_file.seek(0)
-            err_file.seek(0)
-            stdout_text = out_file.read()
-            stderr_text = err_file.read()
+    stdout_text = intercepted.stdout_text
+    stderr_text = intercepted.stderr_text
 
     sys.exit = _real_exit
 

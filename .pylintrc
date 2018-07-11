@@ -329,7 +329,7 @@ variable-rgx=(([a-z][a-z0-9_]{2,40})|(_[a-z0-9_]*))$
 [CLASSES]
 
 # List of method names used to declare (i.e. assign) instance attributes.
-defining-attr-methods=__init__,__new__,setUp
+defining-attr-methods=__init__,__new__,setUp,__enter__
 
 # List of member names, which should be excluded from the protected access
 # warning.

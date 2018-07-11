@@ -1,18 +1,24 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import sys
+
 # monkey-patch to force always uncolored output:
 from pikaur import pprint
-pprint._ARGS.color = 'never'
+pprint._ARGS.color = 'never' # noqa
 
 from pikaur_test.helpers import (
     pikaur, pacman, assert_installed, assert_not_installed,
-) # noqa
+)
+
+from pikaur_test.test_news import run as test_news
 
 
 WRITE_DB = False
 if (len(sys.argv) > 1) and sys.argv[1] == '--write-db':
     WRITE_DB = True
+
+
+test_news()
 
 
 # just run info commands for coverage:

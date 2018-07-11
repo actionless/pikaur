@@ -1,19 +1,17 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import sys
-from datetime import datetime
 from multiprocessing.pool import ThreadPool
 from typing import Any, Dict, Tuple, List, Iterable, Union, Set
 
 import pyalpm
 
 from .i18n import _
-from .config import PikaurConfig
 from .core import DataType, PackageSource, return_exception
 from .pprint import (
-    color_line, bold_line, format_paragraph, print_stderr,
+    print_stderr,
 )
-from .print_department import pretty_format_repo_name, GROUP_COLOR
+from .print_department import print_package_search_results
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
 from .aur import (
     AURPackageInfo,
@@ -104,76 +102,6 @@ def join_search_results(
         for result in all_aur_results[0]
         if get_pkg_id(result) in aur_pkgs_nameset
     }.values()
-
-
-def print_package_search_results(
-        packages: Iterable[Union[AURPackageInfo, pyalpm.Package]],
-        local_pkgs_versions: Dict[str, str],
-        args: PikaurArgs
-) -> None:
-
-    def get_sort_key(pkg: AURPackageInfo) -> float:
-        if getattr(pkg, "numvotes", None) is not None:
-            return (pkg.numvotes + 1) * (pkg.popularity + 1)
-        return 1
-
-    local_pkgs_names = local_pkgs_versions.keys()
-    for package in sorted(
-            packages,
-            key=get_sort_key,
-            reverse=True
-    ):
-        # @TODO: return only packages for the current architecture
-        pkg_name = package.name
-        if args.quiet:
-            print(pkg_name)
-        else:
-
-            repo = color_line('aur/', 9)
-            if isinstance(package, pyalpm.Package):
-                repo = pretty_format_repo_name(package.db.name)
-
-            groups = ''
-            if getattr(package, 'groups', None):
-                groups = color_line('({}) '.format(' '.join(package.groups)), GROUP_COLOR)
-
-            installed = ''
-            if pkg_name in local_pkgs_names:
-                if package.version != local_pkgs_versions[pkg_name]:
-                    installed = color_line(_("[installed: {version}]").format(
-                        version=local_pkgs_versions[pkg_name],
-                    ) + ' ', 14)
-                else:
-                    installed = color_line(_("[installed]") + ' ', 14)
-
-            rating = ''
-            if getattr(package, "numvotes", None) is not None:
-                rating = color_line('({}, {:.2f})'.format(
-                    package.numvotes,
-                    package.popularity
-                ), 3)
-
-            color_config = PikaurConfig().colors
-            version_color = color_config.get_int('Version')
-            version = package.version
-
-            if getattr(package, "outofdate", None) is not None:
-                version_color = color_config.get_int('VersionDiffOld')
-                version = "{} [{}: {}]".format(
-                    package.version,
-                    _("outofdate"),
-                    datetime.fromtimestamp(package.outofdate).strftime('%Y/%m/%d')
-                )
-
-            print("{}{} {} {}{}{}".format(
-                repo,
-                bold_line(pkg_name),
-                color_line(version, version_color),
-                groups,
-                installed,
-                rating
-            ))
-            print(format_paragraph(f'{package.desc}'))
 
 
 def cli_search_packages(args: PikaurArgs) -> None:

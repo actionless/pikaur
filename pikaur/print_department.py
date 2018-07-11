@@ -1,17 +1,24 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import sys
-from typing import List, Tuple
+from datetime import datetime
+from typing import TYPE_CHECKING, List, Tuple, Iterable, Union, Dict
+
+import pyalpm
 
 from .i18n import _, _n
 from .pprint import (
     print_stderr, color_line, bold_line, format_paragraph, get_term_width,
 )
+from .args import PikaurArgs
 from .core import PackageSource, InstallInfo
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
 from .pacman import PackageDB
-from .updates import get_remote_package_version
+
+if TYPE_CHECKING:
+    # pylint: disable=unused-import
+    from .aur import AURPackageInfo  # noqa
 
 
 GROUP_COLOR = 4
@@ -278,6 +285,8 @@ def pretty_format_repo_name(repo_name: str) -> str:
 
 
 def print_ignored_package(package_name):
+    from .updates import get_remote_package_version
+
     current = PackageDB.get_local_dict().get(package_name)
     current_version = current.version if current else ''
     new_version = get_remote_package_version(package_name)
@@ -313,3 +322,73 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
             )
         )
     )
+
+
+def print_package_search_results(
+        packages: Iterable[Union['AURPackageInfo', pyalpm.Package]],
+        local_pkgs_versions: Dict[str, str],
+        args: PikaurArgs
+) -> None:
+
+    def get_sort_key(pkg: 'AURPackageInfo') -> float:
+        if getattr(pkg, "numvotes", None) is not None:
+            return (pkg.numvotes + 1) * (pkg.popularity + 1)
+        return 1
+
+    local_pkgs_names = local_pkgs_versions.keys()
+    for package in sorted(
+            packages,
+            key=get_sort_key,
+            reverse=True
+    ):
+        # @TODO: return only packages for the current architecture
+        pkg_name = package.name
+        if args.quiet:
+            print(pkg_name)
+        else:
+
+            repo = color_line('aur/', 9)
+            if isinstance(package, pyalpm.Package):
+                repo = pretty_format_repo_name(package.db.name)
+
+            groups = ''
+            if getattr(package, 'groups', None):
+                groups = color_line('({}) '.format(' '.join(package.groups)), GROUP_COLOR)
+
+            installed = ''
+            if pkg_name in local_pkgs_names:
+                if package.version != local_pkgs_versions[pkg_name]:
+                    installed = color_line(_("[installed: {version}]").format(
+                        version=local_pkgs_versions[pkg_name],
+                    ) + ' ', 14)
+                else:
+                    installed = color_line(_("[installed]") + ' ', 14)
+
+            rating = ''
+            if getattr(package, "numvotes", None) is not None:
+                rating = color_line('({}, {:.2f})'.format(
+                    package.numvotes,
+                    package.popularity
+                ), 3)
+
+            color_config = PikaurConfig().colors
+            version_color = color_config.get_int('Version')
+            version = package.version
+
+            if getattr(package, "outofdate", None) is not None:
+                version_color = color_config.get_int('VersionDiffOld')
+                version = "{} [{}: {}]".format(
+                    package.version,
+                    _("outofdate"),
+                    datetime.fromtimestamp(package.outofdate).strftime('%Y/%m/%d')
+                )
+
+            print("{}{} {} {}{}{}".format(
+                repo,
+                bold_line(pkg_name),
+                color_line(version, version_color),
+                groups,
+                installed,
+                rating
+            ))
+            print(format_paragraph(f'{package.desc}'))

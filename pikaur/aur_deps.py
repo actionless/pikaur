@@ -49,7 +49,7 @@ def check_deps_versions(  # pylint:disable=too-many-branches
             # @TODO: find a more common way to split multiple requirements line?
             try:
                 result = PackageDB.find_repo_package(
-                    version_matchers[dep_name].line.split(',')[0]
+                    version_matchers[dep_name].line
                 )
             except PackagesNotFoundInRepo:
                 not_found_deps.append(dep_name)

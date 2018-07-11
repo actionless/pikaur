@@ -47,10 +47,14 @@ def check_deps_versions(  # pylint:disable=too-many-branches
         not_found_deps = PackageDB.get_not_found_packages(deps_pkg_names)
         for dep_name in set(deps_pkg_names).difference(set(not_found_deps)):
             # @TODO: find a more common way to split multiple requirements line?
-            result = PackageDB.find_repo_package(
-                version_matchers[dep_name].line.split(',')[0]
-            )
-            deps[dep_name] = result
+            try:
+                result = PackageDB.find_repo_package(
+                    version_matchers[dep_name].line.split(',')[0]
+                )
+            except PackagesNotFoundInRepo:
+                not_found_deps.append(dep_name)
+            else:
+                deps[dep_name] = result
     else:
         deps_list, not_found_deps = find_local_packages(deps_pkg_names)
         deps = {dep.name: dep for dep in deps_list}

@@ -6,7 +6,8 @@ from pikaur.news import News  # pylint: disable=no-name-in-module
 
 
 def run():
-    os.remove(News.CACHE_FILE)
+    if os.path.exists(News.CACHE_FILE):
+        os.remove(News.CACHE_FILE)
     news = News()
     news.fetch_latest()
 

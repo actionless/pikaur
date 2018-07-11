@@ -50,6 +50,22 @@ def format_pacman_question(message: str, question=QUESTION_YN_YES) -> str:
     return bold_line(" {} {} ".format(_p(message), question))
 
 
+def create_pacman_pattern(pacman_message: str) -> str:
+    return re.compile(
+        _p(pacman_message).replace(
+            "(", r"\("
+        ).replace(
+            ")", r"\)"
+        ).replace(
+            "%d", "(.*)"
+        ).replace(
+            "%s", "(.*)"
+        ).replace(
+            "%zu", "(.*)"
+        ).strip()
+    )
+
+
 MESSAGE_PACKAGES = _p('Packages')
 
 QUESTION_PROCEED = format_pacman_question('Proceed with installation?')
@@ -60,6 +76,7 @@ QUESTION_CONFLICT = format_pacman_question(
 QUESTION_CONFLICT_VIA_PROVIDED = format_pacman_question(
     '%s and %s are in conflict (%s). Remove %s?', QUESTION_YN_NO
 )
+PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
 
 
 def format_conflicts(conflicts: List[List[str]]) -> List[str]:
@@ -380,9 +397,11 @@ class PackageDB(PackageDBCommon):
         results = spawn(
             get_pacman_command() + ['--sync', '--print-format=%%'] + pkg_names_to_check
         ).stderr_text.splitlines()
-        new_not_found_pkg_names = [
-            result.split(' ')[-1] for result in results
-        ]
+        new_not_found_pkg_names = []
+        for result in results:
+            groups = PATTERN_NOTFOUND.findall(result)
+            if groups:
+                new_not_found_pkg_names.append(groups[0])
 
         for pkg_name in pkg_names_to_check:
             cls._pacman_repo_pkg_present_cache[pkg_name] = pkg_name not in new_not_found_pkg_names

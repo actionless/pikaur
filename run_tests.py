@@ -75,11 +75,11 @@ if WRITE_DB:
     # # Arch Wiki: Split packages #############################################
 
     # Split packages 1
-    pikaur('-S clion')
+    pikaur('-S clion --mflags=--noextract', fake_makepkg=True)
     assert_installed('clion')
 
     # Split packages 2: libc++
-    pikaur('-S libc++ --mflags=--skippgpcheck')
+    pikaur('-S libc++ --mflags=--skippgpcheck', fake_makepkg=True, capture_stdout=False)
     assert_installed('libc++')
 
     # Split packages 2: libc++abi (installing already built package)

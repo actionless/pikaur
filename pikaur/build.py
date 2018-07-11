@@ -18,7 +18,7 @@ from .config import (
     CACHE_ROOT, AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
 )
 from .aur import get_repo_url, find_aur_packages
-from .pacman import find_local_packages, PackageDB, get_pacman_command
+from .pacman import PackageDB, get_pacman_command
 from .args import PikaurArgs, parse_args
 from .pprint import color_line, bold_line, color_enabled, print_stdout, print_stderr
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit, ask_to_continue
@@ -28,7 +28,7 @@ from .exceptions import (
 )
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
-from .version import compare_versions
+from .version import compare_versions, VersionMatcher
 from .pikspect import pikspect
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
@@ -219,9 +219,10 @@ class PackageBuild(DataType):
         self.built_deps_to_install = {}
         for dep in self.all_deps_to_install:
             # @TODO: check if dep is Provided by built package
-            if dep not in all_package_builds:
+            dep_name = VersionMatcher(dep).pkg_name
+            if dep_name not in all_package_builds:
                 continue
-            package_build = all_package_builds[dep]
+            package_build = all_package_builds[dep_name]
             if package_build == self:
                 _mark_dep_resolved(dep)
                 continue
@@ -373,7 +374,6 @@ class PackageBuild(DataType):
         copy_tree(self.repo_path, self.build_dir)
 
     def _get_deps(self) -> None:
-        local_provided_pkgs = PackageDB.get_local_provided_dict()
         self.new_deps_to_install = []
         new_make_deps_to_install: List[str] = []
         new_check_deps_to_install: List[str] = []
@@ -389,23 +389,15 @@ class PackageBuild(DataType):
                     ),
             ):
                 # find deps satisfied explicitly:
-                installed_deps, new_deps_to_install = find_local_packages(
-                    new_deps_version_matchers.keys()
-                )
-                # find deps satisfied via provided packages:
-                for dep_name in new_deps_to_install[:]:
-                    if dep_name not in local_provided_pkgs:
-                        continue
-                    # and check version of each candidate:
-                    for provided_by in local_provided_pkgs[dep_name]:
-                        if new_deps_version_matchers[dep_name](provided_by.package.version):
-                            new_deps_to_install.remove(dep_name)
-                            break
-                # check also versions of explicitly satisfied deps:
-                new_deps_to_install += [
-                    pkg.name
-                    for pkg in installed_deps
-                    if not new_deps_version_matchers[pkg.name](pkg.version)
+                new_deps_to_install = [
+                    dep_line
+                    for dep_lines in [
+                        new_deps_version_matchers[dep_name].line.split(',')
+                        for dep_name in PackageDB.get_not_found_local_packages([
+                            vm.line for vm in new_deps_version_matchers.values()
+                        ])
+                    ]
+                    for dep_line in dep_lines
                 ]
                 deps_destination += new_deps_to_install
         self.new_make_deps_to_install = list(set(

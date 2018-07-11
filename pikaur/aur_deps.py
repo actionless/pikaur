@@ -3,111 +3,27 @@
 from multiprocessing.pool import ThreadPool
 from typing import List, Dict
 
-import pyalpm
-
-from .pacman import PackageDB, ProvidedDependency, find_local_packages
+from .pacman import PackageDB
 from .version import VersionMatcher
 from .aur import AURPackageInfo, find_aur_packages
 from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch, PackagesNotFoundInRepo
 from .core import PackageSource
 
 
-def find_provided_pkgs(
-        pkg_names: List[str],
-        source: PackageSource
-) -> Dict[str, List[ProvidedDependency]]:
-
-    provided_by_backrefs: Dict[str, List[ProvidedDependency]] = {}
-    if not pkg_names:
-        return provided_by_backrefs
-    if source == PackageSource.REPO:
-        provided_dict = PackageDB.get_repo_provided_dict()
-    else:
-        provided_dict = PackageDB.get_local_provided_dict()
-    for provided_name, provided in provided_dict.items():
-        for provided_pkg in provided:
-            for dep_name in pkg_names:
-                if dep_name == provided_name:
-                    provided_by_backrefs.setdefault(
-                        dep_name, []
-                    ).append(provided_pkg)
-    return provided_by_backrefs
-
-
-def check_deps_versions(  # pylint:disable=too-many-branches
-        aur_pkg_name: str,
+def check_deps_versions(
         deps_pkg_names: List[str],
         version_matchers: Dict[str, VersionMatcher],
         source: PackageSource
 ) -> List[str]:
-    # try to find explicit pkgs:
     not_found_deps: List[str] = []
-    deps: Dict[str, pyalpm.Package] = {}
+    deps_lines = [
+        version_matchers[dep_name].line
+        for dep_name in deps_pkg_names
+    ]
     if source == PackageSource.REPO:
-        not_found_deps = PackageDB.get_not_found_packages(deps_pkg_names)
-        for dep_name in set(deps_pkg_names).difference(set(not_found_deps)):
-            # @TODO: find a more common way to split multiple requirements line?
-            try:
-                result = PackageDB.find_repo_package(
-                    version_matchers[dep_name].line
-                )
-            except PackagesNotFoundInRepo:
-                not_found_deps.append(dep_name)
-            else:
-                deps[dep_name] = result
+        not_found_deps = PackageDB.get_not_found_repo_packages(deps_lines)
     else:
-        deps_list, not_found_deps = find_local_packages(deps_pkg_names)
-        deps = {dep.name: dep for dep in deps_list}
-
-    # try to find pkgs provided by other pkgs:
-    provided_by_backrefs = find_provided_pkgs(
-        pkg_names=deps_pkg_names,
-        source=source
-    )
-    for dep_name in provided_by_backrefs:
-        if dep_name in not_found_deps:
-            not_found_deps.remove(dep_name)
-        if dep_name in deps:
-            del deps[dep_name]
-
-    # check versions of found excplicit deps:
-    for dep_name, dep in list(deps.items())[:]:
-        version_matcher = version_matchers[dep_name]
-        if not version_matcher(dep.version):
-            if source == PackageSource.REPO:
-                raise DependencyVersionMismatch(
-                    version_found=dep.version,
-                    dependency_line=version_matcher.line,
-                    who_depends=aur_pkg_name,
-                    depends_on=dep_name,
-                    location=source,
-                )
-            else:
-                del deps[dep_name]
-                not_found_deps.append(dep_name)
-
-    # dep via provided pkg:
-    for dep_name, provided_by_pkgs in provided_by_backrefs.items():
-        version_matcher = version_matchers[dep_name]
-        if not sum([
-                version_matcher(provided.version_matcher.version or provided.package.version)
-                for provided in provided_by_pkgs
-        ]):
-            if source == PackageSource.REPO:
-                raise DependencyVersionMismatch(
-                    version_found={
-                        provided.name: provided.package.version for provided in provided_by_pkgs
-                    },
-                    dependency_line=version_matcher.line,
-                    who_depends=aur_pkg_name,
-                    depends_on=dep_name,
-                    location=source,
-                )
-            else:
-                if dep_name in deps:
-                    del deps[dep_name]
-                not_found_deps.append(dep_name)
-
+        not_found_deps = PackageDB.get_not_found_local_packages(deps_lines)
     return not_found_deps
 
 
@@ -125,6 +41,65 @@ def get_aur_pkg_deps_and_version_matchers(aur_pkg: AURPackageInfo) -> Dict[str, 
     return deps
 
 
+def handle_not_found_aur_pkgs(
+        aur_pkg_name: str,
+        aur_pkgs_info: List[AURPackageInfo],
+        not_found_aur_deps: List[str],
+) -> None:
+    if not not_found_aur_deps:
+        return
+    all_repo_provided_packages = PackageDB.get_repo_provided_dict()
+    all_local_provided_packages = PackageDB.get_local_provided_dict()
+
+    problem_packages_names = []
+    for aur_pkg in aur_pkgs_info:
+        version_matchers = get_aur_pkg_deps_and_version_matchers(aur_pkg)
+        deps = version_matchers.keys()
+        for not_found_pkg in not_found_aur_deps:
+            if not_found_pkg in deps:
+                version_matcher = version_matchers[not_found_pkg]
+
+                try:
+                    failed_pkg = PackageDB.find_repo_package(not_found_pkg)
+                except PackagesNotFoundInRepo:
+                    pass
+                else:
+                    version_found = failed_pkg.version
+                    if not_found_pkg in all_repo_provided_packages:
+                        version_found = str({
+                            provided.name: provided.package.version
+                            for provided in all_repo_provided_packages[not_found_pkg]
+                        })
+                    raise DependencyVersionMismatch(
+                        version_found=version_found,
+                        dependency_line=version_matcher.line,
+                        who_depends=aur_pkg_name,
+                        depends_on=not_found_pkg,
+                        location=PackageSource.REPO,
+                    )
+
+                not_found_local_pkgs = PackageDB.get_not_found_local_packages([not_found_pkg])
+                if not not_found_local_pkgs:
+                    raise DependencyVersionMismatch(
+                        version_found={
+                            provided.name: provided.package.version
+                            for provided in all_local_provided_packages[not_found_pkg]
+                        },
+                        dependency_line=version_matcher.line,
+                        who_depends=aur_pkg_name,
+                        depends_on=not_found_pkg,
+                        location=PackageSource.LOCAL,
+                    )
+
+                problem_packages_names.append(aur_pkg.name)
+                break
+
+    raise PackagesNotFoundInAUR(
+        packages=not_found_aur_deps,
+        wanted_by=problem_packages_names
+    )
+
+
 def find_missing_deps_for_aur_pkg(
         aur_pkg_name: str,
         version_matchers: Dict[str, VersionMatcher],
@@ -133,7 +108,6 @@ def find_missing_deps_for_aur_pkg(
 
     # local pkgs
     not_found_local_pkgs = check_deps_versions(
-        aur_pkg_name=aur_pkg_name,
         deps_pkg_names=list(version_matchers.keys()),
         version_matchers=version_matchers,
         source=PackageSource.LOCAL
@@ -143,7 +117,6 @@ def find_missing_deps_for_aur_pkg(
 
     # repo pkgs
     not_found_repo_pkgs = check_deps_versions(
-        aur_pkg_name=aur_pkg_name,
         deps_pkg_names=not_found_local_pkgs,
         version_matchers=version_matchers,
         source=PackageSource.REPO
@@ -176,18 +149,11 @@ def find_missing_deps_for_aur_pkg(
         not_found_repo_pkgs
     )
     # @TODO: find packages Provided by AUR packages
-    if not_found_aur_deps:
-        problem_packages_names = []
-        for aur_pkg in aur_pkgs_info:
-            deps = get_aur_pkg_deps_and_version_matchers(aur_pkg).keys()
-            for not_found_pkg in not_found_aur_deps:
-                if not_found_pkg in deps:
-                    problem_packages_names.append(aur_pkg.name)
-                    break
-        raise PackagesNotFoundInAUR(
-            packages=not_found_aur_deps,
-            wanted_by=problem_packages_names
-        )
+    handle_not_found_aur_pkgs(
+        aur_pkg_name=aur_pkg_name,
+        aur_pkgs_info=aur_pkgs_info,
+        not_found_aur_deps=not_found_aur_deps,
+    )
 
     # check versions of found AUR packages:
     for aur_dep_info in aur_deps_info:
@@ -252,35 +218,26 @@ def find_aur_deps(package_names: List[str]) -> Dict[str, List[str]]:  # pylint: 
     return result_aur_deps
 
 
-def _find_repo_deps_of_aur_pkg(pkg_name: str) -> List[str]:
-    local_pkg_names = PackageDB.get_local_pkgnames()
-    local_provided_names = PackageDB.get_local_provided_dict().keys()
-    new_dep_names: List[str] = []
+def _find_repo_deps_of_aur_pkg(pkg_name: str) -> List[VersionMatcher]:
+    new_dep_names: List[VersionMatcher] = []
     pkg = find_aur_packages([pkg_name])[0][0]
-    for dep_line in (
-            pkg.depends + pkg.makedepends + pkg.checkdepends
-    ):
-        dep_name = VersionMatcher(dep_line).pkg_name
-        if (
-                dep_line in new_dep_names
-        ) or (
-            dep_name in new_dep_names
-        ) or (
-            dep_name in local_pkg_names
-        ) or (
-            dep_name in local_provided_names
-        ):
-            continue
-        try:
-            PackageDB.find_repo_package(dep_line)
-        except PackagesNotFoundInRepo:
-            continue
-        new_dep_names.append(dep_line)
+    deps = get_aur_pkg_deps_and_version_matchers(pkg)
+    dep_lines = [vm.line for vm in deps.values()]
+    locally_not_found_pkgs = PackageDB.get_not_found_local_packages(dep_lines)
+    for dep_name, version_matcher in deps.items():
+        dep_line = version_matcher.line
+        if dep_name in locally_not_found_pkgs:
+            try:
+                PackageDB.find_repo_package(dep_line)
+            except PackagesNotFoundInRepo:
+                continue
+            else:
+                new_dep_names.append(version_matcher)
     return new_dep_names
 
 
-def find_repo_deps_of_aur_pkgs(package_names: List[str]) -> List[str]:
-    new_dep_names: List[str] = []
+def find_repo_deps_of_aur_pkgs(package_names: List[str]) -> List[VersionMatcher]:
+    new_dep_names: List[VersionMatcher] = []
     with ThreadPool() as pool:
         results = [
             pool.apply_async(_find_repo_deps_of_aur_pkg, (pkg_name, ))

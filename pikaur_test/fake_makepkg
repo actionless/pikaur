@@ -3,10 +3,10 @@
 # This file is licensed under GPLv3, see https://www.gnu.org/licenses/
 
 if [[ ! "$(grep foobz1 PKGBUILD)" ]]  && [[ ! "$(grep foobz2 PKGBUILD)" ]] ; then
-	for line in $(grep "^prepare.*()" PKGBUILD -o) ; do
+	for line in $(grep "^prepare_.\+()" PKGBUILD -o) ; do
 		echo -e "$line {\n echo \"foo_$line\"\n }" >> PKGBUILD
 	done
-	for line in $(grep "^package.*()" PKGBUILD -o) ; do
+	for line in $(grep "^package_.\+()" PKGBUILD -o) ; do
 		echo -e "$line {\n echo \"foo_$line\"\n }" >> PKGBUILD
 	done
 	echo '

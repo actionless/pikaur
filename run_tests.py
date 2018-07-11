@@ -142,8 +142,12 @@ if WRITE_DB:
             # pikaur -Si --aur | grep -e \^name -e \^depends | grep -E "(>.*<|<.*>)" -B 1
             'xfe',  # with doubled repo dep
             'python2-uncompyle6',  # with doubled aur dep
+
+            # depend on versioned requirement provided by few pkgs
+            # 'minecraft-launcher',  # too many deps to download
+            'jetbrains-toolbox',
     ]:
-        pikaur(f'-S {pkg_name} --mflags=--noextract', fake_makepkg=True)
+        pikaur(f'-S {pkg_name} --mflags=--noextract', fake_makepkg=True, capture_stdout=False)
         assert_installed(pkg_name)
 
 

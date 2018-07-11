@@ -3,7 +3,7 @@
 import gettext
 import re
 from typing import (
-    List, Dict, Tuple, Iterable, Optional, Union, Pattern, TYPE_CHECKING
+    List, Dict, Optional, Union, Pattern, TYPE_CHECKING
 )
 
 from pycman.config import PacmanConfig as PycmanConfig
@@ -254,6 +254,7 @@ class PackageDB(PackageDBCommon):
     _alpm_handle: Optional[pyalpm.Handle] = None
 
     _pacman_find_cache: Dict[str, pyalpm.Package] = {}
+    _pacman_test_cache: Dict[str, List[VersionMatcher]] = {}
     _pacman_repo_pkg_present_cache: Dict[str, bool] = {}
 
     @classmethod
@@ -266,6 +267,7 @@ class PackageDB(PackageDBCommon):
     def discard_local_cache(cls) -> None:
         super().discard_local_cache()
         cls._alpm_handle = None
+        cls._pacman_test_cache = {}
 
     @classmethod
     def discard_repo_cache(cls) -> None:
@@ -383,15 +385,38 @@ class PackageDB(PackageDBCommon):
         return results
 
     @classmethod
-    def get_not_found_packages(cls, pkg_names: List[str]) -> List[str]:
+    def get_pacman_test_output(cls, cmd_args: List[str]) -> List[VersionMatcher]:
+        cache_index = ' '.join(sorted(cmd_args))
+        cached_pkg = cls._pacman_test_cache.get(cache_index)
+        if cached_pkg is not None:
+            return cached_pkg
+        results: List[VersionMatcher] = []
+        not_found_packages_output = spawn(
+            get_pacman_command() + ['-T', ] + cmd_args
+        ).stdout_text
+        if not not_found_packages_output:
+            cls._pacman_test_cache[cache_index] = results
+            return results
+        for line in not_found_packages_output.splitlines():
+            try:
+                version_matcher = VersionMatcher(line)
+            except ValueError:
+                print_stderr(line)
+                continue
+            else:
+                results.append(version_matcher)
+        return results
+
+    @classmethod
+    def get_not_found_repo_packages(cls, pkg_lines: List[str]) -> List[str]:
         not_found_pkg_names = []
-        pkg_names_to_check = []
-        for pkg_name in pkg_names:
+        pkg_names_to_check: List[str] = []
+        for pkg_name in pkg_lines:
             if pkg_name in cls._pacman_repo_pkg_present_cache:
                 if not cls._pacman_repo_pkg_present_cache[pkg_name]:
                     not_found_pkg_names.append(pkg_name)
             else:
-                pkg_names_to_check.append(pkg_name)
+                pkg_names_to_check += pkg_name.split(',')
 
         if not pkg_names_to_check:
             return not_found_pkg_names
@@ -403,12 +428,25 @@ class PackageDB(PackageDBCommon):
         for result in results:
             groups = PATTERN_NOTFOUND.findall(result)
             if groups:
-                new_not_found_pkg_names.append(groups[0])
+                pkg_name = VersionMatcher(groups[0]).pkg_name
+                new_not_found_pkg_names.append(pkg_name)
 
         for pkg_name in pkg_names_to_check:
             cls._pacman_repo_pkg_present_cache[pkg_name] = pkg_name not in new_not_found_pkg_names
 
         return not_found_pkg_names + new_not_found_pkg_names
+
+    @classmethod
+    def get_not_found_local_packages(cls, pkg_lines: List[str]) -> List[str]:
+        not_found_version_matchers = cls.get_pacman_test_output([
+            splitted_pkg_name for splitted_pkg_names in
+            [pkg_name.split(',') for pkg_name in pkg_lines]
+            for splitted_pkg_name in splitted_pkg_names
+        ])
+        not_found_packages = list(set([
+            vm.pkg_name for vm in not_found_version_matchers
+        ]))
+        return not_found_packages
 
     @classmethod
     def find_repo_package(cls, pkg_name: str) -> pyalpm.Package:
@@ -417,7 +455,7 @@ class PackageDB(PackageDBCommon):
             raise PackagesNotFoundInRepo(packages=[pkg_name])
         all_repo_pkgs = PackageDB.get_repo_dict()
         results = cls.get_print_format_output(
-            get_pacman_command() + ['--sync'] + [pkg_name]
+            get_pacman_command() + ['--sync'] + pkg_name.split(',')
         )
         if not results:
             raise PackagesNotFoundInRepo(packages=[pkg_name])
@@ -473,18 +511,6 @@ def find_sysupgrade_packages() -> List[pyalpm.Package]:
     return [
         all_repo_pkgs[result.full_name] for result in results
     ]
-
-
-def find_local_packages(package_names: Iterable[str]) -> Tuple[List[pyalpm.Package], List[str]]:
-    all_local_pkgs = PackageDB.get_local_dict()
-    pacman_packages = []
-    not_found_packages = []
-    for package_name in package_names:
-        if all_local_pkgs.get(package_name):
-            pacman_packages.append(all_local_pkgs[package_name])
-        else:
-            not_found_packages.append(package_name)
-    return pacman_packages, not_found_packages
 
 
 def find_packages_not_from_repo() -> List[str]:

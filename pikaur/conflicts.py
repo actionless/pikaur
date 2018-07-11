@@ -122,7 +122,8 @@ def find_aur_conflicts(
         aur_packages_names: List[str]
 ) -> Dict[str, List[str]]:
 
-    repo_deps_names = find_repo_deps_of_aur_pkgs(aur_packages_names)
+    repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(aur_packages_names)
+    repo_deps_names = [vm.pkg_name for vm in repo_deps_version_matchers]
     all_pkgs_to_be_installed = aur_packages_names + repo_deps_names
 
     all_local_pkgs_info = PackageDB.get_local_dict()

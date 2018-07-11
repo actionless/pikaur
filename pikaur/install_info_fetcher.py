@@ -109,7 +109,7 @@ class InstallInfoFetcher:
         self.mark_dependent()
 
     def _get_repo_pkgs_info(  # pylint: disable=too-many-locals
-            self, pkg_names: List[str], extra_args: Optional[List[str]] = None
+            self, pkg_lines: List[str], extra_args: Optional[List[str]] = None
     ) -> List[InstallInfo]:
         extra_args = extra_args or []
         all_repo_pkgs = PackageDB.get_repo_dict()
@@ -129,10 +129,10 @@ class InstallInfoFetcher:
         all_results = {}
         with ThreadPool() as pool:
             all_requests = {}
-            for pkg_name in pkg_names[:]:
+            for pkg_name in pkg_lines[:]:
                 all_requests[pkg_name] = pool.apply_async(
                     PackageDB.get_print_format_output,
-                    (pacman_args + [pkg_name], )
+                    (pacman_args + pkg_name.split(','), )
                 )
             pool.close()
             pool.join()
@@ -187,7 +187,7 @@ class InstallInfoFetcher:
 
     def get_repo_pkgs_info(self):
         for pkg_update in (
-                self._get_repo_pkgs_info(pkg_names=self.install_package_names) +
+                self._get_repo_pkgs_info(pkg_lines=self.install_package_names) +
                 self.get_upgradeable_repo_pkgs_info()
         ):
             if pkg_update.name in [
@@ -231,10 +231,13 @@ class InstallInfoFetcher:
         all_aur_pkg_names = [
             pkg_info.name for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
         ]
-        new_dep_names = find_repo_deps_of_aur_pkgs(all_aur_pkg_names)
+        new_dep_version_matchers = find_repo_deps_of_aur_pkgs(all_aur_pkg_names)
+        new_dep_lines = [
+            vm.line for vm in new_dep_version_matchers
+        ]
 
         for dep_install_info in self._get_repo_pkgs_info(
-                pkg_names=new_dep_names, extra_args=['--needed']
+                pkg_lines=new_dep_lines, extra_args=['--needed']
         ):
             if dep_install_info.name in [
                     install_info.name for install_info in

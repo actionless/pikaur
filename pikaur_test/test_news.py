@@ -2,11 +2,15 @@ import os
 
 from pikaur_test.helpers import InterceptSysOutput
 
-from pikaur.news import News
+from pikaur.news import News  # pylint: disable=no-name-in-module
 
 
 def run():
-    with open(os.path.expanduser("~/.cache/pikaur/last_seen_news.dat"), 'w') as news_fd:
+    os.remove(News.CACHE_FILE)
+    news = News()
+    news.fetch_latest()
+
+    with open(News.CACHE_FILE, 'w') as news_fd:
         news_fd.write("Fri, 03 May 2018 20:27:33 +0000")
 
     intercepted: InterceptSysOutput

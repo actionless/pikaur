@@ -161,19 +161,21 @@ class PackageDBCommon():
 
     @classmethod
     def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
-        if not cls._packages_list_cache.get(PackageSource.REPO):
-            cls._packages_list_cache[PackageSource.REPO] = list(
-                cls.get_repo_dict(quiet=quiet).values()
-            )
-        return cls._packages_list_cache[PackageSource.REPO]
+        pass
+        # if not cls._packages_list_cache.get(PackageSource.REPO):
+            # cls._packages_list_cache[PackageSource.REPO] = list(
+                # cls.get_repo_dict(quiet=quiet).values()
+            # )
+        # return cls._packages_list_cache[PackageSource.REPO]
 
     @classmethod
     def get_local_list(cls, quiet=False) -> List[pyalpm.Package]:
-        if not cls._packages_list_cache.get(PackageSource.LOCAL):
-            cls._packages_list_cache[PackageSource.LOCAL] = list(
-                cls.get_local_dict(quiet=quiet).values()
-            )
-        return cls._packages_list_cache[PackageSource.LOCAL]
+        pass
+        # if not cls._packages_list_cache.get(PackageSource.LOCAL):
+            # cls._packages_list_cache[PackageSource.LOCAL] = list(
+                # cls.get_local_dict(quiet=quiet).values()
+            # )
+        # return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
     def get_repo_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:

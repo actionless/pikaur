@@ -73,6 +73,11 @@ if WRITE_DB:
     # # python-tox dep is not available now
 
     # # Arch Wiki: Split packages #############################################
+
+    # Split packages 1
+    pikaur('-S clion')
+    assert_installed('clion')
+
     # Split packages 3: 1 split package
     pikaur('-S python-pyalsaaudio')
     assert_installed('python-pyalsaaudio')

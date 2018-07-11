@@ -11,6 +11,7 @@ set -u
 pip install coveralls
 
 export PATH="${PATH}:/usr/bin/core_perl"
+echo "PKGEXT='.pkg.tar'" >> ~/.makepkg.conf
 
 coverage run --source=pikaur run_tests.py ${2:-}
 

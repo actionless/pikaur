@@ -8,7 +8,16 @@ Inspired by `pacaur`, `yaourt` and `yay`.
 
 Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--ask`, `--noconfirm` and so) it just interactively tells pacman what to do. If pacman will ask some unexpected question user will be just able to answer it manually.
 
-If some `pacman` or `makepkg` operation failed for irrelevant reason (like timed out `sudo` prompt) pikaur will suggest to restart the operation and instead of failing the whole transaction you could also skip the failed operation.
+If some `pacman` or `makepkg` operation failed for irrelevant reason (like untrusted GPG key or checksum mismatch) pikaur will suggest to restart the operation and instead of failing the whole transaction you could also skip the failed operation.
+
+Notable features:
+
+* using [systemd dynamic users](http://0pointer.net/blog/dynamic-users-with-systemd.html "") if building packages as root user
+* show unread [Arch news](https://www.archlinux.org/news/ "") before sysupgrade
+* [m]anual package selection in install prompt using text editor (ignore unwanted updates or select package provider)
+* show AUR package diff and review PKGBUILD and .install files
+* [upgrade](#how-to-upgrade-all-the-dev--git-packages-at-once "") `-git`, `-svn` and other dev packages
+* AUR package names in shell completion
 
 The following pacman operations are extended with AUR capabilities:
 
@@ -24,6 +33,7 @@ Also see `pikaur -Sh` and `pikaur -Qh` for pikaur-specific flags.
 
 Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or has been altered it via [M]anual package selection).
 
+
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
 * [Config file](#configuration "")
@@ -32,8 +42,6 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 * [Contributing](#contributing "")
 * - [Translations](#translations "")
 * [Authors](#authors "")
-
-![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
 
 ### Installation
@@ -44,6 +52,8 @@ git clone https://aur.archlinux.org/pikaur.git
 cd pikaur
 makepkg -fsri
 ```
+
+![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
 
 ### Run without installation

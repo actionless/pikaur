@@ -79,10 +79,10 @@ if WRITE_DB:
     assert_installed('clion')
 
     # Split packages 2: libc++
-    pikaur('-S libc++')
+    pikaur('-S libc++ --mflags=--skippgpcheck')
     assert_installed('libc++')
 
-    # Split packages 2: libc++abi
+    # Split packages 2: libc++abi (installing already built package)
     pikaur('-S libc++abi')
     assert_installed('libc++abi')
 

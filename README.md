@@ -14,10 +14,10 @@ Notable features:
 
 * using [systemd dynamic users](http://0pointer.net/blog/dynamic-users-with-systemd.html "") if building packages as root user
 * show unread [Arch news](https://www.archlinux.org/news/ "") before sysupgrade
-* [m]anual package selection in install prompt using text editor (ignore unwanted updates or select package provider)
+* [m]anual package selection in [install prompt](#screenshot "") using text editor (ignore unwanted updates or select package provider)
 * show AUR package diff and review PKGBUILD and .install files
 * [upgrade](#how-to-upgrade-all-the-dev--git-packages-at-once "") `-git`, `-svn` and other dev packages
-* AUR package names in shell completion
+* AUR package names in shell completion (bash, fish, zsh)
 
 The following pacman operations are extended with AUR capabilities:
 
@@ -52,6 +52,8 @@ git clone https://aur.archlinux.org/pikaur.git
 cd pikaur
 makepkg -fsri
 ```
+
+### Screenshot
 
 ![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 

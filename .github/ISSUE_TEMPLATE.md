@@ -1,7 +1,6 @@
 ```
 pikaur -Vq
 
-
 ```
 
 
@@ -9,12 +8,10 @@ pikaur -Vq
 
 
 
-
 ##### Attached log:
 
 ```
 pikaur -S my-precious-package
-
 
 
 ```

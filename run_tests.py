@@ -78,6 +78,14 @@ if WRITE_DB:
     pikaur('-S clion')
     assert_installed('clion')
 
+    # Split packages 2: libc++
+    pikaur('-S libc++')
+    assert_installed('libc++')
+
+    # Split packages 2: libc++abi
+    pikaur('-S libc++abi')
+    assert_installed('libc++abi')
+
     # Split packages 3: 1 split package
     pikaur('-S python-pyalsaaudio')
     assert_installed('python-pyalsaaudio')

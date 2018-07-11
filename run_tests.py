@@ -153,7 +153,7 @@ if WRITE_DB:
             # 'minecraft-launcher',  # too many deps to download
             'jetbrains-toolbox',
     ]:
-        pikaur(f'-S {pkg_name} --mflags=--noextract', fake_makepkg=True, capture_stdout=False)
+        pikaur(f'-S {pkg_name} --mflags=--noextract', fake_makepkg=True, capture_stdout=True)
         assert_installed(pkg_name)
 
 

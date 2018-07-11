@@ -41,6 +41,14 @@ assert(
 )
 
 
+# package can't be found in AUR
+result = pikaur('-S not-existing-aur-package-7h68712683h1628h1')
+assert(result.returncode == 6)
+assert(
+    result.stdout.splitlines()[-1].strip() == 'not-existing-aur-package-7h68712683h1628h1'
+)
+
+
 # tests which are modifying local package DB:
 if WRITE_DB:
 
@@ -94,7 +102,7 @@ if WRITE_DB:
     assert_installed('clion')
 
     # Split packages 2: libc++
-    pikaur('-S libc++ --mflags=--skippgpcheck', fake_makepkg=True)
+    pikaur('-S libc++ --mflags=--skippgpcheck,--noextract', fake_makepkg=True)
     assert_installed('libc++')
 
     # Split packages 2: libc++abi (installing already built package)

@@ -6,7 +6,7 @@ from pikaur import pprint
 pprint._ARGS.color = 'never'
 
 from pikaur_test.helpers import (
-    pikaur, assert_installed, assert_not_installed,
+    pikaur, pacman, assert_installed, assert_not_installed,
 ) # noqa
 
 
@@ -61,8 +61,23 @@ if WRITE_DB:
     assert_installed('pacaur')
     assert_installed('cower')
 
+    # package removal (pacman wrapping test)
+    pikaur('-Rs pacaur cower --noconfirm')
+    assert_not_installed('pacaur')
+    assert_not_installed('cower')
+
+    pikaur('-S cower-git --mflags=--skippgpcheck')
+    assert_installed('cower-git')
+
+    # aur package with aur dep provided by another already installed AUR pkg
+    pikaur('-S pacaur')
+    assert_installed('pacaur')
+    assert(
+        pacman('-Qsq cower').stdout.strip() == 'cower-git'
+    )
+
     # aur package with manually chosen aur dep (not working by now)
-    # pacman('-Rs pacaur cower')
+    # pacman('-Rs pacaur cower-git')
     # pikaur('-S pacaur cower-git')
     # assert_installed('pacaur')
     # assert_installed('cower-git')
@@ -79,7 +94,7 @@ if WRITE_DB:
     assert_installed('clion')
 
     # Split packages 2: libc++
-    pikaur('-S libc++ --mflags=--skippgpcheck', fake_makepkg=True, capture_stdout=False)
+    pikaur('-S libc++ --mflags=--skippgpcheck', fake_makepkg=True)
     assert_installed('libc++')
 
     # Split packages 2: libc++abi (installing already built package)
@@ -91,7 +106,7 @@ if WRITE_DB:
     assert_installed('python-pyalsaaudio')
     assert_not_installed('python2-pyalsaaudio')
 
-    # package removal (pacman wrapping test)
+    # package removal
     pikaur('-Rs python-pyalsaaudio --noconfirm')
     assert_not_installed('python-pyalsaaudio')
 
@@ -100,14 +115,23 @@ if WRITE_DB:
     assert_installed('python2-pyalsaaudio')
     assert_installed('python-pyalsaaudio')
 
+    # # Arch Wiki: Reliable solver ############################################
+    # pikaur('-S ros-lunar-desktop --mflags=--noextract', fake_makepkg=True)
+    # assert_installed('ros-lunar-desktop')
+    # it's slow as hell even with mocked makepkg :(
+
     # # Based on GH-issues: ###################################################
 
     # split aur package with deps from aur (too long to build so use fake makepkg)
-    pikaur('-S zfs-dkms', fake_makepkg=True)
+    pikaur('-S zfs-dkms --mflags=--noextract', fake_makepkg=True)
     assert_installed('zfs-dkms')
     assert_installed('zfs-utils')
     assert_installed('spl-dkms')
     assert_installed('spl-utils')
+
+    for pkg_name in []:
+        pikaur(f'-S {pkg_name} --mflags=--noextract', fake_makepkg=True)
+        assert_installed(pkg_name)
 
 
 print('\n\n[OK] All tests passed\n')

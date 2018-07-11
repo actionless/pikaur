@@ -220,7 +220,7 @@ def cli_print_help(args: PikaurArgs) -> None:
             ('-k', '--keepbuild', _("don't remove build dir after the build")),
             ('', '--nodiff', _("don't prompt to show the build files diff")),
             ('', '--rebuild', _("always rebuild AUR packages")),
-            ('', '--mflags=<string>', _("cli args to pass to makepkg")),
+            ('', '--mflags=<--flag1>,<--flag2>', _("cli args to pass to makepkg")),
             ('', '--makepkg-config=<path>', _("path to custom makepkg config")),
             ('', '--makepkg-path=<path>', _("override path to makepkg executable")),
         ]

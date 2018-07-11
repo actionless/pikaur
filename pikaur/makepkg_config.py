@@ -107,6 +107,6 @@ class MakepkgConfig():
 
 def get_makepkg_cmd() -> List[str]:
     args = parse_args()
-    return [args.makepkg_path or 'makepkg', ] + (args.mflags or '').split(' ') + (
+    return [args.makepkg_path or 'makepkg', ] + (args.mflags or '').split(',') + (
         (['--config', args.makepkg_config]) if args.makepkg_config else []
     )

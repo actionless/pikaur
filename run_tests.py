@@ -67,22 +67,30 @@ if WRITE_DB:
     # assert_installed('pacaur')
     # assert_installed('cower-git')
 
-    # 1 split package
+    # # Arch Wiki: Reliable parser ############################################
+    # pikaur('-S aws-cli-git')
+    # assert_installed('aws-cli-git')
+    # # python-tox dep is not available now
+
+    # # Arch Wiki: Split packages #############################################
+    # Split packages 3: 1 split package
     pikaur('-S python-pyalsaaudio')
     assert_installed('python-pyalsaaudio')
     assert_not_installed('python2-pyalsaaudio')
 
-    # package removal (pacman wrapping)
+    # package removal (pacman wrapping test)
     pikaur('-Rs python-pyalsaaudio --noconfirm')
     assert_not_installed('python-pyalsaaudio')
 
-    # 2 split packages
+    # Split packages 3: 2 split packages
     pikaur('-S python2-pyalsaaudio python-pyalsaaudio')
     assert_installed('python2-pyalsaaudio')
     assert_installed('python-pyalsaaudio')
 
-    # split aur package with deps from aur (too long to build?)
-    pikaur('-S zfs-dkms')
+    # # Based on GH-issues: ###################################################
+
+    # split aur package with deps from aur (too long to build so use fake makepkg)
+    pikaur('-S zfs-dkms', fake_makepkg=True)
     assert_installed('zfs-dkms')
     assert_installed('zfs-utils')
     assert_installed('spl-dkms')

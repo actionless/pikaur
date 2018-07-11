@@ -1,12 +1,15 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import sys
+import os
 import tempfile
 from subprocess import Popen
 
 from typing import Optional, List, NoReturn
 
 from pikaur.main import main
+
+TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class TestPopen(Popen):
@@ -58,7 +61,7 @@ class CmdResult:
 
 
 def pikaur(
-        cmd: str, capture_stdout=True, capture_stderr=False
+        cmd: str, capture_stdout=True, capture_stderr=False, fake_makepkg=False
 ) -> CmdResult:
     returncode: Optional[int] = None
     stdout_text: Optional[str] = None
@@ -73,7 +76,13 @@ def pikaur(
         raise FakeExit()
 
     sys.argv = ['pikaur'] + cmd.split(' ') + (
-        ['--noconfirm'] if '-S ' in cmd else []
+        [
+            '--noconfirm',
+        ] if '-S ' in cmd else []
+    ) + (
+        [
+            '--makepkg-path=' + os.path.join(TEST_DIR, 'fake_makepkg'),
+        ] if fake_makepkg else []
     )
     print(color_line('\n => ', 10) + ' '.join(sys.argv))
 

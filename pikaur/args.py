@@ -89,6 +89,7 @@ PIKAUR_BOOL_OPTS = (
 PIKAUR_STR_OPTS = (
     (None, 'mflags'),
     (None, 'makepkg-config'),
+    (None, 'makepkg-path'),
 )
 
 
@@ -221,6 +222,7 @@ def cli_print_help(args: PikaurArgs) -> None:
             ('', '--rebuild', _("always rebuild AUR packages")),
             ('', '--mflags=<string>', _("cli args to pass to makepkg")),
             ('', '--makepkg-config=<path>', _("path to custom makepkg config")),
+            ('', '--makepkg-path=<path>', _("override path to makepkg executable")),
         ]
     print(''.join([
         '\n',

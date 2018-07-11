@@ -127,6 +127,10 @@ class PackageDBCommon():
             del cls._packages_list_cache[package_source]
         if cls._packages_dict_cache.get(package_source):
             del cls._packages_dict_cache[package_source]
+        if cls._provided_list_cache.get(package_source):
+            del cls._provided_list_cache[package_source]
+        if cls._provided_dict_cache.get(package_source):
+            del cls._provided_dict_cache[package_source]
 
     @classmethod
     def discard_local_cache(cls) -> None:

@@ -8,6 +8,7 @@ from subprocess import Popen
 from typing import Optional, List, NoReturn
 
 from pikaur.main import main
+from pikaur.pacman import PackageDB  # pylint:disable=no-name-in-module
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -66,6 +67,8 @@ def pikaur(
     returncode: Optional[int] = None
     stdout_text: Optional[str] = None
     stderr_text: Optional[str] = None
+
+    PackageDB.discard_local_cache()
 
     class FakeExit(Exception):
         pass

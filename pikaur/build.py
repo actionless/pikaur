@@ -153,44 +153,48 @@ class PackageBuild(DataType):
         ) as current_hash_file:
             return current_hash_file.readlines()[0].strip()
 
+    def get_latest_dev_sources(self) -> None:
+        if not is_devel_pkg(self.package_base):
+            return
+        print_stdout('{} {}...'.format(
+            color_line('::', 15),
+            _n(
+                "Downloading the latest sources for a devel package {}",
+                "Downloading the latest sources for devel packages {}",
+                len(self.package_names)
+            ).format(
+                bold_line(', '.join(self.package_names))
+            )
+        ))
+        self.prepare_build_destination()
+        pkgver_result = pikspect(
+            isolate_root_cmd(
+                get_makepkg_cmd() + [
+                    '--nobuild', '--noprepare', '--nocheck', '--nodeps'
+                ],
+                cwd=self.build_dir
+            ),
+            cwd=self.build_dir,
+            print_output=False,
+            save_output=True,
+            auto_proceed=False
+        )
+        if pkgver_result.returncode != 0:
+            sys.stdout.buffer.write(pkgver_result.get_output_bytes())
+            sys.stdout.buffer.flush()
+            if not ask_to_continue(
+                    args=self.args, default_yes=False
+            ):
+                raise SysExit(125)
+        src_info_dir = self.build_dir
+        SrcInfo(src_info_dir).regenerate()
+
     @property
     def version_already_installed(self) -> bool:
         if self._already_installed is None:
             local_db = PackageDB.get_local_dict()
             src_info_dir = self.repo_path
-            if is_devel_pkg(self.package_base):
-                print_stdout('{} {}...'.format(
-                    color_line('::', 15),
-                    _n(
-                        "Downloading the latest sources for a devel package {}",
-                        "Downloading the latest sources for devel packages {}",
-                        len(self.package_names)
-                    ).format(
-                        bold_line(', '.join(self.package_names))
-                    )
-                ))
-                self.prepare_build_destination()
-                pkgver_result = pikspect(
-                    isolate_root_cmd(
-                        get_makepkg_cmd() + [
-                            '--nobuild', '--noprepare', '--nocheck', '--nodeps'
-                        ],
-                        cwd=self.build_dir
-                    ),
-                    cwd=self.build_dir,
-                    print_output=False,
-                    save_output=True,
-                    auto_proceed=False
-                )
-                if pkgver_result.returncode != 0:
-                    sys.stdout.buffer.write(pkgver_result.get_output_bytes())
-                    sys.stdout.buffer.flush()
-                    if not ask_to_continue(
-                            args=self.args, default_yes=False
-                    ):
-                        raise SysExit(125)
-                src_info_dir = self.build_dir
-                SrcInfo(src_info_dir).regenerate()
+            self.get_latest_dev_sources()
             self._already_installed = min([
                 compare_versions(
                     local_db[pkg_name].version,
@@ -340,6 +344,7 @@ class PackageBuild(DataType):
                 self.built_packages_paths[pkg_name] = pkg_path
 
     def check_if_already_built(self) -> bool:
+        self.get_latest_dev_sources()
         self._set_built_package_path()
         if (
                 not self.args.rebuild and
@@ -513,7 +518,7 @@ class PackageBuild(DataType):
             args=self.args,
             pikspect=True,
         )
-        print()
+        print_stdout()
 
         self._remove_repo_deps(local_packages_before)
 

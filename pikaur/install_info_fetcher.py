@@ -228,7 +228,6 @@ class InstallInfoFetcher:
                     ) and (not pkg_update.provided_by) and (not pkg_update.members_of)
             ):
                 if pkg_name in self.replacements:
-                    print("BAM!")
                     pkg_update.replaces = self.replacements[pkg_name]
                     if pkg_update.repository in OFFICIAL_REPOS:
                         self.repo_replacements_install_info.append(pkg_update)

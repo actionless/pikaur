@@ -59,6 +59,7 @@ class InstallInfo(DataType):
     provided_by: Optional[List[Union['pyalpm.Package', 'AURPackageInfo']]] = None
     required_by: Optional[List['InstallInfo']] = None
     members_of: Optional[List[str]] = None
+    replaces: Optional[List[str]] = None
 
     def __repr__(self) -> str:
         return (

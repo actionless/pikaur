@@ -18,6 +18,7 @@ from .args import PikaurArgs, parse_args, reconstruct_args
 from .exceptions import DependencyVersionMismatch, SysExit
 from .print_department import print_ignored_package, print_not_found_packages
 from .updates import find_aur_updates
+from .replacements import find_replacements
 
 
 class InstallInfoFetcher:
@@ -26,11 +27,14 @@ class InstallInfoFetcher:
     new_repo_deps_install_info: List[InstallInfo]
     thirdparty_repo_packages_install_info: List[InstallInfo]
     new_thirdparty_repo_deps_install_info: List[InstallInfo]
+    repo_replacements_install_info: List[InstallInfo]
+    thirdparty_repo_replacements_install_info: List[InstallInfo]
     aur_updates_install_info: List[InstallInfo]
     aur_deps_install_info: List[InstallInfo]
 
     args: PikaurArgs
     aur_deps_relations: Dict[str, List[str]]
+    replacements: Dict[str, List[str]]
 
     def __init__(
             self,
@@ -42,6 +46,8 @@ class InstallInfoFetcher:
         self.install_package_names = install_package_names
         self.not_found_repo_pkgs_names = not_found_repo_pkgs_names
         self.manually_excluded_packages_names = manually_excluded_packages_names
+
+        self.replacements = find_replacements() if self.args.sysupgrade else {}
 
         self.get_all_packages_info()
 
@@ -86,6 +92,8 @@ class InstallInfoFetcher:
         self.new_repo_deps_install_info = []
         self.thirdparty_repo_packages_install_info = []
         self.new_thirdparty_repo_deps_install_info = []
+        self.repo_replacements_install_info = []
+        self.thirdparty_repo_replacements_install_info = []
         self.aur_updates_install_info = []
         self.aur_deps_install_info = []
 
@@ -196,7 +204,9 @@ class InstallInfoFetcher:
                         self.repo_packages_install_info +
                         self.thirdparty_repo_packages_install_info +
                         self.new_repo_deps_install_info +
-                        self.new_thirdparty_repo_deps_install_info
+                        self.new_thirdparty_repo_deps_install_info +
+                        self.repo_replacements_install_info +
+                        self.thirdparty_repo_replacements_install_info
                     )
             ]:
                 continue
@@ -217,6 +227,14 @@ class InstallInfoFetcher:
                         pkg_name not in self.install_package_names
                     ) and (not pkg_update.provided_by) and (not pkg_update.members_of)
             ):
+                if pkg_name in self.replacements:
+                    print("BAM!")
+                    pkg_update.replaces = self.replacements[pkg_name]
+                    if pkg_update.repository in OFFICIAL_REPOS:
+                        self.repo_replacements_install_info.append(pkg_update)
+                    else:
+                        self.thirdparty_repo_replacements_install_info.append(pkg_update)
+                    continue
                 if pkg_update.repository in OFFICIAL_REPOS:
                     self.new_repo_deps_install_info.append(pkg_update)
                 else:
@@ -330,6 +348,7 @@ class InstallInfoFetcher:
         """
         update packages' install info to show deps in prompt:
         """
+
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
         all_install_infos = (
             self.repo_packages_install_info +
@@ -337,7 +356,9 @@ class InstallInfoFetcher:
             self.new_repo_deps_install_info +
             self.new_thirdparty_repo_deps_install_info +
             self.aur_updates_install_info +
-            self.aur_deps_install_info
+            self.aur_deps_install_info +
+            self.repo_replacements_install_info +
+            self.thirdparty_repo_replacements_install_info
         )
         all_deps_install_infos = (
             self.new_repo_deps_install_info +
@@ -355,7 +376,6 @@ class InstallInfoFetcher:
         ], [])
 
         for pkg_install_info in all_install_infos:
-
             provides = pkg_install_info.package.provides
             providing_for: List[str] = []
             if provides and pkg_install_info.name not in self.install_package_names:

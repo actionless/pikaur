@@ -253,10 +253,8 @@ class InstallPackagesCLI():
         if not editor_cmd:
             return
         text = pretty_format_sysupgrade(
-            self.install_info.repo_packages_install_info,
-            self.install_info.thirdparty_repo_packages_install_info,
-            self.install_info.aur_updates_install_info,
-            color=False
+            install_info=self.install_info,
+            manual_package_selection=True
         )
         selected_packages = []
         with NamedTemporaryFile() as tmp_file:
@@ -296,14 +294,8 @@ class InstallPackagesCLI():
     def install_prompt(self) -> None:
 
         def _print_sysupgrade(verbose=False) -> None:
-            # pylint: disable=line-too-long
             print_stdout(pretty_format_sysupgrade(
-                repo_packages_updates=self.install_info.repo_packages_install_info,
-                new_repo_deps=self.install_info.new_repo_deps_install_info,
-                thirdparty_repo_packages_updates=self.install_info.thirdparty_repo_packages_install_info,
-                new_thirdparty_repo_deps=self.install_info.new_thirdparty_repo_deps_install_info,
-                aur_updates=self.install_info.aur_updates_install_info,
-                new_aur_deps=self.install_info.aur_deps_install_info,
+                install_info=self.install_info,
                 verbose=verbose
             ))
 

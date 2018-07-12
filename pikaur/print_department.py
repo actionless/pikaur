@@ -2,7 +2,7 @@
 
 import sys
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Tuple, Iterable, Union, Dict
+from typing import TYPE_CHECKING, List, Tuple, Iterable, Union, Dict, Optional
 
 import pyalpm
 
@@ -19,9 +19,11 @@ from .pacman import PackageDB
 if TYPE_CHECKING:
     # pylint: disable=unused-import
     from .aur import AURPackageInfo  # noqa
+    from .install_info_fetcher import InstallInfoFetcher  # noqa
 
 
 GROUP_COLOR = 4
+REPLACEMENTS_COLOR = 14
 
 
 def print_version(pacman_version: str, quiet=False) -> None:
@@ -140,6 +142,14 @@ def pretty_format_upgradeable(
             )
             pkg_len += len(members_of)
             pkg_name += _color_line(members_of, GROUP_COLOR)
+        if pkg_update.replaces:
+            replaces = ' (replaces {})'.format(
+                ', '.join([g for g in pkg_update.replaces])
+            )
+            pkg_len += len(replaces)
+            pkg_name += _color_line(replaces, REPLACEMENTS_COLOR)
+            if not color:
+                pkg_name = f'# {pkg_name}'
 
         return (
             template or (
@@ -189,15 +199,32 @@ def pretty_format_upgradeable(
     ])
 
 
-def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
-        repo_packages_updates: List['InstallInfo'] = None,
-        new_repo_deps: List['InstallInfo'] = None,
-        thirdparty_repo_packages_updates: List['InstallInfo'] = None,
-        new_thirdparty_repo_deps: List['InstallInfo'] = None,
-        aur_updates: List['InstallInfo'] = None,
-        new_aur_deps: List['InstallInfo'] = None,
-        verbose=False, color=True
+def pretty_format_sysupgrade(
+        install_info: 'InstallInfoFetcher',
+        verbose=False,
+        manual_package_selection=False
 ) -> str:
+
+    color = True
+
+    repo_packages_updates = install_info.repo_packages_install_info
+    thirdparty_repo_packages_updates = install_info.thirdparty_repo_packages_install_info
+    aur_updates = install_info.aur_updates_install_info
+    repo_replacements = install_info.repo_replacements_install_info
+    thirdparty_repo_replacements = install_info.thirdparty_repo_replacements_install_info
+
+    new_repo_deps: Optional[List['InstallInfo']] = \
+        install_info.new_repo_deps_install_info
+    new_thirdparty_repo_deps: Optional[List['InstallInfo']] = \
+        install_info.new_thirdparty_repo_deps_install_info
+    new_aur_deps: Optional[List['InstallInfo']] = \
+        install_info.aur_deps_install_info
+
+    if manual_package_selection:
+        color = False
+        new_repo_deps = None
+        new_thirdparty_repo_deps = None
+        new_aur_deps = None
 
     _color_line = color_line
     _bold_line = bold_line
@@ -206,6 +233,34 @@ def pretty_format_sysupgrade(  # pylint: disable=too-many-arguments
         _bold_line = lambda line: line  # noqa
 
     result = []
+
+    if repo_replacements:
+        result.append('\n{} {}'.format(
+            _color_line('::', 12),
+            _bold_line(_n(
+                "Repository package suggested to be replaced:",
+                "Repository packages suggested be replaced:",
+                len(repo_packages_updates)))
+        ))
+        result.append(pretty_format_upgradeable(
+            repo_replacements,
+            verbose=verbose, color=color,
+            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+        ))
+    if thirdparty_repo_replacements:
+        result.append('\n{} {}'.format(
+            _color_line('::', 12),
+            _bold_line(_n(
+                "Third-party repository package suggested to be replaced:",
+                "Third-party repository packages suggested be replaced:",
+                len(repo_packages_updates)))
+        ))
+        result.append(pretty_format_upgradeable(
+            thirdparty_repo_replacements,
+            verbose=verbose, color=color,
+            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+        ))
+
     if repo_packages_updates:
         result.append('\n{} {}'.format(
             _color_line('::', 12),

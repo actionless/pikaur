@@ -137,7 +137,10 @@ path to pacman executable.
 ~/.config/pikaur.conf  # config file
 ```
 
+
+
 ### FAQ
+
 
 ##### How to upgrade all the dev (-git) packages at once?
 
@@ -146,17 +149,22 @@ path to pacman executable.
 `--needed` option will make sure what the same package version won't be rebuilt again
 and `--keepbuild` option will help to avoid re-downloading whole git repo of each installed dev package.
 
+
 ##### How to avoid manually importing GPG keys?
 
 It's recommended to control the keys manually. However if you know what you doing, `keyserver-options auto-key-retrieve` GPG option will automatically import GPG keys.
 
 Note what `makepkg` is using user's keyring, not `pacman`'s one.
 
+Also `pikaur -S your-package-name --mflags=--skippgpcheck` can be used to skip GPG check in makepkg.
+
+
 ##### How to override default source directory, build directory or built package destination?
 
 Set `SRCDEST`, `BUILDDIR` or `PKGDEST` accordingly in `makepkg.conf`.
 
 For more info see `makepkg` documentation.
+
 
 ##### Hot to clean old or uninstalled AUR packages in ~/.cache/pikaur/pkg?
 
@@ -167,6 +175,7 @@ Exec = /usr/bin/env bash -c "/usr/bin/paccache -vrk3; /usr/bin/paccache -vruk1; 
 ```
 
 Change the numbers, and you are good to go.
+
 
 
 ### Contributing

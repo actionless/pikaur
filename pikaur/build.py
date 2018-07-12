@@ -308,6 +308,8 @@ class PackageBuild(DataType):
                              cwd=self.build_dir),
             cwd=self.build_dir
         ).stdout_text.splitlines()
+        if not pkg_paths:
+            return
         pkg_paths.sort(key=len)
         for pkg_name in self.package_names:
             pkg_path = pkg_paths[0]
@@ -333,10 +335,8 @@ class PackageBuild(DataType):
                     if os.path.exists(new_package_path):
                         os.remove(new_package_path)
                     shutil.move(pkg_path, PACKAGE_CACHE_PATH)
-                elif not os.path.exists(new_package_path):
-                    new_package_path = None  # type: ignore
                 pkg_path = new_package_path
-            if pkg_path:
+            if pkg_path and os.path.exists(pkg_path):
                 self.built_packages_paths[pkg_name] = pkg_path
 
     def check_if_already_built(self) -> bool:

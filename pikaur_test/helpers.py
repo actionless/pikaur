@@ -174,3 +174,16 @@ def assert_not_installed(pkg_name: str) -> None:
     assert(
         pacman(f'-Qi {pkg_name}').returncode == 1
     )
+
+
+def assert_provided_by(dep_name: str, provider_name: str) -> None:
+    cmd_result = pacman(f'-Qsq {dep_name}').stdout
+    assert(
+        cmd_result and (cmd_result.strip() == provider_name)
+    )
+
+
+def remove_packages(*pkg_names: str) -> None:
+    pikaur('-Rs --noconfirm ' + ' '.join(pkg_names))
+    for name in pkg_names:
+        assert_not_installed(name)

@@ -7,7 +7,9 @@ from pikaur import pprint
 pprint._ARGS.color = 'never' # noqa
 
 from pikaur_test.helpers import (
-    pikaur, pacman, assert_installed, assert_not_installed,
+    pikaur,
+    remove_packages,
+    assert_installed, assert_not_installed, assert_provided_by
 )
 
 from pikaur_test.test_news import run as test_news
@@ -86,15 +88,14 @@ if WRITE_DB:
     # aur package with aur dep provided by another already installed AUR pkg
     pikaur('-S pacaur')
     assert_installed('pacaur')
-    assert(
-        pacman('-Qsq cower').stdout.strip() == 'cower-git'
-    )
+    assert_provided_by('cower', 'cower-git')
 
-    # aur package with manually chosen aur dep (not working by now)
-    # pacman('-Rs pacaur cower-git')
-    # pikaur('-S pacaur cower-git')
-    # assert_installed('pacaur')
-    # assert_installed('cower-git')
+    remove_packages('pacaur', 'cower-git')
+
+    # aur package with manually chosen aur dep:
+    pikaur('-S pacaur cower-git')
+    assert_installed('pacaur')
+    assert_provided_by('cower', 'cower-git')
 
     # # Arch Wiki: Reliable parser ############################################
     # pikaur('-S aws-cli-git')
@@ -120,9 +121,7 @@ if WRITE_DB:
     assert_installed('python-pyalsaaudio')
     assert_not_installed('python2-pyalsaaudio')
 
-    # package removal
-    pikaur('-Rs python-pyalsaaudio --noconfirm')
-    assert_not_installed('python-pyalsaaudio')
+    remove_packages('python-pyalsaaudio')
 
     # Split packages 3: 2 split packages
     pikaur('-S python2-pyalsaaudio python-pyalsaaudio')

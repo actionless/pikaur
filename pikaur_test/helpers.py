@@ -4,11 +4,12 @@ import sys
 import os
 import tempfile
 from subprocess import Popen
-
 from typing import Optional, List, NoReturn
 
 from pikaur.main import main
+from pikaur.args import CachedArgs, parse_args  # pylint:disable=no-name-in-module
 from pikaur.pacman import PackageDB  # pylint:disable=no-name-in-module
+
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -116,6 +117,7 @@ def pikaur(
         returncode = code
         raise FakeExit()
 
+    # re-parse args:
     sys.argv = ['pikaur'] + cmd.split(' ') + (
         [
             '--noconfirm',
@@ -125,6 +127,10 @@ def pikaur(
             '--makepkg-path=' + os.path.join(TEST_DIR, 'fake_makepkg'),
         ] if fake_makepkg else []
     )
+    CachedArgs.args = None  # pylint:disable=protected-access
+    parse_args()
+    # monkey-patch to force always uncolored output:
+    CachedArgs.args.color = 'never'  # pylint:disable=protected-access
     print(color_line('\n => ', 10) + ' '.join(sys.argv))
 
     _real_exit = sys.exit

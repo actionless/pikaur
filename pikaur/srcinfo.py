@@ -8,9 +8,6 @@ from .version import VersionMatcher
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
 
-CARCH = MakepkgConfig.get('CARCH')
-
-
 class SrcInfo():
 
     _common_lines: List[str]
@@ -68,8 +65,9 @@ class SrcInfo():
         return None
 
     def _get_depends(self, field: str) -> Dict[str, VersionMatcher]:
+        carch = MakepkgConfig.get('CARCH')
         dependencies: Dict[str, VersionMatcher] = {}
-        for dep_line in self.get_values(field) + self.get_values(f'{field}_{CARCH}'):
+        for dep_line in self.get_values(field) + self.get_values(f'{field}_{carch}'):
             version_matcher = VersionMatcher(dep_line)
             pkg_name = version_matcher.pkg_name
             if pkg_name not in dependencies:

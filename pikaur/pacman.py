@@ -12,7 +12,7 @@ import pyalpm
 from .i18n import _
 from .core import DataType, PackageSource
 from .version import VersionMatcher
-from .pprint import print_stderr, color_enabled, bold_line
+from .pprint import print_stderr, color_enabled
 from .args import PikaurArgs
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo
@@ -42,16 +42,6 @@ OFFICIAL_REPOS = (
 )
 
 
-ANSWER_Y = _p("Y")
-ANSWER_N = _p("N")
-QUESTION_YN_YES = _p("[Y/n]")
-QUESTION_YN_NO = _p("[y/N]")
-
-
-def format_pacman_question(message: str, question=QUESTION_YN_YES) -> str:
-    return bold_line(" {} {} ".format(_p(message), question))
-
-
 def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
     return re.compile(
         _p(pacman_message).replace(
@@ -70,27 +60,7 @@ def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
 
 MESSAGE_PACKAGES = _p('Packages')
 
-QUESTION_PROCEED = format_pacman_question('Proceed with installation?')
-QUESTION_REMOVE = format_pacman_question('Do you want to remove these packages?')
-QUESTION_CONFLICT = format_pacman_question(
-    '%s and %s are in conflict. Remove %s?', QUESTION_YN_NO
-)
-QUESTION_CONFLICT_VIA_PROVIDED = format_pacman_question(
-    '%s and %s are in conflict (%s). Remove %s?', QUESTION_YN_NO
-)
 PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
-
-
-def format_conflicts(conflicts: List[List[str]]) -> List[str]:
-    return [
-        QUESTION_CONFLICT % (new_pkg, old_pkg, old_pkg)
-        for new_pkg, old_pkg in conflicts
-    ] + [
-        (
-            re.escape(QUESTION_CONFLICT_VIA_PROVIDED % (new_pkg, old_pkg, '.*', old_pkg))
-        ).replace(r"\.\*", ".*")
-        for new_pkg, old_pkg in conflicts
-    ]
 
 
 def get_pacman_command() -> List[str]:

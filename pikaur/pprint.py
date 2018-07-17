@@ -11,11 +11,10 @@ from .args import parse_args
 
 PADDING = 4
 PRINT_LOCK = Lock()
-_ARGS = parse_args()
 
 
 def color_enabled() -> bool:
-    args = _ARGS
+    args = parse_args()
     if args.color == 'never':
         return False
     if args.color == 'always' or (sys.stderr.isatty() and sys.stdout.isatty()):

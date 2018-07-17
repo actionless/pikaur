@@ -2,10 +2,6 @@
 
 import sys
 
-# monkey-patch to force always uncolored output:
-from pikaur import pprint
-pprint._ARGS.color = 'never' # noqa
-
 from pikaur_test.helpers import (
     pikaur,
     remove_packages,

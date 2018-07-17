@@ -1,7 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import sys
-from typing import List, Any, Tuple
+from typing import List, Any, Tuple, Optional
 
 from . import argparse  # pylint: disable=no-name-in-module
 
@@ -101,7 +101,14 @@ def validate_args(args: PikaurArgs) -> None:
                     raise MissingArgument('sysupgrade', arg_name)
 
 
+class CachedArgs():
+
+    args: Optional[PikaurArgs] = None
+
+
 def parse_args(args: List[str] = None) -> PikaurArgs:
+    if CachedArgs.args:
+        return CachedArgs.args
     args = args or sys.argv[1:]
     parser = PikaurArgumentParser(prog=sys.argv[0], add_help=False)
 
@@ -171,6 +178,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
             )
         )
         sys.exit(1)
+    CachedArgs.args = parsed_args
     return parsed_args
 
 

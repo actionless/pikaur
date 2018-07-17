@@ -17,17 +17,10 @@ from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
-from .pacman import (
-    ANSWER_Y, ANSWER_N, QUESTION_PROCEED, QUESTION_REMOVE, MESSAGE_PACKAGES,
-    format_conflicts,
-)
-from .pprint import PrintLock, print_stdout, purge_line, go_line_up
+from .pprint import PrintLock, print_stdout, purge_line, go_line_up, bold_line
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
 from .args import parse_args
-
-
-Y = ANSWER_Y
-N = ANSWER_N
+from .pacman import _p, MESSAGE_PACKAGES
 
 
 # MAX_QUESTION_LENGTH = 512
@@ -340,14 +333,43 @@ def pikspect(
         **kwargs
 ) -> PikspectPopen:
 
+    # @TODO: refactor to enum or so
+    ANSWER_Y = _p("Y")  # pylint: disable=invalid-name
+    ANSWER_N = _p("N")  # pylint: disable=invalid-name
+    QUESTION_YN_YES = _p("[Y/n]")  # pylint: disable=invalid-name
+    QUESTION_YN_NO = _p("[y/N]")  # pylint: disable=invalid-name
+
+    def format_pacman_question(message: str, question=QUESTION_YN_YES) -> str:
+        return bold_line(" {} {} ".format(_p(message), question))
+
+    QUESTION_PROCEED = format_pacman_question('Proceed with installation?')  # pylint: disable=invalid-name
+    QUESTION_REMOVE = format_pacman_question('Do you want to remove these packages?')  # pylint: disable=invalid-name
+    QUESTION_CONFLICT = format_pacman_question(  # pylint: disable=invalid-name
+        '%s and %s are in conflict. Remove %s?', QUESTION_YN_NO
+    )
+    QUESTION_CONFLICT_VIA_PROVIDED = format_pacman_question(  # pylint: disable=invalid-name
+        '%s and %s are in conflict (%s). Remove %s?', QUESTION_YN_NO
+    )
+
+    def format_conflicts(conflicts: List[List[str]]) -> List[str]:
+        return [
+            QUESTION_CONFLICT % (new_pkg, old_pkg, old_pkg)
+            for new_pkg, old_pkg in conflicts
+        ] + [
+            (
+                re.escape(QUESTION_CONFLICT_VIA_PROVIDED % (new_pkg, old_pkg, '.*', old_pkg))
+            ).replace(r"\.\*", ".*")
+            for new_pkg, old_pkg in conflicts
+        ]
+
     default_questions: Dict[str, List[str]] = {}
     if auto_proceed:
         default_questions = {
-            Y: [
+            ANSWER_Y: [
                 QUESTION_PROCEED,
                 QUESTION_REMOVE,
             ],
-            N: [],
+            ANSWER_N: [],
         }
 
     proc = PikspectPopen(
@@ -360,7 +382,7 @@ def pikspect(
 
     extra_questions = extra_questions or {}
     if conflicts:
-        extra_questions[Y] = extra_questions.get(Y, []) + format_conflicts(conflicts)
+        extra_questions[ANSWER_Y] = extra_questions.get(ANSWER_Y, []) + format_conflicts(conflicts)
     if extra_questions:
         proc.add_answers(extra_questions)
 

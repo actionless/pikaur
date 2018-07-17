@@ -97,7 +97,7 @@ class PackageBuild(DataType):
                 'origin',
                 'master'
             ]
-        elif self.clone:
+        if self.clone:
             return [
                 'git',
                 'clone',
@@ -146,10 +146,10 @@ class PackageBuild(DataType):
     @property
     def current_hash(self) -> str:
         with open_file(
-            os.path.join(
-                self.repo_path,
-                '.git/refs/heads/master'
-            )
+                os.path.join(
+                    self.repo_path,
+                    '.git/refs/heads/master'
+                )
         ) as current_hash_file:
             return current_hash_file.readlines()[0].strip()
 

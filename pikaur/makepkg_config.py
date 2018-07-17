@@ -10,21 +10,21 @@ from .config import CONFIG_ROOT
 from .args import parse_args
 
 
-CONFIG_VALUE_TYPE = Union[None, str, List[str]]
-CONFIG_FORMAT = Dict[str, CONFIG_VALUE_TYPE]
+ConfigValueType = Union[None, str, List[str]]
+ConfigFormat = Dict[str, ConfigValueType]
 
 
 class ConfigReader():
 
     comment_prefixes = ('#', ';')
 
-    _cached_config: Optional[Dict[str, CONFIG_FORMAT]] = None
+    _cached_config: Optional[Dict[str, ConfigFormat]] = None
     default_config_path: str
     list_fields: List[str] = []
     ignored_fields: List[str] = []
 
     @classmethod
-    def _parse_line(cls, line: str) -> Tuple[Optional[str], CONFIG_VALUE_TYPE]:
+    def _parse_line(cls, line: str) -> Tuple[Optional[str], ConfigValueType]:
         blank = (None, None, )
         if line.startswith(' '):
             return blank
@@ -54,7 +54,7 @@ class ConfigReader():
         return key, value
 
     @classmethod
-    def get_config(cls, config_path: str = None) -> CONFIG_FORMAT:
+    def get_config(cls, config_path: str = None) -> ConfigFormat:
         config_path = config_path or cls.default_config_path
         if not cls._cached_config:
             cls._cached_config = {}

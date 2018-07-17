@@ -23,7 +23,7 @@ def color_enabled() -> bool:
     return False
 
 
-class PrintLock(object):
+class PrintLock():
 
     def __enter__(self) -> None:
         PRINT_LOCK.acquire()

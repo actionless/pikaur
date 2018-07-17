@@ -92,7 +92,7 @@ def join_search_results(
 ) -> Iterable[Union[AURPackageInfo, pyalpm.Package]]:
     aur_pkgs_nameset: Set[str] = set()
     for search_results in all_aur_results:
-        new_aur_pkgs_nameset = set([get_pkg_id(result) for result in search_results])
+        new_aur_pkgs_nameset = set(get_pkg_id(result) for result in search_results)
         if aur_pkgs_nameset:
             aur_pkgs_nameset = aur_pkgs_nameset.intersection(new_aur_pkgs_nameset)
         else:

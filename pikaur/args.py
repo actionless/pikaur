@@ -3,7 +3,7 @@
 import sys
 from typing import List, Any, Tuple
 
-from . import argparse as argparse  # pylint: disable=no-name-in-module
+from . import argparse  # pylint: disable=no-name-in-module
 
 from .i18n import _, _n
 

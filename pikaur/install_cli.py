@@ -283,7 +283,7 @@ class InstallPackagesCLI():
                 self.install_package_names.append(pkg_name)
 
         for pkg_name in pkg_names_before.difference(
-                set([strip_aur_repo_name(p) for p in selected_packages])
+                set(strip_aur_repo_name(p) for p in selected_packages)
         ):
             self.manually_excluded_packages_names.append(pkg_name)
             if pkg_name in self.install_package_names:

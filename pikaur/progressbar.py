@@ -7,7 +7,7 @@ from typing import Callable, Dict
 from .pprint import get_term_width, color_enabled
 
 
-class ProgressBar(object):
+class ProgressBar():
 
     print_ratio: float
     index = 0
@@ -42,7 +42,7 @@ class ProgressBar(object):
         sys.stderr.write('\n')
 
 
-class ThreadSafeProgressBar(object):
+class ThreadSafeProgressBar():
 
     _progressbar_storage: Dict[str, ProgressBar] = {}
     _progressbar_lock = Lock()

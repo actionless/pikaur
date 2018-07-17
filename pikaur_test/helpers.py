@@ -132,8 +132,8 @@ def pikaur(
 
     intercepted: InterceptSysOutput
     with InterceptSysOutput(
-        capture_stderr=capture_stderr,
-        capture_stdout=capture_stdout
+            capture_stderr=capture_stderr,
+            capture_stdout=capture_stdout
     ) as _intercepted:
 
         try:

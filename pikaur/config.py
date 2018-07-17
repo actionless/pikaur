@@ -91,7 +91,7 @@ _CONFIG_SCHEMA = {
 }
 
 
-_CONFIG_TYPES = Union[str, bool, int]
+ConfigValueTypes = Union[str, bool, int]
 
 
 def write_config(config: configparser.ConfigParser = None) -> None:
@@ -167,5 +167,5 @@ class PikaurConfig():
         return PikaurConfigSection(self.get_config()[attr])
 
     @classmethod
-    def get(cls, section: str, key: str, *args) -> _CONFIG_TYPES:
+    def get(cls, section: str, key: str, *args) -> ConfigValueTypes:
         return getattr(cls(), section).get(key, *args)

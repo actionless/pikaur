@@ -38,7 +38,7 @@ MAX_QUESTION_LENGTH = 256
 SMALL_TIMEOUT = 0.01
 
 
-TC_ATTRS_TYPE = List[Union[int, List[bytes]]]
+TcAttrsType = List[Union[int, List[bytes]]]
 
 
 class TTYRestore():
@@ -52,7 +52,7 @@ class TTYRestore():
             cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
 
     @classmethod
-    def _restore(cls, what: Optional[TC_ATTRS_TYPE] = None):
+    def _restore(cls, what: Optional[TcAttrsType] = None):
         if sys.stdout.isatty():
             # termios.tcdrain(sys.stdout.fileno())
             # if sys.stderr.isatty():

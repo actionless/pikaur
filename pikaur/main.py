@@ -59,6 +59,9 @@ from .exceptions import (
 from .pikspect import (
     TTYRestore
 )
+from .argparse import (
+    ArgumentError
+)
 
 
 SUDO_LOOP_INTERVAL = 1
@@ -300,12 +303,17 @@ def handle_sig_int(*_whatever):
 
 
 def main() -> None:
+    try:
+        args = parse_args()
+    except ArgumentError as exc:
+        print_stderr(exc)
+        sys.exit(22)
     check_runtime_deps()
     create_dirs()
 
     atexit.register(restore_tty)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    if not parse_args().debug:
+    if not args.debug:
         signal.signal(signal.SIGINT, handle_sig_int)
     try:
         cli_entry_point()

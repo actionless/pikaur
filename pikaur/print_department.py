@@ -59,7 +59,7 @@ def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
         print(format_paragraph(package))
 
 
-def pretty_format_upgradeable(
+def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         packages_updates: List['InstallInfo'],
         verbose=False, print_repo=False, color=True, template: str = None
 ) -> str:
@@ -379,7 +379,8 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
     )
 
 
-def print_package_search_results(
+# @TODO: weird pylint behavior if remove `return` from the end:
+def print_package_search_results(  # pylint:disable=useless-return
         packages: Iterable[Union['AURPackageInfo', pyalpm.Package]],
         local_pkgs_versions: Dict[str, str],
         args: PikaurArgs
@@ -447,3 +448,4 @@ def print_package_search_results(
                 rating
             ))
             print(format_paragraph(f'{package.desc}'))
+    return

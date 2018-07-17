@@ -22,7 +22,7 @@ from .args import (
     parse_args, reconstruct_args, cli_print_help
 )
 from .core import (
-    PackageSource, InstallInfo,
+    InstallInfo,
     spawn, interactive_spawn, running_as_root, remove_dir, sudo,
 )
 from .pprint import (
@@ -145,29 +145,25 @@ def cli_install_packages(args) -> None:
                 raise catched_exc  # pylint: disable=raising-bad-type
 
 
-def _info_packages_thread_repo(
-        args: PikaurArgs
-) -> str:
+def _info_packages_thread_repo() -> str:
+    args = parse_args()
     return spawn(get_pacman_command() + args.raw).stdout_text
 
 
 def cli_info_packages(args: PikaurArgs) -> None:
     aur_pkg_names = args.positional or get_all_aur_names()
     with ThreadPool() as pool:
-        requests = {}
-        requests[PackageSource.AUR] = pool.apply_async(find_aur_packages, (aur_pkg_names, ))
-        requests[PackageSource.REPO] = pool.apply_async(_info_packages_thread_repo, (args, ))
+        aur_thread = pool.apply_async(find_aur_packages, (aur_pkg_names, ))
+        repo_thread = pool.apply_async(_info_packages_thread_repo, ())
         pool.close()
         pool.join()
-        result = {
-            key: value.get()
-            for key, value in requests.items()
-        }
+        repo_result = repo_thread.get()
+        aur_result = aur_thread.get()
 
-    if result[PackageSource.REPO]:
-        print(result[PackageSource.REPO], end='')
+    if repo_result:
+        print(repo_result, end='')
 
-    aur_pkgs = result[PackageSource.AUR][0]
+    aur_pkgs = aur_result[0]
     num_found = len(aur_pkgs)
     for i, aur_pkg in enumerate(aur_pkgs):
         pkg_info_lines = []

@@ -130,7 +130,7 @@ def pikaur(
     CachedArgs.args = None  # pylint:disable=protected-access
     parse_args()
     # monkey-patch to force always uncolored output:
-    CachedArgs.args.color = 'never'  # pylint:disable=protected-access
+    CachedArgs.args.color = 'never'  # type: ignore # pylint:disable=protected-access
     print(color_line('\n => ', 10) + ' '.join(sys.argv))
 
     _real_exit = sys.exit

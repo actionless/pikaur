@@ -8,11 +8,10 @@ Inspired by `pacaur`, `yaourt` and `yay`.
 
 Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--ask`, `--noconfirm` and so) it just interactively tells pacman what to do. If pacman will ask some unexpected question user will be just able to answer it manually.
 
-If some `pacman` or `makepkg` operation failed for irrelevant reason (like untrusted GPG key or checksum mismatch) pikaur will suggest to restart the operation and instead of failing the whole transaction you could also skip the failed operation.
-
 Notable features:
 
 * using [systemd dynamic users](http://0pointer.net/blog/dynamic-users-with-systemd.html "") if building packages as root user
+* interactively handle common build problems (like untrusted GPG key or checksum mismatch, wrong architecture)
 * show unread [Arch news](https://www.archlinux.org/news/ "") before sysupgrade
 * [m]anual package selection in [install prompt](#screenshot "") using text editor (ignore unwanted updates or select package provider)
 * show AUR package diff and review PKGBUILD and .install files
@@ -148,15 +147,6 @@ path to pacman executable.
 
 `--needed` option will make sure what the same package version won't be rebuilt again
 and `--keepbuild` option will help to avoid re-downloading whole git repo of each installed dev package.
-
-
-##### How to avoid manually importing GPG keys?
-
-It's recommended to control the keys manually. However if you know what you doing, `keyserver-options auto-key-retrieve` GPG option will automatically import GPG keys.
-
-Note what `makepkg` is using user's keyring, not `pacman`'s one.
-
-Also `pikaur -S your-package-name --mflags=--skippgpcheck` can be used to skip GPG check in makepkg.
 
 
 ##### How to override default source directory, build directory or built package destination?

@@ -84,6 +84,10 @@ def get_input(prompt: str, answers=None) -> str:
         TTYRestore.restore()
         answer = input(split_last_line(prompt)).lower()
         sub_tty.restore()
+        if not answer:
+            for choice in answers:
+                if choice not in answers.lower():
+                    return choice.lower()
     else:
         answer = read_answer_from_tty(prompt, answers=answers)
     return answer

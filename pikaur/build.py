@@ -21,7 +21,10 @@ from .aur import get_repo_url, find_aur_packages
 from .pacman import PackageDB, get_pacman_command
 from .args import PikaurArgs, parse_args
 from .pprint import color_line, bold_line, color_enabled, print_stdout, print_stderr
-from .prompt import retry_interactive_command, retry_interactive_command_or_exit, ask_to_continue
+from .prompt import (
+    retry_interactive_command, retry_interactive_command_or_exit,
+    ask_to_continue, get_input,
+)
 from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
     SysExit,
@@ -482,6 +485,90 @@ class PackageBuild(DataType):
         )
         PackageDB.discard_local_cache()
 
+    def build_with_makepkg(self) -> bool:  # pylint: disable=too-many-branches,too-many-statements
+        makepkg_args = []
+        if not self.args.needed:
+            makepkg_args.append('--force')
+        if not color_enabled():
+            makepkg_args.append('--nocolor')
+
+        print_stderr('\n{} {}:'.format(
+            color_line('::', 13),
+            _('Starting the build')
+        ))
+        build_succeeded = False
+        skip_pgp_check = False
+        skip_file_checksums = False
+        skip_integration_checks = False
+        skip_carch_check = False
+        while True:
+            cmd_args = get_makepkg_cmd() + makepkg_args
+            if skip_pgp_check:
+                cmd_args += ['--skippgpcheck']
+            if skip_file_checksums:
+                cmd_args += ['--skipchecksums']
+            if skip_integration_checks:
+                cmd_args += ['--skipinteg']
+            if skip_carch_check:
+                cmd_args += ['--ignorearch']
+            cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir)
+            result = interactive_spawn(
+                cmd_args,
+                cwd=self.build_dir,
+                # pikspect=True,
+            )
+            print_stdout()
+            build_succeeded = result.returncode == 0
+            if build_succeeded:
+                break
+
+            print_stderr(color_line(_("Command '{}' failed to execute.").format(
+                ' '.join(cmd_args)
+            ), 9))
+            if self.args.noconfirm:
+                answer = _("a")
+            else:
+                prompt = '{} {}\n{}\n> '.format(
+                    color_line('::', 11),
+                    _("Try recovering?"),
+                    "\n".join((
+                        _("[R] retry build"),
+                        _("[p] pgp check skip"),
+                        _("[c] checksums skip"),
+                        _("[i] ignore architecture"),
+                        _("[v] skip all validity checks"),
+                        "-" * 24,
+                        _("[s] skip building this package"),
+                        _("[a] abort building all the packages"),
+                    ))
+                )
+                answer = get_input(
+                    prompt,
+                    _('r').upper() + _('p') + _('c') + _('i') + _('s') + _('a')
+                )
+
+            answer = answer.lower()[0]
+            if answer == _("r"):
+                continue
+            elif answer == _("p"):
+                skip_pgp_check = True
+                continue
+            elif answer == _("c"):
+                skip_file_checksums = True
+                continue
+            elif answer == _("i"):
+                skip_carch_check = True
+                continue
+            elif answer == _("v"):
+                skip_integration_checks = True
+                continue
+            elif answer == _("a"):
+                raise SysExit(125)
+            else:  # "s"kip
+                break
+
+        return build_succeeded
+
     def build(
             self,
             all_package_builds: Dict[str, 'PackageBuild'],
@@ -499,26 +586,11 @@ class PackageBuild(DataType):
         self._install_built_deps(all_package_builds)
         local_packages_before = self._install_repo_deps()
 
-        makepkg_args = []
-        if not self.args.needed:
-            makepkg_args.append('--force')
-        if not color_enabled():
-            makepkg_args.append('--nocolor')
-
-        print_stderr('\n{} {}:'.format(
-            color_line('::', 13),
-            _('Starting the build')
-        ))
-        build_succeeded = retry_interactive_command(
-            isolate_root_cmd(
-                get_makepkg_cmd() + makepkg_args,
-                cwd=self.build_dir
-            ),
-            cwd=self.build_dir,
-            args=self.args,
-            pikspect=True,
-        )
-        print_stdout()
+        try:
+            build_succeeded = self.build_with_makepkg()
+        except SysExit as exc:
+            self._remove_repo_deps(local_packages_before)
+            raise exc
 
         self._remove_repo_deps(local_packages_before)
 

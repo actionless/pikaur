@@ -16,45 +16,40 @@ if (len(sys.argv) > 1) and sys.argv[1] == '--write-db':
     WRITE_DB = True
 
 
-test_news()
+def run_cli_tests():
+    # just run info commands for coverage:
+    assert(
+        not pikaur('-V').returncode
+    )
+    assert(
+        not pikaur('-Sh').returncode
+    )
+    assert(
+        not pikaur('-Qh').returncode
+    )
+
+    # unknown argument passed to pacman
+    assert(
+        pikaur('-Zyx').returncode == 1
+    )
+
+    # search aur packages
+    assert(
+        sorted(
+            pikaur('-Ssq oomox').stdout.splitlines()
+        ) == ['oomox', 'oomox-git']
+    )
+
+    # package can't be found in AUR
+    result = pikaur('-S not-existing-aur-package-7h68712683h1628h1')
+    assert result.returncode == 6
+    assert(
+        result.stdout.splitlines()[-1].strip() == 'not-existing-aur-package-7h68712683h1628h1'
+    )
 
 
-# just run info commands for coverage:
-assert(
-    not pikaur('-V').returncode
-)
-assert(
-    not pikaur('-Sh').returncode
-)
-assert(
-    not pikaur('-Qh').returncode
-)
-
-
-# unknown argument passed to pacman
-assert(
-    pikaur('-Zyx').returncode == 1
-)
-
-
-# search aur packages
-assert(
-    sorted(
-        pikaur('-Ssq oomox').stdout.splitlines()
-    ) == ['oomox', 'oomox-git']
-)
-
-
-# package can't be found in AUR
-result = pikaur('-S not-existing-aur-package-7h68712683h1628h1')
-assert(result.returncode == 6)
-assert(
-    result.stdout.splitlines()[-1].strip() == 'not-existing-aur-package-7h68712683h1628h1'
-)
-
-
-# tests which are modifying local package DB:
-if WRITE_DB:
+def run_db_tests():
+    # tests which are modifying local package DB:
 
     # aur package with repo deps
     pikaur('-S inxi')
@@ -152,4 +147,8 @@ if WRITE_DB:
         assert_installed(pkg_name)
 
 
+test_news()
+run_cli_tests()
+if WRITE_DB:
+    run_db_tests()
 print('\n\n[OK] All tests passed\n')

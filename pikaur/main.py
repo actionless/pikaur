@@ -311,6 +311,7 @@ def main() -> None:
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     if not args.debug:
         signal.signal(signal.SIGINT, handle_sig_int)
+
     try:
         cli_entry_point()
     except BrokenPipeError:

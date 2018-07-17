@@ -3,7 +3,7 @@
 import sys
 
 from pikaur_test.helpers import (
-    pikaur,
+    pikaur, pacman,
     remove_packages,
     assert_installed, assert_not_installed, assert_provided_by
 )
@@ -46,6 +46,19 @@ def run_cli_tests():
     assert(
         result.stdout.splitlines()[-1].strip() == 'not-existing-aur-package-7h68712683h1628h1'
     )
+
+    # aur package info
+    result = pikaur('-Si oomox')
+    pkg_name_found = False
+    for line in result.stdout.splitlines():
+        if 'name' in line and 'oomox' in line:
+            pkg_name_found = True
+    assert pkg_name_found
+
+    # repo package info
+    result1 = pikaur('-Si mpv')
+    result2 = pacman('-Si mpv')
+    assert result1 == result2
 
 
 def run_db_tests():

@@ -61,6 +61,15 @@ class CmdResult:
             f'{self.stdout}\n'
         )
 
+    def __eq__(self, other) -> bool:
+        return ((
+            self.stdout == other.stdout
+        ) and (
+            self.stderr == other.stderr
+        ) and (
+            self.returncode == other.returncode
+        ))
+
 
 class InterceptSysOutput():
 

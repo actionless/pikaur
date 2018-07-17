@@ -11,7 +11,6 @@ import subprocess
 import codecs
 import shutil
 import atexit
-from datetime import datetime
 from typing import List
 from time import sleep
 from multiprocessing.pool import ThreadPool
@@ -25,43 +24,21 @@ from .core import (
     InstallInfo,
     spawn, interactive_spawn, running_as_root, remove_dir, sudo,
 )
-from .pprint import (
-    color_line, bold_line, print_stderr,
-)
-from .print_department import (
-    pretty_format_upgradeable, print_version,
-)
-from .pacman import (
-    get_pacman_command,
-)
-from .aur import (
-    find_aur_packages, get_all_aur_names,
-)
-from .updates import (
-    find_repo_upgradeable, find_aur_updates,
-)
-from .prompt import (
-    ask_to_continue,
-)
+from .pprint import color_line, bold_line, print_stderr
+from .print_department import pretty_format_upgradeable, print_version
+from .updates import find_repo_upgradeable, find_aur_updates
+from .prompt import ask_to_continue
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT,
     PikaurConfig,
 )
-from .install_cli import (
-    InstallPackagesCLI,
-)
-from .search_cli import (
-    cli_search_packages,
-)
-from .exceptions import (
-    SysExit
-)
-from .pikspect import (
-    TTYRestore
-)
-from .argparse import (
-    ArgumentError
-)
+from .exceptions import SysExit
+from .pikspect import TTYRestore
+from .argparse import ArgumentError
+
+from .install_cli import InstallPackagesCLI
+from .search_cli import cli_search_packages
+from .info_cli import cli_info_packages
 
 
 SUDO_LOOP_INTERVAL = 1
@@ -143,38 +120,6 @@ def cli_install_packages(args) -> None:
                 pool.terminate()
             if catched_exc:
                 raise catched_exc  # pylint: disable=raising-bad-type
-
-
-def _info_packages_thread_repo() -> str:
-    args = parse_args()
-    return spawn(get_pacman_command() + args.raw).stdout_text
-
-
-def cli_info_packages(args: PikaurArgs) -> None:
-    aur_pkg_names = args.positional or get_all_aur_names()
-    with ThreadPool() as pool:
-        aur_thread = pool.apply_async(find_aur_packages, (aur_pkg_names, ))
-        repo_thread = pool.apply_async(_info_packages_thread_repo, ())
-        pool.close()
-        pool.join()
-        repo_result = repo_thread.get()
-        aur_result = aur_thread.get()
-
-    if repo_result:
-        print(repo_result, end='')
-
-    aur_pkgs = aur_result[0]
-    num_found = len(aur_pkgs)
-    for i, aur_pkg in enumerate(aur_pkgs):
-        pkg_info_lines = []
-        for key, value in aur_pkg.__dict__.items():
-            if key in ['firstsubmitted', 'lastmodified']:
-                value = datetime.fromtimestamp(value).strftime('%c')
-            elif isinstance(value, list):
-                value = ', '.join(value)
-            pkg_info_lines.append('{key:24}: {value}'.format(
-                key=bold_line(key), value=value))
-        print('\n'.join(pkg_info_lines) + ('\n' if i + 1 < num_found else ''))
 
 
 def cli_clean_packages_cache(args: PikaurArgs) -> None:

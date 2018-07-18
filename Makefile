@@ -29,15 +29,19 @@ $(LOCALEDIR)/%.po: $(POTFILE)
 %.mo: %.po
 	msgfmt -o $@ $<
 
-man:
-	ln -sf README.md $(MD_MAN_FILE)
-	ronn $(MD_MAN_FILE) --manual="Pikaur manual" -r
-	gzip $(MAN_FILE)
+clean_man:
+	$(RM) $(MANFILES)
 
-clean:
+clean: clean_man
 	$(RM) $(LANGS_MO)
 	$(RM) $(POTEMPFILES)
-	$(RM) $(MANFILES)
+
+man: clean_man
+	cp README.md $(MD_MAN_FILE)
+	sed -i -e 's/^##### /### /g' -e 's/^#### /### /g' $(MD_MAN_FILE)
+	ronn $(MD_MAN_FILE) --manual="Pikaur manual" -r
+	sed -i -e '/travis/d' -e '/Screenshot/d' $(MAN_FILE)
+	gzip $(MAN_FILE)
 
 .PHONY: all clean $(POTFILE)
 .PRECIOUS: $(LOCALEDIR)/%.po

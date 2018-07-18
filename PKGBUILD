@@ -15,9 +15,12 @@ md5sums=(
 	"SKIP"
 )
 depends=(
-	'pacman>=5.1'
+	'pacman'
 	'pyalpm'
 	'git'
+)
+makedepends=(
+	'ruby-ronn'
 )
 conflicts=('pikaur')
 
@@ -41,5 +44,6 @@ package() {
 		install -Dm644 "locale/${langmo}" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"
 	done
 	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	install -Dm644 pikaur.1.gz "$pkgdir/usr/share/man/man1/pikaur.1.gz"
 	cp -r ./packaging/* "${pkgdir}"
 }

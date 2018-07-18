@@ -43,7 +43,7 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 * [Authors](#authors "")
 
 
-### Installation
+## Installation
 
 ```sh
 sudo pacman -S --needed base-devel git
@@ -52,12 +52,12 @@ cd pikaur
 makepkg -fsri
 ```
 
-### Screenshot
+## Screenshot
 
 ![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
 
 
-### Run without installation
+## Run without installation
 
 ```sh
 git clone https://github.com/actionless/pikaur.git
@@ -69,7 +69,7 @@ python3 ./pikaur.py -Syu
 
 
 
-### Configuration
+## Configuration
 
 ~/.config/pikaur.conf
 
@@ -125,7 +125,7 @@ path to pacman executable.
 
 
 
-### Directories
+## Directories
 
 ```sh
 ~/.cache/pikaur/
@@ -138,7 +138,7 @@ path to pacman executable.
 
 
 
-### FAQ
+## FAQ
 
 
 ##### How to upgrade all the dev (-git) packages at once?
@@ -168,15 +168,15 @@ Change the numbers, and you are good to go.
 
 
 
-### Contributing
+## Contributing
 
 
-#### Code
+### Code
 
 You can start from [this list of issues](https://github.com/actionless/pikaur/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22 ""). Grep-ing `@TODO` comments also useful if you're itching to write something.
 
 
-#### Translations
+### Translations
 
 To start working on a new language, say 'it' (Italian), add it to the
 `Makefile` `LANGS` variable and run `make`. Then translate `locale/it.po` using
@@ -184,7 +184,7 @@ your favorite PO editor. Run `make` every time the Python code strings change
 or the `.po` is modified.
 
 
-### Authors
+## Authors
 
 To see the list of authors use this command inside pikaur git repository directory:
 
@@ -192,6 +192,6 @@ To see the list of authors use this command inside pikaur git repository directo
 git log --pretty=tformat:"%an <%ae>" | sort -u
 ```
 
-##### Special thanks
+### Special thanks
 
 @AladW ([aurutils](https://github.com/AladW/aurutils)), @morganamilo ([yay](https://github.com/Jguer/yay)) and [all the other issue contributors](https://github.com/actionless/pikaur/issues?utf8=%E2%9C%93&q=is%3Aissue+-author%3Aactionless) for helping in triaging the bugs and clearing up feature requirements.

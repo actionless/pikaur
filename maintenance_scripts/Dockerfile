@@ -2,15 +2,16 @@
 
 FROM base/archlinux
 WORKDIR /opt/app-build/
-ENV LANG=en_US.utf8 \
-    LANGUAGE=en_US.UTF-8 \
-    LC_ALL=en_US.UTF-8
-
 RUN useradd -m user && \
     echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN pacman -Syu --noconfirm --needed sudo base-devel git
+
+RUN locale-gen en_US.UTF-8
+ENV LANG=en_US.utf8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 
 COPY . /opt/app-build/
 RUN pacman -Sy && \

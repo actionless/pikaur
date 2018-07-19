@@ -8,7 +8,9 @@ RUN useradd -m user && \
 
 RUN pacman -Syu --noconfirm --needed sudo base-devel git
 
-RUN locale-gen en_US.UTF-8
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+	echo "LANG=en_US.UTF-8" > /etc/locale.conf && \
+	locale-gen
 ENV LANG=en_US.utf8 \
     LANGUAGE=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8

@@ -2,6 +2,9 @@
 
 FROM base/archlinux
 WORKDIR /opt/app-build/
+ENV LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 
 RUN useradd -m user && \
     echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \

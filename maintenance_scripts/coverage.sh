@@ -13,7 +13,10 @@ pip install coveralls
 export PATH="${PATH}:/usr/bin/core_perl"
 echo "PKGEXT='.pkg.tar'" >> ~/.makepkg.conf
 
-coverage run --source=pikaur -m unittest ${2:-}
+if [[ "${2:-}" == "--write-db" ]] ; then
+	export WRITE_DB=True
+fi
+coverage run --source=pikaur -m unittest
 
 if [[ "${1:-}" == "--coveralls" ]] ; then
 	coveralls

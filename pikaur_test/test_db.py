@@ -17,7 +17,7 @@ if WRITE_DB:
     class CliTest(TestCase):
         # tests which are modifying local package DB:
 
-        def test_all(self):
+        def test_all(self):  # pylint: disable=no-self-use
             # @TODO: split to tests and use self.assert*
 
             # aur package with repo deps
@@ -112,5 +112,8 @@ if WRITE_DB:
                     # 'minecraft-launcher',  # too many deps to download
                     'jetbrains-toolbox',
             ]:
-                pikaur(f'-S {pkg_name} --mflags=--noextract', fake_makepkg=True, capture_stdout=True)
+                pikaur(
+                    f'-S {pkg_name} --mflags=--noextract',
+                    fake_makepkg=True, capture_stdout=True
+                )
                 assert_installed(pkg_name)

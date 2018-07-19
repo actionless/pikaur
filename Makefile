@@ -9,10 +9,10 @@ POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
 MOFILES = $(POFILES:.po=.mo)
 
 MAN_FILE := pikaur.1
+MAN_FILE_BAK := pikaur.1.repo
 MD_MAN_FILE := $(MAN_FILE).md
-MANFILES := $(MAN_FILE) $(MD_MAN_FILE)
 
-all: locale man
+all: locale
 
 locale: $(MOFILES)
 
@@ -29,9 +29,9 @@ $(LOCALEDIR)/%.po: $(POTFILE)
 	msgfmt -o $@ $<
 
 clean_man:
-	$(RM) $(MANFILES)
+	$(RM) $(MD_MAN_FILE)
 
-clean: clean_man
+clean: clean_man clean_checkman
 	$(RM) $(LANGS_MO)
 	$(RM) $(POTEMPFILES)
 
@@ -40,6 +40,16 @@ man: clean_man
 	sed -i -e 's/^##### /### /g' -e 's/^#### /### /g' $(MD_MAN_FILE)
 	ronn $(MD_MAN_FILE) --manual="Pikaur manual" -r
 	sed -i -e '/travis/d' -e '/Screenshot/d' $(MAN_FILE)
+
+backup_man:
+	mv $(MAN_FILE) $(MAN_FILE_BAK)
+
+check_man: backup_man man
+	diff $(MAN_FILE) $(MAN_FILE_BAK)
+	mv $(MAN_FILE_BAK) $(MAN_FILE)
+
+clean_checkman:
+	rm $(MAN_FILE_BAK)
 
 .PHONY: all clean $(POTFILE)
 .PRECIOUS: $(LOCALEDIR)/%.po

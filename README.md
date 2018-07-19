@@ -183,6 +183,10 @@ To start working on a new language, say 'it' (Italian), add it to the
 your favorite PO editor. Run `make` every time the Python code strings change
 or the `.po` is modified.
 
+### Documentation
+
+After updating readme please install `ruby-ronn` and run `make man`.
+
 
 ## Authors
 

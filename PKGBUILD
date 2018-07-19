@@ -19,9 +19,6 @@ depends=(
 	'pyalpm'
 	'git'
 )
-makedepends=(
-	'ruby-ronn'
-)
 conflicts=('pikaur')
 
 pkgver() {

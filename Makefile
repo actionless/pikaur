@@ -10,8 +10,7 @@ MOFILES = $(POFILES:.po=.mo)
 
 MAN_FILE := pikaur.1
 MD_MAN_FILE := $(MAN_FILE).md
-GZ_MAN_FILE := $(MAN_FILE).gz
-MANFILES := $(MAN_FILE) $(MD_MAN_FILE) $(GZ_MAN_FILE)
+MANFILES := $(MAN_FILE) $(MD_MAN_FILE)
 
 all: locale man
 
@@ -41,7 +40,6 @@ man: clean_man
 	sed -i -e 's/^##### /### /g' -e 's/^#### /### /g' $(MD_MAN_FILE)
 	ronn $(MD_MAN_FILE) --manual="Pikaur manual" -r
 	sed -i -e '/travis/d' -e '/Screenshot/d' $(MAN_FILE)
-	gzip $(MAN_FILE)
 
 .PHONY: all clean $(POTFILE)
 .PRECIOUS: $(LOCALEDIR)/%.po

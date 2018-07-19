@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='pikaur',  # Required
-    version='1.0',  # Required
+    version='1.0.1',  # Required
     description='AUR helper with minimal dependencies',  # Required
     long_description=long_description,  # Optional
     url='https://github.com/actionless/pikaur',  # Optional

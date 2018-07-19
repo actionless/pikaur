@@ -62,9 +62,7 @@ makepkg -fsri
 ```sh
 git clone https://github.com/actionless/pikaur.git
 cd pikaur
-python3 ./pikaur.py -Ss AUR_PACKAGE_NAME
 python3 ./pikaur.py -S AUR_PACKAGE_NAME
-python3 ./pikaur.py -Syu
 ```
 
 

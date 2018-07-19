@@ -13,7 +13,7 @@ pip install coveralls
 export PATH="${PATH}:/usr/bin/core_perl"
 echo "PKGEXT='.pkg.tar'" >> ~/.makepkg.conf
 
-coverage run --source=pikaur run_tests.py ${2:-}
+coverage run --source=pikaur -m unittest ${2:-}
 
 if [[ "${1:-}" == "--coveralls" ]] ; then
 	coveralls

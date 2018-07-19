@@ -2,7 +2,7 @@
 
 FROM base/archlinux
 WORKDIR /opt/app-build/
-ENV LANG=en_US.UTF-8 \
+ENV LANG=en_US.utf8 \
     LANGUAGE=en_US.UTF-8 \
     LC_ALL=en_US.UTF-8
 

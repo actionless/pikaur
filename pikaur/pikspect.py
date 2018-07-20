@@ -242,7 +242,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             for question in questions:
                 if not self._match(question, historic_output):
                     continue
-                self.write_something(answer.encode('utf-8'))
+                self.write_something((answer + '\n').encode('utf-8'))
                 with PrintLock():
                     if self.save_output:
                         ThreadSafeBytesStorage.add_bytes(

@@ -14,10 +14,10 @@ import os
 import re
 import threading
 from multiprocessing.pool import ThreadPool
-from time import sleep
+from time import time, sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
-from .pprint import PrintLock, print_stdout, purge_line, go_line_up, bold_line
+from .pprint import PrintLock, purge_line, go_line_up, bold_line
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
 from .args import parse_args
 from .pacman import _p, MESSAGE_PACKAGES
@@ -29,6 +29,8 @@ MAX_QUESTION_LENGTH = 256
 
 # SMALL_TIMEOUT = 0.1
 SMALL_TIMEOUT = 0.01
+
+WRITE_INTERVAL = 0.1
 
 
 TcAttrsType = List[Union[int, List[bytes]]]
@@ -106,6 +108,9 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     _hide_each_line: List[str]
     _re_cache: Dict[str, int]
     _output_done = False
+    # write buffer:
+    _write_buffer: bytes = b''
+    _last_write: float = 0
     # some help for mypy:
     _waitpid_lock: threading.Lock
     _try_wait: Callable
@@ -190,6 +195,8 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                         pool.close()
 
                         output_task.get()
+                        sys.stdout.buffer.write(self._write_buffer)
+                        sys.stdout.buffer.flush()
                         self._output_done = True
                         communicate_task.get()
                         pool.join()
@@ -235,8 +242,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             for question in questions:
                 if not self._match(question, historic_output):
                     continue
-                if self.print_output:
-                    print_stdout(answer)
+                self.write_something(answer.encode('utf-8'))
                 with PrintLock():
                     if self.save_output:
                         ThreadSafeBytesStorage.add_bytes(
@@ -257,6 +263,17 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
         if clear_buffer:
             self.historic_output = [b'']
+
+    def write_something(self, output: bytes) -> None:
+        if not self.print_output:
+            return
+        with PrintLock():
+            self._write_buffer += output
+            if (self._last_write + WRITE_INTERVAL) < time():
+                sys.stdout.buffer.write(self._write_buffer)
+                sys.stdout.buffer.flush()
+                self._write_buffer = b''
+                self._last_write = time()
 
     @handle_exception_in_thread
     def cmd_output_reader_thread(self) -> None:
@@ -282,10 +299,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.historic_output = (
                 self.historic_output[-max_question_length:] + [output, ]
             )
-            if self.print_output:
-                with PrintLock():
-                    sys.stdout.buffer.write(output)
-                    sys.stdout.buffer.flush()
+            self.write_something(output)
             if self.save_output:
                 ThreadSafeBytesStorage.add_bytes(self.task_id, output)
             self.check_questions()
@@ -315,8 +329,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                     self.pty_in.flush()
             except ValueError as exc:
                 print(exc)
-            if self.print_output:
-                print_stdout(char, end='', flush=True)
+            self.write_something(char.encode('utf-8'))
             if self.save_output:
                 ThreadSafeBytesStorage.add_bytes(self.task_id, char.encode('utf-8'))
 

@@ -181,18 +181,6 @@ def pacman(cmd: str) -> CmdResult:
     )
 
 
-def assert_not_installed(pkg_name: str) -> None:
-    assert(
-        pacman(f'-Qi {pkg_name}').returncode == 1
-    )
-
-
-def remove_packages(*pkg_names: str) -> None:
-    pikaur('-Rs --noconfirm ' + ' '.join(pkg_names))
-    for name in pkg_names:
-        assert_not_installed(name)
-
-
 class PikaurTestCase(TestCase):
     # pylint: disable=invalid-name
 
@@ -215,3 +203,8 @@ class PikaurTestCase(TestCase):
             cmd_result.strip(),  # type: ignore
             provider_name
         )
+
+    def remove_packages(self, *pkg_names: str) -> None:
+        pikaur('-Rs --noconfirm ' + ' '.join(pkg_names))
+        for name in pkg_names:
+            self.assertNotInstalled(name)

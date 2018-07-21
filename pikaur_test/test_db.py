@@ -5,7 +5,6 @@ import os
 from pikaur_test.helpers import (
     PikaurTestCase,
     pikaur, fake_pikaur,
-    remove_packages,
 )
 
 
@@ -52,7 +51,7 @@ if WRITE_DB:
             self.assertInstalled('pacaur')
             self.assertProvidedBy('cower', 'cower-git')
 
-            remove_packages('pacaur', 'cower-git')
+            self.remove_packages('pacaur', 'cower-git')
 
             # aur package with manually chosen aur dep:
             pikaur('-S pacaur cower-git')
@@ -90,7 +89,7 @@ if WRITE_DB:
             self.assertInstalled('python-pyalsaaudio')
             self.assertNotInstalled('python2-pyalsaaudio')
 
-            remove_packages('python-pyalsaaudio')
+            self.remove_packages('python-pyalsaaudio')
 
             # Split packages 3: 2 split packages
             pikaur('-S python2-pyalsaaudio python-pyalsaaudio')

@@ -16,7 +16,7 @@ echo "PKGEXT='.pkg.tar'" >> ~/.makepkg.conf
 if [[ "${2:-}" == "--write-db" ]] ; then
 	export WRITE_DB=True
 fi
-coverage run --source=pikaur -m unittest
+coverage run --source=pikaur -m unittest -v
 
 if [[ "${1:-}" == "--coveralls" ]] ; then
 	coveralls

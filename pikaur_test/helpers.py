@@ -71,10 +71,19 @@ class CmdResult:
         ))
 
 
+class FakeExit(Exception):
+    pass
+
+
 class InterceptSysOutput():
 
     stdout_text: str
     stderr_text: str
+    returncode: int
+
+    def _fake_exit(self, code: Optional[int] = 0) -> NoReturn:
+        self.returncode = code
+        raise FakeExit()
 
     def __init__(self, capture_stdout=True, capture_stderr=False) -> None:
         self.capture_stdout = capture_stdout
@@ -93,11 +102,15 @@ class InterceptSysOutput():
         if self.capture_stderr:
             sys.stderr = self.err_file  # type: ignore
 
+        self._real_exit = sys.exit
+        sys.exit = self._fake_exit  # type: ignore
+
         return self
 
     def __exit__(self, *_exc_details) -> None:
         sys.stdout = self._real_stdout
         sys.stderr = self._real_stderr
+        sys.exit = self._real_exit
 
         self.out_file.flush()
         self.err_file.flush()
@@ -112,19 +125,8 @@ class InterceptSysOutput():
 def pikaur(
         cmd: str, capture_stdout=True, capture_stderr=False, fake_makepkg=False
 ) -> CmdResult:
-    returncode: Optional[int] = None
-    stdout_text: Optional[str] = None
-    stderr_text: Optional[str] = None
 
     PackageDB.discard_local_cache()
-
-    class FakeExit(Exception):
-        pass
-
-    def fake_exit(code: Optional[int] = 0) -> NoReturn:
-        nonlocal returncode
-        returncode = code
-        raise FakeExit()
 
     # re-parse args:
     sys.argv = ['pikaur'] + cmd.split(' ') + (
@@ -142,9 +144,6 @@ def pikaur(
     CachedArgs.args.color = 'never'  # type: ignore # pylint:disable=protected-access
     print(color_line('\n => ', 10) + ' '.join(sys.argv))
 
-    _real_exit = sys.exit
-    sys.exit = fake_exit  # type: ignore
-
     intercepted: InterceptSysOutput
     with InterceptSysOutput(
             capture_stderr=capture_stderr,
@@ -157,15 +156,10 @@ def pikaur(
             pass
         intercepted = _intercepted
 
-    stdout_text = intercepted.stdout_text
-    stderr_text = intercepted.stderr_text
-
-    sys.exit = _real_exit
-
     return CmdResult(
-        returncode=returncode,
-        stdout=stdout_text,
-        stderr=stderr_text,
+        returncode=intercepted.returncode,
+        stdout=intercepted.stdout_text,
+        stderr=intercepted.stderr_text,
     )
 
 

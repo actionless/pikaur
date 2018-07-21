@@ -129,7 +129,7 @@ def pikaur(
     # re-parse args:
     sys.argv = ['pikaur'] + cmd.split(' ') + (
         [
-            '--noconfirm',
+            '--noconfirm', '--hide-build-log',
         ] if '-S ' in cmd else []
     ) + (
         [

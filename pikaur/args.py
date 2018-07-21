@@ -81,8 +81,9 @@ PIKAUR_BOOL_OPTS = (
     ('k', 'keepbuild'),
     (None, 'nodiff'),
     (None, 'rebuild'),
-
+    # undocumented options:
     (None, 'debug'),
+    (None, 'hide-build-log'),
 )
 
 

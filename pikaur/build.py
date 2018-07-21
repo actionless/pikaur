@@ -3,6 +3,7 @@
 import os
 import sys
 import shutil
+import subprocess
 from multiprocessing.pool import ThreadPool
 from typing import List, Union, Dict, Set, Optional
 
@@ -512,10 +513,16 @@ class PackageBuild(DataType):
             if skip_carch_check:
                 cmd_args += ['--ignorearch']
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir)
+            spawn_kwargs = {}
+            if self.args.hide_build_log:
+                spawn_kwargs = dict(
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
             result = interactive_spawn(
                 cmd_args,
                 cwd=self.build_dir,
-                # pikspect=True,
+                **spawn_kwargs
             )
             print_stdout()
             build_succeeded = result.returncode == 0

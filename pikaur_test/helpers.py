@@ -15,6 +15,9 @@ from pikaur.pacman import PackageDB  # pylint:disable=no-name-in-module
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
+WRITE_DB = bool(os.environ.get('WRITE_DB'))
+
+
 class TestPopen(Popen):
     stderr_text: Optional[str] = None
     stdout_text: Optional[str] = None
@@ -204,7 +207,21 @@ class PikaurTestCase(TestCase):
             provider_name
         )
 
+
+class PikaurDbTestCase(PikaurTestCase):
+    """
+    tests which are modifying local package DB
+    """
+
     def remove_packages(self, *pkg_names: str) -> None:
         pikaur('-Rs --noconfirm ' + ' '.join(pkg_names))
         for name in pkg_names:
             self.assertNotInstalled(name)
+
+    def run(self, test_result):
+        if WRITE_DB:
+            return super().run(self, test_result)
+        test_result.addSkip(
+            self,
+            test_result.getDescription(self) + '. Not writing to local package DB.'
+        )

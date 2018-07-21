@@ -4,6 +4,7 @@ import sys
 import os
 import tempfile
 from subprocess import Popen
+from unittest import TestCase
 from typing import Optional, List, NoReturn
 
 from pikaur.main import main
@@ -163,6 +164,13 @@ def pikaur(
     )
 
 
+def fake_pikaur(cmd_args: str):
+    pikaur(
+        f'{cmd_args} --mflags=--noextract',
+        fake_makepkg=True, capture_stdout=True
+    )
+
+
 def pacman(cmd: str) -> CmdResult:
     args = ['pacman'] + cmd.split(' ')
     proc = spawn(args)
@@ -173,22 +181,9 @@ def pacman(cmd: str) -> CmdResult:
     )
 
 
-def assert_installed(pkg_name: str) -> None:
-    assert(
-        pacman(f'-Qi {pkg_name}').returncode == 0
-    )
-
-
 def assert_not_installed(pkg_name: str) -> None:
     assert(
         pacman(f'-Qi {pkg_name}').returncode == 1
-    )
-
-
-def assert_provided_by(dep_name: str, provider_name: str) -> None:
-    cmd_result = pacman(f'-Qsq {dep_name}').stdout
-    assert(
-        cmd_result and (cmd_result.strip() == provider_name)
     )
 
 
@@ -196,3 +191,27 @@ def remove_packages(*pkg_names: str) -> None:
     pikaur('-Rs --noconfirm ' + ' '.join(pkg_names))
     for name in pkg_names:
         assert_not_installed(name)
+
+
+class PikaurTestCase(TestCase):
+    # pylint: disable=invalid-name
+
+    def assertInstalled(self, pkg_name: str) -> None:
+        self.assertEqual(
+            pacman(f'-Qi {pkg_name}').returncode, 0
+        )
+
+    def assertNotInstalled(self, pkg_name: str) -> None:
+        self.assertEqual(
+            pacman(f'-Qi {pkg_name}').returncode, 1
+        )
+
+    def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:
+        cmd_result = pacman(f'-Qsq {dep_name}').stdout
+        self.assertTrue(
+            cmd_result
+        )
+        self.assertEqual(
+            cmd_result.strip(),  # type: ignore
+            provider_name
+        )

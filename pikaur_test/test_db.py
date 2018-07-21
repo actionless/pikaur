@@ -1,12 +1,11 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import os
-from unittest import TestCase
 
 from pikaur_test.helpers import (
-    pikaur,
+    PikaurTestCase,
+    pikaur, fake_pikaur,
     remove_packages,
-    assert_installed, assert_not_installed, assert_provided_by
 )
 
 
@@ -14,106 +13,125 @@ WRITE_DB = bool(os.environ.get('WRITE_DB'))
 
 
 if WRITE_DB:
-    class CliTest(TestCase):
-        # tests which are modifying local package DB:
+    class InstallTest(PikaurTestCase):
+        """
+        tests which are modifying local package DB
+        """
 
-        def test_all(self):  # pylint: disable=no-self-use
-            # @TODO: split to tests and use self.assert*
-
+        def test_aur_package_with_repo_deps(self):
             # aur package with repo deps
             pikaur('-S inxi')
-            assert_installed('inxi')
+            self.assertInstalled('inxi')
 
+        def test_repo_package_wo_deps(self):
             # repo package w/o deps
             pikaur('-S nano')
-            assert_installed('nano')
+            self.assertInstalled('nano')
 
+        def test_repo_package_with_deps(self):
             # repo package with deps
             pikaur('-S flac')
-            assert_installed('flac')
+            self.assertInstalled('flac')
 
+        def test_aur_package_with_aur_dep(self):
             # aur package with aur dep and custom makepkg flags
             pikaur('-S pacaur --mflags=--skippgpcheck')
-            assert_installed('pacaur')
-            assert_installed('cower')
+            self.assertInstalled('pacaur')
+            self.assertInstalled('cower')
 
             # package removal (pacman wrapping test)
             pikaur('-Rs pacaur cower --noconfirm')
-            assert_not_installed('pacaur')
-            assert_not_installed('cower')
+            self.assertNotInstalled('pacaur')
+            self.assertNotInstalled('cower')
 
             pikaur('-S cower-git --mflags=--skippgpcheck')
-            assert_installed('cower-git')
+            self.assertInstalled('cower-git')
 
             # aur package with aur dep provided by another already installed AUR pkg
             pikaur('-S pacaur')
-            assert_installed('pacaur')
-            assert_provided_by('cower', 'cower-git')
+            self.assertInstalled('pacaur')
+            self.assertProvidedBy('cower', 'cower-git')
 
             remove_packages('pacaur', 'cower-git')
 
             # aur package with manually chosen aur dep:
             pikaur('-S pacaur cower-git')
-            assert_installed('pacaur')
-            assert_provided_by('cower', 'cower-git')
+            self.assertInstalled('pacaur')
+            self.assertProvidedBy('cower', 'cower-git')
 
-            # # Arch Wiki: Reliable parser ############################################
+    class ArchWikiTest(PikaurTestCase):
+        """
+        criterias from arch wiki
+        """
+
+        # def test_reliable_parser(self):
+            # Arch Wiki: Reliable parser #
             # pikaur('-S aws-cli-git')
-            # assert_installed('aws-cli-git')
-            # # python-tox dep is not available now
+            # self.assertInstalled('aws-cli-git')
+            # python-tox dep is not available now
 
-            # # Arch Wiki: Split packages #############################################
-
+        def test_split_packages_1(self):
             # Split packages 1
             pikaur('-S clion --mflags=--noextract', fake_makepkg=True)
-            assert_installed('clion')
+            self.assertInstalled('clion')
 
+        def test_split_packages_2(self):
             # Split packages 2: libc++
             pikaur('-S libc++ --mflags=--skippgpcheck,--noextract', fake_makepkg=True)
-            assert_installed('libc++')
+            self.assertInstalled('libc++')
 
             # Split packages 2: libc++abi (installing already built package)
             pikaur('-S libc++abi')
-            assert_installed('libc++abi')
+            self.assertInstalled('libc++abi')
 
+        def test_split_packages_3(self):
             # Split packages 3: 1 split package
             pikaur('-S python-pyalsaaudio')
-            assert_installed('python-pyalsaaudio')
-            assert_not_installed('python2-pyalsaaudio')
+            self.assertInstalled('python-pyalsaaudio')
+            self.assertNotInstalled('python2-pyalsaaudio')
 
             remove_packages('python-pyalsaaudio')
 
             # Split packages 3: 2 split packages
             pikaur('-S python2-pyalsaaudio python-pyalsaaudio')
-            assert_installed('python2-pyalsaaudio')
-            assert_installed('python-pyalsaaudio')
+            self.assertInstalled('python2-pyalsaaudio')
+            self.assertInstalled('python-pyalsaaudio')
 
-            # # Arch Wiki: Reliable solver ############################################
+        # def test_reliable_solver(self):
+            # # Arch Wiki: Reliable solver
             # pikaur('-S ros-lunar-desktop --mflags=--noextract', fake_makepkg=True)
-            # assert_installed('ros-lunar-desktop')
+            # self.assertInstalled('ros-lunar-desktop')
             # it's slow as hell even with mocked makepkg :(
 
-            # # Based on GH-issues: ###################################################
+    class RegressionTest(PikaurTestCase):
+        """
+        Based on GH-issues
+        """
 
+        def test_split_pkgs_aur_deps(self):
             # split aur package with deps from aur (too long to build so use fake makepkg)
-            pikaur('-S zfs-dkms --mflags=--noextract', fake_makepkg=True)
-            assert_installed('zfs-dkms')
-            assert_installed('zfs-utils')
-            assert_installed('spl-dkms')
-            assert_installed('spl-utils')
+            fake_pikaur('-S zfs-dkms')
+            self.assertInstalled('zfs-dkms')
+            self.assertInstalled('zfs-utils')
+            self.assertInstalled('spl-dkms')
+            self.assertInstalled('spl-utils')
 
-            for pkg_name in [
-                    # double requirements line
-                    # pikaur -Si --aur | grep -e \^name -e \^depends | grep -E "(>.*<|<.*>)" -B 1
-                    'xfe',  # with doubled repo dep
-                    'python2-uncompyle6',  # with doubled aur dep
+        def test_double_requirements_repo(self):
+            # double requirements line
+            # pikaur -Si --aur | grep -e \^name -e \^depends | grep -E "(>.*<|<.*>)" -B 1
+            # with doubled repo dep
+            pkg_name = 'xfe'
+            fake_pikaur(f'-S {pkg_name}')
+            self.assertInstalled(pkg_name)
 
-                    # depend on versioned requirement provided by few pkgs
-                    # 'minecraft-launcher',  # too many deps to download
-                    'jetbrains-toolbox',
-            ]:
-                pikaur(
-                    f'-S {pkg_name} --mflags=--noextract',
-                    fake_makepkg=True, capture_stdout=True
-                )
-                assert_installed(pkg_name)
+        def test_double_requirements_aur(self):
+            pkg_name = 'python2-uncompyle6'  # with doubled aur dep
+            fake_pikaur(f'-S {pkg_name}')
+            self.assertInstalled(pkg_name)
+
+        def test_aur_pkg_with_versioned_virtual_deps(self):
+            # depend on versioned requirement provided by few pkgs
+            # 'minecraft-launcher',  # too many deps to download
+            pkg_name = 'jetbrains-toolbox'
+            fake_pikaur(f'-S {pkg_name}')
+            self.assertInstalled(pkg_name)

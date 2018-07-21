@@ -218,10 +218,12 @@ class PikaurDbTestCase(PikaurTestCase):
         for name in pkg_names:
             self.assertNotInstalled(name)
 
-    def run(self, test_result):
+    def run(self, result=None):
         if WRITE_DB:
-            return super().run(self, test_result)
-        test_result.addSkip(
-            self,
-            test_result.getDescription(self) + '. Not writing to local package DB.'
-        )
+            return super().run(result)
+        if result:
+            result.addSkip(
+                self,
+                result.getDescription(self) + '. Not writing to local package DB.'
+            )
+        return result

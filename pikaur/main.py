@@ -11,6 +11,7 @@ import subprocess
 import codecs
 import shutil
 import atexit
+import io
 from typing import List
 from time import sleep
 from multiprocessing.pool import ThreadPool
@@ -60,14 +61,18 @@ init_readline()
 def init_output_encoding() -> None:
     for attr in ('stdout', 'stderr'):
         real_stream = getattr(sys, attr)
-        setattr(
-            sys, attr,
-            codecs.open(
-                real_stream.fileno(),
-                mode='w', buffering=0, encoding='utf-8'
+        try:
+            setattr(
+                sys, attr,
+                codecs.open(
+                    real_stream.fileno(),
+                    mode='w', buffering=0, encoding='utf-8'
+                )
             )
-        )
-        getattr(sys, attr).buffer = real_stream.buffer
+        except io.UnsupportedOperation:
+            pass
+        else:
+            getattr(sys, attr).buffer = real_stream.buffer
 
 
 init_output_encoding()

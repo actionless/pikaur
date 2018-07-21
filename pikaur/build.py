@@ -5,7 +5,7 @@ import sys
 import shutil
 import subprocess
 from multiprocessing.pool import ThreadPool
-from typing import List, Union, Dict, Set, Optional
+from typing import List, Union, Dict, Set, Optional, Any
 
 from .core import (
     DataType,
@@ -513,7 +513,7 @@ class PackageBuild(DataType):
             if skip_carch_check:
                 cmd_args += ['--ignorearch']
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir)
-            spawn_kwargs = {}
+            spawn_kwargs: Dict[str, Any] = {}
             if self.args.hide_build_log:
                 spawn_kwargs = dict(
                     stdout=subprocess.PIPE,

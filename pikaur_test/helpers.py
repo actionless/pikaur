@@ -81,7 +81,7 @@ class InterceptSysOutput():
     stderr_text: str
     returncode: int
 
-    def _fake_exit(self, code: Optional[int] = 0) -> NoReturn:
+    def _fake_exit(self, code: int = 0) -> NoReturn:
         self.returncode = code
         raise FakeExit()
 

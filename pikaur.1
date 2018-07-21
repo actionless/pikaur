@@ -142,6 +142,9 @@ when upgrading packages sort them by \fBversiondiff\fR, \fBpkgname\fR or \fBrepo
 .SS "KeepBuildDir (default: no)"
 don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\.
 .
+.SS "SkipFailedBuild (default: no)"
+always skip the build if it fails and don\'t show recovery prompt\.
+.
 .SS "NoEdit (default: no)"
 don\'t prompt to edit PKGBUILD and install files\.
 .

@@ -53,6 +53,10 @@ _CONFIG_SCHEMA = {
             'type': 'bool',
             'default': 'no',
         },
+        'SkipFailedBuild': {
+            'type': 'bool',
+            'default': 'no',
+        },
         'NoEdit': {
             'type': 'bool',
             'default': 'no',

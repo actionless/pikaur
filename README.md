@@ -92,6 +92,9 @@ when upgrading packages sort them by `versiondiff`, `pkgname` or `repo`.
 ##### KeepBuildDir (default: no)
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
 
+##### SkipFailedBuild (default: no)
+always skip the build if it fails and don't show recovery prompt.
+
 ##### NoEdit (default: no)
 don't prompt to edit PKGBUILD and install files.
 

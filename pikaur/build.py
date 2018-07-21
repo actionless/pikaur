@@ -532,7 +532,9 @@ class PackageBuild(DataType):
             print_stderr(color_line(_("Command '{}' failed to execute.").format(
                 ' '.join(cmd_args)
             ), 9))
-            if self.args.noconfirm:
+            if PikaurConfig().build.get_bool('SkipFailedBuild'):
+                answer = _("s")
+            elif self.args.noconfirm:
                 answer = _("a")
             else:
                 prompt = '{} {}\n{}\n> '.format(

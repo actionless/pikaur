@@ -68,6 +68,9 @@ class InstallTest(PikaurDbTestCase):
         """
         from pikaur.pacman import PackageDB  # pylint: disable=no-name-in-module
 
+        # just update to make sure everything is on the latest version, except for test subject packages
+        pikaur('-Syu --noconfirm')
+
         # repo package downgrade
         repo_pkg_name = 'nano'
         repo_old_version = '2.9.7-1'
@@ -89,6 +92,18 @@ class InstallTest(PikaurDbTestCase):
         pikaur(f'-P --install --noconfirm ./{aur_pkg_name}/PKGBUILD')
         self.assertInstalled(aur_pkg_name)
         aur_old_version = PackageDB.get_local_dict()[aur_pkg_name].version
+
+        # test pikaur -Qu
+        query_result = pikaur('-Qu').stdout
+        self.assertEqual(
+            len(query_result.splitlines()), 2
+        )
+        self.assertIn(
+            aur_pkg_name, query_result
+        )
+        self.assertIn(
+            repo_pkg_name, query_result
+        )
 
         # and finally test the sysupgrade itself
         pikaur('-Syu --noconfirm')

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-04 14:52+0200\n"
-"PO-Revision-Date: 2018-04-19 23:46+0300\n"
+"PO-Revision-Date: 2018-07-22 17:19+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -26,12 +26,12 @@ msgstr "({} gün eski)"
 #: pikaur/args.py:155
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] ":: hata: {} seçeneği {} olmadan kullanılamaz."
+msgstr[1] ":: hata: {} seçenekleri {} olmadan kullanılamaz."
 
 #: pikaur/args.py:148
 msgid ":: error: options {} can't be used together."
-msgstr ""
+msgstr ":: hata: {} seçenekleri birlikte kullanılamaz."
 
 #: pikaur/print_department.py:251
 msgid "AUR package will be installed:"
@@ -64,15 +64,15 @@ msgstr "Ortak pacman seçenekleri:"
 
 #: pikaur/news.py:59
 msgid "Could not fetch archlinux.org news"
-msgstr ""
+msgstr "archlinux.org'dan haberler çekilemiyor."
 
 #: pikaur/news.py:84
 msgid "Could not initialize {}"
-msgstr ""
+msgstr "{} başlatılamadı"
 
 #: pikaur/news.py:129
 msgid "Could not update {}"
-msgstr ""
+msgstr "{} güncellemedi"
 
 #: pikaur/install_cli.py:206
 msgid "Dependencies missing for {}"
@@ -127,9 +127,8 @@ msgid "Following packages cannot be found in AUR:"
 msgstr "Paketler AUR'da bulunamadı:"
 
 #: pikaur/print_department.py:42
-#, fuzzy
 msgid "Following packages cannot be found in repositories:"
-msgstr "Paketler AUR'da bulunamadı:"
+msgstr "Takip eden paketler depolarda bulunamadı:"
 
 #: pikaur/print_department.py:284
 msgid "Ignoring package {}"
@@ -150,18 +149,16 @@ msgstr[0] "Yeni bağlılık AUR'dan kurulacak:"
 msgstr[1] "Yeni bağlılıklar AUR'dan kurulacak:"
 
 #: pikaur/print_department.py:216
-#, fuzzy
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
-msgstr[0] "Yeni bağlılık AUR'dan kurulacak:"
-msgstr[1] "Yeni bağlılıklar AUR'dan kurulacak:"
+msgstr[0] "Yeni bağlılık depodan kurulacak:"
+msgstr[1] "Yeni bağlılıklar depodan kurulacak:"
 
 #: pikaur/print_department.py:239
-#, fuzzy
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
-msgstr[0] "Yeni bağlılık AUR'dan kurulacak:"
-msgstr[1] "Yeni bağlılıklar AUR'dan kurulacak:"
+msgstr[0] "Yeni bağlılık üçüncü parti depodan kurulacak:"
+msgstr[1] "Yeni bağlılıklar üçüncü parti depodan kurulacak:"
 
 #: pikaur/install_cli.py:429
 #, python-brace-format
@@ -230,11 +227,11 @@ msgstr "Tam AUR güncellemesi başlatılıyor..."
 
 #: pikaur/build.py:484
 msgid "Starting the build"
-msgstr ""
+msgstr "İnşa başlatılıyor"
 
 #: pikaur/news.py:41
 msgid "There are news from archlinux.org!"
-msgstr ""
+msgstr "archlinux.org'dan haberler var!"
 
 #: pikaur/print_department.py:228
 msgid "Third-party repository package will be installed:"
@@ -293,9 +290,8 @@ msgid "a"
 msgstr "v"
 
 #: pikaur/args.py:209
-#, fuzzy
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
-msgstr "1 günden eski sysupgrade '-git' ve diğer geliştirici paketleri"
+msgstr "her zaman sysupgrade '-git' ve diğer geliştirici paketleri"
 
 #: pikaur/install_cli.py:402 pikaur/install_cli.py:405
 msgid "c"
@@ -310,9 +306,8 @@ msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "PKGBUILD ve diğer inşa dosyalarını düzenlemeyi sorma"
 
 #: pikaur/args.py:211
-#, fuzzy
 msgid "don't prompt to show the build files diff"
-msgstr "PKGBUILD ve diğer inşa dosyalarını düzenlemeyi sorma"
+msgstr "inşa dosyalarının farklarını göstermeyi sorma"
 
 #: pikaur/args.py:210
 msgid "don't remove build dir after the build"
@@ -323,9 +318,8 @@ msgid "edit"
 msgstr "düzenle"
 
 #: pikaur/main.py:279
-#, fuzzy
 msgid "error"
-msgstr "hata:"
+msgstr "hata"
 
 #: pikaur/install_cli.py:582
 msgid "error:"
@@ -333,7 +327,7 @@ msgstr "hata:"
 
 #: pikaur/print_department.py:109 pikaur/print_department.py:115
 msgid "for"
-msgstr ""
+msgstr "için"
 
 #: pikaur/install_cli.py:420
 msgid "looking for conflicting AUR packages..."
@@ -361,9 +355,8 @@ msgstr ""
 "pikaur root olabilmek için systemd >= 235 (dinamik kullanıcılar) gerektirir."
 
 #: pikaur/args.py:207
-#, fuzzy
 msgid "prompt to edit PKGBUILDs and other build files"
-msgstr "PKGBUILD ve diğer inşa dosyalarını düzenlemeyi sorma"
+msgstr "PKGBUILD ve diğer inşa dosyalarını düzenlemeyi sor"
 
 #: pikaur/args.py:201
 msgid "query packages from AUR only"
@@ -411,7 +404,7 @@ msgstr "{name} {version} {package_source} paketi güncel - atlanıyor"
 #: pikaur/install_cli.py:438
 #, python-brace-format
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
-msgstr ""
+msgstr "{new} ve {installed} çakışıyor. {installed} silinsin mi?"
 
 #: pikaur/install_cli.py:213
 #, python-brace-format
@@ -429,17 +422,3 @@ msgstr "{} dosya sisteminde mevcut değil."
 #: pikaur/main.py:186
 msgid "{}: {}"
 msgstr "{}: {}"
-
-#, fuzzy
-#~ msgid "Starting full system upgrade..."
-#~ msgstr "Tam AUR güncellemesi başlatılıyor..."
-
-#~ msgid "Do you want to remove '{installed}'?"
-#~ msgstr "'{installed}' kaldırmak ister misiniz?"
-
-#~ msgid "New package '{new}' conflicts with installed '{installed}'."
-#~ msgstr "Yeni '{new}' paketi ile kurulu '{installed}' çakışıyor."
-
-#, fuzzy
-#~ msgid "New package '{new}' replaces installed '{installed}' Proceed?"
-#~ msgstr "Yeni '{new}' paketi ile kurulu '{installed}' çakışıyor."

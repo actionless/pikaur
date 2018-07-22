@@ -170,6 +170,15 @@ Exec = /usr/bin/env bash -c "/usr/bin/paccache -vrk3; /usr/bin/paccache -vruk1; 
 Change the numbers, and you are good to go.
 
 
+##### How to see upgrade list without syncing the database? (like "checkupdates" tool from pacman)
+
+Actually use `checkupdates` tool to check the repo updates and use pikaur only for AUR (`-a`/`--aur` switch):
+
+```
+checkupdates && pikaur -Qua 2>/dev/null
+```
+
+
 
 ## Contributing
 

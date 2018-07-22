@@ -17,14 +17,9 @@ from multiprocessing.pool import ThreadPool
 from time import time, sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
-from .pprint import PrintLock, purge_line, go_line_up, bold_line
+from .pprint import PrintLock, bold_line
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
-from .args import parse_args
-from .pacman import _p, MESSAGE_PACKAGES
-
-
-# MAX_QUESTION_LENGTH = 512
-MAX_QUESTION_LENGTH = 256
+from .pacman import _p
 
 
 # SMALL_TIMEOUT = 0.1
@@ -93,6 +88,14 @@ class NestedTerminal():
         TTYRestore.restore()
 
 
+def _match(pattern, line):
+    return len(line) >= len(pattern) and (
+        re.compile(pattern).search(line)
+        if '.*' in pattern else
+        (pattern in line)
+    )
+
+
 class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attributes
 
     print_output: bool
@@ -103,10 +106,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     pty_in: TextIO
     pty_out: BinaryIO
     default_questions: Dict[str, List[str]]
-    _hide_after: List[str]
-    _show_after: List[str]
-    _hide_each_line: List[str]
-    _re_cache: Dict[str, int]
+    max_question_length = 0
     _output_done = False
     # write buffer:
     _write_buffer: bytes = b''
@@ -131,10 +131,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         self.capture_input = capture_input
         self.default_questions = {}
         self.historic_output = []
-        self._re_cache = {}
-        self._hide_after = []
-        self._show_after = []
-        self._hide_each_line = []
         if default_questions:
             self.add_answers(default_questions)
 
@@ -153,18 +149,13 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     def add_answers(self, extra_questions: Dict[str, List[str]]) -> None:
         for answer, questions in extra_questions.items():
             self.default_questions[answer] = self.default_questions.get(answer, []) + questions
+            for question in questions:
+                if len(question) > self.max_question_length:
+                    self.max_question_length = len(question)
         self.check_questions()
 
     def get_output_bytes(self) -> bytes:
         return ThreadSafeBytesStorage.get_bytes_output(self.task_id)
-
-    def hide_after(self, pattern):
-        self._hide_after.append(pattern)
-        self.check_questions()
-
-    def show_after(self, pattern):
-        self._show_after.append(pattern)
-        self.check_questions()
 
     @handle_exception_in_thread
     def communicator_thread(self) -> int:
@@ -202,18 +193,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                         pool.join()
                         self.pty_out.close()
 
-    def _re_compile(self, pattern):
-        if not self._re_cache.get(pattern):
-            self._re_cache[pattern] = re.compile(pattern)
-        return self._re_cache[pattern]
-
-    def _match(self, pattern, line):
-        return len(line) >= len(pattern) and (
-            self._re_compile(pattern).search(line)
-            if '.*' in pattern else
-            (pattern in line)
-        )
-
     def check_questions(self):
         # pylint: disable=too-many-branches
         try:
@@ -223,24 +202,9 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
         clear_buffer = False
 
-        for pattern in self._hide_each_line:
-            if self._match(pattern, historic_output):
-                purge_line()
-                if historic_output[-1] == '\n':
-                    go_line_up()
-                    clear_buffer = True
-
-        for pattern in self._hide_after[:]:
-            if self._match(pattern, historic_output):
-                self.print_output = False
-                self.capture_input = False
-                self._hide_after.remove(pattern)
-                purge_line()
-                clear_buffer = True
-
         for answer, questions in self.default_questions.items():
             for question in questions:
-                if not self._match(question, historic_output):
+                if not _match(question, historic_output):
                     continue
                 self.write_something((answer + '\n').encode('utf-8'))
                 with PrintLock():
@@ -254,12 +218,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                     self.pty_in.flush()
                 clear_buffer = True
                 break
-
-        for pattern in self._show_after[:]:
-            if self._match(pattern, historic_output):
-                self.print_output = True
-                self.capture_input = True
-                self._show_after.remove(pattern)
 
         if clear_buffer:
             self.historic_output = [b'']
@@ -277,7 +235,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
     @handle_exception_in_thread
     def cmd_output_reader_thread(self) -> None:
-        max_question_length = MAX_QUESTION_LENGTH
         while True:
 
             try:
@@ -297,7 +254,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             output = pty_reader.read(1)
 
             self.historic_output = (
-                self.historic_output[-max_question_length:] + [output, ]
+                self.historic_output[-self.max_question_length:] + [output, ]
             )
             self.write_something(output)
             if self.save_output:
@@ -340,7 +297,6 @@ def pikspect(
         print_output=True,
         save_output=True,
         auto_proceed=True,
-        hide_pacman_prompt=False,
         conflicts: List[List[str]] = None,
         extra_questions: Dict[str, List[str]] = None,
         **kwargs
@@ -398,11 +354,6 @@ def pikspect(
         extra_questions[ANSWER_Y] = extra_questions.get(ANSWER_Y, []) + format_conflicts(conflicts)
     if extra_questions:
         proc.add_answers(extra_questions)
-
-    if hide_pacman_prompt:
-        if not parse_args().noconfirm:
-            proc.hide_after(MESSAGE_PACKAGES)
-            proc.show_after(QUESTION_PROCEED)
 
     proc.run()
     return proc

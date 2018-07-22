@@ -58,8 +58,6 @@ def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
     )
 
 
-MESSAGE_PACKAGES = _p('Packages')
-
 PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
 
 

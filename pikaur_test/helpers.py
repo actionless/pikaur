@@ -5,7 +5,7 @@ import os
 import tempfile
 from subprocess import Popen
 from unittest import TestCase
-from typing import Optional, List, NoReturn
+from typing import Optional, List, NoReturn, Union
 
 from pikaur.main import main
 from pikaur.args import CachedArgs, parse_args  # pylint:disable=no-name-in-module
@@ -23,7 +23,9 @@ class TestPopen(Popen):
     stdout_text: Optional[str] = None
 
 
-def spawn(cmd: List[str], **kwargs) -> TestPopen:
+def spawn(cmd: Union[str, List[str]], **kwargs) -> TestPopen:
+    if isinstance(cmd, str):
+        cmd = cmd.split(' ')
     with tempfile.TemporaryFile() as out_file:
         with tempfile.TemporaryFile() as err_file:
             proc = TestPopen(cmd, stdout=out_file, stderr=err_file, **kwargs)
@@ -160,6 +162,8 @@ def pikaur(
             pass
         intercepted = _intercepted
 
+    PackageDB.discard_local_cache()
+
     return CmdResult(
         returncode=intercepted.returncode,
         stdout=intercepted.stdout_text,
@@ -184,17 +188,21 @@ def pacman(cmd: str) -> CmdResult:
     )
 
 
+def pkg_is_installed(pkg_name: str) -> bool:
+    return pacman(f'-Qi {pkg_name}').returncode == 0
+
+
 class PikaurTestCase(TestCase):
     # pylint: disable=invalid-name
 
     def assertInstalled(self, pkg_name: str) -> None:
-        self.assertEqual(
-            pacman(f'-Qi {pkg_name}').returncode, 0
+        self.assertTrue(
+            pkg_is_installed(pkg_name)
         )
 
     def assertNotInstalled(self, pkg_name: str) -> None:
-        self.assertEqual(
-            pacman(f'-Qi {pkg_name}').returncode, 1
+        self.assertFalse(
+            pkg_is_installed(pkg_name)
         )
 
     def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:
@@ -218,12 +226,17 @@ class PikaurDbTestCase(PikaurTestCase):
         for name in pkg_names:
             self.assertNotInstalled(name)
 
+    def remove_if_installed(self, *pkg_names: str) -> None:
+        for pkg_name in pkg_names:
+            if pkg_is_installed(pkg_name):
+                self.remove_packages(pkg_name)
+
     def run(self, result=None):
         if WRITE_DB:
             return super().run(result)
         if result:
-            result.addSkip(
-                self,
-                result.getDescription(self) + '. Not writing to local package DB.'
-            )
+            message = 'Not writing to local package DB.'
+            if getattr(result, 'getDescription', None):
+                message = result.getDescription(self) + f'. {message}'
+            result.addSkip(self, message)
         return result

@@ -2,7 +2,7 @@
 
 from pikaur_test.helpers import (
     PikaurDbTestCase,
-    pikaur, fake_pikaur,
+    pikaur, fake_pikaur, spawn,
 )
 
 
@@ -60,6 +60,44 @@ class InstallTest(PikaurDbTestCase):
 
         pikaur('-P ./PKGBUILD --noconfirm --install')
         self.assertInstalled(pkg_name)
+
+    def test_syu(self):
+        """
+        test upgrade of repo and AUR packages
+        and also -U, -P and -G (during downgrading)
+        """
+        from pikaur.pacman import PackageDB  # pylint: disable=no-name-in-module
+
+        # repo package downgrade
+        repo_pkg_name = 'nano'
+        repo_old_version = '2.9.7-1'
+        pikaur(
+            '-U --noconfirm '
+            'https://archive.archlinux.org/repos/2018/05/17/core/os/x86_64/'
+            f'{repo_pkg_name}-{repo_old_version}-x86_64.pkg.tar.xz'
+        )
+        self.assertEqual(
+            PackageDB.get_local_dict()['nano'].version, repo_old_version
+        )
+
+        # AUR package downgrade
+        aur_pkg_name = 'inxi'
+        self.remove_if_installed(aur_pkg_name)
+        pikaur(f'-G {aur_pkg_name}')
+        prev_commit = spawn(f'git -C ./{aur_pkg_name} log --format=%h').stdout_text.splitlines()[1]
+        spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
+        pikaur(f'-P --install --noconfirm ./{aur_pkg_name}/PKGBUILD')
+        self.assertInstalled(aur_pkg_name)
+        aur_old_version = PackageDB.get_local_dict()[aur_pkg_name].version
+
+        # and finally test the sysupgrade itself
+        pikaur('-Syu --noconfirm')
+        self.assertNotEqual(
+            PackageDB.get_local_dict()[repo_pkg_name].version, repo_old_version
+        )
+        self.assertNotEqual(
+            PackageDB.get_local_dict()[aur_pkg_name].version, aur_old_version
+        )
 
 
 class ArchWikiTest(PikaurDbTestCase):

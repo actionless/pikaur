@@ -216,9 +216,9 @@ def get_editor() -> Optional[List[str]]:
     if editor_line:
         return editor_line.split(' ')
     for editor in ('vim', 'nano', 'mcedit', 'edit'):
-        result = spawn(['which', editor])
-        if result.returncode == 0:
-            return [editor, ]
+        path = shutil.which(editor)
+        if path:
+            return [path, ]
     print_stderr(
         '{} {}'.format(
             color_line('error:', 9),

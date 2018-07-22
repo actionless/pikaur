@@ -73,7 +73,7 @@ class PackageBuild(DataType):
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
             self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
-        if pkgbuild_path:
+        elif pkgbuild_path:
             self.repo_path = os.path.dirname(pkgbuild_path)
             srcinfo = SrcInfo(self.repo_path)
             pkgbase = srcinfo.get_value('pkgbase')
@@ -82,6 +82,8 @@ class PackageBuild(DataType):
                 self.package_base = pkgbase
             else:
                 raise BuildError(_("Can't get package name from PKGBUILD"))
+        else:
+            raise NotImplementedError('Either `package_names` or `pkgbuild_path` should be set')
 
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
         self.built_packages_paths = {}

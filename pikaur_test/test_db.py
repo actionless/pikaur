@@ -125,6 +125,11 @@ class InstallTest(PikaurDbTestCase):
             PackageDB.get_local_dict()[aur_pkg_name].version, aur_old_version
         )
 
+    def test_conflicting_packages(self):
+        self.assertEqual(
+            pikaur('-S cower-git cower').returncode, 131
+        )
+
 
 class ArchWikiTest(PikaurDbTestCase):
     """

@@ -23,7 +23,7 @@ from .args import (
 )
 from .core import (
     InstallInfo,
-    spawn, interactive_spawn, running_as_root, remove_dir, sudo,
+    spawn, interactive_spawn, running_as_root, remove_dir, sudo, isolate_root_cmd,
 )
 from .pprint import color_line, bold_line, print_stderr
 from .print_department import pretty_format_upgradeable, print_version
@@ -36,7 +36,6 @@ from .config import (
 from .exceptions import SysExit
 from .pikspect import TTYRestore
 from .argparse import ArgumentError
-
 from .install_cli import InstallPackagesCLI
 from .search_cli import cli_search_packages
 from .info_cli import cli_info_packages
@@ -242,6 +241,15 @@ def check_runtime_deps():
 
 
 def create_dirs() -> None:
+    if running_as_root():
+        # Let systemd-run setup the directories and symlinks
+        true_cmd = isolate_root_cmd(['true'])
+        result = spawn(true_cmd)
+        if result.returncode != 0:
+            raise Exception(result)
+        # Chown the private CacheDirectory to root to signal systemd that
+        # it needs to recursively chown it to the correct user
+        os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
     if not os.path.exists(CACHE_ROOT):
         os.makedirs(CACHE_ROOT)
 

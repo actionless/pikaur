@@ -77,6 +77,13 @@ class InteractiveSpawn(subprocess.Popen):
         self.stdout_text = stdout.decode('utf-8') if stdout else None
         self.stderr_text = stderr.decode('utf-8') if stderr else None
 
+    def __repr__(self) -> str:
+        return (
+            f'{self.__class__.__name__} returned {self.returncode}:\n'
+            f'STDOUT:\n{self.stdout_text}\n\n'
+            f'STDERR:\n{self.stderr_text}'
+        )
+
 
 def interactive_spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
     process = InteractiveSpawn(cmd, **kwargs)
@@ -198,6 +205,8 @@ def return_exception(fun: Callable) -> Callable:
 def just_copy_damn_tree(from_path, to_path) -> None:
     if not os.path.exists(to_path):
         os.makedirs(to_path)
+    if running_as_root():
+        os.chown(os.path.realpath(to_path), 0, 0)
 
     if os.path.isdir(from_path):
         from_path = f'{from_path}/.'

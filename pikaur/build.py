@@ -9,14 +9,14 @@ from typing import List, Dict, Set, Optional, Any
 
 from .core import (
     DataType,
-    isolate_root_cmd, remove_dir, running_as_root, open_file,
-    spawn, interactive_spawn, InteractiveSpawn, sudo,
+    isolate_root_cmd, remove_dir, open_file,
+    spawn, interactive_spawn, InteractiveSpawn, sudo, running_as_root,
     just_copy_damn_tree as copy_tree,
 )
 from .i18n import _, _n
 from .config import (
     PikaurConfig,
-    CACHE_ROOT, AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
+    AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
 )
 from .aur import get_repo_url, find_aur_packages
 from .pacman import PackageDB, get_pacman_command
@@ -98,14 +98,14 @@ class PackageBuild(DataType):
             self.clone = True
 
     def git_reset_changed(self) -> InteractiveSpawn:
-        return interactive_spawn([
+        return interactive_spawn(isolate_root_cmd([
             'git',
             '-C',
             self.repo_path,
             'checkout',
             '--',
             "*"
-        ])
+        ]))
 
     def update_aur_repo(self) -> InteractiveSpawn:
         cmd_args: List[str]
@@ -127,7 +127,7 @@ class PackageBuild(DataType):
             ]
         if not cmd_args:
             return NotImplemented
-        return spawn(cmd_args)
+        return spawn(isolate_root_cmd(cmd_args))
 
     @property
     def last_installed_file_path(self) -> str:
@@ -389,14 +389,6 @@ class PackageBuild(DataType):
         return False
 
     def prepare_build_destination(self) -> None:
-        if running_as_root():
-            # Let systemd-run setup the directories and symlinks
-            true_cmd = isolate_root_cmd(['true'])
-            spawn(true_cmd)
-            # Chown the private CacheDirectory to root to signal systemd that
-            # it needs to recursively chown it to the correct user
-            os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
-
         if os.path.exists(self.build_dir) and not (
                 self.args.keepbuild or PikaurConfig().build.get_bool('KeepBuildDir')
         ):
@@ -645,7 +637,10 @@ def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
         for pkgbase, pkg_names in packages_bases.items()
         for pkg_name in pkg_names
     }
-    with ThreadPool() as pool:
+    pool_size: Optional[int] = None
+    if running_as_root():
+        pool_size = 1
+    with ThreadPool(processes=pool_size) as pool:
         requests = {
             key: pool.apply_async(repo_status.update_aur_repo, ())
             for key, repo_status in package_builds_by_base.items()

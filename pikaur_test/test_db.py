@@ -68,7 +68,8 @@ class InstallTest(PikaurDbTestCase):
         """
         from pikaur.pacman import PackageDB  # pylint: disable=no-name-in-module
 
-        # just update to make sure everything is on the latest version, except for test subject packages
+        # just update to make sure everything is on the latest version,
+        # except for test subject packages
         pikaur('-Syu --noconfirm')
 
         # repo package downgrade
@@ -94,6 +95,16 @@ class InstallTest(PikaurDbTestCase):
         aur_old_version = PackageDB.get_local_dict()[aur_pkg_name].version
 
         # test pikaur -Qu
+        query_result = pikaur('-Qu --aur').stdout
+        self.assertEqual(
+            len(query_result.splitlines()), 1
+        )
+
+        query_result = pikaur('-Qu --repo').stdout
+        self.assertEqual(
+            len(query_result.splitlines()), 1
+        )
+
         query_result = pikaur('-Qu').stdout
         self.assertEqual(
             len(query_result.splitlines()), 2

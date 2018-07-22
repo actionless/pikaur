@@ -144,10 +144,7 @@ def pikaur(
             '--makepkg-path=' + os.path.join(TEST_DIR, 'fake_makepkg'),
         ] if fake_makepkg else []
     )
-    CachedArgs.args = None  # pylint:disable=protected-access
-    parse_args()
-    # monkey-patch to force always uncolored output:
-    CachedArgs.args.color = 'never'  # type: ignore # pylint:disable=protected-access
+
     print(color_line('\n => ', 10) + ' '.join(sys.argv))
 
     intercepted: InterceptSysOutput
@@ -155,9 +152,15 @@ def pikaur(
             capture_stderr=capture_stderr,
             capture_stdout=capture_stdout
     ) as _intercepted:
-
         try:
+
+            CachedArgs.args = None  # pylint:disable=protected-access
+            parse_args()
+            # monkey-patch to force always uncolored output:
+            CachedArgs.args.color = 'never'  # type: ignore # pylint:disable=protected-access
+
             main()
+
         except FakeExit:
             pass
         intercepted = _intercepted

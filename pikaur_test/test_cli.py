@@ -44,11 +44,24 @@ class CliTest(TestCase):
         result2 = pacman('-Si mpv')
         self.assertEqual(result1, result2)
 
+    def test_incompatible_args(self):
+        self.assertEqual(
+            pikaur('-Qs pkg --repo').returncode, 1
+        )
+        self.assertEqual(
+            pikaur('-Qs pkg --aur').returncode, 1
+        )
+
     # just run info commands for coverage:
 
     def test_version(self):
         self.assertEqual(
             pikaur('-V').returncode, 0
+        )
+
+    def test_help(self):
+        self.assertEqual(
+            pikaur('-h').returncode, 0
         )
 
     def test_sync_help(self):
@@ -59,4 +72,14 @@ class CliTest(TestCase):
     def test_query_help(self):
         self.assertEqual(
             pikaur('-Qh').returncode, 0
+        )
+
+    def test_pkgbuild_help(self):
+        self.assertEqual(
+            pikaur('-Ph').returncode, 0
+        )
+
+    def test_getpkgbuild_help(self):
+        self.assertEqual(
+            pikaur('-Gh').returncode, 0
         )

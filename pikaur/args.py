@@ -29,7 +29,7 @@ class PikaurArgs(argparse.Namespace):
     def handle_the_same_letter(self):
         # pylint: disable=attribute-defined-outside-init,access-member-before-definition
         # type: ignore
-        if self.info:  # handle "-i"
+        if self.pkgbuild and self.info:  # handle "-i"
             self.install = self.info
             self.info = False
 
@@ -165,7 +165,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     # print("ARGPARSE:")
     # print(parsed_args)
     # print(f'args = {args}')
-    # print(unknown_args)
+    # print(parsed_args.unknown_args)
     # print(reconstruct_args(parsed_args))
     # print(reconstruct_args(parsed_args, ignore_args=['sync']))
     # sys.exit(0)

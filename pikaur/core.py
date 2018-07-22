@@ -201,7 +201,7 @@ def just_copy_damn_tree(from_path, to_path) -> None:
 
     if os.path.isdir(from_path):
         from_path = f'{from_path}/.'
-    cmd_args = isolate_root_cmd(['cp', '-r', from_path, to_path])
+    cmd_args = ['cp', '-r', from_path, to_path]
 
     result = spawn(cmd_args)
     if result.returncode != 0:

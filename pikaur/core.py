@@ -196,16 +196,13 @@ def return_exception(fun: Callable) -> Callable:
 
 
 def just_copy_damn_tree(from_path, to_path) -> None:
-
-    def _try_copy():
-        return spawn(['cp', '-rf', f'{from_path}/.', to_path])
-
     if not os.path.exists(to_path):
         os.makedirs(to_path)
-    result = _try_copy()
+    cmd_args = ['cp', '-rf', f'{from_path}/.', to_path]
+    result = spawn(cmd_args)
     if result.returncode != 0:
         remove_dir(to_path)
-        result = _try_copy()
+        result = interactive_spawn(cmd_args)
         if result.returncode != 0:
             raise Exception(_(f"Can't copy '{from_path}' to '{to_path}'."))
 

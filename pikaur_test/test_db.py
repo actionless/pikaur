@@ -95,14 +95,14 @@ class InstallTest(PikaurDbTestCase):
         aur_old_version = PackageDB.get_local_dict()[aur_pkg_name].version
 
         # test pikaur -Qu
-        query_result = pikaur('-Qu --aur').stdout
+        query_result = pikaur('-Quq --aur').stdout.strip()
         self.assertEqual(
-            len(query_result.splitlines()), 1
+            query_result, aur_pkg_name
         )
 
-        query_result = pikaur('-Qu --repo').stdout
+        query_result = pikaur('-Quq --repo').stdout.strip()
         self.assertEqual(
-            len(query_result.splitlines()), 1
+            query_result, repo_pkg_name
         )
 
         query_result = pikaur('-Qu').stdout

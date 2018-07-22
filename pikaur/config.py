@@ -65,10 +65,6 @@ _CONFIG_SCHEMA = {
             'type': 'bool',
             'default': 'no',
         },
-        'DiffPager': {
-            'type': 'str',
-            'default': 'auto'
-        },
     },
     'colors': {
         'Version': {
@@ -88,6 +84,10 @@ _CONFIG_SCHEMA = {
         'RequireEnterConfirm': {
             'type': 'bool',
             'default': 'yes'
+        },
+        'DiffPager': {
+            'type': 'str',
+            'default': 'auto'
         },
     },
     'misc': {

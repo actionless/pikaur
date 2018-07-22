@@ -542,7 +542,7 @@ class InstallPackagesCLI():
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
                     ]
-                    diff_pager = PikaurConfig().build.DiffPager
+                    diff_pager = PikaurConfig().ui.DiffPager
                     if diff_pager == 'always':
                         git_args = ['env', 'GIT_PAGER=less -+F'] + git_args
                     elif diff_pager == 'never':

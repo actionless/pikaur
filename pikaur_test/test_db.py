@@ -55,10 +55,10 @@ class InstallTest(PikaurDbTestCase):
     def test_pkgbuild(self):
         pkg_name = 'pikaur-git'
 
-        pikaur(f'-R --noconfirm {pkg_name}')
+        pikaur(f'-R --noconfirm {pkg_name} -d')
         self.assertNotInstalled(pkg_name)
 
-        pikaur('-P ./PKGBUILD --noconfirm --install')
+        pikaur('-P ./PKGBUILD --noconfirm -i')
         self.assertInstalled(pkg_name)
 
     def test_syu(self):

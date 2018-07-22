@@ -6,8 +6,6 @@ import subprocess
 import enum
 import codecs
 import tempfile
-from distutils.dir_util import copy_tree
-from distutils.errors import DistutilsFileError
 from typing import Any, List, Iterable, Callable, Optional, Union, TYPE_CHECKING
 
 from .i18n import _
@@ -60,6 +58,7 @@ class InstallInfo(DataType):
     required_by: Optional[List['InstallInfo']] = None
     members_of: Optional[List[str]] = None
     replaces: Optional[List[str]] = None
+    pkgbuild_path: Optional[str] = None
 
     def __repr__(self) -> str:
         return (
@@ -196,15 +195,14 @@ def return_exception(fun: Callable) -> Callable:
     return decorator
 
 
-def just_copy_damn_tree(from_path, to_path):
-    if os.path.exists(to_path):
-        try:
-            copy_tree(from_path, to_path, preserve_symlinks=True)
-        except (FileNotFoundError, DistutilsFileError):
-            remove_dir(to_path)
-        else:
-            return
-    shutil.copytree(from_path, to_path, symlinks=True)
+def just_copy_damn_tree(from_path, to_path) -> None:
+    to_dir = os.path.abspath(os.path.join(to_path, '..'))
+    result = spawn(['cp', '-r', from_path, to_dir])
+    if result.returncode != 0:
+        remove_dir(to_path)
+        result = interactive_spawn(['cp', '-r', from_path, to_dir])
+        if result.returncode != 0:
+            raise Exception(_(f"Can't copy '{from_path}' to '{to_path}'."))
 
 
 def get_editor() -> Optional[List[str]]:

@@ -15,8 +15,10 @@ class SrcInfo():
     path: str
     repo_path: str
     package_name: Optional[str]
+    pkgnames: List[str]
 
     def load_config(self) -> None:
+        self.pkgnames = []
         self._common_lines = []
         self._package_lines = []
         if not os.path.exists(self.path):
@@ -25,7 +27,9 @@ class SrcInfo():
         with open_file(self.path) as srcinfo_file:
             for line in srcinfo_file.readlines():
                 if line.startswith('pkgname ='):
-                    if line.split('=')[1].strip() == self.package_name:
+                    pkgname = line.split('=')[1].strip()
+                    self.pkgnames.append(pkgname)
+                    if pkgname == self.package_name:
                         destination = self._package_lines
                     else:
                         destination = []

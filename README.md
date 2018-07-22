@@ -10,6 +10,7 @@ Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--
 
 Notable features:
 
+* build local PKGBUILDs with AUR deps (`-P`/`--pkgbuild`)
 * using [systemd dynamic users](http://0pointer.net/blog/dynamic-users-with-systemd.html "") if building packages as root user
 * interactively handle common build problems (like untrusted GPG key or checksum mismatch, wrong architecture)
 * show unread [Arch news](https://www.archlinux.org/news/ "") before sysupgrade

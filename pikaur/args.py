@@ -26,6 +26,13 @@ class PikaurArgs(argparse.Namespace):
         """
         return getattr(super(), name)
 
+    def handle_the_same_letter(self):
+        # pylint: disable=attribute-defined-outside-init,access-member-before-definition
+        # type: ignore
+        if self.info:  # handle "-i"
+            self.install = self.info
+            self.info = False
+
     @classmethod
     def from_namespace(
             cls,
@@ -38,6 +45,7 @@ class PikaurArgs(argparse.Namespace):
             setattr(result, key, value)
         result.unknown_args = unknown_args
         result.raw = raw_args
+        result.handle_the_same_letter()
         return result
 
 
@@ -81,6 +89,8 @@ PIKAUR_BOOL_OPTS = (
     ('k', 'keepbuild'),
     (None, 'nodiff'),
     (None, 'rebuild'),
+    ('P', 'pkgbuild'),
+    (None, 'install'),
     # undocumented options:
     (None, 'debug'),
     (None, 'hide-build-log'),
@@ -202,11 +212,23 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
     ))
 
 
+def _format_options_help(options: List[Tuple[str, str, str]]) -> str:
+    return '\n'.join([
+        '{:>5} {:<16} {}'.format(
+            short_opt and (short_opt + ',') or '',
+            long_opt or '',
+            descr if ((len(short_opt) + len(long_opt)) < 16) else f"\n{23 * ' '}{descr}"
+        )
+        for short_opt, long_opt, descr in options
+    ])
+
+
 def cli_print_help(args: PikaurArgs) -> None:
     from .core import spawn
     from .config import PikaurConfig
 
     pikaur_long_opts = [long_opt for _short_opt, long_opt in PIKAUR_BOOL_OPTS + PIKAUR_STR_OPTS]
+
     pacman_help = spawn(
         [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args, ignore_args=pikaur_long_opts),
     ).stdout_text.replace(
@@ -214,35 +236,47 @@ def cli_print_help(args: PikaurArgs) -> None:
     ).replace(
         'options:', '\n' + _("Common pacman options:")
     )
+    if '--help' in pacman_help:
+        pacman_help += (
+            "\n" +
+            _("pikaur-specific operations:") + "\n    " +
+            _("pikaur {-P --pkgbuild} [options] <file(s)>")
+        )
+    if args.pkgbuild:
+        pacman_help = (
+            _("usage:  pikaur {-P --pkgbuild} [options] <file(s)>") + "\n\n" +
+            _("All common pacman options as when doing `pacman -U <pkg_name>`. See `pacman -Uh`.")
+        )
+
     pikaur_options_help: List[Tuple[str, str, str]] = []
     if args.sync or args.query:
         pikaur_options_help += [
             ('-a', '--aur', _("query packages from AUR only")),
             ('-r', '--repo', _("query packages from repository only")),
         ]
-    if args.sync:
+    if args.pkgbuild:
+        pikaur_options_help += [
+            ('-i', '--install', _("install built package")),
+        ]
+    if args.sync or args.pkgbuild:
         pikaur_options_help += [
             ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
             ('', '--edit', _("prompt to edit PKGBUILDs and other build files")),
-            ('', '--namesonly', _("search only in package names")),
-            ('', '--devel', _("always sysupgrade '-git', '-svn' and other dev packages")),
             ('-k', '--keepbuild', _("don't remove build dir after the build")),
-            ('', '--nodiff', _("don't prompt to show the build files diff")),
             ('', '--rebuild', _("always rebuild AUR packages")),
             ('', '--mflags=<--flag1>,<--flag2>', _("cli args to pass to makepkg")),
             ('', '--makepkg-config=<path>', _("path to custom makepkg config")),
             ('', '--makepkg-path=<path>', _("override path to makepkg executable")),
         ]
+    if args.sync:
+        pikaur_options_help += [
+            ('', '--namesonly', _("search only in package names")),
+            ('', '--devel', _("always sysupgrade '-git', '-svn' and other dev packages")),
+            ('', '--nodiff', _("don't prompt to show the build files diff")),
+        ]
     print(''.join([
         '\n',
         pacman_help,
         '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
-        '\n'.join([
-            '{:>5} {:<16} {}'.format(
-                short_opt and (short_opt + ',') or '',
-                long_opt or '',
-                descr if ((len(short_opt) + len(long_opt)) < 16) else f"\n{23 * ' '}{descr}"
-            )
-            for short_opt, long_opt, descr in pikaur_options_help
-        ])
+        _format_options_help(pikaur_options_help),
     ]))

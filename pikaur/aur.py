@@ -48,6 +48,26 @@ class AURPackageInfo(DataType):
             kwargs['desc'] = kwargs.pop('description')
         super().__init__(**kwargs)
 
+    @classmethod
+    def from_srcinfo(cls, srcinfo):
+        return cls(
+            name=srcinfo.package_name,
+            version=srcinfo.get_value('pkgver') + '-' + srcinfo.get_value('pkgrel'),
+            desc=srcinfo.get_value('pkgdesc'),
+            **{
+                key: srcinfo.get_values(key)
+                for key in [
+                    'depends',
+                    'makedepends',
+                    'optdepends',
+                    'checkdepends',
+                    'conflicts',
+                    'replaces',
+                    'provides',
+                ]
+            }
+        )
+
 
 def read_bytes_from_url(url: str) -> bytes:
     req = request.Request(url)

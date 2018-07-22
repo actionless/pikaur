@@ -1,5 +1,6 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
+import os
 from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Dict
 
@@ -19,6 +20,7 @@ from .exceptions import DependencyVersionMismatch, SysExit
 from .print_department import print_ignored_package, print_not_found_packages
 from .updates import find_aur_updates
 from .replacements import find_replacements
+from .srcinfo import SrcInfo
 
 
 class InstallInfoFetcher:
@@ -41,11 +43,13 @@ class InstallInfoFetcher:
             install_package_names: List[str],
             not_found_repo_pkgs_names: List[str],
             manually_excluded_packages_names: List[str],
+            pkgbuilds_paths: List[str],
     ) -> None:
         self.args = parse_args()
         self.install_package_names = install_package_names
         self.not_found_repo_pkgs_names = not_found_repo_pkgs_names
         self.manually_excluded_packages_names = manually_excluded_packages_names
+        self.pkgbuilds_paths = pkgbuilds_paths
 
         self.replacements = find_replacements() if self.args.sysupgrade else {}
 
@@ -106,6 +110,8 @@ class InstallInfoFetcher:
         # and their upgrades if --sysupgrade was passed
         if not self.args.repo:
             self.get_aur_pkgs_info(self.not_found_repo_pkgs_names)
+        if self.pkgbuilds_paths:
+            self.get_info_from_pkgbuilds()
 
         # try to find AUR deps for AUR packages
         # if some exception wasn't handled inside -- just write message and exit
@@ -245,10 +251,11 @@ class InstallInfoFetcher:
                 self.thirdparty_repo_packages_install_info.append(pkg_update)
 
     def get_repo_deps_info(self) -> None:
-        all_aur_pkg_names = [
-            pkg_info.name for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
+        all_aur_pkgs = [
+            pkg_info.package
+            for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
         ]
-        new_dep_version_matchers = find_repo_deps_of_aur_pkgs(all_aur_pkg_names)
+        new_dep_version_matchers = find_repo_deps_of_aur_pkgs(all_aur_pkgs)
         new_dep_lines = [
             vm.line for vm in new_dep_version_matchers
         ]
@@ -306,12 +313,35 @@ class InstallInfoFetcher:
                 del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
 
+    def get_info_from_pkgbuilds(self):
+        aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
+        local_pkgs = PackageDB.get_local_dict()
+        for path in self.pkgbuilds_paths:
+            dirname = os.path.dirname(path)
+            common_srcinfo = SrcInfo(dirname)
+            common_srcinfo.regenerate()
+            for pkg_name in common_srcinfo.pkgnames:
+                srcinfo = SrcInfo(dirname, package_name=pkg_name)
+                aur_pkg = AURPackageInfo.from_srcinfo(srcinfo)
+                if pkg_name in aur_updates_install_info_by_name:
+                    raise Exception(_(f"{pkg_name} already added to the list"))
+                local_pkg = local_pkgs.get(pkg_name)
+                aur_updates_install_info_by_name[pkg_name] = InstallInfo(
+                    name=pkg_name,
+                    current_version=local_pkg.version if local_pkg else ' ',
+                    new_version=aur_pkg.version,
+                    description=aur_pkg.desc,
+                    package=aur_pkg,
+                    pkgbuild_path=path,
+                )
+        self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
+
     def get_aur_deps_info(self):
-        all_aur_packages_names = [info.name for info in self.aur_updates_install_info]
-        if all_aur_packages_names:
+        all_aur_pkgs = [info.package for info in self.aur_updates_install_info]
+        if all_aur_pkgs:
             print_stdout(_("Resolving AUR dependencies..."))
         try:
-            self.aur_deps_relations = find_aur_deps(all_aur_packages_names)
+            self.aur_deps_relations = find_aur_deps(all_aur_pkgs)
         except DependencyVersionMismatch as exc:
             if exc.location is not PackageSource.LOCAL:
                 raise exc

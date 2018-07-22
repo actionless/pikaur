@@ -86,6 +86,7 @@ class InstallPackagesCLI():
     install_package_names: List[str]
     manually_excluded_packages_names: List[str]
     resolved_conflicts: List[List[str]]
+    pkgbuilds_paths: List[str]
 
     # computed package lists:
     not_found_repo_pkgs_names: List[str]
@@ -112,6 +113,7 @@ class InstallPackagesCLI():
         self.args = args
         self.install_package_names = self.args.positional[:]
 
+        self.pkgbuilds_paths = []
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
 
@@ -146,6 +148,8 @@ class InstallPackagesCLI():
             self.not_found_repo_pkgs_names = self.install_package_names
             self.install_package_names = []
 
+        if args.pkgbuild:
+            self.get_info_from_pkgbuilds()
         self.get_all_packages_info()
         if self.news:
             self.news.print_news()
@@ -181,6 +185,11 @@ class InstallPackagesCLI():
             raise SysExit(125)
         return editor
 
+    def get_info_from_pkgbuilds(self):
+        self.install_package_names = []
+        self.not_found_repo_pkgs_names = []
+        self.pkgbuilds_paths = self.args.positional
+
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """
         Retrieve info (`InstallInfo` objects) of packages
@@ -198,6 +207,7 @@ class InstallPackagesCLI():
             self.install_info = InstallInfoFetcher(
                 install_package_names=self.install_package_names,
                 not_found_repo_pkgs_names=self.not_found_repo_pkgs_names,
+                pkgbuilds_paths=self.pkgbuilds_paths,
                 manually_excluded_packages_names=self.manually_excluded_packages_names,
             )
         except PackagesNotFoundInAUR as exc:
@@ -363,8 +373,18 @@ class InstallPackagesCLI():
     def get_package_builds(self) -> None:
         while self.all_aur_packages_names:
             try:
-                self.package_builds_by_name = \
-                    clone_aur_repos(self.all_aur_packages_names)
+                clone_names = []
+                pkgbuilds = {}
+                for info in (
+                        self.install_info.aur_updates_install_info +
+                        self.install_info.aur_deps_install_info
+                ):
+                    if info.pkgbuild_path:
+                        pkgbuilds[info.name] = PackageBuild(pkgbuild_path=info.pkgbuild_path)
+                    else:
+                        clone_names.append(info.name)
+                self.package_builds_by_name = clone_aur_repos(clone_names)
+                self.package_builds_by_name.update(pkgbuilds)
                 break
             except CloneError as err:
                 package_build = err.build
@@ -732,7 +752,11 @@ class InstallPackagesCLI():
             self.install_repo_packages()
 
         self.build_packages()
-        if not self.args.downloadonly:
+        if (
+                not self.args.downloadonly
+        ) and (
+            not self.args.pkgbuild or self.args.install
+        ):
             self.install_new_aur_deps()
             self.install_aur_packages()
 

@@ -127,6 +127,10 @@ def cli_install_packages(args) -> None:
                 raise catched_exc  # pylint: disable=raising-bad-type
 
 
+def cli_pkgbuild(args) -> None:
+    cli_install_packages(args)
+
+
 def cli_clean_packages_cache(args: PikaurArgs) -> None:
     if not args.repo:
         for directory, message, minimal_clean_level in (
@@ -168,6 +172,9 @@ def cli_entry_point() -> None:
         cli_print_help(args)
     elif args.version:
         cli_print_version(args)
+
+    elif args.pkgbuild:
+        cli_pkgbuild(args)
 
     elif args.sync:
         if args.search:

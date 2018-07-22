@@ -52,6 +52,11 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled('pacaur')
         self.assertProvidedBy('cower', 'cower-git')
 
+    def test_pkgbuild(self):
+        self.remove_packages('pikaur-git')
+        pikaur('-P ./PKGBUILD --noconfirm --install')
+        self.assertInstalled('pikaur-git')
+
 
 class ArchWikiTest(PikaurDbTestCase):
     """

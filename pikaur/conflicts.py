@@ -122,7 +122,8 @@ def find_aur_conflicts(
         aur_packages_names: List[str]
 ) -> Dict[str, List[str]]:
 
-    repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(aur_packages_names)
+    aur_pkgs, _not_found_aur_pkgs = find_aur_packages(aur_packages_names)
+    repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(aur_pkgs)
     repo_deps_names = [vm.pkg_name for vm in repo_deps_version_matchers]
     all_pkgs_to_be_installed = aur_packages_names + repo_deps_names
 

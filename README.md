@@ -97,6 +97,9 @@ don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the build
 ##### SkipFailedBuild (default: no)
 always skip the build if it fails and don't show recovery prompt.
 
+##### DiffPager (default: auto)
+Wherever to use `less` pager when viewing AUR packages diff. Choices are `always`, `auto` or `never`.
+
 ##### NoEdit (default: no)
 don't prompt to edit PKGBUILD and install files.
 

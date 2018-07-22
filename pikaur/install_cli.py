@@ -532,7 +532,7 @@ class InstallPackagesCLI():
                             name=bold_line(', '.join(repo_status.package_names))
                         )
                 ):
-                    interactive_spawn([
+                    git_args = [
                         'git',
                         '-C',
                         repo_status.repo_path,
@@ -541,7 +541,13 @@ class InstallPackagesCLI():
                         '--ignore-all-space',
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
-                    ])
+                    ]
+                    diff_pager = PikaurConfig().build.DiffPager
+                    if diff_pager == 'always':
+                        git_args = ['env', 'GIT_PAGER=less -+F'] + git_args
+                    elif diff_pager == 'never':
+                        git_args = ['env', 'GIT_PAGER=cat'] + git_args
+                    interactive_spawn(git_args)
             src_info = SrcInfo(repo_status.repo_path)
 
             if self.ask_to_edit_file('PKGBUILD', repo_status):

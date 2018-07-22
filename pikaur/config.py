@@ -64,7 +64,11 @@ _CONFIG_SCHEMA = {
         'NoDiff': {
             'type': 'bool',
             'default': 'no',
-        }
+        },
+        'DiffPager': {
+            'type': 'str',
+            'default': 'auto'
+        },
     },
     'colors': {
         'Version': {

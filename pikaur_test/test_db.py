@@ -126,9 +126,12 @@ class InstallTest(PikaurDbTestCase):
         )
 
     def test_conflicting_packages(self):
+        self.remove_if_installed('cower-git', 'pacaur', 'cower')
         self.assertEqual(
             pikaur('-S cower-git cower').returncode, 131
         )
+        self.assertNotInstalled('cower')
+        self.assertNotInstalled('cower-git')
 
 
 class ArchWikiTest(PikaurDbTestCase):

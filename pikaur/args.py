@@ -32,6 +32,16 @@ class PikaurArgs(argparse.Namespace):
         if self.pkgbuild and self.info:  # handle "-i"
             self.install = self.info
             self.info = False
+        if self.getpkgbuild and self.nodeps:  # handle "-d"
+            self.deps = self.nodeps
+            self.nodeps = False
+
+    def validate(self) -> None:
+        if self.query:
+            if not self.sysupgrade:
+                for arg_name in ('aur', 'repo'):
+                    if getattr(self, arg_name):
+                        raise MissingArgument('sysupgrade', arg_name)
 
     @classmethod
     def from_namespace(
@@ -91,6 +101,8 @@ PIKAUR_BOOL_OPTS = (
     (None, 'rebuild'),
     ('P', 'pkgbuild'),
     (None, 'install'),
+    ('G', 'getpkgbuild'),
+    (None, 'deps'),
     # undocumented options:
     (None, 'debug'),
     (None, 'hide-build-log'),
@@ -104,14 +116,6 @@ PIKAUR_STR_OPTS = (
 )
 
 
-def validate_args(args: PikaurArgs) -> None:
-    if args.query:
-        if not args.sysupgrade:
-            for arg_name in ('aur', 'repo'):
-                if getattr(args, arg_name):
-                    raise MissingArgument('sysupgrade', arg_name)
-
-
 class CachedArgs():
 
     args: Optional[PikaurArgs] = None
@@ -123,6 +127,9 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     args = args or sys.argv[1:]
     parser = PikaurArgumentParser(prog=sys.argv[0], add_help=False)
 
+    # add some of pacman options to argparser to have them registered by pikaur
+    # (they will be bypassed to pacman with the rest unrecognized args anyway)
+
     for letter, opt in (
             ('S', 'sync'),
             ('g', 'groups'),
@@ -131,6 +138,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
             ('q', 'quiet'),
             ('s', 'search'),
             ('u', 'sysupgrade'),
+            ('d', 'nodeps'),
             #
             ('h', 'help'),
             ('V', 'version'),
@@ -171,7 +179,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     # sys.exit(0)
 
     try:
-        validate_args(parsed_args)
+        parsed_args.validate()
     except IncompatibleArguments as exc:
         print(_(":: error: options {} can't be used together.").format(
             ", ".join([f"'--{opt}'" for opt in exc.args])
@@ -240,12 +248,17 @@ def cli_print_help(args: PikaurArgs) -> None:
         pacman_help += (
             "\n" +
             _("pikaur-specific operations:") + "\n    " +
-            _("pikaur {-P --pkgbuild} [options] <file(s)>")
+            _("pikaur {-P --pkgbuild}    [options] <file(s)>") + '\n    ' +
+            _("pikaur {-G --getpkgbuild} [options] <package(s)>")
         )
     if args.pkgbuild:
         pacman_help = (
             _("usage:  pikaur {-P --pkgbuild} [options] <file(s)>") + "\n\n" +
-            _("All common pacman options as when doing `pacman -U <pkg_name>`. See `pacman -Uh`.")
+            _("All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -Uh`.")
+        )
+    if args.getpkgbuild:
+        pacman_help = (
+            _("usage:  pikaur {-G --getpkgbuild} [options] <package(s)>")
         )
 
     pikaur_options_help: List[Tuple[str, str, str]] = []
@@ -257,6 +270,10 @@ def cli_print_help(args: PikaurArgs) -> None:
     if args.pkgbuild:
         pikaur_options_help += [
             ('-i', '--install', _("install built package")),
+        ]
+    if args.getpkgbuild:
+        pikaur_options_help += [
+            ('-d', '--deps', _("download also AUR dependencies")),
         ]
     if args.sync or args.pkgbuild:
         pikaur_options_help += [

@@ -25,8 +25,10 @@ from .core import (
     InstallInfo,
     spawn, interactive_spawn, running_as_root, remove_dir, sudo, isolate_root_cmd,
 )
-from .pprint import color_line, bold_line, print_stderr
-from .print_department import pretty_format_upgradeable, print_version
+from .pprint import color_line, bold_line, print_stderr, print_stdout
+from .print_department import (
+    pretty_format_upgradeable, print_version, print_not_found_packages,
+)
 from .updates import find_repo_upgradeable, find_aur_updates
 from .prompt import ask_to_continue
 from .config import (
@@ -39,6 +41,9 @@ from .argparse import ArgumentError
 from .install_cli import InstallPackagesCLI
 from .search_cli import cli_search_packages
 from .info_cli import cli_info_packages
+from .aur import find_aur_packages, get_repo_url
+from .aur_deps import get_aur_deps_list
+from .pacman import PackageDB, PackagesNotFoundInRepo
 
 
 SUDO_LOOP_INTERVAL = 1
@@ -85,11 +90,11 @@ def cli_print_upgradeable(args: PikaurArgs) -> None:
     if not args.aur:
         updates += find_repo_upgradeable()
     if args.quiet:
-        print('\n'.join([
+        print_stdout('\n'.join([
             pkg_update.name for pkg_update in updates
         ]))
     else:
-        print(pretty_format_upgradeable(
+        print_stdout(pretty_format_upgradeable(
             updates,
             print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
         ))
@@ -130,6 +135,47 @@ def cli_pkgbuild(args) -> None:
     cli_install_packages(args)
 
 
+def cli_getpkgbuild(args) -> None:
+    pwd = os.path.abspath(os.path.curdir)
+    aur_pkg_names = args.positional
+
+    aur_pkgs, not_found_aur_pkgs = find_aur_packages(aur_pkg_names)
+    repo_pkgs = []
+    not_found_repo_pkgs = []
+    for pkg_name in not_found_aur_pkgs:
+        try:
+            repo_pkg = PackageDB.find_repo_package(pkg_name)
+        except PackagesNotFoundInRepo:
+            not_found_repo_pkgs.append(pkg_name)
+        else:
+            repo_pkgs.append(repo_pkg)
+
+    if not_found_repo_pkgs:
+        print_not_found_packages(not_found_repo_pkgs)
+
+    if args.deps:
+        aur_pkgs = aur_pkgs + get_aur_deps_list(aur_pkgs)
+
+    for aur_pkg in aur_pkgs:
+        name = aur_pkg.name
+        repo_path = os.path.join(pwd, name)
+        print_stdout()
+        interactive_spawn([
+            'git',
+            'clone',
+            get_repo_url(aur_pkg.packagebase),
+            repo_path,
+        ])
+
+    for repo_pkg in repo_pkgs:
+        print_stdout()
+        interactive_spawn([
+            'asp',
+            'checkout',
+            repo_pkg.name,
+        ])
+
+
 def cli_clean_packages_cache(args: PikaurArgs) -> None:
     if not args.repo:
         for directory, message, minimal_clean_level in (
@@ -137,7 +183,7 @@ def cli_clean_packages_cache(args: PikaurArgs) -> None:
                 (PACKAGE_CACHE_PATH, "Packages directory", 2, ),
         ):
             if minimal_clean_level <= args.clean and os.path.exists(directory):
-                print('\n' + _("{}: {}").format(message, directory))
+                print_stdout('\n' + _("{}: {}").format(message, directory))
                 if ask_to_continue(args=args, text='{} {}'.format(
                         color_line('::', 12),
                         _("Do you want to remove all files?")
@@ -161,6 +207,11 @@ def cli_print_version(args: PikaurArgs) -> None:
 def cli_entry_point() -> None:
     # pylint: disable=too-many-branches
     # @TODO: import pikaur.args module instead of passing them as function arg
+
+    # operations are parsed in order what the less destructive (like info and query)
+    # are being handled first, for cases when user by mistake
+    # specified both operations, like `pikaur -QS smth`
+
     args = parse_args()
     raw_args = args.raw
 
@@ -171,6 +222,16 @@ def cli_entry_point() -> None:
         cli_print_help(args)
     elif args.version:
         cli_print_version(args)
+
+    elif args.query:
+        if args.sysupgrade:
+            cli_print_upgradeable(args)
+        else:
+            not_implemented_in_pikaur = True
+            require_sudo = False
+
+    elif args.getpkgbuild:
+        cli_getpkgbuild(args)
 
     elif args.pkgbuild:
         cli_pkgbuild(args)
@@ -189,13 +250,6 @@ def cli_entry_point() -> None:
             require_sudo = False
         else:
             not_implemented_in_pikaur = True
-
-    elif args.query:
-        if args.sysupgrade:
-            cli_print_upgradeable(args)
-        else:
-            not_implemented_in_pikaur = True
-            require_sudo = False
 
     else:
         not_implemented_in_pikaur = True
@@ -270,7 +324,10 @@ def main() -> None:
         print_stderr(exc)
         sys.exit(22)
     check_runtime_deps()
+
     create_dirs()
+    # initialize config to avoid race condition in threads:
+    PikaurConfig.get_config()
 
     atexit.register(restore_tty)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)

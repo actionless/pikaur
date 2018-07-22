@@ -255,6 +255,16 @@ def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:
     return result_aur_deps
 
 
+def get_aur_deps_list(aur_pkgs_infos: List[AURPackageInfo]) -> List[AURPackageInfo]:
+    aur_deps_relations = find_aur_deps(aur_pkgs_infos)
+    all_aur_deps = list(set(
+        dep
+        for _pkg, deps in aur_deps_relations.items()
+        for dep in deps
+    ))
+    return find_aur_packages(all_aur_deps)[0]
+
+
 def _find_repo_deps_of_aur_pkg(
         aur_pkg: AURPackageInfo,
         all_aur_pkgs: List[AURPackageInfo]

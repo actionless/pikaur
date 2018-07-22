@@ -29,10 +29,10 @@ class AURPackageInfo(DataType):
     conflicts: List[str] = []
     replaces: List[str] = []
     provides: List[str] = []
+    packagebase: str
 
     id: str  # pylint: disable=invalid-name
     packagebaseid: str
-    packagebase: str
     url: str
     outofdate: int
     maintainer: str
@@ -54,6 +54,7 @@ class AURPackageInfo(DataType):
             name=srcinfo.package_name,
             version=srcinfo.get_value('pkgver') + '-' + srcinfo.get_value('pkgrel'),
             desc=srcinfo.get_value('pkgdesc'),
+            packagebase=srcinfo.get_value('pkgbase'),
             **{
                 key: srcinfo.get_values(key)
                 for key in [

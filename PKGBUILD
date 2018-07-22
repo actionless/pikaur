@@ -19,6 +19,9 @@ depends=(
 	'pyalpm'
 	'git'
 )
+optdepends=(
+	'asp: for ABS support in -G/--getpkgbuild operation'
+)
 conflicts=('pikaur')
 
 pkgver() {

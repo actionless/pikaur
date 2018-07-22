@@ -55,10 +55,10 @@ class InstallTest(PikaurDbTestCase):
     def test_pkgbuild(self):
         pkg_name = 'pikaur-git'
 
-        pikaur(f'-R --noconfirm {pkg_name} -d')
+        pikaur(f'-R --noconfirm {pkg_name}')
         self.assertNotInstalled(pkg_name)
 
-        pikaur('-P ./PKGBUILD --noconfirm -i')
+        pikaur('-P ./PKGBUILD --noconfirm --install')
         self.assertInstalled(pkg_name)
 
     def test_syu(self):
@@ -87,10 +87,10 @@ class InstallTest(PikaurDbTestCase):
         # AUR package downgrade
         aur_pkg_name = 'inxi'
         self.remove_if_installed(aur_pkg_name)
-        pikaur(f'-G {aur_pkg_name}')
+        pikaur(f'-G -d {aur_pkg_name}')
         prev_commit = spawn(f'git -C ./{aur_pkg_name} log --format=%h').stdout_text.splitlines()[1]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
-        pikaur(f'-P --install --noconfirm ./{aur_pkg_name}/PKGBUILD')
+        pikaur(f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD')
         self.assertInstalled(aur_pkg_name)
         aur_old_version = PackageDB.get_local_dict()[aur_pkg_name].version
 

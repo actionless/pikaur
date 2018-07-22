@@ -198,7 +198,11 @@ def return_exception(fun: Callable) -> Callable:
 def just_copy_damn_tree(from_path, to_path) -> None:
     if not os.path.exists(to_path):
         os.makedirs(to_path)
-    cmd_args = ['cp', '-r', f'{from_path}/.', to_path]
+
+    if os.path.isdir(from_path):
+        from_path = f'{from_path}/.'
+    cmd_args = ['cp', '-r', from_path, to_path]
+
     result = spawn(cmd_args)
     if result.returncode != 0:
         remove_dir(to_path)

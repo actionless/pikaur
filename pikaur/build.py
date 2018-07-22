@@ -74,7 +74,9 @@ class PackageBuild(DataType):
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
             self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
         if pkgbuild_path:
-            self.repo_path = os.path.dirname(pkgbuild_path)
+            self.repo_path = os.path.abspath(
+                os.path.dirname(pkgbuild_path)
+            )
             srcinfo = SrcInfo(self.repo_path)
             pkgbase = srcinfo.get_value('pkgbase')
             if pkgbase and srcinfo.pkgnames:

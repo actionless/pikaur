@@ -521,6 +521,8 @@ class InstallPackagesCLI():
             ) and (
                 repo_status.last_installed_hash
             ) and (
+                repo_status.current_hash
+            ) and (
                 not self.args.noconfirm
             ):
                 nodiff = self.args.nodiff or PikaurConfig().build.get_bool('NoDiff')

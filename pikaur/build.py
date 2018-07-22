@@ -5,7 +5,7 @@ import sys
 import shutil
 import subprocess
 from multiprocessing.pool import ThreadPool
-from typing import List, Union, Dict, Set, Optional, Any
+from typing import List, Dict, Set, Optional, Any
 
 from .core import (
     DataType,
@@ -138,20 +138,22 @@ class PackageBuild(DataType):
         return os.path.exists(self.last_installed_file_path)
 
     @property
-    def last_installed_hash(self) -> Union[str, None]:
+    def last_installed_hash(self) -> Optional[str]:
         if self.is_installed:
             with open_file(self.last_installed_file_path) as last_installed_file:
                 return last_installed_file.readlines()[0].strip()
         return None
 
     def update_last_installed_file(self) -> None:
-        shutil.copy2(
-            os.path.join(
-                self.repo_path,
-                '.git/refs/heads/master'
-            ),
-            self.last_installed_file_path
+        git_hash_path = os.path.join(
+            self.repo_path,
+            '.git/refs/heads/master'
         )
+        if os.path.exists(git_hash_path):
+            shutil.copy2(
+                git_hash_path,
+                self.last_installed_file_path
+            )
 
     @property
     def build_files_updated(self) -> bool:
@@ -164,13 +166,14 @@ class PackageBuild(DataType):
         return False
 
     @property
-    def current_hash(self) -> str:
-        with open_file(
-                os.path.join(
-                    self.repo_path,
-                    '.git/refs/heads/master'
-                )
-        ) as current_hash_file:
+    def current_hash(self) -> Optional[str]:
+        git_hash_path = os.path.join(
+            self.repo_path,
+            '.git/refs/heads/master'
+        )
+        if not os.path.exists(git_hash_path):
+            return None
+        with open_file(git_hash_path) as current_hash_file:
             return current_hash_file.readlines()[0].strip()
 
     def get_latest_dev_sources(self) -> None:

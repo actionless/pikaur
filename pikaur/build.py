@@ -107,9 +107,10 @@ class PackageBuild(DataType):
             "*"
         ])
 
-    def get_task_command(self) -> List[str]:
+    def update_aur_repo(self) -> InteractiveSpawn:
+        cmd_args: List[str]
         if self.pull:
-            return [
+            cmd_args = [
                 'git',
                 '-C',
                 self.repo_path,
@@ -118,13 +119,15 @@ class PackageBuild(DataType):
                 'master'
             ]
         if self.clone:
-            return [
+            cmd_args = [
                 'git',
                 'clone',
                 get_repo_url(self.package_base),
                 self.repo_path,
             ]
-        return NotImplemented
+        if not cmd_args:
+            return NotImplemented
+        return spawn(cmd_args)
 
     @property
     def last_installed_file_path(self) -> str:
@@ -644,7 +647,7 @@ def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
     }
     with ThreadPool() as pool:
         requests = {
-            key: pool.apply_async(spawn, (repo_status.get_task_command(), ))
+            key: pool.apply_async(repo_status.update_aur_repo, ())
             for key, repo_status in package_builds_by_base.items()
         }
         pool.close()

@@ -49,7 +49,7 @@ check_man: backup_man man
 	mv $(MAN_FILE_BAK) $(MAN_FILE)
 
 clean_checkman:
-	rm $(MAN_FILE_BAK)
+	$(RM) $(MAN_FILE_BAK)
 
 .PHONY: all clean $(POTFILE)
 .PRECIOUS: $(LOCALEDIR)/%.po

@@ -502,6 +502,8 @@ class InstallPackagesCLI():
                 threads.append(
                     pool.apply_async(getattr, (repo_status, 'version_already_installed'))
                 )
+            for thread in threads:
+                thread.get()
             pool.close()
             pool.join()
 

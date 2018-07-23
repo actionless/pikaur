@@ -11,7 +11,7 @@ import pyalpm
 
 from .i18n import _
 from .config import PikaurConfig
-from .args import reconstruct_args, PikaurArgs
+from .args import reconstruct_args, PikaurArgs, parse_args
 from .aur import strip_aur_repo_name
 from .pacman import (
     PackageDB,
@@ -45,7 +45,7 @@ from .srcinfo import SrcInfo
 from .news import News
 
 
-def _check_pkg_arch(pkgbuild):
+def check_pkg_arch(pkgbuild):
     src_info = SrcInfo(pkgbuild.repo_path)
     arch = MakepkgConfig.get('CARCH')
     supported_archs = src_info.get_values('arch')
@@ -79,6 +79,13 @@ def hash_file(filename):
     return md5.hexdigest()
 
 
+def get_editor_or_exit() -> Optional[List[str]]:
+    editor = get_editor()
+    if not editor and not ask_to_continue(_("Do you want to proceed without editing?")):
+        raise SysExit(125)
+    return editor
+
+
 class InstallPackagesCLI():
 
     # User input
@@ -109,8 +116,8 @@ class InstallPackagesCLI():
     # arch news
     news: Optional[News] = None
 
-    def __init__(self, args: PikaurArgs) -> None:
-        self.args = args
+    def __init__(self) -> None:
+        self.args = parse_args()
         self.install_package_names = self.args.positional[:]
 
         self.pkgbuilds_paths = []
@@ -128,7 +135,7 @@ class InstallPackagesCLI():
 
         if not self.args.aur:
             with ThreadPool() as pool:
-                pool.apply_async(refresh_pkg_db, (self.args, ))
+                pool.apply_async(refresh_pkg_db, ())
                 if self.news:
                     pool.apply_async(self.news.fetch_latest, ())
                 pool.close()
@@ -136,7 +143,7 @@ class InstallPackagesCLI():
             if self.args.refresh:
                 PackageDB.discard_repo_cache()
 
-        if self.args.sysupgrade and not args.repo:
+        if self.args.sysupgrade and not self.args.repo:
             print_stderr('{} {}'.format(
                 color_line('::', 12),
                 bold_line(_("Starting full AUR upgrade..."))
@@ -148,7 +155,7 @@ class InstallPackagesCLI():
             self.not_found_repo_pkgs_names = self.install_package_names
             self.install_package_names = []
 
-        if args.pkgbuild:
+        if self.args.pkgbuild:
             self.get_info_from_pkgbuilds()
         self.get_all_packages_info()
         if self.news:
@@ -178,12 +185,6 @@ class InstallPackagesCLI():
     @property
     def all_aur_packages_names(self) -> List[str]:
         return list(set(self.aur_packages_names + self.aur_deps_names))
-
-    def get_editor(self) -> Optional[List[str]]:
-        editor = get_editor()
-        if not editor and not self.ask_to_continue(_("Do you want to proceed without editing?")):
-            raise SysExit(125)
-        return editor
 
     def get_info_from_pkgbuilds(self):
         self.install_package_names = []
@@ -259,7 +260,7 @@ class InstallPackagesCLI():
                 )
             ] + self.install_package_names + self.not_found_repo_pkgs_names
         )
-        editor_cmd = self.get_editor()
+        editor_cmd = get_editor_or_exit()
         if not editor_cmd:
             return
         text = pretty_format_sysupgrade(
@@ -426,9 +427,6 @@ class InstallPackagesCLI():
                 else:
                     raise SysExit(125)
 
-    def ask_to_continue(self, text: str = None, default_yes=True) -> bool:
-        return ask_to_continue(text=text, default_yes=default_yes, args=self.args)
-
     def ask_about_package_conflicts(self) -> None:
         if self.aur_packages_names:
             print_stderr(_('looking for conflicting AUR packages...'))
@@ -446,7 +444,7 @@ class InstallPackagesCLI():
                     raise SysExit(131)
         for new_pkg_name, new_pkg_conflicts in self.found_conflicts.items():
             for pkg_conflict in new_pkg_conflicts:
-                answer = self.ask_to_continue('{} {}'.format(
+                answer = ask_to_continue('{} {}'.format(
                     color_line('::', 11),
                     bold_line(_(
                         "{new} and {installed} are in conflict. Remove {installed}?"
@@ -459,7 +457,7 @@ class InstallPackagesCLI():
                 self.resolved_conflicts.append([new_pkg_name, pkg_conflict])
 
     def ask_to_edit_file(self, filename: str, package_build: PackageBuild) -> bool:
-        editor_cmd = self.get_editor()
+        editor_cmd = get_editor_or_exit()
         if not editor_cmd:
             return False
         noedit = not self.args.edit and (
@@ -475,7 +473,7 @@ class InstallPackagesCLI():
                     (self.args.noconfirm and '--noconfirm')),
             ))
             return False
-        if self.ask_to_continue(
+        if ask_to_continue(
                 _("Do you want to {edit} {file} for {name} package?").format(
                     edit=bold_line(_("edit")),
                     file=filename,
@@ -528,7 +526,7 @@ class InstallPackagesCLI():
                 not self.args.noconfirm
             ):
                 nodiff = self.args.nodiff or PikaurConfig().build.get_bool('NoDiff')
-                if not nodiff and self.ask_to_continue(
+                if not nodiff and ask_to_continue(
                         _("Do you want to see build files {diff} for {name} package?").format(
                             diff=bold_line(_("diff")),
                             name=bold_line(', '.join(repo_status.package_names))
@@ -561,7 +559,7 @@ class InstallPackagesCLI():
                     if install_file_name:
                         self.ask_to_edit_file(install_file_name, repo_status)
 
-            _check_pkg_arch(repo_status)
+            check_pkg_arch(repo_status)
 
     def build_packages(self) -> None:
         failed_to_build_package_names = []
@@ -590,7 +588,7 @@ class InstallPackagesCLI():
                 print_stderr(
                     color_line(_("Can't build '{name}'.").format(name=pkg_name) + '\n', 9)
                 )
-                # if not self.ask_to_continue():
+                # if not ask_to_continue():
                 #     raise SysExit(125)
                 for _pkg_name in repo_status.package_names:
                     failed_to_build_package_names.append(_pkg_name)
@@ -624,7 +622,6 @@ class InstallPackagesCLI():
                         '-Rs',
                     ] + packages_to_be_removed
                 ),
-                args=self.args,
                 pikspect=True,
             )
             PackageDB.discard_local_cache()
@@ -678,11 +675,10 @@ class InstallPackagesCLI():
                         'ignore',
                     ]) + self.install_package_names + extra_args
                 ),
-                args=self.args,
                 pikspect=True,
                 conflicts=self.resolved_conflicts,
         ):
-            if not self.ask_to_continue(default_yes=False):
+            if not ask_to_continue(default_yes=False):
                 self._revert_transaction(PackageSource.REPO)
                 raise SysExit(125)
         PackageDB.discard_local_cache()
@@ -712,11 +708,10 @@ class InstallPackagesCLI():
                             'ignore',
                         ]) + new_aur_deps_to_install
                     ),
-                    args=self.args,
                     pikspect=True,
                     conflicts=self.resolved_conflicts,
             ):
-                if not self.ask_to_continue(default_yes=False):
+                if not ask_to_continue(default_yes=False):
                     self._revert_transaction(PackageSource.AUR)
                     raise SysExit(125)
             PackageDB.discard_local_cache()
@@ -744,11 +739,10 @@ class InstallPackagesCLI():
                             'ignore',
                         ]) + aur_packages_to_install
                     ),
-                    args=self.args,
                     pikspect=True,
                     conflicts=self.resolved_conflicts,
             ):
-                if not self.ask_to_continue(default_yes=False):
+                if not ask_to_continue(default_yes=False):
                     self._revert_transaction(PackageSource.AUR)
                     raise SysExit(125)
             PackageDB.discard_local_cache()

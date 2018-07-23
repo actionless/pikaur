@@ -2,7 +2,7 @@ from datetime import datetime
 from multiprocessing.pool import ThreadPool
 
 from .aur import find_aur_packages, get_all_aur_names
-from .args import parse_args, PikaurArgs
+from .args import parse_args
 from .core import spawn
 from .pacman import get_pacman_command
 from .pprint import bold_line
@@ -13,7 +13,8 @@ def _info_packages_thread_repo() -> str:
     return spawn(get_pacman_command() + args.raw).stdout_text
 
 
-def cli_info_packages(args: PikaurArgs) -> None:
+def cli_info_packages() -> None:
+    args = parse_args()
     aur_pkg_names = args.positional or get_all_aur_names()
     with ThreadPool() as pool:
         aur_thread = pool.apply_async(find_aur_packages, (aur_pkg_names, ))

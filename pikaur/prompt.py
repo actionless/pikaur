@@ -4,7 +4,7 @@ import sys
 import tty
 from typing import List
 
-from .args import PikaurArgs
+from .args import parse_args
 from .config import PikaurConfig
 
 from .core import interactive_spawn
@@ -93,7 +93,8 @@ def get_input(prompt: str, answers=None) -> str:
     return answer
 
 
-def ask_to_continue(args: PikaurArgs, text: str = None, default_yes: bool = True) -> bool:
+def ask_to_continue(text: str = None, default_yes: bool = True) -> bool:
+    args = parse_args()
     if text is None:
         text = _('Do you want to proceed?')
 
@@ -113,15 +114,13 @@ def ask_to_continue(args: PikaurArgs, text: str = None, default_yes: bool = True
 
 def retry_interactive_command(
         cmd_args: List[str],
-        args: PikaurArgs,
         pikspect=False,
         **kwargs
 ) -> bool:
-    auto_proceed = True
-    hide_pacman_prompt = False
+    args = parse_args()
     while True:
         good = None
-        if pikspect and (auto_proceed or hide_pacman_prompt):
+        if pikspect:
             from .pikspect import pikspect as pikspect_spawn
             good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
         else:
@@ -135,13 +134,12 @@ def retry_interactive_command(
         ), 9))
         if not ask_to_continue(
                 text=_("Do you want to retry?"),
-                args=args,
                 default_yes=not args.noconfirm
         ):
             return False
 
 
-def retry_interactive_command_or_exit(cmd_args: List[str], args: PikaurArgs, **kwargs) -> None:
-    if not retry_interactive_command(cmd_args, args=args, **kwargs):
-        if not ask_to_continue(args=args, default_yes=False):
+def retry_interactive_command_or_exit(cmd_args: List[str], **kwargs) -> None:
+    if not retry_interactive_command(cmd_args, **kwargs):
+        if not ask_to_continue(default_yes=False):
             raise SysExit(125)

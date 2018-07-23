@@ -17,7 +17,7 @@ from .aur import (
     AURPackageInfo,
     aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names,
 )
-from .args import PikaurArgs
+from .args import parse_args
 from .exceptions import AURError, SysExit
 
 
@@ -104,8 +104,9 @@ def join_search_results(
     }.values()
 
 
-def cli_search_packages(args: PikaurArgs) -> None:
-    refresh_pkg_db(args)
+def cli_search_packages() -> None:
+    args = parse_args()
+    refresh_pkg_db()
     search_query = args.positional or []
     REPO_ONLY = args.repo  # pylint: disable=invalid-name
     AUR_ONLY = args.aur  # pylint: disable=invalid-name
@@ -157,8 +158,7 @@ def cli_search_packages(args: PikaurArgs) -> None:
         ])
         print_package_search_results(
             packages=repo_result,
-            local_pkgs_versions=local_pkgs_versions,
-            args=args
+            local_pkgs_versions=local_pkgs_versions
         )
     if not REPO_ONLY:
         for _key, query_result in result[PackageSource.AUR].items():
@@ -172,6 +172,5 @@ def cli_search_packages(args: PikaurArgs) -> None:
         ])
         print_package_search_results(
             packages=aur_result,
-            local_pkgs_versions=local_pkgs_versions,
-            args=args
+            local_pkgs_versions=local_pkgs_versions
         )

@@ -13,7 +13,7 @@ from .i18n import _
 from .core import DataType, PackageSource
 from .version import VersionMatcher
 from .pprint import print_stderr, color_enabled
-from .args import PikaurArgs
+from .args import parse_args
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo
 from .core import sudo, spawn
@@ -493,11 +493,10 @@ def find_packages_not_from_repo() -> List[str]:
     return not_found_packages
 
 
-def refresh_pkg_db(args: PikaurArgs) -> None:
+def refresh_pkg_db() -> None:
+    args = parse_args()
     if args.refresh:
         pacman_args = (sudo(
             get_pacman_command() + ['--sync'] + ['--refresh'] * args.refresh
         ))
-        retry_interactive_command_or_exit(
-            pacman_args, args=args
-        )
+        retry_interactive_command_or_exit(pacman_args)

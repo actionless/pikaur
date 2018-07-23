@@ -231,9 +231,11 @@ def _format_options_help(options: List[Tuple[str, str, str]]) -> str:
     ])
 
 
-def cli_print_help(args: PikaurArgs) -> None:
+def cli_print_help() -> None:
     from .core import spawn
     from .config import PikaurConfig
+
+    args = parse_args()
 
     pikaur_long_opts = [long_opt for _short_opt, long_opt in PIKAUR_BOOL_OPTS + PIKAUR_STR_OPTS]
 

@@ -11,7 +11,7 @@ from .pacman import (
 )
 from .aur import AURPackageInfo, find_aur_packages
 from .pprint import print_stderr
-from .args import PikaurArgs
+from .args import parse_args
 from .config import PikaurConfig
 from .core import InstallInfo
 from .exceptions import PackagesNotFoundInRepo
@@ -94,7 +94,8 @@ def find_aur_devel_updates(
     return aur_updates
 
 
-def find_aur_updates(args: PikaurArgs) -> Tuple[List[InstallInfo], List[str]]:
+def find_aur_updates() -> Tuple[List[InstallInfo], List[str]]:
+    args = parse_args()
     package_names = find_packages_not_from_repo()
     print_stderr(_n(
         "Reading AUR package info...",

@@ -18,7 +18,6 @@ from multiprocessing.pool import ThreadPool
 
 from .i18n import _  # keep that first
 from .args import (
-    PikaurArgs,
     parse_args, reconstruct_args, cli_print_help
 )
 from .core import (
@@ -82,10 +81,11 @@ def init_output_encoding() -> None:
 init_output_encoding()
 
 
-def cli_print_upgradeable(args: PikaurArgs) -> None:
+def cli_print_upgradeable() -> None:
+    args = parse_args()
     updates: List[InstallInfo] = []
     if not args.repo:
-        aur_updates, _not_found_aur_pkgs = find_aur_updates(args)
+        aur_updates, _not_found_aur_pkgs = find_aur_updates()
         updates += aur_updates
     if not args.aur:
         updates += find_repo_upgradeable()
@@ -111,13 +111,17 @@ def sudo_loop(once=False) -> None:
         sleep(SUDO_LOOP_INTERVAL)
 
 
-def cli_install_packages(args) -> None:
+def cli_install_packages() -> None:
+
+    def _run_install() -> None:
+        InstallPackagesCLI()
+
     if running_as_root():
-        InstallPackagesCLI(args=args)
+        _run_install()
     else:
         sudo_loop(once=True)
         with ThreadPool(processes=2) as pool:
-            install_packages_thread = pool.apply_async(lambda: InstallPackagesCLI(args=args))
+            install_packages_thread = pool.apply_async(_run_install, ())
             pool.apply_async(sudo_loop)
             pool.close()
             catched_exc = None
@@ -131,11 +135,12 @@ def cli_install_packages(args) -> None:
                 raise catched_exc  # pylint: disable=raising-bad-type
 
 
-def cli_pkgbuild(args) -> None:
-    cli_install_packages(args)
+def cli_pkgbuild() -> None:
+    cli_install_packages()
 
 
-def cli_getpkgbuild(args) -> None:
+def cli_getpkgbuild() -> None:
+    args = parse_args()
     pwd = os.path.abspath(os.path.curdir)
     aur_pkg_names = args.positional
 
@@ -176,7 +181,8 @@ def cli_getpkgbuild(args) -> None:
         ])
 
 
-def cli_clean_packages_cache(args: PikaurArgs) -> None:
+def cli_clean_packages_cache() -> None:
+    args = parse_args()
     if not args.repo:
         for directory, message, minimal_clean_level in (
                 (BUILD_CACHE_PATH, "Build directory", 1, ),
@@ -184,7 +190,7 @@ def cli_clean_packages_cache(args: PikaurArgs) -> None:
         ):
             if minimal_clean_level <= args.clean and os.path.exists(directory):
                 print_stdout('\n' + _("{}: {}").format(message, directory))
-                if ask_to_continue(args=args, text='{} {}'.format(
+                if ask_to_continue(text='{} {}'.format(
                         color_line('::', 12),
                         _("Do you want to remove all files?")
                 )):
@@ -197,7 +203,8 @@ def cli_clean_packages_cache(args: PikaurArgs) -> None:
         )
 
 
-def cli_print_version(args: PikaurArgs) -> None:
+def cli_print_version() -> None:
+    args = parse_args()
     pacman_version = spawn(
         [PikaurConfig().misc.PacmanPath, '--version', ],
     ).stdout_text.splitlines()[1].strip(' .-')
@@ -206,7 +213,6 @@ def cli_print_version(args: PikaurArgs) -> None:
 
 def cli_entry_point() -> None:
     # pylint: disable=too-many-branches
-    # @TODO: import pikaur.args module instead of passing them as function arg
 
     # operations are parsed in order what the less destructive (like info and query)
     # are being handled first, for cases when user by mistake
@@ -219,32 +225,32 @@ def cli_entry_point() -> None:
     require_sudo = True
 
     if args.help:
-        cli_print_help(args)
+        cli_print_help()
     elif args.version:
-        cli_print_version(args)
+        cli_print_version()
 
     elif args.query:
         if args.sysupgrade:
-            cli_print_upgradeable(args)
+            cli_print_upgradeable()
         else:
             not_implemented_in_pikaur = True
             require_sudo = False
 
     elif args.getpkgbuild:
-        cli_getpkgbuild(args)
+        cli_getpkgbuild()
 
     elif args.pkgbuild:
-        cli_pkgbuild(args)
+        cli_pkgbuild()
 
     elif args.sync:
         if args.search:
-            cli_search_packages(args)
+            cli_search_packages()
         elif args.info:
-            cli_info_packages(args)
+            cli_info_packages()
         elif args.clean:
-            cli_clean_packages_cache(args)
+            cli_clean_packages_cache()
         elif args.sysupgrade or '-S' in raw_args or '-Sy' in raw_args:
-            cli_install_packages(args)
+            cli_install_packages()
         elif args.groups:
             not_implemented_in_pikaur = True
             require_sudo = False

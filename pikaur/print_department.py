@@ -10,7 +10,7 @@ from .i18n import _, _n
 from .pprint import (
     print_stderr, color_line, bold_line, format_paragraph, get_term_width,
 )
-from .args import PikaurArgs
+from .args import parse_args
 from .core import PackageSource, InstallInfo
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
@@ -383,7 +383,6 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
 def print_package_search_results(  # pylint:disable=useless-return
         packages: Iterable[Union['AURPackageInfo', pyalpm.Package]],
         local_pkgs_versions: Dict[str, str],
-        args: PikaurArgs
 ) -> None:
 
     def get_sort_key(pkg: 'AURPackageInfo') -> float:
@@ -391,6 +390,7 @@ def print_package_search_results(  # pylint:disable=useless-return
             return (pkg.numvotes + 1) * (pkg.popularity + 1)
         return 1
 
+    args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
     for package in sorted(
             packages,

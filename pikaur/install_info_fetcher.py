@@ -285,7 +285,7 @@ class InstallInfoFetcher:
         }
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         if self.args.sysupgrade:
-            aur_updates_list, not_found_aur_pkgs = find_aur_updates(self.args)
+            aur_updates_list, not_found_aur_pkgs = find_aur_updates()
             self.exclude_ignored_packages(not_found_aur_pkgs)
             if not_found_aur_pkgs:
                 print_not_found_packages(sorted(not_found_aur_pkgs))

@@ -234,9 +234,7 @@ class PackageBuild(DataType):
         if pkgver_result.returncode != 0:
             sys.stdout.buffer.write(pkgver_result.get_output_bytes())
             sys.stdout.buffer.flush()
-            if not ask_to_continue(
-                    args=self.args, default_yes=False
-            ):
+            if not ask_to_continue(default_yes=False):
                 raise SysExit(125)
         SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True
@@ -325,7 +323,6 @@ class PackageBuild(DataType):
                         if name not in explicitly_installed_deps
                     ],
                 ),
-                args=self.args,
                 pikspect=True,
                 conflicts=self.resolved_conflicts,
             )
@@ -340,7 +337,6 @@ class PackageBuild(DataType):
                         if name in explicitly_installed_deps
                     ]
                 ),
-                args=self.args,
                 pikspect=True,
                 conflicts=self.resolved_conflicts,
             )
@@ -468,7 +464,6 @@ class PackageBuild(DataType):
                     '--asdeps',
                 ] + self.all_deps_to_install
             ),
-            args=self.args,
             pikspect=True,
             conflicts=self.resolved_conflicts,
         )
@@ -502,7 +497,7 @@ class PackageBuild(DataType):
                 _("Failed to remove installed dependencies, packages inconsistency: {}").format(
                     bold_line(', '.join(deps_packages_removed)))
             ))
-            if not ask_to_continue(args=self.args):
+            if not ask_to_continue():
                 raise SysExit(125)
         if not deps_packages_installed:
             return
@@ -518,7 +513,6 @@ class PackageBuild(DataType):
                     '--remove',
                 ] + list(deps_packages_installed)
             ),
-            args=self.args,
             pikspect=True,
         )
         PackageDB.discard_local_cache()

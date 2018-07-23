@@ -160,6 +160,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     @handle_exception_in_thread
     def communicator_thread(self) -> int:
         while self.returncode is None:
+            sleep(SMALL_TIMEOUT)
             with self._waitpid_lock:
                 if self.returncode is not None:
                     break  # Another thread waited.
@@ -248,6 +249,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                     break
                 if self.historic_output:
                     self._output_done = True
+                else:
                     sleep(SMALL_TIMEOUT)
                 continue
             pty_reader = readers[0]
@@ -275,6 +277,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                 if line:
                     char = line
                 else:
+                    sleep(SMALL_TIMEOUT)
                     continue
             else:
                 sleep(SMALL_TIMEOUT)

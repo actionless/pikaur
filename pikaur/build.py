@@ -5,13 +5,13 @@ import sys
 import shutil
 import subprocess
 from multiprocessing.pool import ThreadPool
+from glob import glob
 from typing import List, Dict, Set, Optional, Any
 
 from .core import (
     DataType,
     isolate_root_cmd, remove_dir, open_file,
     spawn, interactive_spawn, InteractiveSpawn, sudo, running_as_root,
-    just_copy_damn_tree as copy_tree,
 )
 from .i18n import _, _n
 from .config import (
@@ -35,6 +35,28 @@ from .updates import is_devel_pkg
 from .version import compare_versions, VersionMatcher
 from .pikspect import pikspect
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
+
+
+def copy_aur_repo(from_path, to_path) -> None:
+    if not os.path.exists(to_path):
+        os.makedirs(to_path)
+    if running_as_root():
+        os.chown(os.path.realpath(to_path), 0, 0)
+
+    from_paths = []
+    for src_path in glob(f'{from_path}/*') + glob(f'{from_path}/.*'):
+        if os.path.basename(src_path) != '.git':
+            from_paths.append(src_path)
+    to_path = f'{to_path}/'
+
+    cmd_args = isolate_root_cmd(['cp', '-r'] + from_paths + [to_path])
+
+    result = spawn(cmd_args)
+    if result.returncode != 0:
+        remove_dir(to_path)
+        result = interactive_spawn(cmd_args)
+        if result.returncode != 0:
+            raise Exception(_(f"Can't copy '{from_path}' to '{to_path}'."))
 
 
 class PackageBuild(DataType):
@@ -395,7 +417,7 @@ class PackageBuild(DataType):
                 self.args.keepbuild or PikaurConfig().build.get_bool('KeepBuildDir')
         ):
             remove_dir(self.build_dir)
-        copy_tree(self.repo_path, self.build_dir)
+        copy_aur_repo(self.repo_path, self.build_dir)
 
     def _get_deps(self) -> None:
         self.new_deps_to_install = []

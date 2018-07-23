@@ -404,10 +404,15 @@ class InstallInfoFetcher:
             for ii in all_install_infos
         ], [])
 
+        explicit_aur_pkg_names = [ii.name for ii in self.aur_updates_install_info]
         for pkg_install_info in all_install_infos:
             provides = pkg_install_info.package.provides
             providing_for: List[str] = []
-            if provides and pkg_install_info.name not in self.install_package_names:
+            if provides and (
+                    pkg_install_info.name not in self.install_package_names
+            ) and (
+                pkg_install_info.name not in explicit_aur_pkg_names
+            ):
                 providing_for = [
                     pkg_name for pkg_name in sum([
                         (lambda vm: [vm.line, vm.pkg_name])(VersionMatcher(prov))

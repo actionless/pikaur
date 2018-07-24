@@ -270,7 +270,7 @@ def cli_entry_point() -> None:
         )
 
 
-def check_systemd_dynamic_users() -> bool:
+def check_systemd_dynamic_users() -> bool:  # pragma: no cover
     try:
         out = subprocess.check_output(['systemd-run', '--version'],
                                       universal_newlines=True)
@@ -318,7 +318,7 @@ def restore_tty():
     TTYRestore.restore()
 
 
-def handle_sig_int(*_whatever):
+def handle_sig_int(*_whatever):  # pragma: no cover
     print_stderr("\n\nCanceled by user (SIGINT)")
     sys.exit(125)
 

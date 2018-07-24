@@ -1,9 +1,10 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import sys
-from typing import List, Any, Tuple, Optional
+from argparse import Namespace  # pylint: disable=no-name-in-module
+from typing import List, Any, Tuple, Optional, NoReturn
 
-from . import argparse  # pylint: disable=no-name-in-module
+from .argparse import ArgumentParserWithUnknowns
 
 from .i18n import _, _n
 
@@ -16,7 +17,7 @@ class MissingArgument(Exception):
     pass
 
 
-class PikaurArgs(argparse.Namespace):
+class PikaurArgs(Namespace):
     unknown_args: List[str]
     raw: List[str]
 
@@ -46,7 +47,7 @@ class PikaurArgs(argparse.Namespace):
     @classmethod
     def from_namespace(
             cls,
-            namespace: argparse.Namespace,
+            namespace: Namespace,
             unknown_args: List[str],
             raw_args: List[str]
     ) -> 'PikaurArgs':
@@ -59,9 +60,9 @@ class PikaurArgs(argparse.Namespace):
         return result
 
 
-class PikaurArgumentParser(argparse.ArgumentParser):
+class PikaurArgumentParser(ArgumentParserWithUnknowns):
 
-    def error(self, message: str) -> None:
+    def error(self, message: str) -> NoReturn:
         exc = sys.exc_info()[1]
         if exc:
             raise exc
@@ -82,11 +83,11 @@ class PikaurArgumentParser(argparse.ArgumentParser):
 
     def add_letter_andor_opt(self, action: str = None, letter: str = None, opt: str = None) -> None:
         if letter and opt:
-            self.add_argument('-' + letter, '--' + opt, action=action)
+            self.add_argument('-' + letter, '--' + opt, action=action)  # type: ignore
         elif opt:
-            self.add_argument('--' + opt, action=action)
+            self.add_argument('--' + opt, action=action)  # type: ignore
         elif letter:
-            self.add_argument('-' + letter, action=action)
+            self.add_argument('-' + letter, action=action)  # type: ignore
 
 
 PIKAUR_BOOL_OPTS = (

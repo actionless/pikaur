@@ -17,7 +17,9 @@ all: locale
 locale: $(MOFILES)
 
 $(POTFILE):
-	find pikaur -type f -name '*.py' -not -name 'argparse.py' \
+	# find pikaur -type f -name '*.py' -not -name 'argparse.py' \
+		#
+	find pikaur -type f -name '*.py' \
 		| xargs xgettext --language=python --add-comments --sort-output \
 			--default-domain=pikaur --from-code=UTF-8 --keyword='_n:1,2' --output=$@
 

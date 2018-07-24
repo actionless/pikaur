@@ -14,6 +14,7 @@ import atexit
 import io
 from typing import List
 from time import sleep
+from argparse import ArgumentError  # pylint: disable=no-name-in-module
 from multiprocessing.pool import ThreadPool
 
 from .i18n import _  # keep that first
@@ -36,7 +37,6 @@ from .config import (
 )
 from .exceptions import SysExit
 from .pikspect import TTYRestore
-from .argparse import ArgumentError
 from .install_cli import InstallPackagesCLI
 from .search_cli import cli_search_packages
 from .info_cli import cli_info_packages

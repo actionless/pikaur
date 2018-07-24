@@ -1,6 +1,8 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-from vulture.whitelist_utils import Whitelist
+# pylint: disable=invalid-name,protected-access,pointless-statement
+
+from vulture.whitelist_utils import Whitelist  # pylint: disable=import-error,no-name-in-module
 
 
 whitelist = Whitelist()
@@ -20,3 +22,5 @@ whitelist.aur.AURPackageInfo.lastmodified
 whitelist.aur.AURPackageInfo.urlpath
 whitelist.aur.AURPackageInfo.license
 whitelist.aur.AURPackageInfo.keywords
+
+whitelist.argparse.ArgumentParserWithUnknowns._parse_known_args

@@ -1,6 +1,5 @@
 [report]
 omit =
-    pikaur/argparse.py
     pikaur/i18n.py
     pikaur/pprint.py
     pikaur/print_department.py

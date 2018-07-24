@@ -24,3 +24,8 @@ whitelist.aur.AURPackageInfo.license
 whitelist.aur.AURPackageInfo.keywords
 
 whitelist.argparse.ArgumentParserWithUnknowns._parse_known_args
+
+whitelist.args.CachedArgs.args.color
+
+whitelist.helpers.InterceptSysOutput.out_file.isatty
+whitelist.helpers.InterceptSysOutput.err_file.isatty

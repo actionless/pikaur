@@ -1,10 +1,9 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
-from unittest import TestCase
 
-from pikaur_test.helpers import pikaur, pacman
+from pikaur_test.helpers import PikaurTestCase, pikaur, pacman
 
 
-class CliTest(TestCase):
+class CliTest(PikaurTestCase):
 
     def test_unknown_argument(self):
         """

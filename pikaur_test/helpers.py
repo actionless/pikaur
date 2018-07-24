@@ -10,6 +10,7 @@ from typing import Optional, List, NoReturn, Union
 from pikaur.main import main
 from pikaur.args import CachedArgs, parse_args  # pylint:disable=no-name-in-module
 from pikaur.pacman import PackageDB  # pylint:disable=no-name-in-module
+from pikaur.pprint import get_term_width
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -197,6 +198,15 @@ def pkg_is_installed(pkg_name: str) -> bool:
 
 class PikaurTestCase(TestCase):
     # pylint: disable=invalid-name
+    separator = color_line(f"\n{'-' * get_term_width()}\n", 12)
+
+    def run(self, result=None):
+        sys.stderr.write(self.separator)
+        super().run(result)
+
+    def setUp(self):
+        super().setUp()
+        sys.stderr.write(self.separator)
 
     def assertInstalled(self, pkg_name: str) -> None:
         self.assertTrue(

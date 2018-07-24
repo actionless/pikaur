@@ -251,6 +251,7 @@ class InstallPackagesCLI():
             raise SysExit(0)
 
     def manual_package_selection(self):
+        # pragma: no cover
         pkg_names_before = set(
             [
                 update.name for update in (
@@ -303,6 +304,7 @@ class InstallPackagesCLI():
                 self.not_found_repo_pkgs_names.remove(pkg_name)
 
     def install_prompt(self) -> None:
+        # pragma: no cover
 
         def _print_sysupgrade(verbose=False) -> None:
             print_stdout(pretty_format_sysupgrade(
@@ -405,6 +407,7 @@ class InstallPackagesCLI():
                 if self.args.noconfirm:
                     answer = _("a")
                 else:
+                    # pragma: no cover
                     prompt = '{} {}\n{}\n{}\n{}\n{}\n> '.format(
                         color_line('::', 11),
                         _("Try recovering?"),
@@ -473,6 +476,7 @@ class InstallPackagesCLI():
                     (self.args.noconfirm and '--noconfirm')),
             ))
             return False
+        # pragma: no cover
         if ask_to_continue(
                 _("Do you want to {edit} {file} for {name} package?").format(
                     edit=bold_line(_("edit")),
@@ -506,6 +510,7 @@ class InstallPackagesCLI():
             pool.join()
 
     def review_build_files(self) -> None:
+        # pragma: no cover
         if self.args.needed or self.args.devel:
             self._preload_latest_sources()
         for repo_status in set(self.package_builds_by_name.values()):

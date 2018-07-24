@@ -9,8 +9,8 @@
 _dispatch pacman pacman
 
 _pikaur_opts_commands=(
-	'--pkgbuild	-P[build local PKGBUILD]'
-	'--getpkgbuild -G[download PKGBUILD from AUR or ABS]'
+	'--pkgbuild	-P[build local PKGBUILDs with AUR deps]'
+	'--getpkgbuild -G[download PKGBUILDs from AUR or ABS]'
 )
 
 _pikaur_opts_sync_modifiers=(

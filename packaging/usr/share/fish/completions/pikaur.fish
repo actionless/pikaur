@@ -43,7 +43,11 @@ set -l listall "(__fish_pikaur_print_packages)"
 set -l listrepos "(__fish_print_pacman_repos)"
 set -l listgroups "(pikaur -Sg)\t'Package Group'"
 
-set -l noopt 'not __fish_contains_opt -s S -s D -s Q -s R -s U -s T -s F database query sync remove upgrade deptest files'
+###############################################################################
+set -l noopt 'not __fish_contains_opt -s S -s D -s Q -s R -s U -s T -s F -s P -s G database query sync remove upgrade deptest files pkgbuild getpkgbuild'
+set -l pkgbuild '__fish_contains_opt -s P pkgbuild'
+set -l getpkgbuild '__fish_contains_opt -s G getpkgbuild'
+###############################################################################
 set -l database '__fish_contains_opt -s D database'
 set -l query '__fish_contains_opt -s Q query'
 set -l remove '__fish_contains_opt -s R remove'
@@ -66,6 +70,12 @@ complete -c $progname -s U -f -l upgrade -n $noopt -d 'Upgrade or add a local pa
 complete -c $progname -s F -f -l files -n $noopt -d 'Query the files database'
 complete -c $progname -s V -f -l version -d 'Display version and exit'
 complete -c $progname -s h -f -l help -d 'Display help'
+###############################################################################
+complete -c $progname -s P -f -l pkgbuild -n $noopt -d 'Build local PKGBUILDs with AUR deps'
+complete -c $progname -n "$pkgbuild" -xa '(__fish_complete_suffix "*")' -d 'PKGBUILD'
+complete -c $progname -s G -f -l getpkgbuild -n $noopt -d 'Download PKGBUILDs from AUR or ABS'
+complete -c $progname -n "$getpkgbuild" -xa "$listall"
+###############################################################################
 
 # General options
 # Only offer these once a command has been given so they get prominent display
@@ -80,9 +90,34 @@ complete -c $progname -n "not $noopt" -l gpgdir -d 'GPG directory to verify sign
 complete -c $progname -n "not $noopt" -l hookdir -d 'Hook file directory'
 complete -c $progname -n "not $noopt" -l logfile -d 'Specify alternative log file'
 complete -c $progname -n "not $noopt" -l noconfirm -d 'Bypass any question' -f
-complete -c $progname -n "not $noopt" -l noedit -d 'Bypass editing PKGBUILDs' -f
-complete -c $progname -n "not $noopt" -l edit -d 'Edit PKGBUILDs' -f
-complete -c $progname -n "not $noopt" -l namesonly -d 'Search only in package names' -f
+
+
+###############################################################################
+for condition in pkgbuild
+	complete -c $progname -n $$condition -s i -l install -d 'Install built package' -f
+end
+
+for condition in sync pkgbuild
+	complete -c $progname -n $$condition -l noedit -d 'Bypass editing PKGBUILDs' -f
+	complete -c $progname -n $$condition -l edit -d 'Edit PKGBUILDs' -f
+	complete -c $progname -n $$condition -s k -l keepbuild -d "Don't remove build dir after the build" -f
+	complete -c $progname -n $$condition -l rebuild -d "Always rebuild AUR packages" -f
+	complete -c $progname -n $$condition -l mflags -x -d "CLI args to pass to makepkg" -f
+	complete -c $progname -n $$condition -l makepkg-config -xa '(__fish_complete_suffix ".conf")' -d "path to custom makepkg config" -f
+	complete -c $progname -n $$condition -l makepkg-path -xa '(__fish_complete_suffix "*")' -d "override path to makepkg executable" -f
+end
+
+for condition in sync
+	complete -c $progname -n $$condition -l namesonly -d "Search only in package names" -f
+	complete -c $progname -n $$condition -l devel -d "always sysupgrade '-git', '-svn' and other dev packages" -f
+	complete -c $progname -n $$condition -l nodiff -d "don't prompt to show the build files diff" -f
+end
+
+for condition in sync query
+	complete -c $progname -n $$condition -s a -l aur -d 'Query packages from AUR only' -f
+	complete -c $progname -n $$condition -s r -l repo -d 'Query packages from repo only' -f
+end
+###############################################################################
 
 # Transaction options (sync, remove, upgrade)
 for condition in sync remove upgrade

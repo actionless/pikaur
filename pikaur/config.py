@@ -3,7 +3,6 @@
 import os
 import sys
 import configparser
-from typing import Union
 
 from .core import running_as_root, open_file
 
@@ -99,9 +98,6 @@ _CONFIG_SCHEMA = {
 }
 
 
-ConfigValueTypes = Union[str, bool, int]
-
-
 def write_config(config: configparser.ConfigParser = None) -> None:
     if not config:
         config = configparser.ConfigParser()
@@ -173,7 +169,3 @@ class PikaurConfig():
 
     def __getattr__(self, attr: str) -> PikaurConfigSection:
         return PikaurConfigSection(self.get_config()[attr])
-
-    @classmethod
-    def get(cls, section: str, key: str, *args) -> ConfigValueTypes:
-        return getattr(cls(), section).get(key, *args)

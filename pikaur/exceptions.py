@@ -11,14 +11,24 @@ if TYPE_CHECKING:
     from .core import InteractiveSpawn  # noqa
 
 
-class PackagesNotFoundInRepo(DataType, Exception):
+class PackagesNotFound(DataType, Exception):
     packages: List[str]
-    wanted_by: str
+    wanted_by: Optional[str]
+
+    def __init__(self, packages: List[str], wanted_by: Optional[str] = None) -> None:
+        DataType.__init__(self, packages=packages, wanted_by=wanted_by)
+        message = ', '.join(packages)
+        if wanted_by:
+            message += f" wanted by {wanted_by}"
+        Exception.__init__(self, message)
 
 
-class PackagesNotFoundInAUR(DataType, Exception):
-    packages: List[str]
-    wanted_by: str
+class PackagesNotFoundInRepo(PackagesNotFound):
+    pass
+
+
+class PackagesNotFoundInAUR(PackagesNotFound):
+    pass
 
 
 class BuildError(Exception):

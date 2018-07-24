@@ -66,7 +66,7 @@ def check_pkg_arch(pkgbuild):
     pkgbuild.reviewed = True
 
 
-def hash_file(filename):
+def hash_file(filename):  # pragma: no cover
     md5 = hashlib.md5()
     with open(filename, 'rb') as file:
         eof = False

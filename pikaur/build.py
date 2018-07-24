@@ -567,7 +567,7 @@ class PackageBuild(DataType):
                 answer = _("s")
             elif self.args.noconfirm:
                 answer = _("a")
-            else:
+            else:  # pragma: no cover
                 prompt = '{} {}\n{}\n> '.format(
                     color_line('::', 11),
                     _("Try recovering?"),

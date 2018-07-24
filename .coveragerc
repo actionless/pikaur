@@ -12,3 +12,4 @@ exclude_lines =
     NotImplemented
     if __name__ == .__main__.:
     if TYPE_CHECKING:
+    if running_as_root():

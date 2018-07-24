@@ -7,9 +7,11 @@ from subprocess import Popen
 from unittest import TestCase
 from typing import Optional, List, NoReturn, Union
 
+# pylint:disable=no-name-in-module
+
 from pikaur.main import main
-from pikaur.args import CachedArgs, parse_args  # pylint:disable=no-name-in-module
-from pikaur.pacman import PackageDB  # pylint:disable=no-name-in-module
+from pikaur.args import CachedArgs, parse_args
+from pikaur.pacman import PackageDB
 from pikaur.pprint import get_term_width
 
 

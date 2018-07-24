@@ -21,6 +21,13 @@ TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 WRITE_DB = bool(os.environ.get('WRITE_DB'))
 
 
+if WRITE_DB:
+    # pylint:disable=protected-access
+    from pikaur.config import CONFIG_PATH, PikaurConfig
+    os.unlink(CONFIG_PATH)
+    PikaurConfig._config = None  # type: ignore
+
+
 class TestPopen(Popen):
     stderr_text: Optional[str] = None
     stdout_text: Optional[str] = None

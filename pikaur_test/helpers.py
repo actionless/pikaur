@@ -58,6 +58,11 @@ def color_line(line: str, color_number: int) -> str:
     return result
 
 
+def log_stderr(b_line: bytes) -> None:
+    sys.stderr.buffer.write(b_line)
+    sys.stderr.buffer.flush()
+
+
 class CmdResult:
 
     def __init__(
@@ -207,15 +212,16 @@ def pkg_is_installed(pkg_name: str) -> bool:
 
 class PikaurTestCase(TestCase):
     # pylint: disable=invalid-name
-    separator = color_line(f"\n{'-' * get_term_width()}\n", 12)
+
+    b_separator = color_line(f"\n{'-' * get_term_width()}\n", 12).encode('utf-8')
 
     def run(self, result=None):
-        sys.stderr.write(self.separator)
+        log_stderr(self.b_separator)
         super().run(result)
 
     def setUp(self):
         super().setUp()
-        sys.stderr.write(self.separator)
+        log_stderr(self.b_separator)
 
     def assertInstalled(self, pkg_name: str) -> None:
         self.assertTrue(

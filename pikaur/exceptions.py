@@ -13,13 +13,13 @@ if TYPE_CHECKING:
 
 class PackagesNotFound(DataType, Exception):
     packages: List[str]
-    wanted_by: Optional[str]
+    wanted_by: Optional[List[str]]
 
-    def __init__(self, packages: List[str], wanted_by: Optional[str] = None) -> None:
+    def __init__(self, packages: List[str], wanted_by: Optional[List[str]] = None) -> None:
         DataType.__init__(self, packages=packages, wanted_by=wanted_by)
         message = ', '.join(packages)
         if wanted_by:
-            message += f" wanted by {wanted_by}"
+            message += f" wanted by {', '.join(wanted_by)}"
         Exception.__init__(self, message)
 
 

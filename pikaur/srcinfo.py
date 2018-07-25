@@ -117,7 +117,7 @@ class SrcInfo():
             result = spawn(
                 isolate_root_cmd(
                     get_makepkg_cmd() + ['--printsrcinfo'] +
-                    ['-p', self.pkgbuild_path],
+                    ['-p', os.path.basename(self.pkgbuild_path)],
                     cwd=self.repo_path
                 ), cwd=self.repo_path
             )

@@ -41,10 +41,10 @@ from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
 
 def copy_aur_repo(from_path, to_path) -> None:
+    from_path = os.path.realpath(from_path)
+    to_path = os.path.realpath(to_path)
     if not os.path.exists(to_path):
-        os.makedirs(to_path)
-    if running_as_root():
-        os.chown(os.path.realpath(to_path), 0, 0)
+        spawn(isolate_root_cmd(['mkdir', to_path]))
 
     from_paths = []
     for src_path in glob(f'{from_path}/*') + glob(f'{from_path}/.*'):

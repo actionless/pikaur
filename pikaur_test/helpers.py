@@ -215,8 +215,17 @@ class PikaurTestCase(TestCase):
 
     b_separator = color_line(f"\n{'-' * get_term_width()}\n", 12).encode('utf-8')
 
+    def filter_pyalpm_warning(self):  # pylint: disable=no-self-use
+        import warnings
+        warnings.filterwarnings(
+            action="ignore",
+            message="unclosed",
+            category=ResourceWarning
+        )
+
     def run(self, result=None):
         log_stderr(self.b_separator)
+        self.filter_pyalpm_warning()
         super().run(result)
 
     def setUp(self):

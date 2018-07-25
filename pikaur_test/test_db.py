@@ -1,5 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
+# pylint: disable=no-name-in-module
+
 import os
 
 from pikaur_test.helpers import (

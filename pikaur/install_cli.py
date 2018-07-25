@@ -46,7 +46,7 @@ from .news import News
 
 
 def check_pkg_arch(pkgbuild):
-    src_info = SrcInfo(pkgbuild.repo_path)
+    src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path)
     arch = MakepkgConfig.get('CARCH')
     supported_archs = src_info.get_values('arch')
     if supported_archs and (
@@ -547,13 +547,18 @@ class InstallPackagesCLI():
                     elif diff_pager == 'never':
                         git_args = ['env', 'GIT_PAGER=cat'] + git_args
                     interactive_spawn(git_args)
-            src_info = SrcInfo(repo_status.repo_path)
+            src_info = SrcInfo(pkgbuild_path=repo_status.pkgbuild_path)
 
-            if self.ask_to_edit_file('PKGBUILD', repo_status):
+            if self.ask_to_edit_file(
+                    os.path.basename(repo_status.pkgbuild_path), repo_status
+            ):
                 src_info.regenerate()
                 # @TODO: recompute AUR deps
                 for pkg_name in repo_status.package_names:
-                    install_src_info = SrcInfo(repo_status.repo_path, pkg_name)
+                    install_src_info = SrcInfo(
+                        pkgbuild_path=repo_status.pkgbuild_path,
+                        package_name=pkg_name
+                    )
                     install_file_name = install_src_info.get_install_script()
                     if install_file_name:
                         self.ask_to_edit_file(install_file_name, repo_status)

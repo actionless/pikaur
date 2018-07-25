@@ -3,7 +3,7 @@
 import os
 from typing import List, Dict, Optional
 
-from .core import open_file, spawn, isolate_root_cmd
+from .core import open_file, spawn, isolate_root_cmd, dirname
 from .version import VersionMatcher
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
@@ -15,6 +15,7 @@ class SrcInfo():
     path: str
     repo_path: str
     package_name: Optional[str]
+    pkgbuild_path: Optional[str]
     pkgnames: List[str]
 
     def load_config(self) -> None:
@@ -36,12 +37,24 @@ class SrcInfo():
                 else:
                     destination.append(line)
 
-    def __init__(self, repo_path: str, package_name: str = None) -> None:
+    def __init__(
+            self,
+            repo_path: str = None,
+            package_name: str = None,
+            pkgbuild_path: str = None
+    ) -> None:
+        if repo_path:
+            self.repo_path = repo_path
+            self.pkgbuild_path = os.path.join(repo_path, 'PKGBUILD')
+        elif pkgbuild_path:
+            self.pkgbuild_path = pkgbuild_path
+            self.repo_path = dirname(pkgbuild_path)
+        else:
+            raise NotImplementedError('Either `repo_path` or `pkgbuild_path` should be set')
         self.path = os.path.join(
-            repo_path,
+            self.repo_path,
             '.SRCINFO'
         )
-        self.repo_path = repo_path
         self.package_name = package_name
         self.load_config()
 
@@ -100,10 +113,13 @@ class SrcInfo():
         )
 
     def regenerate(self) -> None:
+        extra_args: List[str] = []
+        if self.pkgbuild_path:
+            extra_args += ['-p', self.pkgbuild_path]
         with open_file(self.path, 'w') as srcinfo_file:
             result = spawn(
                 isolate_root_cmd(
-                    get_makepkg_cmd() + ['--printsrcinfo'],
+                    get_makepkg_cmd() + ['--printsrcinfo'] + extra_args,
                     cwd=self.repo_path
                 ), cwd=self.repo_path
             )

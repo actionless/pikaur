@@ -4,7 +4,7 @@ from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Dict
 
 from .i18n import _
-from .core import PackageSource, InstallInfo, dirname
+from .core import PackageSource, InstallInfo
 from .version import VersionMatcher
 from .pacman import (
     OFFICIAL_REPOS,
@@ -316,11 +316,10 @@ class InstallInfoFetcher:
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path in self.pkgbuilds_paths:
-            dir_name = dirname(path)
-            common_srcinfo = SrcInfo(dir_name)
+            common_srcinfo = SrcInfo(pkgbuild_path=path)
             common_srcinfo.regenerate()
             for pkg_name in common_srcinfo.pkgnames:
-                srcinfo = SrcInfo(dir_name, package_name=pkg_name)
+                srcinfo = SrcInfo(pkgbuild_path=path, package_name=pkg_name)
                 aur_pkg = AURPackageInfo.from_srcinfo(srcinfo)
                 if pkg_name in aur_updates_install_info_by_name:
                     raise Exception(_(f"{pkg_name} already added to the list"))

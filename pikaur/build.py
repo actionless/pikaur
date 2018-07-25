@@ -71,6 +71,7 @@ class PackageBuild(DataType):
     package_names: List[str]
 
     repo_path: str
+    pkgbuild_path: str
     build_dir: str
     built_packages_paths: Dict[str, str]
 
@@ -98,9 +99,11 @@ class PackageBuild(DataType):
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
             self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
+            self.pkgbuild_path = os.path.join(self.repo_path, 'PKGBUILD')
         elif pkgbuild_path:
             self.repo_path = dirname(pkgbuild_path)
-            srcinfo = SrcInfo(self.repo_path)
+            self.pkgbuild_path = pkgbuild_path
+            srcinfo = SrcInfo(pkgbuild_path=pkgbuild_path)
             pkgbase = srcinfo.get_value('pkgbase')
             if pkgbase and srcinfo.pkgnames:
                 self.package_names = srcinfo.pkgnames
@@ -417,6 +420,14 @@ class PackageBuild(DataType):
         ):
             remove_dir(self.build_dir)
         copy_aur_repo(self.repo_path, self.build_dir)
+
+        pkgbuild_name = os.path.basename(self.pkgbuild_path)
+        if pkgbuild_name != 'PKGBUILD':
+            default_pkgbuild_path = os.path.join(self.build_dir, 'PKGBUILD')
+            custom_pkgbuild_path = os.path.join(self.build_dir, pkgbuild_name)
+            if os.path.exists(default_pkgbuild_path):
+                os.unlink(default_pkgbuild_path)
+            os.renames(custom_pkgbuild_path, default_pkgbuild_path)
 
     def _get_deps(self) -> None:
         self.new_deps_to_install = []

@@ -1,6 +1,7 @@
 from typing import List, Dict
 
 from .pacman import PackageDB
+from .exceptions import PackagesNotFoundInRepo
 
 
 def find_replacements() -> Dict[str, List[str]]:
@@ -20,16 +21,20 @@ def find_replacements() -> Dict[str, List[str]]:
     new_pkgs_replaces: Dict[str, List[str]] = {}
     for pkg_name, replace_list in replaces_lists.items():
         for replace_pkg_name in replace_list:
-            if (replace_pkg_name in all_local_pkgs_names) and (
-                    (pkg_name not in all_repo_pkg_names) or (
-                        replace_pkg_name not in all_repo_pkg_names or (
-                            PackageDB.get_repo_priority(
-                                PackageDB.find_repo_package(replace_pkg_name).db.name
-                            ) >= PackageDB.get_repo_priority(
-                                PackageDB.find_repo_package(pkg_name).db.name
+            try:
+                if (replace_pkg_name in all_local_pkgs_names) and (
+                        (pkg_name not in all_repo_pkg_names) or (
+                            replace_pkg_name not in all_repo_pkg_names or (
+                                PackageDB.get_repo_priority(
+                                    PackageDB.find_repo_package(replace_pkg_name).db.name
+                                ) >= PackageDB.get_repo_priority(
+                                    PackageDB.find_repo_package(pkg_name).db.name
+                                )
                             )
                         )
-                    )
-            ):
-                new_pkgs_replaces.setdefault(pkg_name, []).append(replace_pkg_name)
+                ):
+                    new_pkgs_replaces.setdefault(pkg_name, []).append(replace_pkg_name)
+            except PackagesNotFoundInRepo:
+                # could happen if package is available in the repo but not installable
+                pass
     return new_pkgs_replaces

@@ -7,7 +7,7 @@ import configparser
 from .core import running_as_root, open_file
 
 
-VERSION = '1.2.2-dev'
+VERSION = '1.2.3-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",

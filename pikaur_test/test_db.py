@@ -138,7 +138,7 @@ class InstallTest(PikaurDbTestCase):
     def test_cache_clean(self):
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 
-        pikaur('-S inxi --rebuild')
+        pikaur('-S inxi --rebuild --keepbuild')
         self.assertGreaterEqual(
             len(os.listdir(BUILD_CACHE_PATH)), 1
         )
@@ -157,7 +157,7 @@ class InstallTest(PikaurDbTestCase):
     def test_cache_full_clean(self):
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 
-        pikaur('-S inxi --rebuild')
+        pikaur('-S inxi --rebuild --keepbuild')
         self.assertGreaterEqual(
             len(os.listdir(BUILD_CACHE_PATH)), 1
         )

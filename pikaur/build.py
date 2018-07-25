@@ -10,7 +10,7 @@ from typing import List, Dict, Set, Optional, Any
 
 from .core import (
     DataType,
-    isolate_root_cmd, remove_dir, open_file,
+    isolate_root_cmd, remove_dir, open_file, dirname,
     spawn, interactive_spawn, InteractiveSpawn, sudo, running_as_root,
 )
 from .i18n import _, _n
@@ -99,7 +99,7 @@ class PackageBuild(DataType):
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
             self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
         elif pkgbuild_path:
-            self.repo_path = os.path.dirname(pkgbuild_path)
+            self.repo_path = dirname(pkgbuild_path)
             srcinfo = SrcInfo(self.repo_path)
             pkgbase = srcinfo.get_value('pkgbase')
             if pkgbase and srcinfo.pkgnames:

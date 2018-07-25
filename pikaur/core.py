@@ -212,3 +212,7 @@ def get_editor() -> Optional[List[str]]:
             return [path, ]
     print_error(_("no editor found. Try setting $VISUAL or $EDITOR."))
     return None
+
+
+def dirname(path):
+    return os.path.dirname(path) or '.'

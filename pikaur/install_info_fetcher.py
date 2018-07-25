@@ -1,11 +1,10 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-import os
 from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Dict
 
 from .i18n import _
-from .core import PackageSource, InstallInfo
+from .core import PackageSource, InstallInfo, dirname
 from .version import VersionMatcher
 from .pacman import (
     OFFICIAL_REPOS,
@@ -317,11 +316,11 @@ class InstallInfoFetcher:
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path in self.pkgbuilds_paths:
-            dirname = os.path.dirname(path)
-            common_srcinfo = SrcInfo(dirname)
+            dir_name = dirname(path)
+            common_srcinfo = SrcInfo(dir_name)
             common_srcinfo.regenerate()
             for pkg_name in common_srcinfo.pkgnames:
-                srcinfo = SrcInfo(dirname, package_name=pkg_name)
+                srcinfo = SrcInfo(dir_name, package_name=pkg_name)
                 aur_pkg = AURPackageInfo.from_srcinfo(srcinfo)
                 if pkg_name in aur_updates_install_info_by_name:
                     raise Exception(_(f"{pkg_name} already added to the list"))

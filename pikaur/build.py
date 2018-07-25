@@ -56,7 +56,8 @@ def copy_aur_repo(from_path, to_path) -> None:
 
     result = spawn(cmd_args)
     if result.returncode != 0:
-        remove_dir(to_path)
+        if not os.path.exists(to_path):
+            remove_dir(to_path)
         result = interactive_spawn(cmd_args)
         if result.returncode != 0:
             raise Exception(_(f"Can't copy '{from_path}' to '{to_path}'."))

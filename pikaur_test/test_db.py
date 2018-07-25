@@ -83,7 +83,7 @@ class InstallTest(PikaurDbTestCase):
             f'git -C ./{repo_pkg_name} log --format=%h'
         ).stdout_text.splitlines()[10]
         spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
-        pikaur(f'-P -i --noconfirm --mflags=--skippgpcheck ./{repo_pkg_name}/trunk/PKGBUILD')
+        pikaur(f'-P -i --noconfirm --mflags=--skippgpcheck ./{repo_pkg_name}/repos/extra-x86_64/PKGBUILD')
         self.assertInstalled(repo_pkg_name)
         repo_old_version = PackageDB.get_local_dict()[repo_pkg_name].version
 

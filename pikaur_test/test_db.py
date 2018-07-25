@@ -77,22 +77,23 @@ class InstallTest(PikaurDbTestCase):
         pikaur('-Syu --noconfirm')
 
         # repo package downgrade
-        repo_pkg_name = 'nano'
-        repo_old_version = '2.9.7-1'
-        pikaur(
-            '-U --noconfirm '
-            'https://archive.archlinux.org/repos/2018/05/17/core/os/x86_64/'
-            f'{repo_pkg_name}-{repo_old_version}-x86_64.pkg.tar.xz'
-        )
-        self.assertEqual(
-            PackageDB.get_local_dict()['nano'].version, repo_old_version
-        )
+        repo_pkg_name = 'tree'
+        pikaur(f'-G -d {repo_pkg_name}')
+        some_older_commit = spawn(
+            f'git -C ./{repo_pkg_name} log --format=%h'
+        ).stdout_text.splitlines()[10]
+        spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
+        pikaur(f'-P -i --noconfirm --mflags=--skippgpcheck ./{repo_pkg_name}/trunk/PKGBUILD')
+        self.assertInstalled(repo_pkg_name)
+        repo_old_version = PackageDB.get_local_dict()[repo_pkg_name].version
 
         # AUR package downgrade
         aur_pkg_name = 'inxi'
         self.remove_if_installed(aur_pkg_name)
         pikaur(f'-G -d {aur_pkg_name}')
-        prev_commit = spawn(f'git -C ./{aur_pkg_name} log --format=%h').stdout_text.splitlines()[1]
+        prev_commit = spawn(
+            f'git -C ./{aur_pkg_name} log --format=%h'
+        ).stdout_text.splitlines()[1]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
         pikaur(f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD')
         self.assertInstalled(aur_pkg_name)

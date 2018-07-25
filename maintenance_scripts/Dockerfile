@@ -16,7 +16,7 @@ ENV LANG=en_US.utf8 \
 	LC_ALL=en_US.UTF-8
 
 COPY . /opt/app-build/
-RUN pacman -Sy ruby-ronn --noconfirm --needed && \
+RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 	chown -R user /opt/app-build/ && \
 	sudo -u user git fetch -t || true && \
 	sudo -u user make check_man && \

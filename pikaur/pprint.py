@@ -6,6 +6,7 @@ from threading import Lock
 from string import printable
 from typing import List, Optional
 
+from .i18n import _
 from .args import parse_args
 
 
@@ -62,6 +63,13 @@ def bold_line(line: str) -> str:
     if not color_enabled():
         return line
     return f'\033[0;1m{line}\033[0m'
+
+
+def print_warning(message: str) -> None:
+    print_stderr(' '.join([
+        color_line(':: ' + _("warning:"), 11),
+        message
+    ]))
 
 
 def get_term_width() -> int:

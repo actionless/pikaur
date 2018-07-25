@@ -9,6 +9,7 @@ import pyalpm
 from .i18n import _, _n
 from .pprint import (
     print_stderr, color_line, bold_line, format_paragraph, get_term_width,
+    print_warning,
 )
 from .args import parse_args
 from .core import PackageSource, InstallInfo
@@ -47,14 +48,11 @@ def print_version(pacman_version: str, quiet=False) -> None:
 
 
 def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
-    print("{} {}".format(
-        color_line(':: ' + _("warning:"), 11),
-        (
-            bold_line(_("Following packages cannot be found in repositories:"))
-            if repo else
-            bold_line(_("Following packages cannot be found in AUR:"))
-        ),
-    ))
+    print_warning(
+        bold_line(_("Following packages cannot be found in repositories:"))
+        if repo else
+        bold_line(_("Following packages cannot be found in AUR:"))
+    )
     for package in not_found_packages:
         print(format_paragraph(package))
 
@@ -365,16 +363,13 @@ def print_ignored_package(package_name):
 
 
 def print_package_uptodate(package_name: str, package_source: PackageSource) -> None:
-    print_stderr(
-        '{} {}'.format(
-            color_line(_("warning:"), 11),
-            _("{name} {version} {package_source} package is up to date - skipping").format(
-                name=package_name,
-                version=bold_line(
-                    PackageDB.get_local_dict()[package_name].version
-                ),
-                package_source=package_source.name
-            )
+    print_warning(
+        _("{name} {version} {package_source} package is up to date - skipping").format(
+            name=package_name,
+            version=bold_line(
+                PackageDB.get_local_dict()[package_name].version
+            ),
+            package_source=package_source.name
         )
     )
 

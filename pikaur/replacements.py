@@ -1,7 +1,9 @@
 from typing import List, Dict
 
+from .i18n import _
 from .pacman import PackageDB
 from .exceptions import PackagesNotFoundInRepo
+from .pprint import print_warning
 
 
 def find_replacements() -> Dict[str, List[str]]:
@@ -34,7 +36,10 @@ def find_replacements() -> Dict[str, List[str]]:
                         )
                 ):
                     new_pkgs_replaces.setdefault(pkg_name, []).append(replace_pkg_name)
-            except PackagesNotFoundInRepo:
-                # could happen if package is available in the repo but not installable
-                pass
+            except PackagesNotFoundInRepo as exc:
+                print_warning(_(
+                    "'{packages}' is available in the repo but can't be installed".format(
+                        packages=', '.join(exc.packages)
+                    )
+                ))
     return new_pkgs_replaces

@@ -27,7 +27,7 @@ from .build import PackageBuild, clone_aur_repos
 from .makepkg_config import MakepkgConfig
 from .pprint import (
     color_line, bold_line,
-    print_stderr, print_stdout,
+    print_stderr, print_stdout, print_warning,
 )
 from .print_department import (
     pretty_format_sysupgrade, print_not_found_packages, print_package_uptodate,
@@ -648,10 +648,9 @@ class InstallPackagesCLI():
         target_transaction = self.transactions.get(str(target))
         if not target_transaction:
             return
-        print_stderr('{} {}'.format(
-            color_line(':: warning', 9),
+        print_warning(
             _("Reverting {target} transaction...").format(target=target)
-        ))
+        )
         removed = target_transaction.get('removed')
         installed = target_transaction.get('installed')
         if removed:

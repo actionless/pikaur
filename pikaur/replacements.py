@@ -37,9 +37,9 @@ def find_replacements() -> Dict[str, List[str]]:
                 ):
                     new_pkgs_replaces.setdefault(pkg_name, []).append(replace_pkg_name)
             except PackagesNotFoundInRepo as exc:
-                print_warning(_(
-                    "'{packages}' is available in the repo but can't be installed".format(
+                print_warning(
+                    _("'{packages}' is available in the repo but can't be installed").format(
                         packages=', '.join(exc.packages)
                     )
-                ))
+                )
     return new_pkgs_replaces

@@ -54,7 +54,7 @@ def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
         bold_line(_("Following packages cannot be found in AUR:"))
     )
     for package in not_found_packages:
-        print(format_paragraph(package))
+        print_stderr(format_paragraph(package))
 
 
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements

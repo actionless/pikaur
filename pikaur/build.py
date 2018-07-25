@@ -44,7 +44,7 @@ def copy_aur_repo(from_path, to_path) -> None:
     from_path = os.path.realpath(from_path)
     to_path = os.path.realpath(to_path)
     if not os.path.exists(to_path):
-        spawn(isolate_root_cmd(['mkdir', to_path]))
+        spawn(isolate_root_cmd(['mkdir', '-p', to_path]))
 
     from_paths = []
     for src_path in glob(f'{from_path}/*') + glob(f'{from_path}/.*'):

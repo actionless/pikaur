@@ -72,6 +72,13 @@ def print_warning(message: str) -> None:
     ]))
 
 
+def print_error(message: str) -> None:
+    print_stderr(' '.join([
+        color_line(':: ' + _("error:"), 9),
+        message
+    ]))
+
+
 def get_term_width() -> int:
     return shutil.get_terminal_size((80, 80)).columns
 

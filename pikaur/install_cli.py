@@ -27,7 +27,7 @@ from .build import PackageBuild, clone_aur_repos
 from .makepkg_config import MakepkgConfig
 from .pprint import (
     color_line, bold_line,
-    print_stderr, print_stdout, print_warning,
+    print_stderr, print_stdout, print_warning, print_error,
 )
 from .print_department import (
     pretty_format_sysupgrade, print_not_found_packages, print_package_uptodate,
@@ -54,14 +54,13 @@ def check_pkg_arch(pkgbuild):
     ) and (
         arch not in supported_archs
     ):
-        print_stderr("{} {}".format(
-            color_line(':: error:', 9),
+        print_error(
             _("{name} can't be built on the current arch ({arch}). "
               "Supported: {suparch}").format(
                   name=bold_line(', '.join(pkgbuild.package_names)),
                   arch=arch,
                   suparch=', '.join(supported_archs))
-        ))
+        )
         raise SysExit(95)
     pkgbuild.reviewed = True
 
@@ -213,10 +212,8 @@ class InstallPackagesCLI():
             )
         except PackagesNotFoundInAUR as exc:
             if exc.wanted_by:
-                print_stderr("{} {}".format(
-                    color_line(':: error:', 9),
-                    bold_line(
-                        _("Dependencies missing for {}").format(', '.join(exc.wanted_by)))
+                print_error(bold_line(
+                    _("Dependencies missing for {}").format(', '.join(exc.wanted_by))
                 ))
             print_not_found_packages(exc.packages)
             raise SysExit(131)
@@ -604,10 +601,9 @@ class InstallPackagesCLI():
                     deps_fails_counter.setdefault(_pkg_name, 0)
                     deps_fails_counter[_pkg_name] += 1
                     if deps_fails_counter[_pkg_name] > len(self.all_aur_packages_names):
-                        print_stderr('{} {}'.format(
-                            color_line(":: " + _("error:"), 9),
+                        print_error(
                             _("Dependency cycle detected between {}").format(deps_fails_counter)
-                        ))
+                        )
                         raise SysExit(131)
             else:
                 for _pkg_name in repo_status.package_names:

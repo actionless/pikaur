@@ -21,7 +21,10 @@ from .config import (
 from .aur import get_repo_url, find_aur_packages
 from .pacman import PackageDB, get_pacman_command
 from .args import PikaurArgs, parse_args
-from .pprint import color_line, bold_line, color_enabled, print_stdout, print_stderr
+from .pprint import (
+    color_line, bold_line, color_enabled,
+    print_stdout, print_stderr, print_error,
+)
 from .prompt import (
     retry_interactive_command, retry_interactive_command_or_exit,
     ask_to_continue, get_input,
@@ -492,11 +495,11 @@ class PackageBuild(DataType):
                         continue
 
         if deps_packages_removed:
-            print_stderr('{} {}:'.format(
-                color_line(':: error', 9),
+            print_error(
                 _("Failed to remove installed dependencies, packages inconsistency: {}").format(
-                    bold_line(', '.join(deps_packages_removed)))
-            ))
+                    bold_line(', '.join(deps_packages_removed))
+                )
+            )
             if not ask_to_continue():
                 raise SysExit(125)
         if not deps_packages_installed:

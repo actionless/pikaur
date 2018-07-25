@@ -25,7 +25,7 @@ from .core import (
     InstallInfo,
     spawn, interactive_spawn, running_as_root, remove_dir, sudo, isolate_root_cmd,
 )
-from .pprint import color_line, bold_line, print_stderr, print_stdout
+from .pprint import color_line, bold_line, print_stderr, print_stdout, print_error
 from .print_department import (
     pretty_format_upgradeable, print_version, print_not_found_packages,
 )
@@ -283,17 +283,15 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
 
 def check_runtime_deps():
     if running_as_root() and not check_systemd_dynamic_users():
-        print_stderr("{} {}".format(
-            color_line('::', 9),
+        print_error(
             _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
-        ))
+        )
         sys.exit(65)
     for dep_bin in [
             "fakeroot",
     ] + (['sudo'] if not running_as_root() else []):
         if not shutil.which(dep_bin):
-            print_stderr("{} '{}' {}.".format(
-                color_line(':: ' + _('error') + ':', 9),
+            print_error("'{}' {}.".format(
                 bold_line(dep_bin),
                 "executable not found"
             ))

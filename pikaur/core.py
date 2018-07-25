@@ -9,7 +9,7 @@ import tempfile
 from typing import Any, List, Iterable, Callable, Optional, Union, TYPE_CHECKING
 
 from .i18n import _
-from .pprint import print_stderr, color_line
+from .pprint import print_error
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
@@ -210,10 +210,5 @@ def get_editor() -> Optional[List[str]]:
         path = shutil.which(editor)
         if path:
             return [path, ]
-    print_stderr(
-        '{} {}'.format(
-            color_line('error:', 9),
-            _("no editor found. Try setting $VISUAL or $EDITOR.")
-        )
-    )
+    print_error(_("no editor found. Try setting $VISUAL or $EDITOR."))
     return None

@@ -14,8 +14,8 @@ class SrcInfo():
     _package_lines: List[str]
     path: str
     repo_path: str
+    pkgbuild_path: str
     package_name: Optional[str]
-    pkgbuild_path: Optional[str]
     pkgnames: List[str]
 
     def load_config(self) -> None:
@@ -113,13 +113,11 @@ class SrcInfo():
         )
 
     def regenerate(self) -> None:
-        extra_args: List[str] = []
-        if self.pkgbuild_path:
-            extra_args += ['-p', self.pkgbuild_path]
         with open_file(self.path, 'w') as srcinfo_file:
             result = spawn(
                 isolate_root_cmd(
-                    get_makepkg_cmd() + ['--printsrcinfo'] + extra_args,
+                    get_makepkg_cmd() + ['--printsrcinfo'] +
+                    ['-p', self.pkgbuild_path],
                     cwd=self.repo_path
                 ), cwd=self.repo_path
             )

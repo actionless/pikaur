@@ -1,5 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
+import os
+
 from pikaur_test.helpers import (
     PikaurDbTestCase,
     pikaur, fake_pikaur, spawn,
@@ -132,6 +134,44 @@ class InstallTest(PikaurDbTestCase):
         )
         self.assertNotInstalled('cower')
         self.assertNotInstalled('cower-git')
+
+    def test_cache_clean(self):
+        from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
+
+        pikaur('-S inxi')
+        self.assertGreaterEqual(
+            len(os.listdir(BUILD_CACHE_PATH)), 1
+        )
+        self.assertGreaterEqual(
+            len(os.listdir(PACKAGE_CACHE_PATH)), 1
+        )
+
+        pikaur('-Sc --noconfirm')
+        self.assertFalse(
+            os.path.exists(BUILD_CACHE_PATH)
+        )
+        self.assertGreaterEqual(
+            len(os.listdir(PACKAGE_CACHE_PATH)), 1
+        )
+
+    def test_cache_full_clean(self):
+        from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
+
+        pikaur('-S inxi')
+        self.assertGreaterEqual(
+            len(os.listdir(BUILD_CACHE_PATH)), 1
+        )
+        self.assertGreaterEqual(
+            len(os.listdir(PACKAGE_CACHE_PATH)), 1
+        )
+
+        pikaur('-Scc --noconfirm')
+        self.assertFalse(
+            os.path.exists(BUILD_CACHE_PATH)
+        )
+        self.assertFalse(
+            os.path.exists(PACKAGE_CACHE_PATH)
+        )
 
 
 class ArchWikiTest(PikaurDbTestCase):

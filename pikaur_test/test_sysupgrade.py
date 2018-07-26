@@ -122,6 +122,18 @@ class SysupgradeTest(PikaurDbTestCase):
             self.repo_pkg_name, query_result
         )
 
+        # test --ignore flag
+        pikaur('-Syu --noconfirm '
+               f'--ignore {self.repo_pkg_name} --ignore {self.aur_pkg_name}')
+        self.assertEqual(
+            PackageDB.get_local_dict()[self.repo_pkg_name].version,
+            self.repo_old_version
+        )
+        self.assertEqual(
+            PackageDB.get_local_dict()[self.aur_pkg_name].version,
+            self.aur_old_version
+        )
+
         # and finally test the sysupgrade itself
         pikaur('-Syu --noconfirm')
         self.assertNotEqual(

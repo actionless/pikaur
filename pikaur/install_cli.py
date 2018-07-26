@@ -133,6 +133,8 @@ class InstallPackagesCLI():
         self.failed_to_build_package_names = []
 
         if not self.args.aur:
+            if self.args.sysupgrade:
+                self.news = News()
             with ThreadPool() as pool:
                 pool.apply_async(refresh_pkg_db, ())
                 if self.news:
@@ -147,10 +149,7 @@ class InstallPackagesCLI():
                 color_line('::', 12),
                 bold_line(_("Starting full AUR upgrade..."))
             ))
-        if not self.args.aur:
-            if self.args.sysupgrade:
-                self.news = News()
-        else:
+        if self.args.aur:
             self.not_found_repo_pkgs_names = self.install_package_names
             self.install_package_names = []
 

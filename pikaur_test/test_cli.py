@@ -23,14 +23,15 @@ class CliTest(PikaurTestCase):
         """
         package can't be found in AUR
         """
+        not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
         result = pikaur(
-            '-S not-existing-aur-package-7h68712683h1628h1',
+            f'-S {not_existing_pkg_name}',
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 6)
         self.assertEqual(
             result.stderr.splitlines()[-1].strip(),
-            'not-existing-aur-package-7h68712683h1628h1'
+            not_existing_pkg_name
         )
 
     def test_aur_package_info(self):

@@ -33,82 +33,81 @@ CONFIG_PATH = os.path.join(
 )
 
 
-def get_config_schema() -> Dict[str, Dict[str, Dict[str, str]]]:
-    return {
-        'sync': {
-            'AlwaysShowPkgOrigin': {
-                'type': 'bool',
-                'default': 'no',
-            },
-            'DevelPkgsExpiration': {
-                'type': 'int',
-                'default': '-1',
-            },
-            'UpgradeSorting': {
-                'type': 'str',
-                'default': 'versiondiff'
-            },
+CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
+    'sync': {
+        'AlwaysShowPkgOrigin': {
+            'type': 'bool',
+            'default': 'no',
         },
-        'build': {
-            'KeepBuildDir': {
-                'type': 'bool',
-                'default': 'no',
-            },
-            'SkipFailedBuild': {
-                'type': 'bool',
-                'default': 'no',
-            },
-            'NoEdit': {
-                'type': 'bool',
-                'default': 'no',
-            },
-            'NoDiff': {
-                'type': 'bool',
-                'default': 'no',
-            },
+        'DevelPkgsExpiration': {
+            'type': 'int',
+            'default': '-1',
         },
-        'colors': {
-            'Version': {
-                'type': 'int',
-                'default': '10',
-            },
-            'VersionDiffOld': {
-                'type': 'int',
-                'default': '11',
-            },
-            'VersionDiffNew': {
-                'type': 'int',
-                'default': '9',
-            },
+        'UpgradeSorting': {
+            'type': 'str',
+            'default': 'versiondiff'
         },
-        'ui': {
-            'RequireEnterConfirm': {
-                'type': 'bool',
-                'default': 'yes'
-            },
-            'DiffPager': {
-                'type': 'str',
-                'default': 'auto'
-            },
+    },
+    'build': {
+        'KeepBuildDir': {
+            'type': 'bool',
+            'default': 'no',
         },
-        'misc': {
-            'PacmanPath': {
-                'type': 'str',
-                'default': 'pacman'
-            },
+        'SkipFailedBuild': {
+            'type': 'bool',
+            'default': 'no',
         },
-    }
+        'NoEdit': {
+            'type': 'bool',
+            'default': 'no',
+        },
+        'NoDiff': {
+            'type': 'bool',
+            'default': 'no',
+        },
+    },
+    'colors': {
+        'Version': {
+            'type': 'int',
+            'default': '10',
+        },
+        'VersionDiffOld': {
+            'type': 'int',
+            'default': '11',
+        },
+        'VersionDiffNew': {
+            'type': 'int',
+            'default': '9',
+        },
+    },
+    'ui': {
+        'RequireEnterConfirm': {
+            'type': 'bool',
+            'default': 'yes'
+        },
+        'DiffPager': {
+            'type': 'str',
+            'default': 'auto'
+        },
+    },
+    'misc': {
+        'PacmanPath': {
+            'type': 'str',
+            'default': 'pacman'
+        },
+    },
+}
 
 
 def get_key_type(section_name: str, key_name: str) -> Optional[str]:
-    return get_config_schema().get(section_name, {}).get(key_name, {}).get('type')
+    return CONFIG_SCHEMA.get(section_name, {}).get(key_name, {}).get('type')
 
 
 def write_config(config: configparser.ConfigParser = None) -> None:
     if not config:
         config = configparser.ConfigParser()
     need_write = False
-    for section_name, section in get_config_schema().items():
+    for section_name, section in CONFIG_SCHEMA.items():
         if section_name not in config:
             config[section_name] = {}
         for option_name, option_schema in section.items():

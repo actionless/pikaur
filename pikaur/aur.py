@@ -81,7 +81,7 @@ def get_json_from_url(url: str) -> Dict[str, Any]:
     result_bytes = read_bytes_from_url(url)
     result_json = json.loads(result_bytes.decode('utf-8'))
     if 'error' in result_json:
-        raise AURError(result_json['error'])
+        raise AURError(f"URL: {url}\nError: {result_json['error']}")
     return result_json
 
 

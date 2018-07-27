@@ -182,6 +182,7 @@ def pikaur(
         intercepted = _intercepted
 
     PackageDB.discard_local_cache()
+    PackageDB.discard_repo_cache()
 
     return CmdResult(
         returncode=intercepted.returncode,

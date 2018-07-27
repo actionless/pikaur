@@ -24,7 +24,7 @@ class SysupgradeTest(PikaurDbTestCase):
     repo2_pkg_name = 'expac'
     repo2_old_version: str
 
-    aur2_pkg_name = 'yaourt'
+    aur2_pkg_name = 'git-hub'
     aur2_old_version: str
 
     dev_pkg_name = 'termdown-git'

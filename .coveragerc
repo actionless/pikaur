@@ -13,3 +13,4 @@ exclude_lines =
     if __name__ == .__main__.:
     if TYPE_CHECKING:
     if running_as_root
+    if not self.args.noconfirm

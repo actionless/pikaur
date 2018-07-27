@@ -258,7 +258,6 @@ class SysupgradeTest(PikaurDbTestCase):
 
         self.downgrade_repo_pkg()
 
-        # ignore the only one remaining repo package
         pikaur('-Su --noconfirm --aur')
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,

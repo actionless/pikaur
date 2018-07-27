@@ -1,15 +1,15 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
+import codecs
+import enum
 import os
 import shutil
 import subprocess
-import enum
-import codecs
 import tempfile
-from typing import Any, List, Iterable, Callable, Optional, Union, TYPE_CHECKING
-
-from .i18n import _
-from .pprint import print_warning
+from typing import (
+    TYPE_CHECKING,
+    Any, Callable, Iterable, List, Optional, Union
+)
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
@@ -210,7 +210,6 @@ def get_editor() -> Optional[List[str]]:
         path = shutil.which(editor)
         if path:
             return [path, ]
-    print_warning(_("no editor found. Try setting $VISUAL or $EDITOR."))
     return None
 
 

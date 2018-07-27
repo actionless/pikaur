@@ -2,10 +2,11 @@
 
 import sys
 from argparse import Namespace  # pylint: disable=no-name-in-module
-from typing import List, Any, Tuple, Optional, NoReturn
+from typing import Any, List, NoReturn, Optional, Tuple
 
 from .argparse import ArgumentParserWithUnknowns
-
+from .core import spawn
+from .config import PikaurConfig
 from .i18n import _, _n
 
 
@@ -233,9 +234,6 @@ def _format_options_help(options: List[Tuple[str, str, str]]) -> str:
 
 
 def cli_print_help() -> None:
-    from .core import spawn
-    from .config import PikaurConfig
-
     args = parse_args()
 
     pikaur_long_opts = [long_opt for _short_opt, long_opt in PIKAUR_BOOL_OPTS + PIKAUR_STR_OPTS]

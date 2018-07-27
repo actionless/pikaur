@@ -80,8 +80,10 @@ def hash_file(filename):  # pragma: no cover
 
 def get_editor_or_exit() -> Optional[List[str]]:
     editor = get_editor()
-    if not editor and not ask_to_continue(_("Do you want to proceed without editing?")):
-        raise SysExit(125)
+    if not editor:
+        print_warning(_("no editor found. Try setting $VISUAL or $EDITOR."))
+        if not ask_to_continue(_("Do you want to proceed without editing?")):
+            raise SysExit(125)
     return editor
 
 

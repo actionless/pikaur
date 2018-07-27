@@ -3,6 +3,7 @@
 import os
 import sys
 import configparser
+from typing import Dict, Optional
 
 from .core import running_as_root, open_file
 
@@ -32,77 +33,82 @@ CONFIG_PATH = os.path.join(
 )
 
 
-_CONFIG_SCHEMA = {
-    'sync': {
-        'AlwaysShowPkgOrigin': {
-            'type': 'bool',
-            'default': 'no',
+def get_config_schema() -> Dict[str, Dict[str, Dict[str, str]]]:
+    return {
+        'sync': {
+            'AlwaysShowPkgOrigin': {
+                'type': 'bool',
+                'default': 'no',
+            },
+            'DevelPkgsExpiration': {
+                'type': 'int',
+                'default': '-1',
+            },
+            'UpgradeSorting': {
+                'type': 'str',
+                'default': 'versiondiff'
+            },
         },
-        'DevelPkgsExpiration': {
-            'type': 'int',
-            'default': '-1',
+        'build': {
+            'KeepBuildDir': {
+                'type': 'bool',
+                'default': 'no',
+            },
+            'SkipFailedBuild': {
+                'type': 'bool',
+                'default': 'no',
+            },
+            'NoEdit': {
+                'type': 'bool',
+                'default': 'no',
+            },
+            'NoDiff': {
+                'type': 'bool',
+                'default': 'no',
+            },
         },
-        'UpgradeSorting': {
-            'type': 'str',
-            'default': 'versiondiff'
+        'colors': {
+            'Version': {
+                'type': 'int',
+                'default': '10',
+            },
+            'VersionDiffOld': {
+                'type': 'int',
+                'default': '11',
+            },
+            'VersionDiffNew': {
+                'type': 'int',
+                'default': '9',
+            },
         },
-    },
-    'build': {
-        'KeepBuildDir': {
-            'type': 'bool',
-            'default': 'no',
+        'ui': {
+            'RequireEnterConfirm': {
+                'type': 'bool',
+                'default': 'yes'
+            },
+            'DiffPager': {
+                'type': 'str',
+                'default': 'auto'
+            },
         },
-        'SkipFailedBuild': {
-            'type': 'bool',
-            'default': 'no',
+        'misc': {
+            'PacmanPath': {
+                'type': 'str',
+                'default': 'pacman'
+            },
         },
-        'NoEdit': {
-            'type': 'bool',
-            'default': 'no',
-        },
-        'NoDiff': {
-            'type': 'bool',
-            'default': 'no',
-        },
-    },
-    'colors': {
-        'Version': {
-            'type': 'int',
-            'default': '10',
-        },
-        'VersionDiffOld': {
-            'type': 'int',
-            'default': '11',
-        },
-        'VersionDiffNew': {
-            'type': 'int',
-            'default': '9',
-        },
-    },
-    'ui': {
-        'RequireEnterConfirm': {
-            'type': 'bool',
-            'default': 'yes'
-        },
-        'DiffPager': {
-            'type': 'str',
-            'default': 'auto'
-        },
-    },
-    'misc': {
-        'PacmanPath': {
-            'type': 'str',
-            'default': 'pacman'
-        },
-    },
-}
+    }
+
+
+def get_key_type(section_name: str, key_name: str) -> Optional[str]:
+    return get_config_schema().get(section_name, {}).get(key_name, {}).get('type')
 
 
 def write_config(config: configparser.ConfigParser = None) -> None:
     if not config:
         config = configparser.ConfigParser()
     need_write = False
-    for section_name, section in _CONFIG_SCHEMA.items():
+    for section_name, section in get_config_schema().items():
         if section_name not in config:
             config[section_name] = {}
         for option_name, option_schema in section.items():
@@ -128,19 +134,19 @@ class PikaurConfigSection():
 
     def get_str(self, key: str, *args) -> str:
         section = self.section
-        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'str':
+        if get_key_type(section.name, key) != 'str':
             raise TypeError(f"{key} is not 'str'")
         return section.get(key, *args)
 
     def get_int(self, key: str) -> int:
         section = self.section
-        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'int':
+        if get_key_type(section.name, key) != 'int':
             raise TypeError(f"{key} is not 'int'")
         return section.getint(key)
 
     def get_bool(self, key: str) -> bool:
         section = self.section
-        if _CONFIG_SCHEMA[section.name].get(key, {}).get('type') != 'bool':
+        if get_key_type(section.name, key) != 'bool':
             raise TypeError(f"{key} is not 'bool'")
         return section.getboolean(key)
 

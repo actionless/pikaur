@@ -392,7 +392,6 @@ class InstallInfoFetcher:
             self.new_thirdparty_repo_deps_install_info +
             self.aur_deps_install_info
         )
-
         all_requested_pkg_names = self.install_package_names + sum([
             (
                 ii.package.depends + ii.package.makedepends + ii.package.checkdepends
@@ -401,9 +400,12 @@ class InstallInfoFetcher:
             )
             for ii in all_install_infos
         ], [])
-
         explicit_aur_pkg_names = [ii.name for ii in self.aur_updates_install_info]
+
+        # iterate each package metadata
         for pkg_install_info in all_install_infos:
+
+            # process providers
             provides = pkg_install_info.package.provides
             providing_for: List[str] = []
             if provides and (
@@ -428,6 +430,7 @@ class InstallInfoFetcher:
                     ]
                     pkg_install_info.new_version = ''
 
+            # process deps
             pkg_dep_lines = (
                 (
                     pkg_install_info.package.depends +
@@ -450,3 +453,11 @@ class InstallInfoFetcher:
                         if not dep_install_info.required_by:
                             dep_install_info.required_by = []
                         dep_install_info.required_by.append(pkg_install_info)
+
+                        # if package marked as provider candidate
+                        # is already requested as explicit dep for other package
+                        # then remove `provided_by` mark and metadata change
+                        if name_and_version == dep_install_info.package.name:
+                            dep_install_info.provided_by = None
+                            dep_install_info.name = name
+                            pkg_install_info.new_version = dep_install_info.package.version

@@ -2,7 +2,6 @@
 
 import codecs
 import enum
-import getpass
 import os
 import shutil
 import subprocess
@@ -216,11 +215,3 @@ def get_editor() -> Optional[List[str]]:
 
 def dirname(path):
     return os.path.dirname(path) or '.'
-
-
-def get_home_dir() -> str:
-    if "HOME" in os.environ:
-        return os.environ["HOME"]
-    if running_as_root():
-        return "/root/"
-    return os.path.join("/home/", getpass.getuser())

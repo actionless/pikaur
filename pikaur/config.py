@@ -3,16 +3,17 @@
 import os
 import sys
 import configparser
+from pathlib import Path
 from typing import Dict, Optional
 
-from .core import running_as_root, open_file, get_home_dir
+from .core import running_as_root, open_file
 
 
 VERSION = '1.2.6-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",
-    os.path.join(get_home_dir(), ".cache/")
+    os.path.join(Path.home(), ".cache/")
 )
 if running_as_root():
     CACHE_ROOT = '/var/cache/pikaur'
@@ -25,7 +26,7 @@ PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, 'pkg')
 
 CONFIG_ROOT = os.environ.get(
     "XDG_CONFIG_HOME",
-    os.path.join(get_home_dir(), ".config/")
+    os.path.join(Path.home(), ".config/")
 )
 CONFIG_PATH = os.path.join(
     CONFIG_ROOT,

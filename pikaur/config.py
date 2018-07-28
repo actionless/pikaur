@@ -94,6 +94,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'str',
             'default': 'auto'
         },
+        'PrintCommands': {
+            'type': 'bool',
+            'default': 'no'
+        },
     },
     'misc': {
         'PacmanPath': {

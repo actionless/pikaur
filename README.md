@@ -128,6 +128,9 @@ require enter key to be pressed when answering questions.
 ##### DiffPager (default: auto)
 Wherever to use `less` pager when viewing AUR packages diff. Choices are `always`, `auto` or `never`.
 
+##### PrintCommands (default: no)
+Print each command which pikaur is currently spawning.
+
 
 #### [misc]
 

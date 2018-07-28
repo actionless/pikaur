@@ -55,6 +55,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, 'deps', None),
         # undocumented options:
         (None, 'debug', PikaurConfig().misc.get_bool('Debug')),
+        (None, 'print-commands', PikaurConfig().ui.get_bool('PrintCommands')),
         (None, 'hide-build-log', None),
     ]
 
@@ -100,6 +101,8 @@ class PikaurArgs(Namespace):
         if self.getpkgbuild and self.nodeps:  # handle "-d"
             self.deps = self.nodeps
             self.nodeps = False
+        if self.debug:
+            self.print_commands = self.debug
 
     def validate(self) -> None:
         if self.query:

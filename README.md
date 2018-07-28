@@ -93,15 +93,22 @@ when upgrading packages sort them by `versiondiff`, `pkgname` or `repo`.
 
 ##### KeepBuildDir (default: no)
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
+Will be overriden by `-k/--keepbuild` flag.
 
 ##### SkipFailedBuild (default: no)
 always skip the build if it fails and don't show recovery prompt.
 
 ##### NoEdit (default: no)
 don't prompt to edit PKGBUILD and install files.
+Will be overriden by `--noedit` and `--edit` flags.
 
 ##### NoDiff (default: no)
 don't prompt to show the build files diff.
+Will be overriden by `--nodiff` flag.
+
+##### AlwaysUseDynamicUsers (default: no)
+always isolate the build using systemd dynamic users.
+Will be overriden by `--dynamic-users` flag.
 
 
 #### [colors]

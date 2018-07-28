@@ -329,6 +329,9 @@ def main() -> None:
         sys.exit(22)
     check_runtime_deps()
 
+    if not running_as_root() and args.dynamic_users:
+        sys.exit(interactive_spawn(sudo(sys.argv)).returncode)
+
     create_dirs()
     # initialize config to avoid race condition in threads:
     PikaurConfig.get_config()

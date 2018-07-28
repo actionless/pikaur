@@ -65,6 +65,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no',
         },
+        'AlwaysUseDynamicUsers': {
+            'type': 'bool',
+            'default': 'no',
+        },
     },
     'colors': {
         'Version': {
@@ -94,6 +98,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
         'PacmanPath': {
             'type': 'str',
             'default': 'pacman'
+        },
+        'Debug': {
+            'type': 'bool',
+            'default': 'no'
         },
     },
 }

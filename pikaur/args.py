@@ -48,12 +48,13 @@ def get_pikaur_bool_opts() -> ArgSchema:
         ('k', 'keepbuild', PikaurConfig().build.get_bool('KeepBuildDir')),
         (None, 'nodiff', PikaurConfig().build.get_bool('NoDiff')),
         (None, 'rebuild', None),
+        (None, 'dynamic-users', PikaurConfig().build.get_bool('AlwaysUseDynamicUsers')),
         ('P', 'pkgbuild', None),
         (None, 'install', None),
         ('G', 'getpkgbuild', None),
         (None, 'deps', None),
         # undocumented options:
-        (None, 'debug', None),
+        (None, 'debug', PikaurConfig().misc.get_bool('Debug')),
         (None, 'hide-build-log', None),
     ]
 
@@ -316,6 +317,7 @@ def cli_print_help() -> None:
             ('', '--mflags=<--flag1>,<--flag2>', _("cli args to pass to makepkg")),
             ('', '--makepkg-config=<path>', _("path to custom makepkg config")),
             ('', '--makepkg-path=<path>', _("override path to makepkg executable")),
+            ('', '--dynamic-users', _("always isolate with systemd dynamic users")),
         ]
     if args.sync:
         pikaur_options_help += [

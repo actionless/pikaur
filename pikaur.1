@@ -146,16 +146,19 @@ when upgrading packages sort them by \fBversiondiff\fR, \fBpkgname\fR or \fBrepo
 .SS "[build]"
 .
 .SS "KeepBuildDir (default: no)"
-don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\.
+don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. Will be overriden by \fB\-k/\-\-keepbuild\fR flag\.
 .
 .SS "SkipFailedBuild (default: no)"
 always skip the build if it fails and don\'t show recovery prompt\.
 .
 .SS "NoEdit (default: no)"
-don\'t prompt to edit PKGBUILD and install files\.
+don\'t prompt to edit PKGBUILD and install files\. Will be overriden by \fB\-\-noedit\fR and \fB\-\-edit\fR flags\.
 .
 .SS "NoDiff (default: no)"
-don\'t prompt to show the build files diff\.
+don\'t prompt to show the build files diff\. Will be overriden by \fB\-\-nodiff\fR flag\.
+.
+.SS "AlwaysUseDynamicUsers (default: no)"
+always isolate the build using systemd dynamic users\. Will be overriden by \fB\-\-dynamic\-users\fR flag\.
 .
 .SS "[colors]"
 terminal colors, from 0 to 15

@@ -457,7 +457,11 @@ class InstallInfoFetcher:
                         # if package marked as provider candidate
                         # is already requested as explicit dep for other package
                         # then remove `provided_by` mark and metadata change
-                        if name_and_version == dep_install_info.package.name:
+                        if (
+                                dep_install_info.provided_by
+                        ) and (
+                            name_and_version == dep_install_info.package.name
+                        ):
                             dep_install_info.provided_by = None
                             dep_install_info.name = name
-                            pkg_install_info.new_version = dep_install_info.package.version
+                            dep_install_info.new_version = dep_install_info.package.version

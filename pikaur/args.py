@@ -302,7 +302,7 @@ def cli_print_help() -> None:
     if args.sync or args.query:
         pikaur_options_help += [
             ('-a', '--aur', _("query packages from AUR only")),
-            ('-r', '--repo', _("query packages from repository only")),
+            ('', '--repo', _("query packages from repository only")),
         ]
     if args.pkgbuild:
         pikaur_options_help += [

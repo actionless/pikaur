@@ -7,7 +7,7 @@ set -euo pipefail
 IFS=$'\n\t'
 aur_repo_dir=~/build/pikaur
 aur_dev_repo_dir=~/build/pikaur-git
-src_repo_dir=$(readlink -e $(dirname "${0}"))
+src_repo_dir=$(readlink -e $(dirname "${0}")/..)
 
 new_version=$1
 

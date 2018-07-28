@@ -191,8 +191,8 @@ def pikaur(
     )
 
 
-def fake_pikaur(cmd_args: str):
-    pikaur(
+def fake_pikaur(cmd_args: str) -> CmdResult:
+    return pikaur(
         f'{cmd_args} --mflags=--noextract',
         fake_makepkg=True, capture_stdout=True
     )

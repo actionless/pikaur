@@ -4,7 +4,7 @@
 
 import os
 
-from pikaur_test.helpers import PikaurDbTestCase, pikaur
+from pikaur_test.helpers import PikaurDbTestCase, pikaur, fake_pikaur
 
 
 class InstallTest(PikaurDbTestCase):
@@ -106,4 +106,20 @@ class InstallTest(PikaurDbTestCase):
         )
         self.assertFalse(
             os.path.exists(PACKAGE_CACHE_PATH)
+        )
+
+    def test_print_commands_and_needed(self):
+        """
+        test what --print--commands option not fails
+        """
+        self.assertEqual(
+            fake_pikaur('-S inxi nano --print-commands').returncode, 0
+        )
+
+    def test_needed(self):
+        """
+        test what --needed option not fails
+        """
+        self.assertEqual(
+            pikaur('-S inxi nano --needed').returncode, 0
         )

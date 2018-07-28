@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class PackagesNotFound(DataType, Exception):
     packages: List[str]
-    wanted_by: Optional[List[str]]
+    wanted_by: Optional[List[str]] = None
 
     def __init__(self, packages: List[str], wanted_by: Optional[List[str]] = None) -> None:
         DataType.__init__(self, packages=packages, wanted_by=wanted_by)

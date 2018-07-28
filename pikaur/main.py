@@ -105,7 +105,7 @@ def sudo_loop(once=False) -> None:
     get sudo for further questions (command should do nothing)
     """
     while True:
-        interactive_spawn(sudo([PikaurConfig().misc.PacmanPath, '-T']))
+        interactive_spawn(['sudo', '-v'])
         if once:
             break
         sleep(SUDO_LOOP_INTERVAL)

@@ -360,6 +360,8 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def get_pacman_test_output(cls, cmd_args: List[str]) -> List[VersionMatcher]:
+        if not cmd_args:
+            return []
         cache_index = ' '.join(sorted(cmd_args))
         cached_pkg = cls._pacman_test_cache.get(cache_index)
         if cached_pkg is not None:

@@ -76,7 +76,7 @@ class InteractiveSpawn(subprocess.Popen):
         from .args import parse_args
         if parse_args().debug:
             from .pprint import print_stderr, color_line
-            if self.args != ['sudo', 'pacman', '-T']:
+            if self.args != ['sudo', '-v']:
                 print_stderr(color_line('=> ', 14) + ' '.join(self.args))
 
         stdout, stderr = super().communicate(_input, _timeout)

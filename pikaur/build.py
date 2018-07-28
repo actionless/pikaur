@@ -416,9 +416,7 @@ class PackageBuild(DataType):
         return False
 
     def prepare_build_destination(self) -> None:
-        if os.path.exists(self.build_dir) and not (
-                self.args.keepbuild or PikaurConfig().build.get_bool('KeepBuildDir')
-        ):
+        if os.path.exists(self.build_dir) and not self.args.keepbuild:
             remove_dir(self.build_dir)
         copy_aur_repo(self.repo_path, self.build_dir)
 

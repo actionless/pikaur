@@ -461,7 +461,7 @@ class InstallPackagesCLI():
         if not editor_cmd:
             return False
         noedit = not self.args.edit and (
-            self.args.noedit or PikaurConfig().build.get_bool('NoEdit')
+            self.args.noedit
         )
         if noedit or self.args.noconfirm:
             print_stderr('{} {}'.format(
@@ -525,8 +525,7 @@ class InstallPackagesCLI():
             ) and (
                 not self.args.noconfirm
             ):
-                nodiff = self.args.nodiff or PikaurConfig().build.get_bool('NoDiff')
-                if not nodiff and ask_to_continue(
+                if not self.args.nodiff and ask_to_continue(
                         _("Do you want to see build files {diff} for {name} package?").format(
                             diff=bold_line(_("diff")),
                             name=bold_line(', '.join(repo_status.package_names))
@@ -777,7 +776,7 @@ class InstallPackagesCLI():
                 if len(package_build.built_packages_paths) == len(package_build.package_names):
                     if not self.args.downloadonly:
                         package_build.update_last_installed_file()
-                    if not (self.args.keepbuild or PikaurConfig().build.get_bool('KeepBuildDir')):
+                    if not self.args.keepbuild:
                         remove_dir(package_build.build_dir)
 
         if self.failed_to_build_package_names:

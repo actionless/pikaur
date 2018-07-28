@@ -8,7 +8,7 @@ from typing import Dict, Optional
 from .core import running_as_root, open_file, get_home_dir
 
 
-VERSION = '1.2.5-dev'
+VERSION = '1.2.6-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",

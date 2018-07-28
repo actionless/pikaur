@@ -42,7 +42,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, 'noedit', PikaurConfig().build.get_bool('NoEdit')),
         (None, 'edit', None),
         (None, 'namesonly', None),
-        ('r', 'repo', None),
+        (None, 'repo', None),
         ('a', 'aur', None),
         (None, 'devel', None),
         ('k', 'keepbuild', PikaurConfig().build.get_bool('KeepBuildDir')),
@@ -61,6 +61,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
 
 PACMAN_STR_OPTS: ArgSchema = [
     (None, 'color', None),
+    ('r', 'root', None),
 ]
 
 
@@ -244,7 +245,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
         f'--{key}' if len(key) > 1 else f'-{key}': value
         for key, value in parsed_args.__dict__.items()
         if value
-        if key not in ignore_args + ['raw', 'unknown_args', 'positional', 'color']
+        if key not in ignore_args + ['raw', 'unknown_args', 'positional', 'color', 'root']
     }
     return list(set(
         list(reconstructed_args.keys()) + parsed_args.unknown_args

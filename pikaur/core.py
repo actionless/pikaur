@@ -73,6 +73,12 @@ class InteractiveSpawn(subprocess.Popen):
     stderr_text: str
 
     def communicate(self, _input=None, _timeout=None):
+        from .args import parse_args
+        if parse_args().debug:
+            from .pprint import print_stderr, color_line
+            if self.args != ['sudo', 'pacman', '-T']:
+                print_stderr(color_line('=> ', 14) + ' '.join(self.args))
+
         stdout, stderr = super().communicate(_input, _timeout)
         self.stdout_text = stdout.decode('utf-8') if stdout else None
         self.stderr_text = stderr.decode('utf-8') if stderr else None

@@ -62,10 +62,14 @@ PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
 
 
 def get_pacman_command() -> List[str]:
+    args = parse_args()
     pacman_path = PikaurConfig().misc.PacmanPath
+    pacman_cmd = [pacman_path, ]
+    if args.root:
+        pacman_cmd += ['--root', args.root]
     if color_enabled():
-        return [pacman_path, '--color=always']
-    return [pacman_path, '--color=never']
+        return pacman_cmd + ['--color=always']
+    return pacman_cmd + ['--color=never']
 
 
 class PacmanPrint(DataType):

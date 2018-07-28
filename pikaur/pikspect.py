@@ -20,6 +20,8 @@ from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 from .pprint import PrintLock, bold_line
 from .threading import handle_exception_in_thread, ThreadSafeBytesStorage
 from .pacman import _p
+from .args import parse_args
+from .pprint import print_stderr, color_line
 
 
 # SMALL_TIMEOUT = 0.1
@@ -358,6 +360,8 @@ def pikspect(
     if extra_questions:
         proc.add_answers(extra_questions)
 
+    if parse_args().debug:
+        print_stderr(color_line('=> ', 14) + ' '.join(cmd))
     proc.run()
     return proc
 

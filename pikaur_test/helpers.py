@@ -60,8 +60,8 @@ def color_line(line: str, color_number: int) -> str:
     return result
 
 
-def log_stderr(b_line: bytes) -> None:
-    sys.stderr.buffer.write(b_line)
+def log_stderr(line: str) -> None:
+    sys.stderr.buffer.write((line + '\n').encode('utf-8'))
     sys.stderr.buffer.flush()
 
 
@@ -216,9 +216,10 @@ def pkg_is_installed(pkg_name: str) -> bool:
 class PikaurTestCase(TestCase):
     # pylint: disable=invalid-name
 
-    b_separator = color_line(f"\n{'-' * get_term_width()}\n", 12).encode('utf-8')
+    separator = color_line(f"\n{'-' * get_term_width()}", 12)
 
     def filter_pyalpm_warning(self):  # pylint: disable=no-self-use
+        # @TODO: remove it when pyalpm will be fixed
         import warnings
         warnings.filterwarnings(
             action="ignore",
@@ -228,14 +229,14 @@ class PikaurTestCase(TestCase):
 
     def run(self, result=None):
         time_started = time()
-        log_stderr(self.b_separator)
+        log_stderr(self.separator)
         self.filter_pyalpm_warning()
         super().run(result)
         print(':: Took {:.2f} seconds'.format(time() - time_started))
 
     def setUp(self):
         super().setUp()
-        log_stderr(self.b_separator)
+        log_stderr(self.separator)
 
     def assertInstalled(self, pkg_name: str) -> None:
         self.assertTrue(

@@ -15,16 +15,16 @@ class SysupgradeTest(PikaurDbTestCase):
     sysupgrade-related test cases
     """
 
-    repo2_pkg_name = 'expac'
+    repo_pkg_name = 'expac'
     repo_old_version: str
 
-    aur2_pkg_name = 'pkgbuild-introspection'
-    aur_old_version: str
-
-    repo_pkg_name = 'tree'
+    repo2_pkg_name = 'tree'
     repo2_old_version: str
 
     aur_pkg_name = 'etc-update'
+    aur_old_version: str
+
+    aur2_pkg_name = 'python-flake8-polyfill'
     aur2_old_version: str
 
     dev_pkg_name = 'pxltrm-git'

@@ -369,21 +369,27 @@ class InstallPackagesCLI():
             if pkg_name in list(self.package_builds_by_name.keys()):
                 del self.package_builds_by_name[pkg_name]
 
-    def get_package_builds(self) -> None:
+    def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:
             try:
                 clone_names = []
-                pkgbuilds = {}
+                pkgbuilds_by_base: Dict[str, PackageBuild] = {}
+                pkgbuilds_by_name = {}
                 for info in (
                         self.install_info.aur_updates_install_info +
                         self.install_info.aur_deps_install_info
                 ):
                     if info.pkgbuild_path:
-                        pkgbuilds[info.name] = PackageBuild(pkgbuild_path=info.pkgbuild_path)
+                        pkg_base = info.package.packagebase
+                        if pkg_base not in pkgbuilds_by_base:
+                            pkgbuilds_by_base[pkg_base] = PackageBuild(
+                                pkgbuild_path=info.pkgbuild_path
+                            )
+                        pkgbuilds_by_name[info.name] = pkgbuilds_by_base[pkg_base]
                     else:
                         clone_names.append(info.name)
                 self.package_builds_by_name = clone_aur_repos(clone_names)
-                self.package_builds_by_name.update(pkgbuilds)
+                self.package_builds_by_name.update(pkgbuilds_by_name)
                 break
             except CloneError as err:
                 package_build = err.build

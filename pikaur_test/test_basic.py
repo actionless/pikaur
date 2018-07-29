@@ -62,6 +62,19 @@ class InstallTest(PikaurDbTestCase):
         pikaur('-P ./PKGBUILD --noconfirm --install')
         self.assertInstalled(pkg_name)
 
+    def test_pkgbuild_split_packages(self):
+        pkg_base = 'python-flake8-polyfill'
+        pkg_name1 = pkg_base
+        pkg_name2 = 'python2-flake8-polyfill'
+
+        self.remove_if_installed(pkg_name1)
+        self.remove_if_installed(pkg_name2)
+
+        pikaur(f'-G {pkg_base}')
+        pikaur(f'-P ./{pkg_base}/PKGBUILD --noconfirm --install')
+        self.assertInstalled(pkg_name1)
+        self.assertInstalled(pkg_name2)
+
     def test_conflicting_packages(self):
         self.remove_if_installed('pacaur', 'cower-git', 'cower')
         self.assertEqual(

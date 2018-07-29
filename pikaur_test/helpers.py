@@ -3,6 +3,7 @@
 import sys
 import os
 import tempfile
+from time import time
 from subprocess import Popen
 from unittest import TestCase
 from typing import Optional, List, NoReturn, Union
@@ -226,9 +227,11 @@ class PikaurTestCase(TestCase):
         )
 
     def run(self, result=None):
+        time_started = time()
         log_stderr(self.b_separator)
         self.filter_pyalpm_warning()
         super().run(result)
+        print(':: Took {:.2f} seconds'.format(time() - time_started))
 
     def setUp(self):
         super().setUp()

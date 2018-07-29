@@ -30,7 +30,7 @@ The following pacman operations are extended with AUR capabilities:
 * `-Sc` / `-Scc` (build dir /built packages cache clean)
 * `-Qu` (query upgradeable, `-q` supported)
 
-Also see `pikaur -Sh` and `pikaur -Qh` for pikaur-specific flags.
+Also see `pikaur -Sh`, `-Qh`, `-Ph` and `-Gh` for pikaur-specific flags.
 
 Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or has been altered it via [M]anual package selection).
 

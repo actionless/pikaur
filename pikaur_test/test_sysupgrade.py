@@ -18,7 +18,7 @@ class SysupgradeTest(PikaurDbTestCase):
     repo_pkg_name = 'tree'
     repo_old_version: str
 
-    aur_pkg_name = 'inxi'
+    aur_pkg_name = 'aurvote'
     aur_old_version: str
 
     repo2_pkg_name = 'expac'
@@ -27,8 +27,8 @@ class SysupgradeTest(PikaurDbTestCase):
     aur2_pkg_name = 'git-hub'
     aur2_old_version: str
 
-    dev_pkg_name = 'termdown-git'
-    dev_pkg_url = "https://github.com/trehn/termdown"
+    dev_pkg_name = 'oh-my-zsh-git'
+    dev_pkg_url = "https://github.com/robbyrussell/oh-my-zsh"
     dev_old_version: str
 
     def setUp(self):

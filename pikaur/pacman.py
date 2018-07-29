@@ -13,9 +13,9 @@ from .i18n import _
 from .core import DataType, PackageSource
 from .version import VersionMatcher
 from .pprint import print_stderr, color_enabled
-from .args import parse_args
+from .args import parse_args, reconstruct_args
 from .config import PikaurConfig
-from .exceptions import PackagesNotFoundInRepo
+from .exceptions import PackagesNotFoundInRepo, DependencyError
 from .core import sudo, spawn
 from .prompt import retry_interactive_command_or_exit
 
@@ -506,3 +506,65 @@ def refresh_pkg_db() -> None:
             get_pacman_command() + ['--sync'] + ['--refresh'] * args.refresh
         ))
         retry_interactive_command_or_exit(pacman_args)
+
+
+def install_built_deps(
+        deps_names_and_paths: Dict[str, str],
+        resolved_conflicts: Optional[List[List[str]]] = None
+) -> None:
+    from .pprint import color_line
+    from .prompt import retry_interactive_command
+
+    local_packages = PackageDB.get_local_dict()
+    args = parse_args()
+
+    def _get_pacman_command():
+        return get_pacman_command() + reconstruct_args(args, ignore_args=[
+            'upgrade',
+            'asdeps',
+            'sync',
+            'sysupgrade',
+            'refresh',
+            'ignore',
+        ])
+
+    explicitly_installed_deps = []
+    for pkg_name, _path in deps_names_and_paths.items():
+        print(color_line(pkg_name, 14))
+        if pkg_name in local_packages and local_packages[pkg_name].reason == 0:
+            explicitly_installed_deps.append(pkg_name)
+    deps_upgrade_success = True
+    if len(explicitly_installed_deps) < len(deps_names_and_paths):
+        deps_upgrade_success = retry_interactive_command(
+            sudo(
+                _get_pacman_command() + [
+                    '--upgrade',
+                    '--asdeps',
+                ] + [
+                    path for name, path in deps_names_and_paths.items()
+                    if name not in explicitly_installed_deps
+                ],
+            ),
+            pikspect=True,
+            conflicts=resolved_conflicts,
+        )
+
+    explicit_upgrade_success = True
+    if explicitly_installed_deps:
+        explicit_upgrade_success = retry_interactive_command(
+            sudo(
+                _get_pacman_command() + [
+                    '--upgrade',
+                ] + [
+                    path for name, path in deps_names_and_paths.items()
+                    if name in explicitly_installed_deps
+                ]
+            ),
+            pikspect=True,
+            conflicts=resolved_conflicts,
+        )
+
+    PackageDB.discard_local_cache()
+
+    if not (deps_upgrade_success and explicit_upgrade_success):
+        raise DependencyError()

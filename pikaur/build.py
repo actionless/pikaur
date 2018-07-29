@@ -19,15 +19,16 @@ from .config import (
     AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
 )
 from .aur import get_repo_url, find_aur_packages
-from .pacman import PackageDB, get_pacman_command
+from .pacman import (
+    PackageDB, get_pacman_command, install_built_deps,
+)
 from .args import PikaurArgs, parse_args
 from .pprint import (
     color_line, bold_line, color_enabled,
     print_stdout, print_stderr, print_error,
 )
 from .prompt import (
-    retry_interactive_command, retry_interactive_command_or_exit,
-    ask_to_continue, get_input,
+    retry_interactive_command_or_exit, ask_to_continue, get_input,
 )
 from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
@@ -313,50 +314,17 @@ class PackageBuild(DataType):
                 bold_line(', '.join(self.package_names)))
         ))
 
-        local_packages = PackageDB.get_local_dict()
-        explicitly_installed_deps = []
-        for dep_name in self.built_deps_to_install:
-            if dep_name in local_packages and local_packages[dep_name].reason == 0:
-                explicitly_installed_deps.append(dep_name)
-
-        result1 = True
-        if len(explicitly_installed_deps) < len(self.built_deps_to_install):
-            result1 = retry_interactive_command(
-                sudo(
-                    self._get_pacman_command() + [
-                        '--upgrade',
-                        '--asdeps',
-                    ] + [
-                        path for name, path in self.built_deps_to_install.items()
-                        if name not in explicitly_installed_deps
-                    ],
-                ),
-                pikspect=True,
-                conflicts=self.resolved_conflicts,
+        try:
+            install_built_deps(
+                deps_names_and_paths=self.built_deps_to_install,
+                resolved_conflicts=self.resolved_conflicts
             )
-        result2 = True
-        if explicitly_installed_deps:
-            result2 = retry_interactive_command(
-                sudo(
-                    self._get_pacman_command() + [
-                        '--upgrade',
-                    ] + [
-                        path for name, path in self.built_deps_to_install.items()
-                        if name in explicitly_installed_deps
-                    ]
-                ),
-                pikspect=True,
-                conflicts=self.resolved_conflicts,
-            )
-
-        PackageDB.discard_local_cache()
-
-        if result1 and result2:
+        except DependencyError as dep_exc:
+            self.failed = True
+            raise dep_exc from None
+        else:
             for pkg_name in self.built_deps_to_install:
                 all_package_builds[pkg_name].built_packages_installed[pkg_name] = True
-        else:
-            self.failed = True
-            raise DependencyError()
 
     def _set_built_package_path(self) -> None:
         dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)

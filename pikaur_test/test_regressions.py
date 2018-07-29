@@ -37,3 +37,35 @@ class RegressionTest(PikaurDbTestCase):
         pkg_name = 'jetbrains-toolbox'
         fake_pikaur(f'-S {pkg_name}')
         self.assertInstalled(pkg_name)
+
+    def test_explicit_pkgs_not_becoming_deps(self):
+        """
+        #123 AUR dep which was previously explicitly installed gets
+        incorrectly marked as a dependency
+        """
+        from pikaur.pacman import PackageDB
+
+        aur_pkg_name = 'nqp'
+        explicitly_installed_dep_name = 'moarvm'
+
+        self.remove_if_installed(aur_pkg_name, explicitly_installed_dep_name)
+        explicitly_installed_dep_old_version = self.downgrade_aur_pkg(
+            explicitly_installed_dep_name, fake_makepkg=True
+        )
+        self.assertInstalled(explicitly_installed_dep_name)
+        self.assertEqual(
+            PackageDB.get_local_dict()[explicitly_installed_dep_name].reason,
+            0
+        )
+
+        fake_pikaur(f'-S {aur_pkg_name}')
+        self.assertInstalled(aur_pkg_name)
+        self.assertInstalled(explicitly_installed_dep_name)
+        self.assertNotEqual(
+            PackageDB.get_local_dict()[explicitly_installed_dep_name].version,
+            explicitly_installed_dep_old_version
+        )
+        self.assertEqual(
+            PackageDB.get_local_dict()[explicitly_installed_dep_name].reason,
+            0
+        )

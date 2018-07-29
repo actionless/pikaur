@@ -15,7 +15,7 @@ from .args import reconstruct_args, PikaurArgs, parse_args
 from .aur import strip_aur_repo_name
 from .pacman import (
     PackageDB,
-    get_pacman_command, refresh_pkg_db,
+    get_pacman_command, refresh_pkg_db, install_built_deps,
 )
 from .install_info_fetcher import InstallInfoFetcher
 from .exceptions import (
@@ -695,45 +695,33 @@ class InstallPackagesCLI():
         )
 
     def install_new_aur_deps(self) -> None:
-        new_aur_deps_to_install = [
-            self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
+        new_aur_deps_to_install = {
+            pkg_name: self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
             for pkg_name in self.aur_deps_names
             if self.package_builds_by_name[pkg_name].built_packages_paths.get(pkg_name) and
             not self.package_builds_by_name[pkg_name].built_packages_installed.get(pkg_name)
-        ]
-        if new_aur_deps_to_install:
-            if not retry_interactive_command(
-                    sudo(
-                        get_pacman_command() + [
-                            '--upgrade',
-                            '--asdeps',
-                        ] + reconstruct_args(self.args, ignore_args=[
-                            'upgrade',
-                            'asdeps',
-                            'sync',
-                            'sysupgrade',
-                            'refresh',
-                            'ignore',
-                        ]) + new_aur_deps_to_install
-                    ),
-                    pikspect=True,
-                    conflicts=self.resolved_conflicts,
-            ):
-                if not ask_to_continue(default_yes=False):
-                    self._revert_transaction(PackageSource.AUR)
-                    raise SysExit(125)
-            PackageDB.discard_local_cache()
+        }
+        try:
+            install_built_deps(
+                deps_names_and_paths=new_aur_deps_to_install,
+                resolved_conflicts=self.resolved_conflicts
+            )
+        except DependencyError:
+            if not ask_to_continue(default_yes=False):
+                self._revert_transaction(PackageSource.AUR)
+                raise SysExit(125)
+        else:
             self._save_transaction(
-                PackageSource.AUR, installed=new_aur_deps_to_install
+                PackageSource.AUR, installed=list(new_aur_deps_to_install.keys())
             )
 
     def install_aur_packages(self) -> None:
-        aur_packages_to_install = [
-            self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
+        aur_packages_to_install = {
+            pkg_name: self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
             for pkg_name in self.aur_packages_names
             if self.package_builds_by_name[pkg_name].built_packages_paths.get(pkg_name) and
             not self.package_builds_by_name[pkg_name].built_packages_installed.get(pkg_name)
-        ]
+        }
         if aur_packages_to_install:
             if not retry_interactive_command(
                     sudo(
@@ -745,7 +733,7 @@ class InstallPackagesCLI():
                             'sysupgrade',
                             'refresh',
                             'ignore',
-                        ]) + aur_packages_to_install
+                        ]) + list(aur_packages_to_install.values())
                     ),
                     pikspect=True,
                     conflicts=self.resolved_conflicts,
@@ -755,7 +743,7 @@ class InstallPackagesCLI():
                     raise SysExit(125)
             PackageDB.discard_local_cache()
             self._save_transaction(
-                PackageSource.AUR, installed=aur_packages_to_install
+                PackageSource.AUR, installed=list(aur_packages_to_install.keys())
             )
 
     def install_packages(self):

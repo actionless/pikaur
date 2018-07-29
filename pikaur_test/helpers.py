@@ -151,16 +151,19 @@ def pikaur(
 
     PackageDB.discard_local_cache()
 
-    # re-parse args:
-    sys.argv = ['pikaur'] + cmd.split(' ') + (
-        [
+    new_args = ['pikaur'] + cmd.split(' ')
+    if '-S ' in cmd:
+        new_args += [
             '--noconfirm', '--hide-build-log',
-        ] if '-S ' in cmd else []
-    ) + (
-        [
-            '--makepkg-path=' + os.path.join(TEST_DIR, 'fake_makepkg'),
-        ] if fake_makepkg else []
-    )
+        ]
+    if fake_makepkg:
+        new_args += [
+            '--makepkg-path=' + os.path.join(TEST_DIR, 'fake_makepkg')
+        ]
+        if '--mflags' not in cmd:
+            new_args += ['--mflags=--noextract', ]
+    # re-parse args:
+    sys.argv = new_args
 
     print(color_line('\n => ', 10) + ' '.join(sys.argv))
 
@@ -193,10 +196,7 @@ def pikaur(
 
 
 def fake_pikaur(cmd_args: str) -> CmdResult:
-    return pikaur(
-        f'{cmd_args} --mflags=--noextract',
-        fake_makepkg=True, capture_stdout=True
-    )
+    return pikaur(cmd_args, fake_makepkg=True)
 
 
 def pacman(cmd: str) -> CmdResult:
@@ -305,9 +305,9 @@ class PikaurDbTestCase(PikaurTestCase):
             f'git -C ./{aur_pkg_name} log --format=%h'
         ).stdout_text.splitlines()[1]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
-        downgrade_cmd = f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD'
-        if fake_makepkg:
-            downgrade_cmd += ' --mflags=--noextract'
-        pikaur(downgrade_cmd, fake_makepkg=fake_makepkg)
+        pikaur(
+            f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD',
+            fake_makepkg=fake_makepkg
+        )
         self.assertInstalled(aur_pkg_name)
         return PackageDB.get_local_dict()[aur_pkg_name].version

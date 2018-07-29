@@ -2,7 +2,7 @@
 
 # pylint: disable=no-name-in-module
 
-from pikaur_test.helpers import PikaurDbTestCase, pikaur
+from pikaur_test.helpers import PikaurDbTestCase, pikaur, fake_pikaur
 
 
 class ArchWikiTest(PikaurDbTestCase):
@@ -18,12 +18,12 @@ class ArchWikiTest(PikaurDbTestCase):
 
     def test_split_packages_1(self):
         # Split packages 1
-        pikaur('-S clion --mflags=--noextract', fake_makepkg=True)
+        fake_pikaur('-S clion')
         self.assertInstalled('clion')
 
     def test_split_packages_2(self):
         # Split packages 2: libc++
-        pikaur('-S libc++ --mflags=--skippgpcheck,--noextract', fake_makepkg=True)
+        fake_pikaur('-S libc++ --mflags=--skippgpcheck,--noextract')
         self.assertInstalled('libc++')
 
         # Split packages 2: libc++abi (installing already built package)
@@ -45,6 +45,6 @@ class ArchWikiTest(PikaurDbTestCase):
 
     # def test_reliable_solver(self):
         # # Arch Wiki: Reliable solver
-        # pikaur('-S ros-lunar-desktop --mflags=--noextract', fake_makepkg=True)
+        # fake_pikaur('-S ros-lunar-desktop')
         # self.assertInstalled('ros-lunar-desktop')
         # it's slow as hell even with mocked makepkg :(

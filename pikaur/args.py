@@ -14,6 +14,7 @@ ArgSchema = List[Tuple[Optional[str], str, Union[None, bool, str]]]
 
 
 PACMAN_BOOL_OPTS: ArgSchema = [
+    # sync options
     ('S', 'sync', None),
     ('g', 'groups', None),
     ('i', 'info', None),
@@ -22,16 +23,18 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     ('s', 'search', None),
     ('u', 'sysupgrade', None),
     ('d', 'nodeps', None),
-    #
-    ('h', 'help', None),
-    ('V', 'version', None),
+    # query options
+    ('Q', 'query', None),
+    ('o', 'owns', None),
+    # operations
     ('D', 'database', None),
     ('F', 'files', None),
-    ('Q', 'query', None),
     ('R', 'remove', None),
     ('T', 'deptest', None),
     ('U', 'upgrade', None),
-    #
+    ('V', 'version', None),
+    ('h', 'help', None),
+    # universal options
     (None, 'noconfirm', None),
     (None, 'needed', None),
 ]
@@ -101,6 +104,10 @@ class PikaurArgs(Namespace):
         if self.getpkgbuild and self.nodeps:  # handle "-d"
             self.deps = self.nodeps
             self.nodeps = False
+        if (self.sync or self.pkgbuild) and self.owns:  # handle "-o"
+            self.repo = self.owns
+            self.owns = False
+
         if self.debug:
             self.print_commands = self.debug
 
@@ -299,21 +306,25 @@ def cli_print_help() -> None:
         )
 
     pikaur_options_help: List[Tuple[str, str, str]] = []
-    if args.sync or args.query:
+    if args.getpkgbuild:
         pikaur_options_help += [
-            ('-a', '--aur', _("query packages from AUR only")),
-            ('', '--repo', _("query packages from repository only")),
+            ('-d', '--deps', _("download also AUR dependencies")),
         ]
     if args.pkgbuild:
         pikaur_options_help += [
             ('-i', '--install', _("install built package")),
         ]
-    if args.getpkgbuild:
+    if args.sync or args.query or args.pkgbuild:
         pikaur_options_help += [
-            ('-d', '--deps', _("download also AUR dependencies")),
+            ('-a', '--aur', _("query packages from AUR only")),
+        ]
+    if args.query:
+        pikaur_options_help += [
+            ('', '--repo', _("query packages from repository only")),
         ]
     if args.sync or args.pkgbuild:
         pikaur_options_help += [
+            ('-o', '--repo', _("query packages from repository only")),
             ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
             ('', '--edit', _("prompt to edit PKGBUILDs and other build files")),
             ('-k', '--keepbuild', _("don't remove build dir after the build")),

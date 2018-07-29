@@ -24,7 +24,7 @@ class SysupgradeTest(PikaurDbTestCase):
     aur_pkg_name = 'etc-update'
     aur_old_version: str
 
-    aur2_pkg_name = 'python-flake8-polyfill'
+    aur2_pkg_name = 'inxi'
     aur2_old_version: str
 
     dev_pkg_name = 'pxltrm-git'

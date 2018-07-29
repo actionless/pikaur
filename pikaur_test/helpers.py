@@ -239,9 +239,8 @@ class PikaurTestCase(TestCase):
         log_stderr(self.separator)
 
     def assertInstalled(self, pkg_name: str) -> None:
-        self.assertTrue(
-            pkg_is_installed(pkg_name)
-        )
+        if not pkg_is_installed(pkg_name):
+            self.fail(f'Package "{pkg_name}" is not installed.')
 
     def assertNotInstalled(self, pkg_name: str) -> None:
         self.assertFalse(

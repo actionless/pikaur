@@ -18,7 +18,7 @@ class SysupgradeTest(PikaurDbTestCase):
     repo_pkg_name = 'tree'
     repo_old_version: str
 
-    aur_pkg_name = 'aurvote'
+    aur_pkg_name = 'etc-update'
     aur_old_version: str
 
     repo2_pkg_name = 'expac'

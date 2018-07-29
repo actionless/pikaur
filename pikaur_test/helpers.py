@@ -263,6 +263,16 @@ class PikaurDbTestCase(PikaurTestCase):
     tests which are modifying local package DB
     """
 
+    def run(self, result=None):
+        if WRITE_DB:
+            return super().run(result)
+        if result:
+            message = 'Not writing to local package DB.'
+            if getattr(result, 'getDescription', None):
+                message = result.getDescription(self) + f'. {message}'
+            result.addSkip(self, message)
+        return result
+
     def remove_packages(self, *pkg_names: str) -> None:
         pikaur('-Rs --noconfirm ' + ' '.join(pkg_names))
         for name in pkg_names:
@@ -273,12 +283,31 @@ class PikaurDbTestCase(PikaurTestCase):
             if pkg_is_installed(pkg_name):
                 self.remove_packages(pkg_name)
 
-    def run(self, result=None):
-        if WRITE_DB:
-            return super().run(result)
-        if result:
-            message = 'Not writing to local package DB.'
-            if getattr(result, 'getDescription', None):
-                message = result.getDescription(self) + f'. {message}'
-            result.addSkip(self, message)
-        return result
+    def downgrade_repo_pkg(self, repo_pkg_name: str) -> str:
+        self.remove_if_installed(repo_pkg_name)
+        spawn(f'rm -fr ./{repo_pkg_name}')
+        pikaur(f'-G {repo_pkg_name}')
+        some_older_commit = spawn(  # type: ignore
+            f'git -C ./{repo_pkg_name} log --format=%h'
+        ).stdout_text.splitlines()[10]
+        spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
+        pikaur(f'-P -i --noconfirm --mflags=--skippgpcheck '
+               f'./{repo_pkg_name}/trunk/PKGBUILD')
+        self.assertInstalled(repo_pkg_name)
+        return PackageDB.get_local_dict()[repo_pkg_name].version
+
+    def downgrade_aur_pkg(self, aur_pkg_name: str, fake_makepkg=False) -> str:
+        # and test -P and -G during downgrading :-)
+        self.remove_if_installed(aur_pkg_name)
+        spawn(f'rm -fr ./{aur_pkg_name}')
+        pikaur(f'-G {aur_pkg_name}')
+        prev_commit = spawn(  # type: ignore
+            f'git -C ./{aur_pkg_name} log --format=%h'
+        ).stdout_text.splitlines()[1]
+        spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
+        downgrade_cmd = f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD'
+        if fake_makepkg:
+            downgrade_cmd += ' --mflags=--noextract'
+        pikaur(downgrade_cmd, fake_makepkg=fake_makepkg)
+        self.assertInstalled(aur_pkg_name)
+        return PackageDB.get_local_dict()[aur_pkg_name].version

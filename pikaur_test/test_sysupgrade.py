@@ -36,43 +36,17 @@ class SysupgradeTest(PikaurDbTestCase):
         # except for test subject packages
         pikaur('-Syu --noconfirm')
 
-    def _downgrade_repo_pkg(self, repo_pkg_name: str) -> str:
-        self.remove_if_installed(repo_pkg_name)
-        spawn(f'rm -fr ./{repo_pkg_name}')
-        pikaur(f'-G {repo_pkg_name}')
-        some_older_commit = spawn(  # type: ignore
-            f'git -C ./{repo_pkg_name} log --format=%h'
-        ).stdout_text.splitlines()[10]
-        spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
-        pikaur(f'-P -i --noconfirm --mflags=--skippgpcheck '
-               f'./{repo_pkg_name}/trunk/PKGBUILD')
-        self.assertInstalled(repo_pkg_name)
-        return PackageDB.get_local_dict()[repo_pkg_name].version
-
-    def downgrade_repo_pkg(self):
-        self.repo_old_version = self._downgrade_repo_pkg(self.repo_pkg_name)
+    def downgrade_repo1_pkg(self):
+        self.repo_old_version = self.downgrade_repo_pkg(self.repo_pkg_name)
 
     def downgrade_repo2_pkg(self):
-        self.repo2_old_version = self._downgrade_repo_pkg(self.repo2_pkg_name)
+        self.repo2_old_version = self.downgrade_repo_pkg(self.repo2_pkg_name)
 
-    def _downgrade_aur_pkg(self, aur_pkg_name: str) -> str:
-        # test -P and -G during downgrading
-        self.remove_if_installed(aur_pkg_name)
-        spawn(f'rm -fr ./{aur_pkg_name}')
-        pikaur(f'-G {aur_pkg_name}')
-        prev_commit = spawn(  # type: ignore
-            f'git -C ./{aur_pkg_name} log --format=%h'
-        ).stdout_text.splitlines()[1]
-        spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
-        pikaur(f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD')
-        self.assertInstalled(aur_pkg_name)
-        return PackageDB.get_local_dict()[aur_pkg_name].version
-
-    def downgrade_aur_pkg(self):
-        self.aur_old_version = self._downgrade_aur_pkg(self.aur_pkg_name)
+    def downgrade_aur1_pkg(self):
+        self.aur_old_version = self.downgrade_aur_pkg(self.aur_pkg_name)
 
     def downgrade_aur2_pkg(self):
-        self.aur2_old_version = self._downgrade_aur_pkg(self.aur2_pkg_name)
+        self.aur2_old_version = self.downgrade_aur_pkg(self.aur2_pkg_name)
 
     def downgrade_dev_pkg(self):
         # test -P <custom_name> and -G -d during downgrading
@@ -119,8 +93,8 @@ class SysupgradeTest(PikaurDbTestCase):
         test upgrade of repo and AUR packages
         """
 
-        self.downgrade_repo_pkg()
-        self.downgrade_aur_pkg()
+        self.downgrade_repo1_pkg()
+        self.downgrade_aur1_pkg()
 
         query_result = pikaur('-Quq --aur').stdout.strip()
         self.assertEqual(
@@ -159,9 +133,9 @@ class SysupgradeTest(PikaurDbTestCase):
         test --ignore flag with sysupgrade
         """
 
-        self.downgrade_repo_pkg()
+        self.downgrade_repo1_pkg()
         self.downgrade_repo2_pkg()
-        self.downgrade_aur_pkg()
+        self.downgrade_aur1_pkg()
         self.downgrade_aur2_pkg()
 
         # ignore all upgradeable packages
@@ -224,7 +198,7 @@ class SysupgradeTest(PikaurDbTestCase):
             self.aur_old_version
         )
 
-        self.downgrade_repo_pkg()
+        self.downgrade_repo1_pkg()
 
         # ignore the only one remaining repo package
         pikaur('-Su --noconfirm '
@@ -243,8 +217,8 @@ class SysupgradeTest(PikaurDbTestCase):
         test --aur and --repo flags with sysupgrade
         """
 
-        self.downgrade_repo_pkg()
-        self.downgrade_aur_pkg()
+        self.downgrade_repo1_pkg()
+        self.downgrade_aur1_pkg()
 
         pikaur('-Su --noconfirm --repo')
         self.assertNotEqual(
@@ -256,7 +230,7 @@ class SysupgradeTest(PikaurDbTestCase):
             self.aur_old_version
         )
 
-        self.downgrade_repo_pkg()
+        self.downgrade_repo1_pkg()
 
         pikaur('-Su --noconfirm --aur')
         self.assertEqual(

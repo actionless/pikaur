@@ -77,6 +77,7 @@ class PackageBuild(DataType):
     built_packages_paths: Dict[str, str]
 
     _source_repo_updated = False
+    _build_files_copied = False
 
     failed: Optional[bool] = None
     reviewed = False
@@ -416,6 +417,8 @@ class PackageBuild(DataType):
         return False
 
     def prepare_build_destination(self) -> None:
+        if self._build_files_copied:
+            return
         if os.path.exists(self.build_dir) and not self.args.keepbuild:
             remove_dir(self.build_dir)
         copy_aur_repo(self.repo_path, self.build_dir)
@@ -427,6 +430,7 @@ class PackageBuild(DataType):
             if os.path.exists(default_pkgbuild_path):
                 os.unlink(default_pkgbuild_path)
             os.renames(custom_pkgbuild_path, default_pkgbuild_path)
+        self._build_files_copied = True
 
     def _get_deps(self) -> None:
         self.new_deps_to_install = []

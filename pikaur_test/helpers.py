@@ -162,8 +162,6 @@ def pikaur(
         ]
         if '--mflags' not in cmd:
             new_args += ['--mflags=--noextract', ]
-    # re-parse args:
-    sys.argv = new_args
 
     print(color_line('\n => ', 10) + ' '.join(sys.argv))
 
@@ -174,11 +172,14 @@ def pikaur(
     ) as _intercepted:
         try:
 
+            # re-parse args:
+            sys.argv = new_args
             CachedArgs.args = None  # pylint:disable=protected-access
             parse_args()
             # monkey-patch to force always uncolored output:
             CachedArgs.args.color = 'never'  # type: ignore # pylint:disable=protected-access
 
+            # finally run pikaur's mainloop
             main()
 
         except FakeExit:

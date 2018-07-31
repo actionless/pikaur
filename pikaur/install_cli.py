@@ -145,6 +145,7 @@ class InstallPackagesCLI():
                 pool.join()
             if self.args.refresh:
                 PackageDB.discard_repo_cache()
+                print_stdout()
 
         if self.args.sysupgrade and not self.args.repo:
             print_stderr('{} {}'.format(

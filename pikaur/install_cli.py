@@ -242,10 +242,13 @@ class InstallPackagesCLI():
                 self.install_info.thirdparty_repo_packages_install_info or
                 self.install_info.aur_updates_install_info
         ):
-            print_stdout('{} {}'.format(
-                color_line('::', 10),
-                _("Nothing to do."),
-            ))
+            if not self.args.aur and self.args.sysupgrade:
+                self.install_repo_packages()
+            else:
+                print_stdout('{} {}'.format(
+                    color_line('::', 10),
+                    _("Nothing to do."),
+                ))
             raise SysExit(0)
 
     def manual_package_selection(self):  # pragma: no cover

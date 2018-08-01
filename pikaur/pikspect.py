@@ -225,16 +225,19 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         if clear_buffer:
             self.historic_output = [b'']
 
+    def write_buffer_contents(self) -> None:
+        if (self._last_write + WRITE_INTERVAL) < time():
+            sys.stdout.buffer.write(self._write_buffer)
+            sys.stdout.buffer.flush()
+            self._write_buffer = b''
+            self._last_write = time()
+
     def write_something(self, output: bytes) -> None:
         if not self.print_output:
             return
         with PrintLock():
             self._write_buffer += output
-            if (self._last_write + WRITE_INTERVAL) < time():
-                sys.stdout.buffer.write(self._write_buffer)
-                sys.stdout.buffer.flush()
-                self._write_buffer = b''
-                self._last_write = time()
+            self.write_buffer_contents()
 
     @handle_exception_in_thread
     def cmd_output_reader_thread(self) -> None:
@@ -253,6 +256,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                     self._output_done = True
                 else:
                     sleep(SMALL_TIMEOUT)
+                self.write_buffer_contents()
                 continue
             pty_reader = readers[0]
             output = pty_reader.read(1)

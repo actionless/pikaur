@@ -226,7 +226,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.historic_output = [b'']
 
     def write_buffer_contents(self) -> None:
-        if (self._last_write + WRITE_INTERVAL) < time():
+        if (self._last_write + WRITE_INTERVAL) < time() and self._write_buffer:
             sys.stdout.buffer.write(self._write_buffer)
             sys.stdout.buffer.flush()
             self._write_buffer = b''

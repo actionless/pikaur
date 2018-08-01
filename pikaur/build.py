@@ -255,7 +255,7 @@ class PackageBuild(DataType):
         return min([
             compare_versions(
                 local_db[pkg_name].version,
-                SrcInfo(self.build_dir, pkg_name).get_version()
+                SrcInfo(self.repo_path, pkg_name).get_version()
             ) == 0
             if pkg_name in local_db else False
             for pkg_name in self.package_names

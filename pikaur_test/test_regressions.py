@@ -71,7 +71,11 @@ class RegressionTest(PikaurDbTestCase):
         )
 
     def test_getpkgbuild_group_package(self):
+        result = pikaur('-G gnome', capture_stderr=True)
         self.assertEqual(
-            pikaur('-G gnome').returncode,
-            0
+            result.returncode, 0
+        )
+        self.assertIn(
+            'cannot be found',
+            result.stderr
         )

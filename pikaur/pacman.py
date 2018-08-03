@@ -473,7 +473,7 @@ class PackageDB(PackageDBCommon):
                     provided_name = VersionMatcher(provided_pkg_line).pkg_name
                     if provided_name == pkg_name:
                         return pkg
-        raise Exception(f'Failed to find "{pkg_name}" in the output: {found_pkgs}')
+        raise PackagesNotFoundInRepo(packages=[pkg_name])
 
 
 def get_upgradeable_package_names() -> List[str]:

@@ -2,7 +2,7 @@
 
 # pylint: disable=no-name-in-module
 
-from pikaur_test.helpers import PikaurDbTestCase, fake_pikaur
+from pikaur_test.helpers import PikaurDbTestCase, fake_pikaur, pikaur
 
 
 class RegressionTest(PikaurDbTestCase):
@@ -67,5 +67,11 @@ class RegressionTest(PikaurDbTestCase):
         )
         self.assertEqual(
             PackageDB.get_local_dict()[explicitly_installed_dep_name].reason,
+            0
+        )
+
+    def test_getpkgbuild_group_package(self):
+        self.assertEqual(
+            pikaur('-G gnome').returncode,
             0
         )

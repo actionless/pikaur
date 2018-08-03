@@ -65,11 +65,35 @@ def get_pacman_command() -> List[str]:
     args = parse_args()
     pacman_path = PikaurConfig().misc.PacmanPath
     pacman_cmd = [pacman_path, ]
-    if args.root:
-        pacman_cmd += ['--root', args.root]
     if color_enabled():
-        return pacman_cmd + ['--color=always']
-    return pacman_cmd + ['--color=never']
+        pacman_cmd += ['--color=always']
+    else:
+        pacman_cmd += ['--color=never']
+
+    for arg in [
+            'dbpath',
+            'root',
+            'arch',
+            'cachedir',
+            'config',
+            'gpgdir',
+            'hookdir',
+            'logfile',
+            'print_format',
+    ]:
+        value = getattr(args, arg)
+        if value:
+            pacman_cmd += ['--' + arg.replace('_', '-'), value]
+
+    for arg in [
+            'overwrite',
+            'assume_installed',
+            'ignoregroup',
+    ]:
+        for value in getattr(args, arg) or []:
+            pacman_cmd += ['--' + arg.replace('_', '-'), value]
+
+    return pacman_cmd
 
 
 class PacmanPrint(DataType):

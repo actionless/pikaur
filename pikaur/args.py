@@ -66,7 +66,15 @@ def get_pikaur_bool_opts() -> ArgSchema:
 
 PACMAN_STR_OPTS: ArgSchema = [
     (None, 'color', None),
+    ('b', 'dbpath', None),  # @TODO: pyalpm?
     ('r', 'root', None),
+    (None, 'arch', None),  # @TODO
+    (None, 'cachedir', None),  # @TODO
+    (None, 'config', None),  # @TODO
+    (None, 'gpgdir', None),
+    (None, 'hookdir', None),
+    (None, 'logfile', None),
+    (None, 'print-format', None),  # @TODO
 ]
 
 
@@ -86,6 +94,10 @@ PACMAN_COUNT_OPTS: ArgSchema = [
 
 PACMAN_APPEND_OPTS: ArgSchema = [
     (None, 'ignore', None),
+    (None, 'ignoregroup', None),  # @TODO
+    ('l', 'list', None),  # @TODO
+    (None, 'overwrite', None),
+    (None, 'assume-installed', None),  # @TODO
 ]
 
 
@@ -318,7 +330,21 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
         f'--{key}' if len(key) > 1 else f'-{key}': value
         for key, value in vars(parsed_args).items()
         if value
-        if key not in ignore_args + ['raw', 'unknown_args', 'positional', 'color', 'root']
+        if key not in ignore_args + [
+            'raw', 'unknown_args', 'positional', 'color',
+            'dbpath',
+            'root',
+            'arch',
+            'cachedir',
+            'config',
+            'gpgdir',
+            'hookdir',
+            'logfile',
+            'print_format',
+            'overwrite',
+            'assume_installed',
+            'ignoregroup',
+        ]
     }
     return list(set(
         list(reconstructed_args.keys()) + parsed_args.unknown_args

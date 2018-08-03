@@ -249,13 +249,11 @@ def cli_entry_point() -> None:
             cli_info_packages()
         elif args.clean:
             cli_clean_packages_cache()
-        elif args.sysupgrade or '-S' in raw_args or '-Sy' in raw_args:
-            cli_install_packages()
-        elif args.groups:
+        elif args.groups or args.list:   # @TODO: implement -l/--list
             not_implemented_in_pikaur = True
             require_sudo = False
         else:
-            not_implemented_in_pikaur = True
+            cli_install_packages()
 
     else:
         not_implemented_in_pikaur = True

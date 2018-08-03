@@ -12,7 +12,7 @@ import codecs
 import shutil
 import atexit
 import io
-from typing import List
+from typing import List, Optional
 from time import sleep
 from argparse import ArgumentError  # pylint: disable=no-name-in-module
 from multiprocessing.pool import ThreadPool
@@ -140,6 +140,7 @@ def cli_pkgbuild() -> None:
 
 
 def cli_getpkgbuild() -> None:
+    check_runtime_deps(['asp'])
     args = parse_args()
     pwd = os.path.abspath(os.path.curdir)
     aur_pkg_names = args.positional
@@ -279,15 +280,17 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
     return version >= 235
 
 
-def check_runtime_deps():
+def check_runtime_deps(dep_names: Optional[List[str]] = None):
     if running_as_root() and not check_systemd_dynamic_users():
         print_error(
             _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         )
         sys.exit(65)
-    for dep_bin in [
+    if not dep_names:
+        dep_names = [
             "fakeroot",
-    ] + (['sudo'] if not running_as_root() else []):
+        ] + (['sudo'] if not running_as_root() else [])
+    for dep_bin in dep_names:
         if not shutil.which(dep_bin):
             print_error("'{}' {}.".format(
                 bold_line(dep_bin),

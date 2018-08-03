@@ -53,5 +53,5 @@ check_man: backup_man man
 clean_checkman:
 	$(RM) $(MAN_FILE_BAK)
 
-.PHONY: all clean $(POTFILE)
+.PHONY: all clean $(POTFILE) clean_man man backup_man check_man clean_checkman
 .PRECIOUS: $(LOCALEDIR)/%.po

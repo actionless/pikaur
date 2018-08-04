@@ -561,7 +561,7 @@ class PackageBuild(DataType):
                         _("[p] pgp check skip"),
                         _("[c] checksums skip"),
                         _("[i] ignore architecture"),
-                        _("[v] skip all the source verification checks"),
+                        _("[v] skip all source verification checks"),
                         "-" * 24,
                         _("[s] skip building this package"),
                         _("[a] abort building all the packages"),

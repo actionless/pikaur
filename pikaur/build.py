@@ -213,6 +213,7 @@ class PackageBuild(DataType):
             return current_hash_file.readlines()[0].strip()
 
     def get_latest_dev_sources(self) -> None:
+        self.prepare_build_destination()
         if self._source_repo_updated:
             return
         if not is_devel_pkg(self.package_base):
@@ -227,7 +228,6 @@ class PackageBuild(DataType):
                 bold_line(', '.join(self.package_names))
             )
         ))
-        self.prepare_build_destination()
         pkgver_result = pikspect(
             isolate_root_cmd(
                 get_makepkg_cmd() + [
@@ -255,7 +255,7 @@ class PackageBuild(DataType):
         return min([
             compare_versions(
                 local_db[pkg_name].version,
-                SrcInfo(self.repo_path, pkg_name).get_version()
+                SrcInfo(self.build_dir, pkg_name).get_version()
             ) == 0
             if pkg_name in local_db else False
             for pkg_name in self.package_names

@@ -32,7 +32,7 @@ git push origin HEAD
 git push origin "${new_version}"
 
 
-git tag -n9 > "${aur_dev_repo_dir}"/CHANGELOG
+./maintenance_scripts/changelog.sh > "${aur_dev_repo_dir}"/CHANGELOG
 cp PKGBUILD "${aur_dev_repo_dir}"/PKGBUILD
 # shellcheck disable=SC2164
 cd "${aur_dev_repo_dir}"
@@ -46,7 +46,7 @@ git push origin HEAD
 
 
 cd "${src_repo_dir}"
-git tag -n9 > "${aur_repo_dir}"/CHANGELOG
+./maintenance_scripts/changelog.sh > "${aur_repo_dir}"/CHANGELOG
 sed \
 	-e 's|pkgname=pikaur-git|pkgname=pikaur|' \
 	-e 's|"$pkgname::git+https://github.com/actionless/pikaur.git#branch=master"|"$pkgname-$pkgver.tar.gz"::https://github.com/actionless/pikaur/archive/"$pkgver".tar.gz|' \

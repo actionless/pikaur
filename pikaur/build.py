@@ -384,7 +384,10 @@ class PackageBuild(DataType):
             return True
         return False
 
-    def prepare_build_destination(self) -> None:
+    def prepare_build_destination(self, flush=False) -> None:
+        if flush:
+            remove_dir(self.build_dir)
+            self._build_files_copied = False
         if self._build_files_copied:
             return
         if os.path.exists(self.build_dir) and not self.args.keepbuild:
@@ -562,6 +565,7 @@ class PackageBuild(DataType):
                         _("[c] checksums skip"),
                         _("[i] ignore architecture"),
                         _("[v] skip all source verification checks"),
+                        _("[d] delete build dir and try again"),
                         "-" * 24,
                         _("[s] skip building this package"),
                         _("[a] abort building all the packages"),
@@ -569,7 +573,7 @@ class PackageBuild(DataType):
                 )
                 answer = get_input(
                     prompt,
-                    _('r').upper() + _('p') + _('c') + _('i') + _('s') + _('a')
+                    _('r').upper() + _('p') + _('c') + _('i') + _('v') + _('d') + _('s') + _('a')
                 )
 
             answer = answer.lower()[0]
@@ -586,6 +590,9 @@ class PackageBuild(DataType):
                 continue
             elif answer == _("v"):
                 skip_integration_checks = True
+                continue
+            elif answer == _("d"):
+                self.prepare_build_destination(flush=True)
                 continue
             elif answer == _("a"):
                 raise SysExit(125)

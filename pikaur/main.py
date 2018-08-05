@@ -12,10 +12,10 @@ import codecs
 import shutil
 import atexit
 import io
-from typing import List, Optional
 from time import sleep
 from argparse import ArgumentError  # pylint: disable=no-name-in-module
 from multiprocessing.pool import ThreadPool
+from typing import List, Optional, Callable
 
 from .i18n import _  # keep that first
 from .args import (
@@ -222,50 +222,56 @@ def cli_entry_point() -> None:
     args = parse_args()
     raw_args = args.raw
 
-    not_implemented_in_pikaur = False
-    require_sudo = True
+    pikaur_operation: Optional[Callable] = None
+    require_sudo = False
 
     if args.help:
-        cli_print_help()
+        pikaur_operation = cli_print_help
     elif args.version:
-        cli_print_version()
+        pikaur_operation = cli_print_version
 
     elif args.query:
         if args.sysupgrade:
-            cli_print_upgradeable()
-        else:
-            not_implemented_in_pikaur = True
-            require_sudo = False
+            pikaur_operation = cli_print_upgradeable
 
     elif args.getpkgbuild:
-        cli_getpkgbuild()
+        pikaur_operation = cli_getpkgbuild
 
     elif args.pkgbuild:
-        cli_pkgbuild()
+        require_sudo = True
+        pikaur_operation = cli_pkgbuild
 
     elif args.sync:
         if args.search:
-            cli_search_packages()
+            pikaur_operation = cli_search_packages
         elif args.info:
-            cli_info_packages()
+            pikaur_operation = cli_info_packages
         elif args.clean:
-            cli_clean_packages_cache()
+            require_sudo = True
+            pikaur_operation = cli_clean_packages_cache
         elif args.groups or args.list:   # @TODO: implement -l/--list
-            not_implemented_in_pikaur = True
             require_sudo = False
         else:
-            cli_install_packages()
+            require_sudo = True
+            pikaur_operation = cli_install_packages
 
     else:
-        not_implemented_in_pikaur = True
+        require_sudo = True
 
-    if not_implemented_in_pikaur:
-        if require_sudo and raw_args:
-            sys.exit(
-                interactive_spawn(sudo([PikaurConfig().misc.PacmanPath, ] + raw_args)).returncode
-            )
+    if pikaur_operation:
+        if require_sudo and args.dynamic_users and not running_as_root():
+            # Restart pikaur with sudo to use systemd dynamic users
+            sys.exit(interactive_spawn(sudo(sys.argv)).returncode)
+        else:
+            # Or just run the operation normally
+            pikaur_operation()
+    else:
+        # Just bypass all the args to pacman
+        pacman_args = [PikaurConfig().misc.PacmanPath, ] + (raw_args or [])
+        if require_sudo:
+            pacman_args = sudo(pacman_args)
         sys.exit(
-            interactive_spawn([PikaurConfig().misc.PacmanPath, ] + raw_args).returncode
+            interactive_spawn(pacman_args).returncode
         )
 
 
@@ -329,9 +335,6 @@ def main() -> None:
         print_stderr(exc)
         sys.exit(22)
     check_runtime_deps()
-
-    if not running_as_root() and args.dynamic_users:
-        sys.exit(interactive_spawn(sudo(sys.argv)).returncode)
 
     create_dirs()
     # initialize config to avoid race condition in threads:

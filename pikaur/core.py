@@ -6,6 +6,8 @@ import os
 import shutil
 import subprocess
 import tempfile
+from multiprocessing.pool import ThreadPool
+from time import sleep
 from typing import (
     TYPE_CHECKING,
     Any, Callable, Iterable, List, Optional, Union
@@ -18,6 +20,9 @@ if TYPE_CHECKING:
 
 
 NOT_FOUND_ATOM = object()
+
+
+SUDO_LOOP_INTERVAL = 1
 
 
 class DataType():
@@ -221,3 +226,35 @@ def get_editor() -> Optional[List[str]]:
 
 def dirname(path):
     return os.path.dirname(path) or '.'
+
+
+def sudo_loop(once=False) -> None:
+    """
+    get sudo for further questions (command should do nothing)
+    """
+    while True:
+        interactive_spawn(['sudo', '-v'])
+        if once:
+            break
+        sleep(SUDO_LOOP_INTERVAL)
+
+
+def run_with_sudo_loop(function: Callable) -> Optional[Any]:
+    sudo_loop(once=True)
+    with ThreadPool(processes=2) as pool:
+        main_thread = pool.apply_async(function, ())
+        pool.apply_async(sudo_loop)
+        pool.close()
+        catched_exc = None
+        result: Optional[Any] = None
+        try:
+            result = main_thread.get()
+        except Exception as exc:
+            catched_exc = exc
+        finally:
+            pool.terminate()
+        if catched_exc:
+            raise catched_exc  # pylint: disable=raising-bad-type
+        if result:
+            return result
+        return None

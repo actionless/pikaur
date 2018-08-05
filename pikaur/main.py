@@ -12,9 +12,7 @@ import codecs
 import shutil
 import atexit
 import io
-from time import sleep
 from argparse import ArgumentError  # pylint: disable=no-name-in-module
-from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Callable
 
 from .i18n import _  # keep that first
@@ -23,7 +21,8 @@ from .args import (
 )
 from .core import (
     InstallInfo,
-    spawn, interactive_spawn, running_as_root, remove_dir, sudo, isolate_root_cmd,
+    spawn, interactive_spawn, remove_dir,
+    running_as_root, sudo, isolate_root_cmd, run_with_sudo_loop,
 )
 from .pprint import color_line, bold_line, print_stderr, print_stdout, print_error
 from .print_department import (
@@ -43,9 +42,6 @@ from .info_cli import cli_info_packages
 from .aur import find_aur_packages, get_repo_url
 from .aur_deps import get_aur_deps_list
 from .pacman import PackageDB, PackagesNotFoundInRepo
-
-
-SUDO_LOOP_INTERVAL = 1
 
 
 def init_readline() -> None:
@@ -100,39 +96,8 @@ def cli_print_upgradeable() -> None:
         ))
 
 
-def sudo_loop(once=False) -> None:
-    """
-    get sudo for further questions (command should do nothing)
-    """
-    while True:
-        interactive_spawn(['sudo', '-v'])
-        if once:
-            break
-        sleep(SUDO_LOOP_INTERVAL)
-
-
 def cli_install_packages() -> None:
-
-    def _run_install() -> None:
-        InstallPackagesCLI()
-
-    if running_as_root():
-        _run_install()
-    else:
-        sudo_loop(once=True)
-        with ThreadPool(processes=2) as pool:
-            install_packages_thread = pool.apply_async(_run_install, ())
-            pool.apply_async(sudo_loop)
-            pool.close()
-            catched_exc = None
-            try:
-                install_packages_thread.get()
-            except Exception as exc:
-                catched_exc = exc
-            finally:
-                pool.terminate()
-            if catched_exc:
-                raise catched_exc  # pylint: disable=raising-bad-type
+    InstallPackagesCLI()
 
 
 def cli_pkgbuild() -> None:
@@ -220,13 +185,12 @@ def cli_entry_point() -> None:
     # specified both operations, like `pikaur -QS smth`
 
     args = parse_args()
-    raw_args = args.raw
-
     pikaur_operation: Optional[Callable] = None
     require_sudo = False
 
     if args.help:
         pikaur_operation = cli_print_help
+
     elif args.version:
         pikaur_operation = cli_print_version
 
@@ -263,11 +227,15 @@ def cli_entry_point() -> None:
             # Restart pikaur with sudo to use systemd dynamic users
             sys.exit(interactive_spawn(sudo(sys.argv)).returncode)
         else:
-            # Or just run the operation normally
-            pikaur_operation()
+            if not require_sudo or running_as_root():
+                # Just run the operation normally
+                pikaur_operation()
+            else:
+                # Or use sudo loop if not running as root but need to have it later
+                run_with_sudo_loop(pikaur_operation)
     else:
         # Just bypass all the args to pacman
-        pacman_args = [PikaurConfig().misc.PacmanPath, ] + (raw_args or [])
+        pacman_args = [PikaurConfig().misc.PacmanPath, ] + (args.raw or [])
         if require_sudo:
             pacman_args = sudo(pacman_args)
         sys.exit(

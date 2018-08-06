@@ -110,6 +110,8 @@ Will be overriden by `--nodiff` flag.
 always isolate the build using systemd dynamic users.
 Will be overriden by `--dynamic-users` flag.
 
+##### DontEditByDefault (default: no)
+sets default response to always be no for editing files.
 
 #### [colors]
 

@@ -489,7 +489,8 @@ class InstallPackagesCLI():
                     file=filename,
                     name=bold_line(', '.join(package_build.package_names)),
                 ),
-                default_yes=not package_build.is_installed
+                default_yes=not (package_build.is_installed or
+                                 PikaurConfig().build.get_bool("DontEditByDefault"))
         ):
             full_filename = os.path.join(
                 package_build.repo_path,

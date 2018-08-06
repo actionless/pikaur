@@ -70,6 +70,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no',
         },
+        'DontEditByDefault': {
+            'type': 'bool',
+            'default': 'no',
+        },
     },
     'colors': {
         'Version': {

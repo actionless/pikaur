@@ -99,7 +99,7 @@ class VersionMatcher():
 
         if cond:
             splitted_line = self.line.split(cond)
-            pkg_name = splitted_line[1]
+            pkg_name = splitted_line[0]
             version = cond.join(splitted_line[1:])
         else:
             pkg_name = self.line

@@ -99,7 +99,7 @@ Will be overriden by `-k/--keepbuild` flag.
 always skip the build if it fails and don't show recovery prompt.
 
 ##### DontEditByDefault (default: no)
-always default to no for editing PKGBUILD and install files.
+always default to no when prompting to edit PKGBUILD and install files.
 
 ##### NoEdit (default: no)
 don't prompt to edit PKGBUILD and install files.

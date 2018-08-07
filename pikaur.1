@@ -151,6 +151,9 @@ don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the
 .SS "SkipFailedBuild (default: no)"
 always skip the build if it fails and don\'t show recovery prompt\.
 .
+.SS "DontEditByDefault (default: no)"
+always default to no for editing PKGBUILD and install files\.
+.
 .SS "NoEdit (default: no)"
 don\'t prompt to edit PKGBUILD and install files\. Will be overriden by \fB\-\-noedit\fR and \fB\-\-edit\fR flags\.
 .
@@ -159,9 +162,6 @@ don\'t prompt to show the build files diff\. Will be overriden by \fB\-\-nodiff\
 .
 .SS "AlwaysUseDynamicUsers (default: no)"
 always isolate the build using systemd dynamic users\. Will be overriden by \fB\-\-dynamic\-users\fR flag\.
-.
-.SS "DontEditByDefault (default: no)"
-sets default response to always be no for editing files\.
 .
 .SS "[colors]"
 terminal colors, from 0 to 15

@@ -108,7 +108,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     pty_out: BinaryIO
     default_questions: Dict[str, List[str]]
     max_question_length = 0
-    _output_done = False
     # write buffer:
     _write_buffer: bytes = b''
     _last_write: float = 0
@@ -180,7 +179,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                         output_task.get()
                         sys.stdout.buffer.write(self._write_buffer)
                         sys.stdout.buffer.flush()
-                        self._output_done = True
                         communicate_task.get()
                         pool.join()
                         self.pty_out.close()
@@ -243,9 +241,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             if not readers:
                 if self.returncode is not None:
                     break
-                if self.historic_output:
-                    self._output_done = True
-                else:
+                if not self.historic_output:
                     sleep(SMALL_TIMEOUT)
                 self.write_buffer_contents()
                 continue

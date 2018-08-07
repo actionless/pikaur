@@ -163,7 +163,7 @@ def pikaur(
         if '--mflags' not in cmd:
             new_args += ['--mflags=--noextract', ]
 
-    print(color_line('\n => ', 10) + ' '.join(sys.argv))
+    print(color_line('\n => ', 10) + ' '.join(new_args))
 
     intercepted: InterceptSysOutput
     with InterceptSysOutput(

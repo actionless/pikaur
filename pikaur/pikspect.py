@@ -12,7 +12,6 @@ import fcntl
 import uuid
 import os
 import re
-import threading
 from multiprocessing.pool import ThreadPool
 from time import time, sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
@@ -114,9 +113,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     _write_buffer: bytes = b''
     _last_write: float = 0
     # some help for mypy:
-    _waitpid_lock: threading.Lock
-    _try_wait: Callable
-    _handle_exitstatus: Callable
+    _wait: Callable
 
     def __init__(  # pylint: disable=too-many-arguments
             self,
@@ -161,15 +158,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
     @handle_exception_in_thread
     def communicator_thread(self) -> int:
-        while self.returncode is None:
-            sleep(SMALL_TIMEOUT)
-            with self._waitpid_lock:
-                if self.returncode is not None:
-                    break  # Another thread waited.
-                (pid, sts) = self._try_wait(0)
-                if pid == self.pid and self._output_done:
-                    self._handle_exitstatus(sts)
-        return self.returncode
+        return self._wait(None)
 
     def run(self) -> None:
         with NestedTerminal() as real_term_geometry:

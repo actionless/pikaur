@@ -98,7 +98,9 @@ class VersionMatcher():
                 break
 
         if cond:
-            pkg_name, version = self.line.split(cond)[:2]
+            splitted_line = self.line.split(cond)
+            pkg_name = splitted_line[1]
+            version = cond.join(splitted_line[1:])
         else:
             pkg_name = self.line
 

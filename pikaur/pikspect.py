@@ -149,7 +149,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.default_questions[answer] = self.default_questions.get(answer, []) + questions
             for question in questions:
                 if len(question) > self.max_question_length:
-                    self.max_question_length = len(question)
+                    self.max_question_length = len(question.encode('utf-8'))
         self.check_questions()
 
     def get_output_bytes(self) -> bytes:

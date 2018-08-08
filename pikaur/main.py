@@ -151,11 +151,11 @@ def cli_clean_packages_cache() -> None:
     args = parse_args()
     if not args.repo:
         for directory, message, minimal_clean_level in (
-                (BUILD_CACHE_PATH, "Build directory", 1, ),
-                (PACKAGE_CACHE_PATH, "Packages directory", 2, ),
+                (BUILD_CACHE_PATH, _("Build directory"), 1, ),
+                (PACKAGE_CACHE_PATH, _("Packages directory"), 2, ),
         ):
             if minimal_clean_level <= args.clean and os.path.exists(directory):
-                print_stdout('\n' + _("{}: {}").format(message, directory))
+                print_stdout('\n' + "{}: {}".format(message, directory))
                 if ask_to_continue(text='{} {}'.format(
                         color_line('::', 12),
                         _("Do you want to remove all files?")

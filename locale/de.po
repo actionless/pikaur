@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-07 06:10+0200\n"
+"POT-Creation-Date: 2018-08-08 00:07+0200\n"
 "PO-Revision-Date: 2018-06-08 17:51+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -283,7 +283,7 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Zu installierendes 3rd-Party Repository-Paket:"
 msgstr[1] "Zu installierende 3rd-Party Repository-Pakete:"
 
-#: pikaur/install_cli.py:418 pikaur/build.py:561
+#: pikaur/build.py:561 pikaur/install_cli.py:418
 msgid "Try recovering?"
 msgstr "Versuchen wiederherzustellen?"
 
@@ -364,8 +364,8 @@ msgstr ""
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[P]aketdetails anzeigen, Pakete [m]anuell auswählen"
 
-#: pikaur/install_cli.py:414 pikaur/install_cli.py:425 pikaur/build.py:557
-#: pikaur/build.py:576 pikaur/build.py:597
+#: pikaur/build.py:557 pikaur/build.py:576 pikaur/build.py:597
+#: pikaur/install_cli.py:414 pikaur/install_cli.py:425
 msgid "a"
 msgstr "a"
 
@@ -381,8 +381,8 @@ msgstr ""
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "Führe immer sysupgrade auf '-git', '-svn' und andere dev Pakete aus"
 
-#: pikaur/install_cli.py:425 pikaur/install_cli.py:428 pikaur/build.py:576
-#: pikaur/build.py:585
+#: pikaur/build.py:576 pikaur/build.py:585 pikaur/install_cli.py:425
+#: pikaur/install_cli.py:428
 msgid "c"
 msgstr "c"
 
@@ -450,7 +450,7 @@ msgstr "Suche nach in Konflikt stehenden Pakten..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:323 pikaur/prompt.py:17
+#: pikaur/prompt.py:17 pikaur/install_cli.py:323
 msgid "n"
 msgstr "n"
 
@@ -515,13 +515,13 @@ msgstr "Nur AUR-Pakete abfragen"
 msgid "query packages from repository only"
 msgstr "Nur Repository-Pakete abfragen"
 
-#: pikaur/install_cli.py:425 pikaur/install_cli.py:430 pikaur/build.py:576
-#: pikaur/build.py:580
+#: pikaur/build.py:576 pikaur/build.py:580 pikaur/install_cli.py:425
+#: pikaur/install_cli.py:430
 msgid "r"
 msgstr "e"
 
-#: pikaur/install_cli.py:425 pikaur/install_cli.py:432 pikaur/build.py:555
-#: pikaur/build.py:576
+#: pikaur/build.py:555 pikaur/build.py:576 pikaur/install_cli.py:425
+#: pikaur/install_cli.py:432
 msgid "s"
 msgstr "u"
 
@@ -542,8 +542,8 @@ msgstr ""
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr ""
 
-#: pikaur/install_cli.py:323 pikaur/install_cli.py:338 pikaur/build.py:576
-#: pikaur/build.py:591
+#: pikaur/build.py:576 pikaur/build.py:591 pikaur/install_cli.py:323
+#: pikaur/install_cli.py:338
 msgid "v"
 msgstr "p"
 
@@ -551,7 +551,7 @@ msgstr "p"
 msgid "warning:"
 msgstr "Warnung:"
 
-#: pikaur/install_cli.py:323 pikaur/install_cli.py:336 pikaur/prompt.py:16
+#: pikaur/prompt.py:16 pikaur/install_cli.py:323 pikaur/install_cli.py:336
 msgid "y"
 msgstr "j"
 

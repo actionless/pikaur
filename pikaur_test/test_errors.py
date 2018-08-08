@@ -7,6 +7,7 @@ from pikaur_test.helpers import PikaurDbTestCase, pikaur
 
 MSG_CANNOT_BE_FOUND = "cannot be found"
 MSG_DEPS_MISSING = "Dependencies missing"
+MSG_VERSION_MISMATCH = "Version mismatch"
 
 
 class FailureTest(PikaurDbTestCase):
@@ -32,7 +33,7 @@ class FailureTest(PikaurDbTestCase):
 
     def test_dep_not_found(self):
         """
-        package can't be found in AUR
+        depedency package can't be found in AUR
         """
         pkg_name = "pikaur-test-not-found-dep"
         not_existing_dep_name = "not-existing-package-y8r73ruue99y5u77t5u4r"
@@ -48,4 +49,32 @@ class FailureTest(PikaurDbTestCase):
             result.stderr.splitlines()[-1].strip(),
             not_existing_dep_name
         )
+        self.assertNotInstalled(pkg_name)
+
+    def test_version_mismatch_aur(self):
+        """
+        dependency AUR package version not satisfied
+        """
+        pkg_name = "pikaur-test-version-mismatch-aur"
+        result = pikaur(
+            f'-Pi ./pikaur_test/PKGBUILD_version_mismatch_aur',
+            capture_stderr=True
+        )
+        self.assertEqual(result.returncode, 131)
+        self.assertIn(MSG_VERSION_MISMATCH, result.stderr)
+        self.assertIn(pkg_name, result.stderr)
+        self.assertNotInstalled(pkg_name)
+
+    def test_version_mismatch_repo(self):
+        """
+        dependency repo package version not satisfied
+        """
+        pkg_name = "pikaur-test-version-mismatch-repo"
+        result = pikaur(
+            f'-Pi ./pikaur_test/PKGBUILD_version_mismatch_repo',
+            capture_stderr=True
+        )
+        self.assertEqual(result.returncode, 131)
+        self.assertIn(MSG_VERSION_MISMATCH, result.stderr)
+        self.assertIn(pkg_name, result.stderr)
         self.assertNotInstalled(pkg_name)

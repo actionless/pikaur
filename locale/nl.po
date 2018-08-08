@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-07 06:10+0200\n"
+"POT-Creation-Date: 2018-08-08 00:07+0200\n"
 "PO-Revision-Date: 2018-05-24 12:43+0200\n"
 "Last-Translator: Bert Peters <bert@bertptrs.nl>\n"
 "Language-Team: none\n"
@@ -286,7 +286,7 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Pakket van derden zal worden geïnstalleerd:"
 msgstr[1] "Pakketten van derden zullen worden geïnstalleerd:"
 
-#: pikaur/install_cli.py:418 pikaur/build.py:561
+#: pikaur/build.py:561 pikaur/install_cli.py:418
 msgid "Try recovering?"
 msgstr "Proberen te herstellen?"
 
@@ -367,8 +367,8 @@ msgstr ""
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[b]ekijk pakket verschil \t[h]andmatige selectie"
 
-#: pikaur/install_cli.py:414 pikaur/install_cli.py:425 pikaur/build.py:557
-#: pikaur/build.py:576 pikaur/build.py:597
+#: pikaur/build.py:557 pikaur/build.py:576 pikaur/build.py:597
+#: pikaur/install_cli.py:414 pikaur/install_cli.py:425
 msgid "a"
 msgstr "a"
 
@@ -384,8 +384,8 @@ msgstr ""
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "update altijd '-git', '-svn' en andere ontwikkelingspakketten"
 
-#: pikaur/install_cli.py:425 pikaur/install_cli.py:428 pikaur/build.py:576
-#: pikaur/build.py:585
+#: pikaur/build.py:576 pikaur/build.py:585 pikaur/install_cli.py:425
+#: pikaur/install_cli.py:428
 msgid "c"
 msgstr "c"
 
@@ -451,7 +451,7 @@ msgstr "zoeken naar conflicterende pakketten..."
 msgid "m"
 msgstr "h"
 
-#: pikaur/install_cli.py:323 pikaur/prompt.py:17
+#: pikaur/prompt.py:17 pikaur/install_cli.py:323
 msgid "n"
 msgstr "n"
 
@@ -516,13 +516,13 @@ msgstr "zoek allen pakketten uit AUR"
 msgid "query packages from repository only"
 msgstr "zoek alleen pakketten uit repository"
 
-#: pikaur/install_cli.py:425 pikaur/install_cli.py:430 pikaur/build.py:576
-#: pikaur/build.py:580
+#: pikaur/build.py:576 pikaur/build.py:580 pikaur/install_cli.py:425
+#: pikaur/install_cli.py:430
 msgid "r"
 msgstr "r"
 
-#: pikaur/install_cli.py:425 pikaur/install_cli.py:432 pikaur/build.py:555
-#: pikaur/build.py:576
+#: pikaur/build.py:555 pikaur/build.py:576 pikaur/install_cli.py:425
+#: pikaur/install_cli.py:432
 msgid "s"
 msgstr "s"
 
@@ -543,8 +543,8 @@ msgstr ""
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr ""
 
-#: pikaur/install_cli.py:323 pikaur/install_cli.py:338 pikaur/build.py:576
-#: pikaur/build.py:591
+#: pikaur/build.py:576 pikaur/build.py:591 pikaur/install_cli.py:323
+#: pikaur/install_cli.py:338
 msgid "v"
 msgstr "b"
 
@@ -552,7 +552,7 @@ msgstr "b"
 msgid "warning:"
 msgstr "waarschuwing:"
 
-#: pikaur/install_cli.py:323 pikaur/install_cli.py:336 pikaur/prompt.py:16
+#: pikaur/prompt.py:16 pikaur/install_cli.py:323 pikaur/install_cli.py:336
 msgid "y"
 msgstr "j"
 

@@ -155,7 +155,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     def get_output_bytes(self) -> bytes:
         return ThreadSafeBytesStorage.get_bytes_output(self.task_id)
 
-    @handle_exception_in_thread
     def communicator_thread(self) -> int:
         return self._wait(None)
 
@@ -228,7 +227,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self._write_buffer += output
             self.write_buffer_contents()
 
-    @handle_exception_in_thread
     def cmd_output_reader_thread(self) -> None:
         while True:
 
@@ -257,7 +255,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.check_questions()
 
     @handle_exception_in_thread
-    def user_input_reader_thread(self) -> None:
+    def user_input_reader_thread(self) -> None:  # pragma: no cover
         while self.returncode is None:
             if not self.capture_input:
                 sleep(SMALL_TIMEOUT)

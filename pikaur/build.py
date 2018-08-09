@@ -57,7 +57,7 @@ def copy_aur_repo(from_path, to_path) -> None:
 
     result = spawn(cmd_args)
     if result.returncode != 0:
-        if not os.path.exists(to_path):
+        if os.path.exists(to_path):
             remove_dir(to_path)
         result = interactive_spawn(cmd_args)
         if result.returncode != 0:

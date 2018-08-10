@@ -48,10 +48,21 @@ def print_version(pacman_version: str, quiet=False) -> None:
 
 
 def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
+    num_packages = len(not_found_packages)
     print_warning(
-        bold_line(_("Following packages cannot be found in repositories:"))
-        if repo else
-        bold_line(_("Following packages cannot be found in AUR:"))
+        bold_line(
+            _n(
+                "Following package cannot be found in repositories:",
+                "Following packages cannot be found in repositories:",
+                num_packages
+            )
+            if repo else
+            _n(
+                "Following package cannot be found in AUR:",
+                "Following packages cannot be found in AUR:",
+                num_packages
+            )
+        )
     )
     for package in not_found_packages:
         print_stderr(format_paragraph(package))

@@ -255,6 +255,11 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
 
 
 def check_runtime_deps(dep_names: Optional[List[str]] = None):
+    if sys.version_info.major < 3 or sys.version_info.minor < 7:
+        print_error(
+            _("pikaur requires Python >= 3.7 to run."),
+        )
+        sys.exit(65)
     if running_as_root() and not check_systemd_dynamic_users():
         print_error(
             _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),

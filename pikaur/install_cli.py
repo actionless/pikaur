@@ -235,6 +235,7 @@ class InstallPackagesCLI():
 
         if self.args.repo and self.not_found_repo_pkgs_names:
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)
+            raise SysExit(6)
 
         # check if we really need to build/install anything
         if not (

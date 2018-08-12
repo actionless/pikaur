@@ -82,7 +82,7 @@ def get_editor_or_exit() -> Optional[List[str]]:
     editor = get_editor()
     if not editor:
         print_warning(_("no editor found. Try setting $VISUAL or $EDITOR."))
-        if not ask_to_continue(_("Do you want to proceed without editing?")):
+        if not ask_to_continue(_("Do you want to proceed without editing?")):  # pragma: no cover
             raise SysExit(125)
     return editor
 
@@ -425,11 +425,11 @@ class InstallPackagesCLI():
                     answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
 
                 answer = answer.lower()[0]
-                if answer == _("c"):
+                if answer == _("c"):  # pragma: no cover
                     package_build.git_reset_changed()
-                elif answer == _("r"):
+                elif answer == _("r"):  # pragma: no cover
                     remove_dir(package_build.repo_path)
-                elif answer == _("s"):
+                elif answer == _("s"):  # pragma: no cover
                     for skip_pkg_name in package_build.package_names:
                         self.discard_aur_package(skip_pkg_name)
                 else:
@@ -521,7 +521,7 @@ class InstallPackagesCLI():
                 for package_name in repo_status.package_names:
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_aur_package(package_name)
-                if repo_status.build_files_reviewed:
+                if repo_status.build_files_reviewed:  # pragma: no cover
                     repo_status.update_last_installed_file()
 
     def review_build_files(self) -> None:  # pragma: no cover
@@ -698,7 +698,7 @@ class InstallPackagesCLI():
                 pikspect=True,
                 conflicts=self.resolved_conflicts,
         ):
-            if not ask_to_continue(default_yes=False):
+            if not ask_to_continue(default_yes=False):  # pragma: no cover
                 self._revert_transaction(PackageSource.REPO)
                 raise SysExit(125)
         PackageDB.discard_local_cache()
@@ -750,7 +750,7 @@ class InstallPackagesCLI():
                     pikspect=True,
                     conflicts=self.resolved_conflicts,
             ):
-                if not ask_to_continue(default_yes=False):
+                if not ask_to_continue(default_yes=False):  # pragma: no cover
                     self._revert_transaction(PackageSource.AUR)
                     raise SysExit(125)
             PackageDB.discard_local_cache()

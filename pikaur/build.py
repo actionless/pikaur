@@ -582,21 +582,21 @@ class PackageBuild(DataType):
                 )
 
             answer = answer.lower()[0]
-            if answer == _("r"):
+            if answer == _("r"):  # pragma: no cover
                 continue
-            elif answer == _("p"):
+            elif answer == _("p"):  # pragma: no cover
                 skip_pgp_check = True
                 continue
-            elif answer == _("c"):
+            elif answer == _("c"):  # pragma: no cover
                 skip_file_checksums = True
                 continue
-            elif answer == _("i"):
+            elif answer == _("i"):  # pragma: no cover
                 skip_carch_check = True
                 continue
-            elif answer == _("v"):
+            elif answer == _("v"):  # pragma: no cover
                 skip_integration_checks = True
                 continue
-            elif answer == _("d"):
+            elif answer == _("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)
                 continue
             elif answer == _("a"):

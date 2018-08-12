@@ -504,7 +504,7 @@ class InstallPackagesCLI():
             return old_hash != new_hash
         return False
 
-    def _preload_latest_sources(self) -> None:
+    def _get_installed_status(self) -> None:
         with ThreadPool() as pool:
             threads = []
             for repo_status in set(self.package_builds_by_name.values()):
@@ -518,7 +518,7 @@ class InstallPackagesCLI():
 
     def review_build_files(self) -> None:  # pragma: no cover
         if self.args.needed or self.args.devel:
-            self._preload_latest_sources()
+            self._get_installed_status()
         for repo_status in set(self.package_builds_by_name.values()):
             if repo_status.reviewed:
                 continue

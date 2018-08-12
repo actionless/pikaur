@@ -214,9 +214,13 @@ class PackageBuild(DataType):
 
     def get_latest_dev_sources(self) -> None:
         self.prepare_build_destination()
-        if self._source_repo_updated:
-            return
-        if not is_devel_pkg(self.package_base):
+        if (
+                self._source_repo_updated
+        ) or (
+            not is_devel_pkg(self.package_base)
+        ) or (
+            self.last_installed_hash != self.current_hash
+        ):
             return
         print_stdout('{} {}...'.format(
             color_line('::', 15),

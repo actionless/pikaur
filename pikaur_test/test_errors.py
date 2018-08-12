@@ -31,6 +31,22 @@ class FailureTest(PikaurDbTestCase):
             not_existing_pkg_name
         )
 
+    def test_install_not_found_repo(self):
+        """
+        package can't be found in AUR
+        """
+        not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
+        result = pikaur(
+            f'-S {not_existing_pkg_name} --repo',
+            capture_stderr=True
+        )
+        self.assertEqual(result.returncode, 6)
+        self.assertIn(MSG_CANNOT_BE_FOUND, result.stderr)
+        self.assertEqual(
+            result.stderr.splitlines()[-1].strip(),
+            not_existing_pkg_name
+        )
+
     def test_dep_not_found(self):
         """
         depedency package can't be found in AUR

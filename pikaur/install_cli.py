@@ -505,9 +505,10 @@ class InstallPackagesCLI():
         return False
 
     def _get_installed_status(self) -> None:
+        all_package_builds = set(self.package_builds_by_name.values())
         with ThreadPool() as pool:
             threads = []
-            for repo_status in set(self.package_builds_by_name.values()):
+            for repo_status in all_package_builds:
                 threads.append(
                     pool.apply_async(getattr, (repo_status, 'version_already_installed'))
                 )
@@ -515,6 +516,13 @@ class InstallPackagesCLI():
                 thread.get()
             pool.close()
             pool.join()
+        for repo_status in all_package_builds:
+            if self.args.needed and repo_status.version_already_installed:
+                for package_name in repo_status.package_names:
+                    print_package_uptodate(package_name, PackageSource.AUR)
+                    self.discard_aur_package(package_name)
+                if repo_status.build_files_reviewed:
+                    repo_status.update_last_installed_file()
 
     def review_build_files(self) -> None:  # pragma: no cover
         if self.args.needed or self.args.devel:
@@ -523,9 +531,6 @@ class InstallPackagesCLI():
             if repo_status.reviewed:
                 continue
             if self.args.needed and repo_status.version_already_installed:
-                for package_name in repo_status.package_names:
-                    print_package_uptodate(package_name, PackageSource.AUR)
-                    self.discard_aur_package(package_name)
                 continue
             if (
                     repo_status.build_files_updated
@@ -574,9 +579,13 @@ class InstallPackagesCLI():
                     if install_file_name:
                         self.ask_to_edit_file(install_file_name, repo_status)
 
+            repo_status.build_files_reviewed = True
             check_pkg_arch(repo_status)
 
-    def build_packages(self) -> None:
+    def build_packages(self) -> None:  # pylint: disable=too-many-branches
+        if self.args.needed or self.args.devel:
+            self._get_installed_status()
+
         failed_to_build_package_names = []
         deps_fails_counter: Dict[str, int] = {}
         packages_to_be_built = self.all_aur_packages_names[:]
@@ -588,8 +597,6 @@ class InstallPackagesCLI():
             pkg_name = packages_to_be_built[index]
             repo_status = self.package_builds_by_name[pkg_name]
             if self.args.needed and repo_status.version_already_installed:
-                print_package_uptodate(pkg_name, PackageSource.AUR)
-                self.discard_aur_package(pkg_name)
                 packages_to_be_built.remove(pkg_name)
                 continue
 

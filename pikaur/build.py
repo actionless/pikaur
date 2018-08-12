@@ -77,6 +77,7 @@ class PackageBuild(DataType):
     build_dir: str
     built_packages_paths: Dict[str, str]
 
+    build_files_reviewed = False
     _source_repo_updated = False
     _build_files_copied = False
 
@@ -219,7 +220,7 @@ class PackageBuild(DataType):
         ) or (
             not is_devel_pkg(self.package_base)
         ) or (
-            self.last_installed_hash != self.current_hash
+            (self.last_installed_hash != self.current_hash) and not self.build_files_reviewed
         ):
             return
         print_stdout('{} {}...'.format(

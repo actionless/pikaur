@@ -62,7 +62,6 @@ def check_pkg_arch(pkgbuild):
                   suparch=', '.join(supported_archs))
         )
         raise SysExit(95)
-    pkgbuild.reviewed = True
 
 
 def hash_file(filename):  # pragma: no cover
@@ -522,7 +521,7 @@ class InstallPackagesCLI():
                 for package_name in repo_status.package_names:
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_aur_package(package_name)
-                if repo_status.build_files_reviewed:  # pragma: no cover
+                if repo_status.reviewed:  # pragma: no cover
                     repo_status.update_last_installed_file()
 
     def review_build_files(self) -> None:  # pragma: no cover
@@ -580,8 +579,8 @@ class InstallPackagesCLI():
                     if install_file_name:
                         self.ask_to_edit_file(install_file_name, repo_status)
 
-            repo_status.build_files_reviewed = True
             check_pkg_arch(repo_status)
+            repo_status.reviewed = True
 
     def build_packages(self) -> None:  # pylint: disable=too-many-branches
         if self.args.needed or self.args.devel:

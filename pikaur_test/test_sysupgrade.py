@@ -28,7 +28,7 @@ class SysupgradeTest(PikaurDbTestCase):
     aur2_old_version: str
 
     dev_pkg_name = 'pxltrm-git'
-    dev_pkg_url = 'https://github.com/dylanaraps/pxltrm.git'
+    dev_pkg_url = 'git://github.com/dylanaraps/pxltrm.git'
     dev_old_version: str
 
     def setUp(self):

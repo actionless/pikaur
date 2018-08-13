@@ -207,10 +207,10 @@ path to pacman executable\.
 .SH "FAQ"
 .
 .SS "How to upgrade all the dev (\-git) packages at once?"
-\fBpikaur \-Syu \-\-devel \-\-needed \-\-keepbuild\fR
+\fBpikaur \-Syu \-\-devel \-\-needed\fR
 .
 .P
-\fB\-\-needed\fR option will make sure what the same package version won\'t be rebuilt again and \fB\-\-keepbuild\fR option will help to avoid re\-downloading whole git repo of each installed dev package\.
+(\fB\-\-needed\fR option will make sure what the same package version won\'t be rebuilt again)
 .
 .SS "How to override default source directory, build directory or built package destination?"
 Set \fBSRCDEST\fR, \fBBUILDDIR\fR or \fBPKGDEST\fR accordingly in \fBmakepkg\.conf\fR\.

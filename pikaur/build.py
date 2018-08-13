@@ -78,6 +78,7 @@ class PackageBuild(DataType):
     built_packages_paths: Dict[str, str]
 
     build_files_reviewed = False
+    keep_build_dir = False
     _source_repo_updated = False
     _build_files_copied = False
 
@@ -120,6 +121,9 @@ class PackageBuild(DataType):
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
         self.built_packages_paths = {}
         self.built_packages_installed = {}
+        self.keep_build_dir = self.args.keepbuild or (
+            is_devel_pkg(self.package_base) and PikaurConfig().build.get_bool('KeepDevBuildDir')
+        )
 
         if os.path.exists(self.repo_path):
             # pylint: disable=simplifiable-if-statement
@@ -395,7 +399,7 @@ class PackageBuild(DataType):
             self._build_files_copied = False
         if self._build_files_copied:
             return
-        if os.path.exists(self.build_dir) and not self.args.keepbuild:
+        if os.path.exists(self.build_dir) and not self.keep_build_dir:
             remove_dir(self.build_dir)
         copy_aur_repo(self.repo_path, self.build_dir)
 

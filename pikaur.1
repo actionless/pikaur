@@ -148,6 +148,9 @@ when upgrading packages sort them by \fBversiondiff\fR, \fBpkgname\fR or \fBrepo
 .SS "KeepBuildDir (default: no)"
 don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. Will be overriden by \fB\-k/\-\-keepbuild\fR flag\.
 .
+.SS "KeepDevBuildDir (default: yes)"
+when building dev packages (\fB\-git\fR, \fB\-svn\fR, etc) don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. \fBNo\fR value will be overriden by \fBKeepBuildDir\fR option and \fB\-k/\-\-keepbuild\fR flag\.
+.
 .SS "SkipFailedBuild (default: no)"
 always skip the build if it fails and don\'t show recovery prompt\.
 .

@@ -95,6 +95,11 @@ when upgrading packages sort them by `versiondiff`, `pkgname` or `repo`.
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
 Will be overriden by `-k/--keepbuild` flag.
 
+##### KeepDevBuildDir (default: yes)
+when building dev packages (`-git`, `-svn`, etc)
+don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
+`No` value will be overriden by `KeepBuildDir` option and `-k/--keepbuild` flag.
+
 ##### SkipFailedBuild (default: no)
 always skip the build if it fails and don't show recovery prompt.
 

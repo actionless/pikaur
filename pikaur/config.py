@@ -54,6 +54,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no',
         },
+        'KeepDevBuildDir': {
+            'type': 'bool',
+            'default': 'yes',
+        },
         'SkipFailedBuild': {
             'type': 'bool',
             'default': 'no',

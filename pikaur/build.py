@@ -41,11 +41,15 @@ from .pikspect import pikspect
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
 
+def mkdir(to_path):
+    spawn(isolate_root_cmd(['mkdir', '-p', to_path]))
+
+
 def copy_aur_repo(from_path, to_path) -> None:
     from_path = os.path.realpath(from_path)
     to_path = os.path.realpath(to_path)
     if not os.path.exists(to_path):
-        spawn(isolate_root_cmd(['mkdir', '-p', to_path]))
+        mkdir(to_path)
 
     from_paths = []
     for src_path in glob(f'{from_path}/*') + glob(f'{from_path}/.*'):
@@ -59,6 +63,7 @@ def copy_aur_repo(from_path, to_path) -> None:
     if result.returncode != 0:
         if os.path.exists(to_path):
             remove_dir(to_path)
+            mkdir(to_path)
         result = interactive_spawn(cmd_args)
         if result.returncode != 0:
             raise Exception(_(f"Can't copy '{from_path}' to '{to_path}'."))

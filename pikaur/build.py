@@ -586,7 +586,7 @@ class PackageBuild(DataType):
                 )
                 answer = get_input(
                     prompt,
-                    _('r').upper() + _('p') + _('c') + _('i') + _('v') + _('d') + _('s') + _('a')
+                    _('r').upper() + _('p') + _('c') + _('i') + _('d') + _('s') + _('a')
                 )
 
             answer = answer.lower()[0]

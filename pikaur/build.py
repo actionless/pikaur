@@ -536,7 +536,6 @@ class PackageBuild(DataType):
         build_succeeded = False
         skip_pgp_check = False
         skip_file_checksums = False
-        skip_integration_checks = False
         skip_carch_check = False
         while True:
             cmd_args = get_makepkg_cmd() + makepkg_args
@@ -544,8 +543,6 @@ class PackageBuild(DataType):
                 cmd_args += ['--skippgpcheck']
             if skip_file_checksums:
                 cmd_args += ['--skipchecksums']
-            if skip_integration_checks:
-                cmd_args += ['--skipinteg']
             if skip_carch_check:
                 cmd_args += ['--ignorearch']
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir)
@@ -578,10 +575,9 @@ class PackageBuild(DataType):
                     _("Try recovering?"),
                     "\n".join((
                         _("[R] retry build"),
-                        _("[p] pgp check skip"),
+                        _("[p] PGP check skip"),
                         _("[c] checksums skip"),
                         _("[i] ignore architecture"),
-                        _("[v] skip all source verification checks"),
                         _("[d] delete build dir and try again"),
                         "-" * 24,
                         _("[s] skip building this package"),
@@ -604,9 +600,6 @@ class PackageBuild(DataType):
                 continue
             elif answer == _("i"):  # pragma: no cover
                 skip_carch_check = True
-                continue
-            elif answer == _("v"):  # pragma: no cover
-                skip_integration_checks = True
                 continue
             elif answer == _("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)

@@ -81,7 +81,7 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
         # and finally test the sysupgrade itself
-        pikaur('-Su --noconfirm --devel')
+        pikaur('-Su --noconfirm --devel --ignore pikaur-git')
         # pikaur(f'-S {self.dev_pkg_name} --noconfirm --devel')
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.dev_pkg_name].version,

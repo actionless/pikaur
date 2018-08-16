@@ -247,9 +247,9 @@ def pretty_format_sysupgrade(
         result.append('\n{} {}'.format(
             _color_line('::', 12),
             _bold_line(_n(
-                "Repository package suggested to be replaced:",
-                "Repository packages suggested be replaced:",
-                len(repo_packages_updates)))
+                "Repository package suggested as a replacement:",
+                "Repository packages suggested as a replacement:",
+                len(repo_replacements)))
         ))
         result.append(pretty_format_upgradeable(
             repo_replacements,

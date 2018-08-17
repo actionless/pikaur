@@ -554,6 +554,7 @@ class InstallPackagesCLI():
                         'diff',
                         '--ignore-space-change',
                         '--ignore-all-space',
+                        '--unified={line_count}'.format(line_count=PikaurConfig().ui.get_int('DiffContext')),
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
                     ]

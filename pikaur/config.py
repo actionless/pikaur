@@ -106,6 +106,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no'
         },
+        'DiffContext': {
+            'type': 'int',
+            'default': '3'
+        },
     },
     'misc': {
         'PacmanPath': {

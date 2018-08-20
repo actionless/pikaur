@@ -43,6 +43,7 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .news import News
+from .updates import is_devel_pkg
 
 
 def check_pkg_arch(pkgbuild):
@@ -506,6 +507,17 @@ class InstallPackagesCLI():
 
     def _get_installed_status(self) -> None:
         all_package_builds = set(self.package_builds_by_name.values())
+
+        # first prepare build destinations for dev packages synchronously
+        # (to prevent race condition in systemd dynamic users)
+        for repo_status in all_package_builds:
+            for package_name in repo_status.package_names:
+                if is_devel_pkg(package_name):
+                    repo_status.prepare_build_destination()
+
+        # check if pkgs versions already installed
+        # (use threads because devel packages require downloading
+        # latest sources for quite a long time)
         with ThreadPool() as pool:
             threads = []
             for repo_status in all_package_builds:
@@ -516,6 +528,8 @@ class InstallPackagesCLI():
                 thread.get()
             pool.close()
             pool.join()
+
+        # handle if version is already installed
         for repo_status in all_package_builds:
             if self.args.needed and repo_status.version_already_installed:
                 for package_name in repo_status.package_names:

@@ -118,7 +118,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self,
             args: List[str],
             print_output: bool = True,
-            save_output: bool = True,
+            save_output: bool = False,
             capture_input: bool = True,
             default_questions: Dict[str, List[str]] = None,
             **kwargs
@@ -289,7 +289,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 def pikspect(
         cmd: List[str],
         print_output=True,
-        save_output=True,
+        save_output=False,
         auto_proceed=True,
         conflicts: List[List[str]] = None,
         extra_questions: Dict[str, List[str]] = None,

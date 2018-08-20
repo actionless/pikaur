@@ -113,6 +113,14 @@ def spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
     return proc
 
 
+def joined_spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
+    with tempfile.TemporaryFile() as out_file:
+        proc = interactive_spawn(cmd, stdout=out_file, stderr=out_file, **kwargs)
+        out_file.seek(0)
+        proc.stdout_text = out_file.read().decode('utf-8')
+    return proc
+
+
 def running_as_root() -> bool:
     return os.geteuid() == 0
 

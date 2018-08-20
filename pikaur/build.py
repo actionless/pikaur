@@ -1,7 +1,6 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import os
-import sys
 import shutil
 import subprocess
 from multiprocessing.pool import ThreadPool
@@ -10,8 +9,9 @@ from typing import List, Dict, Set, Optional, Any
 
 from .core import (
     DataType,
-    isolate_root_cmd, remove_dir, open_file, dirname,
-    spawn, interactive_spawn, InteractiveSpawn, sudo, running_as_root,
+    remove_dir, open_file, dirname,
+    joined_spawn, spawn, interactive_spawn, InteractiveSpawn,
+    sudo, running_as_root, isolate_root_cmd,
 )
 from .i18n import _, _n
 from .config import (
@@ -37,7 +37,6 @@ from .exceptions import (
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .version import compare_versions, VersionMatcher
-from .pikspect import pikspect
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
 
@@ -245,7 +244,7 @@ class PackageBuild(DataType):
                 bold_line(', '.join(self.package_names))
             )
         ))
-        pkgver_result = pikspect(
+        pkgver_result = joined_spawn(
             isolate_root_cmd(
                 get_makepkg_cmd() + [
                     '--nobuild', '--noprepare', '--nocheck', '--nodeps'
@@ -253,13 +252,10 @@ class PackageBuild(DataType):
                 cwd=self.build_dir
             ),
             cwd=self.build_dir,
-            print_output=False,
-            save_output=True,
-            auto_proceed=False
         )
         if pkgver_result.returncode != 0:
-            sys.stdout.buffer.write(pkgver_result.get_output_bytes())
-            sys.stdout.buffer.flush()
+            print_error(_("failed to retrieve latest dev sources:"))
+            print_stderr(pkgver_result.stdout_text)
             if not ask_to_continue(default_yes=False):
                 raise SysExit(125)
         SrcInfo(self.build_dir).regenerate()

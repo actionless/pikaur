@@ -29,6 +29,8 @@ whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict
 
+whitelist.pikspect.Pikspect.get_output_bytes
+
 # test:
 whitelist.helpers.InterceptSysOutput.out_file.isatty
 whitelist.helpers.InterceptSysOutput.err_file.isatty

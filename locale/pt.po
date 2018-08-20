@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Pikaur\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-08-19 19:46+0200\n"
-"PO-Revision-Date: 2018-08-19 09:32-0300\n"
+"PO-Revision-Date: 2018-08-19 19:16-0300\n"
 "Last-Translator: Alexandre Lopes <lopes.tamt@gmail.com>\n"
 "Language-Team: pt\n"
 "Language: pt\n"
@@ -59,9 +59,8 @@ msgstr ""
 "Veja `pacman -Uh`."
 
 #: pikaur/main.py:154
-#, fuzzy
 msgid "Build directory"
-msgstr "Criar diretório: {}"
+msgstr "Criar diretório"
 
 #: pikaur/install_cli.py:611
 #, python-brace-format
@@ -81,7 +80,7 @@ msgstr "Não é possível copiar '{from_path}' para '{to_path}'."
 #: pikaur/build.py:49
 #, python-brace-format
 msgid "Can't create destination directory '{to_path}'."
-msgstr ""
+msgstr "Não é possível criar o diretório de destino '{to_path}'."
 
 #: pikaur/build.py:125
 msgid "Can't get package name from PKGBUILD"
@@ -162,17 +161,15 @@ msgstr ""
 "Falha ao remover dependências instaladas, inconsistência de pacotes: {}"
 
 #: pikaur/print_department.py:61
-#, fuzzy
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
-msgstr[0] "Os seguintes pacotes não podem ser encontrados no AUR:"
+msgstr[0] "O seguinte pacote não pode ser encontrado no AUR:"
 msgstr[1] "Os seguintes pacotes não podem ser encontrados no AUR:"
 
 #: pikaur/print_department.py:55
-#, fuzzy
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
-msgstr[0] "Os seguintes pacotes não podem ser encontrados em repositórios:"
+msgstr[0] "O seguinte pacote não pode ser encontrado nos repositórios:"
 msgstr[1] "Os seguintes pacotes não podem ser encontrados em repositórios:"
 
 #: pikaur/print_department.py:359
@@ -231,7 +228,7 @@ msgstr[1] ""
 
 #: pikaur/main.py:155
 msgid "Packages directory"
-msgstr ""
+msgstr "Diretório de pacotes"
 
 #: pikaur/args.py:431
 msgid "Pikaur-specific options:"
@@ -260,11 +257,10 @@ msgid "Removing installed repository dependencies for {}"
 msgstr "Removendo dependências do repositório instaladas para {}"
 
 #: pikaur/print_department.py:250
-#, fuzzy
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
-msgstr[0] "Pacote de repositório sugerido para ser substituído:"
-msgstr[1] "Pacotes de repositório sugeridos foram substituídos:"
+msgstr[0] "Pacote de repositório sugerido como um substituto:"
+msgstr[1] "Pacotes de repositório sugeridos como substitutos:"
 
 #: pikaur/print_department.py:277
 msgid "Repository package will be installed:"
@@ -304,11 +300,10 @@ msgid "There are news from archlinux.org!"
 msgstr "Há notícias do archlinux.org!"
 
 #: pikaur/print_department.py:263
-#, fuzzy
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
-msgstr[0] "Pacote de repositório de terceiros sugerido para ser substituído:"
-msgstr[1] "Pacotes de repositórios de terceiros sugeridos foram substituídos:"
+msgstr[0] "Pacote de repositório de terceiros sugerido como substituto:"
+msgstr[1] "Pacotes de repositórios de terceiros sugeridos como substitutos:"
 
 #: pikaur/print_department.py:301
 msgid "Third-party repository package will be installed:"
@@ -370,9 +365,8 @@ msgid "[installed]"
 msgstr "[instalado]"
 
 #: pikaur/build.py:578
-#, fuzzy
 msgid "[p] PGP check skip"
-msgstr "[p] Pular pgp check "
+msgstr "[p] Pular PGP"
 
 #. _("[c] git checkout -- '*' ; git clean -f -d -x"),
 #: pikaur/install_cli.py:421
@@ -509,11 +503,8 @@ msgid "path to custom makepkg config"
 msgstr "caminho para a configuração customizada do makepkg"
 
 #: pikaur/main.py:260
-#, fuzzy
 msgid "pikaur requires Python >= 3.7 to run."
-msgstr ""
-"pikaur requer systemd >= 235 (usuários dinâmicos) para ser executado como "
-"root."
+msgstr "O pikaur requer o Python> = 3.7 para ser executado."
 
 #: pikaur/main.py:265
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."

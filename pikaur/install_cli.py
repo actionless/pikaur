@@ -682,7 +682,7 @@ class InstallPackagesCLI():
         extra_args = []
         if not (self.install_package_names or self.args.sysupgrade):
             return
-        for excluded_pkg_name in self.manually_excluded_packages_names + (self.args.ignore or []):
+        for excluded_pkg_name in self.manually_excluded_packages_names + self.args.ignore:
             extra_args.append('--ignore')
             extra_args.append(excluded_pkg_name)
         if not retry_interactive_command(

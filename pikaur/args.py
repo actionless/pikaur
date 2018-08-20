@@ -151,8 +151,17 @@ class PikaurArgs(Namespace):
                 self.keepbuild = True
                 self.check = None
 
+    def post_process_args(self):
+        # pylint: disable=attribute-defined-outside-init,access-member-before-definition
+        self.handle_the_same_letter()
+
         if self.debug:
             self.print_commands = self.debug
+
+        new_ignore = []
+        for ignored in self.ignore or []:
+            new_ignore += ignored.split(',')
+        self.ignore = new_ignore
 
     def validate(self) -> None:
         if self.query:
@@ -173,7 +182,7 @@ class PikaurArgs(Namespace):
             setattr(result, key, value)
         result.unknown_args = unknown_args
         result.raw = raw_args
-        result.handle_the_same_letter()
+        result.post_process_args()
         return result
 
 

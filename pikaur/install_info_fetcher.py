@@ -57,7 +57,7 @@ class InstallInfoFetcher:
     def package_is_ignored(self, package_name: str) -> bool:
         if (
                 package_name in (
-                    (self.args.ignore or []) + PacmanConfig().options.get('IgnorePkg', [])
+                    self.args.ignore + PacmanConfig().options.get('IgnorePkg', [])
                 )
         ) and not (
             package_name in self.install_package_names or

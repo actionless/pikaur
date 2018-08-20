@@ -9,7 +9,10 @@ from .config import PikaurConfig
 
 from .core import interactive_spawn
 from .i18n import _
-from .pprint import color_line, print_stderr, get_term_width, range_printable
+from .pprint import (
+    color_line, print_stderr, get_term_width, range_printable,
+    PrintLock,
+)
 from .exceptions import SysExit
 
 
@@ -78,19 +81,20 @@ def split_last_line(text: str) -> str:
 
 
 def get_input(prompt: str, answers=None) -> str:
-    if PikaurConfig().ui.get_bool('RequireEnterConfirm'):
-        from .pikspect import TTYRestore
-        sub_tty = TTYRestore()
-        TTYRestore.restore()
-        answer = input(split_last_line(prompt)).lower()
-        sub_tty.restore()
-        if not answer:
-            for choice in answers:
-                if choice not in answers.lower():
-                    return choice.lower()
-    else:
-        answer = read_answer_from_tty(prompt, answers=answers)
-    return answer
+    with PrintLock():
+        if PikaurConfig().ui.get_bool('RequireEnterConfirm'):
+            from .pikspect import TTYRestore
+            sub_tty = TTYRestore()
+            TTYRestore.restore()
+            answer = input(split_last_line(prompt)).lower()
+            sub_tty.restore()
+            if not answer:
+                for choice in answers:
+                    if choice not in answers.lower():
+                        return choice.lower()
+        else:
+            answer = read_answer_from_tty(prompt, answers=answers)
+        return answer
 
 
 def ask_to_continue(text: str = None, default_yes: bool = True) -> bool:

@@ -12,12 +12,13 @@ import pyalpm
 from .i18n import _
 from .core import DataType, PackageSource
 from .version import VersionMatcher
-from .pprint import print_stderr, color_enabled
+from .pprint import print_stderr, color_enabled, color_line
 from .args import parse_args, reconstruct_args
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo, DependencyError
 from .core import sudo, spawn
-from .prompt import retry_interactive_command_or_exit
+from .prompt import retry_interactive_command_or_exit, retry_interactive_command
+
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
@@ -538,9 +539,6 @@ def install_built_deps(
 ) -> None:
     if not deps_names_and_paths:
         return
-
-    from .pprint import color_line
-    from .prompt import retry_interactive_command
 
     local_packages = PackageDB.get_local_dict()
     args = parse_args()

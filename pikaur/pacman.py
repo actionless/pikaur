@@ -536,6 +536,9 @@ def install_built_deps(
         deps_names_and_paths: Dict[str, str],
         resolved_conflicts: Optional[List[List[str]]] = None
 ) -> None:
+    if not deps_names_and_paths:
+        return
+
     from .pprint import color_line
     from .prompt import retry_interactive_command
 

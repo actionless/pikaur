@@ -371,12 +371,13 @@ class InstallInfoFetcher:
                 package=aur_pkg,
             ))
 
-    def mark_dependent(self) -> None:
+    def mark_dependent(self) -> None:  # pylint: disable=too-many-locals
         """
         update packages' install info to show deps in prompt:
         """
 
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
+        all_local_pkgnames = PackageDB.get_local_pkgnames()
         all_install_infos = (
             self.repo_packages_install_info +
             self.thirdparty_repo_packages_install_info +
@@ -412,6 +413,8 @@ class InstallInfoFetcher:
                     pkg_install_info.name not in self.install_package_names
             ) and (
                 pkg_install_info.name not in explicit_aur_pkg_names
+            ) and (
+                pkg_install_info.name not in all_local_pkgnames
             ):
                 providing_for = [
                     pkg_name for pkg_name in sum([

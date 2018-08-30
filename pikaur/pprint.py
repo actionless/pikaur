@@ -4,7 +4,7 @@ import sys
 import shutil
 from threading import Lock
 from string import printable
-from typing import List, Optional
+from typing import List, Optional, TextIO
 
 from .i18n import _
 from .args import parse_args
@@ -32,7 +32,7 @@ class PrintLock():
         PRINT_LOCK.release()
 
 
-def _print(destination, message='', end='\n', flush=False, lock=True) -> None:
+def _print(destination: TextIO, message='', end='\n', flush=False, lock=True) -> None:
     if lock:
         PrintLock().__enter__()
     destination.write(f'{message}{end}')

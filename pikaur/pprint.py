@@ -32,18 +32,24 @@ class PrintLock():
         PRINT_LOCK.release()
 
 
-def print_stdout(message='', end='\n', flush=False) -> None:
-    with PrintLock():
-        sys.stdout.write(f'{message}{end}')
-        if flush:
-            sys.stdout.flush()
+def print_stdout(message='', end='\n', flush=False, lock=True) -> None:
+    if lock:
+        PrintLock().__enter__()
+    sys.stdout.write(f'{message}{end}')
+    if flush:
+        sys.stdout.flush()
+    if lock:
+        PrintLock().__exit__()
 
 
-def print_stderr(message='', end='\n', flush=False) -> None:
-    with PrintLock():
-        sys.stderr.write(f'{message}{end}')
-        if flush:
-            sys.stderr.flush()
+def print_stderr(message='', end='\n', flush=False, lock=True) -> None:
+    if lock:
+        PrintLock().__enter__()
+    sys.stderr.write(f'{message}{end}')
+    if flush:
+        sys.stderr.flush()
+    if lock:
+        PrintLock().__exit__()
 
 
 def color_line(line: str, color_number: int) -> str:

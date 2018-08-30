@@ -297,7 +297,7 @@ def restore_tty():
 
 
 def handle_sig_int(*_whatever):  # pragma: no cover
-    print_stderr("\n\nCanceled by user (SIGINT)")
+    print_stderr("\n\nCanceled by user (SIGINT)", lock=False)
     raise SysExit(125)
 
 

@@ -298,7 +298,7 @@ def restore_tty():
 
 def handle_sig_int(*_whatever):  # pragma: no cover
     print_stderr("\n\nCanceled by user (SIGINT)")
-    sys.exit(125)
+    raise SysExit(125)
 
 
 def main() -> None:

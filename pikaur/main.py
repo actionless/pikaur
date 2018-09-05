@@ -164,7 +164,8 @@ def cli_clean_packages_cache() -> None:
     if not args.aur:
         sys.exit(
             interactive_spawn(sudo(
-                [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args) + ['--clean'] * args.clean
+                [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args) +
+                ['--clean'] * args.clean
             )).returncode
         )
 

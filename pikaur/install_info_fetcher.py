@@ -132,7 +132,6 @@ class InstallInfoFetcher:
             '--sync',
         ] + reconstruct_args(self.args, ignore_args=[
             'sync',
-            'refresh',
             'ignore',
             'sysupgrade',
             'needed'

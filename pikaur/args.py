@@ -330,7 +330,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> List[str]:
     if not ignore_args:
         ignore_args = []
-    for letter, opt, _default in get_pikaur_bool_opts() + get_pikaur_str_opts():
+    for letter, opt, _default in get_pikaur_bool_opts() + get_pikaur_str_opts() + PACMAN_COUNT_OPTS:
         if letter:
             ignore_args.append(letter)
         if opt:

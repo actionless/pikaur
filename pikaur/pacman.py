@@ -549,7 +549,6 @@ def install_built_deps(
             'asdeps',
             'sync',
             'sysupgrade',
-            'refresh',
             'ignore',
         ])
 

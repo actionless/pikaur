@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-04 17:36+0800\n"
+"POT-Creation-Date: 2018-09-06 18:31+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -23,8 +23,7 @@ msgid "'{packages}' package is available in the repo but can't be installed"
 msgid_plural ""
 "'{packages}' packages are available in the repo but can't be installed"
 msgstr[0] "'{packages}' 在库中但无法被安装"
-msgstr[1] ""
-"'{packages}' 在库中但无法被安装"
+msgstr[1] "'{packages}' 在库中但无法被安装"
 
 #: pikaur/print_department.py:111
 msgid "({} days old)"
@@ -50,9 +49,7 @@ msgstr[1] "将被安装的AUR软件包:"
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
-msgstr ""
-"执行 `pacman -U <pkg_file>` 时所有常见的选项. 参见 `pacman -"
-"Uh`."
+msgstr "执行 `pacman -U <pkg_file>` 时所有常见的选项. 参见 `pacman -Uh`."
 
 #: pikaur/main.py:154
 msgid "Build directory"
@@ -147,7 +144,7 @@ msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "下载devel包 {} 的最新源码"
 msgstr[1] "下载devel包 {} 的最新源码"
 
-#: pikaur/install_cli.py:802
+#: pikaur/install_cli.py:800
 msgid "Failed to build following packages:"
 msgstr "构建下列包失败:"
 
@@ -257,7 +254,7 @@ msgid_plural "Repository packages will be installed:"
 msgstr[0] "将被安装的仓库软件包:"
 msgstr[1] "将被安装的仓库软件包:"
 
-#: pikaur/install_info_fetcher.py:340
+#: pikaur/install_info_fetcher.py:339
 msgid "Resolving AUR dependencies..."
 msgstr "解析AUR依赖..."
 
@@ -495,11 +492,11 @@ msgstr "p"
 msgid "path to custom makepkg config"
 msgstr "自定义makepkg配置文件的路径"
 
-#: pikaur/main.py:260
+#: pikaur/main.py:261
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur需要运行于Python >= 3.7."
 
-#: pikaur/main.py:265
+#: pikaur/main.py:266
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr "pikaur需要由root运行的systemd >= 235 (dynamic users)."
 
@@ -570,8 +567,7 @@ msgstr "y"
 #, python-brace-format
 msgid ""
 "{name} can't be built on the current arch ({arch}). Supported: {suparch}"
-msgstr ""
-"{name} 无法在当前构架 ({arch}) 上构建. 支持的构架: {suparch}"
+msgstr "{name} 无法在当前构架 ({arch}) 上构建. 支持的构架: {suparch}"
 
 #: pikaur/print_department.py:378
 #, python-brace-format
@@ -583,7 +579,7 @@ msgstr "{name} {version} {package_source} 包是最新的 - 跳过"
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} 与 {installed} 冲突. 移除 {installed}?"
 
-#: pikaur/install_info_fetcher.py:325
+#: pikaur/install_info_fetcher.py:324
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} 已在列表中"

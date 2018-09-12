@@ -1,6 +1,6 @@
 # This file is licensed under GPLv3, see https://www.gnu.org/licenses/
 
-LANGS := fr ru pt de is tr da nl es zh_cn
+LANGS := fr ru pt de is tr da nl es zh_CN
 
 LOCALEDIR := locale
 POTFILE := $(LOCALEDIR)/pikaur.pot

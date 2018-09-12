@@ -435,7 +435,6 @@ def cli_print_help() -> None:
             ('', '--nodiff', _("don't prompt to show the build files diff")),
         ]
     print(''.join([
-        '\n',
         pacman_help,
         '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
         _format_options_help(pikaur_options_help),

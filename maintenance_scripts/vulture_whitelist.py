@@ -9,8 +9,6 @@ whitelist = Whitelist()
 
 whitelist.argparse.ArgumentParserWithUnknowns._parse_known_args
 
-whitelist.args.CachedArgs.args.color
-
 whitelist.aur.AURPackageInfo.firstsubmitted
 whitelist.aur.AURPackageInfo.id
 whitelist.aur.AURPackageInfo.keywords
@@ -23,14 +21,8 @@ whitelist.aur.AURPackageInfo.urlpath
 
 whitelist.build.PackageBuild._get_deps.deps_destination
 
-whitelist.config.PikaurConfig._config
-
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict
 
 whitelist.pikspect.Pikspect.get_output_bytes
-
-# test:
-whitelist.helpers.InterceptSysOutput.out_file.isatty
-whitelist.helpers.InterceptSysOutput.err_file.isatty

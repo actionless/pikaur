@@ -177,11 +177,14 @@ def find_aur_packages(
     if package_names:
         with ThreadPool() as pool:
             search_chunks = list(get_chunks(package_names, chunk_size=200))
-            results = pool.map(aur_rpc_info_with_progress, [
-                (chunk, len(search_chunks), with_progressbar, )
+            requests = [
+                pool.apply_async(aur_rpc_info_with_progress, [
+                    (chunk, len(search_chunks), with_progressbar, )
+                ])
                 for chunk in search_chunks
-            ])
+            ]
             pool.close()
+            results = [request.get() for request in requests]
             pool.join()
             for result in results:
                 for aur_pkg in result:

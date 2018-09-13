@@ -212,15 +212,6 @@ def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[List[Any]]:
         yield result
 
 
-def return_exception(fun: Callable) -> Callable:
-    def decorator(*args, **kwargs):
-        try:
-            return fun(*args, **kwargs)
-        except Exception as exc:
-            return exc
-    return decorator
-
-
 def get_editor() -> Optional[List[str]]:
     editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
     if editor_line:

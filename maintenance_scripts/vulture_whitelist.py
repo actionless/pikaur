@@ -24,5 +24,3 @@ whitelist.build.PackageBuild._get_deps.deps_destination
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict
-
-whitelist.pikspect.Pikspect.get_output_bytes

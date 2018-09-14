@@ -16,7 +16,6 @@ from time import time, sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
 from .pprint import PrintLock, bold_line
-from .threading import handle_exception_in_thread
 from .pacman import _p
 from .args import parse_args
 from .pprint import print_stderr, color_line
@@ -162,7 +161,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                     )
                     with ThreadPool(processes=3) as pool:
                         output_task = pool.apply_async(self.cmd_output_reader_thread, ())
-                        pool.apply_async(self.user_input_reader_thread, ())
+                        input_task = pool.apply_async(self.user_input_reader_thread, ())
                         communicate_task = pool.apply_async(self.communicator_thread, ())
                         pool.close()
 
@@ -170,6 +169,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                         sys.stdout.buffer.write(self._write_buffer)
                         sys.stdout.buffer.flush()
                         communicate_task.get()
+                        input_task.get()
                         pool.join()
                         self.pty_out.close()
 
@@ -239,7 +239,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.write_something(output)
             self.check_questions()
 
-    @handle_exception_in_thread
     def user_input_reader_thread(self) -> None:  # pragma: no cover
         while self.returncode is None:
             if not self.capture_input:

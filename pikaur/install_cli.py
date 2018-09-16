@@ -61,7 +61,8 @@ def check_pkg_arch(pkgbuild):
                   arch=arch,
                   suparch=', '.join(supported_archs))
         )
-        raise SysExit(95)
+        if not ask_to_continue():
+            raise SysExit(95)
 
 
 def hash_file(filename):  # pragma: no cover

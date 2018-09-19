@@ -355,21 +355,13 @@ class InstallPackagesCLI():
         if canceled_pkg_name in self.install_package_names:
             self.install_package_names.remove(canceled_pkg_name)
         already_discarded = (already_discarded or []) + [canceled_pkg_name]
-        packages_to_be_removed = []
         for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
             if canceled_pkg_name in aur_deps + [aur_pkg_name]:
                 for pkg_name in aur_deps + [aur_pkg_name]:
                     if pkg_name not in already_discarded:
                         self.discard_aur_package(pkg_name, already_discarded)
-                    pkg_build = self.package_builds_by_name.get(pkg_name)
-                    if pkg_build and pkg_build.built_packages_installed and \
-                       pkg_build.built_packages_installed.get(pkg_name):
-                        packages_to_be_removed.append(pkg_name)
-                        del pkg_build.built_packages_installed[pkg_name]
                 if aur_pkg_name in self.aur_deps_relations:
                     del self.aur_deps_relations[aur_pkg_name]
-        if packages_to_be_removed:
-            self._remove_packages(list(set(packages_to_be_removed)))
         for pkg_name in already_discarded:
             if pkg_name in list(self.package_builds_by_name.keys()):
                 del self.package_builds_by_name[pkg_name]
@@ -722,8 +714,6 @@ class InstallPackagesCLI():
         new_aur_deps_to_install = {
             pkg_name: self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
             for pkg_name in self.aur_deps_names
-            if self.package_builds_by_name[pkg_name].built_packages_paths.get(pkg_name) and
-            not self.package_builds_by_name[pkg_name].built_packages_installed.get(pkg_name)
         }
         try:
             install_built_deps(
@@ -743,8 +733,6 @@ class InstallPackagesCLI():
         aur_packages_to_install = {
             pkg_name: self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
             for pkg_name in self.aur_packages_names
-            if self.package_builds_by_name[pkg_name].built_packages_paths.get(pkg_name) and
-            not self.package_builds_by_name[pkg_name].built_packages_installed.get(pkg_name)
         }
         if aur_packages_to_install:
             if not retry_interactive_command(

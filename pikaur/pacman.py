@@ -550,6 +550,7 @@ def install_built_deps(
             'sync',
             'sysupgrade',
             'ignore',
+            'downloadonly',
         ])
 
     explicitly_installed_deps = []

@@ -91,7 +91,6 @@ class PackageBuild(DataType):
     _build_files_copied = False
 
     failed: Optional[bool] = None
-    built_packages_installed: Dict[str, bool]
 
     new_deps_to_install: List[str]
     new_make_deps_to_install: List[str]
@@ -127,7 +126,6 @@ class PackageBuild(DataType):
 
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
         self.built_packages_paths = {}
-        self.built_packages_installed = {}
         self.keep_build_dir = self.args.keepbuild or (
             is_devel_pkg(self.package_base) and PikaurConfig().build.get_bool('KeepDevBuildDir')
         )
@@ -278,7 +276,7 @@ class PackageBuild(DataType):
     def all_deps_to_install(self):
         return self.new_make_deps_to_install + self.new_deps_to_install
 
-    def _get_built_deps(
+    def _filter_built_deps(
             self,
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
@@ -290,6 +288,7 @@ class PackageBuild(DataType):
                 self.new_deps_to_install.remove(dep)
 
         self.built_deps_to_install = {}
+
         for dep in self.all_deps_to_install:
             # @TODO: check if dep is Provided by built package
             dep_name = VersionMatcher(dep).pkg_name
@@ -305,19 +304,19 @@ class PackageBuild(DataType):
                     raise DependencyError()
                 if not package_build.built_packages_paths.get(pkg_name):
                     raise DependencyNotBuiltYet()
-                if not package_build.built_packages_installed.get(pkg_name):
-                    self.built_deps_to_install[pkg_name] = \
-                        package_build.built_packages_paths[pkg_name]
+                self.built_deps_to_install[pkg_name] = \
+                    package_build.built_packages_paths[pkg_name]
                 _mark_dep_resolved(dep)
 
     def _get_pacman_command(self) -> List[str]:
         return get_pacman_command() + (['--noconfirm'] if self.args.noconfirm else [])
 
-    def _install_built_deps(
+    def install_built_deps(
             self,
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
 
+        self._get_deps(all_package_builds)
         if not self.built_deps_to_install:
             return
 
@@ -328,6 +327,13 @@ class PackageBuild(DataType):
         ))
 
         try:
+            update_self_deps = False
+            for pkg_name, pkg_build in all_package_builds.items():
+                if pkg_name in self.built_deps_to_install.keys():
+                    pkg_build.install_built_deps(all_package_builds)
+                    update_self_deps = True
+            if update_self_deps:
+                self._get_deps(all_package_builds)
             install_built_deps(
                 deps_names_and_paths=self.built_deps_to_install,
                 resolved_conflicts=self.resolved_conflicts
@@ -335,9 +341,8 @@ class PackageBuild(DataType):
         except DependencyError as dep_exc:
             self.failed = True
             raise dep_exc from None
-        else:
-            for pkg_name in self.built_deps_to_install:
-                all_package_builds[pkg_name].built_packages_installed[pkg_name] = True
+        finally:
+            PackageDB.discard_local_cache()
 
     def _set_built_package_path(self) -> None:
         dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)
@@ -416,7 +421,10 @@ class PackageBuild(DataType):
             os.renames(custom_pkgbuild_path, default_pkgbuild_path)
         self._build_files_copied = True
 
-    def _get_deps(self) -> None:
+    def _get_deps(
+            self,
+            all_package_builds: Dict[str, 'PackageBuild']
+    ) -> None:
         self.new_deps_to_install = []
         new_make_deps_to_install: List[str] = []
         new_check_deps_to_install: List[str] = []
@@ -446,13 +454,12 @@ class PackageBuild(DataType):
         self.new_make_deps_to_install = list(set(
             new_make_deps_to_install + new_check_deps_to_install
         ))
+        self._filter_built_deps(all_package_builds)
 
-    def _install_repo_deps(self) -> Set[str]:
+    def _install_repo_deps(self):
         if not self.all_deps_to_install:
-            return set()
+            return
         # @TODO: use lock file?
-        PackageDB.discard_local_cache()
-        local_packages_before = set(PackageDB.get_local_dict().keys())
         print_stderr('{} {}:'.format(
             color_line('::', 13),
             _("Installing repository dependencies for {}").format(
@@ -469,10 +476,9 @@ class PackageBuild(DataType):
             conflicts=self.resolved_conflicts,
         )
         PackageDB.discard_local_cache()
-        return local_packages_before
 
-    def _remove_repo_deps(self, local_packages_before: Set[str]) -> None:
-        if not self.all_deps_to_install:
+    def _remove_installed_deps(self, local_packages_before: Set[str]) -> None:
+        if not local_packages_before:
             return
         PackageDB.discard_local_cache()
         local_packages_after = set(PackageDB.get_local_dict().keys())
@@ -619,18 +625,22 @@ class PackageBuild(DataType):
         if self.check_if_already_built():
             return
 
-        self._get_deps()
-        self._get_built_deps(all_package_builds)
-        self._install_built_deps(all_package_builds)
-        local_packages_before = self._install_repo_deps()
+        local_packages_before: Set[str] = set()
+        self._get_deps(all_package_builds)
+        if self.all_deps_to_install or self.built_deps_to_install:
+            PackageDB.discard_local_cache()
+            local_packages_before = set(PackageDB.get_local_dict().keys())
+
+        self.install_built_deps(all_package_builds)
+        self._install_repo_deps()
 
         try:
             build_succeeded = self.build_with_makepkg()
         except SysExit as exc:
-            self._remove_repo_deps(local_packages_before)
+            self._remove_installed_deps(local_packages_before)
             raise exc
 
-        self._remove_repo_deps(local_packages_before)
+        self._remove_installed_deps(local_packages_before)
 
         if not build_succeeded:
             self.failed = True

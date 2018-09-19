@@ -83,6 +83,7 @@ def get_pikaur_str_opts() -> ArgSchema:
         (None, 'mflags', None),
         (None, 'makepkg-config', None),
         (None, 'makepkg-path', None),
+        (None, 'pikaur-config', None),
     ]
 
 
@@ -426,6 +427,7 @@ def cli_print_help() -> None:
             ('', '--mflags=<--flag1>,<--flag2>', _("cli args to pass to makepkg")),
             ('', '--makepkg-config=<path>', _("path to custom makepkg config")),
             ('', '--makepkg-path=<path>', _("override path to makepkg executable")),
+            ('', '--pikaur-config=<path>', _("path to custom pikaur config")),
             ('', '--dynamic-users', _("always isolate with systemd dynamic users")),
         ]
     if args.sync:

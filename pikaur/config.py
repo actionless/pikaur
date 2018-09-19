@@ -28,10 +28,21 @@ CONFIG_ROOT = os.environ.get(
     "XDG_CONFIG_HOME",
     os.path.join(Path.home(), ".config/")
 )
-CONFIG_PATH = os.path.join(
-    CONFIG_ROOT,
-    "pikaur.conf"
-)
+
+
+def get_config_path():
+    config_flag = '--pikaur-config'
+    if config_flag in sys.argv:
+        return sys.argv[
+            sys.argv.index(config_flag) + 1
+        ]
+    return os.path.join(
+        CONFIG_ROOT,
+        "pikaur.conf"
+    )
+
+
+CONFIG_PATH = get_config_path()
 
 
 CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {

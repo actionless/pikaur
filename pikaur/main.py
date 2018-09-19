@@ -31,7 +31,7 @@ from .print_department import (
 from .updates import find_repo_upgradeable, find_aur_updates
 from .prompt import ask_to_continue
 from .config import (
-    BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT,
+    BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT, CONFIG_PATH,
     PikaurConfig,
 )
 from .exceptions import SysExit
@@ -226,7 +226,9 @@ def cli_entry_point() -> None:
     if pikaur_operation:
         if require_sudo and args.dynamic_users and not running_as_root():
             # Restart pikaur with sudo to use systemd dynamic users
-            sys.exit(interactive_spawn(sudo(sys.argv)).returncode)
+            sys.exit(interactive_spawn(
+                sudo(sys.argv) + ['--pikaur-config', CONFIG_PATH]
+            ).returncode)
         else:
             if not require_sudo or running_as_root():
                 # Just run the operation normally

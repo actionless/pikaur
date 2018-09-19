@@ -511,7 +511,7 @@ class PackageBuild(DataType):
 
         print_stderr('{} {}:'.format(
             color_line('::', 13),
-            _("Removing installed repository dependencies for {}").format(
+            _("Removing already installed dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
         ))
         retry_interactive_command_or_exit(

@@ -114,6 +114,10 @@ Will be overriden by `--noedit` and `--edit` flags.
 don't prompt to show the build files diff.
 Will be overriden by `--nodiff` flag.
 
+##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
+flags to be passed to `git diff` command when reviewing build files.
+Should be separated by commas (`,`).
+
 ##### AlwaysUseDynamicUsers (default: no)
 always isolate the build using systemd dynamic users.
 Will be overriden by `--dynamic-users` flag.

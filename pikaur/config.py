@@ -73,7 +73,16 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no',
         },
+        'AlwaysUseDynamicUsers': {
+            'type': 'bool',
+            'default': 'no',
+        },
+        # @TODO: move above to new `review` section?
         'NoEdit': {
+            'type': 'bool',
+            'default': 'no',
+        },
+        'DontEditByDefault': {
             'type': 'bool',
             'default': 'no',
         },
@@ -81,13 +90,9 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no',
         },
-        'AlwaysUseDynamicUsers': {
-            'type': 'bool',
-            'default': 'no',
-        },
-        'DontEditByDefault': {
-            'type': 'bool',
-            'default': 'no',
+        'GitDiffArgs': {
+            'type': 'str',
+            'default': '--ignore-space-change,--ignore-all-space',
         },
     },
     'colors': {

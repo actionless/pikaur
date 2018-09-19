@@ -557,8 +557,7 @@ class InstallPackagesCLI():
                         '-C',
                         repo_status.repo_path,
                         'diff',
-                        '--ignore-space-change',
-                        '--ignore-all-space',
+                    ] + PikaurConfig().build.GitDiffArgs.split(',') + [
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
                     ]

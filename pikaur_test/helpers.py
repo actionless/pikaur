@@ -219,19 +219,9 @@ class PikaurTestCase(TestCase):
 
     separator = color_line(f"\n{'-' * get_term_width()}", 12)
 
-    def filter_pyalpm_warning(self):  # pylint: disable=no-self-use
-        # @TODO: remove it when pyalpm will be fixed
-        import warnings
-        warnings.filterwarnings(
-            action="ignore",
-            message="unclosed",
-            category=ResourceWarning
-        )
-
     def run(self, result=None):
         time_started = time()
         log_stderr(self.separator)
-        self.filter_pyalpm_warning()
         super().run(result)
         print(':: Took {:.2f} seconds'.format(time() - time_started))
 

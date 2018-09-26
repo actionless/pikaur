@@ -24,7 +24,6 @@ from .exceptions import (
     SysExit,
 )
 from .build import PackageBuild, clone_aur_repos
-from .makepkg_config import MakepkgConfig
 from .pprint import (
     color_line, bold_line,
     print_stderr, print_stdout, print_warning, print_error,
@@ -43,26 +42,6 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .news import News
-
-
-def check_pkg_arch(pkgbuild):
-    src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path)
-    arch = MakepkgConfig.get('CARCH')
-    supported_archs = src_info.get_values('arch')
-    if supported_archs and (
-            'any' not in supported_archs
-    ) and (
-        arch not in supported_archs
-    ):
-        print_error(
-            _("{name} can't be built on the current arch ({arch}). "
-              "Supported: {suparch}").format(
-                  name=bold_line(', '.join(pkgbuild.package_names)),
-                  arch=arch,
-                  suparch=', '.join(supported_archs))
-        )
-        if not ask_to_continue():
-            raise SysExit(95)
 
 
 def hash_file(filename):  # pragma: no cover
@@ -583,7 +562,7 @@ class InstallPackagesCLI():
                     if install_file_name:
                         self.ask_to_edit_file(install_file_name, repo_status)
 
-            check_pkg_arch(repo_status)
+            repo_status.check_pkg_arch()
             repo_status.reviewed = True
 
     def build_packages(self) -> None:  # pylint: disable=too-many-branches

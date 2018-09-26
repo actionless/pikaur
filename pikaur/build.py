@@ -524,6 +524,25 @@ class PackageBuild(DataType):
         )
         PackageDB.discard_local_cache()
 
+    def check_pkg_arch(self):
+        src_info = SrcInfo(pkgbuild_path=self.pkgbuild_path)
+        arch = MakepkgConfig.get('CARCH')
+        supported_archs = src_info.get_values('arch')
+        if supported_archs and (
+                'any' not in supported_archs
+        ) and (
+            arch not in supported_archs
+        ):
+            print_error(
+                _("{name} can't be built on the current arch ({arch}). "
+                  "Supported: {suparch}").format(
+                      name=bold_line(', '.join(self.package_names)),
+                      arch=arch,
+                      suparch=', '.join(supported_archs))
+            )
+            if not ask_to_continue():
+                raise SysExit(95)
+
     def build_with_makepkg(self) -> bool:  # pylint: disable=too-many-branches,too-many-statements
         makepkg_args = []
         if not self.args.needed:
@@ -588,7 +607,8 @@ class PackageBuild(DataType):
                 )
                 answer = get_input(
                     prompt,
-                    _('r').upper() + _('p') + _('c') + _('i') + _('d') + _('s') + _('a')
+                    _('r').upper() + _('p') + _('c') + _('i') + _('d') +
+                    _('s') + _('a')
                 )
 
             answer = answer.lower()[0]

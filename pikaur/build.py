@@ -87,6 +87,7 @@ class PackageBuild(DataType):
 
     reviewed = False
     keep_build_dir = False
+    skip_carch_check = False
     _source_repo_updated = False
     _build_files_copied = False
 
@@ -542,6 +543,7 @@ class PackageBuild(DataType):
             )
             if not ask_to_continue():
                 raise SysExit(95)
+            self.skip_carch_check = True
 
     def build_with_makepkg(self) -> bool:  # pylint: disable=too-many-branches,too-many-statements
         makepkg_args = []
@@ -557,14 +559,13 @@ class PackageBuild(DataType):
         build_succeeded = False
         skip_pgp_check = False
         skip_file_checksums = False
-        skip_carch_check = False
         while True:
             cmd_args = get_makepkg_cmd() + makepkg_args
             if skip_pgp_check:
                 cmd_args += ['--skippgpcheck']
             if skip_file_checksums:
                 cmd_args += ['--skipchecksums']
-            if skip_carch_check:
+            if self.skip_carch_check:
                 cmd_args += ['--ignorearch']
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir)
             spawn_kwargs: Dict[str, Any] = {}
@@ -621,7 +622,7 @@ class PackageBuild(DataType):
                 skip_file_checksums = True
                 continue
             elif answer == _("i"):  # pragma: no cover
-                skip_carch_check = True
+                self.skip_carch_check = True
                 continue
             elif answer == _("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)

@@ -57,10 +57,14 @@ class TTYRestore():
 
     def __init__(self):
         self.restore = self.restore_new
-        self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        try:
+            self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        except termios.error as exc:
+            print(exc)
 
     def restore_new(self, *_whatever):
-        self._restore(self.sub_tty_old_tcattrs)
+        if self.sub_tty_old_tcattrs:
+            self._restore(self.sub_tty_old_tcattrs)
 
 
 TTYRestore.save()

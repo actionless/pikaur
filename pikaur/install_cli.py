@@ -268,7 +268,6 @@ class InstallPackagesCLI():
                         selected_packages.append(pkg_name)
 
         list_diff = set(selected_packages).difference(pkg_names_before)
-        list_diff.update(selected_packages)
         for pkg_name in list_diff:
             if strip_aur_repo_name(pkg_name) not in (
                     self.install_package_names + self.not_found_repo_pkgs_names

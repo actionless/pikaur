@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "PIKAUR" "1" "September 2018" "" "Pikaur manual"
+.TH "PIKAUR" "1" "October 2018" "" "Pikaur manual"
 .
 .P
 AUR helper with minimal dependencies\. Review PKGBUILDs all in once, next build them all without user interaction\.
@@ -10,7 +10,7 @@ AUR helper with minimal dependencies\. Review PKGBUILDs all in once, next build 
 Inspired by \fBpacaur\fR, \fByaourt\fR and \fByay\fR\.
 .
 .P
-Instead of trying to be smarter than pacman (by using \fB\-\-nodeps\fR, \fB\-\-force\fR, \fB\-\-ask\fR, \fB\-\-noconfirm\fR and so) it just interactively tells pacman what to do\. If pacman will ask some unexpected question user will be just able to answer it manually\.
+Instead of trying to be smarter than pacman (by using \fB\-\-nodeps\fR, \fB\-\-force\fR, \fB\-\-ask\fR, \fB\-\-noconfirm\fR and so) it just interactively tells pacman what to do\. If pacman asks some unexpected question, the user will be just able to answer it manually\.
 .
 .P
 Notable features:
@@ -51,7 +51,7 @@ The following pacman operations are extended with AUR capabilities:
 \fB\-S\fR (build AUR packages, \fB\-\-needed\fR, \fB\-\-ignore\fR and \fB\-\-noconfirm\fR are supported as in pacman, other args are just bypassed to it)
 .
 .IP "\(bu" 4
-\fB\-Sw\fR (build AUR packages but not install)
+\fB\-Sw\fR (build AUR packages but don\'t install)
 .
 .IP "\(bu" 4
 \fB\-Ss\fR (search or list all AUR packages, \fB\-q\fR also supported)
@@ -63,7 +63,7 @@ The following pacman operations are extended with AUR capabilities:
 \fB\-Su\fR / \fB\-Syu\fR (sysupgrade)
 .
 .IP "\(bu" 4
-\fB\-Sc\fR / \fB\-Scc\fR (build dir /built packages cache clean)
+\fB\-Sc\fR / \fB\-Scc\fR (build dir/built packages cache clean)
 .
 .IP "\(bu" 4
 \fB\-Qu\fR (query upgradeable, \fB\-q\fR supported)
@@ -74,7 +74,7 @@ The following pacman operations are extended with AUR capabilities:
 Also see \fBpikaur \-Sh\fR, \fB\-Qh\fR, \fB\-Ph\fR and \fB\-Gh\fR for pikaur\-specific flags\.
 .
 .P
-Pikaur wraps all the pacman options accurately except for \fB\-Syu\fR which is being splitted into \fB\-Sy\fR (to refresh package list first) and \fB\-Su\fR (to install upgrades after user confirmed the package list or has been altered it via [M]anual package selection)\.
+Pikaur wraps all the pacman options accurately except for \fB\-Syu\fR which is being splitted into \fB\-Sy\fR (to refresh package list first) and \fB\-Su\fR (to install upgrades after user confirmed the package list or altered it via [M]anual package selection)\.
 .
 .IP "\(bu" 4
 \fIInstallation\fR
@@ -135,39 +135,39 @@ python3 \./pikaur\.py \-S AUR_PACKAGE_NAME
 .SS "[sync]"
 .
 .SS "DevelPkgsExpiration (default: \-1)"
-when doing sysupgrade count all devel (\-git, \-svn, \-bzr, \-hg, \-cvs) packages older than N days as being upgradeable\. \-1 disables this\. 0 means always upgrade\. Passing \fB\-\-devel\fR argument will override this option to 0\.
+When doing sysupgrade, count all devel (\-git, \-svn, \-bzr, \-hg, \-cvs) packages older than N days as being upgradeable\. \-1 disables this\. 0 means always upgrade\. Passing \fB\-\-devel\fR argument will override this option to 0\.
 .
 .SS "AlwaysShowPkgOrigin (default: no)"
-when installing new packages show their repository name even if they are coming from one of the official Arch Linux repositories\.
+When installing new packages, show their repository name, even if they are coming from one of the official Arch Linux repositories\.
 .
 .SS "UpgradeSorting (default: versiondiff)"
-when upgrading packages sort them by \fBversiondiff\fR, \fBpkgname\fR or \fBrepo\fR\.
+When upgrading packages, sort them by \fBversiondiff\fR, \fBpkgname\fR or \fBrepo\fR\.
 .
 .SS "[build]"
 .
 .SS "KeepBuildDir (default: no)"
-don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. Will be overriden by \fB\-k/\-\-keepbuild\fR flag\.
+Don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. Will be overriden by \fB\-k/\-\-keepbuild\fR flag\.
 .
 .SS "KeepDevBuildDir (default: yes)"
-when building dev packages (\fB\-git\fR, \fB\-svn\fR, etc) don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. \fBNo\fR value will be overriden by \fBKeepBuildDir\fR option and \fB\-k/\-\-keepbuild\fR flag\.
+When building dev packages (\fB\-git\fR, \fB\-svn\fR, etc), don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. \fBNo\fR value will be overriden by \fBKeepBuildDir\fR option and \fB\-k/\-\-keepbuild\fR flag\.
 .
 .SS "SkipFailedBuild (default: no)"
-always skip the build if it fails and don\'t show recovery prompt\.
+Always skip the build if it fails and don\'t show recovery prompt\.
 .
 .SS "DontEditByDefault (default: no)"
-always default to no when prompting to edit PKGBUILD and install files\.
+Always default to no when prompting to edit PKGBUILD and install files\.
 .
 .SS "NoEdit (default: no)"
-don\'t prompt to edit PKGBUILD and install files\. Will be overriden by \fB\-\-noedit\fR and \fB\-\-edit\fR flags\.
+Don\'t prompt to edit PKGBUILD and install files\. Will be overriden by \fB\-\-noedit\fR and \fB\-\-edit\fR flags\.
 .
 .SS "NoDiff (default: no)"
-don\'t prompt to show the build files diff\. Will be overriden by \fB\-\-nodiff\fR flag\.
+Don\'t prompt to show the build files diff\. Will be overriden by \fB\-\-nodiff\fR flag\.
 .
 .SS "GitDiffArgs (default: \-\-ignore\-space\-change,\-\-ignore\-all\-space)"
-flags to be passed to \fBgit diff\fR command when reviewing build files\. Should be separated by commas (\fB,\fR)\.
+Flags to be passed to \fBgit diff\fR command when reviewing build files\. Should be separated by commas (\fB,\fR)\.
 .
 .SS "AlwaysUseDynamicUsers (default: no)"
-always isolate the build using systemd dynamic users\. Will be overriden by \fB\-\-dynamic\-users\fR flag\.
+Always isolate the build using systemd dynamic users\. Will be overriden by \fB\-\-dynamic\-users\fR flag\.
 .
 .SS "[colors]"
 terminal colors, from 0 to 15
@@ -181,7 +181,7 @@ terminal colors, from 0 to 15
 .SS "[ui]"
 .
 .SS "RequireEnterConfirm (default: yes)"
-require enter key to be pressed when answering questions\.
+Require enter key to be pressed when answering questions\.
 .
 .SS "DiffPager (default: auto)"
 Wherever to use \fBless\fR pager when viewing AUR packages diff\. Choices are \fBalways\fR, \fBauto\fR or \fBnever\fR\.
@@ -192,14 +192,14 @@ Print each command which pikaur is currently spawning\.
 .SS "[misc]"
 .
 .SS "PacmanPath (default: pacman)"
-path to pacman executable\.
+Path to pacman executable\.
 .
 .SH "Directories"
 .
 .nf
 
 ~/\.cache/pikaur/
-├── aur_repos/  # keep there aur repos; show diff when updating
+├── aur_repos/  # keep aur repos there; show diff when updating
 │   └── last_installed\.txt  # aur repo hash of last successfully installed package
 ├── build/  # build directory (removed after successfull build)
 └── pkg/  # built packages directory
@@ -222,7 +222,7 @@ Set \fBSRCDEST\fR, \fBBUILDDIR\fR or \fBPKGDEST\fR accordingly in \fBmakepkg\.co
 For more info see \fBmakepkg\fR documentation\.
 .
 .SS "Hot to clean old or uninstalled AUR packages in ~/\.cache/pikaur/pkg?"
-This is the part from a pacman\-hook (paccache\-clear\.hook)\. For both official and AUR packages, the last 3 packages are kept if the package is still installed, and one package is kept if the package is uninstalled\.
+This can be achieved using a pacman\-hook (paccache\-clear\.hook)\. For both official and AUR packages, the last 3 packages are kept if the package is still installed, and one package is kept if the package is uninstalled\.
 .
 .IP "" 4
 .
@@ -259,10 +259,10 @@ You can start from this list of issues \fIhttps://github\.com/actionless/pikaur/
 To start working on a new language, say \'it\' (Italian), add it to the \fBMakefile\fR \fBLANGS\fR variable and run \fBmake\fR\. Then translate \fBlocale/it\.po\fR using your favorite PO editor\. Run \fBmake\fR every time the Python code strings change or the \fB\.po\fR is modified\.
 .
 .SS "Documentation"
-After updating readme please install \fBruby\-ronn\fR and run \fBmake man\fR\.
+After updating readme, please install \fBruby\-ronn\fR and run \fBmake man\fR\.
 .
 .SH "Authors"
-To see the list of authors use this command inside pikaur git repository directory:
+To see the list of authors, use this command inside pikaur git repository directory:
 .
 .IP "" 4
 .

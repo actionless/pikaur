@@ -6,7 +6,7 @@ AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build t
 
 Inspired by `pacaur`, `yaourt` and `yay`.
 
-Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--ask`, `--noconfirm` and so) it just interactively tells pacman what to do. If pacman will ask some unexpected question user will be just able to answer it manually.
+Instead of trying to be smarter than pacman (by using `--nodeps`, `--force`, `--ask`, `--noconfirm` and so) it just interactively tells pacman what to do. If pacman asks some unexpected question, the user will be just able to answer it manually.
 
 Notable features:
 
@@ -23,16 +23,16 @@ Notable features:
 The following pacman operations are extended with AUR capabilities:
 
 * `-S` (build AUR packages, `--needed`, `--ignore` and `--noconfirm` are supported as in pacman, other args are just bypassed to it)
-* `-Sw` (build AUR packages but not install)
+* `-Sw` (build AUR packages but don't install)
 * `-Ss` (search or list all AUR packages, `-q` also supported)
 * `-Si` (package info)
 * `-Su` / `-Syu` (sysupgrade)
-* `-Sc` / `-Scc` (build dir /built packages cache clean)
+* `-Sc` / `-Scc` (build dir/built packages cache clean)
 * `-Qu` (query upgradeable, `-q` supported)
 
 Also see `pikaur -Sh`, `-Qh`, `-Ph` and `-Gh` for pikaur-specific flags.
 
-Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or has been altered it via [M]anual package selection).
+Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or altered it via [M]anual package selection).
 
 
 * [Installation](#installation "")
@@ -77,49 +77,49 @@ python3 ./pikaur.py -S AUR_PACKAGE_NAME
 #### [sync]
 
 ##### DevelPkgsExpiration (default: -1)
-when doing sysupgrade count all devel (-git, -svn, -bzr, -hg, -cvs) packages older than N days as being upgradeable.
+When doing sysupgrade, count all devel (-git, -svn, -bzr, -hg, -cvs) packages older than N days as being upgradeable.
 -1 disables this.
 0 means always upgrade.
 Passing `--devel` argument will override this option to 0.
 
 ##### AlwaysShowPkgOrigin (default: no)
-when installing new packages show their repository name even if they are coming from one of the official Arch Linux repositories.
+When installing new packages, show their repository name, even if they are coming from one of the official Arch Linux repositories.
 
 ##### UpgradeSorting (default: versiondiff)
-when upgrading packages sort them by `versiondiff`, `pkgname` or `repo`.
+When upgrading packages, sort them by `versiondiff`, `pkgname` or `repo`.
 
 
 #### [build]
 
 ##### KeepBuildDir (default: no)
-don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
+Don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
 Will be overriden by `-k/--keepbuild` flag.
 
 ##### KeepDevBuildDir (default: yes)
-when building dev packages (`-git`, `-svn`, etc)
+When building dev packages (`-git`, `-svn`, etc),
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
 `No` value will be overriden by `KeepBuildDir` option and `-k/--keepbuild` flag.
 
 ##### SkipFailedBuild (default: no)
-always skip the build if it fails and don't show recovery prompt.
+Always skip the build if it fails and don't show recovery prompt.
 
 ##### DontEditByDefault (default: no)
-always default to no when prompting to edit PKGBUILD and install files.
+Always default to no when prompting to edit PKGBUILD and install files.
 
 ##### NoEdit (default: no)
-don't prompt to edit PKGBUILD and install files.
+Don't prompt to edit PKGBUILD and install files.
 Will be overriden by `--noedit` and `--edit` flags.
 
 ##### NoDiff (default: no)
-don't prompt to show the build files diff.
+Don't prompt to show the build files diff.
 Will be overriden by `--nodiff` flag.
 
 ##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
-flags to be passed to `git diff` command when reviewing build files.
+Flags to be passed to `git diff` command when reviewing build files.
 Should be separated by commas (`,`).
 
 ##### AlwaysUseDynamicUsers (default: no)
-always isolate the build using systemd dynamic users.
+Always isolate the build using systemd dynamic users.
 Will be overriden by `--dynamic-users` flag.
 
 #### [colors]
@@ -134,7 +134,7 @@ terminal colors, from 0 to 15
 #### [ui]
 
 ##### RequireEnterConfirm (default: yes)
-require enter key to be pressed when answering questions.
+Require enter key to be pressed when answering questions.
 
 ##### DiffPager (default: auto)
 Wherever to use `less` pager when viewing AUR packages diff. Choices are `always`, `auto` or `never`.
@@ -146,7 +146,7 @@ Print each command which pikaur is currently spawning.
 #### [misc]
 
 ##### PacmanPath (default: pacman)
-path to pacman executable.
+Path to pacman executable.
 
 
 
@@ -157,7 +157,7 @@ path to pacman executable.
 
 ```sh
 ~/.cache/pikaur/
-├── aur_repos/  # keep there aur repos; show diff when updating
+├── aur_repos/  # keep aur repos there; show diff when updating
 │   └── last_installed.txt  # aur repo hash of last successfully installed package
 ├── build/  # build directory (removed after successfull build)
 └── pkg/  # built packages directory
@@ -185,7 +185,7 @@ For more info see `makepkg` documentation.
 
 ##### Hot to clean old or uninstalled AUR packages in ~/.cache/pikaur/pkg?
 
-This is the part from a pacman-hook (paccache-clear.hook). For both official and AUR packages, the last 3 packages are kept if the package is still installed, and one package is kept if the package is uninstalled.
+This can be achieved using a pacman-hook (paccache-clear.hook). For both official and AUR packages, the last 3 packages are kept if the package is still installed, and one package is kept if the package is uninstalled.
 
 ```
 Exec = /usr/bin/env bash -c "/usr/bin/paccache -vrk3; /usr/bin/paccache -vruk1; /usr/bin/paccache --cachedir PATH/TO/.cache/pikaur/pkg/ -vrk3; /usr/bin/paccache --cachedir PATH/TO/.cache/pikaur/pkg/ -vruk1"
@@ -221,12 +221,12 @@ or the `.po` is modified.
 
 ### Documentation
 
-After updating readme please install `ruby-ronn` and run `make man`.
+After updating readme, please install `ruby-ronn` and run `make man`.
 
 
 ## Authors
 
-To see the list of authors use this command inside pikaur git repository directory:
+To see the list of authors, use this command inside pikaur git repository directory:
 
 ```sh
 git log --pretty=tformat:"%an <%ae>" | sort -u

@@ -385,14 +385,19 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
     )
 
 
+AnyPackage = Union['AURPackageInfo', pyalpm.Package]
+
+
 # @TODO: weird pylint behavior if remove `return` from the end:
 def print_package_search_results(  # pylint:disable=useless-return
-        packages: Iterable[Union['AURPackageInfo', pyalpm.Package]],
+        packages: Iterable[AnyPackage],
         local_pkgs_versions: Dict[str, str],
 ) -> None:
 
-    def get_sort_key(pkg: 'AURPackageInfo') -> float:
-        if getattr(pkg, "numvotes", None) is not None:
+    from .aur import AURPackageInfo  # noqa  pylint:disable=redefined-outer-name
+
+    def get_sort_key(pkg: AnyPackage) -> float:
+        if isinstance(pkg, AURPackageInfo) and pkg.numvotes is not None:
             return (pkg.numvotes + 1) * (pkg.popularity + 1)
         return 1
 
@@ -427,7 +432,13 @@ def print_package_search_results(  # pylint:disable=useless-return
                     installed = color_line(_("[installed]") + ' ', 14)
 
             rating = ''
-            if getattr(package, "numvotes", None) is not None:
+            if (
+                    isinstance(package, AURPackageInfo)
+            ) and (
+                package.numvotes is not None
+            ) and (
+                package.popularity is not None
+            ):
                 rating = color_line('({}, {:.2f})'.format(
                     package.numvotes,
                     package.popularity
@@ -437,7 +448,7 @@ def print_package_search_results(  # pylint:disable=useless-return
             version_color = color_config.get_int('Version')
             version = package.version
 
-            if getattr(package, "outofdate", None) is not None:
+            if isinstance(package, AURPackageInfo) and package.outofdate is not None:
                 version_color = color_config.get_int('VersionDiffOld')
                 version = "{} [{}: {}]".format(
                     package.version,

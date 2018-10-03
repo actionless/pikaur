@@ -8,7 +8,7 @@ echo PyLint:
 pylint pikaur.py pikaur pikaur_test
 
 echo MyPy:
-mypy --ignore-missing-imports pikaur.py pikaur_test
+env MYPYPATH=./maintenance_scripts/mypy_stubs:/usr/lib/python3.7/site-packages/ mypy pikaur.py pikaur_test
 
 echo Vulture:
 ./maintenance_scripts/vulture.sh

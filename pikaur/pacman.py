@@ -252,7 +252,7 @@ class PackageDB(PackageDBCommon):
 
     _alpm_handle: Optional[pyalpm.Handle] = None
 
-    _pacman_find_cache: Dict[str, pyalpm.Package] = {}
+    _pacman_find_cache: Dict[str, List[PacmanPrint]] = {}
     _pacman_test_cache: Dict[str, List[VersionMatcher]] = {}
     _pacman_repo_pkg_present_cache: Dict[str, bool] = {}
 
@@ -260,6 +260,8 @@ class PackageDB(PackageDBCommon):
     def get_alpm_handle(cls) -> pyalpm.Handle:
         if not cls._alpm_handle:
             cls._alpm_handle = PacmanConfig().initialize_alpm()
+        if not cls._alpm_handle:
+            raise Exception("Cannot initialize ALPM")
         return cls._alpm_handle
 
     @classmethod
@@ -365,21 +367,19 @@ class PackageDB(PackageDBCommon):
         found_packages_output = spawn(
             cmd_args + ['--print-format', '%r/%n']
         ).stdout_text
-        if not found_packages_output:
-            cls._pacman_find_cache[cache_index] = results
-            return results
-        for line in found_packages_output.splitlines():
-            try:
-                repo_name, pkg_name = line.split('/')
-            except ValueError:
-                print_stderr(line)
-                continue
-            else:
-                results.append(PacmanPrint(
-                    full_name=line,
-                    repo=repo_name,
-                    name=pkg_name
-                ))
+        if found_packages_output:
+            for line in found_packages_output.splitlines():
+                try:
+                    repo_name, pkg_name = line.split('/')
+                except ValueError:
+                    print_stderr(line)
+                    continue
+                else:
+                    results.append(PacmanPrint(
+                        full_name=line,
+                        repo=repo_name,
+                        name=pkg_name
+                    ))
         cls._pacman_find_cache[cache_index] = results
         return results
 

@@ -249,8 +249,8 @@ class InstallInfoFetcher:
                 self.thirdparty_repo_packages_install_info.append(pkg_update)
 
     def get_repo_deps_info(self) -> None:
-        all_aur_pkgs = [
-            pkg_info.package
+        all_aur_pkgs: List[AURPackageInfo] = [
+            pkg_info.package  # type: ignore
             for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
         ]
         new_dep_version_matchers = find_repo_deps_of_aur_pkgs(all_aur_pkgs)

@@ -2,7 +2,7 @@
 
 import sys
 from multiprocessing.pool import ThreadPool
-from typing import Any, Dict, List, Iterable, Union, Set
+from typing import Any, Dict, List, Iterable, Union, Set, Sequence
 
 import pyalpm
 
@@ -18,7 +18,7 @@ from .args import parse_args
 from .exceptions import AURError, SysExit
 
 
-def package_search_thread_repo(query: str) -> List[Any]:
+def package_search_thread_repo(query: str) -> List[pyalpm.Package]:
     args = parse_args()
     if query:
         result = PackageDB.search_repo(
@@ -74,19 +74,19 @@ def package_search_thread_local():
 
 
 def join_search_results(
-        all_aur_results: List[List[Union[AURPackageInfo, pyalpm.Package]]]
+        all_search_results: Sequence[Union[List[AURPackageInfo], List[pyalpm.Package]]]
 ) -> Iterable[Union[AURPackageInfo, pyalpm.Package]]:
-    aur_pkgs_nameset: Set[str] = set()
-    for search_results in all_aur_results:
-        new_aur_pkgs_nameset = set(get_pkg_id(result) for result in search_results)
-        if aur_pkgs_nameset:
-            aur_pkgs_nameset = aur_pkgs_nameset.intersection(new_aur_pkgs_nameset)
+    pkgnames_set: Set[str] = set()
+    for search_results in all_search_results:
+        new_pkgnames_set = set(get_pkg_id(result) for result in search_results)
+        if pkgnames_set:
+            pkgnames_set = pkgnames_set.intersection(new_pkgnames_set)
         else:
-            aur_pkgs_nameset = new_aur_pkgs_nameset
+            pkgnames_set = new_pkgnames_set
     return {
         get_pkg_id(result): result
-        for result in all_aur_results[0]
-        if get_pkg_id(result) in aur_pkgs_nameset
+        for result in all_search_results[0]
+        if get_pkg_id(result) in pkgnames_set
     }.values()
 
 

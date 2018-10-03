@@ -12,7 +12,7 @@ import pyalpm
 from .i18n import _
 from .config import PikaurConfig
 from .args import reconstruct_args, PikaurArgs, parse_args
-from .aur import strip_aur_repo_name
+from .aur import AURPackageInfo, strip_aur_repo_name
 from .pacman import (
     PackageDB,
     get_pacman_command, refresh_pkg_db, install_built_deps,
@@ -355,6 +355,8 @@ class InstallPackagesCLI():
                         self.install_info.aur_deps_install_info
                 ):
                     if info.pkgbuild_path:
+                        if not isinstance(info.package, AURPackageInfo):
+                            raise TypeError()
                         pkg_base = info.package.packagebase
                         if pkg_base not in pkgbuilds_by_base:
                             pkgbuilds_by_base[pkg_base] = PackageBuild(

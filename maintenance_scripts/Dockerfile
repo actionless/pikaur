@@ -28,6 +28,6 @@ cd /home/user && \
 sudo -u user pikaur -G mypy && \
 cd mypy/trunk && \
 git checkout adc8f0312381ae54488a813b82c23f611041ab97 && \
-sudo -u user pikaur -Pi PKGBUILD
+sudo -u user pikaur -Pi PKGBUILD --noconfirm
 	#sudo -u user pikaur -S --noconfirm python-virtualenv python-pylint flake8 mypy python-vulture --color=always
 # @TODO: remove python-mypy_extensions when `mypy` package will be fixed

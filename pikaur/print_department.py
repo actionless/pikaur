@@ -27,6 +27,9 @@ GROUP_COLOR = 4
 REPLACEMENTS_COLOR = 14
 
 
+AnyPackage = Union['AURPackageInfo', pyalpm.Package]
+
+
 def print_version(pacman_version: str, quiet=False) -> None:
     if quiet:
         print(f'Pikaur v{VERSION}')
@@ -383,9 +386,6 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
             package_source=package_source.name
         )
     )
-
-
-AnyPackage = Union['AURPackageInfo', pyalpm.Package]
 
 
 # @TODO: weird pylint behavior if remove `return` from the end:

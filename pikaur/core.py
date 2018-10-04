@@ -22,9 +22,6 @@ if TYPE_CHECKING:
 NOT_FOUND_ATOM = object()
 
 
-SUDO_LOOP_INTERVAL = 1
-
-
 class DataType():
 
     def __init__(self, **kwargs) -> None:
@@ -229,13 +226,17 @@ def dirname(path):
 
 def sudo_loop(once=False) -> None:
     """
-    get sudo for further questions (command should do nothing)
+    get sudo for further questions
     """
+    from .config import PikaurConfig
+    sudo_loop_interval = PikaurConfig().misc.get_int('SudoLoopInterval')
+    if sudo_loop_interval == -1:
+        return
     while True:
         interactive_spawn(['sudo', '-v'])
         if once:
             break
-        sleep(SUDO_LOOP_INTERVAL)
+        sleep(sudo_loop_interval)
 
 
 def run_with_sudo_loop(function: Callable) -> Optional[Any]:

@@ -124,7 +124,7 @@ Will be overriden by `--dynamic-users` flag.
 
 #### [colors]
 
-terminal colors, from 0 to 15
+Terminal colors, from 0 to 15
 
 ##### Version (default: 10)
 ##### VersionDiffOld (default: 11)

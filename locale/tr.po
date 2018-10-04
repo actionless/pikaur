@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-04 05:22+0200\n"
-"PO-Revision-Date: 2018-08-08 21:47+0300\n"
+"PO-Revision-Date: 2018-10-04 11:18+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -50,7 +50,7 @@ msgstr[1] "AUR paketleri kurulacak:"
 #: pikaur/config.py:52
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
-msgstr ""
+msgstr "AUR depo dizini '{old}'dan '{new}'a taşındı."
 
 #: pikaur/args.py:396
 msgid ""
@@ -62,7 +62,7 @@ msgstr ""
 
 #: pikaur/main.py:154
 msgid "Build directory"
-msgstr ""
+msgstr "İnşa dizini"
 
 #: pikaur/install_cli.py:595
 #, python-brace-format
@@ -82,7 +82,7 @@ msgstr "'{from_path}'dan '{to_path}'a kopyalanamadı."
 #: pikaur/build.py:48
 #, python-brace-format
 msgid "Can't create destination directory '{to_path}'."
-msgstr ""
+msgstr "Hedef dizin '{to_path}' oluşturulamıyor."
 
 #: pikaur/build.py:124
 msgid "Can't get package name from PKGBUILD"
@@ -162,17 +162,15 @@ msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr "Kurulan bağımlılıklar silinemedi, paketler tutarsız: {}"
 
 #: pikaur/print_department.py:64
-#, fuzzy
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
-msgstr[0] "Paketler AUR'da bulunamadı:"
-msgstr[1] "Paketler AUR'da bulunamadı:"
+msgstr[0] "Takip eden paket AUR'da bulunamadı:"
+msgstr[1] "Takip eden paketler AUR'da bulunamadı:"
 
 #: pikaur/print_department.py:58
-#, fuzzy
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
-msgstr[0] "Takip eden paketler depolarda bulunamadı:"
+msgstr[0] "Takip eden paket depolarda bulunamadı:"
 msgstr[1] "Takip eden paketler depolarda bulunamadı:"
 
 #: pikaur/print_department.py:362
@@ -229,7 +227,7 @@ msgstr[1] ""
 
 #: pikaur/main.py:155
 msgid "Packages directory"
-msgstr ""
+msgstr "Paketler dizini"
 
 #: pikaur/args.py:441
 msgid "Pikaur-specific options:"
@@ -254,16 +252,14 @@ msgid "Reading repository package databases..."
 msgstr "Depo paket veritabanı okunuyor..."
 
 #: pikaur/build.py:515
-#, fuzzy
 msgid "Removing already installed dependencies for {}"
-msgstr "{} için kurulan depo bağımlılıkları siliniyor"
+msgstr "{} için şimdi kurulan depo bağımlılıkları siliniyor"
 
 #: pikaur/print_department.py:253
-#, fuzzy
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
-msgstr[0] "Depo paketi değiştirilmesi önerisi:"
-msgstr[1] "Depo paketleri değiştirilmesi önerisi:"
+msgstr[0] "Depo paketi yer değiştirilmesi önerisi:"
+msgstr[1] "Depo paketleri yer değiştirilmesi önerisi:"
 
 #: pikaur/print_department.py:280
 msgid "Repository package will be installed:"
@@ -304,11 +300,10 @@ msgid "There are news from archlinux.org!"
 msgstr "Archlinux.org'dan haberler var!"
 
 #: pikaur/print_department.py:266
-#, fuzzy
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
-msgstr[0] "Üçüncü-parti depo paketi değiştirilmesi önerisi:"
-msgstr[1] "Üçüncü-parti depo paketleri değiştirilmesi önerisi:"
+msgstr[0] "Üçüncü-parti depo paketi yer değiştirilmesi önerisi:"
+msgstr[1] "Üçüncü-parti depo paketleri yer değiştirilmesi önerisi:"
 
 #: pikaur/print_department.py:304
 msgid "Third-party repository package will be installed:"
@@ -370,14 +365,13 @@ msgid "[installed]"
 msgstr "[kurulu]"
 
 #: pikaur/build.py:600
-#, fuzzy
 msgid "[p] PGP check skip"
-msgstr "[p] pgp doğrulamayı atla"
+msgstr "[p] PGP doğrulamayı atla"
 
 #. _("[c] git checkout -- '*' ; git clean -f -d -x"),
 #: pikaur/install_cli.py:394
 msgid "[r] remove dir and clone again"
-msgstr "[s] dizini sil ve tekrar klonla"
+msgstr "[r] dizini sil ve tekrar klonla"
 
 #: pikaur/build.py:605
 msgid "[s] skip building this package"
@@ -451,7 +445,7 @@ msgstr "hata:"
 
 #: pikaur/build.py:256
 msgid "failed to retrieve latest dev sources:"
-msgstr ""
+msgstr "son geliştirme kaynakları alınamadı:"
 
 #: pikaur/print_department.py:132 pikaur/print_department.py:138
 msgid "for"
@@ -513,15 +507,12 @@ msgid "path to custom makepkg config"
 msgstr "özel makepkg yapılandırması yolu"
 
 #: pikaur/args.py:430
-#, fuzzy
 msgid "path to custom pikaur config"
-msgstr "özel makepkg yapılandırması yolu"
+msgstr "özel pikaur yapılandırması yolu"
 
 #: pikaur/main.py:263
-#, fuzzy
 msgid "pikaur requires Python >= 3.7 to run."
-msgstr ""
-"pikaur root olabilmek için systemd >= 235 (dinamik kullanıcılar) gerektirir."
+msgstr "pikaur çalışabilmek için Python >= 3.7 gerektirir."
 
 #: pikaur/main.py:268
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
@@ -555,7 +546,7 @@ msgstr "paketler için sadece depoda sorgula"
 #: pikaur/install_cli.py:398 pikaur/install_cli.py:403 pikaur/build.py:611
 #: pikaur/build.py:616
 msgid "r"
-msgstr "s"
+msgstr "r"
 
 #: pikaur/install_cli.py:398 pikaur/install_cli.py:405 pikaur/build.py:591
 #: pikaur/build.py:612
@@ -624,12 +615,3 @@ msgstr ""
 #: pikaur/build.py:373
 msgid "{} does not exist on the filesystem."
 msgstr "{} dosya sisteminde mevcut değil."
-
-#~ msgid "[v] skip all source verification checks"
-#~ msgstr "[g] bütün kaynak doğrulamaları atla"
-
-#~ msgid "{}: {}"
-#~ msgstr "{}: {}"
-
-#~ msgid "error"
-#~ msgstr "hata"

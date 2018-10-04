@@ -147,7 +147,7 @@ Print each command which pikaur is currently spawning.
 
 ##### SudoLoopInterval (default: 1)
 Interval in seconds in which `sudo` command will be spawned in the background
-to awoid asking for sudo password more than once
+to avoid asking for sudo password more than once
 (`-1` to disable sudo loop at all).
 
 ##### PacmanPath (default: pacman)

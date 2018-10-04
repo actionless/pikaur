@@ -34,10 +34,27 @@ DATA_ROOT = os.environ.get(
 )
 _OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
 AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
-if os.path.exists(_OLD_AUR_REPOS_CACHE_PATH) and not os.path.exists(AUR_REPOS_CACHE_PATH):
+
+
+def migrate_old_aur_repos_dir():
+    if not (
+            os.path.exists(_OLD_AUR_REPOS_CACHE_PATH) and not os.path.exists(AUR_REPOS_CACHE_PATH)
+    ):
+        return
     if not os.path.exists(DATA_ROOT):
         os.makedirs(DATA_ROOT)
     os.renames(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
+
+    from .pprint import print_warning, print_stderr
+    from .i18n import _
+    print_stderr()
+    print_warning(
+        _("Aur repos dir has been moved from '{old}' to '{new}'.".format(
+            old=_OLD_AUR_REPOS_CACHE_PATH,
+            new=AUR_REPOS_CACHE_PATH
+        ))
+    )
+    print_stderr()
 
 
 def get_config_path():

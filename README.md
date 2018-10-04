@@ -163,11 +163,11 @@ Path to pacman executable.
 ```sh
 ~/.cache/pikaur/
 ├── build/  # build directory (removed after successfull build)
-└── pkg/  # built packages directory
+├── pkg/  # built packages directory
 ~/.config/pikaur.conf  # config file
 ~/.local/share/pikaur/
-├── aur_repos/  # keep aur repos there; show diff when updating
-│   └── last_installed.txt  # aur repo hash of last successfully installed package
+└── aur_repos/  # keep aur repos there; show diff when updating
+    └── last_installed.txt  # aur repo hash of last successfully installed package
 ```
 
 

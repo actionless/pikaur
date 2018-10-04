@@ -49,7 +49,7 @@ def migrate_old_aur_repos_dir():
     from .i18n import _
     print_stderr()
     print_warning(
-        _("Aur repos dir has been moved from '{old}' to '{new}'.".format(
+        _("AUR repos dir has been moved from '{old}' to '{new}'.".format(
             old=_OLD_AUR_REPOS_CACHE_PATH,
             new=AUR_REPOS_CACHE_PATH
         ))

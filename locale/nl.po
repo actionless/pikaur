@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-04 05:18+0200\n"
+"POT-Creation-Date: 2018-10-04 05:22+0200\n"
 "PO-Revision-Date: 2018-09-24 11:43+0200\n"
 "Last-Translator: Bert Peters <bert@bertptrs.nl>\n"
 "Language-Team: none\n"
@@ -50,6 +50,11 @@ msgid_plural "AUR packages will be installed:"
 msgstr[0] "AUR pakket zal worden geïnstalleerd:"
 msgstr[1] "AUR-pakketten zullen worden geïnstalleerd:"
 
+#: pikaur/config.py:52
+#, python-brace-format
+msgid "AUR repos dir has been moved from '{old}' to '{new}'."
+msgstr ""
+
 #: pikaur/args.py:396
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
@@ -57,11 +62,6 @@ msgid ""
 msgstr ""
 "Alle gebruikelijke pacman opties zoal bij `pacman -U <pkg_bestand>`. Zie: "
 "`pacman -Uh`."
-
-#: pikaur/config.py:52
-#, python-brace-format
-msgid "Aur repos dir has been moved from '{old}' to '{new}'."
-msgstr ""
 
 #: pikaur/main.py:154
 msgid "Build directory"

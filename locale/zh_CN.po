@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-04 05:18+0200\n"
+"POT-Creation-Date: 2018-10-04 05:22+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -45,16 +45,16 @@ msgid_plural "AUR packages will be installed:"
 msgstr[0] "将被安装的AUR软件包:"
 msgstr[1] "将被安装的AUR软件包:"
 
+#: pikaur/config.py:52
+#, python-brace-format
+msgid "AUR repos dir has been moved from '{old}' to '{new}'."
+msgstr ""
+
 #: pikaur/args.py:396
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
 msgstr "执行 `pacman -U <pkg_file>` 时所有常见的选项. 参见 `pacman -Uh`."
-
-#: pikaur/config.py:52
-#, python-brace-format
-msgid "Aur repos dir has been moved from '{old}' to '{new}'."
-msgstr ""
 
 #: pikaur/main.py:154
 msgid "Build directory"

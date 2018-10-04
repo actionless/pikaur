@@ -20,7 +20,6 @@ if running_as_root():
 else:
     CACHE_ROOT = os.path.join(_USER_CACHE_HOME, 'pikaur/')
 
-AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
 BUILD_CACHE_PATH = os.path.join(CACHE_ROOT, 'build')
 PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, 'pkg')
 
@@ -28,6 +27,17 @@ CONFIG_ROOT = os.environ.get(
     "XDG_CONFIG_HOME",
     os.path.join(Path.home(), ".config/")
 )
+
+DATA_ROOT = os.environ.get(
+    "XDG_DATA_HOME",
+    os.path.join(Path.home(), ".local/share/pikaur")
+)
+_OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
+AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
+if os.path.exists(_OLD_AUR_REPOS_CACHE_PATH) and not os.path.exists(AUR_REPOS_CACHE_PATH):
+    if not os.path.exists(DATA_ROOT):
+        os.makedirs(DATA_ROOT)
+    os.renames(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
 
 
 def get_config_path():

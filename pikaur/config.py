@@ -3,6 +3,7 @@
 import os
 import sys
 import configparser
+import shutil
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -43,7 +44,7 @@ def migrate_old_aur_repos_dir():
         return
     if not os.path.exists(DATA_ROOT):
         os.makedirs(DATA_ROOT)
-    os.renames(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
+    shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
 
     from .pprint import print_warning, print_stderr
     from .i18n import _

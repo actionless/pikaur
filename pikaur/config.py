@@ -34,7 +34,10 @@ DATA_ROOT = os.environ.get(
     os.path.join(Path.home(), ".local/share/pikaur")
 )
 _OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
-AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
+if running_as_root():
+    AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
+else:
+    AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
 
 
 def migrate_old_aur_repos_dir():

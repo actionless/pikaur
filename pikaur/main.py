@@ -32,7 +32,7 @@ from .updates import find_repo_upgradeable, find_aur_updates
 from .prompt import ask_to_continue
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT, CONFIG_PATH,
-    PikaurConfig, migrate_old_aur_repos_dir,
+    AUR_REPOS_CACHE_PATH, PikaurConfig, migrate_old_aur_repos_dir,
 )
 from .exceptions import SysExit
 from .pikspect import TTYRestore
@@ -294,6 +294,8 @@ def create_dirs() -> None:
     if not os.path.exists(CACHE_ROOT):
         os.makedirs(CACHE_ROOT)
     migrate_old_aur_repos_dir()
+    if not os.path.exists(AUR_REPOS_CACHE_PATH):
+        os.makedirs(AUR_REPOS_CACHE_PATH)
 
 
 def restore_tty():

@@ -2,21 +2,22 @@
 # Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2018.
+# Lastname <email@example.com>, 2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-04 05:22+0200\n"
-"PO-Revision-Date: 2018-03-09 20:31+0300\n"
-"Last-Translator: Mauladen <twertrue@yandex.ru>\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2018-10-07 23:43+0200\n"
+"Last-Translator: Lastname <email@example.com>\n"
+"Language-Team: Russian <email@example.com>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Gtranslator 2.91.7\n"
 
 #: pikaur/replacements.py:42
 #, python-brace-format
@@ -46,7 +47,7 @@ msgid_plural "AUR packages will be installed:"
 msgstr[0] "Будет установлен пакет из AUR:"
 msgstr[1] "Будут установлены пакеты из AUR:"
 
-#: pikaur/config.py:52
+#: pikaur/config.py:56
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr ""
@@ -58,9 +59,8 @@ msgid ""
 msgstr ""
 
 #: pikaur/main.py:154
-#, fuzzy
 msgid "Build directory"
-msgstr "Директория для сборки: {}"
+msgstr "Директория для сборки"
 
 #: pikaur/install_cli.py:595
 #, python-brace-format
@@ -160,18 +160,16 @@ msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr ""
 
 #: pikaur/print_department.py:64
-#, fuzzy
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
-msgstr[0] "Данные пакеты не могут быть найдены в AUR:"
+msgstr[0] "Данный пакет не может быть найден в AUR:"
 msgstr[1] "Данные пакеты не могут быть найдены в AUR:"
 
 #: pikaur/print_department.py:58
-#, fuzzy
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
-msgstr[0] "Данные пакеты не могут быть найдены в AUR:"
-msgstr[1] "Данные пакеты не могут быть найдены в AUR:"
+msgstr[0] "Данный пакет не может быть найдены в репозиториях:"
+msgstr[1] "Данные пакеты не могут быть найдены в репозиториях:"
 
 #: pikaur/print_department.py:362
 msgid "Ignoring package {}"
@@ -192,18 +190,16 @@ msgstr[0] "Будет установлена новая зависимость �
 msgstr[1] "Будут установлены новые зависимости из AUR:"
 
 #: pikaur/print_department.py:292
-#, fuzzy
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
-msgstr[0] "Будет установлена новая зависимость из AUR:"
-msgstr[1] "Будут установлены новые зависимости из AUR:"
+msgstr[0] "Будет установлена новая зависимость из репозитория:"
+msgstr[1] "Будут установлены новые зависимости из репозитория:"
 
 #: pikaur/print_department.py:315
-#, fuzzy
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
-msgstr[0] "Будет установлена новая зависимость из AUR:"
-msgstr[1] "Будут установлены новые зависимости из AUR:"
+msgstr[0] "Будет установлена новая зависимость из неофициальных репозиториев:"
+msgstr[1] "Будут установлены новые зависимости из неофициальных репозиториев:"
 
 #: pikaur/install_cli.py:422
 #, python-brace-format
@@ -250,16 +246,17 @@ msgid "Reading repository package databases..."
 msgstr "Чтение баз данных пакетов из репозиториев..."
 
 #: pikaur/build.py:515
-#, fuzzy
 msgid "Removing already installed dependencies for {}"
 msgstr "Удаление уже установленных зависимостей {}"
 
 #: pikaur/print_department.py:253
-#, fuzzy
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
-msgstr[0] "Будет установлен следующий пакет из репозиториев:"
-msgstr[1] "Будут установлены следующие пакеты из репозиториев:"
+msgstr[0] ""
+"Cледующий пакет из официальных репозиториев был предложен в качестве замены:"
+msgstr[1] ""
+"Cледующие пакеты из официальных репозиториев были предложены в качестве "
+"замены:"
 
 #: pikaur/print_department.py:280
 msgid "Repository package will be installed:"
@@ -268,9 +265,8 @@ msgstr[0] "Будет установлен следующий пакет из р
 msgstr[1] "Будут установлены следующие пакеты из репозиториев:"
 
 #: pikaur/install_info_fetcher.py:339
-#, fuzzy
 msgid "Resolving AUR dependencies..."
-msgstr "разрешение зависимостей..."
+msgstr "разрешение зависимостей из AUR..."
 
 #: pikaur/install_cli.py:655
 #, python-brace-format
@@ -300,11 +296,14 @@ msgid "There are news from archlinux.org!"
 msgstr ""
 
 #: pikaur/print_department.py:266
-#, fuzzy
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
-msgstr[0] "Будет установлен следующий пакет из неофициальных репозиториев:"
-msgstr[1] "Будут установлены следующие пакеты из неофициальных репозиториев:"
+msgstr[0] ""
+"Cледующий пакет из неофициальных репозиториев был предложен в качестве "
+"замены:"
+msgstr[1] ""
+"Cледующие пакеты из неофициальных репозиториев были предложены в качестве "
+"замены:"
 
 #: pikaur/print_department.py:304
 msgid "Third-party repository package will be installed:"
@@ -322,9 +321,8 @@ msgid "Version mismatch:"
 msgstr "Несовпадение версии:"
 
 #: pikaur/prompt.py:108
-#, fuzzy
 msgid "[N]o (--noconfirm)"
-msgstr "[Y]es (--noconfirm)"
+msgstr "[N]o (--noconfirm)"
 
 #: pikaur/build.py:599
 msgid "[R] retry build"
@@ -339,9 +337,8 @@ msgid "[a] abort"
 msgstr "[a] отмена"
 
 #: pikaur/build.py:606
-#, fuzzy
 msgid "[a] abort building all the packages"
-msgstr "Не удалось собрать данные пакеты:"
+msgstr "[a] отменить сборку всех пакетов"
 
 #: pikaur/build.py:601
 msgid "[c] checksums skip"
@@ -352,9 +349,8 @@ msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
 #: pikaur/build.py:603
-#, fuzzy
 msgid "[d] delete build dir and try again"
-msgstr "[r] удалить директорию и клонировать заново"
+msgstr "[d] удалить директорию сбоки и попробовать заново"
 
 #: pikaur/build.py:602
 msgid "[i] ignore architecture"
@@ -379,9 +375,8 @@ msgid "[r] remove dir and clone again"
 msgstr "[r] удалить директорию и клонировать заново"
 
 #: pikaur/build.py:605
-#, fuzzy
 msgid "[s] skip building this package"
-msgstr "[s] пропустить этот пакет"
+msgstr "[s] пропустить сборку этого пакета"
 
 #: pikaur/install_cli.py:395
 msgid "[s] skip this package"
@@ -521,11 +516,8 @@ msgid "path to custom pikaur config"
 msgstr ""
 
 #: pikaur/main.py:263
-#, fuzzy
 msgid "pikaur requires Python >= 3.7 to run."
-msgstr ""
-"pikaur требует systemd >= 235 (поддержка динамических пользователей) для "
-"запуска от root."
+msgstr "pikaur требует Python >= 3.7 для запуска."
 
 #: pikaur/main.py:268
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
@@ -542,14 +534,12 @@ msgid "pikaur {-P --pkgbuild}    [options] <file(s)>"
 msgstr ""
 
 #: pikaur/args.py:389
-#, fuzzy
 msgid "pikaur-specific operations:"
 msgstr "Опции pikaur:"
 
 #: pikaur/args.py:424
-#, fuzzy
 msgid "prompt to edit PKGBUILDs and other build files"
-msgstr "не запрашивать редактирование файлов PKGBUILD и других файлов сборки"
+msgstr "запрашивать редактирование файлов PKGBUILD и других файлов сборки"
 
 #: pikaur/args.py:414
 msgid "query packages from AUR only"
@@ -607,9 +597,9 @@ msgstr ""
 "архитектуры: {suparch}"
 
 #: pikaur/print_department.py:381
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
-msgstr "{name} уже обновлён - пропуск"
+msgstr "{name} {version} {package_source} не устарел - пропускается"
 
 #: pikaur/install_cli.py:431
 #, python-brace-format

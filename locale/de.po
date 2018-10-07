@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-04 05:22+0200\n"
+"POT-Creation-Date: 2018-10-07 23:23+0200\n"
 "PO-Revision-Date: 2018-10-03 16:07+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: de <>\n"
@@ -50,7 +50,7 @@ msgid_plural "AUR packages will be installed:"
 msgstr[0] "Zu installierendes AUR-Paket:"
 msgstr[1] "Zu installierende AUR-Pakete:"
 
-#: pikaur/config.py:52
+#: pikaur/config.py:56
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr ""

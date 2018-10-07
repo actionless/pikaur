@@ -18,9 +18,6 @@ depends=(
 	'pyalpm'
 	'git'
 )
-makedepends=(
-	'gettext'
-)
 optdepends=(
 	'asp: for ABS support in -G/--getpkgbuild operation'
 )

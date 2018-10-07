@@ -11,7 +11,7 @@ src_repo_dir=$(readlink -e $(dirname "${0}")/..)
 
 new_version=$1
 
-if [[ $(git status --porcelain 2>/dev/null| grep -c "^ [MD]") -gt 0 ]] ; then
+if [[ $(git status --porcelain 2>/dev/null| grep -c "^ [MD]" || true) -gt 0 ]] ; then
 	echo
 	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	echo "!!    You have uncommited changes:    !!"
@@ -32,7 +32,7 @@ if [[ $(git status --porcelain 2>/dev/null| grep -c "^ [MD]") -gt 0 ]] ; then
 	answer=
 fi
 
-./maintenance_scripts/show_recent_history.sh -c
+./maintenance_scripts/show_recent_history.sh -c || true
 
 echo
 echo "*******************************"

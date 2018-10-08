@@ -509,7 +509,7 @@ class InstallPackagesCLI():
                 if repo_status.reviewed:  # pragma: no cover
                     repo_status.update_last_installed_file()
 
-    def review_build_files(self) -> None:  # pragma: no cover
+    def review_build_files(self) -> None:  # pragma: no cover  pylint:disable=too-many-branches
         if self.args.needed or self.args.devel:
             self._get_installed_status()
         for repo_status in set(self.package_builds_by_name.values()):
@@ -517,6 +517,9 @@ class InstallPackagesCLI():
                 continue
             if self.args.needed and repo_status.version_already_installed:
                 continue
+
+            _pkg_label = bold_line(', '.join(repo_status.package_names))
+            _skip_diff_label = _("Not showing diff for {pkg} package ({reason})")
             if (
                     repo_status.build_files_updated
             ) and (
@@ -529,7 +532,7 @@ class InstallPackagesCLI():
                 if not self.args.nodiff and ask_to_continue(
                         _("Do you want to see build files {diff} for {name} package?").format(
                             diff=bold_line(_("diff")),
-                            name=bold_line(', '.join(repo_status.package_names))
+                            name=_pkg_label
                         )
                 ):
                     git_args = [
@@ -547,8 +550,18 @@ class InstallPackagesCLI():
                     elif diff_pager == 'never':
                         git_args = ['env', 'GIT_PAGER=cat'] + git_args
                     interactive_spawn(git_args)
-            src_info = SrcInfo(pkgbuild_path=repo_status.pkgbuild_path)
+            elif self.args.noconfirm:
+                print_stdout(_skip_diff_label.format(
+                    pkg=_pkg_label,
+                    reason="--noconfirm"
+                ))
+            else:
+                print_warning(_skip_diff_label.format(
+                    pkg=_pkg_label,
+                    reason=_("installing for the first time")
+                ))
 
+            src_info = SrcInfo(pkgbuild_path=repo_status.pkgbuild_path)
             if self.ask_to_edit_file(
                     os.path.basename(repo_status.pkgbuild_path), repo_status
             ):

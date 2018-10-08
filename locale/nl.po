@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-07 23:23+0200\n"
+"POT-Creation-Date: 2018-10-08 16:24+0200\n"
 "PO-Revision-Date: 2018-09-24 11:43+0200\n"
 "Last-Translator: Bert Peters <bert@bertptrs.nl>\n"
 "Language-Team: none\n"
@@ -67,7 +67,7 @@ msgstr ""
 msgid "Build directory"
 msgstr "Bouwmap"
 
-#: pikaur/install_cli.py:595
+#: pikaur/install_cli.py:608
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "Kan '{name}' niet bouwen."
@@ -96,7 +96,7 @@ msgstr "Kan pakketnaam niet opvragen van PKGBUILD"
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "Kan '{name}' niet pullen in '{path}' vanaf AUR:"
 
-#: pikaur/build.py:587 pikaur/prompt.py:136
+#: pikaur/prompt.py:136 pikaur/build.py:587
 msgid "Command '{}' failed to execute."
 msgstr "Commando '{}' mislukte."
 
@@ -120,7 +120,7 @@ msgstr "Kon {} niet bijwerken"
 msgid "Dependencies missing for {}"
 msgstr "Vereisten ontbrekend voor {}"
 
-#: pikaur/install_cli.py:612
+#: pikaur/install_cli.py:625
 msgid "Dependency cycle detected between {}"
 msgstr "Vereistencykel gedetecteerd tussen {}"
 
@@ -140,7 +140,7 @@ msgstr "Wilt u alle bestanden verwijderen?"
 msgid "Do you want to retry?"
 msgstr "Wilt u het opnieuw proberen?"
 
-#: pikaur/install_cli.py:530
+#: pikaur/install_cli.py:533
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "Wilt u het build files {diff} voor pakket {name} bekijken?"
@@ -156,7 +156,7 @@ msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Laatste bronnen voor ontwikkelingspakket {} downloaden"
 msgstr[1] "Laatste bronnen voor ontwikkelingspakketten {} downloaden"
 
-#: pikaur/install_cli.py:768
+#: pikaur/install_cli.py:781
 msgid "Failed to build following packages:"
 msgstr "Bouwen van de volgende pakketten mislukt:"
 
@@ -212,6 +212,11 @@ msgstr[1] ""
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "Nieuwe pakketten '{new}' en '{other}' zijn in conflict."
+
+#: pikaur/install_cli.py:522
+#, python-brace-format
+msgid "Not showing diff for {pkg} package ({reason})"
+msgstr ""
 
 #: pikaur/install_cli.py:231
 msgid "Nothing to do."
@@ -275,7 +280,7 @@ msgstr[1] "Repository pakketten zal worden geïnstalleerd:"
 msgid "Resolving AUR dependencies..."
 msgstr "AUR-vereisten oplossen..."
 
-#: pikaur/install_cli.py:655
+#: pikaur/install_cli.py:668
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "{target} transactie terugdraaien..."
@@ -418,7 +423,7 @@ msgstr "cli argumenten om door te geven aan makepkg"
 msgid "d"
 msgstr "d"
 
-#: pikaur/install_cli.py:531
+#: pikaur/install_cli.py:534
 msgid "diff"
 msgstr "verschil"
 
@@ -466,6 +471,10 @@ msgstr "expliciet argument voor %r genegeerd"
 #: pikaur/args.py:410
 msgid "install built package"
 msgstr "installeer gebouwd pakket"
+
+#: pikaur/install_cli.py:561
+msgid "installing for the first time"
+msgstr ""
 
 #: pikaur/install_cli.py:413
 msgid "looking for conflicting AUR packages..."

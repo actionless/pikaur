@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-04 05:22+0200\n"
+"POT-Creation-Date: 2018-10-08 16:24+0200\n"
 "PO-Revision-Date: 2018-10-07 23:43+0200\n"
 "Last-Translator: Lastname <email@example.com>\n"
 "Language-Team: Russian <email@example.com>\n"
@@ -62,7 +62,7 @@ msgstr ""
 msgid "Build directory"
 msgstr "Директория для сборки"
 
-#: pikaur/install_cli.py:595
+#: pikaur/install_cli.py:608
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "Невозможно собрать '{name}'."
@@ -91,7 +91,7 @@ msgstr ""
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "Невозможно обновить пакет '{name}' из AUR по пути '{path}':"
 
-#: pikaur/build.py:587 pikaur/prompt.py:136
+#: pikaur/prompt.py:136 pikaur/build.py:587
 msgid "Command '{}' failed to execute."
 msgstr "Не удалось выполнить команду '{}'."
 
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Dependencies missing for {}"
 msgstr "Отсутствуют зависимости для {}"
 
-#: pikaur/install_cli.py:612
+#: pikaur/install_cli.py:625
 msgid "Dependency cycle detected between {}"
 msgstr "Обнаружена циклическая зависимость между {}"
 
@@ -135,7 +135,7 @@ msgstr "Вы действительно хотите удалить все фа�
 msgid "Do you want to retry?"
 msgstr "Хотите ли вы попробовать снова?"
 
-#: pikaur/install_cli.py:530
+#: pikaur/install_cli.py:533
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "Хотите ли вы просмотреть {diff} файлов сборки для пакета {name}?"
@@ -151,7 +151,7 @@ msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/install_cli.py:768
+#: pikaur/install_cli.py:781
 msgid "Failed to build following packages:"
 msgstr "Не удалось собрать данные пакеты:"
 
@@ -205,6 +205,11 @@ msgstr[1] "Будут установлены новые зависимости �
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "Новые пакеты '{new}' и '{other}' конфликтуют."
+
+#: pikaur/install_cli.py:522
+#, python-brace-format
+msgid "Not showing diff for {pkg} package ({reason})"
+msgstr ""
 
 #: pikaur/install_cli.py:231
 msgid "Nothing to do."
@@ -268,7 +273,7 @@ msgstr[1] "Будут установлены следующие пакеты и�
 msgid "Resolving AUR dependencies..."
 msgstr "разрешение зависимостей из AUR..."
 
-#: pikaur/install_cli.py:655
+#: pikaur/install_cli.py:668
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "Откат транзакции {target}..."
@@ -416,7 +421,7 @@ msgstr ""
 msgid "d"
 msgstr ""
 
-#: pikaur/install_cli.py:531
+#: pikaur/install_cli.py:534
 msgid "diff"
 msgstr "различия"
 
@@ -465,6 +470,10 @@ msgstr ""
 
 #: pikaur/args.py:410
 msgid "install built package"
+msgstr ""
+
+#: pikaur/install_cli.py:561
+msgid "installing for the first time"
 msgstr ""
 
 #: pikaur/install_cli.py:413

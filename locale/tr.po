@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-07 23:23+0200\n"
+"POT-Creation-Date: 2018-10-08 16:24+0200\n"
 "PO-Revision-Date: 2018-10-04 11:18+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -64,7 +64,7 @@ msgstr ""
 msgid "Build directory"
 msgstr "İnşa dizini"
 
-#: pikaur/install_cli.py:595
+#: pikaur/install_cli.py:608
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "'{name}' inşa edilemedi."
@@ -93,7 +93,7 @@ msgstr "PKGBUILD'den paket adı alınamadı"
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "AUR'dan '{path}' içindeki '{name}' çekilemedi:"
 
-#: pikaur/build.py:587 pikaur/prompt.py:136
+#: pikaur/prompt.py:136 pikaur/build.py:587
 msgid "Command '{}' failed to execute."
 msgstr "'{}' komutu çalıştırılamadı."
 
@@ -117,7 +117,7 @@ msgstr "{} güncellemedi"
 msgid "Dependencies missing for {}"
 msgstr "{} için bağımlılıklar eksik"
 
-#: pikaur/install_cli.py:612
+#: pikaur/install_cli.py:625
 msgid "Dependency cycle detected between {}"
 msgstr "{} ile bağımlılık döngüsü tespit edildi"
 
@@ -137,7 +137,7 @@ msgstr "Tüm dosyaları silmek ister misiniz?"
 msgid "Do you want to retry?"
 msgstr "Tekrar denemek ister misiniz?"
 
-#: pikaur/install_cli.py:530
+#: pikaur/install_cli.py:533
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "{name} paketi için inşa dosyaları {diff} görmek ister misiniz?"
@@ -153,7 +153,7 @@ msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Geliştirici paketi için güncel kaynaklar indiriliyor {}"
 msgstr[1] "Geliştirici paketleri için güncel kaynaklar indiriliyor {}"
 
-#: pikaur/install_cli.py:768
+#: pikaur/install_cli.py:781
 msgid "Failed to build following packages:"
 msgstr "Paketler inşa edilemedi:"
 
@@ -207,6 +207,11 @@ msgstr[1] "Yeni bağlılıklar üçüncü parti depodan kurulacak:"
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "Yeni '{new}' paketleri ile '{other}' çakışıyor."
+
+#: pikaur/install_cli.py:522
+#, python-brace-format
+msgid "Not showing diff for {pkg} package ({reason})"
+msgstr ""
 
 #: pikaur/install_cli.py:231
 msgid "Nothing to do."
@@ -271,7 +276,7 @@ msgstr[1] "Depo paketleri kurulacak:"
 msgid "Resolving AUR dependencies..."
 msgstr "AUR bağımlılıkları çözülüyor..."
 
-#: pikaur/install_cli.py:655
+#: pikaur/install_cli.py:668
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "{target} işlem geri alınıyor..."
@@ -415,7 +420,7 @@ msgstr "makepkg için komut satırı argümanları"
 msgid "d"
 msgstr "s"
 
-#: pikaur/install_cli.py:531
+#: pikaur/install_cli.py:534
 msgid "diff"
 msgstr "fark"
 
@@ -463,6 +468,10 @@ msgstr "dışlanan açık argüman %r"
 #: pikaur/args.py:410
 msgid "install built package"
 msgstr "inşa edilen paketi kur"
+
+#: pikaur/install_cli.py:561
+msgid "installing for the first time"
+msgstr ""
 
 #: pikaur/install_cli.py:413
 msgid "looking for conflicting AUR packages..."

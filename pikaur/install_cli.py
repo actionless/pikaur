@@ -555,10 +555,15 @@ class InstallPackagesCLI():
                     pkg=_pkg_label,
                     reason="--noconfirm"
                 ))
-            else:
+            elif not repo_status.last_installed_hash:
                 print_warning(_skip_diff_label.format(
                     pkg=_pkg_label,
                     reason=_("installing for the first time")
+                ))
+            else:
+                print_warning(_skip_diff_label.format(
+                    pkg=_pkg_label,
+                    reason=_("already reviewed")
                 ))
 
             src_info = SrcInfo(pkgbuild_path=repo_status.pkgbuild_path)

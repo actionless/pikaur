@@ -346,7 +346,10 @@ class PackageBuild(DataType):
             PackageDB.discard_local_cache()
 
     def _set_built_package_path(self) -> None:
-        dest_dir = MakepkgConfig.get('PKGDEST', self.build_dir)
+        dest_dir = os.environ.get(
+            'PKGDEST',
+            MakepkgConfig.get('PKGDEST', self.build_dir)
+        )
         pkg_paths = spawn(
             isolate_root_cmd(get_makepkg_cmd() + ['--packagelist'],
                              cwd=self.build_dir),

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-08 16:24+0200\n"
-"PO-Revision-Date: 2018-10-03 16:07+0200\n"
+"PO-Revision-Date: 2018-10-20 19:45+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: de <>\n"
 "Language: de\n"
@@ -53,7 +53,7 @@ msgstr[1] "Zu installierende AUR-Pakete:"
 #: pikaur/config.py:56
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
-msgstr ""
+msgstr "AUR-Repository-Verzeichnis wurde von '{old}' nach '{new}' verschoben."
 
 #: pikaur/args.py:396
 msgid ""
@@ -93,7 +93,7 @@ msgstr "Paketname kann nicht aus PKGBUILD ermittelt werden"
 #: pikaur/install_cli.py:377
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
-msgstr "'{name}' in '{path} kann nicht vom AUR bezogen werden:"
+msgstr "'{name}' in '{path}' kann nicht vom AUR bezogen werden:"
 
 #: pikaur/prompt.py:136 pikaur/build.py:587
 msgid "Command '{}' failed to execute."
@@ -213,7 +213,7 @@ msgstr "Neue Pakete '{new}' und '{other}' stehen in Konflikt."
 #: pikaur/install_cli.py:522
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
-msgstr ""
+msgstr "Diff für Paket {package} wird nicht angezeigt ({reason})"
 
 #: pikaur/install_cli.py:231
 msgid "Nothing to do."
@@ -242,7 +242,7 @@ msgstr "Pikaur-spezifische Optionen:"
 
 #: pikaur/install_cli.py:298
 msgid "Proceed with installation? [Y/n] "
-msgstr "Mit Installation fortfahren? [J/n] "
+msgstr "Mit der Installation fortfahren? [J/n] "
 
 #: pikaur/updates.py:101
 msgid "Reading AUR package info..."
@@ -474,7 +474,7 @@ msgstr "installiere gebautes Paket"
 
 #: pikaur/install_cli.py:561
 msgid "installing for the first time"
-msgstr ""
+msgstr "Paket wird zum ersten Mal installiert"
 
 #: pikaur/install_cli.py:413
 msgid "looking for conflicting AUR packages..."
@@ -519,9 +519,8 @@ msgid "path to custom makepkg config"
 msgstr "Pfad der angepassten Konfiguration von makepkg"
 
 #: pikaur/args.py:430
-#, fuzzy
 msgid "path to custom pikaur config"
-msgstr "Pfad der angepassten Konfiguration von makepkg"
+msgstr "Pfad der angepassten Konfiguration von pikaur"
 
 #: pikaur/main.py:263
 msgid "pikaur requires Python >= 3.7 to run."
@@ -542,9 +541,8 @@ msgid "pikaur {-P --pkgbuild}    [options] <file(s)>"
 msgstr "pikaur {-P --pkgbuild}    [Optionen] <Datei(en)>"
 
 #: pikaur/args.py:389
-#, fuzzy
 msgid "pikaur-specific operations:"
-msgstr "Pikaur-spezifische Optionen:"
+msgstr "Pikaur-spezifische Operationen:"
 
 #: pikaur/args.py:424
 msgid "prompt to edit PKGBUILDs and other build files"
@@ -627,7 +625,7 @@ msgid ""
 "{what} depends on: '{dep}'\n"
 " found in '{location}': '{version}'"
 msgstr ""
-"{what} häng ab von: '{dep}'\n"
+"{what} hängt ab von: '{dep}'\n"
 " gefunden in '{location}': '{version}'"
 
 #: pikaur/build.py:373

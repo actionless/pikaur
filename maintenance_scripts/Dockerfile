@@ -23,11 +23,4 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 	sudo -u user tar --transform 's,^,pikaur-git/,' -cf pikaur-git.tar.gz . && \
 	sudo -u user sed -i 's/"$pkgname::.*"/"pikaur-git.tar.gz"/' PKGBUILD && \
 	sudo -u user makepkg -fsi --noconfirm && \
-	sudo -u user pikaur -S --noconfirm python-virtualenv python-pylint flake8 python-vulture --color=always && \
-cd /home/user && \
-sudo -u user pikaur -G mypy && \
-cd mypy/trunk && \
-git checkout adc8f0312381ae54488a813b82c23f611041ab97 && \
-sudo -u user pikaur -Pi PKGBUILD --noconfirm
-	#sudo -u user pikaur -S --noconfirm python-virtualenv python-pylint flake8 mypy python-vulture --color=always
-# @TODO: remove python-mypy_extensions when `mypy` package will be fixed
+	sudo -u user pikaur -S --noconfirm python-virtualenv python-pylint flake8 mypy python-vulture --color=always

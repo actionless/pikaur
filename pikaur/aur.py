@@ -5,11 +5,15 @@ import json
 from multiprocessing.pool import ThreadPool
 from urllib import parse, request
 from urllib.parse import quote
+from urllib.error import URLError
 from typing import List, Dict, Tuple, Union, Any
 
+from .i18n import _
 from .core import DataType, get_chunks
-from .exceptions import AURError
+from .exceptions import AURError, SysExit
 from .progressbar import ThreadSafeProgressBar
+from .pprint import print_error
+from .prompt import ask_to_continue
 
 
 AUR_HOST = 'aur.archlinux.org'
@@ -72,7 +76,13 @@ class AURPackageInfo(DataType):
 
 def read_bytes_from_url(url: str) -> bytes:
     req = request.Request(url)
-    response = request.urlopen(req)
+    try:
+        response = request.urlopen(req)
+    except URLError as exc:
+        print_error('urllib: ' + str(exc.reason))
+        if ask_to_continue(_('Do you want to retry?')):
+            return read_bytes_from_url(url)
+        raise SysExit(102)
     result_bytes = response.read()
     return result_bytes
 

@@ -50,7 +50,7 @@ def print_stderr(message='', end='\n', flush=False, lock=True) -> None:
     _print(sys.stderr, message=message, end=end, flush=flush, lock=lock)
 
 
-def color_line(line: str, color_number: int) -> str:
+def color_line(line: str, color_number: int, reset=True) -> str:
     if not color_enabled():
         return line
     result = ''
@@ -59,7 +59,8 @@ def color_line(line: str, color_number: int) -> str:
         color_number -= 8
     result += f"\033[03{color_number}m{line}"
     # reset font:
-    result += "\033[0;0m"
+    if reset:
+        result += "\033[0;0m"
     return result
 
 

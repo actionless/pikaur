@@ -79,7 +79,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
     _color_line = color_line
     _bold_line = bold_line
     if not color:
-        _color_line = lambda line, color: line  # noqa
+        _color_line = lambda line, *args: line  # noqa
         _bold_line = lambda line: line  # noqa
 
     def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, str]:  # pylint:disable=too-many-locals
@@ -128,18 +128,19 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             pkg_len += len('aur/')
 
         if pkg_update.required_by:
-            required_by = ' ({} {})'.format(
-                _('for'),
-                ', '.join([p.package.name for p in pkg_update.required_by])
+            required_by = ' ({})'.format(
+                _('for {pkg}').format(
+                    pkg=', '.join([p.package.name for p in pkg_update.required_by])
+                )
             )
             pkg_len += len(required_by)
             dep_color = 3
-            required_by = ' {} {}{}'.format(
-                _color_line('(' + _('for'), dep_color),
-                _color_line(', ', dep_color).join([
-                    _color_line(p.package.name, dep_color + 8) for p in pkg_update.required_by
-                ]),
-                _color_line(')', dep_color),
+            required_by = _color_line(' ({})', dep_color).format(
+                _('for {pkg}').format(
+                    pkg=_color_line(', ', dep_color).join([
+                        _color_line(p.package.name, dep_color + 8) for p in pkg_update.required_by
+                    ]) + _color_line('', dep_color, reset=False),
+                )
             )
             pkg_name += required_by
         if pkg_update.provided_by:
@@ -150,9 +151,18 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             pkg_name += _color_line(provided_by, 2)
         if pkg_update.members_of:
             members_of = ' ({})'.format(
-                ', '.join([g for g in pkg_update.members_of])
+                _n('{grp} group', '{grp} groups', len(pkg_update.members_of)).format(
+                    grp=', '.join([g for g in pkg_update.members_of]),
+                )
             )
             pkg_len += len(members_of)
+            members_of = _color_line(' ({})', GROUP_COLOR).format(
+                _n('{grp} group', '{grp} groups', len(pkg_update.members_of)).format(
+                    grp=_color_line(', ', GROUP_COLOR).join(
+                        [_color_line(g, GROUP_COLOR + 8) for g in pkg_update.members_of]
+                    ) + _color_line('', GROUP_COLOR, reset=False),
+                )
+            )
             pkg_name += _color_line(members_of, GROUP_COLOR)
         if pkg_update.replaces:
             replaces = ' (replaces {})'.format(
@@ -241,7 +251,7 @@ def pretty_format_sysupgrade(
     _color_line = color_line
     _bold_line = bold_line
     if not color:
-        _color_line = lambda line, color: line  # noqa
+        _color_line = lambda line, *args: line  # noqa
         _bold_line = lambda line: line  # noqa
 
     result = []

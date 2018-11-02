@@ -19,6 +19,17 @@ class CliTest(PikaurTestCase):
             ['oomox', 'oomox-git']
         )
 
+    def test_search_multiword(self):
+        result_first = pikaur('-Ssq aur').stdout.splitlines()
+        result_second = pikaur('-Ssq helper').stdout.splitlines()
+        result_all = pikaur('-Ssq aur helper').stdout.splitlines()
+        self.assertIn('pikaur', result_all)
+        self.assertGreaterEqual(len(result_all), 10)
+        self.assertEqual(
+            set(result_all),
+            set(result_first).intersection(result_second)
+        )
+
     def test_list(self):
         result_all = pikaur('-Ssq').stdout.splitlines()
         result_aur = pikaur('-Ssq --aur').stdout.splitlines()

@@ -20,11 +20,18 @@ class CliTest(PikaurTestCase):
         )
 
     def test_list(self):
-        result = pikaur('-Ssq').stdout.splitlines()
-        self.assertIn(
-            'oomox-git', result
-        )
-        self.assertGreaterEqual(len(result), 50000)
+        result_all = pikaur('-Ssq').stdout.splitlines()
+        result_aur = pikaur('-Ssq --aur').stdout.splitlines()
+        result_repo = pikaur('-Ssq --repo').stdout.splitlines()
+        self.assertIn('oomox-git', result_all)
+        self.assertIn('oomox-git', result_aur)
+        self.assertNotIn('oomox-git', result_repo)
+        self.assertIn('pacman', result_all)
+        self.assertNotIn('pacman', result_aur)
+        self.assertIn('pacman', result_repo)
+        self.assertGreaterEqual(len(result_aur), 50000)
+        self.assertGreaterEqual(len(result_repo), 100)
+        self.assertEqual(len(result_all), len(result_aur) + len(result_repo))
 
     def test_aur_package_info(self):
         result = pikaur('-Si oomox')

@@ -19,6 +19,13 @@ class CliTest(PikaurTestCase):
             ['oomox', 'oomox-git']
         )
 
+    def test_list(self):
+        result = pikaur('-Ssq').stdout.splitlines()
+        self.assertIn(
+            'oomox-git', result
+        )
+        self.assertGreaterEqual(len(result), 50000)
+
     def test_aur_package_info(self):
         result = pikaur('-Si oomox')
         pkg_name_found = False

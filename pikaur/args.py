@@ -21,7 +21,6 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     ('w', 'downloadonly', None),
     ('q', 'quiet', None),
     ('s', 'search', None),
-    ('u', 'sysupgrade', None),
     ('d', 'nodeps', None),
     # query options
     ('Q', 'query', None),
@@ -89,6 +88,7 @@ def get_pikaur_str_opts() -> ArgSchema:
 
 PACMAN_COUNT_OPTS: ArgSchema = [
     ('y', 'refresh', None),
+    ('u', 'sysupgrade', None),
     ('c', 'clean', None),
     ('k', 'check', None),
 ]
@@ -331,16 +331,22 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> List[str]:
     if not ignore_args:
         ignore_args = []
-    for letter, opt, _default in get_pikaur_bool_opts() + get_pikaur_str_opts() + PACMAN_COUNT_OPTS:
+    for letter, opt, _default in get_pikaur_bool_opts() + get_pikaur_str_opts():
         if letter:
             ignore_args.append(letter)
         if opt:
             ignore_args.append(opt.replace('-', '_'))
+    count_args = []
+    for letter, opt, _default in PACMAN_COUNT_OPTS:
+        if letter:
+            count_args.append(letter)
+        if opt:
+            count_args.append(opt.replace('-', '_'))
     reconstructed_args = {
         f'--{key}' if len(key) > 1 else f'-{key}': value
         for key, value in vars(parsed_args).items()
         if value
-        if key not in ignore_args + [
+        if key not in ignore_args + count_args + [
             'raw', 'unknown_args', 'positional', 'color',
             'dbpath',
             'root',
@@ -356,9 +362,15 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
             'ignoregroup',
         ]
     }
-    return list(set(
+    result = list(set(
         list(reconstructed_args.keys()) + parsed_args.unknown_args
     ))
+    for args_key, value in vars(parsed_args).items():
+        for letter, _opt, _default in PACMAN_COUNT_OPTS:
+            opt = _opt.replace('-', '_')
+            if value and opt == args_key and opt not in ignore_args and letter not in ignore_args:
+                result += ['--' + opt] * value
+    return result
 
 
 def _format_options_help(options: List[Tuple[str, str, str]]) -> str:

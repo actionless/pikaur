@@ -694,6 +694,7 @@ class InstallPackagesCLI():
                     ] + reconstruct_args(self.args, ignore_args=[
                         'sync',
                         'ignore',
+                        'refresh',
                     ]) + self.install_package_names + extra_args
                 ),
                 pikspect=True,
@@ -740,6 +741,7 @@ class InstallPackagesCLI():
                             'upgrade',
                             'sync',
                             'sysupgrade',
+                            'refresh',
                             'ignore',
                         ]) + list(aur_packages_to_install.values())
                     ),

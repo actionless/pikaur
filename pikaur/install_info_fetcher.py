@@ -134,6 +134,7 @@ class InstallInfoFetcher:
             'sync',
             'ignore',
             'sysupgrade',
+            'refresh',
             'needed'
         ]) + extra_args
 

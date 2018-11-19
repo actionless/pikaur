@@ -507,7 +507,7 @@ def find_sysupgrade_packages() -> List[pyalpm.Package]:
     all_repo_pkgs = PackageDB.get_repo_dict()
 
     results = PackageDB.get_print_format_output(
-        get_pacman_command() + ['--sync', '--sysupgrade']
+        get_pacman_command() + ['--sync'] + ['--sysupgrade'] * parse_args().sysupgrade
     )
     return [
         all_repo_pkgs[result.full_name] for result in results
@@ -549,6 +549,7 @@ def install_built_deps(
             'asdeps',
             'sync',
             'sysupgrade',
+            'refresh',
             'ignore',
             'downloadonly',
         ])

@@ -250,7 +250,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
             if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                 line = sys.stdin.read(1)
-                if line is not None:
+                if line not in [None, '']:
                     char = line
                 else:
                     sleep(SMALL_TIMEOUT)

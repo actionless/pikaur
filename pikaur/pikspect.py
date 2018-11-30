@@ -18,7 +18,7 @@ from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 from .pprint import PrintLock, bold_line
 from .pacman import _p
 from .args import parse_args
-from .pprint import print_stderr, color_line
+from .pprint import print_stderr, color_line, get_term_width
 
 
 # SMALL_TIMEOUT = 0.1
@@ -103,7 +103,8 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     pty_in: TextIO
     pty_out: BinaryIO
     default_questions: Dict[str, List[str]]
-    max_question_length = 0
+    # max_question_length = 0  # preserve enough information to analyze questions
+    max_question_length = get_term_width() * 2  # preserve also at least last line
     # write buffer:
     _write_buffer: bytes = b''
     _last_write: float = 0
@@ -249,7 +250,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
             if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                 line = sys.stdin.read(1)
-                if line:
+                if line is not None:
                     char = line
                 else:
                     sleep(SMALL_TIMEOUT)
@@ -260,6 +261,13 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
             try:
                 with PrintLock():
+                    if ord(char) == 127:  # BackSpace
+                        sys.stdout.write('\b \b')
+                    if ord(char) == 23:  # Ctrl+W
+                        sys.stdout.write(
+                            '\r' + ' ' * get_term_width() + '\r' +
+                            b''.join(self.historic_output).decode('utf-8').splitlines()[-1]
+                        )
                     self.pty_in.write(char)
                     self.pty_in.flush()
             except ValueError as exc:

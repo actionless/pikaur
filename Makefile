@@ -39,9 +39,16 @@ clean: clean_man clean_checkman
 
 man: clean_man
 	cp README.md $(MD_MAN_FILE)
-	sed -i -e 's/^##### /### /g' -e 's/^#### /### /g' $(MD_MAN_FILE)
+	sed -i \
+		-e 's/^##### /### /g' \
+		-e 's/^#### /### /g' \
+		$(MD_MAN_FILE)
 	ronn $(MD_MAN_FILE) --manual="Pikaur manual" -r
-	sed -i -e '/travis/d' -e '/Screenshot/d' $(MAN_FILE)
+	sed -i \
+		-e '/travis/d' \
+		-e '/Screenshot/d' \
+		-e 's/\(^\.SS.*\)\\"\(.*\)\\"/\1'"'"'\2'"'"'/g' \
+		$(MAN_FILE)
 
 backup_man:
 	mv $(MAN_FILE) $(MAN_FILE_BAK)

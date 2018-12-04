@@ -223,12 +223,12 @@ class PackageBuild(DataType):
         with open_file(git_hash_path) as current_hash_file:
             return current_hash_file.readlines()[0].strip()
 
-    def get_latest_dev_sources(self) -> None:
+    def get_latest_dev_sources(self, check_dev_pkgs=True) -> None:
         self.prepare_build_destination()
         if (
                 self._source_repo_updated
         ) or (
-            not (is_devel_pkg(self.package_base) and self.args.needed)
+            not (is_devel_pkg(self.package_base) and check_dev_pkgs)
         ) or (
             (self.last_installed_hash != self.current_hash) and not self.reviewed
         ):
@@ -263,7 +263,7 @@ class PackageBuild(DataType):
     @property
     def version_already_installed(self) -> bool:
         local_db = PackageDB.get_local_dict()
-        self.get_latest_dev_sources()
+        self.get_latest_dev_sources(check_dev_pkgs=self.args.needed)
         return min([
             compare_versions(
                 local_db[pkg_name].version,
@@ -648,9 +648,6 @@ class PackageBuild(DataType):
 
         self.prepare_build_destination()
 
-        if self.check_if_already_built():
-            return
-
         local_packages_before: Set[str] = set()
         self._get_deps(all_package_builds)
         if self.all_deps_to_install or self.built_deps_to_install:
@@ -660,11 +657,14 @@ class PackageBuild(DataType):
         self.install_built_deps(all_package_builds)
         self._install_repo_deps()
 
-        try:
-            build_succeeded = self.build_with_makepkg()
-        except SysExit as exc:
-            self._remove_installed_deps(local_packages_before)
-            raise exc
+        if self.check_if_already_built():
+            build_succeeded = True
+        else:
+            try:
+                build_succeeded = self.build_with_makepkg()
+            except SysExit as exc:
+                self._remove_installed_deps(local_packages_before)
+                raise exc
 
         self._remove_installed_deps(local_packages_before)
 

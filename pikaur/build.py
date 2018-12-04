@@ -228,7 +228,7 @@ class PackageBuild(DataType):
         if (
                 self._source_repo_updated
         ) or (
-            not is_devel_pkg(self.package_base)
+            not (is_devel_pkg(self.package_base) and self.args.needed)
         ) or (
             (self.last_installed_hash != self.current_hash) and not self.reviewed
         ):

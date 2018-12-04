@@ -35,7 +35,7 @@ from .exceptions import (
     SysExit,
 )
 from .srcinfo import SrcInfo
-from .updates import is_devel_pkg, get_remote_package
+from .updates import is_devel_pkg
 from .version import compare_versions, VersionMatcher
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
@@ -289,17 +289,15 @@ class PackageBuild(DataType):
                 self.new_deps_to_install.remove(dep)
 
         all_provided_pkgnames: Dict[str, str] = {}
-        for pkg_name in [
-                name
-                for pkgbuild in all_package_builds.values()
-                for name in pkgbuild.package_names
-        ]:
-            pkg = get_remote_package(pkg_name)
-            if pkg:
+        for pkg_build in all_package_builds.values():
+            for pkg_name in pkg_build.package_names:
+                srcinfo = SrcInfo(
+                    pkgbuild_path=pkg_build.pkgbuild_path, package_name=pkg_name
+                )
                 all_provided_pkgnames.update({
                     provided_name: pkg_name
                     for provided_name in
-                    [pkg_name] + pkg.provides
+                    [pkg_name] + srcinfo.get_values('provides')
                 })
 
         self.built_deps_to_install = {}

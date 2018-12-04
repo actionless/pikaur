@@ -177,9 +177,9 @@ Path to pacman executable.
 
 ##### How to upgrade all the dev (-git) packages at once?
 
-`pikaur -Syu --devel --needed`
+`pikaur -Sua --devel --needed`
 
-(`--needed` option will make sure what the same package version won't be rebuilt again)
+(`--needed` option will make sure what the same package version won't be rebuilt again and `-a/--aur` will ensure what only AUR packages will be upgraded)
 
 
 ##### How to override default source directory, build directory or built package destination?

@@ -35,7 +35,7 @@ from .exceptions import (
     SysExit,
 )
 from .srcinfo import SrcInfo
-from .updates import is_devel_pkg
+from .updates import is_devel_pkg, get_remote_package
 from .version import compare_versions, VersionMatcher
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
@@ -288,14 +288,27 @@ class PackageBuild(DataType):
             if dep in self.new_deps_to_install:
                 self.new_deps_to_install.remove(dep)
 
+        all_provided_pkgnames: Dict[str, str] = {}
+        for pkg_name in [
+                name
+                for pkgbuild in all_package_builds.values()
+                for name in pkgbuild.package_names
+        ]:
+            pkg = get_remote_package(pkg_name)
+            if pkg:
+                all_provided_pkgnames.update({
+                    provided_name: pkg_name
+                    for provided_name in
+                    [pkg_name] + pkg.provides
+                })
+
         self.built_deps_to_install = {}
 
         for dep in self.all_deps_to_install:
-            # @TODO: check if dep is Provided by built package
             dep_name = VersionMatcher(dep).pkg_name
-            if dep_name not in all_package_builds:
+            if dep_name not in all_provided_pkgnames:
                 continue
-            package_build = all_package_builds[dep_name]
+            package_build = all_package_builds[all_provided_pkgnames[dep_name]]
             if package_build == self:
                 _mark_dep_resolved(dep)
                 continue

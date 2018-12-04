@@ -1,7 +1,9 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 from datetime import datetime
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
+
+import pyalpm
 
 from .i18n import _n
 from .version import compare_versions
@@ -36,16 +38,25 @@ def is_devel_pkg(pkg_name: str) -> bool:
     return result
 
 
-def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
+def get_remote_package(
+        new_pkg_name: str
+) -> Optional[Union[pyalpm.Package, AURPackageInfo]]:
     try:
         repo_pkg = PackageDB.find_repo_package(new_pkg_name)
     except PackagesNotFoundInRepo:
         aur_packages, _not_found = find_aur_packages([new_pkg_name])
         if aur_packages:
-            return aur_packages[0].version
+            return aur_packages[0]
         return None
     else:
-        return repo_pkg.version
+        return repo_pkg
+
+
+def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
+    pkg = get_remote_package(new_pkg_name)
+    if pkg:
+        return pkg.version
+    return None
 
 
 def find_repo_upgradeable() -> List[InstallInfo]:

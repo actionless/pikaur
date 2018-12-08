@@ -10,7 +10,7 @@ from typing import Dict, Optional
 from .core import running_as_root, open_file
 
 
-VERSION = '1.3.1-dev'
+VERSION = '1.3.2-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",

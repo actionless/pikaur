@@ -1,6 +1,7 @@
 from datetime import datetime
 from multiprocessing.pool import ThreadPool
 
+from .i18n import _
 from .aur import find_aur_packages, get_all_aur_names
 from .args import parse_args
 from .core import spawn
@@ -11,6 +12,35 @@ from .pprint import bold_line
 def _info_packages_thread_repo() -> str:
     args = parse_args()
     return spawn(get_pacman_command() + args.raw).stdout_text
+
+
+INFO_FIELDS = dict(
+    # @TODO: Git Clone URL
+    # id=_("id"),
+    name=_("Name"),
+    # packagebaseid=_(""),
+    packagebase=_("Package Base"),
+    version=_("Version"),
+    desc=_("Description"),
+    url=_("URL"),
+    keywords=_("Keywords"),
+    license=_("Licenses"),
+    groups=_("Groups"),
+    provides=_("Provides"),
+    depends=_("Depends On"),
+    optdepends=_("Optional Deps"),
+    makedepends=_("Make Deps"),
+    checkdepends=_("Check Deps"),
+    conflicts=_("Conflicts With"),
+    replaces=_("Replaces"),
+    # urlpath=_(""),
+    maintainer=_("Maintainer"),
+    numvotes=_("Votes"),
+    popularity=_("Popularity"),
+    firstsubmitted=_("First Submitted"),
+    lastmodified=_("Last Updated"),
+    outofdate=_("Out-of-date"),
+)
 
 
 def cli_info_packages() -> None:
@@ -31,11 +61,12 @@ def cli_info_packages() -> None:
     num_found = len(aur_pkgs)
     for i, aur_pkg in enumerate(aur_pkgs):
         pkg_info_lines = []
-        for key, value in aur_pkg.__dict__.items():
+        for key, display_name in INFO_FIELDS.items():
+            value = getattr(aur_pkg, key, None)
             if key in ['firstsubmitted', 'lastmodified']:
                 value = datetime.fromtimestamp(value).strftime('%c')
             elif isinstance(value, list):
-                value = ', '.join(value)
-            pkg_info_lines.append('{key:24}: {value}'.format(
-                key=bold_line(key), value=value))
+                value = ', '.join(value) or _("None")
+            pkg_info_lines.append('{key:26}: {value}'.format(
+                key=bold_line(display_name), value=value))
         print('\n'.join(pkg_info_lines) + ('\n' if i + 1 < num_found else ''))

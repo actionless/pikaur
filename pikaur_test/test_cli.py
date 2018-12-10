@@ -48,7 +48,7 @@ class CliTest(PikaurTestCase):
         result = pikaur('-Si oomox')
         pkg_name_found = False
         for line in result.stdout.splitlines():
-            if 'name' in line and 'oomox' in line:
+            if 'name' in line.lower() and 'oomox' in line:
                 pkg_name_found = True
         self.assertTrue(pkg_name_found)
 

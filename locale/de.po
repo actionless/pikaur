@@ -267,7 +267,7 @@ msgstr ""
 #: pikaur/install_cli.py:522
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
-msgstr "Diff für Paket {package} wird nicht angezeigt ({reason})"
+msgstr "Diff für Paket {pkg} wird nicht angezeigt ({reason})"
 
 #: pikaur/install_cli.py:231
 msgid "Nothing to do."

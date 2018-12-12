@@ -24,3 +24,8 @@ whitelist.build.PackageBuild._get_deps.deps_destination
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict
+
+# @TODO: will be used for resolving install deps after editing PKGBUILD by user:
+whitelist.SrcInfo.get_depends
+whitelist.SrcInfo.get_makedepends
+whitelist.SrcInfo.get_checkdepends

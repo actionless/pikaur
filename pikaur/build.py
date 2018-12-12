@@ -449,11 +449,11 @@ class PackageBuild(DataType):
             src_info = SrcInfo(self.build_dir, package_name=package_name)
             for new_deps_version_matchers, deps_destination in (
                     (
-                        src_info.get_depends(), self.new_deps_to_install
+                        src_info.get_build_depends(), self.new_deps_to_install
                     ), (
-                        src_info.get_makedepends(), new_make_deps_to_install,
+                        src_info.get_build_makedepends(), new_make_deps_to_install,
                     ), (
-                        src_info.get_checkdepends(), new_check_deps_to_install,
+                        src_info.get_build_checkdepends(), new_check_deps_to_install,
                     ),
             ):
                 # find deps satisfied explicitly:

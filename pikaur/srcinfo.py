@@ -81,10 +81,15 @@ class SrcInfo():
             return values[0]
         return None
 
-    def _get_depends(self, field: str) -> Dict[str, VersionMatcher]:
+    def _get_depends(self, field: str, lines: List[str] = None) -> Dict[str, VersionMatcher]:
+        if lines is None:
+            lines = self._common_lines + self._package_lines
         carch = MakepkgConfig.get('CARCH')
         dependencies: Dict[str, VersionMatcher] = {}
-        for dep_line in self.get_values(field) + self.get_values(f'{field}_{carch}'):
+        for dep_line in (
+                self.get_values(field, lines=lines) +
+                self.get_values(f'{field}_{carch}', lines=lines)
+        ):
             version_matcher = VersionMatcher(dep_line)
             pkg_name = version_matcher.pkg_name
             if pkg_name not in dependencies:
@@ -92,6 +97,9 @@ class SrcInfo():
             else:
                 dependencies[pkg_name].add_version_matcher(version_matcher)
         return dependencies
+
+    def _get_build_depends(self, field: str) -> Dict[str, VersionMatcher]:
+        return self._get_depends(field=field, lines=self._common_lines)
 
     def get_makedepends(self) -> Dict[str, VersionMatcher]:
         return self._get_depends('makedepends')
@@ -101,6 +109,15 @@ class SrcInfo():
 
     def get_checkdepends(self) -> Dict[str, VersionMatcher]:
         return self._get_depends('checkdepends')
+
+    def get_build_makedepends(self) -> Dict[str, VersionMatcher]:
+        return self._get_build_depends('makedepends')
+
+    def get_build_depends(self) -> Dict[str, VersionMatcher]:
+        return self._get_build_depends('depends')
+
+    def get_build_checkdepends(self) -> Dict[str, VersionMatcher]:
+        return self._get_build_depends('checkdepends')
 
     def get_version(self) -> str:
         epoch = self.get_value('epoch')

@@ -85,6 +85,8 @@ def cli_print_upgradeable() -> None:
         updates += aur_updates
     if not args.aur:
         updates += find_repo_upgradeable()
+    if not updates:
+        return
     if args.quiet:
         print_stdout('\n'.join([
             pkg_update.name for pkg_update in updates

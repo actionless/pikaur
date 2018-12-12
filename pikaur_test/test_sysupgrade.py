@@ -77,7 +77,7 @@ class SysupgradeTest(PikaurDbTestCase):
 
         query_result = pikaur('-Qu').stdout
         self.assertEqual(
-            len([l for l in query_result.splitlines() if l]), 0
+            len(query_result.splitlines()), 0
         )
 
         # and finally test the sysupgrade itself
@@ -96,14 +96,14 @@ class SysupgradeTest(PikaurDbTestCase):
         self.downgrade_repo1_pkg()
         self.downgrade_aur1_pkg()
 
-        query_result = pikaur('-Quq --aur').stdout.strip()
+        query_result = pikaur('-Quq --aur').stdout
         self.assertEqual(
-            query_result, self.aur_pkg_name
+            query_result.splitlines(), [self.aur_pkg_name]
         )
 
-        query_result = pikaur('-Quq --repo').stdout.strip()
+        query_result = pikaur('-Quq --repo').stdout
         self.assertEqual(
-            query_result, self.repo_pkg_name
+            query_result.splitlines(), [self.repo_pkg_name]
         )
 
         query_result = pikaur('-Qu').stdout

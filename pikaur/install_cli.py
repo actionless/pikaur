@@ -42,6 +42,7 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .news import News
+from .version import VersionMatcher
 
 
 def hash_file(filename):  # pragma: no cover
@@ -351,14 +352,16 @@ class InstallPackagesCLI():
         for pkgbuild in all_package_builds.values():
             new_build_deps_found_for_pkg = []
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
-            for dep_name in (
+            for dep_line in (
                     pkgbuild.new_deps_to_install + pkgbuild.new_make_deps_to_install
             ):
-                if dep_name not in self.all_aur_packages_names:
-                    try:
-                        PackageDB.find_repo_package(dep_name)
-                    except PackagesNotFoundInRepo:
-                        new_build_deps_found_for_pkg.append(dep_name)
+                dep_name = VersionMatcher(dep_line).pkg_name
+                if dep_name in self.all_aur_packages_names:
+                    continue
+                try:
+                    PackageDB.find_repo_package(dep_line)
+                except PackagesNotFoundInRepo:
+                    new_build_deps_found_for_pkg.append(dep_name)
             if new_build_deps_found_for_pkg:
                 print_warning(_("New AUR build deps found for {pkg} package: {deps}").format(
                     pkg=bold_line(', '.join(pkgbuild.package_names)),

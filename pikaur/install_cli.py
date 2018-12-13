@@ -19,7 +19,7 @@ from .pacman import (
 )
 from .install_info_fetcher import InstallInfoFetcher
 from .exceptions import (
-    PackagesNotFoundInAUR, DependencyVersionMismatch,
+    PackagesNotFoundInAUR, PackagesNotFoundInRepo, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
     SysExit,
 )
@@ -80,6 +80,7 @@ class InstallPackagesCLI():
     found_conflicts: Dict[str, List[str]]
     repo_packages_by_name: Dict[str, pyalpm.Package]
     aur_deps_relations: Dict[str, List[str]]
+    extra_aur_build_deps: List[str]
     # pkgbuilds from cloned aur repos:
     package_builds_by_name: Dict[str, PackageBuild]
 
@@ -108,6 +109,7 @@ class InstallPackagesCLI():
         self.repo_packages_by_name = {}
         self.aur_deps_relations = {}
         self.package_builds_by_name = {}
+        self.extra_aur_build_deps = []
 
         self.found_conflicts = {}
         self.transactions = {}
@@ -164,7 +166,7 @@ class InstallPackagesCLI():
 
     @property
     def all_aur_packages_names(self) -> List[str]:
-        return list(set(self.aur_packages_names + self.aur_deps_names))
+        return list(set(self.aur_packages_names + self.aur_deps_names + self.extra_aur_build_deps))
 
     def get_info_from_pkgbuilds(self):
         self.install_package_names = []
@@ -344,6 +346,29 @@ class InstallPackagesCLI():
             if pkg_name in list(self.package_builds_by_name.keys()):
                 del self.package_builds_by_name[pkg_name]
 
+    def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]) -> List[str]:
+        new_build_deps_found: List[str] = []
+        for pkgbuild in all_package_builds.values():
+            new_build_deps_found_for_pkg = []
+            pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
+            for dep_name in (
+                    pkgbuild.new_deps_to_install + pkgbuild.new_make_deps_to_install
+            ):
+                if dep_name not in self.all_aur_packages_names:
+                    try:
+                        PackageDB.find_repo_package(dep_name)
+                    except PackagesNotFoundInRepo:
+                        new_build_deps_found_for_pkg.append(dep_name)
+            if new_build_deps_found_for_pkg:
+                print_warning(_("New AUR build deps found for {pkg} package: {deps}").format(
+                    pkg=bold_line(', '.join(pkgbuild.package_names)),
+                    deps=bold_line(', '.join(new_build_deps_found_for_pkg)),
+                ))
+                if not ask_to_continue():
+                    raise SysExit(125)
+                new_build_deps_found += new_build_deps_found_for_pkg
+        return new_build_deps_found
+
     def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:
             try:
@@ -365,9 +390,17 @@ class InstallPackagesCLI():
                         pkgbuilds_by_name[info.name] = pkgbuilds_by_base[pkg_base]
                     else:
                         clone_names.append(info.name)
-                self.package_builds_by_name = clone_aur_repos(clone_names)
-                self.package_builds_by_name.update(pkgbuilds_by_name)
+                cloned_pkgbuilds = clone_aur_repos(clone_names + self.extra_aur_build_deps)
+                pkgbuilds_by_name.update(cloned_pkgbuilds)
+                new_build_deps_found = self._find_extra_aur_build_deps(
+                    all_package_builds=pkgbuilds_by_name
+                )
+                if new_build_deps_found:
+                    self.extra_aur_build_deps += new_build_deps_found
+                    continue
+                self.package_builds_by_name = pkgbuilds_by_name
                 break
+
             except CloneError as err:
                 package_build = err.build
                 print_stderr(color_line(
@@ -393,8 +426,8 @@ class InstallPackagesCLI():
                         # _("[c] git checkout -- '*' ; git clean -f -d -x"),
                         _("[r] remove dir and clone again"),
                         _("[s] skip this package"),
-                        _("[a] abort"))
-
+                        _("[a] abort")
+                    )
                     answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
 
                 answer = answer.lower()[0]

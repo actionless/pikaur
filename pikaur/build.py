@@ -328,7 +328,7 @@ class PackageBuild(DataType):
             all_package_builds: Dict[str, 'PackageBuild']
     ) -> None:
 
-        self._get_deps(all_package_builds)
+        self.get_deps(all_package_builds)
         if not self.built_deps_to_install:
             return
 
@@ -345,7 +345,7 @@ class PackageBuild(DataType):
                     pkg_build.install_built_deps(all_package_builds)
                     update_self_deps = True
             if update_self_deps:
-                self._get_deps(all_package_builds)
+                self.get_deps(all_package_builds)
             install_built_deps(
                 deps_names_and_paths=self.built_deps_to_install,
                 resolved_conflicts=self.resolved_conflicts
@@ -438,15 +438,16 @@ class PackageBuild(DataType):
             os.renames(custom_pkgbuild_path, default_pkgbuild_path)
         self._build_files_copied = True
 
-    def _get_deps(
+    def get_deps(
             self,
-            all_package_builds: Dict[str, 'PackageBuild']
+            all_package_builds: Dict[str, 'PackageBuild'],
+            filter_built=True
     ) -> None:
         self.new_deps_to_install = []
         new_make_deps_to_install: List[str] = []
         new_check_deps_to_install: List[str] = []
         for package_name in self.package_names:
-            src_info = SrcInfo(self.build_dir, package_name=package_name)
+            src_info = SrcInfo(pkgbuild_path=self.pkgbuild_path, package_name=package_name)
             for new_deps_version_matchers, deps_destination in (
                     (
                         src_info.get_build_depends(), self.new_deps_to_install
@@ -471,7 +472,8 @@ class PackageBuild(DataType):
         self.new_make_deps_to_install = list(set(
             new_make_deps_to_install + new_check_deps_to_install
         ))
-        self._filter_built_deps(all_package_builds)
+        if filter_built:
+            self._filter_built_deps(all_package_builds)
 
     def _install_repo_deps(self):
         if not self.all_deps_to_install:
@@ -660,7 +662,7 @@ class PackageBuild(DataType):
         self.prepare_build_destination()
 
         local_packages_before: Set[str] = set()
-        self._get_deps(all_package_builds)
+        self.get_deps(all_package_builds)
         if self.all_deps_to_install or self.built_deps_to_install:
             PackageDB.discard_local_cache()
             local_packages_before = set(PackageDB.get_local_dict().keys())

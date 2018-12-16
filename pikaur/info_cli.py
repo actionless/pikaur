@@ -6,7 +6,7 @@ from .aur import find_aur_packages, get_all_aur_names
 from .args import parse_args
 from .core import spawn
 from .pacman import get_pacman_command
-from .pprint import bold_line
+from .pprint import bold_line, color_line
 
 
 def _info_packages_thread_repo() -> str:
@@ -42,6 +42,12 @@ INFO_FIELDS = dict(
 )
 
 
+def _decorate_info_output(output: str) -> str:
+    return output.replace(
+        _('None'), color_line(_('None'), 8)
+    )
+
+
 def cli_info_packages() -> None:
     args = parse_args()
     aur_pkg_names = args.positional or get_all_aur_names()
@@ -54,7 +60,7 @@ def cli_info_packages() -> None:
         aur_result = aur_thread.get()
 
     if repo_result:
-        print(repo_result, end='')
+        print(_decorate_info_output(repo_result), end='')
 
     aur_pkgs = aur_result[0]
     num_found = len(aur_pkgs)
@@ -68,4 +74,7 @@ def cli_info_packages() -> None:
                 value = ', '.join(value) or _("None")
             pkg_info_lines.append('{key:26}: {value}'.format(
                 key=bold_line(display_name), value=value))
-        print('\n'.join(pkg_info_lines) + ('\n' if i + 1 < num_found else ''))
+        print(
+            _decorate_info_output('\n'.join(pkg_info_lines)) +
+            ('\n' if i + 1 < num_found else '')
+        )

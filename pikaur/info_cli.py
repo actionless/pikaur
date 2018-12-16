@@ -15,7 +15,7 @@ def _info_packages_thread_repo() -> str:
 
 
 INFO_FIELDS = dict(
-    # @TODO: Git Clone URL
+    git_url=_("AUR Git URL"),
     # id=_("id"),
     name=_("Name"),
     # packagebaseid=_(""),
@@ -33,7 +33,6 @@ INFO_FIELDS = dict(
     checkdepends=_("Check Deps"),
     conflicts=_("Conflicts With"),
     replaces=_("Replaces"),
-    # urlpath=_(""),
     maintainer=_("Maintainer"),
     numvotes=_("Votes"),
     popularity=_("Popularity"),

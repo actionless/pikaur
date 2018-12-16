@@ -47,6 +47,10 @@ class AURPackageInfo(DataType):
     keywords: List[str]
     groups: List[str]
 
+    @property
+    def git_url(self) -> str:
+        return f'{AUR_BASE_URL}/{self.packagebase}.git'
+
     def __init__(self, **kwargs):
         if 'description' in kwargs:
             kwargs['desc'] = kwargs.pop('description')

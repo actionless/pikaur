@@ -10,6 +10,7 @@ whitelist = Whitelist()
 whitelist.argparse.ArgumentParserWithUnknowns._parse_known_args
 
 whitelist.aur.AURPackageInfo.firstsubmitted
+whitelist.aur.AURPackageInfo.git_url
 whitelist.aur.AURPackageInfo.id
 whitelist.aur.AURPackageInfo.keywords
 whitelist.aur.AURPackageInfo.lastmodified

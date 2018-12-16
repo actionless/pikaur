@@ -34,8 +34,7 @@ class ConfigReader():
         for comment_prefix in cls.comment_prefixes:
             line, *_comments = line.split(comment_prefix)
 
-        key, *values = line.split('=')
-        value = '='.join(values)
+        key, _sep, value = line.partition('=')
         key = key.strip()
         value = value.strip()
 

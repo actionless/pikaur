@@ -29,28 +29,28 @@ class InstallTest(PikaurDbTestCase):
 
     def test_aur_package_with_aur_dep(self):
         # aur package with aur dep and custom makepkg flags
-        pikaur('-S pacaur --mflags=--skippgpcheck')
-        self.assertInstalled('pacaur')
+        pikaur('-S pacaur-no-ud --mflags=--skippgpcheck')
+        self.assertInstalled('pacaur-no-ud')
         self.assertInstalled('cower')
 
         # package removal (pacman wrapping test)
-        pikaur('-Rs pacaur cower --noconfirm')
-        self.assertNotInstalled('pacaur')
+        pikaur('-Rs pacaur-no-ud cower --noconfirm')
+        self.assertNotInstalled('pacaur-no-ud')
         self.assertNotInstalled('cower')
 
         pikaur('-S cower-git --mflags=--skippgpcheck')
         self.assertInstalled('cower-git')
 
         # aur package with aur dep provided by another already installed AUR pkg
-        pikaur('-S pacaur')
-        self.assertInstalled('pacaur')
+        pikaur('-S pacaur-no-ud')
+        self.assertInstalled('pacaur-no-ud')
         self.assertProvidedBy('cower', 'cower-git')
 
-        self.remove_packages('pacaur', 'cower-git')
+        self.remove_packages('pacaur-no-ud', 'cower-git')
 
         # aur package with manually chosen aur dep:
-        pikaur('-S pacaur cower-git')
-        self.assertInstalled('pacaur')
+        pikaur('-S pacaur-no-ud cower-git')
+        self.assertInstalled('pacaur-no-ud')
         self.assertProvidedBy('cower', 'cower-git')
 
     def test_pkgbuild(self):
@@ -76,7 +76,7 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name2)
 
     def test_conflicting_packages(self):
-        self.remove_if_installed('pacaur', 'cower-git', 'cower')
+        self.remove_if_installed('pacaur-no-ud', 'cower-git', 'cower')
         self.assertEqual(
             pikaur('-S cower-git cower').returncode, 131
         )

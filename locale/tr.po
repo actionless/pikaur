@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-10 08:12+0100\n"
+"POT-Creation-Date: 2018-12-18 21:06+0100\n"
 "PO-Revision-Date: 2018-10-04 11:18+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -41,6 +41,10 @@ msgstr[1] ":: hata: {} seçenekleri {} olmadan kullanılamaz."
 msgid ":: error: options {} can't be used together."
 msgstr ":: hata: {} seçenekleri birlikte kullanılamaz."
 
+#: pikaur/info_cli.py:18
+msgid "AUR Git URL"
+msgstr ""
+
 #: pikaur/print_department.py:337
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
@@ -60,16 +64,16 @@ msgstr ""
 "`pacman -U <paket>` ile ilgili tüm ortak pacman seçenekleri. `pacman -Uh` "
 "bakın."
 
-#: pikaur/main.py:154
+#: pikaur/main.py:156
 msgid "Build directory"
 msgstr "İnşa dizini"
 
-#: pikaur/install_cli.py:613
+#: pikaur/install_cli.py:649
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "'{name}' inşa edilemedi."
 
-#: pikaur/install_cli.py:375
+#: pikaur/install_cli.py:411
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
 msgstr "AUR'dan '{path}' içindeki '{name}' klonlanamadı:"
@@ -88,16 +92,16 @@ msgstr "Hedef dizin '{to_path}' oluşturulamıyor."
 msgid "Can't get package name from PKGBUILD"
 msgstr "PKGBUILD'den paket adı alınamadı"
 
-#: pikaur/install_cli.py:377
+#: pikaur/install_cli.py:413
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "AUR'dan '{path}' içindeki '{name}' çekilemedi:"
 
-#: pikaur/info_cli.py:32
+#: pikaur/info_cli.py:33
 msgid "Check Deps"
 msgstr ""
 
-#: pikaur/build.py:603 pikaur/prompt.py:136
+#: pikaur/build.py:605 pikaur/prompt.py:136
 msgid "Command '{}' failed to execute."
 msgstr "'{}' komutu çalıştırılamadı."
 
@@ -105,7 +109,7 @@ msgstr "'{}' komutu çalıştırılamadı."
 msgid "Common pacman options:"
 msgstr "Ortak pacman seçenekleri:"
 
-#: pikaur/info_cli.py:33
+#: pikaur/info_cli.py:34
 msgid "Conflicts With"
 msgstr ""
 
@@ -121,23 +125,23 @@ msgstr "{} başlatılamadı"
 msgid "Could not update {}"
 msgstr "{} güncellemedi"
 
-#: pikaur/install_cli.py:197
+#: pikaur/install_cli.py:200
 msgid "Dependencies missing for {}"
 msgstr "{} için bağımlılıklar eksik"
 
-#: pikaur/install_cli.py:630
+#: pikaur/install_cli.py:666
 msgid "Dependency cycle detected between {}"
 msgstr "{} ile bağımlılık döngüsü tespit edildi"
 
-#: pikaur/info_cli.py:29
+#: pikaur/info_cli.py:30
 msgid "Depends On"
 msgstr ""
 
-#: pikaur/info_cli.py:23
+#: pikaur/info_cli.py:24
 msgid "Description"
 msgstr ""
 
-#: pikaur/install_cli.py:64
+#: pikaur/install_cli.py:65
 msgid "Do you want to proceed without editing?"
 msgstr "Düzenlemeden devam etmek ister misiniz?"
 
@@ -145,20 +149,20 @@ msgstr "Düzenlemeden devam etmek ister misiniz?"
 msgid "Do you want to proceed?"
 msgstr "Devam etmek ister misiniz?"
 
-#: pikaur/main.py:161
+#: pikaur/main.py:163
 msgid "Do you want to remove all files?"
 msgstr "Tüm dosyaları silmek ister misiniz?"
 
-#: pikaur/prompt.py:140 pikaur/aur.py:83
+#: pikaur/prompt.py:140 pikaur/aur.py:87
 msgid "Do you want to retry?"
 msgstr "Tekrar denemek ister misiniz?"
 
-#: pikaur/install_cli.py:533
+#: pikaur/install_cli.py:569
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "{name} paketi için inşa dosyaları {diff} görmek ister misiniz?"
 
-#: pikaur/install_cli.py:460
+#: pikaur/install_cli.py:496
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "{name} paketi için {file} {edit} ister misiniz?"
@@ -169,11 +173,11 @@ msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Geliştirici paketi için güncel kaynaklar indiriliyor {}"
 msgstr[1] "Geliştirici paketleri için güncel kaynaklar indiriliyor {}"
 
-#: pikaur/install_cli.py:788
+#: pikaur/install_cli.py:824
 msgid "Failed to build following packages:"
 msgstr "Paketler inşa edilemedi:"
 
-#: pikaur/build.py:520
+#: pikaur/build.py:522
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr "Kurulan bağımlılıklar silinemedi, paketler tutarsız: {}"
 
@@ -193,7 +197,7 @@ msgid_plural "Following packages cannot be found in repositories:"
 msgstr[0] "Takip eden paket depolarda bulunamadı:"
 msgstr[1] "Takip eden paketler depolarda bulunamadı:"
 
-#: pikaur/info_cli.py:27
+#: pikaur/info_cli.py:28
 msgid "Groups"
 msgstr ""
 
@@ -205,11 +209,11 @@ msgstr "Paket gözardı ediliyor {}"
 msgid "Installing already built dependencies for {}"
 msgstr "{} için inşa edilmiş paketler kuruluyor"
 
-#: pikaur/build.py:482
+#: pikaur/build.py:484
 msgid "Installing repository dependencies for {}"
 msgstr "{} için depo bağımlılıkları kuruluyor"
 
-#: pikaur/info_cli.py:25
+#: pikaur/info_cli.py:26
 msgid "Keywords"
 msgstr ""
 
@@ -217,22 +221,26 @@ msgstr ""
 msgid "Last Updated"
 msgstr ""
 
-#: pikaur/info_cli.py:26
+#: pikaur/info_cli.py:27
 msgid "Licenses"
 msgstr ""
 
-#. urlpath=_(""),
 #: pikaur/info_cli.py:36
 msgid "Maintainer"
 msgstr ""
 
-#: pikaur/info_cli.py:31
+#: pikaur/info_cli.py:32
 msgid "Make Deps"
 msgstr ""
 
 #. id=_("id"),
-#: pikaur/info_cli.py:19
+#: pikaur/info_cli.py:20
 msgid "Name"
+msgstr ""
+
+#: pikaur/install_cli.py:366
+#, python-brace-format
+msgid "New AUR build deps found for {pkg} package: {deps}"
 msgstr ""
 
 #: pikaur/print_department.py:348
@@ -253,25 +261,25 @@ msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "Yeni bağlılık üçüncü parti depodan kurulacak:"
 msgstr[1] "Yeni bağlılıklar üçüncü parti depodan kurulacak:"
 
-#: pikaur/install_cli.py:422
+#: pikaur/install_cli.py:458
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "Yeni '{new}' paketleri ile '{other}' çakışıyor."
 
-#: pikaur/info_cli.py:68
+#: pikaur/info_cli.py:47 pikaur/info_cli.py:74
 msgid "None"
 msgstr ""
 
-#: pikaur/install_cli.py:522
+#: pikaur/install_cli.py:558
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
 msgstr ""
 
-#: pikaur/install_cli.py:231
+#: pikaur/install_cli.py:234
 msgid "Nothing to do."
 msgstr "Yapacak bişey yok."
 
-#: pikaur/info_cli.py:30
+#: pikaur/info_cli.py:31
 msgid "Optional Deps"
 msgstr ""
 
@@ -281,7 +289,7 @@ msgid "Out-of-date"
 msgstr "eski"
 
 #. packagebaseid=_(""),
-#: pikaur/info_cli.py:21
+#: pikaur/info_cli.py:22
 #, fuzzy
 msgid "Package Base"
 msgstr "Paketler dizini"
@@ -299,7 +307,7 @@ msgstr[1] ""
 "{pkg} paketleri zaten inşa edilmiş. Tekrar inşaya zorlamak için '--rebuild' "
 "argünamını kullanın"
 
-#: pikaur/main.py:155
+#: pikaur/main.py:157
 msgid "Packages directory"
 msgstr "Paketler dizini"
 
@@ -311,11 +319,11 @@ msgstr "Pikaur-özel seçenekler:"
 msgid "Popularity"
 msgstr ""
 
-#: pikaur/install_cli.py:298
+#: pikaur/install_cli.py:301
 msgid "Proceed with installation? [Y/n] "
 msgstr "Kuruluma devam edilsin mi? [E/h] "
 
-#: pikaur/info_cli.py:28
+#: pikaur/info_cli.py:29
 msgid "Provides"
 msgstr ""
 
@@ -333,11 +341,11 @@ msgstr "Yerel paket veritabanı okunuyor..."
 msgid "Reading repository package databases..."
 msgstr "Depo paket veritabanı okunuyor..."
 
-#: pikaur/build.py:531
+#: pikaur/build.py:533
 msgid "Removing already installed dependencies for {}"
 msgstr "{} için şimdi kurulan depo bağımlılıkları siliniyor"
 
-#: pikaur/info_cli.py:34
+#: pikaur/info_cli.py:35
 msgid "Replaces"
 msgstr ""
 
@@ -357,7 +365,7 @@ msgstr[1] "Depo paketleri kurulacak:"
 msgid "Resolving AUR dependencies..."
 msgstr "AUR bağımlılıkları çözülüyor..."
 
-#: pikaur/install_cli.py:673
+#: pikaur/install_cli.py:709
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "{target} işlem geri alınıyor..."
@@ -367,17 +375,17 @@ msgstr "{target} işlem geri alınıyor..."
 msgid "Searching... [{bar}]"
 msgstr "Aranıyor... [{bar}]"
 
-#: pikaur/install_cli.py:452
+#: pikaur/install_cli.py:488
 #, python-brace-format
 msgid "Skipping review of {file} for {name} package ({flag})"
 msgstr ""
 "{name} paketindeki {file} dosyanın gösden geçirilmesi atlanıyor ({flag})"
 
-#: pikaur/install_cli.py:132
+#: pikaur/install_cli.py:135
 msgid "Starting full AUR upgrade..."
 msgstr "Tam AUR güncellemesi başlatılıyor..."
 
-#: pikaur/build.py:573
+#: pikaur/build.py:575
 msgid "Starting the build"
 msgstr "İnşa başlatılıyor"
 
@@ -397,19 +405,19 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Üçüncü-parti depo paketi kurulacak:"
 msgstr[1] "Üçüncü-parti depo paketleri kurulacak:"
 
-#: pikaur/install_cli.py:391 pikaur/build.py:613
+#: pikaur/install_cli.py:427 pikaur/build.py:615
 msgid "Try recovering?"
 msgstr "Kurtarmayı dene?"
 
-#: pikaur/info_cli.py:24
+#: pikaur/info_cli.py:25
 msgid "URL"
 msgstr ""
 
-#: pikaur/info_cli.py:22
+#: pikaur/info_cli.py:23
 msgid "Version"
 msgstr ""
 
-#: pikaur/install_cli.py:202
+#: pikaur/install_cli.py:205
 msgid "Version mismatch:"
 msgstr "Sürüm uyumsuzluğu:"
 
@@ -421,7 +429,7 @@ msgstr ""
 msgid "[N]o (--noconfirm)"
 msgstr "[H]ayır (--noconfirm)"
 
-#: pikaur/build.py:615
+#: pikaur/build.py:617
 msgid "[R] retry build"
 msgstr "[R] tekrar inşa etmeyi dene"
 
@@ -429,27 +437,27 @@ msgstr "[R] tekrar inşa etmeyi dene"
 msgid "[Y]es (--noconfirm)"
 msgstr "[E]vet (--noconfirm)"
 
-#: pikaur/install_cli.py:396
+#: pikaur/install_cli.py:432
 msgid "[a] abort"
 msgstr "[v] vazgeç"
 
-#: pikaur/build.py:622
+#: pikaur/build.py:624
 msgid "[a] abort building all the packages"
 msgstr "[v] bütün paketleri inşa etmekten vazgeç"
 
-#: pikaur/build.py:617
+#: pikaur/build.py:619
 msgid "[c] checksums skip"
 msgstr "[c] sağlamayı atla"
 
-#: pikaur/install_cli.py:392
+#: pikaur/install_cli.py:428
 msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
-#: pikaur/build.py:619
+#: pikaur/build.py:621
 msgid "[d] delete build dir and try again"
 msgstr "[s] inşa dizinini sil ve tekrar dene"
 
-#: pikaur/build.py:618
+#: pikaur/build.py:620
 msgid "[i] ignore architecture"
 msgstr "[m] mimariyi dışla"
 
@@ -462,33 +470,33 @@ msgstr "[kurulu: {version}]"
 msgid "[installed]"
 msgstr "[kurulu]"
 
-#: pikaur/build.py:616
+#: pikaur/build.py:618
 msgid "[p] PGP check skip"
 msgstr "[p] PGP doğrulamayı atla"
 
 #. _("[c] git checkout -- '*' ; git clean -f -d -x"),
-#: pikaur/install_cli.py:394
+#: pikaur/install_cli.py:430
 msgid "[r] remove dir and clone again"
 msgstr "[r] dizini sil ve tekrar klonla"
 
-#: pikaur/build.py:621
+#: pikaur/build.py:623
 msgid "[s] skip building this package"
 msgstr "[a] bu paketi inşa etmeyi atla"
 
-#: pikaur/install_cli.py:395
+#: pikaur/install_cli.py:431
 msgid "[s] skip this package"
 msgstr "[a] bu paketi atla"
 
-#: pikaur/install_cli.py:300
+#: pikaur/install_cli.py:303
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "paket detaylarını [g]öster   paketleri elle se[ç]"
 
-#: pikaur/install_cli.py:387 pikaur/install_cli.py:398 pikaur/build.py:609
-#: pikaur/build.py:628 pikaur/build.py:646
+#: pikaur/install_cli.py:423 pikaur/install_cli.py:434 pikaur/build.py:611
+#: pikaur/build.py:630 pikaur/build.py:648
 msgid "a"
 msgstr "v"
 
-#: pikaur/install_cli.py:566
+#: pikaur/install_cli.py:602
 msgid "already reviewed"
 msgstr ""
 
@@ -504,8 +512,8 @@ msgstr "daima AUR paketlerini tekrar inşa et"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "her zaman sysupgrade '-git' ve diğer geliştirici paketleri"
 
-#: pikaur/install_cli.py:398 pikaur/install_cli.py:401 pikaur/build.py:627
-#: pikaur/build.py:637
+#: pikaur/install_cli.py:434 pikaur/install_cli.py:437 pikaur/build.py:629
+#: pikaur/build.py:639
 msgid "c"
 msgstr "c"
 
@@ -513,11 +521,11 @@ msgstr "c"
 msgid "cli args to pass to makepkg"
 msgstr "makepkg için komut satırı argümanları"
 
-#: pikaur/build.py:627 pikaur/build.py:643
+#: pikaur/build.py:629 pikaur/build.py:645
 msgid "d"
 msgstr "s"
 
-#: pikaur/install_cli.py:534
+#: pikaur/install_cli.py:570
 msgid "diff"
 msgstr "fark"
 
@@ -537,7 +545,7 @@ msgstr "inşa ettikten sonra inşa dizinini silme"
 msgid "download also AUR dependencies"
 msgstr "ayrıca AUR bağımlılıklarını indir"
 
-#: pikaur/install_cli.py:461
+#: pikaur/install_cli.py:497
 msgid "edit"
 msgstr "düzenle"
 
@@ -554,7 +562,7 @@ msgstr "son geliştirme kaynakları alınamadı:"
 msgid "for {pkg}"
 msgstr ""
 
-#: pikaur/build.py:627 pikaur/build.py:640
+#: pikaur/build.py:629 pikaur/build.py:642
 msgid "i"
 msgstr "m"
 
@@ -567,23 +575,23 @@ msgstr "dışlanan açık argüman %r"
 msgid "install built package"
 msgstr "inşa edilen paketi kur"
 
-#: pikaur/install_cli.py:561
+#: pikaur/install_cli.py:597
 msgid "installing for the first time"
 msgstr ""
 
-#: pikaur/install_cli.py:413
+#: pikaur/install_cli.py:449
 msgid "looking for conflicting AUR packages..."
 msgstr "çakışan paketlere bakılıyor..."
 
-#: pikaur/install_cli.py:302 pikaur/install_cli.py:319
+#: pikaur/install_cli.py:305 pikaur/install_cli.py:322
 msgid "m"
 msgstr "ç"
 
-#: pikaur/install_cli.py:302 pikaur/prompt.py:20
+#: pikaur/install_cli.py:305 pikaur/prompt.py:20
 msgid "n"
 msgstr "h"
 
-#: pikaur/install_cli.py:63
+#: pikaur/install_cli.py:64
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
 msgstr "düzenleyici bulanamadı. $VISUAL veya $EDITOR değişkenini ayarlayın."
 
@@ -605,7 +613,7 @@ msgstr "eski"
 msgid "override path to makepkg executable"
 msgstr "makepkg yolunu değiştir"
 
-#: pikaur/build.py:627 pikaur/build.py:634
+#: pikaur/build.py:629 pikaur/build.py:636
 msgid "p"
 msgstr "p"
 
@@ -617,11 +625,11 @@ msgstr "özel makepkg yapılandırması yolu"
 msgid "path to custom pikaur config"
 msgstr "özel pikaur yapılandırması yolu"
 
-#: pikaur/main.py:263
+#: pikaur/main.py:264
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur çalışabilmek için Python >= 3.7 gerektirir."
 
-#: pikaur/main.py:268
+#: pikaur/main.py:269
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur root olabilmek için systemd >= 235 (dinamik kullanıcılar) gerektirir."
@@ -650,13 +658,13 @@ msgstr "paketler için sadece AUR'da sorgula"
 msgid "query packages from repository only"
 msgstr "paketler için sadece depoda sorgula"
 
-#: pikaur/install_cli.py:398 pikaur/install_cli.py:403 pikaur/build.py:627
-#: pikaur/build.py:632
+#: pikaur/install_cli.py:434 pikaur/install_cli.py:439 pikaur/build.py:629
+#: pikaur/build.py:634
 msgid "r"
 msgstr "r"
 
-#: pikaur/install_cli.py:398 pikaur/install_cli.py:405 pikaur/build.py:607
-#: pikaur/build.py:628
+#: pikaur/install_cli.py:434 pikaur/install_cli.py:441 pikaur/build.py:609
+#: pikaur/build.py:630
 msgid "s"
 msgstr "a"
 
@@ -677,7 +685,7 @@ msgstr "kullanım:  pikaur {-G --getpkgbuild} [seçenekler] <paket(ler)>"
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "kullanım:  pikaur {-P --pkgbuild} [seçenekler] <dosya(lar)>"
 
-#: pikaur/install_cli.py:302 pikaur/install_cli.py:317
+#: pikaur/install_cli.py:305 pikaur/install_cli.py:320
 msgid "v"
 msgstr "g"
 
@@ -685,7 +693,7 @@ msgstr "g"
 msgid "warning:"
 msgstr "uyarı:"
 
-#: pikaur/install_cli.py:302 pikaur/install_cli.py:315 pikaur/prompt.py:19
+#: pikaur/install_cli.py:305 pikaur/install_cli.py:318 pikaur/prompt.py:19
 msgid "y"
 msgstr "e"
 
@@ -696,7 +704,7 @@ msgid_plural "{grp} groups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/build.py:554
+#: pikaur/build.py:556
 #, python-brace-format
 msgid ""
 "{name} can't be built on the current arch ({arch}). Supported: {suparch}"
@@ -707,7 +715,7 @@ msgstr "{name} bu mimaride inşa edilemez ({arch}). Destek: {suparch}"
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "{name} {version} {package_source} paketi güncel - atlanıyor"
 
-#: pikaur/install_cli.py:431
+#: pikaur/install_cli.py:467
 #, python-brace-format
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} ve {installed} çakışıyor. {installed} silinsin mi?"
@@ -717,7 +725,7 @@ msgstr "{new} ve {installed} çakışıyor. {installed} silinsin mi?"
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} zaten listeye eklendi"
 
-#: pikaur/install_cli.py:204
+#: pikaur/install_cli.py:207
 #, python-brace-format
 msgid ""
 "{what} depends on: '{dep}'\n"

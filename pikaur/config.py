@@ -157,7 +157,7 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
     'misc': {
         'SudoLoopInterval': {
             'type': 'int',
-            'default': '1',
+            'default': '59',
         },
         'PacmanPath': {
             'type': 'str',

@@ -145,7 +145,7 @@ Print each command which pikaur is currently spawning.
 
 #### [misc]
 
-##### SudoLoopInterval (default: 1)
+##### SudoLoopInterval (default: 59)
 Interval in seconds in which `sudo` command will be spawned in the background
 to avoid asking for sudo password more than once
 (`-1` to disable sudo loop at all).

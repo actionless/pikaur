@@ -322,7 +322,7 @@ def main() -> None:
 
     atexit.register(restore_tty)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    if not args.debug:
+    if not args.verbose:
         signal.signal(signal.SIGINT, handle_sig_int)
 
     try:

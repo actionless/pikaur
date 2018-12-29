@@ -163,10 +163,6 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'str',
             'default': 'pacman'
         },
-        'Debug': {
-            'type': 'bool',
-            'default': 'no'
-        },
     },
 }
 

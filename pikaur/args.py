@@ -57,7 +57,6 @@ def get_pikaur_bool_opts() -> ArgSchema:
         ('G', 'getpkgbuild', None),
         (None, 'deps', None),
         # undocumented options:
-        (None, 'debug', PikaurConfig().misc.get_bool('Debug')),
         (None, 'print-commands', PikaurConfig().ui.get_bool('PrintCommands')),
         (None, 'hide-build-log', None),
         (None, 'print-args-and-exit', None),
@@ -156,9 +155,6 @@ class PikaurArgs(Namespace):
     def post_process_args(self):
         # pylint: disable=attribute-defined-outside-init,access-member-before-definition
         self.handle_the_same_letter()
-
-        if self.debug:
-            self.print_commands = self.debug
 
         new_ignore = []
         for ignored in self.ignore or []:

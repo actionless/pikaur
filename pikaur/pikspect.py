@@ -335,7 +335,7 @@ def pikspect(
     if extra_questions:
         proc.add_answers(extra_questions)
 
-    if parse_args().print_commands:
+    if parse_args().verbose:
         print_stderr(color_line('=> ', 14) + ' '.join(cmd))
     proc.run()
     return proc

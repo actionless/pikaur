@@ -5,6 +5,7 @@ IFS=$'\n\t'
 
 virtualenv --system-site-packages coverage_env
 set +u
+# shellcheck disable=SC1091
 source coverage_env/bin/activate
 set -u
 

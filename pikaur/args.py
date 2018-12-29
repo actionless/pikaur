@@ -34,6 +34,7 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     ('V', 'version', None),
     ('h', 'help', None),
     # universal options
+    ('v', 'verbose', None),
     (None, 'noconfirm', None),
     (None, 'needed', None),
 ]

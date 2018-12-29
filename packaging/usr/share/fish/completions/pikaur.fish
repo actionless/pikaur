@@ -85,7 +85,6 @@ complete -c $progname -n "not $noopt" -s v -l verbose -d 'Output more status mes
 complete -c $progname -n "not $noopt" -l arch -d 'Alternate architecture' -f
 complete -c $progname -n "not $noopt" -l cachedir -d 'Alternative package cache location'
 complete -c $progname -n "not $noopt" -l config -d 'Alternate config file'
-complete -c $progname -n "not $noopt" -l debug -d 'Display debug messages' -f
 complete -c $progname -n "not $noopt" -l gpgdir -d 'GPG directory to verify signatures'
 complete -c $progname -n "not $noopt" -l hookdir -d 'Hook file directory'
 complete -c $progname -n "not $noopt" -l logfile -d 'Specify alternative log file'

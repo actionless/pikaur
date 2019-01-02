@@ -53,12 +53,18 @@ man: clean_man
 backup_man:
 	mv $(MAN_FILE) $(MAN_FILE_BAK)
 
-check_man: backup_man man
-	diff $(MAN_FILE) $(MAN_FILE_BAK)
+_check_man: backup_man man
+	tail -n +5 $(MAN_FILE) > $(MAN_FILE).compare
+	tail -n +5 $(MAN_FILE_BAK) > $(MAN_FILE_BAK).compare
+	diff $(MAN_FILE).compare $(MAN_FILE_BAK).compare
 	mv $(MAN_FILE_BAK) $(MAN_FILE)
 
 clean_checkman:
 	$(RM) $(MAN_FILE_BAK)
+	$(RM) $(MAN_FILE_BAK).compare
+	$(RM) $(MAN_FILE).compare
+
+check_man: _check_man clean_checkman
 
 .PHONY: all clean $(POTFILE) clean_man man backup_man check_man clean_checkman
 .PRECIOUS: $(LOCALEDIR)/%.po

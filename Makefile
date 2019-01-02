@@ -56,11 +56,10 @@ backup_man:
 _check_man: backup_man man
 	tail -n +5 $(MAN_FILE) > $(MAN_FILE).compare
 	tail -n +5 $(MAN_FILE_BAK) > $(MAN_FILE_BAK).compare
-	diff $(MAN_FILE).compare $(MAN_FILE_BAK).compare
 	mv $(MAN_FILE_BAK) $(MAN_FILE)
+	diff $(MAN_FILE).compare $(MAN_FILE_BAK).compare
 
 clean_checkman:
-	$(RM) $(MAN_FILE_BAK)
 	$(RM) $(MAN_FILE_BAK).compare
 	$(RM) $(MAN_FILE).compare
 

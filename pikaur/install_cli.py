@@ -608,14 +608,15 @@ class InstallPackagesCLI():
             ):
                 src_info.regenerate()
                 # @TODO: recompute AUR deps
-                for pkg_name in repo_status.package_names:
-                    install_src_info = SrcInfo(
-                        pkgbuild_path=repo_status.pkgbuild_path,
-                        package_name=pkg_name
-                    )
-                    install_file_name = install_src_info.get_install_script()
-                    if install_file_name:
-                        self.ask_to_edit_file(install_file_name, repo_status)
+
+            for pkg_name in repo_status.package_names:
+                install_src_info = SrcInfo(
+                    pkgbuild_path=repo_status.pkgbuild_path,
+                    package_name=pkg_name
+                )
+                install_file_name = install_src_info.get_install_script()
+                if install_file_name:
+                    self.ask_to_edit_file(install_file_name, repo_status)
 
             repo_status.check_pkg_arch()
             repo_status.reviewed = True

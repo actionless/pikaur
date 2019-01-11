@@ -596,3 +596,7 @@ def install_built_deps(
 
     if not (deps_upgrade_success and explicit_upgrade_success):
         raise DependencyError()
+
+
+def strip_repo_name(pkg_name: str) -> str:
+    return pkg_name.split('/', 1)[-1]

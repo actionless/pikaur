@@ -9,7 +9,7 @@ from .version import VersionMatcher
 from .pacman import (
     OFFICIAL_REPOS,
     PackageDB, PacmanConfig,
-    find_sysupgrade_packages, get_pacman_command,
+    find_sysupgrade_packages, get_pacman_command, strip_repo_name,
 )
 from .aur import find_aur_packages, AURPackageInfo
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
@@ -199,7 +199,16 @@ class InstallInfoFetcher:
             pkg_install_infos.append(install_info)
         return pkg_install_infos
 
-    def get_repo_pkgs_info(self):
+    def package_is_manually_excluded(self, pkg_name: str) -> bool:
+        return (
+            pkg_name in self.manually_excluded_packages_names or
+            strip_repo_name(pkg_name) in self.manually_excluded_packages_names or
+            pkg_name in [
+                strip_repo_name(exc_name) for exc_name in self.manually_excluded_packages_names
+            ]
+        )
+
+    def get_repo_pkgs_info(self) -> None:
         for pkg_update in (
                 self._get_repo_pkgs_info(pkg_lines=self.install_package_names) +
                 self.get_upgradeable_repo_pkgs_info()
@@ -219,13 +228,11 @@ class InstallInfoFetcher:
 
             pkg_name = pkg_update.name
             if (
-                    pkg_name in self.manually_excluded_packages_names
+                    self.package_is_manually_excluded(pkg_name)
             ) or (
                 self.package_is_ignored(pkg_name)
             ):
                 print_ignored_package(pkg_name)
-                # if pkg_name not in self.manually_excluded_packages_names:
-                    # self.manually_excluded_packages_names.append(pkg_name)
                 continue
 
             if pkg_update.current_version == '' and (
@@ -305,7 +312,7 @@ class InstallInfoFetcher:
             )
         for pkg_name in list(aur_updates_install_info_by_name.keys())[:]:
             if (
-                    pkg_name in self.manually_excluded_packages_names
+                    self.package_is_manually_excluded(pkg_name)
             ) or (
                 self.package_is_ignored(pkg_name)
             ):

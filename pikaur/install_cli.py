@@ -5,17 +5,17 @@ import os
 import hashlib
 from multiprocessing.pool import ThreadPool
 from tempfile import NamedTemporaryFile
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Set
 
 import pyalpm
 
 from .i18n import _
 from .config import PikaurConfig
 from .args import reconstruct_args, PikaurArgs, parse_args
-from .aur import AURPackageInfo, strip_aur_repo_name
+from .aur import AURPackageInfo
 from .pacman import (
     PackageDB,
-    get_pacman_command, refresh_pkg_db, install_built_deps,
+    get_pacman_command, refresh_pkg_db, install_built_deps, strip_repo_name,
 )
 from .install_info_fetcher import InstallInfoFetcher
 from .exceptions import (
@@ -45,7 +45,7 @@ from .news import News
 from .version import VersionMatcher
 
 
-def hash_file(filename):  # pragma: no cover
+def hash_file(filename: str) -> str:  # pragma: no cover
     md5 = hashlib.md5()
     with open(filename, 'rb') as file:
         eof = False
@@ -169,7 +169,7 @@ class InstallPackagesCLI():
     def all_aur_packages_names(self) -> List[str]:
         return list(set(self.aur_packages_names + self.aur_deps_names + self.extra_aur_build_deps))
 
-    def get_info_from_pkgbuilds(self):
+    def get_info_from_pkgbuilds(self) -> None:
         self.install_package_names = []
         self.not_found_repo_pkgs_names = []
         self.pkgbuilds_paths = self.args.positional
@@ -235,56 +235,55 @@ class InstallPackagesCLI():
                 ))
             raise SysExit(0)
 
-    def manual_package_selection(self):  # pragma: no cover
-        pkg_names_before = set(
-            [
-                update.name for update in (
-                    self.install_info.repo_packages_install_info +
-                    self.install_info.thirdparty_repo_packages_install_info +
-                    self.install_info.aur_updates_install_info
-                )
-            ] + self.install_package_names + self.not_found_repo_pkgs_names
-        )
+    def _ignore_package(self, pkg_name: str) -> None:
+        self.manually_excluded_packages_names.append(pkg_name)
+        for name in (pkg_name, strip_repo_name(pkg_name), ):
+            if name in self.install_package_names:
+                self.install_package_names.remove(name)
+            if name in self.not_found_repo_pkgs_names:
+                self.not_found_repo_pkgs_names.remove(name)
+
+    def manual_package_selection(self) -> None:  # pragma: no cover
         editor_cmd = get_editor_or_exit()
         if not editor_cmd:
             return
-        text = pretty_format_sysupgrade(
+
+        def parse_pkg_names(text: str) -> Set[str]:
+            selected_packages = []
+            for line in text.splitlines():
+                line = line.lstrip()
+                if not line:
+                    continue
+                if not line.startswith('::') and not line.startswith('#'):
+                    pkg_name = line.split()[0]
+                    # for provided package selection: (mb later for optional deps)
+                    pkg_name = pkg_name.split('#')[0].strip()
+                    selected_packages.append(pkg_name)
+            return set(selected_packages)
+
+        text_before = pretty_format_sysupgrade(
             install_info=self.install_info,
             manual_package_selection=True
         )
-        selected_packages = []
+        pkg_names_before = parse_pkg_names(text_before)
         with NamedTemporaryFile() as tmp_file:
             with open_file(tmp_file.name, 'w') as write_file:
-                write_file.write(text)
+                write_file.write(text_before)
             interactive_spawn(
                 editor_cmd + [tmp_file.name, ]
             )
             with open_file(tmp_file.name, 'r') as read_file:
-                for line in read_file.readlines():
-                    line = line.lstrip()
-                    if not line:
-                        continue
-                    if not line.startswith('::') and not line.startswith('#'):
-                        pkg_name = line.split()[0]
-                        # for provided package selection: (mb later for optional deps)
-                        pkg_name = pkg_name.split('#')[0].strip()
-                        selected_packages.append(pkg_name)
+                selected_packages = parse_pkg_names(read_file.read())
 
-        list_diff = set(selected_packages).difference(pkg_names_before)
+        list_diff = selected_packages.difference(pkg_names_before)
         for pkg_name in list_diff:
-            if strip_aur_repo_name(pkg_name) not in (
+            if pkg_name not in (
                     self.install_package_names + self.not_found_repo_pkgs_names
             ):
                 self.install_package_names.append(pkg_name)
 
-        for pkg_name in pkg_names_before.difference(
-                set(strip_aur_repo_name(p) for p in selected_packages)
-        ):
-            self.manually_excluded_packages_names.append(pkg_name)
-            if pkg_name in self.install_package_names:
-                self.install_package_names.remove(pkg_name)
-            if pkg_name in self.not_found_repo_pkgs_names:
-                self.not_found_repo_pkgs_names.remove(pkg_name)
+        for pkg_name in pkg_names_before.difference(selected_packages):
+            self._ignore_package(pkg_name)
 
     def install_prompt(self) -> None:  # pragma: no cover
 
@@ -479,6 +478,7 @@ class InstallPackagesCLI():
         editor_cmd = get_editor_or_exit()
         if not editor_cmd:
             return False
+
         noedit = not self.args.edit and (
             self.args.noedit
         )
@@ -723,7 +723,8 @@ class InstallPackagesCLI():
             return
         for excluded_pkg_name in self.manually_excluded_packages_names + self.args.ignore:
             extra_args.append('--ignore')
-            extra_args.append(excluded_pkg_name)
+            # pacman's --ignore doesn't work with repo name:
+            extra_args.append(strip_repo_name(excluded_pkg_name))
         if not retry_interactive_command(
                 sudo(
                     get_pacman_command() + [
@@ -793,7 +794,7 @@ class InstallPackagesCLI():
                 PackageSource.AUR, installed=list(aur_packages_to_install.keys())
             )
 
-    def install_packages(self):
+    def install_packages(self) -> None:
 
         if not self.args.aur:
             self.install_repo_packages()

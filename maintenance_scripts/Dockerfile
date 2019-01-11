@@ -4,7 +4,7 @@ FROM base/archlinux
 WORKDIR /opt/app-build/
 
 # @TODO: remove it:
-RUN pacman -Syu --noconfirm
+RUN pacman -Syu --noconfirm shadow audit
 
 RUN useradd -m user && \
 	echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \

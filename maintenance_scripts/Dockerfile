@@ -2,6 +2,10 @@
 
 FROM base/archlinux
 WORKDIR /opt/app-build/
+
+# @TODO: remove it:
+RUN pacman -Syu --noconfirm
+
 RUN useradd -m user && \
 	echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 	echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers

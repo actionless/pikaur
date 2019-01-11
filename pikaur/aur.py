@@ -181,6 +181,7 @@ def find_aur_packages(
 
     # @TODO: return only packages for the current architecture
     package_names = [strip_aur_repo_name(name) for name in package_names]
+    num_packages = len(package_names)
     json_results = []
     for package_name in package_names[:]:
         aur_pkg = _AUR_PKGS_FIND_CACHE.get(package_name)
@@ -209,7 +210,7 @@ def find_aur_packages(
         result.name for result in json_results
     ]
     not_found_packages: List[str] = []
-    if len(package_names) != len(found_aur_packages):
+    if num_packages != len(found_aur_packages):
         not_found_packages = [
             package for package in package_names
             if package not in found_aur_packages

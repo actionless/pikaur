@@ -60,6 +60,7 @@ def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
 
 
 PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
+PATTERN_DB_NOTFOUND = create_pacman_pattern("database not found: %s\n")
 
 
 def get_pacman_command() -> List[str]:
@@ -427,10 +428,11 @@ class PackageDB(PackageDBCommon):
         ).stderr_text.splitlines()
         new_not_found_pkg_names = []
         for result in results:
-            groups = PATTERN_NOTFOUND.findall(result)
-            if groups:
-                pkg_name = VersionMatcher(groups[0]).pkg_name
-                new_not_found_pkg_names.append(pkg_name)
+            for pattern in (PATTERN_NOTFOUND, PATTERN_DB_NOTFOUND, ):
+                groups = pattern.findall(result)
+                if groups:
+                    pkg_name = VersionMatcher(groups[0]).pkg_name
+                    new_not_found_pkg_names.append(pkg_name)
 
         for pkg_name in pkg_names_to_check:
             cls._pacman_repo_pkg_present_cache[pkg_name] = pkg_name not in new_not_found_pkg_names

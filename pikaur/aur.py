@@ -51,13 +51,13 @@ class AURPackageInfo(DataType):
     def git_url(self) -> str:
         return f'{AUR_BASE_URL}/{self.packagebase}.git'
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         if 'description' in kwargs:
             kwargs['desc'] = kwargs.pop('description')
         super().__init__(**kwargs)
 
     @classmethod
-    def from_srcinfo(cls, srcinfo):
+    def from_srcinfo(cls, srcinfo) -> 'AURPackageInfo':
         return cls(
             name=srcinfo.package_name,
             version=srcinfo.get_value('pkgver') + '-' + srcinfo.get_value('pkgrel'),
@@ -168,7 +168,7 @@ def aur_rpc_info_with_progress(
     return result
 
 
-def aur_web_packages_list():
+def aur_web_packages_list() -> List[str]:
     return get_gzip_from_url(AUR_BASE_URL + '/packages.gz').splitlines()[1:]
 
 

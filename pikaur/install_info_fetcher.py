@@ -280,7 +280,7 @@ class InstallInfoFetcher:
             else:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
-    def get_aur_pkgs_info(self, aur_packages_names: List[str]):
+    def get_aur_pkgs_info(self, aur_packages_names: List[str]) -> None:
         local_pkgs = PackageDB.get_local_dict()
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(aur_packages_names)
         if not_found_aur_pkgs:
@@ -320,7 +320,7 @@ class InstallInfoFetcher:
                 del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
 
-    def get_info_from_pkgbuilds(self):
+    def get_info_from_pkgbuilds(self) -> None:
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path in self.pkgbuilds_paths:
@@ -342,8 +342,13 @@ class InstallInfoFetcher:
                 )
         self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
 
-    def get_aur_deps_info(self):
-        all_aur_pkgs = [info.package for info in self.aur_updates_install_info]
+    def get_aur_deps_info(self) -> None:
+        all_aur_pkgs = []
+        for info in self.aur_updates_install_info:
+            if isinstance(info.package, AURPackageInfo):
+                all_aur_pkgs.append(info.package)
+            else:
+                raise TypeError()
         if all_aur_pkgs:
             print_stdout(_("Resolving AUR dependencies..."))
         try:

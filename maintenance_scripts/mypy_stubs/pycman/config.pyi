@@ -1,6 +1,6 @@
 from argparse import Namespace
 from collections import OrderedDict
-from typing import List
+from typing import Optional, Union
 
 from pyalpm import Handle
 
@@ -8,7 +8,8 @@ from pyalpm import Handle
 class PacmanConfig(object):
     options: dict
     repos: OrderedDict
-    def __init__(self, conf: str, options: Namespace) -> None: ...
+    # def __init__(self, conf: Optional[str], options: Optional[Namespace]) -> None: ...  # @TODO: figure it out
+    def __init__(self, conf: Optional[str]) -> None: ...
     def load_from_file(self, filename: str) -> None: ...
     def load_from_options(self, options: Namespace) -> None: ...
     def apply(self, h: Handle) -> None: ...

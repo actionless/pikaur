@@ -10,7 +10,7 @@ from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import (
     TYPE_CHECKING,
-    Any, Callable, Iterable, List, Optional, Union
+    Any, Callable, Iterable, List, Optional, Union, Tuple
 )
 
 if TYPE_CHECKING:
@@ -74,16 +74,20 @@ class InteractiveSpawn(subprocess.Popen):
     stdout_text: str
     stderr_text: str
 
-    def communicate(self, _input=None, _timeout=None):
+    def communicate(self, _input=None, _timeout=None) -> Tuple[bytes, bytes]:
         from .args import parse_args
         if parse_args().verbose:
             from .pprint import print_stderr, color_line
             if self.args != ['sudo', '-v']:
-                print_stderr(color_line('=> ', 14) + ' '.join(self.args))
+                print_stderr(
+                    color_line('=> ', 14) +
+                    ' '.join(str(arg) for arg in self.args)
+                )
 
         stdout, stderr = super().communicate(_input, _timeout)
         self.stdout_text = stdout.decode('utf-8') if stdout else None
         self.stderr_text = stderr.decode('utf-8') if stderr else None
+        return stdout, stderr
 
     def __repr__(self) -> str:
         return (
@@ -220,7 +224,7 @@ def get_editor() -> Optional[List[str]]:
     return None
 
 
-def dirname(path):
+def dirname(path: str) -> str:
     return os.path.dirname(path) or '.'
 
 

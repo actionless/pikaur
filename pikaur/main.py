@@ -13,7 +13,7 @@ import shutil
 import atexit
 import io
 from argparse import ArgumentError  # pylint: disable=no-name-in-module
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, NoReturn
 
 from .i18n import _  # keep that first
 from .args import (
@@ -258,7 +258,7 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
     return version >= 235
 
 
-def check_runtime_deps(dep_names: Optional[List[str]] = None):
+def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
     if sys.version_info.major < 3 or sys.version_info.minor < 7:
         print_error(
             _("pikaur requires Python >= 3.7 to run."),
@@ -299,11 +299,11 @@ def create_dirs() -> None:
         os.makedirs(AUR_REPOS_CACHE_PATH)
 
 
-def restore_tty():
+def restore_tty() -> None:
     TTYRestore.restore()
 
 
-def handle_sig_int(*_whatever):  # pragma: no cover
+def handle_sig_int(*_whatever) -> NoReturn:  # pragma: no cover
     print_stderr("\n\nCanceled by user (SIGINT)", lock=False)
     raise SysExit(125)
 

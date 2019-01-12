@@ -128,6 +128,12 @@ class MissingArgument(Exception):
 class PikaurArgs(Namespace):
     unknown_args: List[str]
     raw: List[str]
+    # typehints:
+    info: Optional[bool]
+    nodeps: Optional[bool]
+    owns: Optional[bool]
+    check: Optional[bool]
+    ignore: List[str]
 
     def __getattr__(self, name: str) -> Any:
         """
@@ -135,9 +141,8 @@ class PikaurArgs(Namespace):
         """
         return getattr(super(), name)
 
-    def handle_the_same_letter(self):
+    def handle_the_same_letter(self) -> None:
         # pylint: disable=attribute-defined-outside-init,access-member-before-definition
-        # type: ignore
         if self.pkgbuild and self.info:  # handle "-i"
             self.install = self.info
             self.info = False
@@ -152,11 +157,11 @@ class PikaurArgs(Namespace):
                 self.keepbuild = True
                 self.check = None
 
-    def post_process_args(self):
+    def post_process_args(self) -> None:
         # pylint: disable=attribute-defined-outside-init,access-member-before-definition
         self.handle_the_same_letter()
 
-        new_ignore = []
+        new_ignore: List[str] = []
         for ignored in self.ignore or []:
             new_ignore += ignored.split(',')
         self.ignore = new_ignore
@@ -230,7 +235,7 @@ class CachedArgs():
     args: Optional[PikaurArgs] = None
 
 
-def debug_args(args: List[str], parsed_args: PikaurArgs):  # pragma: no cover
+def debug_args(args: List[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
     from pprint import pprint  # pylint: disable=no-name-in-module
 
     print("Input:")

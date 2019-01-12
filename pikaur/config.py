@@ -40,7 +40,7 @@ else:
     AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
 
 
-def migrate_old_aur_repos_dir():
+def migrate_old_aur_repos_dir() -> None:
     if not (
             os.path.exists(_OLD_AUR_REPOS_CACHE_PATH) and not os.path.exists(AUR_REPOS_CACHE_PATH)
     ):
@@ -61,7 +61,7 @@ def migrate_old_aur_repos_dir():
     print_stderr()
 
 
-def get_config_path():
+def get_config_path() -> str:
     config_flag = '--pikaur-config'
     if config_flag in sys.argv:
         return sys.argv[

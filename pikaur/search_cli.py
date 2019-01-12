@@ -63,7 +63,7 @@ def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:
     return result
 
 
-def package_search_thread_local():
+def package_search_thread_local() -> Dict[str, str]:
     result = {
         pkg_name: pkg.version
         for pkg_name, pkg in PackageDB.get_local_dict(quiet=True).items()

@@ -40,7 +40,7 @@ from .version import compare_versions, VersionMatcher
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
 
 
-def mkdir(to_path):
+def mkdir(to_path) -> None:
     mkdir_result = spawn(isolate_root_cmd(['mkdir', '-p', to_path]))
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
@@ -274,7 +274,7 @@ class PackageBuild(DataType):
         ])
 
     @property
-    def all_deps_to_install(self):
+    def all_deps_to_install(self) -> List[str]:
         return self.new_make_deps_to_install + self.new_deps_to_install
 
     def _filter_built_deps(
@@ -475,7 +475,7 @@ class PackageBuild(DataType):
         if filter_built:
             self._filter_built_deps(all_package_builds)
 
-    def _install_repo_deps(self):
+    def _install_repo_deps(self) -> None:
         if not self.all_deps_to_install:
             return
         # @TODO: use lock file?
@@ -543,7 +543,7 @@ class PackageBuild(DataType):
         )
         PackageDB.discard_local_cache()
 
-    def check_pkg_arch(self):
+    def check_pkg_arch(self) -> None:
         src_info = SrcInfo(pkgbuild_path=self.pkgbuild_path)
         arch = MakepkgConfig.get('CARCH')
         supported_archs = src_info.get_values('arch')

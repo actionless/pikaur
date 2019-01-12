@@ -107,8 +107,8 @@ class PacmanPrint(DataType):
 
 class PacmanConfig(PycmanConfig):
 
-    def __init__(self):
-        super().__init__('/etc/pacman.conf')
+    def __init__(self) -> None:
+        super().__init__(conf='/etc/pacman.conf')
 
 
 class ProvidedDependency(DataType):
@@ -237,11 +237,11 @@ class PackageDBCommon():
         return cls._get_provided_dict(PackageSource.LOCAL)
 
     @classmethod
-    def get_repo_pkgnames(cls):
+    def get_repo_pkgnames(cls) -> List[str]:
         return [pkg.name for pkg in cls.get_repo_list()]
 
     @classmethod
-    def get_local_pkgnames(cls):
+    def get_local_pkgnames(cls) -> List[str]:
         return [pkg.name for pkg in cls.get_local_list()]
 
 
@@ -545,7 +545,7 @@ def install_built_deps(
     local_packages = PackageDB.get_local_dict()
     args = parse_args()
 
-    def _get_pacman_command():
+    def _get_pacman_command() -> List[str]:
         return get_pacman_command() + reconstruct_args(args, ignore_args=[
             'upgrade',
             'asdeps',

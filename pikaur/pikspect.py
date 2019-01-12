@@ -36,12 +36,12 @@ class TTYRestore():
     sub_tty_old_tcattrs = None
 
     @classmethod
-    def save(cls):
+    def save(cls) -> None:
         if sys.stdin.isatty():
             cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
 
     @classmethod
-    def _restore(cls, what: Optional[TcAttrsType] = None):
+    def _restore(cls, what: Optional[TcAttrsType] = None) -> None:
         if sys.stdout.isatty():
             # termios.tcdrain(sys.stdout.fileno())
             # if sys.stderr.isatty():
@@ -52,14 +52,13 @@ class TTYRestore():
                 termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
 
     @classmethod
-    def restore(cls, *_whatever):  # pylint:disable=method-hidden
+    def restore(cls, *_whatever) -> None:  # pylint:disable=method-hidden
         cls._restore(cls.old_tcattrs)
 
-    def __init__(self):
-        self.restore = self.restore_new
+    def __init__(self) -> None:
         self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
 
-    def restore_new(self, *_whatever):
+    def restore_new(self, *_whatever) -> None:
         self._restore(self.sub_tty_old_tcattrs)
 
 
@@ -87,8 +86,8 @@ class NestedTerminal():
         TTYRestore.restore()
 
 
-def _match(pattern, line):
-    return len(line) >= len(pattern) and (
+def _match(pattern: str, line: str) -> bool:
+    return len(line) >= len(pattern) and bool(
         re.compile(pattern).search(line)
         if '.*' in pattern else
         (pattern in line)
@@ -174,7 +173,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                         pool.join()
                         self.pty_out.close()
 
-    def check_questions(self):
+    def check_questions(self) -> None:
         # pylint: disable=too-many-branches
         try:
             historic_output = b''.join(self.historic_output).decode('utf-8')

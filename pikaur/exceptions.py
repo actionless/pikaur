@@ -53,8 +53,8 @@ class DependencyVersionMismatch(DataType, Exception):
 
     version_matcher: Optional['VersionMatcher'] = None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         if self.version_matcher:
             self.dependency_line = self.version_matcher.line
 

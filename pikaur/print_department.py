@@ -361,7 +361,7 @@ def pretty_format_repo_name(repo_name: str) -> str:
     return color_line(f'{repo_name}/', len(repo_name) % 5 + 10)
 
 
-def print_ignored_package(package_name):
+def print_ignored_package(package_name) -> None:
     from .updates import get_remote_package_version
 
     current = PackageDB.get_local_dict().get(package_name)

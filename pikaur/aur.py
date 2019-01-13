@@ -159,9 +159,7 @@ def aur_rpc_info_with_progress(
     search_queries, progressbar_length, with_progressbar = args
     result = aur_rpc_info(search_queries)
     if with_progressbar:
-        progressbar_id = 'change_me_to_uuid_or_so'  # @TODO:
         progressbar = ThreadSafeProgressBar.get(
-            progressbar_id=progressbar_id,
             progressbar_length=progressbar_length
         )
         progressbar.update()

@@ -2,6 +2,7 @@
 
 import sys
 from threading import Lock
+from uuid import uuid4
 from typing import Callable, Dict
 
 from .pprint import get_term_width, color_enabled
@@ -48,7 +49,9 @@ class ThreadSafeProgressBar():
     _progressbar_lock = Lock()
 
     @classmethod
-    def get(cls, progressbar_id: str, progressbar_length: int) -> ProgressBar:
+    def get(cls, progressbar_length: int, progressbar_id: str = None) -> ProgressBar:
+        if not progressbar_id:
+            progressbar_id = uuid4().urn
         if progressbar_id not in cls._progressbar_storage:
             cls._progressbar_lock.acquire()
             if progressbar_id not in cls._progressbar_storage:

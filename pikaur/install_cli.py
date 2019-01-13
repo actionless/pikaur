@@ -42,7 +42,8 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .news import News
-from .version import VersionMatcher
+from .version import VersionMatcher, compare_versions
+from .updates import is_devel_pkg
 
 
 def hash_file(filename: str) -> str:  # pragma: no cover
@@ -219,6 +220,29 @@ class InstallPackagesCLI():
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)
             raise SysExit(6)
 
+        if self.args.needed:
+            # check if there are really any new packages need to be installed
+            need_refetch_info = False
+            for install_info in (
+                    self.install_info.repo_packages_install_info +
+                    self.install_info.new_repo_deps_install_info +
+                    self.install_info.thirdparty_repo_packages_install_info +
+                    self.install_info.aur_updates_install_info
+            ):
+                if is_devel_pkg(install_info.name) or compare_versions(
+                        install_info.current_version,
+                        install_info.new_version
+                ):
+                    # devel packages will be checked later
+                    # after retrieving their sources
+                    continue
+                print_package_uptodate(install_info.name, install_info.package_source)
+                self.discard_aur_package(install_info.name)
+                need_refetch_info = True
+            if need_refetch_info:
+                self.get_all_packages_info()
+                return
+
         # check if we really need to build/install anything
         if not (
                 self.install_info.repo_packages_install_info or
@@ -334,6 +358,8 @@ class InstallPackagesCLI():
     ) -> None:
         if canceled_pkg_name in self.install_package_names:
             self.install_package_names.remove(canceled_pkg_name)
+        if canceled_pkg_name in self.not_found_repo_pkgs_names:
+            self.not_found_repo_pkgs_names.remove(canceled_pkg_name)
         already_discarded = (already_discarded or []) + [canceled_pkg_name]
         for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
             if canceled_pkg_name in aur_deps + [aur_pkg_name]:

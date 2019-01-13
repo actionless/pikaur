@@ -13,9 +13,10 @@ from typing import (
     Any, Callable, Iterable, List, Optional, Union, Tuple
 )
 
+import pyalpm
+
 if TYPE_CHECKING:
     # pylint: disable=unused-import
-    import pyalpm  # noqa
     from .aur import AURPackageInfo  # noqa
 
 
@@ -61,6 +62,12 @@ class InstallInfo(DataType):
     members_of: Optional[List[str]] = None
     replaces: Optional[List[str]] = None
     pkgbuild_path: Optional[str] = None
+
+    @property
+    def package_source(self) -> PackageSource:
+        if isinstance(self.package, pyalpm.Package):
+            return PackageSource.REPO
+        return PackageSource.AUR
 
     def __repr__(self) -> str:
         return (

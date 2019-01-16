@@ -122,11 +122,17 @@ class InstallPackagesCLI():
                 self.news = News()
             if self.args.refresh:
                 with ThreadPool() as pool:
-                    refresh_thread = pool.apply_async(refresh_pkg_db, ())
+                    threads = []
+                    threads.append(
+                        pool.apply_async(refresh_pkg_db, ())
+                    )
                     if self.news:
-                        pool.apply_async(self.news.fetch_latest, ())
+                        threads.append(
+                            pool.apply_async(self.news.fetch_latest, ())
+                        )
                     pool.close()
-                    refresh_thread.get()
+                    for thread in threads:
+                        thread.get()
                     pool.join()
                 PackageDB.discard_repo_cache()
                 print_stdout()

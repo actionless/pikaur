@@ -120,13 +120,14 @@ class InstallPackagesCLI():
         if not self.args.aur:
             if self.args.sysupgrade:
                 self.news = News()
-            with ThreadPool() as pool:
-                pool.apply_async(refresh_pkg_db, ())
-                if self.news:
-                    pool.apply_async(self.news.fetch_latest, ())
-                pool.close()
-                pool.join()
             if self.args.refresh:
+                with ThreadPool() as pool:
+                    refresh_thread = pool.apply_async(refresh_pkg_db, ())
+                    if self.news:
+                        pool.apply_async(self.news.fetch_latest, ())
+                    pool.close()
+                    refresh_thread.get()
+                    pool.join()
                 PackageDB.discard_repo_cache()
                 print_stdout()
 

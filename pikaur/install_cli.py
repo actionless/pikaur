@@ -117,23 +117,25 @@ class InstallPackagesCLI():
         self.transactions = {}
         self.failed_to_build_package_names = []
 
-        if not self.args.aur:
-            if self.args.sysupgrade:
-                self.news = News()
-            if self.args.refresh:
-                with ThreadPool() as pool:
-                    threads = []
+        if not self.args.aur and (self.args.sysupgrade or self.args.refresh):
+
+            with ThreadPool() as pool:
+                threads = []
+                if self.args.sysupgrade:
+                    self.news = News()
+                    threads.append(
+                        pool.apply_async(self.news.fetch_latest, ())
+                    )
+                if self.args.refresh:
                     threads.append(
                         pool.apply_async(refresh_pkg_db, ())
                     )
-                    if self.news:
-                        threads.append(
-                            pool.apply_async(self.news.fetch_latest, ())
-                        )
-                    pool.close()
-                    for thread in threads:
-                        thread.get()
-                    pool.join()
+                pool.close()
+                for thread in threads:
+                    thread.get()
+                pool.join()
+
+            if self.args.refresh:
                 PackageDB.discard_repo_cache()
                 print_stdout()
 

@@ -208,6 +208,10 @@ Actually use `checkupdates` tool to check the repo updates and use pikaur only f
 checkupdates && pikaur -Qua 2>/dev/null
 ```
 
+##### Use pikaur without a password
+
+Simply add the command (typically `/usr/bin/pikaur`) to your sudoers file.  If you find the command takes a long time to initialize via `sudo pikaur ...`, make sure to periodically clear your cache: `pikaur -Scc`
+
 
 
 ## Contributing

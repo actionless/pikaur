@@ -208,9 +208,9 @@ Actually use `checkupdates` tool to check the repo updates and use pikaur only f
 checkupdates && pikaur -Qua 2>/dev/null
 ```
 
-##### Use pikaur without a password
+##### Pikaur slow when running it as root user (or via sudo)
 
-Simply add the command (typically `/usr/bin/pikaur`) to your sudoers file.  If you find the command takes a long time to initialize via `sudo pikaur ...`, make sure to periodically clear your cache: `pikaur -Scc`
+If you find the command takes a long time to initialize, make sure to periodically clear your cache: `pikaur -Scc`. Root pikaur is using SystemD Dynamic Users to isolate build process from the root, and it takes some time to change the owner of build cache to dynamic temporary user.
 
 
 

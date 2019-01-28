@@ -389,12 +389,18 @@ class PackageBuild(DataType):
                 BuildError(_("{} does not exist on the filesystem.").format(pkg_path))
             if dest_dir == self.build_dir:
                 new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
+                pkg_sig_path = pkg_path + ".sig"
+                new_package_sig_path = new_package_path + ".sig"
                 if os.path.exists(pkg_path):
                     if not os.path.exists(PACKAGE_CACHE_PATH):
                         os.makedirs(PACKAGE_CACHE_PATH)
                     if os.path.exists(new_package_path):
                         os.remove(new_package_path)
                     shutil.move(pkg_path, PACKAGE_CACHE_PATH)
+                if os.path.exists(pkg_sig_path):
+                    if os.path.exists(new_package_sig_path):
+                        os.remove(new_package_sig_path)
+                    shutil.move(pkg_sig_path, PACKAGE_CACHE_PATH)
                 pkg_path = new_package_path
             if pkg_path and os.path.exists(pkg_path):
                 self.built_packages_paths[pkg_name] = pkg_path

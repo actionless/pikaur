@@ -182,7 +182,7 @@ class InstallPackagesCLI():
     def get_info_from_pkgbuilds(self) -> None:
         self.install_package_names = []
         self.not_found_repo_pkgs_names = []
-        self.pkgbuilds_paths = self.args.positional
+        self.pkgbuilds_paths = self.args.positional or ['PKGBUILD']
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """

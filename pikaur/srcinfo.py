@@ -6,6 +6,9 @@ from typing import List, Dict, Optional
 from .core import open_file, spawn, isolate_root_cmd, dirname
 from .version import VersionMatcher
 from .makepkg_config import MakepkgConfig, get_makepkg_cmd
+from .pprint import print_stderr, print_error
+from .i18n import _
+from .exceptions import SysExit
 
 
 class SrcInfo():
@@ -130,13 +133,17 @@ class SrcInfo():
         )
 
     def regenerate(self) -> None:
+        result = spawn(
+            isolate_root_cmd(
+                get_makepkg_cmd() + ['--printsrcinfo'] +
+                ['-p', os.path.basename(self.pkgbuild_path)],
+                cwd=self.repo_path
+            ), cwd=self.repo_path
+        )
+        if result.returncode != 0:
+            print_error(_("failed to generate .SRCINFO from {}:").format(self.pkgbuild_path))
+            print_stderr(result.stderr_text)
+            raise SysExit(5)
         with open_file(self.path, 'w') as srcinfo_file:
-            result = spawn(
-                isolate_root_cmd(
-                    get_makepkg_cmd() + ['--printsrcinfo'] +
-                    ['-p', os.path.basename(self.pkgbuild_path)],
-                    cwd=self.repo_path
-                ), cwd=self.repo_path
-            )
             srcinfo_file.write(result.stdout_text)
         self.load_config()

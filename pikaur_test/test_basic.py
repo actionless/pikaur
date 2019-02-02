@@ -62,6 +62,12 @@ class InstallTest(PikaurDbTestCase):
         pikaur('-P ./PKGBUILD --noconfirm --install')
         self.assertInstalled(pkg_name)
 
+        pikaur(f'-R --noconfirm {pkg_name}')
+        self.assertNotInstalled(pkg_name)
+
+        pikaur('-P --noconfirm --install')
+        self.assertInstalled(pkg_name)
+
     def test_pkgbuild_split_packages(self):
         pkg_base = 'python-flake8-polyfill'
         pkg_name1 = pkg_base

@@ -1,6 +1,6 @@
 # This file is licensed under GPLv3, see https://www.gnu.org/licenses/
 
-FROM base/archlinux
+FROM archlinux/base
 WORKDIR /opt/app-build/
 
 # @TODO: remove it:

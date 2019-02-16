@@ -199,6 +199,13 @@ def open_file(
     )
 
 
+def replace_file(src: str, dest: str) -> None:
+    if os.path.exists(src):
+        if os.path.exists(dest):
+            os.remove(dest)
+        shutil.move(src, dest)
+
+
 def remove_dir(dir_path: str) -> None:
     try:
         shutil.rmtree(dir_path)

@@ -9,7 +9,7 @@ from typing import List, Dict, Set, Optional, Any
 
 from .core import (
     DataType,
-    remove_dir, open_file, dirname,
+    remove_dir, replace_file, open_file, dirname,
     joined_spawn, spawn, interactive_spawn, InteractiveSpawn,
     sudo, running_as_root, isolate_root_cmd,
 )
@@ -391,16 +391,10 @@ class PackageBuild(DataType):
                 new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
                 pkg_sig_path = pkg_path + ".sig"
                 new_package_sig_path = new_package_path + ".sig"
-                if os.path.exists(pkg_path):
-                    if not os.path.exists(PACKAGE_CACHE_PATH):
-                        os.makedirs(PACKAGE_CACHE_PATH)
-                    if os.path.exists(new_package_path):
-                        os.remove(new_package_path)
-                    shutil.move(pkg_path, PACKAGE_CACHE_PATH)
-                if os.path.exists(pkg_sig_path):
-                    if os.path.exists(new_package_sig_path):
-                        os.remove(new_package_sig_path)
-                    shutil.move(pkg_sig_path, PACKAGE_CACHE_PATH)
+                if not os.path.exists(PACKAGE_CACHE_PATH):
+                    os.makedirs(PACKAGE_CACHE_PATH)
+                replace_file(pkg_path, new_package_path)
+                replace_file(pkg_sig_path, new_package_sig_path)
                 pkg_path = new_package_path
             if pkg_path and os.path.exists(pkg_path):
                 self.built_packages_paths[pkg_name] = pkg_path

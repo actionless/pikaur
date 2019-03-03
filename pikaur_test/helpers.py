@@ -8,6 +8,8 @@ from subprocess import Popen
 from unittest import TestCase
 from typing import Optional, List, NoReturn, Union
 
+from pycman.config import PacmanConfig
+
 # pylint:disable=no-name-in-module
 
 from pikaur.main import main
@@ -211,7 +213,10 @@ def pacman(cmd: str) -> CmdResult:
 
 
 def pkg_is_installed(pkg_name: str) -> bool:
-    return pacman(f'-Qi {pkg_name}').returncode == 0
+    return pkg_name in [
+        pkg.name for pkg in
+        PacmanConfig(conf='/etc/pacman.conf').initialize_alpm().get_localdb().search(pkg_name)
+    ]
 
 
 class PikaurTestCase(TestCase):

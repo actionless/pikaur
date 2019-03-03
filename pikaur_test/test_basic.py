@@ -39,9 +39,10 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(dep_name)
 
         # package removal (pacman wrapping test)
-        pikaur(f'-Rs {pkg_name} {dep_name} --noconfirm')
+        pikaur(f'-Rs {pkg_name} {dep_name} {dep2_name} --noconfirm')
         self.assertNotInstalled(pkg_name)
         self.assertNotInstalled(dep_name)
+        self.assertNotInstalled(dep2_name)
 
         pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')
         self.assertInstalled('cower-git')

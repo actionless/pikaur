@@ -29,29 +29,36 @@ class InstallTest(PikaurDbTestCase):
 
     def test_aur_package_with_aur_dep(self):
         # aur package with aur dep and custom makepkg flags
-        pikaur('-S pacaur-no-ud --mflags=--skippgpcheck')
-        self.assertInstalled('pacaur-no-ud')
-        self.assertInstalled('cower')
+        pkg_name = 'pacaur'
+        dep_name = 'auracle-git'
+        dep2_name = 'expac'
+        dep2_alt_name = 'expac-git'
+
+        pikaur(f'-S {pkg_name} --mflags=--skippgpcheck')
+        self.assertInstalled(pkg_name)
+        self.assertInstalled(dep_name)
 
         # package removal (pacman wrapping test)
-        pikaur('-Rs pacaur-no-ud cower --noconfirm')
-        self.assertNotInstalled('pacaur-no-ud')
-        self.assertNotInstalled('cower')
+        pikaur(f'-Rs {pkg_name} {dep_name} --noconfirm')
+        self.assertNotInstalled(pkg_name)
+        self.assertNotInstalled(dep_name)
 
-        pikaur('-S cower-git --mflags=--skippgpcheck')
+        pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')
         self.assertInstalled('cower-git')
 
         # aur package with aur dep provided by another already installed AUR pkg
-        pikaur('-S pacaur-no-ud')
-        self.assertInstalled('pacaur-no-ud')
-        self.assertProvidedBy('cower', 'cower-git')
+        pikaur(f'-S {pkg_name}')
+        self.assertInstalled(pkg_name)
+        self.assertNotInstalled(dep2_name)
+        self.assertProvidedBy(dep2_name, dep2_alt_name)
 
-        self.remove_packages('pacaur-no-ud', 'cower-git')
+        self.remove_packages(pkg_name, dep2_alt_name)
 
         # aur package with manually chosen aur dep:
-        pikaur('-S pacaur-no-ud cower-git')
-        self.assertInstalled('pacaur-no-ud')
-        self.assertProvidedBy('cower', 'cower-git')
+        pikaur(f'-S {pkg_name} {dep2_alt_name}')
+        self.assertInstalled(pkg_name)
+        self.assertNotInstalled(dep2_name)
+        self.assertProvidedBy(dep2_name, dep2_alt_name)
 
     def test_pkgbuild(self):
         pkg_name = 'pikaur-git'
@@ -82,12 +89,12 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name2)
 
     def test_conflicting_packages(self):
-        self.remove_if_installed('pacaur-no-ud', 'cower-git', 'cower')
+        self.remove_if_installed('pacaur-no-ud', 'expac-git', 'expac')
         self.assertEqual(
-            pikaur('-S cower-git cower').returncode, 131
+            pikaur('-S expac-git expac').returncode, 131
         )
-        self.assertNotInstalled('cower')
-        self.assertNotInstalled('cower-git')
+        self.assertNotInstalled('expat')
+        self.assertNotInstalled('expat-git')
 
     def test_cache_clean(self):
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH

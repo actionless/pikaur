@@ -54,6 +54,8 @@ class InstallTest(PikaurDbTestCase):
         pikaur(f'-S {pkg_name} {dep2_alt_name}')
         self.assertInstalled(pkg_name)
         self.assertProvidedBy(dep2_name, dep2_alt_name)
+        self.assertInstalled(dep2_alt_name)
+        self.assertNotInstalled(dep2_name)
 
     def test_aur_pkg_with_already_installed_alternative_aur_dep(self):
         pkg_name = 'pacaur'
@@ -64,11 +66,12 @@ class InstallTest(PikaurDbTestCase):
         pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')
         self.assertInstalled(dep2_alt_name)
         self.assertProvidedBy(dep2_name, dep2_alt_name)
+        self.assertInstalled(dep2_alt_name)
+        self.assertNotInstalled(dep2_name)
 
         # aur package with aur dep provided by another already installed AUR pkg
         pikaur(f'-S {pkg_name}')
         self.assertInstalled(pkg_name)
-        self.assertProvidedBy(dep2_name, dep2_alt_name)
 
     def test_pkgbuild(self):
         pkg_name = 'pikaur-git'
@@ -111,8 +114,8 @@ class InstallTest(PikaurDbTestCase):
         self.assertEqual(
             pikaur('-S expac-git expac').returncode, 131
         )
-        self.assertNotInstalled('expat')
-        self.assertNotInstalled('expat-git')
+        self.assertNotInstalled('expac')
+        self.assertNotInstalled('expac-git')
 
     def test_conflicting_aur_and_installed_repo_packages(self):
         self.remove_if_installed('pacaur', 'expac-git', 'expac')
@@ -120,10 +123,10 @@ class InstallTest(PikaurDbTestCase):
             pikaur('-S expac').returncode, 0
         )
         self.assertEqual(
-            pikaur('-S expac-git expac').returncode, 131
+            pikaur('-S expac-git').returncode, 131
         )
-        self.assertNotInstalled('expat')
-        self.assertNotInstalled('expat-git')
+        self.assertInstalled('expac')
+        self.assertNotInstalled('expac-git')
 
     def test_cache_clean(self):
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH

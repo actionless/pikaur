@@ -63,7 +63,7 @@ answer=
 
 echo
 echo "***************************************"
-echo "**    Updating AUR dev PKBUILD...    **"
+echo "**    Updating AUR dev PKGBUILD...    **"
 echo "***************************************"
 echo
 ./maintenance_scripts/changelog.sh > "${aur_dev_repo_dir}"/CHANGELOG
@@ -88,7 +88,7 @@ answer=
 
 echo
 echo "*******************************************"
-echo "**    Updating AUR release PKBUILD...    **"
+echo "**    Updating AUR release PKGBUILD...    **"
 echo "*******************************************"
 echo
 cd "${src_repo_dir}"

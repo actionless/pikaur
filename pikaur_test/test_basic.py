@@ -45,7 +45,8 @@ class InstallTest(PikaurDbTestCase):
         self.assertNotInstalled(dep2_name)
 
         pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')
-        self.assertInstalled('cower-git')
+        self.assertInstalled(dep2_alt_name)
+        self.assertNotInstalled(dep2_name)
 
         # aur package with aur dep provided by another already installed AUR pkg
         pikaur(f'-S {pkg_name}')

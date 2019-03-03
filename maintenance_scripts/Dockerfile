@@ -3,16 +3,11 @@
 FROM archlinux/base
 WORKDIR /opt/app-build/
 
-# @TODO: remove it:
-RUN pacman -Syu --noconfirm shadow audit
-
-RUN useradd -m user && \
+RUN pacman -Syu --noconfirm --needed sudo base-devel git && \
+	useradd -m user && \
 	echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-	echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-RUN pacman -Syu --noconfirm --needed sudo base-devel git
-
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+	echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+	echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
 	echo "LANG=en_US.UTF-8" > /etc/locale.conf && \
 	locale-gen
 ENV LANG=en_US.utf8 \

@@ -86,6 +86,6 @@ class RegressionTest(PikaurDbTestCase):
 
         see #320
         """
-        pikaur('-S python-magic-wormhole')
-        self.assertInstalled('python-magic-wormhole')
+        pikaur('-S magic-wormhole')
+        self.assertInstalled('magic-wormhole')
         self.assertNotInstalled('python2-txtorcon')

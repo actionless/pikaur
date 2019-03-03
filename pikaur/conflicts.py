@@ -119,7 +119,8 @@ def find_conflicting_with_local_pkgs(
 
 
 def find_aur_conflicts(
-        aur_packages_names: List[str]
+        aur_packages_names: List[str],
+        repo_packages_names: List[str]
 ) -> Dict[str, List[str]]:
 
     aur_pkgs, _not_found_aur_pkgs = find_aur_packages(aur_packages_names)
@@ -144,7 +145,7 @@ def find_aur_conflicts(
         conflicts_result.update(
             find_conflicting_with_new_pkgs(
                 new_pkg_name,
-                all_local_pkgs_names + all_pkgs_to_be_installed,
+                all_local_pkgs_names + all_pkgs_to_be_installed + repo_packages_names,
                 new_pkg_conflicts_list
             )
         )

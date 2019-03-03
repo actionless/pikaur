@@ -48,8 +48,8 @@ class InstallTest(PikaurDbTestCase):
         pkg_name = 'pacaur'
         dep2_name = 'expac'
         dep2_alt_name = 'expac-git'
-
         self.remove_if_installed(pkg_name, dep2_name, dep2_alt_name)
+
         # aur package with manually chosen aur dep:
         pikaur(f'-S {pkg_name} {dep2_alt_name}')
         self.assertInstalled(pkg_name)
@@ -59,8 +59,8 @@ class InstallTest(PikaurDbTestCase):
         pkg_name = 'pacaur'
         dep2_name = 'expac'
         dep2_alt_name = 'expac-git'
-
         self.remove_if_installed(pkg_name, dep2_name, dep2_alt_name)
+
         pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')
         self.assertInstalled(dep2_alt_name)
         self.assertProvidedBy(dep2_name, dep2_alt_name)

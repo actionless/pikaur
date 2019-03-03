@@ -481,7 +481,12 @@ class InstallPackagesCLI():
     def ask_about_package_conflicts(self) -> None:
         if self.aur_packages_names:
             print_stderr(_('looking for conflicting AUR packages...'))
-            self.found_conflicts.update(find_aur_conflicts(self.aur_packages_names))
+            self.found_conflicts.update(
+                find_aur_conflicts(
+                    self.aur_packages_names,
+                    self.install_package_names
+                )
+            )
         if not self.found_conflicts:
             return
         all_new_packages_names = list(self.repo_packages_by_name.keys()) + self.aur_packages_names

@@ -213,12 +213,10 @@ def pacman(cmd: str) -> CmdResult:
 
 
 def pkg_is_installed(pkg_name: str) -> bool:
-    matching_local_pkgs = [
+    return pkg_name in [
         pkg.name for pkg in
         PacmanConfig(conf='/etc/pacman.conf').initialize_alpm().get_localdb().search(pkg_name)
     ]
-    print(f"DEBUG: check if {pkg_name} in {matching_local_pkgs}")
-    return pkg_name in matching_local_pkgs
 
 
 class PikaurTestCase(TestCase):

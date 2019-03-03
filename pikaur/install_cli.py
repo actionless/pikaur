@@ -504,7 +504,7 @@ class InstallPackagesCLI():
                     ))
                 ), default_yes=False)
                 if not answer:
-                    raise SysExit(125)
+                    raise SysExit(131)
                 self.resolved_conflicts.append([new_pkg_name, pkg_conflict])
 
     def ask_to_edit_file(

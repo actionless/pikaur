@@ -88,7 +88,7 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name1)
         self.assertInstalled(pkg_name2)
 
-    def test_conflicting_packages(self):
+    def test_conflicting_aur_packages(self):
         self.remove_if_installed('oomox-git', 'oomox')
         self.assertEqual(
             pikaur('-S oomox-git oomox').returncode, 131
@@ -96,14 +96,13 @@ class InstallTest(PikaurDbTestCase):
         self.assertNotInstalled('oomox')
         self.assertNotInstalled('oomox-git')
 
-    # def test_conflicting_packages(self):
-        # @TODO:
-        # self.remove_if_installed('pacaur-no-ud', 'expac-git', 'expac')
-        # self.assertEqual(
-        #     pikaur('-S expac-git expac').returncode, 131
-        # )
-        # self.assertNotInstalled('expat')
-        # self.assertNotInstalled('expat-git')
+    def test_conflicting_aur_and_repo_packages(self):
+        self.remove_if_installed('pacaur', 'expac-git', 'expac')
+        self.assertEqual(
+            pikaur('-S expac-git expac').returncode, 131
+        )
+        self.assertNotInstalled('expat')
+        self.assertNotInstalled('expat-git')
 
     def test_cache_clean(self):
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH

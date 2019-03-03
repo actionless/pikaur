@@ -239,9 +239,8 @@ class PikaurTestCase(TestCase):
             self.fail(f'Package "{pkg_name}" is not installed.')
 
     def assertNotInstalled(self, pkg_name: str) -> None:
-        self.assertFalse(
-            pkg_is_installed(pkg_name), f"'{pkg_name}' is still installed."
-        )
+        if pkg_is_installed(pkg_name):
+            self.fail(f'Package "{pkg_name}" is still installed.')
 
     def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:
         cmd_result = pacman(f'-Qsq {dep_name}').stdout

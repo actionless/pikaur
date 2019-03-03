@@ -31,6 +31,8 @@ class InstallTest(PikaurDbTestCase):
         pkg_name = 'pacaur'
         dep_name = 'auracle-git'
         dep2_name = 'expac'
+        dep2_alt_name = 'expac-git'
+        self.remove_if_installed(pkg_name, dep_name, dep2_name, dep2_alt_name)
 
         pikaur(f'-S {pkg_name} --mflags=--skippgpcheck')
         self.assertInstalled(pkg_name)

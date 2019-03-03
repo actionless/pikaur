@@ -46,12 +46,11 @@ class InstallTest(PikaurDbTestCase):
 
         pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')
         self.assertInstalled(dep2_alt_name)
-        self.assertNotInstalled(dep2_name)
+        self.assertProvidedBy(dep2_name, dep2_alt_name)
 
         # aur package with aur dep provided by another already installed AUR pkg
         pikaur(f'-S {pkg_name}')
         self.assertInstalled(pkg_name)
-        self.assertNotInstalled(dep2_name)
         self.assertProvidedBy(dep2_name, dep2_alt_name)
 
         self.remove_packages(pkg_name, dep2_alt_name)
@@ -59,7 +58,6 @@ class InstallTest(PikaurDbTestCase):
         # aur package with manually chosen aur dep:
         pikaur(f'-S {pkg_name} {dep2_alt_name}')
         self.assertInstalled(pkg_name)
-        self.assertNotInstalled(dep2_name)
         self.assertProvidedBy(dep2_name, dep2_alt_name)
 
     def test_pkgbuild(self):

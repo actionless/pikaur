@@ -112,6 +112,17 @@ class InstallTest(PikaurDbTestCase):
         self.assertNotInstalled('expat')
         self.assertNotInstalled('expat-git')
 
+    def test_conflicting_aur_and_installed_repo_packages(self):
+        self.remove_if_installed('pacaur', 'expac-git', 'expac')
+        self.assertEqual(
+            pikaur('-S expac').returncode, 0
+        )
+        self.assertEqual(
+            pikaur('-S expac-git expac').returncode, 131
+        )
+        self.assertNotInstalled('expat')
+        self.assertNotInstalled('expat-git')
+
     def test_cache_clean(self):
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 

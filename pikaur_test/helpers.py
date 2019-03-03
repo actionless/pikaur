@@ -235,7 +235,7 @@ class PikaurTestCase(TestCase):
 
     def assertNotInstalled(self, pkg_name: str) -> None:
         self.assertFalse(
-            pkg_is_installed(pkg_name)
+            pkg_is_installed(pkg_name), f"'{pkg_name}' is still installed."
         )
 
     def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:

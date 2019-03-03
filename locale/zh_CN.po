@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-02 16:40+0300\n"
+"POT-Creation-Date: 2019-03-03 21:10+0100\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -64,7 +64,7 @@ msgstr "执行 `pacman -U <pkg_file>` 时所有常见的选项. 参见 `pacman -
 msgid "Build directory"
 msgstr "Build 目录"
 
-#: pikaur/install_cli.py:685
+#: pikaur/install_cli.py:690
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "无法构建 '{name}'."
@@ -125,7 +125,7 @@ msgstr "无法更新 {}"
 msgid "Dependencies missing for {}"
 msgstr "{} 缺失依赖"
 
-#: pikaur/install_cli.py:702
+#: pikaur/install_cli.py:707
 msgid "Dependency cycle detected between {}"
 msgstr "检测到 {} 之间存在循环依赖"
 
@@ -149,16 +149,16 @@ msgstr "您想要继续执行吗?"
 msgid "Do you want to remove all files?"
 msgstr "您想要删除所有文件吗?"
 
-#: pikaur/aur.py:87 pikaur/prompt.py:140
+#: pikaur/prompt.py:140 pikaur/aur.py:87
 msgid "Do you want to retry?"
 msgstr "您想要重试吗?"
 
-#: pikaur/install_cli.py:604
+#: pikaur/install_cli.py:609
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "您想要查看包 {name} 的build files的 {diff} 吗?"
 
-#: pikaur/install_cli.py:531
+#: pikaur/install_cli.py:536
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "您想要 {edit} 包 {name} 的 {file} 吗?"
@@ -169,7 +169,7 @@ msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "下载devel包 {} 的最新源码"
 msgstr[1] "下载devel包 {} 的最新源码"
 
-#: pikaur/install_cli.py:861
+#: pikaur/install_cli.py:866
 msgid "Failed to build following packages:"
 msgstr "构建下列包失败:"
 
@@ -197,7 +197,12 @@ msgstr[1] "下列包无法在软件仓库中找到:"
 msgid "Groups"
 msgstr ""
 
-#: pikaur/print_department.py:372
+#: pikaur/print_department.py:378
+#, fuzzy
+msgid "Ignoring package update {}"
+msgstr "忽略包 {}"
+
+#: pikaur/print_department.py:384
 msgid "Ignoring package {}"
 msgstr "忽略包 {}"
 
@@ -257,7 +262,7 @@ msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "将从第三方软件仓库安装新的依赖:"
 msgstr[1] "将从第三方软件仓库安装新的依赖:"
 
-#: pikaur/install_cli.py:492
+#: pikaur/install_cli.py:497
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "新的软件包 '{new}' 与 '{other}' 冲突."
@@ -266,7 +271,7 @@ msgstr "新的软件包 '{new}' 与 '{other}' 冲突."
 msgid "None"
 msgstr ""
 
-#: pikaur/install_cli.py:593
+#: pikaur/install_cli.py:598
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
 msgstr ""
@@ -358,7 +363,7 @@ msgstr[1] "将被安装的仓库软件包:"
 msgid "Resolving AUR dependencies..."
 msgstr "解析 AUR 依赖..."
 
-#: pikaur/install_cli.py:745
+#: pikaur/install_cli.py:750
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "还原 {target} 更改..."
@@ -368,7 +373,7 @@ msgstr "还原 {target} 更改..."
 msgid "Searching... [{bar}]"
 msgstr "搜索中... [{bar}]"
 
-#: pikaur/install_cli.py:523
+#: pikaur/install_cli.py:528
 #, python-brace-format
 msgid "Skipping review of {file} for {name} package ({flag})"
 msgstr "跳过对包 {name} 中 {file} 的审查 ({flag})"
@@ -397,7 +402,7 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "将被安装的第三方仓库软件包:"
 msgstr[1] "将被安装的第三方仓库软件包:"
 
-#: pikaur/build.py:615 pikaur/install_cli.py:461
+#: pikaur/install_cli.py:461 pikaur/build.py:615
 msgid "Try recovering?"
 msgstr "尝试恢复?"
 
@@ -453,12 +458,12 @@ msgstr "[d] 删除构建目录并重试"
 msgid "[i] ignore architecture"
 msgstr "[i] 忽略构架"
 
-#: pikaur/print_department.py:438
+#: pikaur/print_department.py:445
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[已安装: {version}]"
 
-#: pikaur/print_department.py:442
+#: pikaur/print_department.py:449
 msgid "[installed]"
 msgstr "[已安装]"
 
@@ -483,12 +488,12 @@ msgstr "[s] 跳过此包"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v] 查看软件包细节   [m] 手动选择软件包"
 
-#: pikaur/build.py:611 pikaur/build.py:630 pikaur/build.py:648
-#: pikaur/install_cli.py:457 pikaur/install_cli.py:468
+#: pikaur/install_cli.py:457 pikaur/install_cli.py:468 pikaur/build.py:611
+#: pikaur/build.py:630 pikaur/build.py:648
 msgid "a"
 msgstr "a"
 
-#: pikaur/install_cli.py:637
+#: pikaur/install_cli.py:642
 msgid "already reviewed"
 msgstr ""
 
@@ -504,8 +509,8 @@ msgstr "始终重新构建 AUR 包"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "始终全面更新 '-git', '-svn' 和其他 dev 包"
 
-#: pikaur/build.py:629 pikaur/build.py:639 pikaur/install_cli.py:468
-#: pikaur/install_cli.py:471
+#: pikaur/install_cli.py:468 pikaur/install_cli.py:471 pikaur/build.py:629
+#: pikaur/build.py:639
 msgid "c"
 msgstr "c"
 
@@ -517,7 +522,7 @@ msgstr "传递给 makepkg 的命令行参数"
 msgid "d"
 msgstr "d"
 
-#: pikaur/install_cli.py:605
+#: pikaur/install_cli.py:610
 msgid "diff"
 msgstr "diff"
 
@@ -537,7 +542,7 @@ msgstr "完成构建后不删除构建目录"
 msgid "download also AUR dependencies"
 msgstr "下载 AUR 中的依赖"
 
-#: pikaur/install_cli.py:532
+#: pikaur/install_cli.py:537
 msgid "edit"
 msgstr "编辑"
 
@@ -571,7 +576,7 @@ msgstr "忽略明确的参数 %r"
 msgid "install built package"
 msgstr "安装已构建的包"
 
-#: pikaur/install_cli.py:632
+#: pikaur/install_cli.py:637
 msgid "installing for the first time"
 msgstr ""
 
@@ -601,7 +606,7 @@ msgstr "不允许使用参数 %s"
 msgid "one of the arguments %s is required"
 msgstr "需要下列参数之一 %s "
 
-#: pikaur/print_department.py:465
+#: pikaur/print_department.py:472
 msgid "outofdate"
 msgstr "过期"
 
@@ -654,13 +659,13 @@ msgstr "只从 AUR 查找软件包"
 msgid "query packages from repository only"
 msgstr "只从软件仓库查找软件包"
 
-#: pikaur/build.py:629 pikaur/build.py:634 pikaur/install_cli.py:468
-#: pikaur/install_cli.py:473
+#: pikaur/install_cli.py:468 pikaur/install_cli.py:473 pikaur/build.py:629
+#: pikaur/build.py:634
 msgid "r"
 msgstr "r"
 
-#: pikaur/build.py:609 pikaur/build.py:630 pikaur/install_cli.py:468
-#: pikaur/install_cli.py:475
+#: pikaur/install_cli.py:468 pikaur/install_cli.py:475 pikaur/build.py:609
+#: pikaur/build.py:630
 msgid "s"
 msgstr "s"
 
@@ -706,12 +711,12 @@ msgid ""
 "{name} can't be built on the current arch ({arch}). Supported: {suparch}"
 msgstr "{name} 无法在当前构架 ({arch}) 上构建. 支持的构架: {suparch}"
 
-#: pikaur/print_department.py:391
+#: pikaur/print_department.py:398
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "{name} {version} {package_source} 包是最新的 - 跳过"
 
-#: pikaur/install_cli.py:501
+#: pikaur/install_cli.py:506
 #, python-brace-format
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} 与 {installed} 冲突. 移除 {installed}?"

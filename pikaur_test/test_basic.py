@@ -1,6 +1,6 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-# pylint: disable=no-name-in-module
+# pylint: disable=no-name-in-module,invalid-name
 
 import os
 
@@ -28,11 +28,9 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled('flac')
 
     def test_aur_package_with_aur_dep(self):
-        # aur package with aur dep and custom makepkg flags
         pkg_name = 'pacaur'
         dep_name = 'auracle-git'
         dep2_name = 'expac'
-        dep2_alt_name = 'expac-git'
 
         pikaur(f'-S {pkg_name} --mflags=--skippgpcheck')
         self.assertInstalled(pkg_name)
@@ -44,19 +42,29 @@ class InstallTest(PikaurDbTestCase):
         self.assertNotInstalled(dep_name)
         self.assertNotInstalled(dep2_name)
 
+    def test_aur_package_with_alternative_aur_dep(self):
+        pkg_name = 'pacaur'
+        dep2_name = 'expac'
+        dep2_alt_name = 'expac-git'
+
+        self.remove_if_installed(pkg_name, dep2_name, dep2_alt_name)
+        # aur package with manually chosen aur dep:
+        pikaur(f'-S {pkg_name} {dep2_alt_name}')
+        self.assertInstalled(pkg_name)
+        self.assertProvidedBy(dep2_name, dep2_alt_name)
+
+    def test_aur_pkg_with_already_installed_alternative_aur_dep(self):
+        pkg_name = 'pacaur'
+        dep2_name = 'expac'
+        dep2_alt_name = 'expac-git'
+
+        self.remove_if_installed(pkg_name, dep2_name, dep2_alt_name)
         pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')
         self.assertInstalled(dep2_alt_name)
         self.assertProvidedBy(dep2_name, dep2_alt_name)
 
         # aur package with aur dep provided by another already installed AUR pkg
         pikaur(f'-S {pkg_name}')
-        self.assertInstalled(pkg_name)
-        self.assertProvidedBy(dep2_name, dep2_alt_name)
-
-        self.remove_packages(pkg_name, dep2_alt_name)
-
-        # aur package with manually chosen aur dep:
-        pikaur(f'-S {pkg_name} {dep2_alt_name}')
         self.assertInstalled(pkg_name)
         self.assertProvidedBy(dep2_name, dep2_alt_name)
 

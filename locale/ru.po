@@ -574,7 +574,7 @@ msgstr "установить собраный пакет"
 
 #: pikaur/install_cli.py:637
 msgid "installing for the first time"
-msgstr "установленные в последнее время"
+msgstr "устанавливается впервые"
 
 #: pikaur/install_cli.py:483
 msgid "looking for conflicting AUR packages..."

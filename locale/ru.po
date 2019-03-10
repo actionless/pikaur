@@ -71,7 +71,7 @@ msgstr "Невозможно собрать '{name}'."
 #: pikaur/install_cli.py:445
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
-msgstr "Невозможно клонировать пакет '{name}' из AUR по пути '{path}':"
+msgstr "Невозможно клонировать пакет '{name}' из AUR по адресу '{path}':"
 
 #: pikaur/build.py:72
 #, python-brace-format
@@ -90,7 +90,7 @@ msgstr "Невозможно получить название пакета из
 #: pikaur/install_cli.py:447
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
-msgstr "Невозможно обновить пакет '{name}' из AUR по пути '{path}':"
+msgstr "Невозможно обновить пакет '{name}' из AUR по адресу '{path}':"
 
 #: pikaur/info_cli.py:33
 msgid "Check Deps"
@@ -138,11 +138,11 @@ msgstr "Описание"
 
 #: pikaur/install_cli.py:66
 msgid "Do you want to proceed without editing?"
-msgstr "Хотите ли вы продолжить без редактирования?"
+msgstr "Продолжить без редактирования?"
 
 #: pikaur/prompt.py:103
 msgid "Do you want to proceed?"
-msgstr "Хотите ли вы продолжить?"
+msgstr "Продолжить?"
 
 #: pikaur/main.py:163
 msgid "Do you want to remove all files?"
@@ -150,17 +150,17 @@ msgstr "Вы действительно хотите удалить все фа�
 
 #: pikaur/prompt.py:140 pikaur/aur.py:87
 msgid "Do you want to retry?"
-msgstr "Хотите ли вы попробовать снова?"
+msgstr "Попробовать снова?"
 
 #: pikaur/install_cli.py:609
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
-msgstr "Хотите ли вы просмотреть {diff} файлов сборки для пакета {name}?"
+msgstr "Хотите посмотреть {diff} файлов сборки для пакета {name}?"
 
 #: pikaur/install_cli.py:536
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
-msgstr "Хотите ли вы {edit} {file} из пакета {name}?"
+msgstr "Хотите {edit} {file} из пакета {name}?"
 
 #: pikaur/build.py:239
 msgid "Downloading the latest sources for a devel package {}"
@@ -211,7 +211,7 @@ msgstr "Установка уже собранных зависимостей д
 
 #: pikaur/build.py:484
 msgid "Installing repository dependencies for {}"
-msgstr "Установка зависимостей из репозитория для {}"
+msgstr "Установка зависимостей из репозиториев для {}"
 
 #: pikaur/info_cli.py:26
 msgid "Keywords"
@@ -418,7 +418,7 @@ msgstr "Оценка"
 
 #: pikaur/prompt.py:108
 msgid "[N]o (--noconfirm)"
-msgstr "[N] --noconfirm (без подтверждения)"
+msgstr "[N]o --noconfirm (без подтверждения)"
 
 #: pikaur/build.py:617
 msgid "[R] retry build"
@@ -426,7 +426,7 @@ msgstr "[R] повторить сборку"
 
 #: pikaur/prompt.py:108
 msgid "[Y]es (--noconfirm)"
-msgstr "[Y] --noconfirm (без подтверждения)"
+msgstr "[Y]es --noconfirm (без подтверждения)"
 
 #: pikaur/install_cli.py:466
 msgid "[a] abort"
@@ -540,7 +540,7 @@ msgstr "заргузить также зависимости из AUR"
 
 #: pikaur/install_cli.py:537
 msgid "edit"
-msgstr "редактировать"
+msgstr "отредактировать"
 
 #: pikaur/pprint.py:82
 msgid "error:"
@@ -640,7 +640,7 @@ msgstr ""
 
 #: pikaur/args.py:403
 msgid "pikaur-specific operations:"
-msgstr "опции pikaur:"
+msgstr "операции pikaur:"
 
 #: pikaur/args.py:438
 msgid "prompt to edit PKGBUILDs and other build files"

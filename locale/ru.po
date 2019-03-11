@@ -94,7 +94,7 @@ msgstr "Невозможно обновить пакет '{name}' из AUR по 
 
 #: pikaur/info_cli.py:33
 msgid "Check Deps"
-msgstr "Разрешение зависимостей"
+msgstr "Зависимости для проверки"
 
 #: pikaur/build.py:605 pikaur/prompt.py:136
 msgid "Command '{}' failed to execute."

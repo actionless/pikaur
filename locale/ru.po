@@ -290,7 +290,7 @@ msgstr "Устаревший"
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:22
 msgid "Package Base"
-msgstr "Основной пакет"
+msgstr "Группа пакетов"
 
 #: pikaur/build.py:412
 #, python-brace-format

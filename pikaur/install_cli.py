@@ -578,7 +578,7 @@ class InstallPackagesCLI():
 
         # handle if version is already installed
         for repo_status in all_package_builds:
-            if self.args.needed and repo_status.version_already_installed:
+            if self.args.needed and repo_status.version_already_installed and repo_status.reviewed:
                 for package_name in repo_status.package_names:
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_aur_package(package_name)
@@ -587,11 +587,12 @@ class InstallPackagesCLI():
 
     def review_build_files(self) -> None:  # pragma: no cover  pylint:disable=too-many-branches
         if self.args.needed or self.args.devel:
+            for repo_status in set(self.package_builds_by_name.values()):
+                if repo_status.last_installed_hash == repo_status.current_hash:
+                    repo_status.reviewed = True
             self._get_installed_status()
         for repo_status in set(self.package_builds_by_name.values()):
             if repo_status.reviewed:
-                continue
-            if self.args.needed and repo_status.version_already_installed:
                 continue
 
             _pkg_label = bold_line(', '.join(repo_status.package_names))

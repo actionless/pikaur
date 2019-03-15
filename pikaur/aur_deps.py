@@ -3,11 +3,13 @@
 from multiprocessing.pool import ThreadPool
 from typing import List, Dict
 
+from .i18n import _
 from .pacman import PackageDB
 from .version import VersionMatcher
 from .aur import AURPackageInfo, find_aur_packages
 from .exceptions import PackagesNotFoundInAUR, DependencyVersionMismatch, PackagesNotFoundInRepo
 from .core import PackageSource
+from .pprint import print_error
 
 
 def check_deps_versions(
@@ -241,7 +243,13 @@ def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:
             pool.close()
             pool.join()
             for aur_pkg_name, request in all_requests.items():
-                results = request.get()
+                try:
+                    results = request.get()
+                except Exception as exc:
+                    print_error(_(
+                        "Can't resolve dependencies for AUR package '{pkg}':"
+                    ).format(pkg=aur_pkg_name))
+                    raise exc
                 not_found_local_pkgs += results
                 for dep_pkg_name in results:
                     result_aur_deps.setdefault(aur_pkg_name, []).append(dep_pkg_name)

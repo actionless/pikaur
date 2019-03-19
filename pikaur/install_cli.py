@@ -239,12 +239,12 @@ class InstallPackagesCLI():
                     self.install_info.aur_updates_install_info
             ):
                 if (
+                        # devel packages will be checked later
+                        # after retrieving their sources
                         is_devel_pkg(install_info.name)
                 ) or (
                     not install_info.current_version
                 ) or compare_versions(
-                    # devel packages will be checked later
-                    # after retrieving their sources
                     install_info.current_version,
                     install_info.new_version
                 ):

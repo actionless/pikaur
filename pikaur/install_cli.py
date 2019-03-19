@@ -250,10 +250,13 @@ class InstallPackagesCLI():
                 ) or compare_versions(
                     install_info.current_version,
                     install_info.new_version
+                ) or (
+                    # package installed via Provides, not by its real name
+                    install_info.name not in self.install_package_names
                 ):
                     continue
                 print_package_uptodate(install_info.name, install_info.package_source)
-                self.discard_aur_package(install_info.name)
+                self.discard_install_info(install_info.name)
                 need_refetch_info = True
             if need_refetch_info:
                 self.get_all_packages_info()
@@ -369,7 +372,7 @@ class InstallPackagesCLI():
             else:
                 break
 
-    def discard_aur_package(
+    def discard_install_info(
             self, canceled_pkg_name: str, already_discarded: List[str] = None
     ) -> None:
         if canceled_pkg_name in self.install_package_names:
@@ -381,7 +384,7 @@ class InstallPackagesCLI():
             if canceled_pkg_name in aur_deps + [aur_pkg_name]:
                 for pkg_name in aur_deps + [aur_pkg_name]:
                     if pkg_name not in already_discarded:
-                        self.discard_aur_package(pkg_name, already_discarded)
+                        self.discard_install_info(pkg_name, already_discarded)
                 if aur_pkg_name in self.aur_deps_relations:
                     del self.aur_deps_relations[aur_pkg_name]
         for pkg_name in already_discarded:
@@ -481,7 +484,7 @@ class InstallPackagesCLI():
                     remove_dir(package_build.repo_path)
                 elif answer == _("s"):  # pragma: no cover
                     for skip_pkg_name in package_build.package_names:
-                        self.discard_aur_package(skip_pkg_name)
+                        self.discard_install_info(skip_pkg_name)
                 else:
                     raise SysExit(125)
 
@@ -588,7 +591,7 @@ class InstallPackagesCLI():
             if self.args.needed and repo_status.version_already_installed and repo_status.reviewed:
                 for package_name in repo_status.package_names:
                     print_package_uptodate(package_name, PackageSource.AUR)
-                    self.discard_aur_package(package_name)
+                    self.discard_install_info(package_name)
                 if repo_status.reviewed:  # pragma: no cover
                     repo_status.update_last_installed_file()
 
@@ -701,7 +704,7 @@ class InstallPackagesCLI():
                 #     raise SysExit(125)
                 for _pkg_name in repo_status.package_names:
                     failed_to_build_package_names.append(_pkg_name)
-                    self.discard_aur_package(_pkg_name)
+                    self.discard_install_info(_pkg_name)
                     for remaining_aur_pkg_name in packages_to_be_built[:]:
                         if remaining_aur_pkg_name not in self.all_aur_packages_names:
                             packages_to_be_built.remove(remaining_aur_pkg_name)

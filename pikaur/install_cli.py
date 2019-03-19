@@ -238,12 +238,16 @@ class InstallPackagesCLI():
                     self.install_info.thirdparty_repo_packages_install_info +
                     self.install_info.aur_updates_install_info
             ):
-                if is_devel_pkg(install_info.name) or compare_versions(
-                        install_info.current_version,
-                        install_info.new_version
-                ):
+                if (
+                        is_devel_pkg(install_info.name)
+                ) or (
+                    not install_info.current_version
+                ) or compare_versions(
                     # devel packages will be checked later
                     # after retrieving their sources
+                    install_info.current_version,
+                    install_info.new_version
+                ):
                     continue
                 print_package_uptodate(install_info.name, install_info.package_source)
                 self.discard_aur_package(install_info.name)

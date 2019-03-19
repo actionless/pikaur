@@ -135,7 +135,7 @@ class InstallPackagesCLI():
                     thread.get()
                 pool.join()
 
-            if not self.install_package_names or self.args.sysupgrade:
+            if not (self.install_package_names or self.args.sysupgrade):
                 return
 
             if self.args.refresh:

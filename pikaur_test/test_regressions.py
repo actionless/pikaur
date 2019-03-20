@@ -91,3 +91,27 @@ class RegressionTest(PikaurDbTestCase):
         self.assertInstalled('python-txtorcon')
         self.assertInstalled('python-twisted')
         self.assertNotInstalled('python2-twisted')
+
+    def test_sy_only(self):
+        """
+        When running pikaur -Sy to only update the database indexes,
+        Pikaur continues to load the databases off disk if they were updated
+        (if you have a slow rotating HDD and many packages,
+        it can take some time) then exits with "Nothing to do".
+        (pacman just exits).
+
+        see #339
+        """
+        pikaur('-Syu')
+
+        result_syu = pikaur('-Syu', capture_stdout=True)
+        self.assertIn(
+            "nothing to do",
+            result_syu.stdout.lower()
+        )
+
+        result_sy = pikaur('-Sy', capture_stdout=True)
+        self.assertNotIn(
+            "nothing to do",
+            result_sy.stdout.lower()
+        )

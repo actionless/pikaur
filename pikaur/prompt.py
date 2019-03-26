@@ -86,8 +86,12 @@ def get_input(prompt: str, answers=None) -> str:
             from .pikspect import TTYRestore
             sub_tty = TTYRestore()
             TTYRestore.restore()
-            answer = input(split_last_line(prompt)).lower()
-            sub_tty.restore_new()
+            try:
+                answer = input(split_last_line(prompt)).lower()
+            except EOFError:
+                raise SysExit(125)
+            finally:
+                sub_tty.restore_new()
             if not answer:
                 for choice in answers:
                     if choice not in answers.lower():

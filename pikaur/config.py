@@ -164,6 +164,12 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'default': 'pacman'
         },
     },
+    'network': {
+        'Socks5Proxy': {
+            'type': 'str',
+            'default': '',
+        },
+    },
 }
 
 

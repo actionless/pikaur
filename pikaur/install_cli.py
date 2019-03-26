@@ -33,12 +33,12 @@ from .print_department import (
 )
 from .core import (
     PackageSource,
-    interactive_spawn, remove_dir, open_file, sudo, get_editor, running_as_root,
+    interactive_spawn, remove_dir, open_file, sudo, running_as_root,
 )
 from .conflicts import find_aur_conflicts
 from .prompt import (
     ask_to_continue, retry_interactive_command,
-    retry_interactive_command_or_exit, get_input,
+    retry_interactive_command_or_exit, get_input, get_editor_or_exit
 )
 from .srcinfo import SrcInfo
 from .news import News
@@ -57,15 +57,6 @@ def hash_file(filename: str) -> str:  # pragma: no cover
             else:
                 eof = True
     return md5.hexdigest()
-
-
-def get_editor_or_exit() -> Optional[List[str]]:
-    editor = get_editor()
-    if not editor:
-        print_warning(_("no editor found. Try setting $VISUAL or $EDITOR."))
-        if not ask_to_continue(_("Do you want to proceed without editing?")):  # pragma: no cover
-            raise SysExit(125)
-    return editor
 
 
 class InstallPackagesCLI():

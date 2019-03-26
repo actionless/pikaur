@@ -28,7 +28,8 @@ from .pprint import (
     print_stdout, print_stderr, print_error,
 )
 from .prompt import (
-    retry_interactive_command_or_exit, ask_to_continue, get_input,
+    retry_interactive_command_or_exit, ask_to_continue,
+    get_input, get_editor_or_exit,
 )
 from .exceptions import (
     CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
@@ -619,6 +620,7 @@ class PackageBuild(DataType):
                         _("[c] checksums skip"),
                         _("[i] ignore architecture"),
                         _("[d] delete build dir and try again"),
+                        _("[e] edit PKGBUILD"),
                         "-" * 24,
                         _("[s] skip building this package"),
                         _("[a] abort building all the packages"),
@@ -626,7 +628,7 @@ class PackageBuild(DataType):
                 )
                 answer = get_input(
                     prompt,
-                    _('r').upper() + _('p') + _('c') + _('i') + _('d') +
+                    _('r').upper() + _('p') + _('c') + _('i') + _('d') + _('e') +
                     _('s') + _('a')
                 )
 
@@ -644,6 +646,19 @@ class PackageBuild(DataType):
                 continue
             elif answer == _("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)
+                continue
+            elif answer == _('e'):  # pragma: no cover
+                editor_cmd = get_editor_or_exit()
+                if editor_cmd:
+                    interactive_spawn(
+                        editor_cmd + [self.pkgbuild_path]
+                    )
+                    interactive_spawn(isolate_root_cmd([
+                        'cp',
+                        self.pkgbuild_path,
+                        os.path.join(self.build_dir, 'PKGBUILD')
+                    ]))
+                    # or self.prepare_build_destination(flush=True) ?
                 continue
             elif answer == _("a"):
                 raise SysExit(125)

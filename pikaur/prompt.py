@@ -2,16 +2,16 @@
 
 import sys
 import tty
-from typing import List
+from typing import List, Optional
 
 from .args import parse_args
 from .config import PikaurConfig
 
-from .core import interactive_spawn
+from .core import interactive_spawn, get_editor
 from .i18n import _
 from .pprint import (
     color_line, print_stderr, get_term_width, range_printable,
-    PrintLock,
+    PrintLock, print_warning,
 )
 from .exceptions import SysExit
 
@@ -151,3 +151,12 @@ def retry_interactive_command_or_exit(cmd_args: List[str], **kwargs) -> None:
     if not retry_interactive_command(cmd_args, **kwargs):
         if not ask_to_continue(default_yes=False):
             raise SysExit(125)
+
+
+def get_editor_or_exit() -> Optional[List[str]]:
+    editor = get_editor()
+    if not editor:
+        print_warning(_("no editor found. Try setting $VISUAL or $EDITOR."))
+        if not ask_to_continue(_("Do you want to proceed without editing?")):  # pragma: no cover
+            raise SysExit(125)
+    return editor

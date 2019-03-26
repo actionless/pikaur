@@ -154,6 +154,18 @@ to avoid asking for sudo password more than once
 Path to pacman executable.
 
 
+#### [network]
+
+##### Socks5Proxy (default: )
+Specify a socks5 proxy which is used to get AUR package information.
+
+The format is `[host[:port]]`, and the default port is 1080.
+SocksiPy socks module should be installed in order to use this option.
+
+Note that any downloads by `pacman`, `git` or `makepkg` will NOT use this proxy.
+If that's needed, setting proxy options in their own config files will take effect (such as `~/.gitconfig`, `~/.curlrc`).
+
+
 
 
 

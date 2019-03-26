@@ -22,6 +22,8 @@ whitelist.aur.AURPackageInfo.urlpath
 
 whitelist.build.PackageBuild._get_deps.deps_destination
 
+whitelist.main.socket.socket
+
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict

@@ -197,6 +197,17 @@ Interval in seconds in which \fBsudo\fR command will be spawned in the backgroun
 .SS "PacmanPath (default: pacman)"
 Path to pacman executable\.
 .
+.SS "[network]"
+.
+.SS "Socks5Proxy (default: )"
+Specify a socks5 proxy which is used to get AUR package information\.
+.
+.P
+The format is \fB[host[:port]]\fR, and the default port is 1080\. SocksiPy socks module should be installed in order to use this option\.
+.
+.P
+Note that any downloads by \fBpacman\fR, \fBgit\fR or \fBmakepkg\fR will NOT use this proxy\. If that\'s needed, setting proxy options in their own config files will take effect (such as \fB~/\.gitconfig\fR, \fB~/\.curlrc\fR)\.
+.
 .SH "Directories"
 .
 .nf

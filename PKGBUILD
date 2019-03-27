@@ -20,6 +20,7 @@ depends=(
 )
 optdepends=(
 	'asp: for ABS support in -G/--getpkgbuild operation'
+	'python-pysocks: for socks5 proxy support'
 )
 conflicts=('pikaur')
 

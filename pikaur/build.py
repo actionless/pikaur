@@ -658,7 +658,6 @@ class PackageBuild(DataType):
                         self.pkgbuild_path,
                         os.path.join(self.build_dir, 'PKGBUILD')
                     ]))
-                    # or self.prepare_build_destination(flush=True) ?
                 continue
             elif answer == _("a"):
                 raise SysExit(125)

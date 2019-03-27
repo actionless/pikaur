@@ -87,9 +87,15 @@ def init_proxy() -> None:
             port = int(proxy[idx + 1:])
             proxy = proxy[:idx]
 
-        import socks  # type: ignore # pylint: disable=import-error
-        socks.set_default_proxy(socks.PROXY_TYPE_SOCKS5, proxy, port)  # type: ignore
-        socket.socket = socks.socksocket  # type: ignore
+        try:
+            import socks  # type: ignore
+            socks.set_default_proxy(socks.PROXY_TYPE_SOCKS5, proxy, port)
+            socket.socket = socks.socksocket  # type: ignore
+        except ImportError:
+            print_error(
+                _("pikaur requires python-pysocks to use a socks5 proxy.")
+            )
+            sys.exit(2)
 
 
 def cli_print_upgradeable() -> None:

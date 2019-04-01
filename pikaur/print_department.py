@@ -83,7 +83,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         _bold_line = lambda line: line  # noqa
 
     def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, str]:  # pylint:disable=too-many-locals
-        common_version, difference_size = get_common_version(
+        common_version, common_version_weight = get_common_version(
             pkg_update.current_version or '', pkg_update.new_version or ''
         )
         user_config = PikaurConfig()
@@ -94,7 +94,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         column_width = min(int(get_term_width() / 2.5), 37)
 
         sort_by = '{:03d}{}'.format(
-            difference_size,
+            common_version_weight,
             pkg_update.name
         )
         user_chosen_sorting = user_config.sync.UpgradeSorting

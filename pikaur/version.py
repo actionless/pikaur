@@ -124,22 +124,59 @@ def split_version(version: str) -> List[str]:
     return splitted_version
 
 
+def split_always(line: str, separator: str) -> Tuple[str, str]:
+    splitted_line = line.split(separator, 1)
+    if len(splitted_line) > 1:
+        return splitted_line[0], separator + splitted_line[1]
+    return '', splitted_line[0]
+
+
+def rsplit_always(line: str, separator: str) -> Tuple[str, str]:
+    splitted_line = line.rsplit(separator, 1)
+    if len(splitted_line) > 1:
+        return splitted_line[0] + separator, splitted_line[1]
+    return splitted_line[0], ''
+
+
 def get_common_version(version1: str, version2: str) -> Tuple[str, int]:
+
+    def _split_epoch(version: str) -> Tuple[str, str]:
+        return split_always(version, ':')
+
+    def _split_release(version: str) -> Tuple[str, str]:
+        return rsplit_always(version, '-')
+
     common_string = ''
-    common_length = 0
+    common_weight = 0
     if '' in (version1, version2):
-        return common_string, common_length
-    for block1, block2 in zip(
-            split_version(version1),
-            split_version(version2)
+        return common_string, common_weight
+    for weight, version_chunk1, version_chunk2 in (
+            (
+                1, _split_epoch(version1)[0], _split_epoch(version2)[0]
+            ),
+            (
+                10, _split_release(_split_epoch(version1)[1])[0],
+                _split_release(_split_epoch(version2)[1])[0]),
+            (
+                100, _split_release(_split_epoch(version1)[1])[1],
+                _split_release(_split_epoch(version2)[1])[1]
+            ),
     ):
-        if compare_versions(block1, block2) == 0 and block1 == block2:
-            common_string += block1
-            if block1 not in VERSION_SEPARATORS:
-                common_length += 1
-        else:
+        parent_need_break = False
+        for block1, block2 in zip(
+                split_version(version_chunk1),
+                split_version(version_chunk2)
+        ):
+            if compare_versions(block1, block2) == 0 and block1 == block2:
+                common_string += block1
+                if block1 not in VERSION_SEPARATORS:
+                    common_weight += 1 * weight
+            else:
+                parent_need_break = True
+                break
+        if parent_need_break:
             break
-    return common_string, common_length
+    return common_string, common_weight
 
 
 def get_version_diff(version: str, common_version: str) -> str:

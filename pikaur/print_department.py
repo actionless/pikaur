@@ -93,8 +93,9 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         new_color = color_config.get_int('VersionDiffNew')
         column_width = min(int(get_term_width() / 2.5), 37)
 
-        sort_by = '{:03d}{}'.format(
-            common_version_weight,
+        sort_by = '{:04d}{:02d}{}'.format(
+            10000 - common_version_weight,
+            len(common_version),
             pkg_update.name
         )
         user_chosen_sorting = user_config.sync.UpgradeSorting

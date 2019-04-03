@@ -95,7 +95,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
 
         sort_by = '{:04d}{:02d}{}'.format(
             10000 - diff_weight,
-            len(common_version),
+            100 - len(pkg_update.new_version) + len(common_version),
             pkg_update.name
         )
         user_chosen_sorting = user_config.sync.UpgradeSorting

@@ -593,11 +593,16 @@ class InstallPackagesCLI():
                     repo_status.reviewed = True
             self._get_installed_status()
         for repo_status in set(self.package_builds_by_name.values()):
-            if repo_status.reviewed:
-                continue
-
             _pkg_label = bold_line(', '.join(repo_status.package_names))
             _skip_diff_label = _("Not showing diff for {pkg} package ({reason})")
+
+            if repo_status.reviewed:
+                print_warning(_skip_diff_label.format(
+                    pkg=_pkg_label,
+                    reason=_("already reviewed")
+                ))
+                continue
+
             if (
                     repo_status.build_files_updated
             ) and (

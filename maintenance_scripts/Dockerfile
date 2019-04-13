@@ -24,4 +24,4 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	sudo -u user pikaur -S --noconfirm --color=always python-virtualenv \
 		python-pylint flake8 mypy python-vulture python-coveralls \
-		python2 # @TODO: coveralls workaround
+		python2 python2-setuptools # @TODO: coveralls workaround

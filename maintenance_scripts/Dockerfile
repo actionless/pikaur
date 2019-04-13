@@ -25,3 +25,5 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 	sudo -u user pikaur -S --noconfirm --color=always python-virtualenv \
 		python-pylint flake8 mypy python-vulture python-coveralls \
 		python2 python2-setuptools iputils # @TODO: coveralls workaround
+
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf

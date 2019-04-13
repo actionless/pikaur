@@ -22,7 +22,8 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 	sudo -u user tar --transform 's,^,pikaur-git/,' -cf pikaur-git.tar.gz . && \
 	sudo -u user sed -i 's/"$pkgname::.*"/"pikaur-git.tar.gz"/' PKGBUILD && \
 	sudo -u user makepkg -fsi --noconfirm && \
-	sudo -u user pikaur -S --noconfirm python-virtualenv python-pylint flake8 mypy python-vulture --color=always
+	sudo -u user pikaur -S --noconfirm --color=always python-virtualenv \
+		python-pylint flake8 mypy python-vulture python-coveralls
 
 # @TODO: REMOVEME (broken dep in mypy arch pkg)
 RUN pacman -S --noconfirm --needed python-pip && \

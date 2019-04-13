@@ -38,7 +38,7 @@ build() {
 
 package() {
 	cd "${srcdir}/${pkgname}" || exit 2
-	python setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
+	python3 setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
 	for langmo in $(cd ./locale && ls ./*.mo); do
 		lang=$(sed -e 's/.mo$//' <<< "${langmo}")
 		install -Dm644 "locale/${langmo}" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"

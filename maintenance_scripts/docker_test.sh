@@ -2,8 +2,10 @@
 
 # This file is licensed under GPLv3, see https://www.gnu.org/licenses/
 
-#set -euo pipefail
+set -euo pipefail
 IFS=$'\n\t'
+
+set -x
 
 cd "$(readlink -e "$(dirname "${0}")")"/.. || exit 2
 
@@ -14,33 +16,23 @@ mkdir -p ./htmlcov/
 
 sudo docker build ./ -t pikaur -f ./Dockerfile
 
+return_code=0
 sudo docker \
 	container run \
+	--dns="8.8.8.8" \
 	--tty \
 	--interactive \
 	--volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro \
-	--detach \
 	--volume "$(readlink -e ./htmlcov/)":/opt/app-build/htmlcov \
-	pikaur:latest
-
-container_name=$(sudo docker container ls --quiet --filter ancestor=pikaur:latest)
-sudo docker \
-	container exec \
-	--tty \
-	--interactive \
-	"${container_name}" \
+	pikaur:latest \
 	sudo \
 		-u user \
-		env TRAVIS="$TRAVIS" \
-			TRAVIS_JOB_ID="$TRAVIS_JOB_ID" \
-			TRAVIS_BRANCH="$TRAVIS_BRANCH" \
-			TRAVIS_PULL_REQUEST="$TRAVIS_PULL_REQUEST" \
-		./maintenance_scripts/ci.sh "${1:--local}" --write-db
-return_code=$?
-
-sudo docker \
-	container kill \
-	"${container_name}" > /dev/null
+		env TRAVIS="${TRAVIS:-}" \
+			TRAVIS_JOB_ID="${TRAVIS_JOB_ID:-}" \
+			TRAVIS_BRANCH="${TRAVIS_BRANCH:-}" \
+			TRAVIS_PULL_REQUEST="${TRAVIS_PULL_REQUEST:-}" \
+		./maintenance_scripts/ci.sh "${1:--local}" --write-db \
+	|| return_code=$?
 
 if [[ "${1:-}" == "--local" ]] && [[ ${return_code} -eq 0 ]] ; then
 	firefox htmlcov/index.html

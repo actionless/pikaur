@@ -161,15 +161,15 @@ def get_common_version(version1: str, version2: str) -> Tuple[str, int]:
                 1000, _split_epoch(version1)[0], _split_epoch(version2)[0]
             ),
             (
-                100, _split_release(_split_major(_split_epoch(version1)[1])[0])[0],
+                500, _split_release(_split_major(_split_epoch(version1)[1])[0])[0],
                 _split_release(_split_major(_split_epoch(version2)[1])[0])[0],
             ),
             (
-                10, _split_release(_split_major(_split_epoch(version1)[1])[1])[0],
+                100, _split_release(_split_major(_split_epoch(version1)[1])[1])[0],
                 _split_release(_split_major(_split_epoch(version2)[1])[1])[0],
             ),
             (
-                1, _split_release(version1)[1], _split_release(version2)[1],
+                10, _split_release(version1)[1], _split_release(version2)[1],
             ),
     ):
         for block1, block2 in zip(
@@ -181,8 +181,9 @@ def get_common_version(version1: str, version2: str) -> Tuple[str, int]:
                     common_string += block1
             else:
                 diff_found = True
-                if diff_weight in (0, 10) and block1 not in VERSION_SEPARATORS:
+                if diff_weight == 0 and block1 not in VERSION_SEPARATORS:
                     diff_weight += weight
+            weight -= 1
     return common_string, diff_weight
 
 

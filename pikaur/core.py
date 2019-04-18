@@ -144,6 +144,12 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     ]
     if cwd is not None:
         base_root_isolator += ['-p', 'WorkingDirectory=' + cwd]
+    if "http_proxy" in os.environ and os.environ.get('http_proxy') is not None:
+        base_root_isolator += ['-E', 'http_proxy=' + os.environ.get('http_proxy')]
+    if "https_proxy" in os.environ and os.environ.get('https_proxy') is not None:
+        base_root_isolator += ['-E', 'https_proxy=' + os.environ.get('https_proxy')]
+    if "ftp_proxy" in os.environ and os.environ.get('ftp_proxy') is not None:
+        base_root_isolator += ['-E', 'ftp_proxy=' + os.environ.get('ftp_proxy')]
     return base_root_isolator + cmd
 
 

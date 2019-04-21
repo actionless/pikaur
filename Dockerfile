@@ -38,4 +38,4 @@ ENV TRAVIS=$TRAVIS
 ENV TRAVIS_JOB_ID=$TRAVIS_JOB_ID
 ENV TRAVIS_BRANCH=$TRAVIS_BRANCH
 ENV TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST
-RUN sudo -u user ./maintenance_scripts/ci.sh $MODE --write-db
+RUN sudo --preserve-env -u user ./maintenance_scripts/ci.sh $MODE --write-db

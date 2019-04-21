@@ -34,4 +34,8 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 		python-pylint flake8 mypy python-vulture python-coveralls \
 		python2 python2-setuptools iputils # @TODO: coveralls workaround
 
+ENV TRAVIS=$TRAVIS
+ENV TRAVIS_JOB_ID=$TRAVIS_JOB_ID
+ENV TRAVIS_BRANCH=$TRAVIS_BRANCH
+ENV TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST
 RUN sudo -u user ./maintenance_scripts/ci.sh $MODE --write-db

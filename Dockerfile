@@ -9,7 +9,8 @@ ARG TRAVIS_BRANCH
 ARG TRAVIS_PULL_REQUEST
 ARG MODE=--local
 
-RUN pacman -Syu --noconfirm --needed sudo base-devel git && \
+RUN rm /usr/share/libalpm/hooks/package-cleanup.hook ; \
+	pacman -Syu --noconfirm --needed sudo base-devel git && \
 	useradd -m user && \
 	echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 	echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \

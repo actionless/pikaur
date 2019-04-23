@@ -56,7 +56,10 @@ class TTYRestore():
         cls._restore(cls.old_tcattrs)
 
     def __init__(self) -> None:
-        self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        try:
+            self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        except termios.error:  # type: ignore
+            pass
 
     def restore_new(self, *_whatever) -> None:
         self._restore(self.sub_tty_old_tcattrs)

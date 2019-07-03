@@ -24,7 +24,7 @@ class VersionMatcher():
 
     version: Optional[str] = None
     version_matchers: List[Callable[[str], int]]
-    depend_line: str
+    line: str
     pkg_name: str
 
     def __call__(self, version: Optional[str]) -> int:

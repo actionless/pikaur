@@ -698,8 +698,7 @@ class PackageBuild(DataType):
         if not build_succeeded:
             self.failed = True
             raise BuildError()
-        else:
-            self._set_built_package_path()
+        self._set_built_package_path()
 
 
 def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:

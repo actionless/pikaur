@@ -2,14 +2,14 @@
 # Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2018.
-# Osman Karagöz <osmank3@gmail.com>, 2018.
+# Osman Karagöz <osmank3@gmail.com>, 2019.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-03-03 21:10+0100\n"
-"PO-Revision-Date: 2018-10-04 11:18+0300\n"
+"PO-Revision-Date: 2019-07-10 16:43+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: pikaur/replacements.py:42
 #, python-brace-format
@@ -43,7 +43,7 @@ msgstr ":: hata: {} seçenekleri birlikte kullanılamaz."
 
 #: pikaur/info_cli.py:18
 msgid "AUR Git URL"
-msgstr ""
+msgstr "AUR Git URL"
 
 #: pikaur/print_department.py:337
 msgid "AUR package will be installed:"
@@ -99,7 +99,7 @@ msgstr "AUR'dan '{path}' içindeki '{name}' çekilemedi:"
 
 #: pikaur/info_cli.py:33
 msgid "Check Deps"
-msgstr ""
+msgstr "Bağımlılıkları Kontrol Et"
 
 #: pikaur/build.py:605 pikaur/prompt.py:136
 msgid "Command '{}' failed to execute."
@@ -111,7 +111,7 @@ msgstr "Ortak pacman seçenekleri:"
 
 #: pikaur/info_cli.py:34
 msgid "Conflicts With"
-msgstr ""
+msgstr "İle Çakışıyor"
 
 #: pikaur/news.py:61
 msgid "Could not fetch archlinux.org news"
@@ -135,11 +135,11 @@ msgstr "{} ile bağımlılık döngüsü tespit edildi"
 
 #: pikaur/info_cli.py:30
 msgid "Depends On"
-msgstr ""
+msgstr "Buna Bağımlı"
 
 #: pikaur/info_cli.py:24
 msgid "Description"
-msgstr ""
+msgstr "Özet"
 
 #: pikaur/install_cli.py:66
 msgid "Do you want to proceed without editing?"
@@ -183,7 +183,7 @@ msgstr "Kurulan bağımlılıklar silinemedi, paketler tutarsız: {}"
 
 #: pikaur/info_cli.py:39
 msgid "First Submitted"
-msgstr ""
+msgstr "İlk Gönderim"
 
 #: pikaur/print_department.py:64
 msgid "Following package cannot be found in AUR:"
@@ -199,12 +199,11 @@ msgstr[1] "Takip eden paketler depolarda bulunamadı:"
 
 #: pikaur/info_cli.py:28
 msgid "Groups"
-msgstr ""
+msgstr "Gruplar"
 
 #: pikaur/print_department.py:378
-#, fuzzy
 msgid "Ignoring package update {}"
-msgstr "Paket gözardı ediliyor {}"
+msgstr "Paket güncellemesi gözardı ediliyor {}"
 
 #: pikaur/print_department.py:384
 msgid "Ignoring package {}"
@@ -220,33 +219,33 @@ msgstr "{} için depo bağımlılıkları kuruluyor"
 
 #: pikaur/info_cli.py:26
 msgid "Keywords"
-msgstr ""
+msgstr "Anahtar kelimeler"
 
 #: pikaur/info_cli.py:40
 msgid "Last Updated"
-msgstr ""
+msgstr "Son Güncelleme"
 
 #: pikaur/info_cli.py:27
 msgid "Licenses"
-msgstr ""
+msgstr "Lisanslar"
 
 #: pikaur/info_cli.py:36
 msgid "Maintainer"
-msgstr ""
+msgstr "Sürdürücü"
 
 #: pikaur/info_cli.py:32
 msgid "Make Deps"
-msgstr ""
+msgstr "İnşa Bağımlılıkları"
 
 #. id=_("id"),
 #: pikaur/info_cli.py:20
 msgid "Name"
-msgstr ""
+msgstr "İsim"
 
 #: pikaur/install_cli.py:400
 #, python-brace-format
 msgid "New AUR build deps found for {pkg} package: {deps}"
-msgstr ""
+msgstr "{pkg} için yeni AUR inşa bağımlılıkları bulundu: {deps}"
 
 #: pikaur/print_department.py:348
 msgid "New dependency will be installed from AUR:"
@@ -273,12 +272,12 @@ msgstr "Yeni '{new}' paketleri ile '{other}' çakışıyor."
 
 #: pikaur/info_cli.py:47 pikaur/info_cli.py:74
 msgid "None"
-msgstr ""
+msgstr "Yok"
 
 #: pikaur/install_cli.py:598
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
-msgstr ""
+msgstr "{pkg} paketi için fark gösterilemiyor({reason})"
 
 #: pikaur/install_cli.py:267
 msgid "Nothing to do."
@@ -286,18 +285,16 @@ msgstr "Yapacak bişey yok."
 
 #: pikaur/info_cli.py:31
 msgid "Optional Deps"
-msgstr ""
+msgstr "İsteğe Bağlı Bağımlılıklar"
 
 #: pikaur/info_cli.py:41
-#, fuzzy
 msgid "Out-of-date"
-msgstr "eski"
+msgstr "Güncel-değil"
 
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:22
-#, fuzzy
 msgid "Package Base"
-msgstr "Paketler dizini"
+msgstr "Paket Tabanı"
 
 #: pikaur/build.py:412
 #, python-brace-format
@@ -322,7 +319,7 @@ msgstr "Pikaur-özel seçenekler:"
 
 #: pikaur/info_cli.py:38
 msgid "Popularity"
-msgstr ""
+msgstr "Popülerlik"
 
 #: pikaur/install_cli.py:333
 msgid "Proceed with installation? [Y/n] "
@@ -330,7 +327,7 @@ msgstr "Kuruluma devam edilsin mi? [E/h] "
 
 #: pikaur/info_cli.py:29
 msgid "Provides"
-msgstr ""
+msgstr "Sağlar"
 
 #: pikaur/updates.py:112
 msgid "Reading AUR package info..."
@@ -352,7 +349,7 @@ msgstr "{} için şimdi kurulan depo bağımlılıkları siliniyor"
 
 #: pikaur/info_cli.py:35
 msgid "Replaces"
-msgstr ""
+msgstr "Yer değiştirecek"
 
 #: pikaur/print_department.py:263
 msgid "Repository package suggested as a replacement:"
@@ -416,11 +413,11 @@ msgstr "Kurtarmayı dene?"
 
 #: pikaur/info_cli.py:25
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: pikaur/info_cli.py:23
 msgid "Version"
-msgstr ""
+msgstr "Sürüm"
 
 #: pikaur/install_cli.py:215
 msgid "Version mismatch:"
@@ -428,7 +425,7 @@ msgstr "Sürüm uyumsuzluğu:"
 
 #: pikaur/info_cli.py:37
 msgid "Votes"
-msgstr ""
+msgstr "Oylar"
 
 #: pikaur/prompt.py:108
 msgid "[N]o (--noconfirm)"
@@ -503,7 +500,7 @@ msgstr "v"
 
 #: pikaur/install_cli.py:642
 msgid "already reviewed"
-msgstr ""
+msgstr "zaten gözden geçirilmiş"
 
 #: pikaur/args.py:445
 msgid "always isolate with systemd dynamic users"
@@ -552,7 +549,7 @@ msgstr "ayrıca AUR bağımlılıklarını indir"
 
 #: pikaur/install_cli.py:537
 msgid "edit"
-msgstr "düzenle"
+msgstr "düzenlemek"
 
 #: pikaur/pprint.py:82
 msgid "error:"
@@ -560,7 +557,7 @@ msgstr "hata:"
 
 #: pikaur/srcinfo.py:144
 msgid "failed to generate .SRCINFO from {}:"
-msgstr ""
+msgstr "{}'dan .SRCINFO oluşturulamadı:"
 
 #: pikaur/build.py:256
 msgid "failed to retrieve latest dev sources:"
@@ -569,7 +566,7 @@ msgstr "son geliştirme kaynakları alınamadı:"
 #: pikaur/print_department.py:132 pikaur/print_department.py:139
 #, python-brace-format
 msgid "for {pkg}"
-msgstr ""
+msgstr "{pkg} için"
 
 #: pikaur/build.py:629 pikaur/build.py:642
 msgid "i"
@@ -586,7 +583,7 @@ msgstr "inşa edilen paketi kur"
 
 #: pikaur/install_cli.py:637
 msgid "installing for the first time"
-msgstr ""
+msgstr "ilk defa kuruluyor"
 
 #: pikaur/install_cli.py:483
 msgid "looking for conflicting AUR packages..."
@@ -710,8 +707,8 @@ msgstr "e"
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{grp} grup"
+msgstr[1] "{grp} gruplar"
 
 #: pikaur/build.py:556
 #, python-brace-format
@@ -746,6 +743,3 @@ msgstr ""
 #: pikaur/build.py:389
 msgid "{} does not exist on the filesystem."
 msgstr "{} dosya sisteminde mevcut değil."
-
-#~ msgid "for"
-#~ msgstr "için"

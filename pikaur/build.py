@@ -386,8 +386,6 @@ class PackageBuild(DataType):
             pkg_filename = os.path.basename(pkg_path)
             if pkg_path == pkg_filename:
                 pkg_path = os.path.join(dest_dir, pkg_path)
-            if not os.path.exists(pkg_path):
-                raise BuildError(_("{} does not exist on the filesystem.").format(pkg_path))
             if dest_dir == self.build_dir:
                 new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
                 pkg_sig_path = pkg_path + ".sig"

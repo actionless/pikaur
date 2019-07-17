@@ -15,7 +15,6 @@ class RegressionTest(PikaurDbTestCase):
         fake_pikaur('-S zfs-dkms')
         self.assertInstalled('zfs-dkms')
         self.assertInstalled('zfs-utils')
-        self.assertInstalled('spl-dkms')
 
     def test_double_requirements_repo(self):
         # double requirements line

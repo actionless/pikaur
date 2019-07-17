@@ -7,7 +7,10 @@ import shutil
 from pathlib import Path
 from typing import Dict, Optional
 
-from .core import running_as_root, open_file
+from .i18n import _
+
+
+RUNNING_AS_ROOT = os.geteuid() == 0
 
 
 VERSION = '1.4.3-dev'
@@ -16,7 +19,7 @@ _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",
     os.path.join(Path.home(), ".cache/")
 )
-if running_as_root():
+if RUNNING_AS_ROOT:
     CACHE_ROOT = '/var/cache/pikaur'
 else:
     CACHE_ROOT = os.path.join(_USER_CACHE_HOME, 'pikaur/')
@@ -34,7 +37,7 @@ DATA_ROOT = os.environ.get(
     os.path.join(Path.home(), ".local/share/pikaur")
 )
 _OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
-if running_as_root():
+if RUNNING_AS_ROOT:
     AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
 else:
     AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
@@ -50,7 +53,6 @@ def migrate_old_aur_repos_dir() -> None:
     shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
 
     from .pprint import print_warning, print_stderr
-    from .i18n import _
     print_stderr()
     print_warning(
         _("AUR repos dir has been moved from '{old}' to '{new}'.".format(
@@ -191,7 +193,7 @@ def write_config(config: configparser.ConfigParser = None) -> None:
     if need_write:
         if not os.path.exists(CONFIG_ROOT):
             os.makedirs(CONFIG_ROOT)
-        with open_file(CONFIG_PATH, 'w') as configfile:
+        with open(CONFIG_PATH, 'w') as configfile:
             config.write(configfile)
 
 

@@ -466,7 +466,7 @@ msgstr "[c] git checkout -- '*'"
 
 #: pikaur/build.py:622
 msgid "[d] delete build dir and try again"
-msgstr "[e] entferne Build-Verzeichnis und versuche erneut"
+msgstr "[d] entferne Build-Verzeichnis und versuche erneut"
 
 #: pikaur/build.py:623
 msgid "[e] edit PKGBUILD"

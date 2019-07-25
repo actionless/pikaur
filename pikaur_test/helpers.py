@@ -293,6 +293,11 @@ class PikaurDbTestCase(PikaurTestCase):
 
     def downgrade_aur_pkg(self, aur_pkg_name: str, fake_makepkg=False) -> str:
         # and test -P and -G during downgrading :-)
+        old_version = (
+            PackageDB.get_local_dict()[aur_pkg_name].version
+            if aur_pkg_name in PackageDB.get_local_pkgnames()
+            else None
+        )
         self.remove_if_installed(aur_pkg_name)
         spawn(f'rm -fr ./{aur_pkg_name}')
         pikaur(f'-G {aur_pkg_name}')
@@ -305,4 +310,9 @@ class PikaurDbTestCase(PikaurTestCase):
             fake_makepkg=fake_makepkg
         )
         self.assertInstalled(aur_pkg_name)
-        return PackageDB.get_local_dict()[aur_pkg_name].version
+        new_version = PackageDB.get_local_dict()[aur_pkg_name].version
+        self.assertNotEqual(
+            old_version, new_version,
+            f"After downgrading version of {aur_pkg_name} still stays on {old_version}"
+        )
+        return new_version

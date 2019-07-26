@@ -21,9 +21,10 @@ AUR_BASE_URL = 'https://' + AUR_HOST
 
 
 class AURPackageInfo(DataType):
+    packagebase: str
     name: str
     version: str
-    desc: str
+    desc: Optional[str] = None
     numvotes: Optional[int] = None
     popularity: Optional[float] = None
     depends: List[str] = []
@@ -33,7 +34,6 @@ class AURPackageInfo(DataType):
     conflicts: List[str] = []
     replaces: List[str] = []
     provides: List[str] = []
-    packagebase: str
 
     id: Optional[str] = None  # pylint: disable=invalid-name
     packagebaseid: Optional[str] = None

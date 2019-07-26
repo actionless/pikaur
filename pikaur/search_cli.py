@@ -51,10 +51,12 @@ def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:
                 ]
     else:
         if args.quiet:
-            class TmpNameType(AURPackageInfo):
-                pass
             result = {'all': [
-                TmpNameType(name=name) for name in get_all_aur_names()
+                AURPackageInfo(
+                    name=name,
+                    packagebase=name,
+                    version="0",
+                ) for name in get_all_aur_names()
             ]}
         else:
             result = {'all': get_all_aur_packages()}

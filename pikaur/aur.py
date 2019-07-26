@@ -43,8 +43,8 @@ class AURPackageInfo(DataType):
     firstsubmitted: int
     lastmodified: int
     urlpath: str
-    license: str
-    keywords: List[str]
+    license: Optional[str] = None
+    keywords: List[str] = []
     groups: List[str] = []
 
     @property

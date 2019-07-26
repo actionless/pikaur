@@ -60,7 +60,7 @@ class InstallInfo(DataType):
     name: str
     current_version: str
     new_version: str
-    description: str
+    description: Optional[str] = None
     repository: Optional[str] = None
     devel_pkg_age_days: Optional[int] = None
     package: Union['pyalpm.Package', 'AURPackageInfo']

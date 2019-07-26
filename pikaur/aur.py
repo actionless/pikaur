@@ -6,7 +6,7 @@ from multiprocessing.pool import ThreadPool
 from urllib import parse, request
 from urllib.parse import quote
 from urllib.error import URLError
-from typing import List, Dict, Tuple, Union, Any
+from typing import List, Dict, Tuple, Union, Any, Optional
 
 from .i18n import _
 from .core import DataType, get_chunks
@@ -24,8 +24,8 @@ class AURPackageInfo(DataType):
     name: str
     version: str
     desc: str
-    numvotes: int
-    popularity: float
+    numvotes: Optional[int] = None
+    popularity: Optional[float] = None
     depends: List[str] = []
     makedepends: List[str] = []
     optdepends: List[str] = []

@@ -414,7 +414,11 @@ def print_package_search_results(  # pylint:disable=useless-return
     from .aur import AURPackageInfo  # noqa  pylint:disable=redefined-outer-name
 
     def get_sort_key(pkg: AnyPackage) -> float:
-        if isinstance(pkg, AURPackageInfo) and getattr(pkg, 'numvotes', None) is not None:
+        if (
+                isinstance(pkg, AURPackageInfo) and
+                isinstance(pkg.numvotes, int) and
+                isinstance(pkg.popularity, float)
+        ):
             return (pkg.numvotes + 1) * (pkg.popularity + 1)
         return 1
 

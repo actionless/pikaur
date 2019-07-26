@@ -160,7 +160,8 @@ def aur_rpc_info_with_progress(
     result = aur_rpc_info(search_queries)
     if with_progressbar:
         progressbar = ThreadSafeProgressBar.get(
-            progressbar_length=progressbar_length
+            progressbar_length=progressbar_length,
+            progressbar_id='aur_search',
         )
         progressbar.update()
     return result

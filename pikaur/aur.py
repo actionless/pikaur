@@ -45,7 +45,7 @@ class AURPackageInfo(DataType):
     urlpath: str
     license: str
     keywords: List[str]
-    groups: List[str]
+    groups: List[str] = []
 
     @property
     def git_url(self) -> str:

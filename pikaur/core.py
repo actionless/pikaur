@@ -25,17 +25,24 @@ NOT_FOUND_ATOM = object()
 
 class DataType():
 
+    def _key_not_exists(self, key):
+        return getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
+
     def __init__(self, **kwargs) -> None:
         for key, value in kwargs.items():
             setattr(self, key, value)
+        for key in self.__annotations__:  # pylint: disable=no-member
+            if self._key_not_exists(key):
+                raise TypeError(
+                    f"'{self.__class__.__name__}' does "
+                    f"not have required attribute '{key}' set"
+                )
 
     def __setattr__(self, key: str, value: Any) -> None:
         if (
                 not getattr(self, "__annotations__", None) or
                 self.__annotations__.get(key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM  # pylint: disable=no-member
-        ) and (
-            getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
-        ):
+        ) and self._key_not_exists(key):
             raise TypeError(
                 f"'{self.__class__.__name__}' does "
                 f"not have attribute '{key}'"

@@ -35,14 +35,14 @@ class AURPackageInfo(DataType):
     provides: List[str] = []
     packagebase: str
 
-    id: str  # pylint: disable=invalid-name
-    packagebaseid: str
-    url: str
-    outofdate: int
-    maintainer: str
-    firstsubmitted: int
-    lastmodified: int
-    urlpath: str
+    id: Optional[str] = None  # pylint: disable=invalid-name
+    packagebaseid: Optional[str] = None
+    url: Optional[str] = None
+    outofdate: Optional[int] = None
+    maintainer: Optional[str] = None
+    firstsubmitted: Optional[int] = None
+    lastmodified: Optional[int] = None
+    urlpath: Optional[str] = None
     license: Optional[str] = None
     keywords: List[str] = []
     groups: List[str] = []

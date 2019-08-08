@@ -165,6 +165,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'str',
             'default': 'pacman'
         },
+        'AurHost': {
+            'type': 'str',
+            'default': 'aur.archlinux.org',
+        },
     },
     'network': {
         'Socks5Proxy': {

@@ -14,9 +14,10 @@ from .exceptions import AURError, SysExit
 from .progressbar import ThreadSafeProgressBar
 from .pprint import print_error
 from .prompt import ask_to_continue
+from .config import PikaurConfig
 
 
-AUR_HOST = 'aur.archlinux.org'
+AUR_HOST = PikaurConfig().misc.AurHost
 AUR_BASE_URL = 'https://' + AUR_HOST
 
 

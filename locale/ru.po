@@ -59,7 +59,6 @@ msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "Каталог репозитория AUR был перемещён из '{old}' в '{new}'."
 
 #: pikaur/args.py:410
-#, fuzzy
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
@@ -211,7 +210,6 @@ msgid "Groups"
 msgstr "Группы"
 
 #: pikaur/print_department.py:378
-#, fuzzy
 msgid "Ignoring package update {}"
 msgstr "Обновление пакета {} было проигнорировано"
 
@@ -549,7 +547,6 @@ msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "не предлагать редактирование файлов PKGBUILD и других файлов сборки"
 
 #: pikaur/args.py:451
-#, fuzzy
 msgid "don't prompt to show the build files diff"
 msgstr "не предлагать отображение различий файлов сборки"
 
@@ -558,7 +555,6 @@ msgid "don't remove build dir after the build"
 msgstr "не удалять каталог сборки после завершения"
 
 #: pikaur/args.py:420
-#, fuzzy
 msgid "download also AUR dependencies"
 msgstr "заргузить также зависимости из AUR"
 
@@ -657,7 +653,6 @@ msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur требует Python >= 3.7 для запуска."
 
 #: pikaur/main.py:96
-#, fuzzy
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur требует python-pysocks для использования прокси socks5."
 
@@ -773,11 +768,9 @@ msgstr ""
 msgid "{} does not exist on the filesystem."
 msgstr "{} не найден в системе."
 
-#, fuzzy
 #~ msgid "Removing installed repository dependencies for {}"
 #~ msgstr "Установка зависимостей из репозиториев для {}"
 
-#, fuzzy
 #~ msgid "error"
 #~ msgstr "ошибка:"
 

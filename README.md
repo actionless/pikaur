@@ -153,6 +153,9 @@ to avoid asking for sudo password more than once
 ##### PacmanPath (default: pacman)
 Path to pacman executable.
 
+##### AurHost (default: aur.archlinux.org)
+AUR Host, useful for users in China to use "aur.tuna.tsinghua.edu.cn".
+
 
 #### [network]
 

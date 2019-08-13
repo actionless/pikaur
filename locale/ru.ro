@@ -103,7 +103,7 @@ msgstr "Невозможно обновить пакет '{name}' из AUR по 
 #: pikaur/aur_deps.py:250
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
-msgstr ""
+msgstr "Не удается разрешить зависимости для пакета AUR '{pkg}':"
 
 #: pikaur/info_cli.py:33
 msgid "Check Deps"
@@ -470,7 +470,7 @@ msgstr "[d] удалить каталог сборки и попробовать
 
 #: pikaur/build.py:623
 msgid "[e] edit PKGBUILD"
-msgstr ""
+msgstr "[e] редактировать PKGBUILD"
 
 #: pikaur/build.py:621
 msgid "[i] ignore architecture"
@@ -657,9 +657,8 @@ msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur требует Python >= 3.7 для запуска."
 
 #: pikaur/main.py:96
-#, fuzzy
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
-msgstr "pikaur требует Python >= 3.7 для запуска."
+msgstr "pikaur требует python-pysocks для использования прокси socks5."
 
 #: pikaur/main.py:292
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."

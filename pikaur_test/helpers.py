@@ -291,7 +291,9 @@ class PikaurDbTestCase(PikaurTestCase):
         self.assertInstalled(repo_pkg_name)
         return PackageDB.get_local_dict()[repo_pkg_name].version
 
-    def downgrade_aur_pkg(self, aur_pkg_name: str, fake_makepkg=False) -> str:
+    def downgrade_aur_pkg(
+            self, aur_pkg_name: str, fake_makepkg=False, count=1
+    ) -> str:
         # and test -P and -G during downgrading :-)
         old_version = (
             PackageDB.get_local_dict()[aur_pkg_name].version
@@ -303,7 +305,7 @@ class PikaurDbTestCase(PikaurTestCase):
         pikaur(f'-G {aur_pkg_name}')
         prev_commit = spawn(  # type: ignore
             f'git -C ./{aur_pkg_name} log --format=%h'
-        ).stdout_text.splitlines()[1]
+        ).stdout_text.splitlines()[count]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
         pikaur(
             f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD',

@@ -174,7 +174,8 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                         communicate_task.get()
                         input_task.get()
                         pool.join()
-                        self.pty_out.close()
+        os.close(self.pty_cmd_slave)
+        os.close(self.pty_user_slave)
 
     def check_questions(self) -> None:
         # pylint: disable=too-many-branches

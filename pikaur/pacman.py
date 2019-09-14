@@ -63,7 +63,8 @@ PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
 PATTERN_DB_NOTFOUND = create_pacman_pattern("database not found: %s\n")
 
 
-def get_pacman_command() -> List[str]:
+def get_pacman_command(ignore_args: Optional[List[str]] = None) -> List[str]:
+    ignore_args = ignore_args or []
     args = parse_args()
     pacman_path = PikaurConfig().misc.PacmanPath
     pacman_cmd = [pacman_path, ]
@@ -83,6 +84,8 @@ def get_pacman_command() -> List[str]:
             'logfile',
             'print_format',
     ]:
+        if arg in ignore_args:
+            continue
         value = getattr(args, arg)
         if value:
             pacman_cmd += ['--' + arg.replace('_', '-'), value]
@@ -92,6 +95,8 @@ def get_pacman_command() -> List[str]:
             'assume_installed',
             'ignoregroup',
     ]:
+        if arg in ignore_args:
+            continue
         for value in getattr(args, arg) or []:
             pacman_cmd += ['--' + arg.replace('_', '-'), value]
 
@@ -394,7 +399,10 @@ class PackageDB(PackageDBCommon):
             return cached_pkg
         results: List[VersionMatcher] = []
         not_found_packages_output = spawn(
-            get_pacman_command() + ['-T', ] + cmd_args
+            # pacman --deptest flag conflicts with some --sync options:
+            get_pacman_command(ignore_args=[
+                'overwrite'
+            ]) + ['--deptest', ] + cmd_args
         ).stdout_text
         if not not_found_packages_output:
             cls._pacman_test_cache[cache_index] = results

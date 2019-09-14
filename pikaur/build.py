@@ -321,8 +321,10 @@ class PackageBuild(DataType):
                     package_build.built_packages_paths[pkg_name]
                 _mark_dep_resolved(dep)
 
-    def _get_pacman_command(self) -> List[str]:
-        return get_pacman_command() + (['--noconfirm'] if self.args.noconfirm else [])
+    def _get_pacman_command(self, ignore_args: Optional[List[str]] = None) -> List[str]:
+        return get_pacman_command(ignore_args=ignore_args) + (
+            ['--noconfirm'] if self.args.noconfirm else []
+        )
 
     def install_built_deps(
             self,
@@ -534,7 +536,10 @@ class PackageBuild(DataType):
         ))
         retry_interactive_command_or_exit(
             sudo(
-                self._get_pacman_command() + [
+                # pacman --remove flag conflicts with some --sync options:
+                self._get_pacman_command(ignore_args=[
+                    'overwrite',
+                ]) + [
                     '--remove',
                 ] + list(deps_packages_installed)
             ),

@@ -140,6 +140,7 @@ class InstallInfoFetcher:
             'refresh',
             'needed',
             'verbose',
+            'overwrite',
         ]) + extra_args
 
         def _get_pkg_install_infos(results: List[PacmanPrint]) -> List[InstallInfo]:

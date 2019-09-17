@@ -182,14 +182,15 @@ class PackageBuild(DataType):
         )
 
     @property
-    def is_installed(self) -> bool:
-        return os.path.exists(self.last_installed_file_path)
-
-    @property
     def last_installed_hash(self) -> Optional[str]:
-        if self.is_installed:
+        """
+        Commit hash of AUR repo of last version of the pkg installed by Pikaur
+        """
+        if os.path.exists(self.last_installed_file_path):
             with open_file(self.last_installed_file_path) as last_installed_file:
-                return last_installed_file.readlines()[0].strip()
+                lines = last_installed_file.readlines()
+                if lines:
+                    return lines[0].strip()
         return None
 
     def update_last_installed_file(self) -> None:
@@ -204,17 +205,10 @@ class PackageBuild(DataType):
             )
 
     @property
-    def build_files_updated(self) -> bool:
-        if (
-                self.is_installed
-        ) and (
-            self.last_installed_hash != self.current_hash
-        ):
-            return True
-        return False
-
-    @property
     def current_hash(self) -> Optional[str]:
+        """
+        Commit hash of AUR repo of the pkg
+        """
         git_hash_path = os.path.join(
             self.repo_path,
             '.git/refs/heads/master'

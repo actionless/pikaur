@@ -8,7 +8,7 @@ echo PyLint:
 pylint pikaur.py pikaur pikaur_test --score no
 
 echo MyPy:
-env MYPYPATH=./maintenance_scripts/mypy_stubs mypy pikaur.py pikaur_test
+env MYPYPATH=./maintenance_scripts/mypy_stubs python -m mypy pikaur.py pikaur_test
 
 echo Vulture:
 ./maintenance_scripts/vulture.sh

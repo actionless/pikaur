@@ -539,7 +539,7 @@ class InstallPackagesCLI():
                     file=filename,
                     name=bold_line(', '.join(package_build.package_names)),
                 ),
-                default_yes=not (package_build.is_installed or
+                default_yes=not (package_build.last_installed_hash or
                                  PikaurConfig().build.get_bool("DontEditByDefault"))
         ):
             full_filename = os.path.join(
@@ -604,7 +604,7 @@ class InstallPackagesCLI():
                 continue
 
             if (
-                    repo_status.build_files_updated
+                    repo_status.last_installed_hash != repo_status.current_hash
             ) and (
                 repo_status.last_installed_hash
             ) and (

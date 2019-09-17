@@ -150,7 +150,7 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
         '-E', 'HOME=/tmp',
     ]
     if cwd is not None:
-        base_root_isolator += ['-p', 'WorkingDirectory=' + cwd]
+        base_root_isolator += ['-p', 'WorkingDirectory=' + os.path.abspath(cwd)]
     return base_root_isolator + cmd
 
 

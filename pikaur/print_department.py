@@ -432,14 +432,14 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
             reverse=True
     )):
         # @TODO: return only packages for the current architecture
+        idx = ''
+        if enumerated:
+            idx = bold_line(f'{pkg_idx+enumerate_from}) ')
+
         pkg_name = package.name
         if args.quiet:
-            print(pkg_name)
+            print(f'{idx}{pkg_name}')
         else:
-
-            idx = ''
-            if enumerated:
-                idx = bold_line(f'{pkg_idx+enumerate_from}) ')
 
             repo = color_line('aur/', 9)
             if isinstance(package, pyalpm.Package):

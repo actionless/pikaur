@@ -276,7 +276,8 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             pikaur_operation = cli_install_packages
 
     elif not (args.database or args.remove or args.deptest or args.upgrade):
-        pikaur_operation = cli_dynamic_select
+        if args.positional:
+            pikaur_operation = cli_dynamic_select
 
     else:
         require_sudo = True

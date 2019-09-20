@@ -80,10 +80,14 @@ def split_last_line(text: str) -> str:
     return '\n'.join(prev_lines + [last_line])
 
 
-def get_input(prompt: str, answers: Iterable[str]) -> str:
-    require_confirm = max(len(choice) > 1 for choice in answers)
+def get_input(prompt: str, answers: Iterable[str] = ()) -> str:
+    require_confirm = max(len(choice) > 1 for choice in answers) if answers else False
     with PrintLock():
-        if require_confirm or PikaurConfig().ui.get_bool('RequireEnterConfirm'):
+        if not(
+                require_confirm or PikaurConfig().ui.get_bool('RequireEnterConfirm')
+        ):
+            answer = read_answer_from_tty(prompt, answers=answers)
+        else:
             from .pikspect import TTYRestore
             sub_tty = TTYRestore()
             TTYRestore.restore()
@@ -97,8 +101,6 @@ def get_input(prompt: str, answers: Iterable[str]) -> str:
                 for choice in answers:
                     if choice.isupper():
                         return choice.lower()
-        else:
-            answer = read_answer_from_tty(prompt, answers=answers)
         return answer
 
 

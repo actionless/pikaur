@@ -207,7 +207,7 @@ def cli_dynamic_select() -> None:
 
     print_stderr()
     print_stderr(_("Plese enter the number of the package you want to install (default: 0):"))
-    answer = get_input('> ', 'asdasdsa') or '0'
+    answer = get_input('> ') or '0'
     print_stderr()
     if answer.lower() == _('n'):
         raise SysExit(128)

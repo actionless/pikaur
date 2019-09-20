@@ -25,6 +25,7 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     # query options
     ('Q', 'query', None),
     ('o', 'owns', None),
+    ('l', 'list', None),  # @TODO
     # operations
     ('D', 'database', None),
     ('F', 'files', None),
@@ -96,7 +97,6 @@ PACMAN_COUNT_OPTS: ArgSchema = [
 PACMAN_APPEND_OPTS: ArgSchema = [
     (None, 'ignore', None),
     (None, 'ignoregroup', None),  # @TODO
-    ('l', 'list', None),  # @TODO
     (None, 'overwrite', None),
     (None, 'assume-installed', None),  # @TODO
 ]

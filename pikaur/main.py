@@ -244,6 +244,9 @@ def cli_entry_point() -> None:
             require_sudo = True
             pikaur_operation = cli_install_packages
 
+    elif args.files:
+        require_sudo = bool(args.refresh)
+
     else:
         require_sudo = True
 

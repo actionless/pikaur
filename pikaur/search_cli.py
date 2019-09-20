@@ -8,7 +8,7 @@ import pyalpm
 
 from .i18n import _
 from .pprint import print_stderr
-from .print_department import print_package_search_results
+from .print_department import print_package_search_results, AnyPackage
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
 from .aur import (
     AURPackageInfo,
@@ -92,7 +92,7 @@ def join_search_results(
     }.values()
 
 
-def cli_search_packages() -> None:  # pylint: disable=too-many-locals
+def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disable=too-many-locals
     refresh_pkg_db()
 
     args = parse_args()
@@ -132,16 +132,25 @@ def cli_search_packages() -> None:  # pylint: disable=too-many-locals
     if not args.quiet:
         sys.stderr.write('\n')
 
+    results: List[AnyPackage] = []
+
     if result_repo and not AUR_ONLY:
         repo_result = join_search_results(result_repo)
         print_package_search_results(
             packages=repo_result,
-            local_pkgs_versions=result_local
+            local_pkgs_versions=result_local,
+            enumerated=enumerated,
         )
+        results += repo_result
 
     if result_aur and not REPO_ONLY:
         aur_result = join_search_results(list(result_aur.values()))
         print_package_search_results(
             packages=aur_result,
-            local_pkgs_versions=result_local
+            local_pkgs_versions=result_local,
+            enumerated=enumerated,
+            enumerate_from=len(results)
         )
+        results += aur_result
+
+    return results

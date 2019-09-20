@@ -406,9 +406,11 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
 
 
 # @TODO: weird pylint behavior if remove `return` from the end:
-def print_package_search_results(  # pylint:disable=useless-return
+def print_package_search_results(  # pylint:disable=useless-return,too-many-locals
         packages: Iterable[AnyPackage],
         local_pkgs_versions: Dict[str, str],
+        enumerated=False,
+        enumerate_from=0,
 ) -> None:
 
     from .aur import AURPackageInfo  # noqa  pylint:disable=redefined-outer-name
@@ -424,16 +426,20 @@ def print_package_search_results(  # pylint:disable=useless-return
 
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
-    for package in sorted(
+    for pkg_idx, package in enumerate(sorted(
             packages,
             key=get_sort_key,
             reverse=True
-    ):
+    )):
         # @TODO: return only packages for the current architecture
         pkg_name = package.name
         if args.quiet:
             print(pkg_name)
         else:
+
+            idx = ''
+            if enumerated:
+                idx = bold_line(f'{pkg_idx+enumerate_from}) ')
 
             repo = color_line('aur/', 9)
             if isinstance(package, pyalpm.Package):
@@ -477,7 +483,8 @@ def print_package_search_results(  # pylint:disable=useless-return
                     datetime.fromtimestamp(package.outofdate).strftime('%Y/%m/%d')
                 )
 
-            print("{}{} {} {}{}{}".format(
+            print("{}{}{} {} {}{}{}".format(
+                idx,
                 repo,
                 bold_line(pkg_name),
                 color_line(version, version_color),

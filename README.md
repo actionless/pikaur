@@ -19,6 +19,7 @@ Notable features:
 * show AUR package diff and review PKGBUILD and .install files
 * [upgrade](#how-to-upgrade-all-the-dev--git-packages-at-once "") `-git`, `-svn` and other dev packages
 * AUR package names in shell completion (bash, fish, zsh)
+* quickly search&install package by `pikaur <search-query>`
 
 The following pacman operations are extended with AUR capabilities:
 

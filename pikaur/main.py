@@ -30,7 +30,7 @@ from .print_department import (
     pretty_format_upgradeable, print_version, print_not_found_packages,
 )
 from .updates import find_repo_upgradeable, find_aur_updates
-from .prompt import ask_to_continue
+from .prompt import ask_to_continue, get_input
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT, CONFIG_PATH,
     AUR_REPOS_CACHE_PATH, PikaurConfig, migrate_old_aur_repos_dir,
@@ -200,7 +200,35 @@ def cli_print_version() -> None:
     print_version(pacman_version, quiet=args.quiet)
 
 
-def cli_entry_point() -> None:
+def cli_dynamic_select() -> None:
+    packages = cli_search_packages(enumerated=True)
+    if not packages:
+        raise SysExit(1)
+
+    print_stderr()
+    print_stderr(_("Plese enter the number of the package you want to install (default: 0):"))
+    answer = get_input('> ', 'asdasdsa') or '0'
+    print_stderr()
+    if answer.lower() == _('n'):
+        raise SysExit(128)
+
+    try:
+        selected_pkg_idx = int(answer)
+    except ValueError:
+        print_stderr(_('Please enter a valid integer number.'))
+        raise SysExit(5)
+
+    if selected_pkg_idx >= len(packages):
+        print_stderr(_('Please enter a number between 0 and {}.').format(
+            len(packages) - 1
+        ))
+        raise SysExit(5)
+
+    parse_args().positional = [packages[selected_pkg_idx].name, ]
+    cli_install_packages()
+
+
+def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
 
     init_proxy()
@@ -223,6 +251,9 @@ def cli_entry_point() -> None:
         if args.sysupgrade:
             pikaur_operation = cli_print_upgradeable
 
+    elif args.files:
+        require_sudo = bool(args.refresh)
+
     elif args.getpkgbuild:
         pikaur_operation = cli_getpkgbuild
 
@@ -244,8 +275,8 @@ def cli_entry_point() -> None:
             require_sudo = True
             pikaur_operation = cli_install_packages
 
-    elif args.files:
-        require_sudo = bool(args.refresh)
+    elif not (args.database or args.remove or args.deptest or args.upgrade):
+        pikaur_operation = cli_dynamic_select
 
     else:
         require_sudo = True

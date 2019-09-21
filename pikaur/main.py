@@ -207,7 +207,7 @@ def cli_dynamic_select() -> None:
 
     print_stderr(
         '\n' +
-        _("Please enter the number of the package you want to install (default: {}):").format(
+        _("Please enter the number of the package you want to install (default={}):").format(
             1
         )
     )

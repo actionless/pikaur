@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-21 12:07+0200\n"
+"POT-Creation-Date: 2019-09-21 19:28+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -317,14 +317,6 @@ msgstr "Packages目录"
 msgid "Pikaur-specific options:"
 msgstr "Pikaur的独立选项:"
 
-#: pikaur/main.py:226
-msgid "Please enter a number between {} and {}."
-msgstr ""
-
-#: pikaur/main.py:222
-msgid "Please enter a valid integer number."
-msgstr ""
-
 #: pikaur/main.py:210
 msgid ""
 "Please enter the number of the package you want to install (default={}):"
@@ -604,6 +596,14 @@ msgstr "安装已构建的包"
 
 #: pikaur/install_cli.py:644
 msgid "installing for the first time"
+msgstr ""
+
+#: pikaur/main.py:222
+msgid "invalid number: {}"
+msgstr ""
+
+#: pikaur/main.py:226
+msgid "invalid value: {} is not between {} and {}"
 msgstr ""
 
 #: pikaur/install_cli.py:484

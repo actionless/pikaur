@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-21 12:07+0200\n"
+"POT-Creation-Date: 2019-09-21 19:28+0200\n"
 "PO-Revision-Date: 2018-09-24 11:43+0200\n"
 "Last-Translator: Bert Peters <bert@bertptrs.nl>\n"
 "Language-Team: none\n"
@@ -329,14 +329,6 @@ msgstr "Pakketmap"
 msgid "Pikaur-specific options:"
 msgstr "Pikaur-specifieke opties:"
 
-#: pikaur/main.py:226
-msgid "Please enter a number between {} and {}."
-msgstr ""
-
-#: pikaur/main.py:222
-msgid "Please enter a valid integer number."
-msgstr ""
-
 #: pikaur/main.py:210
 msgid ""
 "Please enter the number of the package you want to install (default={}):"
@@ -615,6 +607,14 @@ msgstr "installeer gebouwd pakket"
 
 #: pikaur/install_cli.py:644
 msgid "installing for the first time"
+msgstr ""
+
+#: pikaur/main.py:222
+msgid "invalid number: {}"
+msgstr ""
+
+#: pikaur/main.py:226
+msgid "invalid value: {} is not between {} and {}"
 msgstr ""
 
 #: pikaur/install_cli.py:484

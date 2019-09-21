@@ -219,12 +219,12 @@ def cli_dynamic_select() -> None:
     try:
         selected_pkg_idx = int(answer) - 1
     except ValueError:
-        print_stderr(_('Please enter a valid integer number.'))
+        print_error(_('invalid number: {}').format(answer))
         raise SysExit(5)
 
     if not 0 <= selected_pkg_idx < len(packages):
-        print_stderr(_('Please enter a number between {} and {}.').format(
-            1, len(packages)
+        print_error(_('invalid value: {} is not between {} and {}').format(
+            answer, 1, len(packages)
         ))
         raise SysExit(5)
 

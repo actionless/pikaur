@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2018.
 # Lastname <email@example.com>, 2018.
+# Drommer <drommer@github.com>, 2019.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-21 12:07+0200\n"
-"PO-Revision-Date: 2018-10-07 23:43+0200\n"
+"POT-Creation-Date: 2019-09-21 19:28+0200\n"
+"PO-Revision-Date: 2019-09-21 19:36+0200\n"
 "Last-Translator: Drommer <drommer@github.com>\n"
 "Language-Team: Russian <email@example.com>\n"
 "Language: ru\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Gtranslator 2.91.7\n"
+"X-Generator: Gtranslator 3.32.1\n"
 
 #: pikaur/replacements.py:42
 #, python-brace-format
@@ -59,13 +60,12 @@ msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "Каталог репозитория AUR был перемещён из '{old}' в '{new}'."
 
 #: pikaur/args.py:410
-#, fuzzy
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
 msgstr ""
 "Все стандартные параметры pacman соответствуют выполнению `pacman -U "
-"<pkg_file>`. Смотрите `pacman -"
+"<pkg_file>`. Смотрите `pacman -Uh`."
 
 #: pikaur/main.py:177
 msgid "Build directory"
@@ -211,9 +211,8 @@ msgid "Groups"
 msgstr "Группы"
 
 #: pikaur/print_department.py:378
-#, fuzzy
 msgid "Ignoring package update {}"
-msgstr "Обновление пакета {} было проигнорировано"
+msgstr "пропуск обновления пакета {}"
 
 #: pikaur/print_department.py:384
 msgid "Ignoring package {}"
@@ -327,18 +326,12 @@ msgstr "Каталог пакета"
 msgid "Pikaur-specific options:"
 msgstr "Опции pikaur:"
 
-#: pikaur/main.py:226
-msgid "Please enter a number between {} and {}."
-msgstr ""
-
-#: pikaur/main.py:222
-msgid "Please enter a valid integer number."
-msgstr ""
-
 #: pikaur/main.py:210
 msgid ""
 "Please enter the number of the package you want to install (default={}):"
 msgstr ""
+"Пожалуйста введите порядковый номер пакета, который вы хотите установить (по-"
+"умолчанию={}):"
 
 #: pikaur/info_cli.py:38
 msgid "Popularity"
@@ -562,7 +555,6 @@ msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "не предлагать редактирование файлов PKGBUILD и других файлов сборки"
 
 #: pikaur/args.py:451
-#, fuzzy
 msgid "don't prompt to show the build files diff"
 msgstr "не предлагать отображение различий файлов сборки"
 
@@ -571,9 +563,8 @@ msgid "don't remove build dir after the build"
 msgstr "не удалять каталог сборки после завершения"
 
 #: pikaur/args.py:420
-#, fuzzy
 msgid "download also AUR dependencies"
-msgstr "заргузить также зависимости из AUR"
+msgstr "загрузить также зависимости из AUR"
 
 #: pikaur/build.py:628 pikaur/build.py:647
 msgid "e"
@@ -616,6 +607,14 @@ msgstr "установить собраный пакет"
 #: pikaur/install_cli.py:644
 msgid "installing for the first time"
 msgstr "устанавливается впервые"
+
+#: pikaur/main.py:222
+msgid "invalid number: {}"
+msgstr "неверное число: {}"
+
+#: pikaur/main.py:226
+msgid "invalid value: {} is not between {} and {}"
+msgstr "неверное значение: {} должно быть между {} и {}"
 
 #: pikaur/install_cli.py:484
 msgid "looking for conflicting AUR packages..."
@@ -681,11 +680,11 @@ msgstr ""
 
 #: pikaur/args.py:405
 msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
-msgstr ""
+msgstr "pikaur {-G --getpkgbuild} [параметры] <пакет(ы)>"
 
 #: pikaur/args.py:404
 msgid "pikaur {-P --pkgbuild}    [options] <file(s)>"
-msgstr ""
+msgstr "pikaur {-P --pkgbuild}    [параметры] <файл(ы)>"
 
 #: pikaur/args.py:403
 msgid "pikaur-specific operations:"

@@ -410,8 +410,8 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
         packages: Iterable[AnyPackage],
         local_pkgs_versions: Dict[str, str],
         enumerated=False,
-        enumerate_from=0,
-) -> None:
+        enumerate_after=0,
+) -> Iterable[AnyPackage]:
 
     from .aur import AURPackageInfo  # noqa  pylint:disable=redefined-outer-name
 
@@ -426,15 +426,16 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
 
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
-    for pkg_idx, package in enumerate(sorted(
-            packages,
-            key=get_sort_key,
-            reverse=True
-    )):
+    sorted_packages = sorted(
+        packages,
+        key=get_sort_key,
+        reverse=True
+    )
+    for pkg_idx, package in enumerate(sorted_packages):
         # @TODO: return only packages for the current architecture
         idx = ''
         if enumerated:
-            idx = bold_line(f'{pkg_idx+enumerate_from}) ')
+            idx = bold_line(f'{pkg_idx+enumerate_after+1}) ')
 
         pkg_name = package.name
         if args.quiet:
@@ -493,4 +494,4 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
                 rating
             ))
             print(format_paragraph(f'{package.desc}'))
-    return
+    return sorted_packages

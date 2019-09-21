@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-21 11:17+0200\n"
+"POT-Creation-Date: 2019-09-21 11:19+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -317,16 +317,17 @@ msgstr "Packages目录"
 msgid "Pikaur-specific options:"
 msgstr "Pikaur的独立选项:"
 
-#: pikaur/main.py:222
-msgid "Please enter a number between 1 and {}."
+#: pikaur/main.py:226
+msgid "Please enter a number between {} and {}."
 msgstr ""
 
-#: pikaur/main.py:218
+#: pikaur/main.py:222
 msgid "Please enter a valid integer number."
 msgstr ""
 
-#: pikaur/main.py:209
-msgid "Plese enter the number of the package you want to install (default: 1):"
+#: pikaur/main.py:210
+msgid ""
+"Please enter the number of the package you want to install (default: {}):"
 msgstr ""
 
 #: pikaur/info_cli.py:38
@@ -613,7 +614,7 @@ msgstr "查找冲突的 AUR 包..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:338 pikaur/main.py:212 pikaur/prompt.py:20
+#: pikaur/install_cli.py:338 pikaur/main.py:216 pikaur/prompt.py:20
 msgid "n"
 msgstr "n"
 
@@ -652,7 +653,7 @@ msgstr "自定义 makepkg 配置文件的路径"
 msgid "path to custom pikaur config"
 msgstr "自定义 makepkg 配置文件的路径"
 
-#: pikaur/main.py:329
+#: pikaur/main.py:333
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur 需要运行于 Python >= 3.7."
 
@@ -661,7 +662,7 @@ msgstr "pikaur 需要运行于 Python >= 3.7."
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur 需要运行于 Python >= 3.7."
 
-#: pikaur/main.py:334
+#: pikaur/main.py:338
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr "pikaur 需要由 root 运行的 systemd >= 235 (dynamic users)."
 

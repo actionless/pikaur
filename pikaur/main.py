@@ -205,8 +205,12 @@ def cli_dynamic_select() -> None:
     if not packages:
         raise SysExit(1)
 
-    print_stderr()
-    print_stderr(_("Plese enter the number of the package you want to install (default: 1):"))
+    print_stderr(
+        '\n' +
+        _("Please enter the number of the package you want to install (default: {}):").format(
+            1
+        )
+    )
     answer = get_input('> ', [str(i) for i in range(len(packages))]) or '1'
     print_stderr()
     if answer.lower() == _('n'):
@@ -219,8 +223,8 @@ def cli_dynamic_select() -> None:
         raise SysExit(5)
 
     if not 0 <= selected_pkg_idx < len(packages):
-        print_stderr(_('Please enter a number between 1 and {}.').format(
-            len(packages)
+        print_stderr(_('Please enter a number between {} and {}.').format(
+            1, len(packages)
         ))
         raise SysExit(5)
 

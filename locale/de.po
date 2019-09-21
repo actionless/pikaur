@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-21 11:17+0200\n"
+"POT-Creation-Date: 2019-09-21 11:19+0200\n"
 "PO-Revision-Date: 2018-10-20 19:45+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: de <>\n"
@@ -327,16 +327,17 @@ msgstr "Paket-Verzeichnis"
 msgid "Pikaur-specific options:"
 msgstr "Pikaur-spezifische Optionen:"
 
-#: pikaur/main.py:222
-msgid "Please enter a number between 1 and {}."
+#: pikaur/main.py:226
+msgid "Please enter a number between {} and {}."
 msgstr ""
 
-#: pikaur/main.py:218
+#: pikaur/main.py:222
 msgid "Please enter a valid integer number."
 msgstr ""
 
-#: pikaur/main.py:209
-msgid "Plese enter the number of the package you want to install (default: 1):"
+#: pikaur/main.py:210
+msgid ""
+"Please enter the number of the package you want to install (default: {}):"
 msgstr ""
 
 #: pikaur/info_cli.py:38
@@ -624,7 +625,7 @@ msgstr "Suche nach in Konflikt stehenden AUR-Paketen..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:338 pikaur/main.py:212 pikaur/prompt.py:20
+#: pikaur/install_cli.py:338 pikaur/main.py:216 pikaur/prompt.py:20
 msgid "n"
 msgstr "n"
 
@@ -662,7 +663,7 @@ msgstr "Pfad der angepassten Konfiguration von makepkg"
 msgid "path to custom pikaur config"
 msgstr "Pfad der angepassten Konfiguration von pikaur"
 
-#: pikaur/main.py:329
+#: pikaur/main.py:333
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "Pikaur benötigt Python >= 3.7 um zu funktionieren."
 
@@ -671,7 +672,7 @@ msgstr "Pikaur benötigt Python >= 3.7 um zu funktionieren."
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "Pikaur benötigt Python >= 3.7 um zu funktionieren."
 
-#: pikaur/main.py:334
+#: pikaur/main.py:338
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "Pikaur benötigt systemd >= 235 (dynamic users) um als root ausgeführt werden "

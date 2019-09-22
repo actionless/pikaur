@@ -92,6 +92,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'str',
             'default': 'versiondiff'
         },
+        'ShowDownloadSize': {
+            'type': 'bool',
+            'default': 'yes',
+        },
     },
     'build': {
         'KeepBuildDir': {

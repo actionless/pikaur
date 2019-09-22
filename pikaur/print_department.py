@@ -173,10 +173,19 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             if not color:
                 pkg_name = f'# {pkg_name}'
 
+        pkg_size = ''
+        if (
+                user_config.sync.get_bool('ShowDownloadSize')
+                and pkg_update.package
+                and getattr(pkg_update.package, 'size', None)
+        ):
+            pkg_size = f'{pkg_update.package.size/1024/1024:.2f} MiB'
+
         return (
             template or (
                 ' {pkg_name}{spacing}'
-                ' {current_version}{spacing2}{version_separator}{new_version}{days_old}{verbose}'
+                ' {current_version}{spacing2}'
+                '{version_separator}{new_version}{spacing3}{pkg_size}{days_old}{verbose}'
             )
         ).format(
             pkg_name=pkg_name,
@@ -204,6 +213,12 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 len(pkg_update.current_version or '') -
                 max(-1, (pkg_len - column_width))
             )),
+            spacing3=(' ' * max(1, (
+                column_width - 18 -
+                len(pkg_update.new_version or '') -
+                max(-1, (pkg_len - column_width))
+            )) if pkg_size else ''),
+            pkg_size=pkg_size,
             verbose=(
                 '' if not (verbose and pkg_update.description)
                 else f'\n{format_paragraph(pkg_update.description)}'

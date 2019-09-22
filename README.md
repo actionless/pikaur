@@ -89,6 +89,9 @@ When installing new packages, show their repository name, even if they are comin
 ##### UpgradeSorting (default: versiondiff)
 When upgrading packages, sort them by `versiondiff`, `pkgname` or `repo`.
 
+##### ShowDownloadSize (default: yes)
+When installing repository packages, show their download size.
+
 
 #### [build]
 

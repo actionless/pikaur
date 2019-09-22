@@ -163,6 +163,9 @@ Path to pacman executable.
 ##### AurHost (default: aur.archlinux.org)
 AUR Host, useful for users in China to use "aur.tuna.tsinghua.edu.cn".
 
+##### NewsUrl (default: https://www.archlinux.org/feeds/news/)
+Arch Linux News URL, useful for users of Parabola or other Arch derivatives.
+
 
 #### [network]
 

@@ -177,6 +177,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'str',
             'default': 'aur.archlinux.org',
         },
+        'NewsUrl': {
+            'type': 'str',
+            'default': 'https://www.archlinux.org/feeds/news/',
+        },
     },
     'network': {
         'Socks5Proxy': {

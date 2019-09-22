@@ -12,14 +12,13 @@ from html.parser import HTMLParser
 from typing import TextIO, Union
 
 from .i18n import _
-from .config import CACHE_ROOT
+from .config import CACHE_ROOT, PikaurConfig
 from .pprint import color_line, format_paragraph, print_stdout, bold_line
 from .pacman import PackageDB
 
 
 class News():
-    URL = 'https://www.archlinux.org'
-    DIR = '/feeds/news/'
+    URL = PikaurConfig().misc.NewsUrl.get_str()
     CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
     _news_feed: Union[xml.etree.ElementTree.Element, None]
 
@@ -56,7 +55,7 @@ class News():
     def fetch_latest(self) -> None:
         try:
             http_response: Union[HTTPResponse, urllib.response.addinfourl] = \
-                urllib.request.urlopen(self.URL + self.DIR)
+                urllib.request.urlopen(self.URL)
         except urllib.error.URLError:
             print_stdout(_('Could not fetch archlinux.org news'))
             return

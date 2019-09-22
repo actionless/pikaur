@@ -94,7 +94,7 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
         },
         'ShowDownloadSize': {
             'type': 'bool',
-            'default': 'yes',
+            'default': 'no',
         },
     },
     'build': {

@@ -421,11 +421,11 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
 
 # @TODO: weird pylint behavior if remove `return` from the end:
 def print_package_search_results(  # pylint:disable=useless-return,too-many-locals
-        packages: Iterable[AnyPackage],
+        repo_packages: Iterable[AnyPackage],
+        aur_packages: Iterable[AnyPackage],
         local_pkgs_versions: Dict[str, str],
         enumerated=False,
-        enumerate_after=0,
-) -> Iterable[AnyPackage]:
+) -> List[AnyPackage]:
 
     from .aur import AURPackageInfo  # noqa  pylint:disable=redefined-outer-name
 
@@ -440,16 +440,20 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
 
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
-    sorted_packages = sorted(
-        packages,
+    sorted_packages: List[AnyPackage] = list(repo_packages) + list(sorted(
+        aur_packages,
         key=get_sort_key,
         reverse=True
-    )
-    for pkg_idx, package in enumerate(sorted_packages):
+    ))
+    enumerated_packages = list(enumerate(sorted_packages))
+    if PikaurConfig().sync.ReverseSearchSorting.get_bool():
+        enumerated_packages = list(reversed(enumerated_packages))
+
+    for pkg_idx, package in enumerated_packages:
         # @TODO: return only packages for the current architecture
         idx = ''
         if enumerated:
-            idx = bold_line(f'{pkg_idx+enumerate_after+1}) ')
+            idx = bold_line(f'{pkg_idx+1}) ')
 
         pkg_name = package.name
         if args.quiet:

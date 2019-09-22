@@ -132,23 +132,16 @@ def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disabl
     if not args.quiet:
         sys.stderr.write('\n')
 
-    results: List[AnyPackage] = []
+    repo_result = (
+        join_search_results(result_repo)
+    ) if result_repo and not AUR_ONLY else []
+    aur_result = (
+        join_search_results(list(result_aur.values()))
+    ) if result_aur and not REPO_ONLY else []
 
-    if result_repo and not AUR_ONLY:
-        repo_result = join_search_results(result_repo)
-        results += print_package_search_results(
-            packages=repo_result,
-            local_pkgs_versions=result_local,
-            enumerated=enumerated,
-        )
-
-    if result_aur and not REPO_ONLY:
-        aur_result = join_search_results(list(result_aur.values()))
-        results += print_package_search_results(
-            packages=aur_result,
-            local_pkgs_versions=result_local,
-            enumerated=enumerated,
-            enumerate_after=len(results)
-        )
-
-    return results
+    return print_package_search_results(
+        repo_packages=repo_result,
+        aur_packages=aur_result,
+        local_pkgs_versions=result_local,
+        enumerated=enumerated,
+    )

@@ -159,6 +159,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no'
         },
+        'ReverseSearchSorting': {
+            'type': 'bool',
+            'default': 'no'
+        },
     },
     'misc': {
         'SudoLoopInterval': {

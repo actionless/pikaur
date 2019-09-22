@@ -146,6 +146,9 @@ Wherever to use `less` pager when viewing AUR packages diff. Choices are `always
 ##### PrintCommands (default: no)
 Print each command which pikaur is currently spawning.
 
+##### ReverseSearchSorting (default: no)
+Reverse search results of the commands like `pikaur -Ss <query>` or `piakur <query>`.
+
 
 #### [misc]
 

@@ -446,7 +446,7 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
         reverse=True
     ))
     enumerated_packages = list(enumerate(sorted_packages))
-    if PikaurConfig().sync.ReverseSearchSorting.get_bool():
+    if PikaurConfig().ui.ReverseSearchSorting.get_bool():
         enumerated_packages = list(reversed(enumerated_packages))
 
     for pkg_idx, package in enumerated_packages:

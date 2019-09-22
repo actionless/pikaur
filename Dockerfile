@@ -34,8 +34,6 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 		python-pylint flake8 mypy python-vulture python-coveralls \
 		python2 python2-setuptools iputils # @TODO: coveralls workaround
 
-RUN pacman -S --noconfirm --needed python-pip && pip install -U mypy typing_extensions # @TODO: mypy broken in arch workaround
-
 RUN sudo -u user env \
 	TRAVIS=$TRAVIS \
 	TRAVIS_JOB_ID=$TRAVIS_JOB_ID \

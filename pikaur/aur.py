@@ -17,7 +17,7 @@ from .prompt import ask_to_continue
 from .config import PikaurConfig
 
 
-AUR_HOST = PikaurConfig().misc.AurHost
+AUR_HOST = PikaurConfig().misc.AurHost.get_str()
 AUR_BASE_URL = 'https://' + AUR_HOST
 
 

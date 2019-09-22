@@ -79,7 +79,7 @@ init_output_encoding()
 
 
 def init_proxy() -> None:
-    proxy = PikaurConfig().network.get_str('Socks5Proxy')
+    proxy = PikaurConfig().network.Socks5Proxy.get_str()
     if proxy:  # pragma: no cover
         port = 1080
         idx = proxy.find(':')
@@ -115,7 +115,7 @@ def cli_print_upgradeable() -> None:
     else:
         print_stdout(pretty_format_upgradeable(
             updates,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
 
 
@@ -187,7 +187,7 @@ def cli_clean_packages_cache() -> None:
     if not args.aur:
         raise SysExit(
             interactive_spawn(sudo(
-                [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args)
+                [PikaurConfig().misc.PacmanPath.get_str(), ] + reconstruct_args(args)
             )).returncode
         )
 
@@ -195,7 +195,7 @@ def cli_clean_packages_cache() -> None:
 def cli_print_version() -> None:
     args = parse_args()
     pacman_version = spawn(
-        [PikaurConfig().misc.PacmanPath, '--version', ],
+        [PikaurConfig().misc.PacmanPath.get_str(), '--version', ],
     ).stdout_text.splitlines()[1].strip(' .-')
     print_version(pacman_version, quiet=args.quiet)
 
@@ -308,7 +308,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
                 run_with_sudo_loop(pikaur_operation)
     else:
         # Just bypass all the args to pacman
-        pacman_args = [PikaurConfig().misc.PacmanPath, ] + (args.raw or [])
+        pacman_args = [PikaurConfig().misc.PacmanPath.get_str(), ] + (args.raw or [])
         if require_sudo:
             pacman_args = sudo(pacman_args)
         sys.exit(

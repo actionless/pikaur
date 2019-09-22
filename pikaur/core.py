@@ -254,7 +254,7 @@ def sudo_loop(once=False) -> None:
     get sudo for further questions
     """
     from .config import PikaurConfig
-    sudo_loop_interval = PikaurConfig().misc.get_int('SudoLoopInterval')
+    sudo_loop_interval = PikaurConfig().misc.SudoLoopInterval.get_int()
     if sudo_loop_interval == -1:
         return
     while True:

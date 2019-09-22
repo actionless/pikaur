@@ -540,7 +540,7 @@ class InstallPackagesCLI():
                     name=bold_line(', '.join(package_build.package_names)),
                 ),
                 default_yes=not (package_build.last_installed_hash or
-                                 PikaurConfig().build.get_bool("DontEditByDefault"))
+                                 PikaurConfig().build.DontEditByDefault.get_bool())
         ):
             full_filename = os.path.join(
                 package_build.repo_path,
@@ -623,7 +623,7 @@ class InstallPackagesCLI():
                         '-C',
                         repo_status.repo_path,
                         'diff',
-                    ] + PikaurConfig().build.GitDiffArgs.split(',') + [
+                    ] + PikaurConfig().build.GitDiffArgs.get_str().split(',') + [
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
                     ]

@@ -129,7 +129,7 @@ class PackageBuild(DataType):
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
         self.built_packages_paths = {}
         self.keep_build_dir = self.args.keepbuild or (
-            is_devel_pkg(self.package_base) and PikaurConfig().build.get_bool('KeepDevBuildDir')
+            is_devel_pkg(self.package_base) and PikaurConfig().build.KeepDevBuildDir.get_bool()
         )
 
         if os.path.exists(self.repo_path):
@@ -603,7 +603,7 @@ class PackageBuild(DataType):
             print_stderr(color_line(_("Command '{}' failed to execute.").format(
                 ' '.join(cmd_args)
             ), 9))
-            if PikaurConfig().build.get_bool('SkipFailedBuild'):
+            if PikaurConfig().build.SkipFailedBuild.get_bool():
                 answer = _("s")
             elif self.args.noconfirm:
                 answer = _("a")

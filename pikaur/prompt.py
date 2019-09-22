@@ -84,7 +84,7 @@ def get_input(prompt: str, answers: Iterable[str] = ()) -> str:
     require_confirm = max(len(choice) > 1 for choice in answers) if answers else False
     with PrintLock():
         if not(
-                require_confirm or PikaurConfig().ui.get_bool('RequireEnterConfirm')
+                require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
         ):
             answer = read_answer_from_tty(prompt, answers=answers)
         else:

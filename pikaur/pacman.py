@@ -66,7 +66,7 @@ PATTERN_DB_NOTFOUND = create_pacman_pattern("database not found: %s\n")
 def get_pacman_command(ignore_args: Optional[List[str]] = None) -> List[str]:
     ignore_args = ignore_args or []
     args = parse_args()
-    pacman_path = PikaurConfig().misc.PacmanPath
+    pacman_path = PikaurConfig().misc.PacmanPath.get_str()
     pacman_cmd = [pacman_path, ]
     if color_enabled():
         pacman_cmd += ['--color=always']

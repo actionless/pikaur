@@ -205,6 +205,34 @@ def write_config(config: configparser.ConfigParser = None) -> None:
             config.write(configfile)
 
 
+class PikaurConfigItem:
+
+    def __init__(self, section: configparser.SectionProxy, key: str) -> None:
+        self.section = section
+        self.key = key
+        self.value = self.section.get(key)
+
+    def get_bool(self) -> bool:
+        # pylint:disable=protected-access
+        if get_key_type(self.section.name, self.key) != 'bool':
+            raise TypeError(f"{self.key} is not 'bool'")
+        return configparser.RawConfigParser()._convert_to_boolean(self.value)  # type: ignore
+
+    def get_int(self) -> int:
+        if get_key_type(self.section.name, self.key) != 'int':
+            raise TypeError(f"{self.key} is not 'int'")
+        return int(self.value)
+
+    def get_str(self) -> str:
+        # note: it's basically needed for mypy
+        if get_key_type(self.section.name, self.key) != 'str':
+            raise TypeError(f"{self.key} is not 'str'")
+        return str(self.value)
+
+    def __str__(self) -> str:
+        return self.get_str()
+
+
 class PikaurConfigSection():
 
     section: configparser.SectionProxy
@@ -212,26 +240,8 @@ class PikaurConfigSection():
     def __init__(self, section: configparser.SectionProxy) -> None:
         self.section = section
 
-    def __getattr__(self, attr) -> str:
-        return self.get_str(attr)
-
-    def get_str(self, key: str, *args) -> str:
-        section = self.section
-        if get_key_type(section.name, key) != 'str':
-            raise TypeError(f"{key} is not 'str'")
-        return section.get(key, *args)
-
-    def get_int(self, key: str) -> int:
-        section = self.section
-        if get_key_type(section.name, key) != 'int':
-            raise TypeError(f"{key} is not 'int'")
-        return section.getint(key)
-
-    def get_bool(self, key: str) -> bool:
-        section = self.section
-        if get_key_type(section.name, key) != 'bool':
-            raise TypeError(f"{key} is not 'bool'")
-        return section.getboolean(key)
+    def __getattr__(self, attr) -> PikaurConfigItem:
+        return PikaurConfigItem(self.section, attr)
 
 
 class PikaurConfig():

@@ -43,22 +43,22 @@ PACMAN_BOOL_OPTS: ArgSchema = [
 
 def get_pikaur_bool_opts() -> ArgSchema:
     return [
-        (None, 'noedit', PikaurConfig().build.get_bool('NoEdit')),
+        (None, 'noedit', PikaurConfig().build.NoEdit.get_bool()),
         (None, 'edit', None),
         (None, 'namesonly', None),
         (None, 'repo', None),
         ('a', 'aur', None),
         (None, 'devel', None),
-        (None, 'keepbuild', PikaurConfig().build.get_bool('KeepBuildDir')),
-        (None, 'nodiff', PikaurConfig().build.get_bool('NoDiff')),
+        (None, 'keepbuild', PikaurConfig().build.KeepBuildDir.get_bool()),
+        (None, 'nodiff', PikaurConfig().build.NoDiff.get_bool()),
         (None, 'rebuild', None),
-        (None, 'dynamic-users', PikaurConfig().build.get_bool('AlwaysUseDynamicUsers')),
+        (None, 'dynamic-users', PikaurConfig().build.AlwaysUseDynamicUsers.get_bool()),
         ('P', 'pkgbuild', None),
         (None, 'install', None),
         ('G', 'getpkgbuild', None),
         (None, 'deps', None),
         # undocumented options:
-        (None, 'print-commands', PikaurConfig().ui.get_bool('PrintCommands')),
+        (None, 'print-commands', PikaurConfig().ui.PrintCommands.get_bool()),
         (None, 'hide-build-log', None),
         (None, 'print-args-and-exit', None),
     ]
@@ -390,7 +390,7 @@ def cli_print_help() -> None:
     args = parse_args()
 
     pacman_help = spawn(
-        [PikaurConfig().misc.PacmanPath, ] +
+        [PikaurConfig().misc.PacmanPath.get_str(), ] +
         reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
     ).stdout_text.replace(
         'pacman', 'pikaur'

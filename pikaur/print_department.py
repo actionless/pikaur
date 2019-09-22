@@ -88,9 +88,9 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         )
         user_config = PikaurConfig()
         color_config = user_config.colors
-        version_color = color_config.get_int('Version')
-        old_color = color_config.get_int('VersionDiffOld')
-        new_color = color_config.get_int('VersionDiffNew')
+        version_color = color_config.Version.get_int()
+        old_color = color_config.VersionDiffOld.get_int()
+        new_color = color_config.VersionDiffNew.get_int()
         column_width = min(int(get_term_width() / 2.5), 37)
 
         sort_by = '{:04d}{}'.format(
@@ -175,9 +175,8 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
 
         pkg_size = ''
         if (
-                user_config.sync.get_bool('ShowDownloadSize')
-                and pkg_update.package
-                and getattr(pkg_update.package, 'size', None)
+                user_config.sync.ShowDownloadSize.get_bool() and
+                isinstance(pkg_update.package, pyalpm.Package)
         ):
             pkg_size = f'{pkg_update.package.size/1024/1024:.2f} MiB'
 
@@ -282,7 +281,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             repo_replacements,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if thirdparty_repo_replacements:
         result.append('\n{} {}'.format(
@@ -295,7 +294,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             thirdparty_repo_replacements,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
 
     if repo_packages_updates:
@@ -309,7 +308,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             repo_packages_updates,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if new_repo_deps:
         result.append('\n{} {}'.format(
@@ -321,7 +320,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             new_repo_deps,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if thirdparty_repo_packages_updates:
         result.append('\n{} {}'.format(
@@ -344,7 +343,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             new_thirdparty_repo_deps,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if aur_updates:
         result.append('\n{} {}'.format(
@@ -488,11 +487,11 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
                 ), 3)
 
             color_config = PikaurConfig().colors
-            version_color = color_config.get_int('Version')
+            version_color = color_config.Version.get_int()
             version = package.version
 
             if isinstance(package, AURPackageInfo) and package.outofdate is not None:
-                version_color = color_config.get_int('VersionDiffOld')
+                version_color = color_config.VersionDiffOld.get_int()
                 version = "{} [{}: {}]".format(
                     package.version,
                     _("outofdate"),

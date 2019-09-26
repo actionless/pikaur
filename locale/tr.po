@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-09-21 19:28+0200\n"
-"PO-Revision-Date: 2019-07-10 16:43+0300\n"
+"PO-Revision-Date: 2019-09-26 12:20+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -100,7 +100,7 @@ msgstr "AUR'dan '{path}' içindeki '{name}' çekilemedi:"
 #: pikaur/aur_deps.py:250
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
-msgstr ""
+msgstr "AUR paketi '{pkg}' için bağımlılıklar çözülemedi:"
 
 #: pikaur/info_cli.py:33
 msgid "Check Deps"
@@ -326,6 +326,7 @@ msgstr "Pikaur-özel seçenekler:"
 msgid ""
 "Please enter the number of the package you want to install (default={}):"
 msgstr ""
+"Lütfen kurmak istediğiniz paketin numarasını girin (öntanımlı={}):"
 
 #: pikaur/info_cli.py:38
 msgid "Popularity"
@@ -471,7 +472,7 @@ msgstr "[s] inşa dizinini sil ve tekrar dene"
 
 #: pikaur/build.py:620
 msgid "[e] edit PKGBUILD"
-msgstr ""
+msgstr "[d] PKGBUILD'i düzenle"
 
 #: pikaur/build.py:618
 msgid "[i] ignore architecture"
@@ -563,7 +564,7 @@ msgstr "ayrıca AUR bağımlılıklarını indir"
 
 #: pikaur/build.py:628 pikaur/build.py:647
 msgid "e"
-msgstr ""
+msgstr "d"
 
 #: pikaur/install_cli.py:538
 msgid "edit"
@@ -605,11 +606,11 @@ msgstr "ilk defa kuruluyor"
 
 #: pikaur/main.py:222
 msgid "invalid number: {}"
-msgstr ""
+msgstr "geçersiz numara: {}"
 
 #: pikaur/main.py:226
 msgid "invalid value: {} is not between {} and {}"
-msgstr ""
+msgstr "geçersiz değer: {} değeri {} ile {} arasında değil"
 
 #: pikaur/install_cli.py:484
 msgid "looking for conflicting AUR packages..."

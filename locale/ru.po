@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-21 19:28+0200\n"
+"POT-Creation-Date: 2019-09-29 17:39+0200\n"
 "PO-Revision-Date: 2019-09-21 19:36+0200\n"
 "Last-Translator: Drommer <drommer@github.com>\n"
 "Language-Team: Russian <email@example.com>\n"
@@ -48,7 +48,7 @@ msgstr ":: ошибка: опции {} не могут быть использо
 msgid "AUR Git URL"
 msgstr "Адрес AUR Git"
 
-#: pikaur/print_department.py:337
+#: pikaur/print_department.py:351
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "Будет установлен пакет из AUR:"
@@ -121,15 +121,15 @@ msgstr "Стандартные параметры pacman:"
 msgid "Conflicts With"
 msgstr "Конфликтует с"
 
-#: pikaur/news.py:61
+#: pikaur/news.py:60
 msgid "Could not fetch archlinux.org news"
 msgstr "Не удалось получить новости от archlinux.org"
 
-#: pikaur/news.py:86
+#: pikaur/news.py:85
 msgid "Could not initialize {}"
 msgstr "Не удалось инициализировать {}"
 
-#: pikaur/news.py:131
+#: pikaur/news.py:130
 msgid "Could not update {}"
 msgstr "Не удалось обновить {}"
 
@@ -210,11 +210,11 @@ msgstr[1] "Данные пакеты не найдены в репозитори
 msgid "Groups"
 msgstr "Группы"
 
-#: pikaur/print_department.py:378
+#: pikaur/print_department.py:392
 msgid "Ignoring package update {}"
 msgstr "пропуск обновления пакета {}"
 
-#: pikaur/print_department.py:384
+#: pikaur/print_department.py:398
 msgid "Ignoring package {}"
 msgstr "Пакет {} был проигнорирован"
 
@@ -256,19 +256,19 @@ msgstr "Имя"
 msgid "New AUR build deps found for {pkg} package: {deps}"
 msgstr "Новые зависимости для сборки из AUR для пакета {pkg}: {deps}"
 
-#: pikaur/print_department.py:348
+#: pikaur/print_department.py:362
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "Будет установлена новая зависимость из AUR:"
 msgstr[1] "Будут установлены новые зависимости из AUR:"
 
-#: pikaur/print_department.py:302
+#: pikaur/print_department.py:316
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "Будет установлена новая зависимость из репозитория:"
 msgstr[1] "Будут установлены новые зависимости из репозиториев:"
 
-#: pikaur/print_department.py:325
+#: pikaur/print_department.py:339
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "Будет установлена новая зависимость из стороннего репозитория:"
@@ -367,13 +367,13 @@ msgstr "Удаление уже установленных зависимост�
 msgid "Replaces"
 msgstr "Заменяет"
 
-#: pikaur/print_department.py:263
+#: pikaur/print_department.py:277
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "Пакет из официального репозитория предложен в качестве замены:"
 msgstr[1] "Пакеты из официальных репозиториев предложены в качестве замены:"
 
-#: pikaur/print_department.py:290
+#: pikaur/print_department.py:304
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "Будет установлен пакет из официального репозитория:"
@@ -406,23 +406,23 @@ msgstr "Запуск полного обновления пакетов из AUR
 msgid "Starting the build"
 msgstr "Начало сборки"
 
-#: pikaur/news.py:43
+#: pikaur/news.py:42
 msgid "There are news from archlinux.org!"
 msgstr "Есть новости с archlinux.org!"
 
-#: pikaur/print_department.py:276
+#: pikaur/print_department.py:290
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "Пакет из неофициального репозитория предложен в качестве замены:"
 msgstr[1] "Пакеты из неофициальных репозиториев предложены в качестве замены:"
 
-#: pikaur/print_department.py:314
+#: pikaur/print_department.py:328
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Будет установлен пакет из неофициального репозитория:"
 msgstr[1] "Будут установлены пакеты из неофициальных репозиториев:"
 
-#: pikaur/install_cli.py:462 pikaur/build.py:613
+#: pikaur/build.py:613 pikaur/install_cli.py:462
 msgid "Try recovering?"
 msgstr "Попробовать восстановить?"
 
@@ -482,12 +482,12 @@ msgstr "[e] редактировать PKGBUILD"
 msgid "[i] ignore architecture"
 msgstr "[i] игнорировать архитектуру"
 
-#: pikaur/print_department.py:456
+#: pikaur/print_department.py:474
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[установлен: {version}]"
 
-#: pikaur/print_department.py:460
+#: pikaur/print_department.py:478
 msgid "[installed]"
 msgstr "[установлен]"
 
@@ -512,8 +512,8 @@ msgstr "[s] пропустить этот пакет"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v] посмотреть описание пакетов   [m] выбрать пакеты вручную"
 
-#: pikaur/install_cli.py:458 pikaur/install_cli.py:469 pikaur/build.py:609
-#: pikaur/build.py:629 pikaur/build.py:659
+#: pikaur/build.py:609 pikaur/build.py:629 pikaur/build.py:659
+#: pikaur/install_cli.py:458 pikaur/install_cli.py:469
 msgid "a"
 msgstr ""
 
@@ -533,8 +533,8 @@ msgstr "всегда пересобирать пакеты из AUR"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "всегда обновлять пакеты из '-git', '-svn' и другие нестабильные пакеты"
 
-#: pikaur/install_cli.py:469 pikaur/install_cli.py:472 pikaur/build.py:628
-#: pikaur/build.py:638
+#: pikaur/build.py:628 pikaur/build.py:638 pikaur/install_cli.py:469
+#: pikaur/install_cli.py:472
 msgid "c"
 msgstr ""
 
@@ -624,7 +624,7 @@ msgstr "поиск конфликтующих пакетов..."
 msgid "m"
 msgstr ""
 
-#: pikaur/install_cli.py:338 pikaur/main.py:216 pikaur/prompt.py:20
+#: pikaur/main.py:216 pikaur/prompt.py:20 pikaur/install_cli.py:338
 msgid "n"
 msgstr ""
 
@@ -644,7 +644,7 @@ msgstr "не допускается с аргументом %s"
 msgid "one of the arguments %s is required"
 msgstr "требуется один из аргументов %s"
 
-#: pikaur/print_department.py:483
+#: pikaur/print_department.py:501
 msgid "outofdate"
 msgstr "устаревший"
 
@@ -702,13 +702,13 @@ msgstr "запрашивать пакеты только из AUR"
 msgid "query packages from repository only"
 msgstr "запрашивать пакеты только из репозиториев"
 
-#: pikaur/install_cli.py:469 pikaur/install_cli.py:474 pikaur/build.py:628
-#: pikaur/build.py:633
+#: pikaur/build.py:628 pikaur/build.py:633 pikaur/install_cli.py:469
+#: pikaur/install_cli.py:474
 msgid "r"
 msgstr ""
 
-#: pikaur/install_cli.py:469 pikaur/install_cli.py:476 pikaur/build.py:607
-#: pikaur/build.py:629
+#: pikaur/build.py:607 pikaur/build.py:629 pikaur/install_cli.py:469
+#: pikaur/install_cli.py:476
 msgid "s"
 msgstr ""
 
@@ -737,7 +737,7 @@ msgstr ""
 msgid "warning:"
 msgstr "предупреждение:"
 
-#: pikaur/install_cli.py:338 pikaur/install_cli.py:351 pikaur/prompt.py:19
+#: pikaur/prompt.py:19 pikaur/install_cli.py:338 pikaur/install_cli.py:351
 msgid "y"
 msgstr ""
 
@@ -756,7 +756,7 @@ msgstr ""
 "{name} не может быть собран на текущей архитектуре ({arch}). Поддерживаемые "
 "архитектуры: {suparch}"
 
-#: pikaur/print_department.py:398
+#: pikaur/print_department.py:412
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "{name} {version} {package_source} не устарел - пропускается"

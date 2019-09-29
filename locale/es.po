@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-21 19:28+0200\n"
+"POT-Creation-Date: 2019-09-29 17:39+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -47,7 +47,7 @@ msgstr ":: error: las opciones {} no se pueden usar juntas."
 msgid "AUR Git URL"
 msgstr "URL de AUR Git"
 
-#: pikaur/print_department.py:337
+#: pikaur/print_department.py:351
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "Se instalará el paquete AUR:"
@@ -120,15 +120,15 @@ msgstr "Opciones pacman estándar:"
 msgid "Conflicts With"
 msgstr "Conflictos Con"
 
-#: pikaur/news.py:61
+#: pikaur/news.py:60
 msgid "Could not fetch archlinux.org news"
 msgstr "No pude obtener noticias de archlinux.org"
 
-#: pikaur/news.py:86
+#: pikaur/news.py:85
 msgid "Could not initialize {}"
 msgstr "No se pudo inicializar {}"
 
-#: pikaur/news.py:131
+#: pikaur/news.py:130
 msgid "Could not update {}"
 msgstr "No se pudo actualizar {}"
 
@@ -210,11 +210,11 @@ msgstr[1] "Los siguientes paquetes no se encuentran en los repositorios:"
 msgid "Groups"
 msgstr "Grupos"
 
-#: pikaur/print_department.py:378
+#: pikaur/print_department.py:392
 msgid "Ignoring package update {}"
 msgstr "Ignorar la actualización del paquete {}"
 
-#: pikaur/print_department.py:384
+#: pikaur/print_department.py:398
 msgid "Ignoring package {}"
 msgstr "Paquete {} ignorado"
 
@@ -258,19 +258,19 @@ msgstr ""
 "Nuevos dependencias de construcción de AUR encontrados para el paquete "
 "{pkg}: {deps}"
 
-#: pikaur/print_department.py:348
+#: pikaur/print_department.py:362
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "La nueva dependencia se instalará desde AUR:"
 msgstr[1] "Las nuevas dependencias se instalarán desde AUR:"
 
-#: pikaur/print_department.py:302
+#: pikaur/print_department.py:316
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "La nueva dependencia se instalará desde el repositorio:"
 msgstr[1] "Las nuevas dependencias se instalarán desde el repositorio:"
 
-#: pikaur/print_department.py:325
+#: pikaur/print_department.py:339
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "La nueva dependencia se instalará desde un repositorio de terceros:"
@@ -333,6 +333,7 @@ msgstr "Opciones específicas pikaur:"
 msgid ""
 "Please enter the number of the package you want to install (default={}):"
 msgstr ""
+"Por favor, introduzca el número del paquete que desea instalar (default={}):"
 
 #: pikaur/info_cli.py:38
 msgid "Popularity"
@@ -368,13 +369,13 @@ msgstr "Desinstalación de dependencias ya instaladas para {}"
 msgid "Replaces"
 msgstr "Reemplaza"
 
-#: pikaur/print_department.py:263
+#: pikaur/print_department.py:277
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "Paquete de repositorio sugerido como reemplazo:"
 msgstr[1] "Paquetes de repositorio sugeridos como reemplazo:"
 
-#: pikaur/print_department.py:290
+#: pikaur/print_department.py:304
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "Se instalará el paquete de repositorio:"
@@ -407,23 +408,23 @@ msgstr "Inicio de la actualización completa de AUR..."
 msgid "Starting the build"
 msgstr "Inicio de la compilación"
 
-#: pikaur/news.py:43
+#: pikaur/news.py:42
 msgid "There are news from archlinux.org!"
 msgstr "Hay noticias de archlinux.org!"
 
-#: pikaur/print_department.py:276
+#: pikaur/print_department.py:290
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "Paquete de repositorio de terceros sugerido como reemplazo:"
 msgstr[1] "Paquetes de repositorio de terceros sugeridos como reemplazo:"
 
-#: pikaur/print_department.py:314
+#: pikaur/print_department.py:328
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Se instalará el paquete de repositorio de terceros:"
 msgstr[1] "Se instalarán los paquetes de repositorios de terceros:"
 
-#: pikaur/install_cli.py:462 pikaur/build.py:613
+#: pikaur/build.py:613 pikaur/install_cli.py:462
 msgid "Try recovering?"
 msgstr "¿Intentar recuperarte?"
 
@@ -483,12 +484,12 @@ msgstr "[e] editar el PKGBUILD"
 msgid "[i] ignore architecture"
 msgstr "[i] ignorar la arquitectura"
 
-#: pikaur/print_department.py:456
+#: pikaur/print_department.py:474
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[instalado: {version}]"
 
-#: pikaur/print_department.py:460
+#: pikaur/print_department.py:478
 msgid "[installed]"
 msgstr "[instalado]"
 
@@ -513,8 +514,8 @@ msgstr "[s] omitir este paquete"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v]er detalles del paquete   seleccionar los paquetes [m]anualmente"
 
-#: pikaur/install_cli.py:458 pikaur/install_cli.py:469 pikaur/build.py:609
-#: pikaur/build.py:629 pikaur/build.py:659
+#: pikaur/build.py:609 pikaur/build.py:629 pikaur/build.py:659
+#: pikaur/install_cli.py:458 pikaur/install_cli.py:469
 msgid "a"
 msgstr "a"
 
@@ -534,8 +535,8 @@ msgstr "siempre reconstruir los paquetes AUR"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "siempre sysupgrade '-git', '-svn' y otros paquetes dev"
 
-#: pikaur/install_cli.py:469 pikaur/install_cli.py:472 pikaur/build.py:628
-#: pikaur/build.py:638
+#: pikaur/build.py:628 pikaur/build.py:638 pikaur/install_cli.py:469
+#: pikaur/install_cli.py:472
 msgid "c"
 msgstr "c"
 
@@ -611,11 +612,11 @@ msgstr "instalando por primera vez"
 
 #: pikaur/main.py:222
 msgid "invalid number: {}"
-msgstr ""
+msgstr "número inválido: {}"
 
 #: pikaur/main.py:226
 msgid "invalid value: {} is not between {} and {}"
-msgstr ""
+msgstr "valor no válido: {} no está entre {} y {}"
 
 #: pikaur/install_cli.py:484
 msgid "looking for conflicting AUR packages..."
@@ -625,7 +626,7 @@ msgstr "en busca de paquetes AUR conflictivos..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:338 pikaur/main.py:216 pikaur/prompt.py:20
+#: pikaur/main.py:216 pikaur/prompt.py:20 pikaur/install_cli.py:338
 msgid "n"
 msgstr "n"
 
@@ -643,7 +644,7 @@ msgstr "no permitido con el argumento %s"
 msgid "one of the arguments %s is required"
 msgstr "se requiere uno de los argumentos %s"
 
-#: pikaur/print_department.py:483
+#: pikaur/print_department.py:501
 msgid "outofdate"
 msgstr "outofdate"
 
@@ -700,13 +701,13 @@ msgstr "consultar sólo los paquetes desde AUR"
 msgid "query packages from repository only"
 msgstr "consultar sólo los paquetes desde el repositorio"
 
-#: pikaur/install_cli.py:469 pikaur/install_cli.py:474 pikaur/build.py:628
-#: pikaur/build.py:633
+#: pikaur/build.py:628 pikaur/build.py:633 pikaur/install_cli.py:469
+#: pikaur/install_cli.py:474
 msgid "r"
 msgstr "r"
 
-#: pikaur/install_cli.py:469 pikaur/install_cli.py:476 pikaur/build.py:607
-#: pikaur/build.py:629
+#: pikaur/build.py:607 pikaur/build.py:629 pikaur/install_cli.py:469
+#: pikaur/install_cli.py:476
 msgid "s"
 msgstr "s"
 
@@ -735,7 +736,7 @@ msgstr "v"
 msgid "warning:"
 msgstr "atención:"
 
-#: pikaur/install_cli.py:338 pikaur/install_cli.py:351 pikaur/prompt.py:19
+#: pikaur/prompt.py:19 pikaur/install_cli.py:338 pikaur/install_cli.py:351
 msgid "y"
 msgstr "s"
 
@@ -743,8 +744,8 @@ msgstr "s"
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
-msgstr[0] "{grp} agruparse"
-msgstr[1] "{grp} agrupaciones"
+msgstr[0] "groupo {grp}"
+msgstr[1] "groupos {grp}"
 
 #: pikaur/build.py:554
 #, python-brace-format
@@ -754,7 +755,7 @@ msgstr ""
 "{name} no puede construirse para la arquitectura actual ({arch}) sino sólo "
 "{suparch}"
 
-#: pikaur/print_department.py:398
+#: pikaur/print_department.py:412
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "{name} {version} {package_source} está actualizado - ignorado"
@@ -777,6 +778,3 @@ msgid ""
 msgstr ""
 "{what} depende de: '{dep}'\n"
 " encontrado en '{location}': '{version}'"
-
-#~ msgid "{} does not exist on the filesystem."
-#~ msgstr "{} no existe en el sistema de ficheros."

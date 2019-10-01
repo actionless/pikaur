@@ -38,7 +38,7 @@ from .exceptions import (
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .version import compare_versions, VersionMatcher
-from .makepkg_config import MakepkgConfig, get_makepkg_cmd
+from .makepkg_config import MakepkgConfig, MakePkgCommand, PKGDEST
 
 
 def mkdir(to_path) -> None:
@@ -240,7 +240,7 @@ class PackageBuild(DataType):
         ))
         pkgver_result = joined_spawn(
             isolate_root_cmd(
-                get_makepkg_cmd() + [
+                MakePkgCommand.get() + [
                     '--nobuild', '--noprepare', '--nocheck', '--nodeps'
                 ],
                 cwd=self.build_dir
@@ -354,14 +354,8 @@ class PackageBuild(DataType):
             PackageDB.discard_local_cache()
 
     def _set_built_package_path(self) -> None:
-        dest_dir = os.path.expanduser(
-            os.environ.get(
-                'PKGDEST',
-                MakepkgConfig.get('PKGDEST', self.build_dir)
-            )
-        )
         pkg_paths = spawn(
-            isolate_root_cmd(get_makepkg_cmd() + ['--packagelist'],
+            isolate_root_cmd(MakePkgCommand.get() + ['--packagelist'],
                              cwd=self.build_dir),
             cwd=self.build_dir
         ).stdout_text.splitlines()
@@ -381,8 +375,8 @@ class PackageBuild(DataType):
                         break
             pkg_filename = os.path.basename(pkg_path)
             if pkg_path == pkg_filename:
-                pkg_path = os.path.join(dest_dir, pkg_path)
-            if dest_dir == self.build_dir:
+                pkg_path = os.path.join(PKGDEST, pkg_path)
+            if PKGDEST == self.build_dir:
                 new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
                 pkg_sig_path = pkg_path + ".sig"
                 new_package_sig_path = new_package_path + ".sig"
@@ -576,7 +570,7 @@ class PackageBuild(DataType):
         skip_pgp_check = False
         skip_file_checksums = False
         while True:
-            cmd_args = get_makepkg_cmd() + makepkg_args
+            cmd_args = MakePkgCommand.get() + makepkg_args
             if skip_pgp_check:
                 cmd_args += ['--skippgpcheck']
             if skip_file_checksums:

@@ -5,9 +5,11 @@ from typing import (
     Dict, Any, List, Tuple, Union, Optional,
 )
 
-from .core import open_file
-from .config import CONFIG_ROOT
+from .i18n import _
+from .core import open_file, running_as_root
+from .config import CONFIG_ROOT, PACKAGE_CACHE_PATH
 from .args import parse_args
+from .pprint import print_warning
 
 
 ConfigValueType = Union[None, str, List[str]]
@@ -104,10 +106,49 @@ class MakepkgConfig():
         return value
 
 
-def get_makepkg_cmd() -> List[str]:
-    args = parse_args()
-    return [args.makepkg_path or 'makepkg', ] + (
-        args.mflags.split(',') if args.mflags else []
-    ) + (
-        (['--config', args.makepkg_config]) if args.makepkg_config else []
-    )
+PKGDEST = os.environ.get(
+    'PKGDEST',
+    MakepkgConfig.get('PKGDEST')
+)
+if PKGDEST:
+    PKGDEST = os.path.expanduser(PKGDEST)
+
+
+class MakePkgCommand:
+
+    _cmd: Optional[List[str]] = None
+
+    @classmethod
+    def _apply_dynamis_users_workaround(cls):
+        """
+        systemd dynamic users assume always PrivateTmp, which destroys after;
+        so ignore that option
+        """
+        if running_as_root() and PKGDEST and (
+                PKGDEST.startswith('/tmp') or
+                PKGDEST.startswith('/var/tmp')
+        ):
+            print_warning(_(
+                "When using SystemD DynamicUsers "
+                "PKGDEST can't be set to a temporary directory "
+                "(since it will be destroyed due to PrivateTmp=yes implied by DynamicUsers). "
+                "See http://0pointer.net/blog/dynamic-users-with-systemd.html"
+            ))
+            print_warning(_("PKGDEST will default to {default_pkg_path}").format(
+                default_pkg_path=PACKAGE_CACHE_PATH
+            ))
+            cls._cmd = ['env', 'PKGDEST='] + cls._cmd
+
+    @classmethod
+    def get(cls) -> List[str]:
+        if not cls._cmd:
+            args = parse_args()
+            cls._cmd = [args.makepkg_path or 'makepkg', ] + (
+                args.mflags.split(',') if args.mflags else []
+            ) + (
+                (['--config', args.makepkg_config]) if args.makepkg_config else []
+            )
+            cls._apply_dynamis_users_workaround()
+        if isinstance(cls._cmd, list):
+            return cls._cmd
+        raise NotImplementedError()  # hello mypy

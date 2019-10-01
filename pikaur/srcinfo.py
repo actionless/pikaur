@@ -5,7 +5,7 @@ from typing import List, Dict, Optional
 
 from .core import open_file, spawn, isolate_root_cmd, dirname
 from .version import VersionMatcher
-from .makepkg_config import MakepkgConfig, get_makepkg_cmd
+from .makepkg_config import MakepkgConfig, MakePkgCommand
 from .pprint import print_stderr, print_error
 from .i18n import _
 from .exceptions import SysExit
@@ -135,7 +135,7 @@ class SrcInfo():
     def regenerate(self) -> None:
         result = spawn(
             isolate_root_cmd(
-                get_makepkg_cmd() + ['--printsrcinfo'] +
+                MakePkgCommand.get() + ['--printsrcinfo'] +
                 ['-p', os.path.basename(self.pkgbuild_path)],
                 cwd=self.repo_path
             ), cwd=self.repo_path

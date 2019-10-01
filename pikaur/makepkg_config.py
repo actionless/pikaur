@@ -120,10 +120,6 @@ class MakePkgCommand:
 
     @classmethod
     def _apply_dynamis_users_workaround(cls):
-        """
-        systemd dynamic users assume always PrivateTmp, which destroys after;
-        so ignore that option
-        """
         if running_as_root() and PKGDEST and (
                 PKGDEST.startswith('/tmp') or
                 PKGDEST.startswith('/var/tmp')

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-02 01:31+0200\n"
+"POT-Creation-Date: 2019-10-03 01:21+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -303,11 +303,6 @@ msgstr "Dependencias Opcionales"
 msgid "Out-of-date"
 msgstr "Out-of-date"
 
-#: pikaur/makepkg_config.py:137
-#, python-brace-format
-msgid "PKGDEST will default to {default_pkg_path}"
-msgstr ""
-
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:22
 msgid "Package Base"
@@ -448,13 +443,6 @@ msgstr "Versión que no concuerda:"
 #: pikaur/info_cli.py:37
 msgid "Votes"
 msgstr "Votos"
-
-#: pikaur/makepkg_config.py:132
-msgid ""
-"When using SystemD DynamicUsers PKGDEST can't be set to a temporary "
-"directory (since it will be destroyed due to PrivateTmp=yes implied by "
-"DynamicUsers). See http://0pointer.net/blog/dynamic-users-with-systemd.html"
-msgstr ""
 
 #: pikaur/prompt.py:115
 msgid "[N]o (--noconfirm)"

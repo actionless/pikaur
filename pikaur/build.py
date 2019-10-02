@@ -375,9 +375,9 @@ class PackageBuild(DataType):
                         break
             pkg_filename = os.path.basename(pkg_path)
             if pkg_path == pkg_filename:
-                pkg_path = os.path.join(PKGDEST, pkg_path)
-            if PKGDEST == self.build_dir:
-                new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
+                pkg_path = os.path.join(PKGDEST or self.build_dir, pkg_path)
+            if not PKGDEST or MakePkgCommand.pkgdest_skipped:
+                new_package_path = os.path.join(PKGDEST or PACKAGE_CACHE_PATH, pkg_filename)
                 pkg_sig_path = pkg_path + ".sig"
                 new_package_sig_path = new_package_path + ".sig"
                 if not os.path.exists(PACKAGE_CACHE_PATH):

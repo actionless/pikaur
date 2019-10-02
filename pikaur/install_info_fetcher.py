@@ -74,7 +74,7 @@ class InstallInfoFetcher:
                 ignored_packages.append(pkg_name)
 
         for package_name in ignored_packages:
-            print_ignored_package(package_name)
+            print_ignored_package(package_name=package_name)
 
     @property
     def aur_deps_names(self) -> List[str]:
@@ -254,7 +254,7 @@ class InstallInfoFetcher:
             ) or (
                 self.package_is_ignored(pkg_name)
             ):
-                print_ignored_package(pkg_name)
+                print_ignored_package(install_info=pkg_update)
                 continue
 
             if pkg_update.current_version == '' and (
@@ -338,7 +338,9 @@ class InstallInfoFetcher:
             ) or (
                 self.package_is_ignored(pkg_name)
             ):
-                print_ignored_package(pkg_name)
+                print_ignored_package(
+                    install_info=aur_updates_install_info_by_name[pkg_name]
+                )
                 del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
 

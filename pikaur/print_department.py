@@ -375,32 +375,32 @@ def pretty_format_repo_name(repo_name: str) -> str:
     return color_line(f'{repo_name}/', len(repo_name) % 5 + 10)
 
 
-def print_ignored_package(package_name) -> None:
-    from .updates import get_remote_package_version
-
-    current = PackageDB.get_local_dict().get(package_name)
-    current_version = current.version if current else ''
-    new_version = get_remote_package_version(package_name)
-    install_infos = [InstallInfo(
+def print_ignored_package(
+        package_name: Optional[str] = None,
+        install_info: Optional[InstallInfo] = None,
+) -> None:
+    if not (package_name or install_info):
+        raise TypeError("Either 'package_name' or 'install_info' should be specified")
+    install_info = install_info or InstallInfo(
         name=package_name,
-        current_version=current_version or '',
-        new_version=new_version or '',
+        current_version='',
+        new_version='',
         package=None,
-    )]
+    )
     print_stderr('{} {}'.format(
         color_line('::', 11),
         _("Ignoring package update {}").format(
             pretty_format_upgradeable(
-                install_infos,
+                [install_info],
                 template="{pkg_name} ({current_version} => {new_version})"
             ))
-        if (current_version and new_version) else
+        if (install_info.current_version and install_info.new_version) else
         _("Ignoring package {}").format(
             pretty_format_upgradeable(
-                install_infos,
+                [install_info],
                 template=(
                     "{pkg_name} {current_version}"
-                    if current_version else
+                    if install_info.current_version else
                     "{pkg_name} {new_version}"
                 )
             ))

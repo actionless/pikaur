@@ -128,9 +128,9 @@ class MakePkgCommand:
 
     @classmethod
     def get(cls) -> List[str]:
-        if not cls._cmd:
+        if cls._cmd is None:
             args = parse_args()
-            makepkg_flags: List[str] = (
+            makepkg_flags = (
                 args.mflags.split(',') if args.mflags else []
             )
             config_args = (

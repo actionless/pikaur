@@ -64,7 +64,13 @@ class DependencyNotBuiltYet(Exception):
 
 
 class AURError(Exception):
-    pass
+    url: str
+    error: str
+
+    def __init__(self, url: str, error: str) -> None:
+        self.url = url
+        self.error = error
+        super().__init__(f"URL: {url}\nError: {error}")
 
 
 class SysExit(Exception):

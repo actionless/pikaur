@@ -70,7 +70,7 @@ class AURError(Exception):
     def __init__(self, url: str, error: str) -> None:
         self.url = url
         self.error = error
-        super().__init__(f"URL: {url}\nError: {error}")
+        super().__init__(f"URL: {self.url}\nError: {self.error}")
 
 
 class SysExit(Exception):

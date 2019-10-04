@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Iterable, Union, Set, Sequence
 import pyalpm
 
 from .i18n import _
-from .pprint import print_stderr
+from .pprint import print_stderr, print_error
 from .print_department import print_package_search_results, AnyPackage
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
 from .aur import (
@@ -31,18 +31,44 @@ def package_search_thread_repo(query: str) -> List[pyalpm.Package]:
     return result
 
 
+def filter_aur_results(
+        results: Dict[str, List[AURPackageInfo]],
+        query: str
+) -> Dict[str, List[AURPackageInfo]]:
+    filtered_results: Dict[str, List[AURPackageInfo]] = {}
+    for _q, pkgs in results.items():
+        for pkg in pkgs:
+            if query in pkg.name or query in (pkg.desc or ''):
+                filtered_results.setdefault(_q, []).append(pkg)
+    return filtered_results
+
+
 def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:
     args = parse_args()
     result = {}
     if queries:
+        use_as_filters: List[str] = []
         with ThreadPool() as pool:
             requests = {}
             for query in queries:
                 requests[query] = pool.apply_async(aur_rpc_search_name_desc, (query, ))
             pool.close()
             for query, request in requests.items():
-                result[query] = request.get()
+                try:
+                    result[query] = request.get()
+                except AURError as exc:
+                    if exc.error == "Too many package results.":
+                        print_error(
+                            _("AUR: Too many package results for '{query}'").format(
+                                query=query
+                            )
+                        )
+                        use_as_filters.append(query)
+                    else:
+                        raise
             pool.join()
+        for query in use_as_filters:
+            result = filter_aur_results(result, query)
         if args.namesonly:
             for subindex, subresult in result.items():
                 result[subindex] = [

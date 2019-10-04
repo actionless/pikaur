@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-03 01:21+0200\n"
+"POT-Creation-Date: 2019-10-04 02:09+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -52,6 +52,11 @@ msgstr[1] "将被安装的 AUR 软件包:"
 #: pikaur/config.py:58
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
+msgstr ""
+
+#: pikaur/search_cli.py:62
+#, python-brace-format
+msgid "AUR: Too many package results for '{query}'"
 msgstr ""
 
 #: pikaur/args.py:410
@@ -369,7 +374,7 @@ msgid_plural "Repository packages will be installed:"
 msgstr[0] "将被安装的仓库软件包:"
 msgstr[1] "将被安装的仓库软件包:"
 
-#: pikaur/install_info_fetcher.py:375
+#: pikaur/install_info_fetcher.py:377
 msgid "Resolving AUR dependencies..."
 msgstr "解析 AUR 依赖..."
 
@@ -378,7 +383,7 @@ msgstr "解析 AUR 依赖..."
 msgid "Reverting {target} transaction..."
 msgstr "还原 {target} 更改..."
 
-#: pikaur/search_cli.py:105
+#: pikaur/search_cli.py:131
 #, python-brace-format
 msgid "Searching... [{bar}]"
 msgstr "搜索中... [{bar}]"
@@ -752,7 +757,7 @@ msgstr "{name} {version} {package_source} 包是最新的 - 跳过"
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} 与 {installed} 冲突. 移除 {installed}?"
 
-#: pikaur/install_info_fetcher.py:355
+#: pikaur/install_info_fetcher.py:357
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} 已在列表中"

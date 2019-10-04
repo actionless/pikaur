@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-03 01:21+0200\n"
+"POT-Creation-Date: 2019-10-04 02:09+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -57,6 +57,11 @@ msgstr[1] "Se instalarán los paquetes AUR:"
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "La dirección del repositorio AUR se ha movido de '{old}' a '{new}.'"
+
+#: pikaur/search_cli.py:62
+#, python-brace-format
+msgid "AUR: Too many package results for '{query}'"
+msgstr ""
 
 #: pikaur/args.py:410
 msgid ""
@@ -381,7 +386,7 @@ msgid_plural "Repository packages will be installed:"
 msgstr[0] "Se instalará el paquete de repositorio:"
 msgstr[1] "Se instalarán los paquetes de repositorio:"
 
-#: pikaur/install_info_fetcher.py:375
+#: pikaur/install_info_fetcher.py:377
 msgid "Resolving AUR dependencies..."
 msgstr "Resolución de dependencias AUR..."
 
@@ -390,7 +395,7 @@ msgstr "Resolución de dependencias AUR..."
 msgid "Reverting {target} transaction..."
 msgstr "Cancelación de la transacción {target}..."
 
-#: pikaur/search_cli.py:105
+#: pikaur/search_cli.py:131
 #, python-brace-format
 msgid "Searching... [{bar}]"
 msgstr "Búsqueda... [{bar}]"
@@ -765,7 +770,7 @@ msgstr "{name} {version} {package_source} está actualizado - ignorado"
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} y {installed} están en conflicto. Quitar {installed}"
 
-#: pikaur/install_info_fetcher.py:355
+#: pikaur/install_info_fetcher.py:357
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} ya añadido a la lista"

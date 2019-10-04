@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-03 01:21+0200\n"
+"POT-Creation-Date: 2019-10-04 02:09+0200\n"
 "PO-Revision-Date: 2019-09-26 12:20+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -55,6 +55,11 @@ msgstr[1] "AUR paketleri kurulacak:"
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "AUR depo dizini '{old}'dan '{new}'a taşındı."
+
+#: pikaur/search_cli.py:62
+#, python-brace-format
+msgid "AUR: Too many package results for '{query}'"
+msgstr ""
 
 #: pikaur/args.py:410
 msgid ""
@@ -373,7 +378,7 @@ msgid_plural "Repository packages will be installed:"
 msgstr[0] "Depo paketi kurulacak:"
 msgstr[1] "Depo paketleri kurulacak:"
 
-#: pikaur/install_info_fetcher.py:375
+#: pikaur/install_info_fetcher.py:377
 msgid "Resolving AUR dependencies..."
 msgstr "AUR bağımlılıkları çözülüyor..."
 
@@ -382,7 +387,7 @@ msgstr "AUR bağımlılıkları çözülüyor..."
 msgid "Reverting {target} transaction..."
 msgstr "{target} işlem geri alınıyor..."
 
-#: pikaur/search_cli.py:105
+#: pikaur/search_cli.py:131
 #, python-brace-format
 msgid "Searching... [{bar}]"
 msgstr "Aranıyor... [{bar}]"
@@ -757,7 +762,7 @@ msgstr "{name} {version} {package_source} paketi güncel - atlanıyor"
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} ve {installed} çakışıyor. {installed} silinsin mi?"
 
-#: pikaur/install_info_fetcher.py:355
+#: pikaur/install_info_fetcher.py:357
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} zaten listeye eklendi"

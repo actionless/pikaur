@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-03 01:21+0200\n"
+"POT-Creation-Date: 2019-10-04 02:09+0200\n"
 "PO-Revision-Date: 2018-04-16 18:27+0000\n"
 "Last-Translator: Andri Viðar Tryggvason (andri@arivarton.com)\n"
 "Language-Team: none\n"
@@ -52,6 +52,11 @@ msgstr[1] "AUR pakkar verða settir upp:"
 #: pikaur/config.py:58
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
+msgstr ""
+
+#: pikaur/search_cli.py:62
+#, python-brace-format
+msgid "AUR: Too many package results for '{query}'"
 msgstr ""
 
 #: pikaur/args.py:410
@@ -373,7 +378,7 @@ msgid_plural "Repository packages will be installed:"
 msgstr[0] "Gagnahirslu pakki verður uppsettur:"
 msgstr[1] "Gagnahirslu pakkar verða uppsettir:"
 
-#: pikaur/install_info_fetcher.py:375
+#: pikaur/install_info_fetcher.py:377
 msgid "Resolving AUR dependencies..."
 msgstr "Leysir AUR ákvæði..."
 
@@ -382,7 +387,7 @@ msgstr "Leysir AUR ákvæði..."
 msgid "Reverting {target} transaction..."
 msgstr "Sný {target} hreyfingu..."
 
-#: pikaur/search_cli.py:105
+#: pikaur/search_cli.py:131
 #, python-brace-format
 msgid "Searching... [{bar}]"
 msgstr "Leitra... [{bar}]"
@@ -769,7 +774,7 @@ msgstr "{name} {version} {package_source} pakki er uppfærður - hoppa yfir"
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr ""
 
-#: pikaur/install_info_fetcher.py:355
+#: pikaur/install_info_fetcher.py:357
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr ""

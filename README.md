@@ -249,8 +249,8 @@ You can start from [this list of issues](https://github.com/actionless/pikaur/is
 
 ### Translations
 
-To start working on a new language, say 'it' (Italian), add it to the
-`Makefile` `LANGS` variable and run `make`. Then translate `locale/it.po` using
+To start working on a new language, say 'ja' (Japanese), add it to the
+`Makefile` `LANGS` variable and run `make`. Then translate `locale/ja.po` using
 your favorite PO editor. Run `make` every time the Python code strings change
 or the `.po` is modified.
 

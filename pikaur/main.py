@@ -211,7 +211,7 @@ def cli_dynamic_select() -> None:
             1
         )
     )
-    answer = get_input('> ', [str(i) for i in range(len(packages))]) or '1'
+    answer = get_input('> ', [str(i) for i in range(1, len(packages) + 1)]) or '1'
     print_stderr()
     if answer.lower() == _('n'):
         raise SysExit(128)

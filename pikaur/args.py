@@ -216,18 +216,32 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             letter: str = None, opt: str = None,
             default: Any = None
     ) -> None:
-        if letter and opt:
-            self.add_argument(  # type: ignore
-                '-' + letter, '--' + opt, action=action, default=default
-            )
-        elif opt:
-            self.add_argument(  # type: ignore
-                '--' + opt, action=action, default=default
-            )
-        elif letter:
-            self.add_argument(  # type: ignore
-                '-' + letter, action=action, default=default
-            )
+        if action:
+            if letter and opt:
+                self.add_argument(
+                    '-' + letter, '--' + opt, action=action, default=default
+                )
+            elif opt:
+                self.add_argument(
+                    '--' + opt, action=action, default=default
+                )
+            elif letter:
+                self.add_argument(
+                    '-' + letter, action=action, default=default
+                )
+        else:
+            if letter and opt:
+                self.add_argument(
+                    '-' + letter, '--' + opt, default=default
+                )
+            elif opt:
+                self.add_argument(
+                    '--' + opt, default=default
+                )
+            elif letter:
+                self.add_argument(
+                    '-' + letter, default=default
+                )
 
 
 class CachedArgs():

@@ -27,8 +27,8 @@ class SysupgradeTest(PikaurDbTestCase):
     aur2_pkg_name = 'inxi'
     aur2_old_version: str
 
-    dev_pkg_name = 'pxltrm-git'
-    dev_pkg_url = 'git://github.com/dylanaraps/pxltrm.git'
+    dev_pkg_name = 'xst-git'
+    dev_pkg_url = 'git://github.com/gnotclub/xst.git'
     dev_old_version: str
 
     def setUp(self):

@@ -79,7 +79,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
     _color_line = color_line
     _bold_line = bold_line
     if not color:
-        _color_line = lambda line, *args: line  # noqa
+        _color_line = lambda line, *args, **kwargs: line  # noqa
         _bold_line = lambda line: line  # noqa
 
     def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, str]:  # pylint:disable=too-many-locals

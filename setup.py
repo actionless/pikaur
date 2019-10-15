@@ -1,43 +1,60 @@
 from distutils.core import setup
 
 # To use a consistent encoding
-from codecs import open
-from os import path
+import codecs
+from os import path, environ
 
-here = path.abspath(path.dirname(__file__))
+if environ.get('PYPY_BUILD'):
+    import setuptools  # pylint: disable=unused-import
 
-# Get the long description from the README file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
+
+HERE = path.abspath(path.dirname(__file__))
+
+with codecs.open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = f.read()
 
 setup(
     name='pikaur',  # Required
-    version='1.5.2',  # Required
+    version='1.5.2.2',  # Required
     description='AUR helper with minimal dependencies',  # Required
-    long_description=long_description,  # Optional
+    long_description=LONG_DESCRIPTION,  # Optional
+    long_description_content_type="text/markdown",
     url='https://github.com/actionless/pikaur',  # Optional
     author='Yauheni Kirylau',  # Optional
     author_email='actionless.loveless@gmail.com',  # Optional
-    classifiers=[  # Optional
-        # How mature is this project? Common values are
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
-        'Development Status :: 4 - Beta',
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
 
-        # Indicate who your project is intended for
+        'Environment :: Console',
+
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Information Technology',
+        'Intended Audience :: Other Audience',
+        'Intended Audience :: System Administrators',
 
-        # Pick your license as you wish
-        'License :: OSI Approved :: GPL3 License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
 
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
+        'Operating System :: POSIX :: Linux',
+
         'Programming Language :: Python :: 3.7',
+
+        'Topic :: Software Development :: Build Tools',
+        'Topic :: System :: Archiving :: Packaging',
+        'Topic :: System :: Installation/Setup',
+        'Topic :: Utilities',
     ],
+
     # Note that this is a string of words separated by whitespace, not a list.
-    keywords='aur helper',  # Optional
+    keywords='arch linux aur helper',
+
+    install_requires=["pyalpm"],
 
     packages=["pikaur", ],  # Required
+
+    entry_points={
+        'console_scripts': [
+            'pikaur = pikaur.main:main'
+        ]
+    }
 )

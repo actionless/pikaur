@@ -6,3 +6,6 @@ locale/pikaur.pot
 .coverage
 htmlcov/
 coverage_env/
+dist/
+MANIFEST
+*.egg-info/

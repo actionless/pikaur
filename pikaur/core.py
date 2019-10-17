@@ -15,6 +15,8 @@ from typing import (
 
 import pyalpm
 
+from .config import PikaurConfig
+
 if TYPE_CHECKING:
     # pylint: disable=unused-import
     from .aur import AURPackageInfo  # noqa
@@ -83,6 +85,17 @@ class InstallInfo(DataType):
         )
 
 
+def sudo(cmd: List[str]) -> List[str]:
+    if running_as_root():
+        return cmd
+    return ['sudo', ] + cmd
+
+
+def get_sudo_refresh_command() -> List[str]:
+    pacman_path = PikaurConfig().misc.PacmanPath.get_str()
+    return sudo([pacman_path, '-T'])
+
+
 class InteractiveSpawn(subprocess.Popen):
 
     stdout_text: str
@@ -92,7 +105,7 @@ class InteractiveSpawn(subprocess.Popen):
         from .args import parse_args
         if parse_args().verbose:
             from .pprint import print_stderr, color_line
-            if self.args != ['sudo', '-v']:
+            if self.args != get_sudo_refresh_command():
                 print_stderr(
                     color_line('=> ', 14) +
                     ' '.join(str(arg) for arg in self.args)
@@ -152,12 +165,6 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     if cwd is not None:
         base_root_isolator += ['-p', 'WorkingDirectory=' + os.path.abspath(cwd)]
     return base_root_isolator + cmd
-
-
-def sudo(cmd: List[str]) -> List[str]:
-    if running_as_root():
-        return cmd
-    return ['sudo', ] + cmd
 
 
 def detect_bom_type(file_path: str) -> str:
@@ -253,12 +260,11 @@ def sudo_loop(once=False) -> None:
     """
     get sudo for further questions
     """
-    from .config import PikaurConfig
     sudo_loop_interval = PikaurConfig().misc.SudoLoopInterval.get_int()
     if sudo_loop_interval == -1:
         return
     while True:
-        interactive_spawn(['sudo', '-v'])
+        interactive_spawn(get_sudo_refresh_command())
         if once:
             break
         sleep(sudo_loop_interval)

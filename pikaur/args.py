@@ -134,6 +134,7 @@ class PikaurArgs(Namespace):
     owns: Optional[bool]
     check: Optional[bool]
     ignore: List[str]
+    positional: List[str]
 
     def __getattr__(self, name: str) -> Any:
         """
@@ -317,6 +318,14 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     parser.add_argument('positional', nargs='*')
 
     parsed_args = parser.parse_pikaur_args(args)
+
+    if parsed_args.positional and '-' in parsed_args.positional and not sys.stdin.isatty():
+        parsed_args.positional.remove('-')
+        parsed_args.positional += [
+            word
+            for line in sys.stdin.readlines()
+            for word in line.split()
+        ]
 
     if parsed_args.print_args_and_exit:  # pragma: no cover
         debug_args(args, parsed_args)

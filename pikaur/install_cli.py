@@ -235,7 +235,8 @@ class InstallPackagesCLI():
                 if (
                         # devel packages will be checked later
                         # after retrieving their sources
-                        is_devel_pkg(install_info.name)
+                        is_devel_pkg(install_info.name) and
+                        (install_info in self.install_info.aur_updates_install_info)
                 ) or (
                     not install_info.current_version
                 ) or compare_versions(

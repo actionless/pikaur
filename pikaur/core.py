@@ -92,8 +92,7 @@ def sudo(cmd: List[str]) -> List[str]:
 
 
 def get_sudo_refresh_command() -> List[str]:
-    pacman_path = PikaurConfig().misc.PacmanPath.get_str()
-    return sudo([pacman_path, '-T'])
+    return sudo(['-v'])
 
 
 class InteractiveSpawn(subprocess.Popen):

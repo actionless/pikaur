@@ -80,10 +80,10 @@ class NestedTerminal():
         real_term_geometry = shutil.get_terminal_size((80, 80))
         if sys.stdin.isatty():
             tty.setcbreak(sys.stdin.fileno())
-        if sys.stderr.isatty():
-            tty.setcbreak(sys.stderr.fileno())
-        if sys.stdout.isatty():
-            tty.setcbreak(sys.stdout.fileno())
+            if sys.stderr.isatty():
+                tty.setcbreak(sys.stderr.fileno())
+            if sys.stdout.isatty():
+                tty.setcbreak(sys.stdout.fileno())
         return real_term_geometry
 
     def __exit__(self, *_exc_details) -> None:

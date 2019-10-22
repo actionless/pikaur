@@ -33,7 +33,7 @@ The following pacman operations are extended with AUR capabilities:
 
 Also see `pikaur -Sh`, `-Qh`, `-Ph` and `-Gh` for pikaur-specific flags.
 
-Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or altered it via [M]anual package selection).
+Pikaur wraps all the pacman options accurately except for `-Syu` which is being split into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or altered it via [M]anual package selection).
 
 
 * [Installation](#installation "")
@@ -187,7 +187,7 @@ If that's needed, setting proxy options in their own config files will take effe
 
 ```sh
 ~/.cache/pikaur/
-├── build/  # build directory (removed after successfull build)
+├── build/  # build directory (removed after successful build)
 ├── pkg/  # built packages directory
 ~/.config/pikaur.conf  # config file
 ~/.local/share/pikaur/

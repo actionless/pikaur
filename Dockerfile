@@ -30,11 +30,13 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 	sudo -u user sed -i 's/"$pkgname::.*"/"pikaur-git.tar.gz"/' PKGBUILD && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	sleep 0.1 && \
-	sudo -u user pikaur -S --noconfirm --color=always python-virtualenv \
-		python-pylint flake8 mypy python-vulture python-coveralls \
-		python2 python2-setuptools iputils # @TODO: coveralls workaround
+	sudo -u user pikaur -S --noconfirm --color=always iputils python-virtualenv \
+		python-pylint flake8 mypy python-vulture
+	#sudo -u user pikaur -S --noconfirm --color=always iputils python-virtualenv \
+		#python-pylint flake8 mypy python-vulture python-coveralls \
+		#python2 python2-setuptools # @TODO: coveralls workaround
 
-RUN pacman -S --noconfirm --needed python-pip && pip install -U mypy==0.720  # @TODO: mypy 0.730 is broken
+RUN pacman -S --noconfirm --needed python-pip && pip install -U mypy==0.720 coveralls  # @TODO: mypy 0.730 is broken
 # RUN pacman -S --noconfirm --needed python-pip && pip install -U git+https://github.com/python/mypy/  # @TODO: mypy 0.730 is broken
 
 RUN sudo -u user env \

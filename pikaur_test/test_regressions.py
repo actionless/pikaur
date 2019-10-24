@@ -27,6 +27,7 @@ class RegressionTest(PikaurDbTestCase):
     def test_double_requirements_aur(self):
         pkg_name = 'python2-uncompyle6'  # with doubled aur dep
         fake_pikaur(f'-S {pkg_name}')
+        # pikaur(f'-S {pkg_name}')
         self.assertInstalled(pkg_name)
 
     def test_aur_pkg_with_versioned_virtual_deps(self):

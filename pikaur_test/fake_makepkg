@@ -9,6 +9,8 @@ if [[ ! "$(grep foobz1 PKGBUILD)" ]]  && [[ ! "$(grep foobz2 PKGBUILD)" ]] ; the
 	for line in $(grep "^package_.\+()" PKGBUILD -o) ; do
 		echo -e "$line {\n echo \"foo_$line\"\n }" >> PKGBUILD
 	done
+
+source ./PKGBUILD
 	echo '
 
 prepare() {
@@ -25,12 +27,28 @@ check() {
 	echo "======= Fake build() ======="
 	echo "foobz3"
 }
-
-package() {
-	echo "======= Fake package() ======="
-	echo "foobz1"
-}
-
 ' >> ./PKGBUILD
+
+# shellcheck disable=SC2154
+if [ "${#pkgname[@]}" -eq 1 ] ; then
+		echo "
+package() {
+	echo '======= Fake package() ======='
+	echo 'foobz1'
+}
+	" >> ./PKGBUILD
+else
+	# shellcheck disable=SC2154
+	for _pkg_name in "${pkgname[@]}" ; do
+		echo "
+package_${_pkg_name}() {
+	echo '======= Fake package() ======='
+	echo 'foobz1'
+}
+	" >> ./PKGBUILD
+	done
 fi
+
+fi
+# shellcheck disable=SC2068
 /usr/bin/makepkg --skippgpcheck $@

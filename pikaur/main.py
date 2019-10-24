@@ -200,7 +200,7 @@ def cli_print_version() -> None:
     print_version(pacman_version, quiet=args.quiet)
 
 
-def cli_dynamic_select() -> None:
+def cli_dynamic_select() -> None:  # pragma: no cover
     packages = cli_search_packages(enumerated=True)
     if not packages:
         raise SysExit(1)

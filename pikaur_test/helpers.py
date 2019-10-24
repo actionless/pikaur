@@ -16,6 +16,7 @@ from pikaur.main import main
 from pikaur.args import CachedArgs, parse_args
 from pikaur.pacman import PackageDB
 from pikaur.pprint import get_term_width
+from pikaur.makepkg_config import MakePkgCommand
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -177,6 +178,7 @@ def pikaur(
             # re-parse args:
             sys.argv = new_args
             CachedArgs.args = None  # pylint:disable=protected-access
+            MakePkgCommand._cmd = None  # pylint:disable=protected-access
             parse_args()
             # monkey-patch to force always uncolored output:
             CachedArgs.args.color = 'never'  # type: ignore # pylint:disable=protected-access

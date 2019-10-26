@@ -62,7 +62,7 @@ msgstr "La direction du dépôt de l'AUR a été déplacée de '{old}' vers '{ne
 #: pikaur/search_cli.py:62
 #, python-brace-format
 msgid "AUR: Too many package results for '{query}'"
-msgstr ""
+msgstr "AUR : Trop de résultats de paquets pour '{query}'"
 
 #: pikaur/args.py:410
 msgid ""
@@ -252,7 +252,7 @@ msgstr "Mainteneur"
 
 #: pikaur/info_cli.py:32
 msgid "Make Deps"
-msgstr "Construire les Dépendances"
+msgstr "Dépendances de construction"
 
 #. id=_("id"),
 #: pikaur/info_cli.py:20
@@ -309,7 +309,7 @@ msgstr "Dépendances optionnelles"
 
 #: pikaur/info_cli.py:41
 msgid "Out-of-date"
-msgstr "Out-of-date"
+msgstr "Périmé"
 
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:22
@@ -478,7 +478,7 @@ msgstr "[c] sauter les sommes de contrôle"
 
 #: pikaur/install_cli.py:463
 msgid "[c] git checkout -- '*'"
-msgstr "[c] git checkout -- '*'"
+msgstr "[c] extraction git -- '*'"
 
 #: pikaur/build.py:613
 msgid "[d] delete build dir and try again"
@@ -573,7 +573,7 @@ msgstr ""
 
 #: pikaur/args.py:439
 msgid "don't remove build dir after the build"
-msgstr "ne pas supprimer le répertoire build après la compilation"
+msgstr "ne pas supprimer le répertoire de construction après la compilation"
 
 #: pikaur/args.py:420
 msgid "download also AUR dependencies"
@@ -658,7 +658,7 @@ msgstr "l'un des arguments %s est requis"
 
 #: pikaur/print_department.py:501
 msgid "outofdate"
-msgstr "outofdate"
+msgstr "périmé"
 
 #: pikaur/args.py:443
 msgid "override path to makepkg executable"

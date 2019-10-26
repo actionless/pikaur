@@ -61,7 +61,7 @@ msgstr "La dirección del repositorio AUR se ha movido de '{old}' a '{new}.'"
 #: pikaur/search_cli.py:62
 #, python-brace-format
 msgid "AUR: Too many package results for '{query}'"
-msgstr ""
+msgstr "AUR: Demasiados resultados de paquetes para '{query}'"
 
 #: pikaur/args.py:410
 msgid ""
@@ -249,7 +249,7 @@ msgstr "Mantenedor"
 
 #: pikaur/info_cli.py:32
 msgid "Make Deps"
-msgstr "Hacer Dependencias"
+msgstr "Dependencias de construcción"
 
 #. id=_("id"),
 #: pikaur/info_cli.py:20
@@ -306,7 +306,7 @@ msgstr "Dependencias Opcionales"
 
 #: pikaur/info_cli.py:41
 msgid "Out-of-date"
-msgstr "Out-of-date"
+msgstr "Obsoleto"
 
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:22
@@ -475,7 +475,7 @@ msgstr "[c] omisión de sumas de comprobación"
 
 #: pikaur/install_cli.py:463
 msgid "[c] git checkout -- '*'"
-msgstr "[c] git checkout -- '*'"
+msgstr "[c] extracción git -- '*'"
 
 #: pikaur/build.py:613
 msgid "[d] delete build dir and try again"
@@ -567,7 +567,7 @@ msgstr "no pedir que aparezcan diferencias entre los archivos de compilación"
 
 #: pikaur/args.py:439
 msgid "don't remove build dir after the build"
-msgstr "no borrar el directorio build después de la compilación"
+msgstr "no borrar el directorio de construcción después de la compilación"
 
 #: pikaur/args.py:420
 msgid "download also AUR dependencies"
@@ -651,7 +651,7 @@ msgstr "se requiere uno de los argumentos %s"
 
 #: pikaur/print_department.py:501
 msgid "outofdate"
-msgstr "outofdate"
+msgstr "obsoleto"
 
 #: pikaur/args.py:443
 msgid "override path to makepkg executable"
@@ -688,7 +688,7 @@ msgstr "pikaur {-G --getpkgbuild} [opciones] <paquete(s)>"
 
 #: pikaur/args.py:404
 msgid "pikaur {-P --pkgbuild}    [options] <file(s)>"
-msgstr "pikaur {-P --pkgbuild} [opciones] <archivo(s)>"
+msgstr "pikaur {-P --pkgbuild}    [opciones] <archivo(s)>"
 
 #: pikaur/args.py:403
 msgid "pikaur-specific operations:"

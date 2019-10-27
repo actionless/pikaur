@@ -478,7 +478,7 @@ msgstr "[c] sauter les sommes de contrôle"
 
 #: pikaur/install_cli.py:464
 msgid "[c] git checkout -- '*'"
-msgstr "[c] extraction git -- '*'"
+msgstr "[c] git checkout -- '*'"
 
 #: pikaur/build.py:613
 msgid "[d] delete build dir and try again"

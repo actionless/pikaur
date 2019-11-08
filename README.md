@@ -230,7 +230,7 @@ Change the numbers, and you are good to go.
 Actually use `checkupdates` tool to check the repo updates and use pikaur only for AUR (`-a`/`--aur` switch):
 
 ```
-checkupdates && pikaur -Qua 2>/dev/null
+checkupdates ; pikaur -Qua 2>/dev/null
 ```
 
 ##### Pikaur slow when running it as root user (or via sudo)

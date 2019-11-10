@@ -283,6 +283,9 @@ checkupdates ; pikaur \-Qua 2>/dev/null
 .SS "Pikaur slow when running it as root user (or via sudo)"
 If you find the command takes a long time to initialize, make sure to periodically clear your cache: \fBpikaur \-Scc\fR\. Root pikaur is using SystemD Dynamic Users to isolate build process from the root, and it takes some time to change the owner of build cache to dynamic temporary user\.
 .
+.SS "I set colour red for version in the configuration file. Why does terminal paint it orange?"
+There are no standard colours used in terminal emulation. This means final results vary upon different terminal emulator.
+.
 .SH "Contributing"
 .
 .SS "Code"

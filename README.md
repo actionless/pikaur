@@ -128,7 +128,10 @@ Will be overriden by `--dynamic-users` flag.
 
 #### [colors]
 
-Terminal colors, from 0 to 15:
+Terminal colors, from 0 to 15.
+8 ANSI colours available
+0: gray 1: red 2: green 3: yellow 4: light blue 5: magenta 6: cyan 7: white
+the remaining 8 colours (from 8 to 15) are the bold and brighter equivalents.
 
 ##### Version (default: 10)
 ##### VersionDiffOld (default: 11)

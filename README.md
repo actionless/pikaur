@@ -269,4 +269,5 @@ git log --pretty=tformat:"%an <%ae>" | sort -u
 
 ### Special thanks
 
-@AladW ([aurutils](https://github.com/AladW/aurutils)), @morganamilo ([yay](https://github.com/Jguer/yay)) and [all the other issue contributors](https://github.com/actionless/pikaur/issues?utf8=%E2%9C%93&q=is%3Aissue+-author%3Aactionless) for helping in triaging the bugs and clearing up feature requirements.
+@AladW ([aurutils](https://github.com/AladW/aurutils)), @morganamilo ([yay](https://github.com/Jguer/yay)) during the early stages of Pikaur development.
+And [all the other issue contributors](https://github.com/actionless/pikaur/issues?utf8=%E2%9C%93&q=is%3Aissue+-author%3Aactionless) for helping in triaging the bugs and clearing up feature requirements.

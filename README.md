@@ -97,12 +97,12 @@ When installing repository packages, show their download size.
 
 ##### KeepBuildDir (default: no)
 Don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
-Will be overriden by `-k/--keepbuild` flag.
+Will be overridden by `-k/--keepbuild` flag.
 
 ##### KeepDevBuildDir (default: yes)
 When building dev packages (`-git`, `-svn`, etc),
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
-`No` value will be overriden by `KeepBuildDir` option and `-k/--keepbuild` flag.
+`No` value will be overridden by `KeepBuildDir` option and `-k/--keepbuild` flag.
 
 ##### SkipFailedBuild (default: no)
 Always skip the build if it fails and don't show recovery prompt.
@@ -112,11 +112,11 @@ Always default to no when prompting to edit PKGBUILD and install files.
 
 ##### NoEdit (default: no)
 Don't prompt to edit PKGBUILD and install files.
-Will be overriden by `--noedit` and `--edit` flags.
+Will be overridden by `--noedit` and `--edit` flags.
 
 ##### NoDiff (default: no)
 Don't prompt to show the build files diff.
-Will be overriden by `--nodiff` flag.
+Will be overridden by `--nodiff` flag.
 
 ##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
 Flags to be passed to `git diff` command when reviewing build files.
@@ -124,7 +124,7 @@ Should be separated by commas (`,`).
 
 ##### AlwaysUseDynamicUsers (default: no)
 Always isolate the build using systemd dynamic users.
-Will be overriden by `--dynamic-users` flag.
+Will be overridden by `--dynamic-users` flag.
 
 #### [colors]
 

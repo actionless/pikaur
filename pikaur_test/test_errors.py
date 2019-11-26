@@ -49,7 +49,7 @@ class FailureTest(PikaurDbTestCase):
 
     def test_dep_not_found(self):
         """
-        depedency package can't be found in AUR
+        dependency package can't be found in AUR
         """
         pkg_name = "pikaur-test-not-found-dep"
         not_existing_dep_name = "not-existing-package-y8r73ruue99y5u77t5u4r"

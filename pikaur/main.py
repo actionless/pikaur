@@ -290,11 +290,11 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         if require_sudo and args.dynamic_users and not running_as_root():
             # Restart pikaur with sudo to use systemd dynamic users
             restart_args = sys.argv[:]
-            config_overriden = max([
+            config_overridden = max([
                 arg.startswith('--pikaur-config')
                 for arg in restart_args
             ])
-            if not config_overriden:
+            if not config_overridden:
                 restart_args += ['--pikaur-config', CONFIG_PATH]
             sys.exit(interactive_spawn(
                 sudo(restart_args)

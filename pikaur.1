@@ -152,10 +152,10 @@ When installing repository packages, show their download size\.
 .SS "[build]"
 .
 .SS "KeepBuildDir (default: no)"
-Don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. Will be overriden by \fB\-k/\-\-keepbuild\fR flag\.
+Don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. Will be overridden by \fB\-k/\-\-keepbuild\fR flag\.
 .
 .SS "KeepDevBuildDir (default: yes)"
-When building dev packages (\fB\-git\fR, \fB\-svn\fR, etc), don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. \fBNo\fR value will be overriden by \fBKeepBuildDir\fR option and \fB\-k/\-\-keepbuild\fR flag\.
+When building dev packages (\fB\-git\fR, \fB\-svn\fR, etc), don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. \fBNo\fR value will be overridden by \fBKeepBuildDir\fR option and \fB\-k/\-\-keepbuild\fR flag\.
 .
 .SS "SkipFailedBuild (default: no)"
 Always skip the build if it fails and don\'t show recovery prompt\.
@@ -164,16 +164,16 @@ Always skip the build if it fails and don\'t show recovery prompt\.
 Always default to no when prompting to edit PKGBUILD and install files\.
 .
 .SS "NoEdit (default: no)"
-Don\'t prompt to edit PKGBUILD and install files\. Will be overriden by \fB\-\-noedit\fR and \fB\-\-edit\fR flags\.
+Don\'t prompt to edit PKGBUILD and install files\. Will be overridden by \fB\-\-noedit\fR and \fB\-\-edit\fR flags\.
 .
 .SS "NoDiff (default: no)"
-Don\'t prompt to show the build files diff\. Will be overriden by \fB\-\-nodiff\fR flag\.
+Don\'t prompt to show the build files diff\. Will be overridden by \fB\-\-nodiff\fR flag\.
 .
 .SS "GitDiffArgs (default: \-\-ignore\-space\-change,\-\-ignore\-all\-space)"
 Flags to be passed to \fBgit diff\fR command when reviewing build files\. Should be separated by commas (\fB,\fR)\.
 .
 .SS "AlwaysUseDynamicUsers (default: no)"
-Always isolate the build using systemd dynamic users\. Will be overriden by \fB\-\-dynamic\-users\fR flag\.
+Always isolate the build using systemd dynamic users\. Will be overridden by \fB\-\-dynamic\-users\fR flag\.
 .
 .SS "[colors]"
 Terminal colors, from 0 to 15:

@@ -856,7 +856,7 @@ class InstallPackagesCLI():
             self.install_new_aur_deps()
             self.install_aur_packages()
 
-        # save git hash of last sucessfully installed package
+        # save git hash of last successfully installed package
         if self.package_builds_by_name:
             package_builds_by_base = {
                 pkgbuild.package_base: pkgbuild

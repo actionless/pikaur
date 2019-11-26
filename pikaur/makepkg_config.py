@@ -118,7 +118,7 @@ class MakePkgCommand:
     pkgdest_skipped = False
 
     @classmethod
-    def _apply_dynamis_users_workaround(cls):
+    def _apply_dynamic_users_workaround(cls):
         if running_as_root() and PKGDEST and (
                 PKGDEST.startswith('/tmp') or
                 PKGDEST.startswith('/var/tmp')
@@ -137,5 +137,5 @@ class MakePkgCommand:
                 ['--config', args.makepkg_config] if args.makepkg_config else []
             )
             cls._cmd = [args.makepkg_path or 'makepkg', ] + makepkg_flags + config_args
-            cls._apply_dynamis_users_workaround()
+            cls._apply_dynamic_users_workaround()
         return cls._cmd

@@ -52,6 +52,7 @@ def migrate_old_aur_repos_dir() -> None:
         os.makedirs(DATA_ROOT)
     shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
 
+    # pylint:disable=import-outside-toplevel
     from .pprint import print_warning, print_stderr
     print_stderr()
     print_warning(

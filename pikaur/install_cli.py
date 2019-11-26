@@ -351,7 +351,7 @@ class InstallPackagesCLI():
                 letter = answer.lower()[0]
                 if letter == _("y"):
                     break
-                elif letter == _("v"):
+                if letter == _("v"):
                     answer = _confirm_sysupgrade(verbose=True)
                 elif letter == _("m"):
                     print_stdout()
@@ -359,10 +359,8 @@ class InstallPackagesCLI():
                     self.get_all_packages_info()
                     self.install_prompt()
                     break
-                else:
-                    raise SysExit(125)
-            else:
-                break
+                raise SysExit(125)
+            break
 
     def discard_install_info(
             self, canceled_pkg_name: str, already_discarded: List[str] = None

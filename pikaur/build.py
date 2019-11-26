@@ -626,19 +626,19 @@ class PackageBuild(DataType):
             answer = answer.lower()[0]
             if answer == _("r"):  # pragma: no cover
                 continue
-            elif answer == _("p"):  # pragma: no cover
+            if answer == _("p"):  # pragma: no cover
                 skip_pgp_check = True
                 continue
-            elif answer == _("c"):  # pragma: no cover
+            if answer == _("c"):  # pragma: no cover
                 skip_file_checksums = True
                 continue
-            elif answer == _("i"):  # pragma: no cover
+            if answer == _("i"):  # pragma: no cover
                 self.skip_carch_check = True
                 continue
-            elif answer == _("d"):  # pragma: no cover
+            if answer == _("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)
                 continue
-            elif answer == _('e'):  # pragma: no cover
+            if answer == _('e'):  # pragma: no cover
                 editor_cmd = get_editor_or_exit()
                 if editor_cmd:
                     interactive_spawn(
@@ -650,10 +650,10 @@ class PackageBuild(DataType):
                         os.path.join(self.build_dir, 'PKGBUILD')
                     ]))
                 continue
-            elif answer == _("a"):
+            if answer == _("a"):
                 raise SysExit(125)
-            else:  # "s"kip
-                break
+            # "s"kip
+            break
 
         return build_succeeded
 

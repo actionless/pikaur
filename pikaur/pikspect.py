@@ -155,7 +155,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     def run(self) -> None:
         with NestedTerminal() as real_term_geometry:
             if 'sudo' in self.args:
-                subprocess.run(get_sudo_refresh_command())
+                subprocess.run(get_sudo_refresh_command(), check=True)
             with open(self.pty_user_master, 'w') as self.pty_in:
                 with open(self.pty_cmd_master, 'rb', buffering=0) as self.pty_out:
                     set_terminal_geometry(

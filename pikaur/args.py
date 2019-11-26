@@ -251,6 +251,7 @@ class CachedArgs():
 
 
 def debug_args(args: List[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
+    #  pylint:disable=import-outside-toplevel
     from pprint import pprint  # pylint: disable=no-name-in-module
 
     print("Input:")

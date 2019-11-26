@@ -42,7 +42,7 @@ class RegressionTest(PikaurDbTestCase):
         #123 AUR dep which was previously explicitly installed gets
         incorrectly marked as a dependency
         """
-        from pikaur.pacman import PackageDB
+        from pikaur.pacman import PackageDB  # pylint:disable=import-outside-toplevel
 
         aur_pkg_name = 'nqp'
         explicitly_installed_dep_name = 'moarvm'

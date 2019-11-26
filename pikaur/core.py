@@ -101,6 +101,7 @@ class InteractiveSpawn(subprocess.Popen):
     stderr_text: str
 
     def communicate(self, _input=None, _timeout=None) -> Tuple[bytes, bytes]:
+        #  pylint:disable=import-outside-toplevel
         from .args import parse_args
         if parse_args().verbose:
             from .pprint import print_stderr, color_line

@@ -88,7 +88,7 @@ def init_proxy() -> None:
             proxy = proxy[:idx]
 
         try:
-            import socks  # type: ignore
+            import socks  # type: ignore #  pylint:disable=import-outside-toplevel
             socks.set_default_proxy(socks.PROXY_TYPE_SOCKS5, proxy, port)
             socket.socket = socks.socksocket  # type: ignore
         except ImportError:

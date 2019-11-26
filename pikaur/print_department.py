@@ -152,7 +152,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         if pkg_update.members_of:
             members_of = ' ({})'.format(
                 _n('{grp} group', '{grp} groups', len(pkg_update.members_of)).format(
-                    grp=', '.join([g for g in pkg_update.members_of]),
+                    grp=', '.join(g for g in pkg_update.members_of),
                 )
             )
             pkg_len += len(members_of)
@@ -166,7 +166,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             pkg_name += _color_line(members_of, GROUP_COLOR)
         if pkg_update.replaces:
             replaces = ' (replaces {})'.format(
-                ', '.join([g for g in pkg_update.replaces])
+                ', '.join(g for g in pkg_update.replaces)
             )
             pkg_len += len(replaces)
             pkg_name += _color_line(replaces, REPLACEMENTS_COLOR)
@@ -427,6 +427,7 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
         enumerated=False,
 ) -> List[AnyPackage]:
 
+    # pylint:disable=import-outside-toplevel
     from .aur import AURPackageInfo  # noqa  pylint:disable=redefined-outer-name
 
     def get_sort_key(pkg: AnyPackage) -> float:

@@ -129,6 +129,7 @@ class InstallTest(PikaurDbTestCase):
         self.assertNotInstalled('expac-git')
 
     def test_cache_clean(self):
+        # pylint:disable=import-outside-toplevel
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 
         pikaur('-S inxi --rebuild --keepbuild')
@@ -148,6 +149,7 @@ class InstallTest(PikaurDbTestCase):
         )
 
     def test_cache_full_clean(self):
+        # pylint:disable=import-outside-toplevel
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 
         pikaur('-S inxi --rebuild --keepbuild')

@@ -514,7 +514,7 @@ class PackageBuild(DataType):
             )
             if not ask_to_continue():
                 raise SysExit(125)
-        if not deps_packages_installed:
+        if not deps_packages_installed or self.args.keepbuilddeps:
             return
 
         print_stderr('{} {}:'.format(

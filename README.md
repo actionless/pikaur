@@ -104,6 +104,10 @@ When building dev packages (`-git`, `-svn`, etc),
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
 `No` value will be overridden by `KeepBuildDir` option and `-k/--keepbuild` flag.
 
+##### KeepBuildDeps (default: no)
+Don't remove build dependencies between and after the builds.
+Will be overridden by `--keepbuilddeps` flag.
+
 ##### SkipFailedBuild (default: no)
 Always skip the build if it fails and don't show recovery prompt.
 

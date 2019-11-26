@@ -50,6 +50,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
         ('a', 'aur', None),
         (None, 'devel', None),
         (None, 'keepbuild', PikaurConfig().build.KeepBuildDir.get_bool()),
+        (None, 'keepbuilddeps', PikaurConfig().build.KeepBuildDeps.get_bool()),
         (None, 'nodiff', PikaurConfig().build.NoDiff.get_bool()),
         (None, 'rebuild', None),
         (None, 'dynamic-users', PikaurConfig().build.AlwaysUseDynamicUsers.get_bool()),

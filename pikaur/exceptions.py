@@ -24,11 +24,15 @@ class PackagesNotFound(DataType, Exception):
 
 
 class PackagesNotFoundInRepo(PackagesNotFound):
-    pass
+    # pass
+    # @TODO: pylint bug:
+    packages: List[str]
 
 
 class PackagesNotFoundInAUR(PackagesNotFound):
-    pass
+    # pass
+    # @TODO: pylint bug:
+    packages: List[str]
 
 
 class BuildError(Exception):

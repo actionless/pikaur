@@ -89,9 +89,9 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name)
 
     def test_pkgbuild_split_packages(self):
-        pkg_base = 'python-flake8-polyfill'
+        pkg_base = 'python-vdf'
         pkg_name1 = pkg_base
-        pkg_name2 = 'python2-flake8-polyfill'
+        pkg_name2 = 'python2-vdf'
 
         self.remove_if_installed(pkg_name1)
         self.remove_if_installed(pkg_name2)

@@ -164,7 +164,7 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     ]
     if cwd is not None:
         base_root_isolator += ['-p', 'WorkingDirectory=' + os.path.abspath(cwd)]
-    if os.environ.get('http_proxy') is not None::
+    if os.environ.get('http_proxy') is not None:
         base_root_isolator += ['-E', 'http_proxy=' + os.environ['http_proxy']]
     if os.environ.get('https_proxy') is not None:
         base_root_isolator += ['-E', 'https_proxy=' + os.environ['https_proxy']]

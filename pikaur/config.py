@@ -7,16 +7,19 @@ import shutil
 from pathlib import Path
 from typing import Dict, Optional
 
-from .core import running_as_root, open_file
+from .i18n import _
 
 
-VERSION = '1.4.1-dev'
+RUNNING_AS_ROOT = os.geteuid() == 0
+
+
+VERSION = '1.5.4-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",
     os.path.join(Path.home(), ".cache/")
 )
-if running_as_root():
+if RUNNING_AS_ROOT:
     CACHE_ROOT = '/var/cache/pikaur'
 else:
     CACHE_ROOT = os.path.join(_USER_CACHE_HOME, 'pikaur/')
@@ -34,7 +37,7 @@ DATA_ROOT = os.environ.get(
     os.path.join(Path.home(), ".local/share/pikaur")
 )
 _OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
-if running_as_root():
+if RUNNING_AS_ROOT:
     AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
 else:
     AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
@@ -49,8 +52,8 @@ def migrate_old_aur_repos_dir() -> None:
         os.makedirs(DATA_ROOT)
     shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
 
+    # pylint:disable=import-outside-toplevel
     from .pprint import print_warning, print_stderr
-    from .i18n import _
     print_stderr()
     print_warning(
         _("AUR repos dir has been moved from '{old}' to '{new}'.".format(
@@ -90,6 +93,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'str',
             'default': 'versiondiff'
         },
+        'ShowDownloadSize': {
+            'type': 'bool',
+            'default': 'no',
+        },
     },
     'build': {
         'KeepBuildDir': {
@@ -99,6 +106,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
         'KeepDevBuildDir': {
             'type': 'bool',
             'default': 'yes',
+        },
+        'KeepBuildDeps': {
+            'type': 'bool',
+            'default': 'no',
         },
         'SkipFailedBuild': {
             'type': 'bool',
@@ -153,6 +164,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no'
         },
+        'ReverseSearchSorting': {
+            'type': 'bool',
+            'default': 'no'
+        },
     },
     'misc': {
         'SudoLoopInterval': {
@@ -162,6 +177,14 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
         'PacmanPath': {
             'type': 'str',
             'default': 'pacman'
+        },
+        'AurHost': {
+            'type': 'str',
+            'default': 'aur.archlinux.org',
+        },
+        'NewsUrl': {
+            'type': 'str',
+            'default': 'https://www.archlinux.org/feeds/news/',
         },
     },
     'network': {
@@ -191,8 +214,36 @@ def write_config(config: configparser.ConfigParser = None) -> None:
     if need_write:
         if not os.path.exists(CONFIG_ROOT):
             os.makedirs(CONFIG_ROOT)
-        with open_file(CONFIG_PATH, 'w') as configfile:
+        with open(CONFIG_PATH, 'w') as configfile:
             config.write(configfile)
+
+
+class PikaurConfigItem:
+
+    def __init__(self, section: configparser.SectionProxy, key: str) -> None:
+        self.section = section
+        self.key = key
+        self.value = self.section.get(key)
+
+    def get_bool(self) -> bool:
+        # pylint:disable=protected-access
+        if get_key_type(self.section.name, self.key) != 'bool':
+            raise TypeError(f"{self.key} is not 'bool'")
+        return configparser.RawConfigParser()._convert_to_boolean(self.value)  # type: ignore
+
+    def get_int(self) -> int:
+        if get_key_type(self.section.name, self.key) != 'int':
+            raise TypeError(f"{self.key} is not 'int'")
+        return int(self.value)
+
+    def get_str(self) -> str:
+        # note: it's basically needed for mypy
+        if get_key_type(self.section.name, self.key) != 'str':
+            raise TypeError(f"{self.key} is not 'str'")
+        return str(self.value)
+
+    def __str__(self) -> str:
+        return self.get_str()
 
 
 class PikaurConfigSection():
@@ -202,26 +253,8 @@ class PikaurConfigSection():
     def __init__(self, section: configparser.SectionProxy) -> None:
         self.section = section
 
-    def __getattr__(self, attr) -> str:
-        return self.get_str(attr)
-
-    def get_str(self, key: str, *args) -> str:
-        section = self.section
-        if get_key_type(section.name, key) != 'str':
-            raise TypeError(f"{key} is not 'str'")
-        return section.get(key, *args)
-
-    def get_int(self, key: str) -> int:
-        section = self.section
-        if get_key_type(section.name, key) != 'int':
-            raise TypeError(f"{key} is not 'int'")
-        return section.getint(key)
-
-    def get_bool(self, key: str) -> bool:
-        section = self.section
-        if get_key_type(section.name, key) != 'bool':
-            raise TypeError(f"{key} is not 'bool'")
-        return section.getboolean(key)
+    def __getattr__(self, attr) -> PikaurConfigItem:
+        return PikaurConfigItem(self.section, attr)
 
 
 class PikaurConfig():

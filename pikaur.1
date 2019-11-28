@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "PIKAUR" "1" "March 2019" "" "Pikaur manual"
+.TH "PIKAUR" "1" "November 2019" "" "Pikaur manual"
 .
 .P
 AUR helper with minimal dependencies\. Review PKGBUILDs all in once, next build them all without user interaction\.
@@ -42,6 +42,9 @@ show AUR package diff and review PKGBUILD and \.install files
 .IP "\(bu" 4
 AUR package names in shell completion (bash, fish, zsh)
 .
+.IP "\(bu" 4
+quickly search&install package by \fBpikaur <search\-query>\fR
+.
 .IP "" 0
 .
 .P
@@ -74,7 +77,7 @@ The following pacman operations are extended with AUR capabilities:
 Also see \fBpikaur \-Sh\fR, \fB\-Qh\fR, \fB\-Ph\fR and \fB\-Gh\fR for pikaur\-specific flags\.
 .
 .P
-Pikaur wraps all the pacman options accurately except for \fB\-Syu\fR which is being splitted into \fB\-Sy\fR (to refresh package list first) and \fB\-Su\fR (to install upgrades after user confirmed the package list or altered it via [M]anual package selection)\.
+Pikaur wraps all the pacman options accurately except for \fB\-Syu\fR which is being split into \fB\-Sy\fR (to refresh package list first) and \fB\-Su\fR (to install upgrades after user confirmed the package list or altered it via [M]anual package selection)\.
 .
 .IP "\(bu" 4
 \fIInstallation\fR
@@ -143,13 +146,19 @@ When installing new packages, show their repository name, even if they are comin
 .SS "UpgradeSorting (default: versiondiff)"
 When upgrading packages, sort them by \fBversiondiff\fR, \fBpkgname\fR or \fBrepo\fR\.
 .
+.SS "ShowDownloadSize (default: no)"
+When installing repository packages, show their download size\.
+.
 .SS "[build]"
 .
 .SS "KeepBuildDir (default: no)"
-Don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. Will be overriden by \fB\-k/\-\-keepbuild\fR flag\.
+Don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. Will be overridden by \fB\-k/\-\-keepbuild\fR flag\.
 .
 .SS "KeepDevBuildDir (default: yes)"
-When building dev packages (\fB\-git\fR, \fB\-svn\fR, etc), don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. \fBNo\fR value will be overriden by \fBKeepBuildDir\fR option and \fB\-k/\-\-keepbuild\fR flag\.
+When building dev packages (\fB\-git\fR, \fB\-svn\fR, etc), don\'t remove \fB~/\.cache/pikaur/build/${PACKAGE_NAME}\fR directory between the builds\. \fBNo\fR value will be overridden by \fBKeepBuildDir\fR option and \fB\-k/\-\-keepbuild\fR flag\.
+.
+.SS "KeepBuildDeps (default: no)"
+Don\'t remove build dependencies between and after the builds\. Will be overridden by \fB\-\-keepbuilddeps\fR flag\.
 .
 .SS "SkipFailedBuild (default: no)"
 Always skip the build if it fails and don\'t show recovery prompt\.
@@ -158,16 +167,16 @@ Always skip the build if it fails and don\'t show recovery prompt\.
 Always default to no when prompting to edit PKGBUILD and install files\.
 .
 .SS "NoEdit (default: no)"
-Don\'t prompt to edit PKGBUILD and install files\. Will be overriden by \fB\-\-noedit\fR and \fB\-\-edit\fR flags\.
+Don\'t prompt to edit PKGBUILD and install files\. Will be overridden by \fB\-\-noedit\fR and \fB\-\-edit\fR flags\.
 .
 .SS "NoDiff (default: no)"
-Don\'t prompt to show the build files diff\. Will be overriden by \fB\-\-nodiff\fR flag\.
+Don\'t prompt to show the build files diff\. Will be overridden by \fB\-\-nodiff\fR flag\.
 .
 .SS "GitDiffArgs (default: \-\-ignore\-space\-change,\-\-ignore\-all\-space)"
 Flags to be passed to \fBgit diff\fR command when reviewing build files\. Should be separated by commas (\fB,\fR)\.
 .
 .SS "AlwaysUseDynamicUsers (default: no)"
-Always isolate the build using systemd dynamic users\. Will be overriden by \fB\-\-dynamic\-users\fR flag\.
+Always isolate the build using systemd dynamic users\. Will be overridden by \fB\-\-dynamic\-users\fR flag\.
 .
 .SS "[colors]"
 Terminal colors, from 0 to 15:
@@ -189,6 +198,9 @@ Wherever to use \fBless\fR pager when viewing AUR packages diff\. Choices are \f
 .SS "PrintCommands (default: no)"
 Print each command which pikaur is currently spawning\.
 .
+.SS "ReverseSearchSorting (default: no)"
+Reverse search results of the commands like \fBpikaur \-Ss <query>\fR or \fBpikaur <query>\fR\.
+.
 .SS "[misc]"
 .
 .SS "SudoLoopInterval (default: 59)"
@@ -196,6 +208,12 @@ Interval in seconds in which \fBsudo\fR command will be spawned in the backgroun
 .
 .SS "PacmanPath (default: pacman)"
 Path to pacman executable\.
+.
+.SS "AurHost (default: aur\.archlinux\.org)"
+AUR Host, useful for users in China to use "aur\.tuna\.tsinghua\.edu\.cn"\.
+.
+.SS "NewsUrl (default: https://www\.archlinux\.org/feeds/news/)"
+Arch Linux News URL, useful for users of Parabola or other Arch derivatives\.
 .
 .SS "[network]"
 .
@@ -213,7 +231,7 @@ Note that any downloads by \fBpacman\fR, \fBgit\fR or \fBmakepkg\fR will NOT use
 .nf
 
 ~/\.cache/pikaur/
-├── build/  # build directory (removed after successfull build)
+├── build/  # build directory (removed after successful build)
 ├── pkg/  # built packages directory
 ~/\.config/pikaur\.conf  # config file
 ~/\.local/share/pikaur/
@@ -259,7 +277,7 @@ Actually use \fBcheckupdates\fR tool to check the repo updates and use pikaur on
 .
 .nf
 
-checkupdates && pikaur \-Qua 2>/dev/null
+checkupdates ; pikaur \-Qua 2>/dev/null
 .
 .fi
 .
@@ -274,7 +292,7 @@ If you find the command takes a long time to initialize, make sure to periodical
 You can start from this list of issues \fIhttps://github\.com/actionless/pikaur/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22\fR\. Grep\-ing \fB@TODO\fR comments also useful if you\'re itching to write something\.
 .
 .SS "Translations"
-To start working on a new language, say \'it\' (Italian), add it to the \fBMakefile\fR \fBLANGS\fR variable and run \fBmake\fR\. Then translate \fBlocale/it\.po\fR using your favorite PO editor\. Run \fBmake\fR every time the Python code strings change or the \fB\.po\fR is modified\.
+To start working on a new language, say \'ja\' (Japanese), add it to the \fBMakefile\fR \fBLANGS\fR variable and run \fBmake\fR\. Then translate \fBlocale/ja\.po\fR using your favorite PO editor\. Run \fBmake\fR every time the Python code strings change or the \fB\.po\fR is modified\.
 .
 .SS "Documentation"
 After updating readme, please install \fBruby\-ronn\fR and run \fBmake man\fR\.
@@ -293,4 +311,4 @@ git log \-\-pretty=tformat:"%an <%ae>" | sort \-u
 .IP "" 0
 .
 .SS "Special thanks"
-@AladW (aurutils \fIhttps://github\.com/AladW/aurutils\fR), @morganamilo (yay \fIhttps://github\.com/Jguer/yay\fR) and all the other issue contributors \fIhttps://github\.com/actionless/pikaur/issues?utf8=%E2%9C%93&q=is%3Aissue+\-author%3Aactionless\fR for helping in triaging the bugs and clearing up feature requirements\.
+@AladW (aurutils \fIhttps://github\.com/AladW/aurutils\fR), @morganamilo (yay \fIhttps://github\.com/Jguer/yay\fR) during the early stages of Pikaur development\. And all the other issue contributors \fIhttps://github\.com/actionless/pikaur/issues?utf8=%E2%9C%93&q=is%3Aissue+\-author%3Aactionless\fR for helping in triaging the bugs and clearing up feature requirements\.

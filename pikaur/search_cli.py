@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Iterable, Union, Set, Sequence
 import pyalpm
 
 from .i18n import _
-from .pprint import print_stderr
-from .print_department import print_package_search_results
+from .pprint import print_stderr, print_error
+from .print_department import print_package_search_results, AnyPackage
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
 from .aur import (
     AURPackageInfo,
@@ -31,18 +31,44 @@ def package_search_thread_repo(query: str) -> List[pyalpm.Package]:
     return result
 
 
+def filter_aur_results(
+        results: Dict[str, List[AURPackageInfo]],
+        query: str
+) -> Dict[str, List[AURPackageInfo]]:
+    filtered_results: Dict[str, List[AURPackageInfo]] = {}
+    for _q, pkgs in results.items():
+        for pkg in pkgs:
+            if query in pkg.name or query in (pkg.desc or ''):
+                filtered_results.setdefault(_q, []).append(pkg)
+    return filtered_results
+
+
 def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:
     args = parse_args()
     result = {}
     if queries:
+        use_as_filters: List[str] = []
         with ThreadPool() as pool:
             requests = {}
             for query in queries:
                 requests[query] = pool.apply_async(aur_rpc_search_name_desc, (query, ))
             pool.close()
             for query, request in requests.items():
-                result[query] = request.get()
+                try:
+                    result[query] = request.get()
+                except AURError as exc:
+                    if exc.error == "Too many package results.":
+                        print_error(
+                            _("AUR: Too many package results for '{query}'").format(
+                                query=query
+                            )
+                        )
+                        use_as_filters.append(query)
+                    else:
+                        raise
             pool.join()
+        for query in use_as_filters:
+            result = filter_aur_results(result, query)
         if args.namesonly:
             for subindex, subresult in result.items():
                 result[subindex] = [
@@ -51,10 +77,12 @@ def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:
                 ]
     else:
         if args.quiet:
-            class TmpNameType(AURPackageInfo):
-                pass
             result = {'all': [
-                TmpNameType(name=name) for name in get_all_aur_names()
+                AURPackageInfo(
+                    name=name,
+                    packagebase=name,
+                    version="0",
+                ) for name in get_all_aur_names()
             ]}
         else:
             result = {'all': get_all_aur_packages()}
@@ -90,7 +118,7 @@ def join_search_results(
     }.values()
 
 
-def cli_search_packages() -> None:  # pylint: disable=too-many-locals
+def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disable=too-many-locals
     refresh_pkg_db()
 
     args = parse_args()
@@ -130,16 +158,16 @@ def cli_search_packages() -> None:  # pylint: disable=too-many-locals
     if not args.quiet:
         sys.stderr.write('\n')
 
-    if result_repo and not AUR_ONLY:
-        repo_result = join_search_results(result_repo)
-        print_package_search_results(
-            packages=repo_result,
-            local_pkgs_versions=result_local
-        )
+    repo_result = (
+        join_search_results(result_repo)
+    ) if result_repo and not AUR_ONLY else []
+    aur_result = (
+        join_search_results(list(result_aur.values()))
+    ) if result_aur and not REPO_ONLY else []
 
-    if result_aur and not REPO_ONLY:
-        aur_result = join_search_results(list(result_aur.values()))
-        print_package_search_results(
-            packages=aur_result,
-            local_pkgs_versions=result_local
-        )
+    return print_package_search_results(
+        repo_packages=repo_result,
+        aur_packages=aur_result,
+        local_pkgs_versions=result_local,
+        enumerated=enumerated,
+    )

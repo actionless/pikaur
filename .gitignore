@@ -1,9 +1,11 @@
 __pycache__/
 .mypy_cache/
-Dockerfile
 locale/*.mo
 locale/pikaur.pot
 .idea/
 .coverage
 htmlcov/
 coverage_env/
+dist/
+MANIFEST
+*.egg-info/

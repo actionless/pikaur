@@ -19,6 +19,7 @@ from .pprint import PrintLock, bold_line
 from .pacman import _p
 from .args import parse_args
 from .pprint import print_stderr, color_line, get_term_width
+from .core import get_sudo_refresh_command
 
 
 # SMALL_TIMEOUT = 0.1
@@ -56,7 +57,10 @@ class TTYRestore():
         cls._restore(cls.old_tcattrs)
 
     def __init__(self) -> None:
-        self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        try:
+            self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        except termios.error:  # type: ignore
+            pass
 
     def restore_new(self, *_whatever) -> None:
         self._restore(self.sub_tty_old_tcattrs)
@@ -76,10 +80,10 @@ class NestedTerminal():
         real_term_geometry = shutil.get_terminal_size((80, 80))
         if sys.stdin.isatty():
             tty.setcbreak(sys.stdin.fileno())
-        if sys.stderr.isatty():
-            tty.setcbreak(sys.stderr.fileno())
-        if sys.stdout.isatty():
-            tty.setcbreak(sys.stdout.fileno())
+            if sys.stderr.isatty():
+                tty.setcbreak(sys.stderr.fileno())
+            if sys.stdout.isatty():
+                tty.setcbreak(sys.stdout.fileno())
         return real_term_geometry
 
     def __exit__(self, *_exc_details) -> None:
@@ -151,7 +155,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     def run(self) -> None:
         with NestedTerminal() as real_term_geometry:
             if 'sudo' in self.args:
-                subprocess.run(['sudo', '-v'])
+                subprocess.run(get_sudo_refresh_command(), check=True)
             with open(self.pty_user_master, 'w') as self.pty_in:
                 with open(self.pty_cmd_master, 'rb', buffering=0) as self.pty_out:
                     set_terminal_geometry(
@@ -171,7 +175,8 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                         communicate_task.get()
                         input_task.get()
                         pool.join()
-                        self.pty_out.close()
+        os.close(self.pty_cmd_slave)
+        os.close(self.pty_user_slave)
 
     def check_questions(self) -> None:
         # pylint: disable=too-many-branches

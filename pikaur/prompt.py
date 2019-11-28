@@ -2,7 +2,7 @@
 
 import sys
 import tty
-from typing import List, Optional
+from typing import List, Optional, Iterable
 
 from .args import parse_args
 from .config import PikaurConfig
@@ -23,7 +23,7 @@ Y_UP = Y.upper()
 N_UP = N.upper()
 
 
-def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
+def read_answer_from_tty(question: str, answers: Iterable[str] = (Y_UP, N, )) -> str:
     '''
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
@@ -54,7 +54,7 @@ def read_answer_from_tty(question: str, answers: str = Y_UP + N) -> str:
         if ord(answer) == 13:
             answer = default
             return default
-        if answer in answers.lower():
+        if answer in [choice.lower() for choice in answers]:
             return answer
         return ' '
     except Exception:
@@ -80,10 +80,15 @@ def split_last_line(text: str) -> str:
     return '\n'.join(prev_lines + [last_line])
 
 
-def get_input(prompt: str, answers=None) -> str:
+def get_input(prompt: str, answers: Iterable[str] = ()) -> str:
+    require_confirm = max(len(choice) > 1 for choice in answers) if answers else False
     with PrintLock():
-        if PikaurConfig().ui.get_bool('RequireEnterConfirm'):
-            from .pikspect import TTYRestore
+        if not(
+                require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
+        ):
+            answer = read_answer_from_tty(prompt, answers=answers)
+        else:
+            from .pikspect import TTYRestore  # pylint:disable=import-outside-toplevel
             sub_tty = TTYRestore()
             TTYRestore.restore()
             try:
@@ -94,10 +99,8 @@ def get_input(prompt: str, answers=None) -> str:
                 sub_tty.restore_new()
             if not answer:
                 for choice in answers:
-                    if choice not in answers.lower():
+                    if choice.isupper():
                         return choice.lower()
-        else:
-            answer = read_answer_from_tty(prompt, answers=answers)
         return answer
 
 
@@ -129,6 +132,7 @@ def retry_interactive_command(
     while True:
         good = None
         if pikspect:
+            # pylint:disable=import-outside-toplevel
             from .pikspect import pikspect as pikspect_spawn
             good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
         else:

@@ -5,7 +5,7 @@ from typing import (
     Dict, Any, List, Tuple, Union, Optional,
 )
 
-from .core import open_file
+from .core import open_file, running_as_root
 from .config import CONFIG_ROOT
 from .args import parse_args
 
@@ -104,10 +104,38 @@ class MakepkgConfig():
         return value
 
 
-def get_makepkg_cmd() -> List[str]:
-    args = parse_args()
-    return [args.makepkg_path or 'makepkg', ] + (
-        args.mflags.split(',') if args.mflags else []
-    ) + (
-        (['--config', args.makepkg_config]) if args.makepkg_config else []
-    )
+PKGDEST: Optional[str] = os.environ.get(
+    'PKGDEST',
+    MakepkgConfig.get('PKGDEST')
+)
+if PKGDEST:
+    PKGDEST = os.path.expanduser(PKGDEST)
+
+
+class MakePkgCommand:
+
+    _cmd: Optional[List[str]] = None
+    pkgdest_skipped = False
+
+    @classmethod
+    def _apply_dynamic_users_workaround(cls):
+        if running_as_root() and PKGDEST and (
+                PKGDEST.startswith('/tmp') or
+                PKGDEST.startswith('/var/tmp')
+        ):
+            cls._cmd = ['env', 'PKGDEST='] + cls._cmd
+            cls.pkgdest_skipped = True
+
+    @classmethod
+    def get(cls) -> List[str]:
+        if cls._cmd is None:
+            args = parse_args()
+            makepkg_flags = (
+                args.mflags.split(',') if args.mflags else []
+            )
+            config_args = (
+                ['--config', args.makepkg_config] if args.makepkg_config else []
+            )
+            cls._cmd = [args.makepkg_path or 'makepkg', ] + makepkg_flags + config_args
+            cls._apply_dynamic_users_workaround()
+        return cls._cmd

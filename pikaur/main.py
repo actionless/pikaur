@@ -30,7 +30,7 @@ from .print_department import (
     pretty_format_upgradeable, print_version, print_not_found_packages,
 )
 from .updates import find_repo_upgradeable, find_aur_updates
-from .prompt import ask_to_continue
+from .prompt import ask_to_continue, get_input
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT, CONFIG_PATH,
     AUR_REPOS_CACHE_PATH, PikaurConfig, migrate_old_aur_repos_dir,
@@ -79,7 +79,7 @@ init_output_encoding()
 
 
 def init_proxy() -> None:
-    proxy = PikaurConfig().network.get_str('Socks5Proxy')
+    proxy = PikaurConfig().network.Socks5Proxy.get_str()
     if proxy:  # pragma: no cover
         port = 1080
         idx = proxy.find(':')
@@ -88,7 +88,7 @@ def init_proxy() -> None:
             proxy = proxy[:idx]
 
         try:
-            import socks  # type: ignore
+            import socks  # type: ignore #  pylint:disable=import-outside-toplevel
             socks.set_default_proxy(socks.PROXY_TYPE_SOCKS5, proxy, port)
             socket.socket = socks.socksocket  # type: ignore
         except ImportError:
@@ -115,7 +115,7 @@ def cli_print_upgradeable() -> None:
     else:
         print_stdout(pretty_format_upgradeable(
             updates,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
 
 
@@ -187,7 +187,7 @@ def cli_clean_packages_cache() -> None:
     if not args.aur:
         raise SysExit(
             interactive_spawn(sudo(
-                [PikaurConfig().misc.PacmanPath, ] + reconstruct_args(args)
+                [PikaurConfig().misc.PacmanPath.get_str(), ] + reconstruct_args(args)
             )).returncode
         )
 
@@ -195,12 +195,44 @@ def cli_clean_packages_cache() -> None:
 def cli_print_version() -> None:
     args = parse_args()
     pacman_version = spawn(
-        [PikaurConfig().misc.PacmanPath, '--version', ],
+        [PikaurConfig().misc.PacmanPath.get_str(), '--version', ],
     ).stdout_text.splitlines()[1].strip(' .-')
     print_version(pacman_version, quiet=args.quiet)
 
 
-def cli_entry_point() -> None:
+def cli_dynamic_select() -> None:  # pragma: no cover
+    packages = cli_search_packages(enumerated=True)
+    if not packages:
+        raise SysExit(1)
+
+    print_stderr(
+        '\n' +
+        _("Please enter the number of the package you want to install (default={}):").format(
+            1
+        )
+    )
+    answer = get_input('> ', [str(i) for i in range(1, len(packages) + 1)]) or '1'
+    print_stderr()
+    if answer.lower() == _('n'):
+        raise SysExit(128)
+
+    try:
+        selected_pkg_idx = int(answer) - 1
+    except ValueError:
+        print_error(_('invalid number: {}').format(answer))
+        raise SysExit(5)
+
+    if not 0 <= selected_pkg_idx < len(packages):
+        print_error(_('invalid value: {} is not between {} and {}').format(
+            answer, 1, len(packages)
+        ))
+        raise SysExit(5)
+
+    parse_args().positional = [packages[selected_pkg_idx].name, ]
+    cli_install_packages()
+
+
+def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
 
     init_proxy()
@@ -223,6 +255,9 @@ def cli_entry_point() -> None:
         if args.sysupgrade:
             pikaur_operation = cli_print_upgradeable
 
+    elif args.files:
+        require_sudo = bool(args.refresh)
+
     elif args.getpkgbuild:
         pikaur_operation = cli_getpkgbuild
 
@@ -244,14 +279,25 @@ def cli_entry_point() -> None:
             require_sudo = True
             pikaur_operation = cli_install_packages
 
+    elif not (args.database or args.remove or args.deptest or args.upgrade):
+        if args.positional:
+            pikaur_operation = cli_dynamic_select
+
     else:
         require_sudo = True
 
     if pikaur_operation:
         if require_sudo and args.dynamic_users and not running_as_root():
             # Restart pikaur with sudo to use systemd dynamic users
+            restart_args = sys.argv[:]
+            config_overridden = max([
+                arg.startswith('--pikaur-config')
+                for arg in restart_args
+            ])
+            if not config_overridden:
+                restart_args += ['--pikaur-config', CONFIG_PATH]
             sys.exit(interactive_spawn(
-                sudo(sys.argv) + ['--pikaur-config', CONFIG_PATH]
+                sudo(restart_args)
             ).returncode)
         else:
             if not require_sudo or running_as_root():
@@ -262,7 +308,7 @@ def cli_entry_point() -> None:
                 run_with_sudo_loop(pikaur_operation)
     else:
         # Just bypass all the args to pacman
-        pacman_args = [PikaurConfig().misc.PacmanPath, ] + (args.raw or [])
+        pacman_args = [PikaurConfig().misc.PacmanPath.get_str(), ] + (args.raw or [])
         if require_sudo:
             pacman_args = sudo(pacman_args)
         sys.exit(

@@ -79,7 +79,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
     _color_line = color_line
     _bold_line = bold_line
     if not color:
-        _color_line = lambda line, *args: line  # noqa
+        _color_line = lambda line, *args, **kwargs: line  # noqa
         _bold_line = lambda line: line  # noqa
 
     def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, str]:  # pylint:disable=too-many-locals
@@ -88,9 +88,9 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         )
         user_config = PikaurConfig()
         color_config = user_config.colors
-        version_color = color_config.get_int('Version')
-        old_color = color_config.get_int('VersionDiffOld')
-        new_color = color_config.get_int('VersionDiffNew')
+        version_color = color_config.Version.get_int()
+        old_color = color_config.VersionDiffOld.get_int()
+        new_color = color_config.VersionDiffNew.get_int()
         column_width = min(int(get_term_width() / 2.5), 37)
 
         sort_by = '{:04d}{}'.format(
@@ -152,7 +152,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         if pkg_update.members_of:
             members_of = ' ({})'.format(
                 _n('{grp} group', '{grp} groups', len(pkg_update.members_of)).format(
-                    grp=', '.join([g for g in pkg_update.members_of]),
+                    grp=', '.join(g for g in pkg_update.members_of),
                 )
             )
             pkg_len += len(members_of)
@@ -166,17 +166,25 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             pkg_name += _color_line(members_of, GROUP_COLOR)
         if pkg_update.replaces:
             replaces = ' (replaces {})'.format(
-                ', '.join([g for g in pkg_update.replaces])
+                ', '.join(g for g in pkg_update.replaces)
             )
             pkg_len += len(replaces)
             pkg_name += _color_line(replaces, REPLACEMENTS_COLOR)
             if not color:
                 pkg_name = f'# {pkg_name}'
 
+        pkg_size = ''
+        if (
+                user_config.sync.ShowDownloadSize.get_bool() and
+                isinstance(pkg_update.package, pyalpm.Package)
+        ):
+            pkg_size = f'{pkg_update.package.size/1024/1024:.2f} MiB'
+
         return (
             template or (
                 ' {pkg_name}{spacing}'
-                ' {current_version}{spacing2}{version_separator}{new_version}{days_old}{verbose}'
+                ' {current_version}{spacing2}'
+                '{version_separator}{new_version}{spacing3}{pkg_size}{days_old}{verbose}'
             )
         ).format(
             pkg_name=pkg_name,
@@ -204,6 +212,12 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 len(pkg_update.current_version or '') -
                 max(-1, (pkg_len - column_width))
             )),
+            spacing3=(' ' * max(1, (
+                column_width - 18 -
+                len(pkg_update.new_version or '') -
+                max(-1, (pkg_len - column_width))
+            )) if pkg_size else ''),
+            pkg_size=pkg_size,
             verbose=(
                 '' if not (verbose and pkg_update.description)
                 else f'\n{format_paragraph(pkg_update.description)}'
@@ -267,7 +281,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             repo_replacements,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if thirdparty_repo_replacements:
         result.append('\n{} {}'.format(
@@ -280,7 +294,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             thirdparty_repo_replacements,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
 
     if repo_packages_updates:
@@ -294,7 +308,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             repo_packages_updates,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if new_repo_deps:
         result.append('\n{} {}'.format(
@@ -306,7 +320,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             new_repo_deps,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if thirdparty_repo_packages_updates:
         result.append('\n{} {}'.format(
@@ -329,7 +343,7 @@ def pretty_format_sysupgrade(
         result.append(pretty_format_upgradeable(
             new_thirdparty_repo_deps,
             verbose=verbose, color=color,
-            print_repo=PikaurConfig().sync.get_bool('AlwaysShowPkgOrigin')
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if aur_updates:
         result.append('\n{} {}'.format(
@@ -361,32 +375,32 @@ def pretty_format_repo_name(repo_name: str) -> str:
     return color_line(f'{repo_name}/', len(repo_name) % 5 + 10)
 
 
-def print_ignored_package(package_name) -> None:
-    from .updates import get_remote_package_version
-
-    current = PackageDB.get_local_dict().get(package_name)
-    current_version = current.version if current else ''
-    new_version = get_remote_package_version(package_name)
-    install_infos = [InstallInfo(
+def print_ignored_package(
+        package_name: Optional[str] = None,
+        install_info: Optional[InstallInfo] = None,
+) -> None:
+    if not (package_name or install_info):
+        raise TypeError("Either 'package_name' or 'install_info' should be specified")
+    install_info = install_info or InstallInfo(
         name=package_name,
-        current_version=current_version or '',
-        new_version=new_version or '',
+        current_version='',
+        new_version='',
         package=None,
-    )]
+    )
     print_stderr('{} {}'.format(
         color_line('::', 11),
         _("Ignoring package update {}").format(
             pretty_format_upgradeable(
-                install_infos,
+                [install_info],
                 template="{pkg_name} ({current_version} => {new_version})"
             ))
-        if (current_version and new_version) else
+        if (install_info.current_version and install_info.new_version) else
         _("Ignoring package {}").format(
             pretty_format_upgradeable(
-                install_infos,
+                [install_info],
                 template=(
                     "{pkg_name} {current_version}"
-                    if current_version else
+                    if install_info.current_version else
                     "{pkg_name} {new_version}"
                 )
             ))
@@ -406,29 +420,45 @@ def print_package_uptodate(package_name: str, package_source: PackageSource) -> 
 
 
 # @TODO: weird pylint behavior if remove `return` from the end:
-def print_package_search_results(  # pylint:disable=useless-return
-        packages: Iterable[AnyPackage],
+def print_package_search_results(  # pylint:disable=useless-return,too-many-locals
+        repo_packages: Iterable[AnyPackage],
+        aur_packages: Iterable[AnyPackage],
         local_pkgs_versions: Dict[str, str],
-) -> None:
+        enumerated=False,
+) -> List[AnyPackage]:
 
+    # pylint:disable=import-outside-toplevel
     from .aur import AURPackageInfo  # noqa  pylint:disable=redefined-outer-name
 
     def get_sort_key(pkg: AnyPackage) -> float:
-        if isinstance(pkg, AURPackageInfo) and getattr(pkg, 'numvotes', None) is not None:
+        if (
+                isinstance(pkg, AURPackageInfo) and
+                isinstance(pkg.numvotes, int) and
+                isinstance(pkg.popularity, float)
+        ):
             return (pkg.numvotes + 1) * (pkg.popularity + 1)
         return 1
 
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
-    for package in sorted(
-            packages,
-            key=get_sort_key,
-            reverse=True
-    ):
+    sorted_packages: List[AnyPackage] = list(repo_packages) + list(sorted(
+        aur_packages,
+        key=get_sort_key,
+        reverse=True
+    ))
+    enumerated_packages = list(enumerate(sorted_packages))
+    if PikaurConfig().ui.ReverseSearchSorting.get_bool():
+        enumerated_packages = list(reversed(enumerated_packages))
+
+    for pkg_idx, package in enumerated_packages:
         # @TODO: return only packages for the current architecture
+        idx = ''
+        if enumerated:
+            idx = bold_line(f'{pkg_idx+1}) ')
+
         pkg_name = package.name
         if args.quiet:
-            print(pkg_name)
+            print(f'{idx}{pkg_name}')
         else:
 
             repo = color_line('aur/', 9)
@@ -462,18 +492,19 @@ def print_package_search_results(  # pylint:disable=useless-return
                 ), 3)
 
             color_config = PikaurConfig().colors
-            version_color = color_config.get_int('Version')
+            version_color = color_config.Version.get_int()
             version = package.version
 
             if isinstance(package, AURPackageInfo) and package.outofdate is not None:
-                version_color = color_config.get_int('VersionDiffOld')
+                version_color = color_config.VersionDiffOld.get_int()
                 version = "{} [{}: {}]".format(
                     package.version,
                     _("outofdate"),
                     datetime.fromtimestamp(package.outofdate).strftime('%Y/%m/%d')
                 )
 
-            print("{}{} {} {}{}{}".format(
+            print("{}{}{} {} {}{}{}".format(
+                idx,
                 repo,
                 bold_line(pkg_name),
                 color_line(version, version_color),
@@ -482,4 +513,4 @@ def print_package_search_results(  # pylint:disable=useless-return
                 rating
             ))
             print(format_paragraph(f'{package.desc}'))
-    return
+    return sorted_packages

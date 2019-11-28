@@ -89,9 +89,9 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name)
 
     def test_pkgbuild_split_packages(self):
-        pkg_base = 'python-flake8-polyfill'
+        pkg_base = 'python-vdf'
         pkg_name1 = pkg_base
-        pkg_name2 = 'python2-flake8-polyfill'
+        pkg_name2 = 'python2-vdf'
 
         self.remove_if_installed(pkg_name1)
         self.remove_if_installed(pkg_name2)
@@ -129,6 +129,7 @@ class InstallTest(PikaurDbTestCase):
         self.assertNotInstalled('expac-git')
 
     def test_cache_clean(self):
+        # pylint:disable=import-outside-toplevel
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 
         pikaur('-S inxi --rebuild --keepbuild')
@@ -148,6 +149,7 @@ class InstallTest(PikaurDbTestCase):
         )
 
     def test_cache_full_clean(self):
+        # pylint:disable=import-outside-toplevel
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 
         pikaur('-S inxi --rebuild --keepbuild')

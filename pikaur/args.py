@@ -25,6 +25,7 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     # query options
     ('Q', 'query', None),
     ('o', 'owns', None),
+    ('l', 'list', None),  # @TODO
     # operations
     ('D', 'database', None),
     ('F', 'files', None),
@@ -42,22 +43,23 @@ PACMAN_BOOL_OPTS: ArgSchema = [
 
 def get_pikaur_bool_opts() -> ArgSchema:
     return [
-        (None, 'noedit', PikaurConfig().build.get_bool('NoEdit')),
+        (None, 'noedit', PikaurConfig().build.NoEdit.get_bool()),
         (None, 'edit', None),
         (None, 'namesonly', None),
         (None, 'repo', None),
         ('a', 'aur', None),
         (None, 'devel', None),
-        (None, 'keepbuild', PikaurConfig().build.get_bool('KeepBuildDir')),
-        (None, 'nodiff', PikaurConfig().build.get_bool('NoDiff')),
+        (None, 'keepbuild', PikaurConfig().build.KeepBuildDir.get_bool()),
+        (None, 'keepbuilddeps', PikaurConfig().build.KeepBuildDeps.get_bool()),
+        (None, 'nodiff', PikaurConfig().build.NoDiff.get_bool()),
         (None, 'rebuild', None),
-        (None, 'dynamic-users', PikaurConfig().build.get_bool('AlwaysUseDynamicUsers')),
+        (None, 'dynamic-users', PikaurConfig().build.AlwaysUseDynamicUsers.get_bool()),
         ('P', 'pkgbuild', None),
         (None, 'install', None),
         ('G', 'getpkgbuild', None),
         (None, 'deps', None),
         # undocumented options:
-        (None, 'print-commands', PikaurConfig().ui.get_bool('PrintCommands')),
+        (None, 'print-commands', PikaurConfig().ui.PrintCommands.get_bool()),
         (None, 'hide-build-log', None),
         (None, 'print-args-and-exit', None),
     ]
@@ -96,7 +98,6 @@ PACMAN_COUNT_OPTS: ArgSchema = [
 PACMAN_APPEND_OPTS: ArgSchema = [
     (None, 'ignore', None),
     (None, 'ignoregroup', None),  # @TODO
-    ('l', 'list', None),  # @TODO
     (None, 'overwrite', None),
     (None, 'assume-installed', None),  # @TODO
 ]
@@ -134,6 +135,9 @@ class PikaurArgs(Namespace):
     owns: Optional[bool]
     check: Optional[bool]
     ignore: List[str]
+    # positional: List[str]
+    # @TODO: pylint bug:
+    positional: List[str] = []
 
     def __getattr__(self, name: str) -> Any:
         """
@@ -216,18 +220,32 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             letter: str = None, opt: str = None,
             default: Any = None
     ) -> None:
-        if letter and opt:
-            self.add_argument(  # type: ignore
-                '-' + letter, '--' + opt, action=action, default=default
-            )
-        elif opt:
-            self.add_argument(  # type: ignore
-                '--' + opt, action=action, default=default
-            )
-        elif letter:
-            self.add_argument(  # type: ignore
-                '-' + letter, action=action, default=default
-            )
+        if action:
+            if letter and opt:
+                self.add_argument(
+                    '-' + letter, '--' + opt, action=action, default=default
+                )
+            elif opt:
+                self.add_argument(
+                    '--' + opt, action=action, default=default
+                )
+            elif letter:
+                self.add_argument(
+                    '-' + letter, action=action, default=default
+                )
+        else:
+            if letter and opt:
+                self.add_argument(
+                    '-' + letter, '--' + opt, default=default
+                )
+            elif opt:
+                self.add_argument(
+                    '--' + opt, default=default
+                )
+            elif letter:
+                self.add_argument(
+                    '-' + letter, default=default
+                )
 
 
 class CachedArgs():
@@ -236,6 +254,7 @@ class CachedArgs():
 
 
 def debug_args(args: List[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
+    #  pylint:disable=import-outside-toplevel
     from pprint import pprint  # pylint: disable=no-name-in-module
 
     print("Input:")
@@ -303,6 +322,14 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     parser.add_argument('positional', nargs='*')
 
     parsed_args = parser.parse_pikaur_args(args)
+
+    if parsed_args.positional and '-' in parsed_args.positional and not sys.stdin.isatty():
+        parsed_args.positional.remove('-')
+        parsed_args.positional += [
+            word
+            for line in sys.stdin.readlines()
+            for word in line.split()
+        ]
 
     if parsed_args.print_args_and_exit:  # pragma: no cover
         debug_args(args, parsed_args)
@@ -390,7 +417,7 @@ def cli_print_help() -> None:
     args = parse_args()
 
     pacman_help = spawn(
-        [PikaurConfig().misc.PacmanPath, ] +
+        [PikaurConfig().misc.PacmanPath.get_str(), ] +
         reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
     ).stdout_text.replace(
         'pacman', 'pikaur'

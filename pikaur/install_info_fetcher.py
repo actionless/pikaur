@@ -8,7 +8,7 @@ from .core import PackageSource, InstallInfo
 from .version import VersionMatcher
 from .pacman import (
     OFFICIAL_REPOS,
-    PackageDB, PacmanConfig,
+    PackageDB, PacmanConfig, PacmanPrint,
     find_sysupgrade_packages, get_pacman_command, strip_repo_name,
 )
 from .aur import find_aur_packages, AURPackageInfo
@@ -74,7 +74,7 @@ class InstallInfoFetcher:
                 ignored_packages.append(pkg_name)
 
         for package_name in ignored_packages:
-            print_ignored_package(package_name)
+            print_ignored_package(package_name=package_name)
 
     @property
     def aur_deps_names(self) -> List[str]:
@@ -124,11 +124,17 @@ class InstallInfoFetcher:
     def _get_repo_pkgs_info(  # pylint: disable=too-many-locals
             self, pkg_lines: List[str], extra_args: Optional[List[str]] = None
     ) -> List[InstallInfo]:
+        if not pkg_lines:
+            return []
+
         extra_args = extra_args or []
         all_repo_pkgs = PackageDB.get_repo_dict()
         all_local_pkgs = PackageDB.get_local_dict()
 
-        pacman_args = get_pacman_command() + [
+        # pacman print-info flag conflicts with some normal --sync options:
+        pacman_args = get_pacman_command(ignore_args=[
+            'overwrite'
+        ]) + [
             '--sync',
         ] + reconstruct_args(self.args, ignore_args=[
             'sync',
@@ -137,9 +143,45 @@ class InstallInfoFetcher:
             'refresh',
             'needed',
             'verbose',
+            'overwrite',
+            'search',
         ]) + extra_args
 
-        pkg_install_infos = []
+        def _get_pkg_install_infos(results: List[PacmanPrint]) -> List[InstallInfo]:
+            install_infos = []
+            for pkg_print in results:
+                pkg = all_repo_pkgs[pkg_print.full_name]
+                local_pkg = all_local_pkgs.get(pkg.name)
+                install_info = InstallInfo(
+                    name=pkg.name,
+                    current_version=local_pkg.version if local_pkg else '',
+                    new_version=pkg.version,
+                    description=pkg.desc,
+                    repository=pkg.db.name,
+                    package=pkg,
+                )
+
+                groups = install_info.package.groups
+                members_of = [
+                    gr for gr in groups
+                    if gr in self.install_package_names
+                ]
+                if members_of:
+                    install_info.members_of = members_of
+
+                install_infos.append(install_info)
+            return install_infos
+
+        composed_result = PackageDB.get_print_format_output(
+            pacman_args + [
+                pkg
+                for pkg_line in pkg_lines
+                for pkg in pkg_line.split(',')
+            ]
+        )
+        if composed_result:
+            return _get_pkg_install_infos(composed_result)
+
         all_results = {}
         with ThreadPool() as pool:
             all_requests = {}
@@ -152,33 +194,14 @@ class InstallInfoFetcher:
             pool.join()
             for pkg_name, request in all_requests.items():
                 all_results[pkg_name] = request.get()
+        pkg_install_infos: List[InstallInfo] = []
         for pkg_name, results in all_results.items():
             if not results:
                 self.not_found_repo_pkgs_names.append(pkg_name)
                 if pkg_name in self.install_package_names:
                     self.install_package_names.remove(pkg_name)
             else:
-                for pkg_print in results:
-                    pkg = all_repo_pkgs[pkg_print.full_name]
-                    local_pkg = all_local_pkgs.get(pkg.name)
-                    install_info = InstallInfo(
-                        name=pkg.name,
-                        current_version=local_pkg.version if local_pkg else '',
-                        new_version=pkg.version,
-                        description=pkg.desc,
-                        repository=pkg.db.name,
-                        package=pkg,
-                    )
-
-                    groups = install_info.package.groups
-                    members_of = [
-                        gr for gr in groups
-                        if gr in self.install_package_names
-                    ]
-                    if members_of:
-                        install_info.members_of = members_of
-
-                    pkg_install_infos.append(install_info)
+                pkg_install_infos += _get_pkg_install_infos(results)
         return pkg_install_infos
 
     def get_upgradeable_repo_pkgs_info(self) -> List[InstallInfo]:
@@ -232,7 +255,7 @@ class InstallInfoFetcher:
             ) or (
                 self.package_is_ignored(pkg_name)
             ):
-                print_ignored_package(pkg_name)
+                print_ignored_package(install_info=pkg_update)
                 continue
 
             if pkg_update.current_version == '' and (
@@ -316,7 +339,9 @@ class InstallInfoFetcher:
             ) or (
                 self.package_is_ignored(pkg_name)
             ):
-                print_ignored_package(pkg_name)
+                print_ignored_package(
+                    install_info=aur_updates_install_info_by_name[pkg_name]
+                )
                 del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
 

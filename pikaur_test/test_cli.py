@@ -30,6 +30,26 @@ class CliTest(PikaurTestCase):
             set(result_first).intersection(result_second)
         )
 
+    def test_search_multiword_too_many(self):
+        """
+        https://github.com/actionless/pikaur/issues/298
+        """
+        proc_aur_too_many = pikaur('-Ssq --aur python', capture_stderr=True)
+        self.assertIn(
+            "Too many package results for 'python'",
+            proc_aur_too_many.stderr
+        )
+        result_aur_too_many = proc_aur_too_many.stdout.splitlines()
+        self.assertEqual(len(result_aur_too_many), 0)
+
+        result_aur_second = pikaur('-Ssq --aur opencv').stdout.splitlines()
+        self.assertIn('python-imutils', result_aur_second)
+        self.assertIn('opencv-git', result_aur_second)
+
+        result_all = pikaur('-Ssq --aur python opencv').stdout.splitlines()
+        self.assertIn('python-imutils', result_all)
+        self.assertNotIn('opencv-git', result_all)
+
     def test_list(self):
         result_all = pikaur('-Ssq').stdout.splitlines()
         result_aur = pikaur('-Ssq --aur').stdout.splitlines()

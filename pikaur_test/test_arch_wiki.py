@@ -14,7 +14,7 @@ class ArchWikiTest(PikaurDbTestCase):
         # Arch Wiki: Reliable parser #
         # pikaur('-S aws-cli-git')
         # self.assertInstalled('aws-cli-git')
-        # python-tox dep is not available now
+        # python-yaml dep is not available now
 
     def test_split_packages_1(self):
         # Split packages 1

@@ -15,7 +15,6 @@ class RegressionTest(PikaurDbTestCase):
         fake_pikaur('-S zfs-dkms')
         self.assertInstalled('zfs-dkms')
         self.assertInstalled('zfs-utils')
-        self.assertInstalled('spl-dkms')
 
     def test_double_requirements_repo(self):
         # double requirements line
@@ -28,6 +27,7 @@ class RegressionTest(PikaurDbTestCase):
     def test_double_requirements_aur(self):
         pkg_name = 'python2-uncompyle6'  # with doubled aur dep
         fake_pikaur(f'-S {pkg_name}')
+        # pikaur(f'-S {pkg_name}')
         self.assertInstalled(pkg_name)
 
     def test_aur_pkg_with_versioned_virtual_deps(self):
@@ -42,7 +42,7 @@ class RegressionTest(PikaurDbTestCase):
         #123 AUR dep which was previously explicitly installed gets
         incorrectly marked as a dependency
         """
-        from pikaur.pacman import PackageDB
+        from pikaur.pacman import PackageDB  # pylint:disable=import-outside-toplevel
 
         aur_pkg_name = 'nqp'
         explicitly_installed_dep_name = 'moarvm'

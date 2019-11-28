@@ -2,5 +2,4 @@ language: minimal
 services:
   - docker
 script:
-  - mv ./maintenance_scripts/Dockerfile ./
   - ./maintenance_scripts/docker_test.sh --coveralls

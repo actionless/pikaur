@@ -235,7 +235,8 @@ class InstallPackagesCLI():
                 if (
                         # devel packages will be checked later
                         # after retrieving their sources
-                        is_devel_pkg(install_info.name)
+                        is_devel_pkg(install_info.name) and
+                        (install_info in self.install_info.aur_updates_install_info)
                 ) or (
                     not install_info.current_version
                 ) or compare_versions(
@@ -350,7 +351,7 @@ class InstallPackagesCLI():
                 letter = answer.lower()[0]
                 if letter == _("y"):
                     break
-                elif letter == _("v"):
+                if letter == _("v"):
                     answer = _confirm_sysupgrade(verbose=True)
                 elif letter == _("m"):
                     print_stdout()
@@ -358,10 +359,8 @@ class InstallPackagesCLI():
                     self.get_all_packages_info()
                     self.install_prompt()
                     break
-                else:
-                    raise SysExit(125)
-            else:
-                break
+                raise SysExit(125)
+            break
 
     def discard_install_info(
             self, canceled_pkg_name: str, already_discarded: List[str] = None
@@ -539,8 +538,8 @@ class InstallPackagesCLI():
                     file=filename,
                     name=bold_line(', '.join(package_build.package_names)),
                 ),
-                default_yes=not (package_build.is_installed or
-                                 PikaurConfig().build.get_bool("DontEditByDefault"))
+                default_yes=not (package_build.last_installed_hash or
+                                 PikaurConfig().build.DontEditByDefault.get_bool())
         ):
             full_filename = os.path.join(
                 package_build.repo_path,
@@ -604,7 +603,7 @@ class InstallPackagesCLI():
                 continue
 
             if (
-                    repo_status.build_files_updated
+                    repo_status.last_installed_hash != repo_status.current_hash
             ) and (
                 repo_status.last_installed_hash
             ) and (
@@ -623,7 +622,7 @@ class InstallPackagesCLI():
                         '-C',
                         repo_status.repo_path,
                         'diff',
-                    ] + PikaurConfig().build.GitDiffArgs.split(',') + [
+                    ] + PikaurConfig().build.GitDiffArgs.get_str().split(',') + [
                         repo_status.last_installed_hash,
                         repo_status.current_hash,
                     ]
@@ -855,7 +854,7 @@ class InstallPackagesCLI():
             self.install_new_aur_deps()
             self.install_aur_packages()
 
-        # save git hash of last sucessfully installed package
+        # save git hash of last successfully installed package
         if self.package_builds_by_name:
             package_builds_by_base = {
                 pkgbuild.package_base: pkgbuild

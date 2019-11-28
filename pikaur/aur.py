@@ -6,7 +6,7 @@ from multiprocessing.pool import ThreadPool
 from urllib import parse, request
 from urllib.parse import quote
 from urllib.error import URLError
-from typing import List, Dict, Tuple, Union, Any
+from typing import List, Dict, Tuple, Union, Any, Optional
 
 from .i18n import _
 from .core import DataType, get_chunks
@@ -14,18 +14,20 @@ from .exceptions import AURError, SysExit
 from .progressbar import ThreadSafeProgressBar
 from .pprint import print_error
 from .prompt import ask_to_continue
+from .config import PikaurConfig
 
 
-AUR_HOST = 'aur.archlinux.org'
+AUR_HOST = PikaurConfig().misc.AurHost.get_str()
 AUR_BASE_URL = 'https://' + AUR_HOST
 
 
 class AURPackageInfo(DataType):
+    packagebase: str
     name: str
     version: str
-    desc: str
-    numvotes: int
-    popularity: float
+    desc: Optional[str] = None
+    numvotes: Optional[int] = None
+    popularity: Optional[float] = None
     depends: List[str] = []
     makedepends: List[str] = []
     optdepends: List[str] = []
@@ -33,19 +35,18 @@ class AURPackageInfo(DataType):
     conflicts: List[str] = []
     replaces: List[str] = []
     provides: List[str] = []
-    packagebase: str
 
-    id: str  # pylint: disable=invalid-name
-    packagebaseid: str
-    url: str
-    outofdate: int
-    maintainer: str
-    firstsubmitted: int
-    lastmodified: int
-    urlpath: str
-    license: str
-    keywords: List[str]
-    groups: List[str]
+    id: Optional[str] = None  # pylint: disable=invalid-name
+    packagebaseid: Optional[str] = None
+    url: Optional[str] = None
+    outofdate: Optional[int] = None
+    maintainer: Optional[str] = None
+    firstsubmitted: Optional[int] = None
+    lastmodified: Optional[int] = None
+    urlpath: Optional[str] = None
+    license: Optional[str] = None
+    keywords: List[str] = []
+    groups: List[str] = []
 
     @property
     def git_url(self) -> str:
@@ -95,7 +96,7 @@ def get_json_from_url(url: str) -> Dict[str, Any]:
     result_bytes = read_bytes_from_url(url)
     result_json = json.loads(result_bytes.decode('utf-8'))
     if 'error' in result_json:
-        raise AURError(f"URL: {url}\nError: {result_json['error']}")
+        raise AURError(url=url, error=result_json['error'])
     return result_json
 
 
@@ -160,7 +161,8 @@ def aur_rpc_info_with_progress(
     result = aur_rpc_info(search_queries)
     if with_progressbar:
         progressbar = ThreadSafeProgressBar.get(
-            progressbar_length=progressbar_length
+            progressbar_length=progressbar_length,
+            progressbar_id='aur_search',
         )
         progressbar.update()
     return result

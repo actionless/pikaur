@@ -1,5 +1,6 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
+from itertools import zip_longest
 from typing import Callable, Tuple, List, Optional
 
 import pyalpm
@@ -23,7 +24,7 @@ class VersionMatcher():
 
     version: Optional[str] = None
     version_matchers: List[Callable[[str], int]]
-    depend_line: str
+    line: str
     pkg_name: str
 
     def __call__(self, version: Optional[str]) -> int:
@@ -172,9 +173,10 @@ def get_common_version(version1: str, version2: str) -> Tuple[str, int]:
                 10, _split_release(version1)[1], _split_release(version2)[1],
             ),
     ):
-        for block1, block2 in zip(
+        for block1, block2 in zip_longest(
                 split_version(version_chunk1),
-                split_version(version_chunk2)
+                split_version(version_chunk2),
+                fillvalue=' '
         ):
             if block1 == block2:
                 if not diff_found:

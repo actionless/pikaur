@@ -13,9 +13,9 @@ new_version=$1
 
 if [[ $(git status --porcelain 2>/dev/null| grep -c "^ [MD]" || true) -gt 0 ]] ; then
 	echo
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	echo "!!    You have uncommited changes:    !!"
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "!!    You have uncommitted changes:    !!"
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	echo
 	git status
 
@@ -63,7 +63,7 @@ answer=
 
 echo
 echo "***************************************"
-echo "**    Updating AUR dev PKGBUILD...    **"
+echo "**    Updating AUR dev PKGBUILD...   **"
 echo "***************************************"
 echo
 ./maintenance_scripts/changelog.sh > "${aur_dev_repo_dir}"/CHANGELOG
@@ -88,7 +88,7 @@ answer=
 
 echo
 echo "*******************************************"
-echo "**    Updating AUR release PKGBUILD...    **"
+echo "**    Updating AUR release PKGBUILD...   **"
 echo "*******************************************"
 echo
 cd "${src_repo_dir}"
@@ -116,6 +116,22 @@ if [[ "${answer}" = "y" ]] ; then
 	git add PKGBUILD .SRCINFO CHANGELOG
 	git commit -m "update to ${new_version}"
 	git push origin HEAD
+fi
+answer=
+
+
+echo
+echo "??????????????????????????????????????????????????????"
+echo "??    Confirm push to PyPI release package? [y/N]   ??"
+echo "??????????????????????????????????????????????????????"
+echo -n "> "
+read -r answer
+echo
+if [[ "${answer}" = "y" ]] ; then
+	cd "${src_repo_dir}"
+	rm -fr ./dist
+	env PYPY_BUILD=1 python setup.py sdist
+	twine upload ./dist/*
 fi
 answer=
 

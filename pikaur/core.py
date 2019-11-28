@@ -15,6 +15,8 @@ from typing import (
 
 import pyalpm
 
+from .config import PikaurConfig
+
 if TYPE_CHECKING:
     # pylint: disable=unused-import
     from .aur import AURPackageInfo  # noqa
@@ -25,17 +27,24 @@ NOT_FOUND_ATOM = object()
 
 class DataType():
 
+    def _key_not_exists(self, key):
+        return getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
+
     def __init__(self, **kwargs) -> None:
         for key, value in kwargs.items():
             setattr(self, key, value)
+        for key in self.__annotations__:  # pylint: disable=no-member
+            if self._key_not_exists(key):
+                raise TypeError(
+                    f"'{self.__class__.__name__}' does "
+                    f"not have required attribute '{key}' set"
+                )
 
     def __setattr__(self, key: str, value: Any) -> None:
         if (
                 not getattr(self, "__annotations__", None) or
                 self.__annotations__.get(key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM  # pylint: disable=no-member
-        ) and (
-            getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
-        ):
+        ) and self._key_not_exists(key):
             raise TypeError(
                 f"'{self.__class__.__name__}' does "
                 f"not have attribute '{key}'"
@@ -53,7 +62,7 @@ class InstallInfo(DataType):
     name: str
     current_version: str
     new_version: str
-    description: str
+    description: Optional[str] = None
     repository: Optional[str] = None
     devel_pkg_age_days: Optional[int] = None
     package: Union['pyalpm.Package', 'AURPackageInfo']
@@ -76,16 +85,27 @@ class InstallInfo(DataType):
         )
 
 
+def sudo(cmd: List[str]) -> List[str]:
+    if running_as_root():
+        return cmd
+    return ['sudo', ] + cmd
+
+
+def get_sudo_refresh_command() -> List[str]:
+    return sudo(['-v'])
+
+
 class InteractiveSpawn(subprocess.Popen):
 
     stdout_text: str
     stderr_text: str
 
     def communicate(self, _input=None, _timeout=None) -> Tuple[bytes, bytes]:
+        #  pylint:disable=import-outside-toplevel
         from .args import parse_args
         if parse_args().verbose:
             from .pprint import print_stderr, color_line
-            if self.args != ['sudo', '-v']:
+            if self.args != get_sudo_refresh_command():
                 print_stderr(
                     color_line('=> ', 14) +
                     ' '.join(str(arg) for arg in self.args)
@@ -143,7 +163,7 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
         '-E', 'HOME=/tmp',
     ]
     if cwd is not None:
-        base_root_isolator += ['-p', 'WorkingDirectory=' + cwd]
+        base_root_isolator += ['-p', 'WorkingDirectory=' + os.path.abspath(cwd)]
     if "http_proxy" in os.environ and os.environ.get('http_proxy') is not None:
         base_root_isolator += ['-E', 'http_proxy=' + os.environ.get('http_proxy')]
     if "https_proxy" in os.environ and os.environ.get('https_proxy') is not None:
@@ -151,12 +171,6 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     if "ftp_proxy" in os.environ and os.environ.get('ftp_proxy') is not None:
         base_root_isolator += ['-E', 'ftp_proxy=' + os.environ.get('ftp_proxy')]
     return base_root_isolator + cmd
-
-
-def sudo(cmd: List[str]) -> List[str]:
-    if running_as_root():
-        return cmd
-    return ['sudo', ] + cmd
 
 
 def detect_bom_type(file_path: str) -> str:
@@ -252,12 +266,11 @@ def sudo_loop(once=False) -> None:
     """
     get sudo for further questions
     """
-    from .config import PikaurConfig
-    sudo_loop_interval = PikaurConfig().misc.get_int('SudoLoopInterval')
+    sudo_loop_interval = PikaurConfig().misc.SudoLoopInterval.get_int()
     if sudo_loop_interval == -1:
         return
     while True:
-        interactive_spawn(['sudo', '-v'])
+        interactive_spawn(get_sudo_refresh_command())
         if once:
             break
         sleep(sudo_loop_interval)

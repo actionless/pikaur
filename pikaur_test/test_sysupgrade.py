@@ -27,8 +27,8 @@ class SysupgradeTest(PikaurDbTestCase):
     aur2_pkg_name = 'inxi'
     aur2_old_version: str
 
-    dev_pkg_name = 'pxltrm-git'
-    dev_pkg_url = 'git://github.com/dylanaraps/pxltrm.git'
+    dev_pkg_name = 'xst-git'
+    dev_pkg_url = 'git://github.com/gnotclub/xst.git'
     dev_old_version: str
 
     def setUp(self):
@@ -47,7 +47,7 @@ class SysupgradeTest(PikaurDbTestCase):
         self.aur_old_version = self.downgrade_aur_pkg(self.aur_pkg_name)
 
     def downgrade_aur2_pkg(self):
-        self.aur2_old_version = self.downgrade_aur_pkg(self.aur2_pkg_name)
+        self.aur2_old_version = self.downgrade_aur_pkg(self.aur2_pkg_name, count=2)
 
     def downgrade_dev_pkg(self):
         # test -P <custom_name> and -G -d during downgrading

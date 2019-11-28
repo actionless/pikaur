@@ -1,6 +1,6 @@
 # pikaur
 
-[![Build Status](https://travis-ci.org/actionless/pikaur.svg?branch=master)](https://travis-ci.org/actionless/pikaur) [![Coverage Status](https://coveralls.io/repos/github/actionless/pikaur/badge.svg?branch=master)](https://coveralls.io/github/actionless/pikaur?branch=master)
+[![Build Status](https://travis-ci.com/actionless/pikaur.svg?branch=master)](https://travis-ci.org/actionless/pikaur) [![Coverage Status](https://coveralls.io/repos/github/actionless/pikaur/badge.svg?branch=master)](https://coveralls.io/github/actionless/pikaur?branch=master)
 
 AUR helper with minimal dependencies. Review PKGBUILDs all in once, next build them all without user interaction.
 
@@ -19,6 +19,7 @@ Notable features:
 * show AUR package diff and review PKGBUILD and .install files
 * [upgrade](#how-to-upgrade-all-the-dev--git-packages-at-once "") `-git`, `-svn` and other dev packages
 * AUR package names in shell completion (bash, fish, zsh)
+* quickly search&install package by `pikaur <search-query>`
 
 The following pacman operations are extended with AUR capabilities:
 
@@ -32,7 +33,7 @@ The following pacman operations are extended with AUR capabilities:
 
 Also see `pikaur -Sh`, `-Qh`, `-Ph` and `-Gh` for pikaur-specific flags.
 
-Pikaur wraps all the pacman options accurately except for `-Syu` which is being splitted into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or altered it via [M]anual package selection).
+Pikaur wraps all the pacman options accurately except for `-Syu` which is being split into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or altered it via [M]anual package selection).
 
 
 * [Installation](#installation "")
@@ -88,17 +89,24 @@ When installing new packages, show their repository name, even if they are comin
 ##### UpgradeSorting (default: versiondiff)
 When upgrading packages, sort them by `versiondiff`, `pkgname` or `repo`.
 
+##### ShowDownloadSize (default: no)
+When installing repository packages, show their download size.
+
 
 #### [build]
 
 ##### KeepBuildDir (default: no)
 Don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
-Will be overriden by `-k/--keepbuild` flag.
+Will be overridden by `-k/--keepbuild` flag.
 
 ##### KeepDevBuildDir (default: yes)
 When building dev packages (`-git`, `-svn`, etc),
 don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
-`No` value will be overriden by `KeepBuildDir` option and `-k/--keepbuild` flag.
+`No` value will be overridden by `KeepBuildDir` option and `-k/--keepbuild` flag.
+
+##### KeepBuildDeps (default: no)
+Don't remove build dependencies between and after the builds.
+Will be overridden by `--keepbuilddeps` flag.
 
 ##### SkipFailedBuild (default: no)
 Always skip the build if it fails and don't show recovery prompt.
@@ -108,11 +116,11 @@ Always default to no when prompting to edit PKGBUILD and install files.
 
 ##### NoEdit (default: no)
 Don't prompt to edit PKGBUILD and install files.
-Will be overriden by `--noedit` and `--edit` flags.
+Will be overridden by `--noedit` and `--edit` flags.
 
 ##### NoDiff (default: no)
 Don't prompt to show the build files diff.
-Will be overriden by `--nodiff` flag.
+Will be overridden by `--nodiff` flag.
 
 ##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
 Flags to be passed to `git diff` command when reviewing build files.
@@ -120,7 +128,7 @@ Should be separated by commas (`,`).
 
 ##### AlwaysUseDynamicUsers (default: no)
 Always isolate the build using systemd dynamic users.
-Will be overriden by `--dynamic-users` flag.
+Will be overridden by `--dynamic-users` flag.
 
 #### [colors]
 
@@ -142,6 +150,9 @@ Wherever to use `less` pager when viewing AUR packages diff. Choices are `always
 ##### PrintCommands (default: no)
 Print each command which pikaur is currently spawning.
 
+##### ReverseSearchSorting (default: no)
+Reverse search results of the commands like `pikaur -Ss <query>` or `pikaur <query>`.
+
 
 #### [misc]
 
@@ -152,6 +163,12 @@ to avoid asking for sudo password more than once
 
 ##### PacmanPath (default: pacman)
 Path to pacman executable.
+
+##### AurHost (default: aur.archlinux.org)
+AUR Host, useful for users in China to use "aur.tuna.tsinghua.edu.cn".
+
+##### NewsUrl (default: https://www.archlinux.org/feeds/news/)
+Arch Linux News URL, useful for users of Parabola or other Arch derivatives.
 
 
 #### [network]
@@ -174,7 +191,7 @@ If that's needed, setting proxy options in their own config files will take effe
 
 ```sh
 ~/.cache/pikaur/
-├── build/  # build directory (removed after successfull build)
+├── build/  # build directory (removed after successful build)
 ├── pkg/  # built packages directory
 ~/.config/pikaur.conf  # config file
 ~/.local/share/pikaur/
@@ -217,7 +234,7 @@ Change the numbers, and you are good to go.
 Actually use `checkupdates` tool to check the repo updates and use pikaur only for AUR (`-a`/`--aur` switch):
 
 ```
-checkupdates && pikaur -Qua 2>/dev/null
+checkupdates ; pikaur -Qua 2>/dev/null
 ```
 
 ##### Pikaur slow when running it as root user (or via sudo)
@@ -236,8 +253,8 @@ You can start from [this list of issues](https://github.com/actionless/pikaur/is
 
 ### Translations
 
-To start working on a new language, say 'it' (Italian), add it to the
-`Makefile` `LANGS` variable and run `make`. Then translate `locale/it.po` using
+To start working on a new language, say 'ja' (Japanese), add it to the
+`Makefile` `LANGS` variable and run `make`. Then translate `locale/ja.po` using
 your favorite PO editor. Run `make` every time the Python code strings change
 or the `.po` is modified.
 
@@ -256,4 +273,5 @@ git log --pretty=tformat:"%an <%ae>" | sort -u
 
 ### Special thanks
 
-@AladW ([aurutils](https://github.com/AladW/aurutils)), @morganamilo ([yay](https://github.com/Jguer/yay)) and [all the other issue contributors](https://github.com/actionless/pikaur/issues?utf8=%E2%9C%93&q=is%3Aissue+-author%3Aactionless) for helping in triaging the bugs and clearing up feature requirements.
+@AladW ([aurutils](https://github.com/AladW/aurutils)), @morganamilo ([yay](https://github.com/Jguer/yay)) during the early stages of Pikaur development.
+And [all the other issue contributors](https://github.com/actionless/pikaur/issues?utf8=%E2%9C%93&q=is%3Aissue+-author%3Aactionless) for helping in triaging the bugs and clearing up feature requirements.

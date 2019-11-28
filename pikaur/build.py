@@ -38,7 +38,7 @@ from .exceptions import (
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .version import compare_versions, VersionMatcher
-from .makepkg_config import MakepkgConfig, get_makepkg_cmd
+from .makepkg_config import MakepkgConfig, MakePkgCommand, PKGDEST
 
 
 def mkdir(to_path) -> None:
@@ -129,7 +129,7 @@ class PackageBuild(DataType):
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
         self.built_packages_paths = {}
         self.keep_build_dir = self.args.keepbuild or (
-            is_devel_pkg(self.package_base) and PikaurConfig().build.get_bool('KeepDevBuildDir')
+            is_devel_pkg(self.package_base) and PikaurConfig().build.KeepDevBuildDir.get_bool()
         )
 
         if os.path.exists(self.repo_path):
@@ -182,14 +182,15 @@ class PackageBuild(DataType):
         )
 
     @property
-    def is_installed(self) -> bool:
-        return os.path.exists(self.last_installed_file_path)
-
-    @property
     def last_installed_hash(self) -> Optional[str]:
-        if self.is_installed:
+        """
+        Commit hash of AUR repo of last version of the pkg installed by Pikaur
+        """
+        if os.path.exists(self.last_installed_file_path):
             with open_file(self.last_installed_file_path) as last_installed_file:
-                return last_installed_file.readlines()[0].strip()
+                lines = last_installed_file.readlines()
+                if lines:
+                    return lines[0].strip()
         return None
 
     def update_last_installed_file(self) -> None:
@@ -204,17 +205,10 @@ class PackageBuild(DataType):
             )
 
     @property
-    def build_files_updated(self) -> bool:
-        if (
-                self.is_installed
-        ) and (
-            self.last_installed_hash != self.current_hash
-        ):
-            return True
-        return False
-
-    @property
     def current_hash(self) -> Optional[str]:
+        """
+        Commit hash of AUR repo of the pkg
+        """
         git_hash_path = os.path.join(
             self.repo_path,
             '.git/refs/heads/master'
@@ -246,7 +240,7 @@ class PackageBuild(DataType):
         ))
         pkgver_result = joined_spawn(
             isolate_root_cmd(
-                get_makepkg_cmd() + [
+                MakePkgCommand.get() + [
                     '--nobuild', '--noprepare', '--nocheck', '--nodeps'
                 ],
                 cwd=self.build_dir
@@ -321,8 +315,10 @@ class PackageBuild(DataType):
                     package_build.built_packages_paths[pkg_name]
                 _mark_dep_resolved(dep)
 
-    def _get_pacman_command(self) -> List[str]:
-        return get_pacman_command() + (['--noconfirm'] if self.args.noconfirm else [])
+    def _get_pacman_command(self, ignore_args: Optional[List[str]] = None) -> List[str]:
+        return get_pacman_command(ignore_args=ignore_args) + (
+            ['--noconfirm'] if self.args.noconfirm else []
+        )
 
     def install_built_deps(
             self,
@@ -358,14 +354,8 @@ class PackageBuild(DataType):
             PackageDB.discard_local_cache()
 
     def _set_built_package_path(self) -> None:
-        dest_dir = os.path.expanduser(
-            os.environ.get(
-                'PKGDEST',
-                MakepkgConfig.get('PKGDEST', self.build_dir)
-            )
-        )
         pkg_paths = spawn(
-            isolate_root_cmd(get_makepkg_cmd() + ['--packagelist'],
+            isolate_root_cmd(MakePkgCommand.get() + ['--packagelist'],
                              cwd=self.build_dir),
             cwd=self.build_dir
         ).stdout_text.splitlines()
@@ -385,11 +375,9 @@ class PackageBuild(DataType):
                         break
             pkg_filename = os.path.basename(pkg_path)
             if pkg_path == pkg_filename:
-                pkg_path = os.path.join(dest_dir, pkg_path)
-            if not os.path.exists(pkg_path):
-                BuildError(_("{} does not exist on the filesystem.").format(pkg_path))
-            if dest_dir == self.build_dir:
-                new_package_path = os.path.join(PACKAGE_CACHE_PATH, pkg_filename)
+                pkg_path = os.path.join(PKGDEST or self.build_dir, pkg_path)
+            if not PKGDEST or MakePkgCommand.pkgdest_skipped:
+                new_package_path = os.path.join(PKGDEST or PACKAGE_CACHE_PATH, pkg_filename)
                 pkg_sig_path = pkg_path + ".sig"
                 new_package_sig_path = new_package_path + ".sig"
                 if not os.path.exists(PACKAGE_CACHE_PATH):
@@ -526,7 +514,7 @@ class PackageBuild(DataType):
             )
             if not ask_to_continue():
                 raise SysExit(125)
-        if not deps_packages_installed:
+        if not deps_packages_installed or self.args.keepbuilddeps:
             return
 
         print_stderr('{} {}:'.format(
@@ -536,7 +524,10 @@ class PackageBuild(DataType):
         ))
         retry_interactive_command_or_exit(
             sudo(
-                self._get_pacman_command() + [
+                # pacman --remove flag conflicts with some --sync options:
+                self._get_pacman_command(ignore_args=[
+                    'overwrite',
+                ]) + [
                     '--remove',
                 ] + list(deps_packages_installed)
             ),
@@ -579,7 +570,7 @@ class PackageBuild(DataType):
         skip_pgp_check = False
         skip_file_checksums = False
         while True:
-            cmd_args = get_makepkg_cmd() + makepkg_args
+            cmd_args = MakePkgCommand.get() + makepkg_args
             if skip_pgp_check:
                 cmd_args += ['--skippgpcheck']
             if skip_file_checksums:
@@ -606,7 +597,7 @@ class PackageBuild(DataType):
             print_stderr(color_line(_("Command '{}' failed to execute.").format(
                 ' '.join(cmd_args)
             ), 9))
-            if PikaurConfig().build.get_bool('SkipFailedBuild'):
+            if PikaurConfig().build.SkipFailedBuild.get_bool():
                 answer = _("s")
             elif self.args.noconfirm:
                 answer = _("a")
@@ -635,19 +626,19 @@ class PackageBuild(DataType):
             answer = answer.lower()[0]
             if answer == _("r"):  # pragma: no cover
                 continue
-            elif answer == _("p"):  # pragma: no cover
+            if answer == _("p"):  # pragma: no cover
                 skip_pgp_check = True
                 continue
-            elif answer == _("c"):  # pragma: no cover
+            if answer == _("c"):  # pragma: no cover
                 skip_file_checksums = True
                 continue
-            elif answer == _("i"):  # pragma: no cover
+            if answer == _("i"):  # pragma: no cover
                 self.skip_carch_check = True
                 continue
-            elif answer == _("d"):  # pragma: no cover
+            if answer == _("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)
                 continue
-            elif answer == _('e'):  # pragma: no cover
+            if answer == _('e'):  # pragma: no cover
                 editor_cmd = get_editor_or_exit()
                 if editor_cmd:
                     interactive_spawn(
@@ -659,10 +650,10 @@ class PackageBuild(DataType):
                         os.path.join(self.build_dir, 'PKGBUILD')
                     ]))
                 continue
-            elif answer == _("a"):
+            if answer == _("a"):
                 raise SysExit(125)
-            else:  # "s"kip
-                break
+            # "s"kip
+            break
 
         return build_succeeded
 
@@ -698,8 +689,7 @@ class PackageBuild(DataType):
         if not build_succeeded:
             self.failed = True
             raise BuildError()
-        else:
-            self._set_built_package_path()
+        self._set_built_package_path()
 
 
 def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:

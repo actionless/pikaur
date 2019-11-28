@@ -1,58 +1,64 @@
-# Chinese translations for PACKAGE package.
-# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# Automatically generated, 2018.
+# Italian translations for pikaur package.
+# Copyright (C) 2019 THE pikaur'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the pikaur package.
+# Automatically generated, 2019.
+# Mattia Bertoni <mattia.b89@gmail.com>, 2019.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: pikaur 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-26 09:29+0200\n"
-"PO-Revision-Date: 2018-09-04 17:36+0800\n"
-"Last-Translator: Amane <tobiichiamane@outlook.com>\n"
-"Language-Team: none\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2019-10-05 15:30+0200\n"
+"Last-Translator: Mattia Bertoni <mattia.b89@gmail.com>\n"
+"Language-Team: Italian <none>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Generator: Gtranslator 3.32.1\n"
 
 #: pikaur/replacements.py:42
 #, python-brace-format
 msgid "'{packages}' package is available in the repo but can't be installed"
 msgid_plural ""
 "'{packages}' packages are available in the repo but can't be installed"
-msgstr[0] "'{packages}' 在库中但无法被安装"
-msgstr[1] "'{packages}' 在库中但无法被安装"
+msgstr[0] ""
+"Il pacchetto '{packages}' è disponibile nel repository ma non può essere "
+"installato"
+msgstr[1] ""
+"I pacchetti '{packages}' sono disponibili nel repository ma non possono "
+"essere installati"
 
 #: pikaur/print_department.py:114
 msgid "({} days old)"
-msgstr "({} 天之前)"
+msgstr "({} giorni vecchio)"
 
 #: pikaur/args.py:343
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
-msgstr[0] ":: 错误: 选项 {} 不能脱离 {} 使用."
-msgstr[1] ":: 错误: 选项 {} 不能脱离 {} 使用."
+msgstr[0] ":: errore: l'opzione {} non può essere usata senza {}."
+msgstr[1] ":: errore: le opzioni {} non possono essere usate senza {}."
 
 #: pikaur/args.py:336
 msgid ":: error: options {} can't be used together."
-msgstr ":: 错误: 选项 {} 不能一起使用."
+msgstr ":: errore: le opzioni {} non possono essere usate assieme."
 
 #: pikaur/info_cli.py:18
 msgid "AUR Git URL"
-msgstr ""
+msgstr "URL Git di AUR"
 
 #: pikaur/print_department.py:351
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
-msgstr[0] "将被安装的 AUR 软件包:"
-msgstr[1] "将被安装的 AUR 软件包:"
+msgstr[0] "Il pacchetto AUR verrà installato:"
+msgstr[1] "I pacchetti AUR verranno installati:"
 
 #: pikaur/config.py:58
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
-msgstr ""
+msgstr "La cartella dei repository AUR è stata spostata da '{old}' a '{new}'."
 
 #: pikaur/search_cli.py:62
 #, python-brace-format
@@ -63,247 +69,254 @@ msgstr ""
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
-msgstr "执行 `pacman -U <pkg_file>` 时所有常见的选项. 参见 `pacman -Uh`."
+msgstr ""
+"Tutte le opzioni comuni di pacman, come quando esegui `pacman -U "
+"<pkg_file>`. Vedi `pacman -Uh`."
 
+# prefer english terms
 #: pikaur/main.py:177
 msgid "Build directory"
-msgstr "Build 目录"
+msgstr "Build directory"
 
 #: pikaur/install_cli.py:698
 #, python-brace-format
 msgid "Can't build '{name}'."
-msgstr "无法构建 '{name}'."
+msgstr "Non è possibile compilare '{name}'."
 
 #: pikaur/install_cli.py:447
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
-msgstr "无法在 '{path}' 处从 AUR 获取（clone） '{name}':"
+msgstr "Impossibile clonare '{name}' in '{path}' da AUR:"
 
 #: pikaur/build.py:73
 #, python-brace-format
 msgid "Can't copy '{from_path}' to '{to_path}'."
-msgstr "无法复制 '{from_path}' 到 '{to_path}'."
+msgstr "Impossibile copiare '{from_path}' a '{to_path}'."
 
 #: pikaur/build.py:49
 #, python-brace-format
 msgid "Can't create destination directory '{to_path}'."
-msgstr "无法创建目标目录 '{to_path}'."
+msgstr "Impossibile creare la directory di destinazione '{to_path}'."
 
 #: pikaur/build.py:125
 msgid "Can't get package name from PKGBUILD"
-msgstr "无法从 PKGBUILD 中获取包名"
+msgstr "Impossibile ottenere il nome del pacchetto dal PKGBUILD"
 
+# an easy Italian translation of "pull" doesn't exist
 #: pikaur/install_cli.py:449
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
-msgstr "无法在 '{path}' 处从 AUR 拉取（pull） '{name}':"
+msgstr "Impossibile eseguire il pull '{name}' in '{path}' da AUR:"
 
+# should be plural
 #: pikaur/aur_deps.py:250
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
-msgstr ""
+msgstr "Impossibile risolvere le dipendenze per il pacchetto AUR '{pkg}':"
 
 #: pikaur/info_cli.py:33
 msgid "Check Deps"
-msgstr ""
+msgstr "Controllo Dipendenze"
 
 #: pikaur/build.py:597 pikaur/prompt.py:143
 msgid "Command '{}' failed to execute."
-msgstr "命令 '{}' 执行失败."
+msgstr "L'esecuzione del comando '{}' è fallita."
 
 #: pikaur/args.py:421
 msgid "Common pacman options:"
-msgstr "常见 pacman 选项:"
+msgstr "Opzioni comuni con pacman:"
 
 #: pikaur/info_cli.py:34
 msgid "Conflicts With"
-msgstr ""
+msgstr "Conflitti Con"
 
 #: pikaur/news.py:60
 msgid "Could not fetch archlinux.org news"
-msgstr "无法从 archlinux.org 获取新闻"
+msgstr "Non è stato possibile riportare le notizie da archlinux.org"
 
 #: pikaur/news.py:85
 msgid "Could not initialize {}"
-msgstr "无法初始化 {}"
+msgstr "Non è stato possibile inizializzare {}"
 
 #: pikaur/news.py:130
 msgid "Could not update {}"
-msgstr "无法更新 {}"
+msgstr "Non è stato possibile aggiornare {}"
 
 #: pikaur/install_cli.py:204
 msgid "Dependencies missing for {}"
-msgstr "{} 缺失依赖"
+msgstr "Dipendenze mancanti per {}"
 
 #: pikaur/install_cli.py:715
 msgid "Dependency cycle detected between {}"
-msgstr "检测到 {} 之间存在循环依赖"
+msgstr "Individuato un ciclo di dipendenze tra {}"
 
 #: pikaur/info_cli.py:30
 msgid "Depends On"
-msgstr ""
+msgstr "Dipende Da"
 
 #: pikaur/info_cli.py:24
 msgid "Description"
-msgstr ""
+msgstr "Descrizione"
 
 #: pikaur/prompt.py:163
 msgid "Do you want to proceed without editing?"
-msgstr "您想要不编辑而继续执行吗?"
+msgstr "Vuoi procedere senza modificare?"
 
 #: pikaur/prompt.py:110
 msgid "Do you want to proceed?"
-msgstr "您想要继续执行吗?"
+msgstr "Vuoi procedere?"
 
 #: pikaur/main.py:184
 msgid "Do you want to remove all files?"
-msgstr "您想要删除所有文件吗?"
+msgstr "Vuoi rimuovere tutti i file?"
 
 #: pikaur/prompt.py:147 pikaur/aur.py:88
 msgid "Do you want to retry?"
-msgstr "您想要重试吗?"
+msgstr "Vuoi riprovare?"
 
 #: pikaur/install_cli.py:617
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
-msgstr "您想要查看包 {name} 的build files的 {diff} 吗?"
+msgstr "Vuoi vedere il {diff} per il pacchetto {name}?"
 
 #: pikaur/install_cli.py:538
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
-msgstr "您想要 {edit} 包 {name} 的 {file} 吗?"
+msgstr "Vuoi {edit} {file} per il pacchetto {name}?"
 
 #: pikaur/build.py:234
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
-msgstr[0] "下载devel包 {} 的最新源码"
-msgstr[1] "下载devel包 {} 的最新源码"
+msgstr[0] "Sto scaricando gli ultimi sorgenti per un pacchetto devel {}"
+msgstr[1] "Sto scaricando gli ultimi sorgenti per i pacchetti devel {}"
 
 #: pikaur/install_cli.py:874
 msgid "Failed to build following packages:"
-msgstr "构建下列包失败:"
+msgstr "Impossibile creare i seguenti pacchetti:"
 
 #: pikaur/build.py:511
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
-msgstr "移除已安装的依赖包失败, 软件包矛盾: {}"
+msgstr ""
+"Impossibile rimuovere le dipendenze installate, incongruenza tra i "
+"pacchetti: {}"
 
 #: pikaur/info_cli.py:39
 msgid "First Submitted"
-msgstr ""
+msgstr "Inviato per la prima volta"
 
 #: pikaur/print_department.py:64
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
-msgstr[0] "下列包无法在 AUR 上找到:"
-msgstr[1] "下列包无法在 AUR 上找到:"
+msgstr[0] "Il seguente pacchetto non può essere trovato in AUR:"
+msgstr[1] "I seguenti pacchetti non possono essere trovati in AUR:"
 
 #: pikaur/print_department.py:58
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
-msgstr[0] "下列包无法在软件仓库中找到:"
-msgstr[1] "下列包无法在软件仓库中找到:"
+msgstr[0] "Il seguente pacchetto non può essere trovato nei repository:"
+msgstr[1] "I seguenti pacchetti non possono essere trovati nei repository:"
 
 #: pikaur/info_cli.py:28
 msgid "Groups"
-msgstr ""
+msgstr "Gruppi"
 
 #: pikaur/print_department.py:392
-#, fuzzy
 msgid "Ignoring package update {}"
-msgstr "忽略包 {}"
+msgstr "Ignoro l'aggiornamento del pacchetto {}"
 
 #: pikaur/print_department.py:398
 msgid "Ignoring package {}"
-msgstr "忽略包 {}"
+msgstr "Ignoro il pacchetto {}"
 
+# in this case I can translate "built" with "compile"
 #: pikaur/build.py:334
 msgid "Installing already built dependencies for {}"
-msgstr "为 {} 安装已构建的依赖"
+msgstr "Installazione delle dipendenze già compilate per {}"
 
 #: pikaur/build.py:473
 msgid "Installing repository dependencies for {}"
-msgstr "为 {} 安装软件仓库中的依赖"
+msgstr "Installazione delle dipendenze da repository per {}"
 
 #: pikaur/info_cli.py:26
 msgid "Keywords"
-msgstr ""
+msgstr "Parole Chiave"
 
 #: pikaur/info_cli.py:40
 msgid "Last Updated"
-msgstr ""
+msgstr "Ultimo Aggiornamento"
 
 #: pikaur/info_cli.py:27
 msgid "Licenses"
-msgstr ""
+msgstr "Licenze"
 
 #: pikaur/info_cli.py:36
 msgid "Maintainer"
-msgstr ""
+msgstr "Maintainer"
 
 #: pikaur/info_cli.py:32
 msgid "Make Deps"
-msgstr ""
+msgstr "Dipendenze Make"
 
 #. id=_("id"),
 #: pikaur/info_cli.py:20
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
+# WIP
 #: pikaur/install_cli.py:402
 #, python-brace-format
 msgid "New AUR build deps found for {pkg} package: {deps}"
-msgstr ""
+msgstr "Nuove dipendenze AUR trovate per il pacchetto {pkg}: {deps}"
 
 #: pikaur/print_department.py:362
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
-msgstr[0] "将从 AUR 安装新的依赖:"
-msgstr[1] "将从 AUR 安装新的依赖:"
+msgstr[0] "La nuova dipendenza verrà installata da AUR:"
+msgstr[1] "Le nuove dipendenze verranno installate da AUR:"
 
 #: pikaur/print_department.py:316
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
-msgstr[0] "将从软件仓库安装新的依赖:"
-msgstr[1] "将从软件仓库安装新的依赖:"
+msgstr[0] "La nuova dipendenza verrà installata dal repository:"
+msgstr[1] "Le nuove dipendenze verranno installate dal repository:"
 
 #: pikaur/print_department.py:339
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
-msgstr[0] "将从第三方软件仓库安装新的依赖:"
-msgstr[1] "将从第三方软件仓库安装新的依赖:"
+msgstr[0] "La nuova dipendenza verrà installata dal repository di terze parti:"
+msgstr[1] ""
+"Le nuove dipendenze verranno installate dal repository di terze parti:"
 
 #: pikaur/install_cli.py:499
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
-msgstr "新的软件包 '{new}' 与 '{other}' 冲突."
+msgstr "I nuovi pacchetti '{new}' e '{other}' sono in conflitto."
 
 #: pikaur/info_cli.py:47 pikaur/info_cli.py:74
 msgid "None"
-msgstr ""
+msgstr "Nessuno"
 
 #: pikaur/install_cli.py:598
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
-msgstr ""
+msgstr "Impossibile mostra il diff per il pacchetto {pkg} ({reason})"
 
 #: pikaur/install_cli.py:269
 msgid "Nothing to do."
-msgstr "无事可做."
+msgstr "Niente da fare."
 
 #: pikaur/info_cli.py:31
 msgid "Optional Deps"
-msgstr ""
+msgstr "Dipendenze Opzionali"
 
 #: pikaur/info_cli.py:41
-#, fuzzy
 msgid "Out-of-date"
-msgstr "过期"
+msgstr "Non-aggiornato"
 
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:22
-#, fuzzy
 msgid "Package Base"
-msgstr "Packages目录"
+msgstr "Pacchetto Base"
 
 #: pikaur/build.py:401
 #, python-brace-format
@@ -311,202 +324,222 @@ msgid ""
 "Package {pkg} is already built. Pass '--rebuild' flag to force the build."
 msgid_plural ""
 "Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
-msgstr[0] "包 {pkg} 已被构建. 使用 '--rebuild' 来强制构建."
-msgstr[1] "包 {pkg} 已被构建. 使用 '--rebuild' 来强制构建."
+msgstr[0] ""
+"Pacchetto {pkg} è già creato. Passare il flag '--rebuild' per forzare la "
+"creazione."
+msgstr[1] ""
+"Pacchetti {pkg} sono già creati. Passare il flag '--rebuild' per forzare la "
+"creazione."
 
 #: pikaur/main.py:178
 msgid "Packages directory"
-msgstr "Packages目录"
+msgstr "Cartella dei pacchetti"
 
 #: pikaur/args.py:478
 msgid "Pikaur-specific options:"
-msgstr "Pikaur的独立选项:"
+msgstr "Opzioni specifiche di pikaur:"
 
+# package should be plural
 #: pikaur/main.py:210
+#, fuzzy
 msgid ""
 "Please enter the number of the package you want to install (default={}):"
 msgstr ""
+"Per favore inserire il numero del pacchetto che vuoi installare (default: 1):"
 
 #: pikaur/info_cli.py:38
 msgid "Popularity"
-msgstr ""
+msgstr "Popolarità"
 
 #: pikaur/install_cli.py:335
 msgid "Proceed with installation? [Y/n] "
-msgstr "继续安装吗? [Y/n] "
+msgstr "Procedere con l'installazione? [S/n]"
 
 #: pikaur/info_cli.py:29
 msgid "Provides"
-msgstr ""
+msgstr "Fornisce"
 
 #: pikaur/updates.py:112
 msgid "Reading AUR package info..."
 msgid_plural "Reading AUR packages info..."
-msgstr[0] "读取 AUR 包信息..."
-msgstr[1] "读取 AUR 包信息..."
+msgstr[0] "Sto leggendo le informazioni del pacchetto AUR..."
+msgstr[1] "Sto leggendo le informazioni dei pacchetti AUR..."
 
 #: pikaur/pacman.py:294
 msgid "Reading local package database..."
-msgstr "读取本地包数据库..."
+msgstr "Sto leggendo il database locale dei pacchetti..."
 
 #: pikaur/pacman.py:348
 msgid "Reading repository package databases..."
-msgstr "读取软件包仓库数据库..."
+msgstr "Sto leggendo i database dei pacchetti nel repository..."
 
 #: pikaur/build.py:522
-#, fuzzy
 msgid "Removing already installed dependencies for {}"
-msgstr "移除为 {} 安装的来自仓库的依赖"
+msgstr "Rimozione delle dipendenze già installate per {}"
 
 #: pikaur/info_cli.py:35
 msgid "Replaces"
-msgstr ""
+msgstr "Rimpiazza"
 
 #: pikaur/print_department.py:277
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
-msgstr[0] "建议作替代的仓库软件包:"
-msgstr[1] "建议作替代的仓库软件包:"
+msgstr[0] "Il pacchetto da repository suggerito come sostituto:"
+msgstr[1] "I pacchetti da repository suggeriti come sostituti:"
 
 #: pikaur/print_department.py:304
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
-msgstr[0] "将被安装的仓库软件包:"
-msgstr[1] "将被安装的仓库软件包:"
+msgstr[0] "Il pacchetto da repository sarà installato:"
+msgstr[1] "I pacchetti da repository saranno installati:"
 
 #: pikaur/install_info_fetcher.py:378
 msgid "Resolving AUR dependencies..."
-msgstr "解析 AUR 依赖..."
+msgstr "Risoluzione delle dipendenze AUR..."
 
 #: pikaur/install_cli.py:758
 #, python-brace-format
 msgid "Reverting {target} transaction..."
-msgstr "还原 {target} 更改..."
+msgstr "Sto ripristinando la transazione {target}..."
 
 #: pikaur/search_cli.py:131
 #, python-brace-format
 msgid "Searching... [{bar}]"
-msgstr "搜索中... [{bar}]"
+msgstr "Sto cercando... [{bar}]"
 
 #: pikaur/install_cli.py:530
 #, python-brace-format
 msgid "Skipping review of {file} for {name} package ({flag})"
-msgstr "跳过对包 {name} 中 {file} 的审查 ({flag})"
+msgstr ""
+"Saltare l'esaminazione del file {file} per il pacchetto {name} ({flag})"
 
 #: pikaur/install_cli.py:139
 msgid "Starting full AUR upgrade..."
-msgstr "进行全面 AUR 更新..."
+msgstr "Inizio un aggiornamento completo di AUR..."
 
 #: pikaur/build.py:567
 msgid "Starting the build"
-msgstr "开始构建"
+msgstr "Sto iniziando la creazione del pacchetto"
 
 #: pikaur/news.py:42
 msgid "There are news from archlinux.org!"
-msgstr "archlinux.org 上有新的新闻!"
+msgstr "Ci sono notizie da archlinux.org!"
 
 #: pikaur/print_department.py:290
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
-msgstr[0] "建议作替代的第三方仓库软件包:"
-msgstr[1] "建议作替代的第三方仓库软件包:"
+msgstr[0] "Pacchetto da repository di terze parti suggerito come sostituto:"
+msgstr[1] "Pacchetti da repository di terze parti suggeriti come sostituti:"
 
 #: pikaur/print_department.py:328
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
-msgstr[0] "将被安装的第三方仓库软件包:"
-msgstr[1] "将被安装的第三方仓库软件包:"
+msgstr[0] "Pacchetto da repository di terze parti sarà installato:"
+msgstr[1] "Pacchetti da repository di terze parti saranno installati:"
 
 #: pikaur/build.py:607 pikaur/install_cli.py:463
 msgid "Try recovering?"
-msgstr "尝试恢复?"
+msgstr "Provare a ripristinare?"
 
 #: pikaur/info_cli.py:25
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: pikaur/info_cli.py:23
 msgid "Version"
-msgstr ""
+msgstr "Versione"
 
 #: pikaur/install_cli.py:209
 msgid "Version mismatch:"
-msgstr "版本不对应:"
+msgstr "Versione incompatibile:"
 
 #: pikaur/info_cli.py:37
 msgid "Votes"
-msgstr ""
+msgstr "Voti"
 
+# 'N' stands for "No"
 #: pikaur/prompt.py:115
 msgid "[N]o (--noconfirm)"
 msgstr "[N]o (--noconfirm)"
 
+# 'R' stands for "Riprova"
 #: pikaur/build.py:609
 msgid "[R] retry build"
-msgstr "[R] 重新构建"
+msgstr "[R] riprova"
 
+# 'S' stands for "Sì"
 #: pikaur/prompt.py:115
 msgid "[Y]es (--noconfirm)"
-msgstr "[Y]es (--noconfirm)"
+msgstr "[S]ì (--noconfirm)"
 
+# 'a' stands for "annulla"
 #: pikaur/install_cli.py:468
 msgid "[a] abort"
-msgstr "[a] 取消"
+msgstr "[a] annulla"
 
+# 'a' stands for "annulla"
 #: pikaur/build.py:617
 msgid "[a] abort building all the packages"
-msgstr "[a] 取消构建所有软件包"
+msgstr "[a] annulla la creazione di tutti i pacchetti"
 
+# 'c' stands for "controlla"
 #: pikaur/build.py:611
 msgid "[c] checksums skip"
-msgstr "[c] 跳过 checksum 检查"
+msgstr "[c] salta il controllo hash"
 
 #: pikaur/install_cli.py:464
 msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
+# 'c' stands for "cancella"
 #: pikaur/build.py:613
 msgid "[d] delete build dir and try again"
-msgstr "[d] 删除构建目录并重试"
+msgstr "[c] cancella la cartella di compilazione e riprova"
 
+# 'm' stands for "modifica"
 #: pikaur/build.py:614
 msgid "[e] edit PKGBUILD"
-msgstr ""
+msgstr "[m] modifica PKGBUILD"
 
 #: pikaur/build.py:612
 msgid "[i] ignore architecture"
-msgstr "[i] 忽略构架"
+msgstr "[i] ignora architettura"
 
+# should be pliral
 #: pikaur/print_department.py:474
 #, python-brace-format
 msgid "[installed: {version}]"
-msgstr "[已安装: {version}]"
+msgstr "[installato: {version}]"
 
+# should be plural
 #: pikaur/print_department.py:478
 msgid "[installed]"
-msgstr "[已安装]"
+msgstr "[installato]"
 
 #: pikaur/build.py:610
 msgid "[p] PGP check skip"
-msgstr "[p] 跳过 PGP 检查"
+msgstr "[p] salta controllo PGP"
 
 #. _("[c] git checkout -- '*' ; git clean -f -d -x"),
 #: pikaur/install_cli.py:466
 msgid "[r] remove dir and clone again"
-msgstr "[r] 删除目录并重新 clone"
+msgstr "[r] rimuovere la cartella e clonare di nuovo"
 
 #: pikaur/build.py:616
 msgid "[s] skip building this package"
-msgstr "[s] 跳过此软件包的构建"
+msgstr "[s] salta la compilazione di questo pacchetto"
 
 #: pikaur/install_cli.py:467
 msgid "[s] skip this package"
-msgstr "[s] 跳过此包"
+msgstr "[s] salta questo pacchetto"
 
+# 'v' stands for "vedi"
+# 'm' stands for "manualmente"
 #: pikaur/install_cli.py:337
 msgid "[v]iew package details   [m]anually select packages"
-msgstr "[v] 查看软件包细节   [m] 手动选择软件包"
+msgstr "[v]edi i dettagli del pacchetto   seleziona [m]anualmente i pacchetti"
 
+# 'a' stands for "annulla"
 #: pikaur/build.py:603 pikaur/build.py:623 pikaur/build.py:653
 #: pikaur/install_cli.py:459 pikaur/install_cli.py:470
 msgid "a"
@@ -514,78 +547,87 @@ msgstr "a"
 
 #: pikaur/install_cli.py:603 pikaur/install_cli.py:650
 msgid "already reviewed"
-msgstr ""
+msgstr "già esaminato"
 
 #: pikaur/args.py:468
 msgid "always isolate with systemd dynamic users"
-msgstr "始终与 systemd 动态用户隔离"
+msgstr "isolare sempre con systemd dynamic users"
 
 #: pikaur/args.py:463
 msgid "always rebuild AUR packages"
-msgstr "始终重新构建 AUR 包"
+msgstr "ricrea sempre i pacchetti AUR"
 
+# dev -> devel
 #: pikaur/args.py:473
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
-msgstr "始终全面更新 '-git', '-svn' 和其他 dev 包"
+msgstr "aggiorna sempre i pacchetti '-git, '-svn' e gli altri pacchetti devel"
 
+# 'c' stands for "controlla"
 #: pikaur/build.py:622 pikaur/build.py:632 pikaur/install_cli.py:470
 #: pikaur/install_cli.py:473
 msgid "c"
 msgstr "c"
 
+# 1) "cli" should be "CLI" because acronym
+# 2) I prefer to not translate "cli" as "linea di comando" because acronym
 #: pikaur/args.py:464
 msgid "cli args to pass to makepkg"
-msgstr "传递给 makepkg 的命令行参数"
+msgstr "argomenti cli da passare a makepkg"
 
+# 'd' stands for "diff"
 #: pikaur/build.py:622 pikaur/build.py:638
 msgid "d"
 msgstr "d"
 
+# I prefer keep English term
 #: pikaur/install_cli.py:618
 msgid "diff"
 msgstr "diff"
 
 #: pikaur/args.py:460
 msgid "don't prompt to edit PKGBUILDs and other build files"
-msgstr "不提示修改 PKGBUILD 以及其它的 build files"
+msgstr ""
+"non suggerire di modificare i PKGBUILD e gli altri file di compilazione"
 
 #: pikaur/args.py:474
 msgid "don't prompt to show the build files diff"
-msgstr "不提示显示 build files 的 diff"
+msgstr "non suggerire di mostrare i diff dei file di compilazione"
 
 #: pikaur/args.py:462
 msgid "don't remove build dir after the build"
-msgstr "完成构建后不删除构建目录"
+msgstr "non rimuovere la cartella di compilazione dopo la compilazione"
 
 #: pikaur/args.py:443
 msgid "download also AUR dependencies"
-msgstr "下载 AUR 中的依赖"
+msgstr "scarica anche le dipendenze AUR"
 
+# 'm' stands for "modifica"
 #: pikaur/build.py:622 pikaur/build.py:641
 msgid "e"
-msgstr ""
+msgstr "m"
 
 #: pikaur/install_cli.py:539
 msgid "edit"
-msgstr "编辑"
+msgstr "modifica"
 
 #: pikaur/pprint.py:82
 msgid "error:"
-msgstr "错误:"
+msgstr "errore:"
 
 #: pikaur/srcinfo.py:144
 msgid "failed to generate .SRCINFO from {}:"
-msgstr ""
+msgstr "impossibile generare il file .SRCINFO da {}:"
 
 #: pikaur/build.py:251
 msgid "failed to retrieve latest dev sources:"
-msgstr "获取最新的 dev 源码失败:"
+msgstr "impossibile recuperare i sorgenti aggiornati:"
 
 #: pikaur/print_department.py:132 pikaur/print_department.py:139
 #, python-brace-format
 msgid "for {pkg}"
-msgstr ""
+msgstr "per {pkg}"
 
+# 'i' stands for "ignora"
 #: pikaur/build.py:622 pikaur/build.py:635
 msgid "i"
 msgstr "i"
@@ -593,15 +635,16 @@ msgstr "i"
 #: pikaur/argparse.py:140
 #, python-format
 msgid "ignored explicit argument %r"
-msgstr "忽略明确的参数 %r"
+msgstr "argomento %r esplicitamente ignorato"
 
+# I translate "built" as "creato"
 #: pikaur/args.py:447
 msgid "install built package"
-msgstr "安装已构建的包"
+msgstr "installa il pacchetto creato"
 
 #: pikaur/install_cli.py:645
 msgid "installing for the first time"
-msgstr ""
+msgstr "sto installando per la prima volta"
 
 #: pikaur/main.py:222
 msgid "invalid number: {}"
@@ -613,93 +656,101 @@ msgstr ""
 
 #: pikaur/install_cli.py:485
 msgid "looking for conflicting AUR packages..."
-msgstr "查找冲突的 AUR 包..."
+msgstr "in cerca di pacchetti AUR in conflitto..."
 
+# 'm' stands for "modifica"
 #: pikaur/install_cli.py:339 pikaur/install_cli.py:356
 msgid "m"
 msgstr "m"
 
+# 'n' stands for "no"
 #: pikaur/main.py:216 pikaur/prompt.py:20 pikaur/install_cli.py:339
 msgid "n"
 msgstr "n"
 
 #: pikaur/prompt.py:162
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
-msgstr "未找到编辑器. 尝试设置 $VISUAL 或 $EDITOR."
+msgstr "nessun editor trovato. Prova impostando $VISUAL o $EDITOR."
 
 #: pikaur/argparse.py:71
 #, python-format
 msgid "not allowed with argument %s"
-msgstr "不允许使用参数 %s"
+msgstr "non permesso con l'argomento %s"
 
 #: pikaur/argparse.py:265
 #, python-format
 msgid "one of the arguments %s is required"
-msgstr "需要下列参数之一 %s "
+msgstr "uno degli argomenti %s è richiesto"
 
+# copy of "out-to-date"?
 #: pikaur/print_department.py:501
 msgid "outofdate"
-msgstr "过期"
+msgstr "vecchio"
 
 #: pikaur/args.py:466
 msgid "override path to makepkg executable"
-msgstr "覆盖 makepkg 可执行程序的路径"
+msgstr "dare la precedenza al percorso dell'eseguibile makepkg"
 
+# 'p' stands for "PGP"
 #: pikaur/build.py:622 pikaur/build.py:629
 msgid "p"
 msgstr "p"
 
 #: pikaur/args.py:465
 msgid "path to custom makepkg config"
-msgstr "自定义 makepkg 配置文件的路径"
+msgstr "percorso del file di configurazione makepkg personalizzato"
 
 #: pikaur/args.py:467
-#, fuzzy
 msgid "path to custom pikaur config"
-msgstr "自定义 makepkg 配置文件的路径"
+msgstr "percorso del file di configurazione pikaur personalizzato"
 
 #: pikaur/main.py:333
 msgid "pikaur requires Python >= 3.7 to run."
-msgstr "pikaur 需要运行于 Python >= 3.7."
+msgstr "pikaur ha bisogno di Python >= 3.7 per essere eseguito."
 
 #: pikaur/main.py:96
-#, fuzzy
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
-msgstr "pikaur 需要运行于 Python >= 3.7."
+msgstr "pikaur ha bisogno di python-pysocks per usare un proxy socks5."
 
 #: pikaur/main.py:338
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
-msgstr "pikaur 需要由 root 运行的 systemd >= 235 (dynamic users)."
+msgstr ""
+"pikaur ha bisogno di systemd >= 235 (dynamic users) per essere eseguito come "
+"root."
 
 #: pikaur/args.py:428
 msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
-msgstr "pikaur {-G --getpkgbuild} [options] <package(s)>"
+msgstr "pikaur {-G --getpkgbuild} [opzioni] <pacchetti>"
 
 #: pikaur/args.py:427
 msgid "pikaur {-P --pkgbuild}    [options] <file(s)>"
-msgstr "pikaur {-P --pkgbuild}    [options] <file(s)>"
+msgstr "pikaur {-P --pkgbuild}    [opzioni] <file>"
 
 #: pikaur/args.py:426
 msgid "pikaur-specific operations:"
-msgstr "pikaur 的独立选项:"
+msgstr "operazioni specifiche di pikaur:"
 
 #: pikaur/args.py:461
 msgid "prompt to edit PKGBUILDs and other build files"
-msgstr "提示编辑 PKGBUILD 和其它相关文件"
+msgstr "suggerisci di modificare i PKGBUILD e gli altri file di compilazione"
 
+# I translated "query" as "ricerca" even if technically should be "interroga"
 #: pikaur/args.py:451
 msgid "query packages from AUR only"
-msgstr "只从 AUR 查找软件包"
+msgstr "ricerca pacchetti solo da AUR"
 
+# I translated "query" as "ricerca" even if technically should be "interroga"
 #: pikaur/args.py:455 pikaur/args.py:459
 msgid "query packages from repository only"
-msgstr "只从软件仓库查找软件包"
+msgstr "ricerca pacchetti solo dal repository"
 
+# 'r' stands for "rimuovi"
 #: pikaur/build.py:622 pikaur/build.py:627 pikaur/install_cli.py:470
 #: pikaur/install_cli.py:475
 msgid "r"
 msgstr "r"
 
+# 's' stands for "salta"
 #: pikaur/build.py:601 pikaur/build.py:623 pikaur/install_cli.py:470
 #: pikaur/install_cli.py:477
 msgid "s"
@@ -707,60 +758,65 @@ msgstr "s"
 
 #: pikaur/args.py:472
 msgid "search only in package names"
-msgstr "只搜索包名"
+msgstr "cerca solo tra i nomi dei pacchetti"
 
 #: pikaur/argparse.py:250
 #, python-format
 msgid "the following arguments are required: %s"
-msgstr "需要下列参数: %s"
+msgstr "i seguenti argomenti sono richiesti: %s"
 
 #: pikaur/args.py:437
 msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
-msgstr "用法:  pikaur {-G --getpkgbuild} [options] <package(s)>"
+msgstr "uso:  pikaur {-G --getpkgbuild} [opzioni] <pacchetti>"
 
 #: pikaur/args.py:432
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
-msgstr "用法:  pikaur {-P --pkgbuild} [options] <file(s)>"
+msgstr "uso:  pikaur {-P --pkgbuild} [opzioni] <file>"
 
+# I keep english term "verbose"
 #: pikaur/install_cli.py:339 pikaur/install_cli.py:354
 msgid "v"
 msgstr "v"
 
 #: pikaur/pprint.py:75
 msgid "warning:"
-msgstr "警告:"
+msgstr "attenzione:"
 
+# 's' stands for "sì"
 #: pikaur/prompt.py:19 pikaur/install_cli.py:339 pikaur/install_cli.py:352
 msgid "y"
-msgstr "y"
+msgstr "s"
 
 #: pikaur/print_department.py:154 pikaur/print_department.py:160
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{grp} gruppo"
+msgstr[1] "{grp} gruppi"
 
+# I guess {suparch} has only one item
 #: pikaur/build.py:548
 #, python-brace-format
 msgid ""
 "{name} can't be built on the current arch ({arch}). Supported: {suparch}"
-msgstr "{name} 无法在当前构架 ({arch}) 上构建. 支持的构架: {suparch}"
+msgstr ""
+"{name} non può essere creato sull'architettura attuale ({arch}). Supportata: "
+"{suparch}"
 
 #: pikaur/print_department.py:412
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
-msgstr "{name} {version} {package_source} 包是最新的 - 跳过"
+msgstr "il pacchetto {name} {version} {package_source} è aggiornato - salto"
 
 #: pikaur/install_cli.py:508
 #, python-brace-format
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
-msgstr "{new} 与 {installed} 冲突. 移除 {installed}?"
+msgstr "{new} e {installed} sono in conflitto. Rimuovere {installed}?"
 
 #: pikaur/install_info_fetcher.py:358
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
-msgstr "{pkg_name} 已在列表中"
+msgstr "{pkg_name} già aggiunto alla lista"
 
 #: pikaur/install_cli.py:211
 #, python-brace-format
@@ -768,11 +824,11 @@ msgid ""
 "{what} depends on: '{dep}'\n"
 " found in '{location}': '{version}'"
 msgstr ""
-"{what} 依赖: '{dep}'\n"
-" 在 '{location}' 处找到: '{version}'"
+"{what} depende da: '{dep}'\n"
+" trovato in '{location}': '{version}'"
 
-#~ msgid "{} does not exist on the filesystem."
-#~ msgstr "{} 不存在."
+#~ msgid "Please enter a number between 1 and {}."
+#~ msgstr "Per favore inserire un numero tra 1 e {}."
 
-#~ msgid "for"
-#~ msgstr "for"
+#~ msgid "Please enter a valid integer number."
+#~ msgstr "Per favore inserire un numero intero valido."

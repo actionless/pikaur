@@ -67,8 +67,6 @@ def find_conflicting_with_new_pkgs(
                 if (
                         conflict_pkg_name == installed_pkg_name
                 ) and (
-                    new_pkg_name != conflict_pkg_name
-                ) and (
                     not conflict_version_matcher or
                     conflict_version_matcher(get_remote_package_version(installed_pkg_name))
                 ):

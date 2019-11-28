@@ -16,6 +16,7 @@ from pikaur.main import main
 from pikaur.args import CachedArgs, parse_args
 from pikaur.pacman import PackageDB
 from pikaur.pprint import get_term_width
+from pikaur.makepkg_config import MakePkgCommand
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -177,6 +178,7 @@ def pikaur(
             # re-parse args:
             sys.argv = new_args
             CachedArgs.args = None  # pylint:disable=protected-access
+            MakePkgCommand._cmd = None  # pylint:disable=protected-access
             parse_args()
             # monkey-patch to force always uncolored output:
             CachedArgs.args.color = 'never'  # type: ignore # pylint:disable=protected-access
@@ -291,18 +293,30 @@ class PikaurDbTestCase(PikaurTestCase):
         self.assertInstalled(repo_pkg_name)
         return PackageDB.get_local_dict()[repo_pkg_name].version
 
-    def downgrade_aur_pkg(self, aur_pkg_name: str, fake_makepkg=False) -> str:
+    def downgrade_aur_pkg(
+            self, aur_pkg_name: str, fake_makepkg=False, count=1
+    ) -> str:
         # and test -P and -G during downgrading :-)
+        old_version = (
+            PackageDB.get_local_dict()[aur_pkg_name].version
+            if aur_pkg_name in PackageDB.get_local_pkgnames()
+            else None
+        )
         self.remove_if_installed(aur_pkg_name)
         spawn(f'rm -fr ./{aur_pkg_name}')
         pikaur(f'-G {aur_pkg_name}')
         prev_commit = spawn(  # type: ignore
             f'git -C ./{aur_pkg_name} log --format=%h'
-        ).stdout_text.splitlines()[1]
+        ).stdout_text.splitlines()[count]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
         pikaur(
             f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD',
             fake_makepkg=fake_makepkg
         )
         self.assertInstalled(aur_pkg_name)
-        return PackageDB.get_local_dict()[aur_pkg_name].version
+        new_version = PackageDB.get_local_dict()[aur_pkg_name].version
+        self.assertNotEqual(
+            old_version, new_version,
+            f"After downgrading version of {aur_pkg_name} still stays on {old_version}"
+        )
+        return new_version

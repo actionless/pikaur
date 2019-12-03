@@ -66,15 +66,19 @@ class InstallInfoFetcher:
             return True
         return False
 
-    def exclude_ignored_packages(self, package_names: List[str]) -> None:
+    def exclude_ignored_packages(
+            self,
+            package_names: List[str],
+            print_packages=True
+    ) -> None:
         ignored_packages = []
         for pkg_name in package_names[:]:
             if self.package_is_ignored(pkg_name):
                 package_names.remove(pkg_name)
                 ignored_packages.append(pkg_name)
-
-        for package_name in ignored_packages:
-            print_ignored_package(package_name=package_name)
+        if print_packages:
+            for package_name in ignored_packages:
+                print_ignored_package(package_name=package_name)
 
     @property
     def aur_deps_names(self) -> List[str]:
@@ -316,7 +320,7 @@ class InstallInfoFetcher:
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         if self.args.sysupgrade:
             aur_updates_list, not_found_aur_pkgs = find_aur_updates()
-            self.exclude_ignored_packages(not_found_aur_pkgs)
+            self.exclude_ignored_packages(not_found_aur_pkgs, print_packages=False)
             if not_found_aur_pkgs:
                 print_not_found_packages(sorted(not_found_aur_pkgs))
             aur_updates_install_info_by_name = {

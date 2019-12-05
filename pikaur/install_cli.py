@@ -353,7 +353,8 @@ class InstallPackagesCLI():
                     break
                 if letter == _("v"):
                     answer = _confirm_sysupgrade(verbose=True)
-                elif letter == _("m"):
+                    continue
+                if letter == _("m"):
                     print_stdout()
                     self.manual_package_selection()
                     self.get_all_packages_info()

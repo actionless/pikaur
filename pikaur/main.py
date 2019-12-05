@@ -271,7 +271,8 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         elif args.info:
             pikaur_operation = cli_info_packages
         elif args.clean:
-            require_sudo = True
+            if not args.aur:
+                require_sudo = True
             pikaur_operation = cli_clean_packages_cache
         elif args.groups or args.list:   # @TODO: implement -l/--list
             require_sudo = False

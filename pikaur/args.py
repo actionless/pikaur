@@ -48,7 +48,6 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, 'namesonly', None),
         (None, 'repo', None),
         ('a', 'aur', None),
-        (None, 'devel', None),
         (None, 'keepbuild', PikaurConfig().build.KeepBuildDir.get_bool()),
         (None, 'keepbuilddeps', PikaurConfig().build.KeepBuildDeps.get_bool()),
         (None, 'nodiff', PikaurConfig().build.NoDiff.get_bool()),
@@ -94,6 +93,13 @@ PACMAN_COUNT_OPTS: ArgSchema = [
     ('c', 'clean', None),
     ('k', 'check', None),
 ]
+
+
+def get_pikaur_count_opts() -> ArgSchema:
+    return [
+        (None, 'devel', None),
+    ]
+
 
 PACMAN_APPEND_OPTS: ArgSchema = [
     (None, 'ignore', None),
@@ -304,7 +310,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
             action='store_true', letter=letter, opt=opt, default=default
         )
 
-    for letter, opt, default in PACMAN_COUNT_OPTS:
+    for letter, opt, default in PACMAN_COUNT_OPTS + get_pikaur_count_opts():
         parser.add_letter_andor_opt(
             action='count', letter=letter, opt=opt, default=default
         )
@@ -360,7 +366,9 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> List[str]:
     if not ignore_args:
         ignore_args = []
-    for letter, opt, _default in get_pikaur_bool_opts() + get_pikaur_str_opts():
+    for letter, opt, _default in (
+            get_pikaur_bool_opts() + get_pikaur_str_opts() + get_pikaur_count_opts()
+    ):
         if letter:
             ignore_args.append(letter)
         if opt:

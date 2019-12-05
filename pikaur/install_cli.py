@@ -29,7 +29,9 @@ from .pprint import (
     print_stderr, print_stdout, print_warning, print_error,
 )
 from .print_department import (
-    pretty_format_sysupgrade, print_not_found_packages, print_package_uptodate,
+    pretty_format_sysupgrade,
+    print_not_found_packages, print_package_uptodate,
+    print_package_downgrading, print_local_package_newer,
 )
 from .core import (
     PackageSource,
@@ -578,13 +580,33 @@ class InstallPackagesCLI():
             pool.join()
 
         # handle if version is already installed
+        if not self.args.needed:
+            return
         for repo_status in all_package_builds:
-            if self.args.needed and repo_status.version_already_installed and repo_status.reviewed:
-                for package_name in repo_status.package_names:
+            if not repo_status.reviewed:
+                continue
+            # pragma: no cover
+            repo_status.update_last_installed_file()
+            for package_name in repo_status.package_names:
+                if repo_status.version_already_installed:
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_install_info(package_name)
-                if repo_status.reviewed:  # pragma: no cover
-                    repo_status.update_last_installed_file()
+                elif (
+                        self.args.sysupgrade > 1
+                ) or (
+                    is_devel_pkg(repo_status.package_base) and (self.args.devel > 1)
+                ):
+                    if not repo_status.version_is_upgradeable:
+                        print_package_downgrading(
+                            package_name,
+                            downgrade_version=repo_status.get_version(package_name)
+                        )
+                elif not repo_status.version_is_upgradeable:
+                    print_local_package_newer(
+                        package_name,
+                        aur_version=repo_status.get_version(package_name)
+                    )
+                    self.discard_install_info(package_name)
 
     def review_build_files(self) -> None:  # pragma: no cover  pylint:disable=too-many-branches
         if self.args.needed or self.args.devel:

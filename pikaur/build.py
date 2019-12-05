@@ -255,18 +255,28 @@ class PackageBuild(DataType):
         SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True
 
-    @property
-    def version_already_installed(self) -> bool:
+    def get_version(self, package_name: str) -> str:
+        return SrcInfo(self.build_dir, package_name).get_version()
+
+    def _compare_versions(self, compare_to: int) -> bool:
         local_db = PackageDB.get_local_dict()
         self.get_latest_dev_sources(check_dev_pkgs=self.args.needed)
         return min([
             compare_versions(
                 local_db[pkg_name].version,
-                SrcInfo(self.build_dir, pkg_name).get_version()
-            ) == 0
+                self.get_version(pkg_name)
+            ) == compare_to
             if pkg_name in local_db else False
             for pkg_name in self.package_names
         ])
+
+    @property
+    def version_already_installed(self) -> bool:
+        return self._compare_versions(0)
+
+    @property
+    def version_is_upgradeable(self) -> bool:
+        return self._compare_versions(-1)
 
     @property
     def all_deps_to_install(self) -> List[str]:

@@ -407,14 +407,36 @@ def print_ignored_package(
     ))
 
 
+def _get_local_version(package_name: str) -> str:
+    return PackageDB.get_local_dict()[package_name].version
+
+
 def print_package_uptodate(package_name: str, package_source: PackageSource) -> None:
     print_warning(
         _("{name} {version} {package_source} package is up to date - skipping").format(
             name=package_name,
-            version=bold_line(
-                PackageDB.get_local_dict()[package_name].version
-            ),
+            version=bold_line(_get_local_version(package_name)),
             package_source=package_source.name
+        )
+    )
+
+
+def print_local_package_newer(package_name: str, aur_version: str) -> None:
+    print_warning(
+        _("{name} {version} local package is newer than in AUR ({aur_version}) - skipping").format(
+            name=package_name,
+            version=bold_line(_get_local_version(package_name)),
+            aur_version=bold_line(aur_version),
+        )
+    )
+
+
+def print_package_downgrading(package_name: str, downgrade_version: str) -> None:
+    print_warning(
+        _("Downgrading AUR package {name} {version} to {downgrade_version}").format(
+            name=bold_line(package_name),
+            version=bold_line(_get_local_version(package_name)),
+            downgrade_version=bold_line(downgrade_version)
         )
     )
 

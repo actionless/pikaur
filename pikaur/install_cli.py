@@ -583,10 +583,10 @@ class InstallPackagesCLI():
         if not self.args.needed:
             return
         for repo_status in all_package_builds:
-            if repo_status.reviewed:  # pragma: no cover
-                repo_status.update_last_installed_file()
-            else:
+            if not repo_status.reviewed:
                 continue
+            # pragma: no cover
+            repo_status.update_last_installed_file()
             for package_name in repo_status.package_names:
                 if repo_status.version_already_installed:
                     print_package_uptodate(package_name, PackageSource.AUR)

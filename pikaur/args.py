@@ -10,7 +10,7 @@ from .config import PikaurConfig
 from .i18n import _, _n
 
 
-ArgSchema = List[Tuple[Optional[str], str, Union[None, bool, str]]]
+ArgSchema = List[Tuple[Optional[str], str, Union[None, bool, str, int]]]
 
 
 PACMAN_BOOL_OPTS: ArgSchema = [
@@ -88,16 +88,16 @@ def get_pikaur_str_opts() -> ArgSchema:
 
 
 PACMAN_COUNT_OPTS: ArgSchema = [
-    ('y', 'refresh', None),
-    ('u', 'sysupgrade', None),
-    ('c', 'clean', None),
-    ('k', 'check', None),
+    ('y', 'refresh', 0),
+    ('u', 'sysupgrade', 0),
+    ('c', 'clean', 0),
+    ('k', 'check', 0),
 ]
 
 
 def get_pikaur_count_opts() -> ArgSchema:
     return [
-        (None, 'devel', None),
+        (None, 'devel', 0),
     ]
 
 

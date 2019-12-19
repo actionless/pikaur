@@ -82,7 +82,9 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         _color_line = lambda line, *args, **kwargs: line  # noqa
         _bold_line = lambda line: line  # noqa
 
-    def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, str]:  # pylint:disable=too-many-locals
+    SortKey = Union[Tuple, str]
+
+    def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, SortKey]:  # pylint:disable=too-many-locals
         common_version, diff_weight = get_common_version(
             pkg_update.current_version or '', pkg_update.new_version or ''
         )
@@ -93,7 +95,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         new_color = color_config.VersionDiffNew.get_int()
         column_width = min(int(get_term_width() / 2.5), 37)
 
-        sort_by = (
+        sort_by: SortKey = (
             -diff_weight,
             pkg_update.name
         )
@@ -101,7 +103,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         if user_chosen_sorting == 'pkgname':
             sort_by = pkg_update.name
         elif user_chosen_sorting == 'repo':
-            sort_by = '{}{}'.format(
+            sort_by = (
                 pkg_update.repository,
                 pkg_update.name
             )

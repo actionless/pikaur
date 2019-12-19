@@ -17,7 +17,7 @@ from .pprint import color_line, format_paragraph, print_stdout, bold_line
 from .pacman import PackageDB
 
 
-class News():
+class News:
     URL = PikaurConfig().misc.NewsUrl.get_str()
     CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
     _news_feed: Union[xml.etree.ElementTree.Element, None]

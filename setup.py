@@ -15,7 +15,7 @@ with codecs.open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='pikaur',  # Required
-    version='1.5.4',  # Required
+    version='1.5.5',  # Required
     description='AUR helper with minimal dependencies',  # Required
     long_description=LONG_DESCRIPTION,  # Optional
     long_description_content_type="text/markdown",

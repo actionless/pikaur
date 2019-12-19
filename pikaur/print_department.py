@@ -16,10 +16,11 @@ from .core import PackageSource, InstallInfo
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
 from .pacman import PackageDB
+from .aur import AURPackageInfo
+
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import
-    from .aur import AURPackageInfo  # noqa
     from .install_info_fetcher import InstallInfoFetcher  # noqa
 
 
@@ -27,7 +28,7 @@ GROUP_COLOR = 4
 REPLACEMENTS_COLOR = 14
 
 
-AnyPackage = Union['AURPackageInfo', pyalpm.Package]
+AnyPackage = Union[AURPackageInfo, pyalpm.Package]
 
 
 def print_version(pacman_version: str, quiet=False) -> None:
@@ -111,10 +112,6 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         pkg_name = pkg_update.name
         pkg_len = len(pkg_update.name)
 
-        days_old = ''
-        if pkg_update.devel_pkg_age_days:
-            days_old = ' ' + _('({} days old)').format(pkg_update.devel_pkg_age_days)
-
         pkg_name = _bold_line(pkg_name)
         if (print_repo or verbose) and pkg_update.repository:
             pkg_name = '{}{}'.format(
@@ -182,15 +179,32 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         ):
             pkg_size = f'{pkg_update.package.size/1024/1024:.2f} MiB'
 
+        days_old = ''
+        if pkg_update.devel_pkg_age_days:
+            days_old = ' ' + _('({} days old)').format(pkg_update.devel_pkg_age_days)
+
+        out_of_date = ''
+        if (
+                isinstance(pkg_update.package, AURPackageInfo) and
+                pkg_update.package.outofdate is not None
+        ):
+            out_of_date = _color_line(
+                " [{}: {}]".format(
+                    _("outofdate"),
+                    datetime.fromtimestamp(pkg_update.package.outofdate).strftime('%Y/%m/%d')
+                ),
+                color_config.VersionDiffOld.get_int()
+            )
+
         return (
             template or (
                 ' {pkg_name}{spacing}'
                 ' {current_version}{spacing2}'
-                '{version_separator}{new_version}{spacing3}{pkg_size}{days_old}{verbose}'
+                '{version_separator}{new_version}{spacing3}'
+                '{pkg_size}{days_old}{out_of_date}{verbose}'
             )
         ).format(
             pkg_name=pkg_name,
-            days_old=days_old,
             current_version=(
                 _color_line(common_version, version_color) +
                 _color_line(
@@ -220,6 +234,8 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 max(-1, (pkg_len - column_width))
             )) if pkg_size else ''),
             pkg_size=pkg_size,
+            days_old=days_old,
+            out_of_date=out_of_date,
             verbose=(
                 '' if not (verbose and pkg_update.description)
                 else f'\n{format_paragraph(pkg_update.description)}'
@@ -450,9 +466,6 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
         local_pkgs_versions: Dict[str, str],
         enumerated=False,
 ) -> List[AnyPackage]:
-
-    # pylint:disable=import-outside-toplevel
-    from .aur import AURPackageInfo  # noqa  pylint:disable=redefined-outer-name
 
     def get_sort_key(pkg: AnyPackage) -> float:
         if (

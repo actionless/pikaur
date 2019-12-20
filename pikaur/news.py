@@ -39,7 +39,7 @@ class News:
                     if self._is_new(str(child.text)):
                         if first_news:
                             print_stdout(
-                                '\n' + bold_line(_('There are news from archlinux.org!')) + '\n'
+                                '\n' + color_line(_('There are news from archlinux.org!'), 9) + '\n'
                             )
                         self._print_one_entry(news_entry)
                         # news are in inverse chronological order (newest first).
@@ -109,7 +109,7 @@ class News:
             if 'description' in child.tag:
                 description = str(child.text)
         print_stdout(
-            color_line(title, 11) + ' (' + pub_date + ')'
+            color_line(title, 14) + ' (' + bold_line(pub_date) + ')'
         )
         print_stdout(
             format_paragraph(strip_tags(description))

@@ -2,6 +2,7 @@
 
 import gettext
 import re
+from threading import Lock
 from typing import (
     List, Dict, Optional, Union, Pattern, TYPE_CHECKING
 )
@@ -134,6 +135,32 @@ def get_pkg_id(pkg: Union['AURPackageInfo', pyalpm.Package]) -> str:
     return f"aur/{pkg.name}"
 
 
+DB_LOCK_REPO = Lock()
+DB_LOCK_LOCAL = Lock()
+
+
+class DbLockRepo():
+
+    def __enter__(self) -> None:
+        DB_LOCK_REPO.acquire()
+
+    def __exit__(self, *_exc_details) -> None:
+        DB_LOCK_REPO.release()
+
+
+class DbLockLocal():
+
+    def __enter__(self) -> None:
+        DB_LOCK_LOCAL.acquire()
+
+    def __exit__(self, *_exc_details) -> None:
+        DB_LOCK_LOCAL.release()
+
+
+def get_db_lock(package_source: PackageSource):
+    return DbLockRepo if package_source is PackageSource.REPO else DbLockLocal
+
+
 class PackageDBCommon():
 
     _packages_list_cache: Dict[PackageSource, List[pyalpm.Package]] = {}
@@ -145,14 +172,15 @@ class PackageDBCommon():
     def _discard_cache(
             cls, package_source: PackageSource
     ) -> None:
-        if cls._packages_list_cache.get(package_source):
-            del cls._packages_list_cache[package_source]
-        if cls._packages_dict_cache.get(package_source):
-            del cls._packages_dict_cache[package_source]
-        if cls._provided_list_cache.get(package_source):
-            del cls._provided_list_cache[package_source]
-        if cls._provided_dict_cache.get(package_source):
-            del cls._provided_dict_cache[package_source]
+        with get_db_lock(package_source)():
+            if cls._packages_list_cache.get(package_source):
+                del cls._packages_list_cache[package_source]
+            if cls._packages_dict_cache.get(package_source):
+                del cls._packages_dict_cache[package_source]
+            if cls._provided_list_cache.get(package_source):
+                del cls._provided_list_cache[package_source]
+            if cls._provided_dict_cache.get(package_source):
+                del cls._provided_dict_cache[package_source]
 
     @classmethod
     def discard_local_cache(cls) -> None:
@@ -290,9 +318,10 @@ class PackageDB(PackageDBCommon):
     @classmethod
     def get_local_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.LOCAL):
-            if not quiet:
-                print_stderr(_("Reading local package database..."))
-            cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local('')
+            with DbLockLocal():
+                if not quiet:
+                    print_stderr(_("Reading local package database..."))
+                cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local('')
         return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
@@ -344,11 +373,12 @@ class PackageDB(PackageDBCommon):
     @classmethod
     def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.REPO):
-            if not quiet:
-                print_stderr(_("Reading repository package databases..."))
-            cls._packages_list_cache[PackageSource.REPO] = cls.search_repo(
-                search_query=''
-            )
+            with DbLockRepo():
+                if not quiet:
+                    print_stderr(_("Reading repository package databases..."))
+                cls._packages_list_cache[PackageSource.REPO] = cls.search_repo(
+                    search_query=''
+                )
         return cls._packages_list_cache[PackageSource.REPO]
 
     @classmethod

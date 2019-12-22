@@ -158,7 +158,8 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     if not running_as_root():
         return cmd
     base_root_isolator = [
-        'systemd-run', '--pipe', '--wait',
+        'systemd-run',
+        '--pipe', '--wait', '--pty',
         '-p', 'DynamicUser=yes',
         '-p', 'CacheDirectory=pikaur',
         '-E', 'HOME=/tmp',

@@ -582,12 +582,15 @@ class InstallPackagesCLI():
         # handle if version is already installed
         if not self.args.needed:
             return
+        local_db = PackageDB.get_local_dict()
         for repo_status in all_package_builds:
             if not repo_status.reviewed:
                 continue
             # pragma: no cover
             repo_status.update_last_installed_file()
             for package_name in repo_status.package_names:
+                if package_name not in local_db:
+                    continue
                 if repo_status.version_already_installed:
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_install_info(package_name)

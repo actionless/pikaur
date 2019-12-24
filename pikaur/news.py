@@ -61,7 +61,7 @@ class News:
             http_response: Union[HTTPResponse, urllib.response.addinfourl] = \
                 urllib.request.urlopen(self.URL)
         except urllib.error.URLError:
-            print_stdout(_('Could not fetch archlinux.org news'))
+            print_error(_('Could not fetch archlinux.org news'))
             return
         str_response: str = ''
         for line in http_response:
@@ -92,13 +92,12 @@ class News:
                 with open(self.CACHE_FILE, 'w') as last_seen_fd:
                     last_seen_fd.write(time_formatted)
             except IOError:
-                msg: str = _('Could not initialize {}').format(self.CACHE_FILE)
-                print_stdout(msg)
+                print_error(_('Could not initialize {}').format(self.CACHE_FILE))
             return last_pkg_date
 
     def _is_new(self, last_online_news: str) -> bool:
         if not last_online_news:
-            print_error('The news feed could not be received or parsed.')
+            print_error(_('The news feed could not be received or parsed.'))
             return False
         last_online_news_date: datetime.datetime = datetime.datetime.strptime(
             last_online_news, DT_FORMAT
@@ -135,7 +134,7 @@ class News:
             with open(self.CACHE_FILE, 'w') as last_seen_fd:
                 last_seen_fd.write(pub_date)
         except IOError:
-            print_stdout(_('Could not update {}').format(self.CACHE_FILE))
+            print_error(_('Could not update {}').format(self.CACHE_FILE))
 
 
 class MLStripper(HTMLParser):

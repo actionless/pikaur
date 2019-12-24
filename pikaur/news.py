@@ -13,8 +13,13 @@ from typing import TextIO, Union
 
 from .i18n import _
 from .config import CACHE_ROOT, PikaurConfig
-from .pprint import color_line, format_paragraph, print_stdout, bold_line
+from .pprint import (
+    color_line, format_paragraph, print_stdout, print_stderr, bold_line,
+)
 from .pacman import PackageDB
+
+
+DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
 
 
 class News:
@@ -23,7 +28,6 @@ class News:
     _news_feed: Union[xml.etree.ElementTree.Element, None]
 
     def __init__(self) -> None:
-        self._last_seen_news = self._get_last_seen_news()
         self._news_feed = None
 
     def print_news(self) -> None:
@@ -66,36 +70,39 @@ class News:
             return
         self._news_feed = xml.etree.ElementTree.fromstring(str_response)
 
-    def _get_last_seen_news(self) -> str:
+    def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: TextIO
         try:
             with open(self.CACHE_FILE) as last_seen_fd:
-                return last_seen_fd.readline().strip()
-        except IOError:
-            # if file doesn't exist, this feature was run the first time
-            # then we get take the date from the last installed package
-            now: datetime.datetime = datetime.datetime.fromtimestamp(
+                return datetime.datetime.strptime(
+                    last_seen_fd.readline().strip(), DT_FORMAT
+                )
+        except (IOError, ValueError):
+            # if file doesn't exist or corrupted,
+            # this feature was run the first time
+            # then we get take the date from the last installed package:
+            last_pkg_date: datetime.datetime = datetime.datetime.fromtimestamp(
                 PackageDB.get_last_installed_package_date()
             )
-            time_formatted: str = now.strftime('%a, %d %b %Y %H:%M:%S +0000')
+            last_pkg_date = last_pkg_date.replace(
+                tzinfo=datetime.datetime.now().astimezone().tzinfo
+            )
+            time_formatted: str = last_pkg_date.strftime(DT_FORMAT)
             try:
                 with open(self.CACHE_FILE, 'w') as last_seen_fd:
                     last_seen_fd.write(time_formatted)
             except IOError:
                 msg: str = _('Could not initialize {}').format(self.CACHE_FILE)
                 print_stdout(msg)
-            return time_formatted
+            return last_pkg_date
 
     def _is_new(self, last_online_news: str) -> bool:
-        last_seen_news_date = datetime.datetime.strptime(
-            self._last_seen_news, '%a, %d %b %Y %H:%M:%S %z'
-        )
         if not last_online_news:
-            raise ValueError('The news feed could not be received or parsed.')
+            print_stderr('The news feed could not be received or parsed.')
         last_online_news_date: datetime.datetime = datetime.datetime.strptime(
-            last_online_news, '%a, %d %b %Y %H:%M:%S %z'
+            last_online_news, DT_FORMAT
         )
-        return last_online_news_date > last_seen_news_date
+        return last_online_news_date > self._get_last_seen_news_date()
 
     # noinspection PyUnboundLocalVariable
     @staticmethod

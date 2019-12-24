@@ -14,7 +14,7 @@ from typing import TextIO, Union
 from .i18n import _
 from .config import CACHE_ROOT, PikaurConfig
 from .pprint import (
-    color_line, format_paragraph, print_stdout, print_stderr, bold_line,
+    color_line, format_paragraph, print_stdout, print_error, bold_line,
 )
 from .pacman import PackageDB
 
@@ -98,7 +98,7 @@ class News:
 
     def _is_new(self, last_online_news: str) -> bool:
         if not last_online_news:
-            print_stderr('The news feed could not be received or parsed.')
+            print_error('The news feed could not be received or parsed.')
         last_online_news_date: datetime.datetime = datetime.datetime.strptime(
             last_online_news, DT_FORMAT
         )

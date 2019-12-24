@@ -99,6 +99,7 @@ class News:
     def _is_new(self, last_online_news: str) -> bool:
         if not last_online_news:
             print_error('The news feed could not be received or parsed.')
+            return False
         last_online_news_date: datetime.datetime = datetime.datetime.strptime(
             last_online_news, DT_FORMAT
         )

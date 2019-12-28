@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-24 07:29+0100\n"
+"POT-Creation-Date: 2019-12-28 11:09+0100\n"
 "PO-Revision-Date: 2018-04-20 01:17+0200\n"
 "Last-Translator: \n"
 "Language-Team: none\n"
@@ -30,13 +30,13 @@ msgstr[1] ""
 msgid "({} days old)"
 msgstr "({} dage gammelt)"
 
-#: pikaur/args.py:353
+#: pikaur/args.py:354
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/args.py:346
+#: pikaur/args.py:347
 msgid ":: error: options {} can't be used together."
 msgstr ""
 
@@ -60,7 +60,7 @@ msgstr ""
 msgid "AUR: Too many package results for '{query}'"
 msgstr ""
 
-#: pikaur/args.py:445
+#: pikaur/args.py:446
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Command '{}' failed to execute."
 msgstr "Kommando '{}' mislykkedes."
 
-#: pikaur/args.py:433
+#: pikaur/args.py:434
 msgid "Common pacman options:"
 msgstr "Fælles pacman muligheder:"
 
@@ -330,7 +330,7 @@ msgstr[1] ""
 msgid "Packages directory"
 msgstr ""
 
-#: pikaur/args.py:490
+#: pikaur/args.py:492
 msgid "Pikaur-specific options:"
 msgstr "Pikaur-specifikke muligheder:"
 
@@ -351,7 +351,7 @@ msgstr "Fortsæt med installationen? [J/n] "
 msgid "Provides"
 msgstr ""
 
-#: pikaur/updates.py:112
+#: pikaur/updates.py:113
 msgid "Reading AUR package info..."
 msgid_plural "Reading AUR packages info..."
 msgstr[0] "Læser AUR-pakkeoplysninger..."
@@ -497,12 +497,12 @@ msgstr ""
 msgid "[i] ignore architecture"
 msgstr ""
 
-#: pikaur/print_department.py:512
+#: pikaur/print_department.py:521
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[installeret: {version}]"
 
-#: pikaur/print_department.py:516
+#: pikaur/print_department.py:525
 msgid "[installed]"
 msgstr "[installeret]"
 
@@ -537,15 +537,15 @@ msgstr "a"
 msgid "already reviewed"
 msgstr ""
 
-#: pikaur/args.py:480
+#: pikaur/args.py:481
 msgid "always isolate with systemd dynamic users"
 msgstr ""
 
-#: pikaur/args.py:475
+#: pikaur/args.py:476
 msgid "always rebuild AUR packages"
 msgstr ""
 
-#: pikaur/args.py:485
+#: pikaur/args.py:486
 #, fuzzy
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sysupgrade '-git' og andre dev pakker ældre end 1 dag"
@@ -555,7 +555,7 @@ msgstr "sysupgrade '-git' og andre dev pakker ældre end 1 dag"
 msgid "c"
 msgstr "c"
 
-#: pikaur/args.py:476
+#: pikaur/args.py:477
 msgid "cli args to pass to makepkg"
 msgstr ""
 
@@ -567,20 +567,20 @@ msgstr ""
 msgid "diff"
 msgstr "forskelle"
 
-#: pikaur/args.py:472
+#: pikaur/args.py:473
 msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "spørg ikke om at redigere PKGBUILDs og andre bygfiler"
 
-#: pikaur/args.py:486
+#: pikaur/args.py:487
 #, fuzzy
 msgid "don't prompt to show the build files diff"
 msgstr "spørg ikke om at redigere PKGBUILDs og andre bygfiler"
 
-#: pikaur/args.py:474
+#: pikaur/args.py:475
 msgid "don't remove build dir after the build"
 msgstr "fjern ikke bygmappen efter byg"
 
-#: pikaur/args.py:455
+#: pikaur/args.py:456
 #, fuzzy
 msgid "download also AUR dependencies"
 msgstr "Løser AUR afhængigheder..."
@@ -614,12 +614,16 @@ msgstr ""
 msgid "i"
 msgstr ""
 
+#: pikaur/args.py:488
+msgid "ignore AUR packages' updates which marked 'outofdate'"
+msgstr ""
+
 #: pikaur/argparse.py:140
 #, python-format
 msgid "ignored explicit argument %r"
 msgstr ""
 
-#: pikaur/args.py:459
+#: pikaur/args.py:460
 msgid "install built package"
 msgstr ""
 
@@ -662,11 +666,11 @@ msgstr ""
 msgid "one of the arguments %s is required"
 msgstr ""
 
-#: pikaur/print_department.py:193 pikaur/print_department.py:539
+#: pikaur/print_department.py:193 pikaur/print_department.py:548
 msgid "outofdate"
 msgstr "forældet"
 
-#: pikaur/args.py:478
+#: pikaur/args.py:479
 msgid "override path to makepkg executable"
 msgstr ""
 
@@ -674,11 +678,11 @@ msgstr ""
 msgid "p"
 msgstr ""
 
-#: pikaur/args.py:477
+#: pikaur/args.py:478
 msgid "path to custom makepkg config"
 msgstr ""
 
-#: pikaur/args.py:479
+#: pikaur/args.py:480
 msgid "path to custom pikaur config"
 msgstr ""
 
@@ -696,29 +700,29 @@ msgstr "pikaur kræver systemd >= 235 (dynamic users) for at køre som root."
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr "pikaur kræver systemd >= 235 (dynamic users) for at køre som root."
 
-#: pikaur/args.py:440
+#: pikaur/args.py:441
 msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr ""
 
-#: pikaur/args.py:439
+#: pikaur/args.py:440
 msgid "pikaur {-P --pkgbuild}    [options] <file(s)>"
 msgstr ""
 
-#: pikaur/args.py:438
+#: pikaur/args.py:439
 #, fuzzy
 msgid "pikaur-specific operations:"
 msgstr "Pikaur-specifikke muligheder:"
 
-#: pikaur/args.py:473
+#: pikaur/args.py:474
 #, fuzzy
 msgid "prompt to edit PKGBUILDs and other build files"
 msgstr "spørg ikke om at redigere PKGBUILDs og andre bygfiler"
 
-#: pikaur/args.py:463
+#: pikaur/args.py:464
 msgid "query packages from AUR only"
 msgstr "forespørg kun pakker fra AUR"
 
-#: pikaur/args.py:467 pikaur/args.py:471
+#: pikaur/args.py:468 pikaur/args.py:472
 msgid "query packages from repository only"
 msgstr "forespørg kun pakker fra repository"
 
@@ -732,7 +736,7 @@ msgstr "f"
 msgid "s"
 msgstr "s"
 
-#: pikaur/args.py:484
+#: pikaur/args.py:485
 msgid "search only in package names"
 msgstr "søg kun i pakkenavne"
 
@@ -741,11 +745,11 @@ msgstr "søg kun i pakkenavne"
 msgid "the following arguments are required: %s"
 msgstr ""
 
-#: pikaur/args.py:449
+#: pikaur/args.py:450
 msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr ""
 
-#: pikaur/args.py:444
+#: pikaur/args.py:445
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr ""
 
@@ -774,6 +778,11 @@ msgid ""
 "{name} can't be built on the current arch ({arch}). Supported: {suparch}"
 msgstr ""
 "{name} kan ikke bygge på denne arkitektur ({arch}). Understøtted: {suparch}"
+
+#: pikaur/print_department.py:464
+#, fuzzy, python-brace-format
+msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
+msgstr "{name} {version} {package_source} pakken er opdateret - springer over"
 
 #: pikaur/print_department.py:444
 #, fuzzy, python-brace-format

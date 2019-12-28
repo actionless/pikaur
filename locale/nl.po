@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-24 07:29+0100\n"
+"POT-Creation-Date: 2019-12-28 11:09+0100\n"
 "PO-Revision-Date: 2019-11-07 13:36+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
 "Language-Team: none\n"
@@ -34,13 +34,13 @@ msgstr[1] ""
 msgid "({} days old)"
 msgstr "({} dagen oud)"
 
-#: pikaur/args.py:353
+#: pikaur/args.py:354
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
 msgstr[0] ":: fout: de optie '{}' kan niet worden gebruikt zonder '{}'."
 msgstr[1] ":: fout: opties {} kunnen niet gebruikt worden zonder {}."
 
-#: pikaur/args.py:346
+#: pikaur/args.py:347
 msgid ":: error: options {} can't be used together."
 msgstr ":: fout: de opties '{}' kunnen niet worden gebruikt zonder '{}'."
 
@@ -64,7 +64,7 @@ msgstr "De AUR-pakketbronmap is verplaatst van '{old}' naar '{new}'."
 msgid "AUR: Too many package results for '{query}'"
 msgstr "AUR: te veel pakketresultaten voor '{query}'"
 
-#: pikaur/args.py:445
+#: pikaur/args.py:446
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
@@ -118,7 +118,7 @@ msgstr "Afhankelijkheden controleren"
 msgid "Command '{}' failed to execute."
 msgstr "De opdracht '{}' is mislukt."
 
-#: pikaur/args.py:433
+#: pikaur/args.py:434
 msgid "Common pacman options:"
 msgstr "Veelgebruikte pacman-opties:"
 
@@ -337,7 +337,7 @@ msgstr[1] ""
 msgid "Packages directory"
 msgstr "Pakketmap"
 
-#: pikaur/args.py:490
+#: pikaur/args.py:492
 msgid "Pikaur-specific options:"
 msgstr "Pikaur-specifieke opties:"
 
@@ -358,7 +358,7 @@ msgstr "Wilt u doorgaan met installeren? [J/n] "
 msgid "Provides"
 msgstr "Levert"
 
-#: pikaur/updates.py:112
+#: pikaur/updates.py:113
 msgid "Reading AUR package info..."
 msgid_plural "Reading AUR packages info..."
 msgstr[0] "Bezig met uitlezen van AUR-pakketinformatie..."
@@ -501,12 +501,12 @@ msgstr "[e] PKGBUILD aanpassen"
 msgid "[i] ignore architecture"
 msgstr "[i] Architectuur negeren"
 
-#: pikaur/print_department.py:512
+#: pikaur/print_department.py:521
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[geïnstalleerd: {version}]"
 
-#: pikaur/print_department.py:516
+#: pikaur/print_department.py:525
 msgid "[installed]"
 msgstr "[geïnstalleerd]"
 
@@ -540,15 +540,15 @@ msgstr "a"
 msgid "already reviewed"
 msgstr "reeds nagekeken"
 
-#: pikaur/args.py:480
+#: pikaur/args.py:481
 msgid "always isolate with systemd dynamic users"
 msgstr "altijd isoleren met systemd's dynamische gebruikers"
 
-#: pikaur/args.py:475
+#: pikaur/args.py:476
 msgid "always rebuild AUR packages"
 msgstr "AUR-pakketten altijd herbouwen"
 
-#: pikaur/args.py:485
+#: pikaur/args.py:486
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "altijd '-git', '-svn' en andere ontwikkelingspakketten bijwerken"
 
@@ -557,7 +557,7 @@ msgstr "altijd '-git', '-svn' en andere ontwikkelingspakketten bijwerken"
 msgid "c"
 msgstr "c"
 
-#: pikaur/args.py:476
+#: pikaur/args.py:477
 msgid "cli args to pass to makepkg"
 msgstr "de aan makepkg door te geven opdrachtregelopties"
 
@@ -569,19 +569,19 @@ msgstr "d"
 msgid "diff"
 msgstr "verschil"
 
-#: pikaur/args.py:472
+#: pikaur/args.py:473
 msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "niet vragen om PKGBUILDs en andere bouwbestanden te bewerken"
 
-#: pikaur/args.py:486
+#: pikaur/args.py:487
 msgid "don't prompt to show the build files diff"
 msgstr "niet vragen om verschil tussen bouwbestanden te tonen"
 
-#: pikaur/args.py:474
+#: pikaur/args.py:475
 msgid "don't remove build dir after the build"
 msgstr "bouwmap niet verwijderen na bouwen"
 
-#: pikaur/args.py:455
+#: pikaur/args.py:456
 msgid "download also AUR dependencies"
 msgstr "Ook AUR-afhankelijkheden downloaden"
 
@@ -614,12 +614,16 @@ msgstr "voor {pkg}"
 msgid "i"
 msgstr "i"
 
+#: pikaur/args.py:488
+msgid "ignore AUR packages' updates which marked 'outofdate'"
+msgstr ""
+
 #: pikaur/argparse.py:140
 #, python-format
 msgid "ignored explicit argument %r"
 msgstr "expliciet argument voor %r genegeerd"
 
-#: pikaur/args.py:459
+#: pikaur/args.py:460
 msgid "install built package"
 msgstr "gebouwd pakket installeren"
 
@@ -661,11 +665,11 @@ msgstr "niet toegestaan met optie %s"
 msgid "one of the arguments %s is required"
 msgstr "één van de argumenten %s is vereist"
 
-#: pikaur/print_department.py:193 pikaur/print_department.py:539
+#: pikaur/print_department.py:193 pikaur/print_department.py:548
 msgid "outofdate"
 msgstr "verouderd"
 
-#: pikaur/args.py:478
+#: pikaur/args.py:479
 msgid "override path to makepkg executable"
 msgstr "pad naar makepkg uitvoerbaar bestand overschrijven"
 
@@ -673,11 +677,11 @@ msgstr "pad naar makepkg uitvoerbaar bestand overschrijven"
 msgid "p"
 msgstr "p"
 
-#: pikaur/args.py:477
+#: pikaur/args.py:478
 msgid "path to custom makepkg config"
 msgstr "pad naar aangepaste makepkg-configuratie"
 
-#: pikaur/args.py:479
+#: pikaur/args.py:480
 msgid "path to custom pikaur config"
 msgstr "pad naar aangepaste pikaur-configuratie"
 
@@ -695,27 +699,27 @@ msgstr ""
 "pikaur kan alleen als root draaien (met dynamische gebruikers) met systemd "
 ">= 235."
 
-#: pikaur/args.py:440
+#: pikaur/args.py:441
 msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr "pikaur {-G --getpkgbuild} [opties] <pakket(ten)>"
 
-#: pikaur/args.py:439
+#: pikaur/args.py:440
 msgid "pikaur {-P --pkgbuild}    [options] <file(s)>"
 msgstr "pikaur {-P --pkgbuild}    [opties] <bestand(en)>"
 
-#: pikaur/args.py:438
+#: pikaur/args.py:439
 msgid "pikaur-specific operations:"
 msgstr "pikaur-specifieke opties:"
 
-#: pikaur/args.py:473
+#: pikaur/args.py:474
 msgid "prompt to edit PKGBUILDs and other build files"
 msgstr "vragen om PKGBUILDs en andere bouwbestanden te bewerken"
 
-#: pikaur/args.py:463
+#: pikaur/args.py:464
 msgid "query packages from AUR only"
 msgstr "alleen naar pakketten zoeken in AUR"
 
-#: pikaur/args.py:467 pikaur/args.py:471
+#: pikaur/args.py:468 pikaur/args.py:472
 msgid "query packages from repository only"
 msgstr "alleen naar pakketten zoeken in pakketbron"
 
@@ -729,7 +733,7 @@ msgstr "r"
 msgid "s"
 msgstr "s"
 
-#: pikaur/args.py:484
+#: pikaur/args.py:485
 msgid "search only in package names"
 msgstr "alleen pakketnamen doorzoeken"
 
@@ -738,11 +742,11 @@ msgstr "alleen pakketnamen doorzoeken"
 msgid "the following arguments are required: %s"
 msgstr "de volgende opties zijn vereist: %s"
 
-#: pikaur/args.py:449
+#: pikaur/args.py:450
 msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr "gebruik:  pikaur {-G --getpkgbuild} [opties] <pakket(ten)>"
 
-#: pikaur/args.py:444
+#: pikaur/args.py:445
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "gebruik:  pikaur {-P --pkgbuild} [opties] <bestand(en)>"
 
@@ -772,6 +776,12 @@ msgid ""
 msgstr ""
 "{name} kan niet worden gebouwd op de huidige architectuur ({arch}). "
 "Ondersteund: {suparch}"
+
+#: pikaur/print_department.py:464
+#, fuzzy, python-brace-format
+msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
+msgstr ""
+"{name} {version} {package_source}-pakket is bijgewerkt - wordt overgeslagen"
 
 #: pikaur/print_department.py:444
 #, fuzzy, python-brace-format

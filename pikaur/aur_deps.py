@@ -207,10 +207,7 @@ def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:
         aur_pkg.name
         for aur_pkg in aur_pkgs_infos
     ]
-    result_aur_deps: Dict[str, List[str]] = {
-        aur_pkg_name: []
-        for aur_pkg_name in package_names
-    }
+    result_aur_deps: Dict[str, List[str]] = {}
 
     initial_pkg_infos = aur_pkgs_infos[:]
     iter_package_names: List[str] = []

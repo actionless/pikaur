@@ -83,6 +83,12 @@ class InstallInfoFetcher(ComparableType):
                 print_ignored_package(package_name=package_name)
 
     @property
+    def aur_packages_names(self) -> List[str]:
+        return [
+            pkg_info.name for pkg_info in self.aur_updates_install_info
+        ]
+
+    @property
     def aur_deps_names(self) -> List[str]:
         _aur_deps_names: List[str] = []
         for deps in self.aur_deps_relations.values():

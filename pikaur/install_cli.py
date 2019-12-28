@@ -168,7 +168,7 @@ class InstallPackagesCLI():
 
     @property
     def aur_packages_names(self) -> List[str]:
-        return list(self.aur_deps_relations.keys())
+        return self.install_info.aur_packages_names
 
     @property
     def aur_deps_names(self) -> List[str]:
@@ -392,19 +392,24 @@ class InstallPackagesCLI():
 
     def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]):
         for pkgbuild in all_package_builds.values():
-            new_build_deps_found_for_pkg = []
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
-            for dep_line in (
+            srcinfo_deps = set(
+                VersionMatcher(dep_line).pkg_name
+                for dep_line in (
                     pkgbuild.new_deps_to_install + pkgbuild.new_make_deps_to_install
-            ):
-                dep_name = VersionMatcher(dep_line).pkg_name
-                if dep_name in self.all_aur_packages_names:
-                    continue
-                new_build_deps_found_for_pkg.append(dep_name)
-            if new_build_deps_found_for_pkg:
+                )
+            )
+            aur_rpc_deps = set(
+                pkg
+                for pkg_name in pkgbuild.package_names
+                for pkg in self.aur_deps_relations.get(pkg_name, [])
+            )
+            if srcinfo_deps != aur_rpc_deps:
                 print_warning(_("New build deps found for {pkg} package: {deps}").format(
                     pkg=bold_line(', '.join(pkgbuild.package_names)),
-                    deps=bold_line(', '.join(new_build_deps_found_for_pkg)),
+                    deps=bold_line(', '.join(
+                        srcinfo_deps.symmetric_difference(aur_rpc_deps)
+                    )),
                 ))
                 self.pkgbuilds_paths.add(pkgbuild.pkgbuild_path)
                 self.main_sequence()

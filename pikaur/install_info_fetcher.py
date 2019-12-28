@@ -4,7 +4,7 @@ from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Dict
 
 from .i18n import _
-from .core import PackageSource, InstallInfo
+from .core import PackageSource, InstallInfo, ComparableType
 from .version import VersionMatcher
 from .pacman import (
     OFFICIAL_REPOS,
@@ -22,7 +22,7 @@ from .replacements import find_replacements
 from .srcinfo import SrcInfo
 
 
-class InstallInfoFetcher:
+class InstallInfoFetcher(ComparableType):
 
     repo_packages_install_info: List[InstallInfo]
     new_repo_deps_install_info: List[InstallInfo]
@@ -36,6 +36,8 @@ class InstallInfoFetcher:
     args: PikaurArgs
     aur_deps_relations: Dict[str, List[str]]
     replacements: Dict[str, List[str]]
+
+    __ignore_in_eq__ = ('args', )
 
     def __init__(
             self,

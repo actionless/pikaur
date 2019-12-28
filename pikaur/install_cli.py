@@ -19,9 +19,8 @@ from .pacman import (
 )
 from .install_info_fetcher import InstallInfoFetcher
 from .exceptions import (
-    PackagesNotFoundInAUR, PackagesNotFoundInRepo, DependencyVersionMismatch,
+    SysExit, PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
-    SysExit,
 )
 from .build import PackageBuild, clone_aur_repos
 from .pprint import (
@@ -68,14 +67,13 @@ class InstallPackagesCLI():
     install_package_names: List[str]
     manually_excluded_packages_names: List[str]
     resolved_conflicts: List[List[str]]
-    pkgbuilds_paths: List[str]
+    pkgbuilds_paths: Set[str]
 
     # computed package lists:
     not_found_repo_pkgs_names: List[str]
     found_conflicts: Dict[str, List[str]]
     repo_packages_by_name: Dict[str, pyalpm.Package]
     aur_deps_relations: Dict[str, List[str]]
-    extra_aur_build_deps: List[str]
     # pkgbuilds from cloned aur repos:
     package_builds_by_name: Dict[str, PackageBuild]
 
@@ -96,7 +94,7 @@ class InstallPackagesCLI():
         self.args = parse_args()
         self.install_package_names = self.args.positional[:]
 
-        self.pkgbuilds_paths = []
+        self.pkgbuilds_paths = set()
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
 
@@ -104,7 +102,6 @@ class InstallPackagesCLI():
         self.repo_packages_by_name = {}
         self.aur_deps_relations = {}
         self.package_builds_by_name = {}
-        self.extra_aur_build_deps = []
 
         self.found_conflicts = {}
         self.transactions = {}
@@ -143,22 +140,31 @@ class InstallPackagesCLI():
         if self.args.aur:
             self.not_found_repo_pkgs_names = self.install_package_names
             self.install_package_names = []
-
         if self.args.pkgbuild:
             self.get_info_from_pkgbuilds()
-        self.get_all_packages_info()
-        if self.news:
-            self.news.print_news()
-        if not self.args.noconfirm:
-            self.install_prompt()
 
-        self.get_package_builds()
-        # @TODO: ask to install optdepends (?)
-        if not self.args.downloadonly:
-            self.ask_about_package_conflicts()
-        self.review_build_files()
+        self.main_sequence()
 
-        self.install_packages()
+    class ExitMainSequence(Exception):
+        pass
+
+    def main_sequence(self):
+        try:
+            self.get_all_packages_info()
+            if self.news:
+                self.news.print_news()
+            if not self.args.noconfirm:
+                self.install_prompt()
+
+            self.get_package_builds()
+            # @TODO: ask to install optdepends (?)
+            if not self.args.downloadonly:
+                self.ask_about_package_conflicts()
+            self.review_build_files()
+
+            self.install_packages()
+        except self.ExitMainSequence:
+            pass
 
     @property
     def aur_packages_names(self) -> List[str]:
@@ -173,12 +179,12 @@ class InstallPackagesCLI():
 
     @property
     def all_aur_packages_names(self) -> List[str]:
-        return list(set(self.aur_packages_names + self.aur_deps_names + self.extra_aur_build_deps))
+        return list(set(self.aur_packages_names + self.aur_deps_names))
 
     def get_info_from_pkgbuilds(self) -> None:
         self.install_package_names = []
         self.not_found_repo_pkgs_names = []
-        self.pkgbuilds_paths = self.args.positional or ['PKGBUILD']
+        self.pkgbuilds_paths = set(self.args.positional or ['PKGBUILD'])
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """
@@ -197,7 +203,7 @@ class InstallPackagesCLI():
             self.install_info = InstallInfoFetcher(
                 install_package_names=self.install_package_names,
                 not_found_repo_pkgs_names=self.not_found_repo_pkgs_names,
-                pkgbuilds_paths=self.pkgbuilds_paths,
+                pkgbuilds_paths=list(self.pkgbuilds_paths),
                 manually_excluded_packages_names=self.manually_excluded_packages_names,
             )
         except PackagesNotFoundInAUR as exc:
@@ -384,8 +390,7 @@ class InstallPackagesCLI():
             if pkg_name in list(self.package_builds_by_name.keys()):
                 del self.package_builds_by_name[pkg_name]
 
-    def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]) -> List[str]:
-        new_build_deps_found: List[str] = []
+    def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]):
         for pkgbuild in all_package_builds.values():
             new_build_deps_found_for_pkg = []
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
@@ -395,19 +400,15 @@ class InstallPackagesCLI():
                 dep_name = VersionMatcher(dep_line).pkg_name
                 if dep_name in self.all_aur_packages_names:
                     continue
-                try:
-                    PackageDB.find_repo_package(dep_line)
-                except PackagesNotFoundInRepo:
-                    new_build_deps_found_for_pkg.append(dep_name)
+                new_build_deps_found_for_pkg.append(dep_name)
             if new_build_deps_found_for_pkg:
-                print_warning(_("New AUR build deps found for {pkg} package: {deps}").format(
+                print_warning(_("New build deps found for {pkg} package: {deps}").format(
                     pkg=bold_line(', '.join(pkgbuild.package_names)),
                     deps=bold_line(', '.join(new_build_deps_found_for_pkg)),
                 ))
-                if not ask_to_continue():
-                    raise SysExit(125)
-                new_build_deps_found += new_build_deps_found_for_pkg
-        return new_build_deps_found
+                self.pkgbuilds_paths.add(pkgbuild.pkgbuild_path)
+                self.main_sequence()
+                raise self.ExitMainSequence()
 
     def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:
@@ -430,14 +431,11 @@ class InstallPackagesCLI():
                         pkgbuilds_by_name[info.name] = pkgbuilds_by_base[pkg_base]
                     else:
                         clone_names.append(info.name)
-                cloned_pkgbuilds = clone_aur_repos(clone_names + self.extra_aur_build_deps)
+                cloned_pkgbuilds = clone_aur_repos(clone_names)
                 pkgbuilds_by_name.update(cloned_pkgbuilds)
-                new_build_deps_found = self._find_extra_aur_build_deps(
+                self._find_extra_aur_build_deps(
                     all_package_builds=pkgbuilds_by_name
                 )
-                if new_build_deps_found:
-                    self.extra_aur_build_deps += new_build_deps_found
-                    continue
                 self.package_builds_by_name = pkgbuilds_by_name
                 break
 
@@ -535,7 +533,7 @@ class InstallPackagesCLI():
                     (self.args.noconfirm and '--noconfirm')),
             ))
             return False
-        if ask_to_continue(
+        if not ask_to_continue(
                 _("Do you want to {edit} {file} for {name} package?").format(
                     edit=bold_line(_("edit")),
                     file=filename,
@@ -544,17 +542,17 @@ class InstallPackagesCLI():
                 default_yes=not (package_build.last_installed_hash or
                                  PikaurConfig().build.DontEditByDefault.get_bool())
         ):
-            full_filename = os.path.join(
-                package_build.repo_path,
-                filename
-            )
-            old_hash = hash_file(full_filename)
-            interactive_spawn(
-                editor_cmd + [full_filename]
-            )
-            new_hash = hash_file(full_filename)
-            return old_hash != new_hash
-        return False
+            return False
+        full_filename = os.path.join(
+            package_build.repo_path,
+            filename
+        )
+        old_hash = hash_file(full_filename)
+        interactive_spawn(
+            editor_cmd + [full_filename]
+        )
+        new_hash = hash_file(full_filename)
+        return old_hash != new_hash
 
     def _get_installed_status(self) -> None:
         all_package_builds = set(self.package_builds_by_name.values())
@@ -570,9 +568,9 @@ class InstallPackagesCLI():
         # latest sources for quite a long time)
         with ThreadPool(processes=num_threads) as pool:
             threads = []
-            for repo_status in all_package_builds:
+            for pkg_build in all_package_builds:
                 threads.append(
-                    pool.apply_async(getattr, (repo_status, 'version_already_installed'))
+                    pool.apply_async(getattr, (pkg_build, 'version_already_installed'))
                 )
             for thread in threads:
                 thread.get()
@@ -583,45 +581,45 @@ class InstallPackagesCLI():
         if not self.args.needed:
             return
         local_db = PackageDB.get_local_dict()
-        for repo_status in all_package_builds:
-            if not repo_status.reviewed:
+        for pkg_build in all_package_builds:
+            if not pkg_build.reviewed:
                 continue
             # pragma: no cover
-            repo_status.update_last_installed_file()
-            for package_name in repo_status.package_names:
+            pkg_build.update_last_installed_file()
+            for package_name in pkg_build.package_names:
                 if package_name not in local_db:
                     continue
-                if repo_status.version_already_installed:
+                if pkg_build.version_already_installed:
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_install_info(package_name)
                 elif (
                         self.args.sysupgrade > 1
                 ) or (
-                    is_devel_pkg(repo_status.package_base) and (self.args.devel > 1)
+                    is_devel_pkg(pkg_build.package_base) and (self.args.devel > 1)
                 ):
-                    if not repo_status.version_is_upgradeable:
+                    if not pkg_build.version_is_upgradeable:
                         print_package_downgrading(
                             package_name,
-                            downgrade_version=repo_status.get_version(package_name)
+                            downgrade_version=pkg_build.get_version(package_name)
                         )
-                elif not repo_status.version_is_upgradeable:
+                elif not pkg_build.version_is_upgradeable:
                     print_local_package_newer(
                         package_name,
-                        aur_version=repo_status.get_version(package_name)
+                        aur_version=pkg_build.get_version(package_name)
                     )
                     self.discard_install_info(package_name)
 
     def review_build_files(self) -> None:  # pragma: no cover  pylint:disable=too-many-branches
         if self.args.needed or self.args.devel:
-            for repo_status in set(self.package_builds_by_name.values()):
-                if repo_status.last_installed_hash == repo_status.current_hash:
-                    repo_status.reviewed = True
+            for pkg_build in set(self.package_builds_by_name.values()):
+                if pkg_build.last_installed_hash == pkg_build.current_hash:
+                    pkg_build.reviewed = True
             self._get_installed_status()
-        for repo_status in set(self.package_builds_by_name.values()):
-            _pkg_label = bold_line(', '.join(repo_status.package_names))
+        for pkg_build in set(self.package_builds_by_name.values()):
+            _pkg_label = bold_line(', '.join(pkg_build.package_names))
             _skip_diff_label = _("Not showing diff for {pkg} package ({reason})")
 
-            if repo_status.reviewed:
+            if pkg_build.reviewed:
                 print_warning(_skip_diff_label.format(
                     pkg=_pkg_label,
                     reason=_("already reviewed")
@@ -629,11 +627,11 @@ class InstallPackagesCLI():
                 continue
 
             if (
-                    repo_status.last_installed_hash != repo_status.current_hash
+                    pkg_build.last_installed_hash != pkg_build.current_hash
             ) and (
-                repo_status.last_installed_hash
+                pkg_build.last_installed_hash
             ) and (
-                repo_status.current_hash
+                pkg_build.current_hash
             ) and (
                 not self.args.noconfirm
             ):
@@ -646,11 +644,11 @@ class InstallPackagesCLI():
                     git_args = [
                         'git',
                         '-C',
-                        repo_status.repo_path,
+                        pkg_build.repo_path,
                         'diff',
                     ] + PikaurConfig().build.GitDiffArgs.get_str().split(',') + [
-                        repo_status.last_installed_hash,
-                        repo_status.current_hash,
+                        pkg_build.last_installed_hash,
+                        pkg_build.current_hash,
                     ]
                     diff_pager = PikaurConfig().ui.DiffPager
                     if diff_pager == 'always':
@@ -663,7 +661,7 @@ class InstallPackagesCLI():
                     pkg=_pkg_label,
                     reason="--noconfirm"
                 ))
-            elif not repo_status.last_installed_hash:
+            elif not pkg_build.last_installed_hash:
                 print_warning(_skip_diff_label.format(
                     pkg=_pkg_label,
                     reason=_("installing for the first time")
@@ -674,24 +672,35 @@ class InstallPackagesCLI():
                     reason=_("already reviewed")
                 ))
 
-            src_info = SrcInfo(pkgbuild_path=repo_status.pkgbuild_path)
+            src_info = SrcInfo(pkgbuild_path=pkg_build.pkgbuild_path)
             if self.ask_to_edit_file(
-                    os.path.basename(repo_status.pkgbuild_path), repo_status
+                    os.path.basename(pkg_build.pkgbuild_path), pkg_build
             ):
                 src_info.regenerate()
-                # @TODO: recompute AUR deps
 
-            for pkg_name in repo_status.package_names:
+                # recompute AUR deps:
+                old_install_info = self.install_info
+                self.pkgbuilds_paths.add(pkg_build.pkgbuild_path)
+                self.get_all_packages_info()
+                old_install_info.pkgbuilds_paths = self.install_info.pkgbuilds_paths
+                if old_install_info != self.install_info:
+                    print_warning(_("New build deps found for {pkg} package").format(
+                        pkg=bold_line(', '.join(pkg_build.package_names)),
+                    ))
+                    self.main_sequence()
+                    raise self.ExitMainSequence()
+
+            for pkg_name in pkg_build.package_names:
                 install_src_info = SrcInfo(
-                    pkgbuild_path=repo_status.pkgbuild_path,
+                    pkgbuild_path=pkg_build.pkgbuild_path,
                     package_name=pkg_name
                 )
                 install_file_name = install_src_info.get_install_script()
                 if install_file_name:
-                    self.ask_to_edit_file(install_file_name, repo_status)
+                    self.ask_to_edit_file(install_file_name, pkg_build)
 
-            repo_status.check_pkg_arch()
-            repo_status.reviewed = True
+            pkg_build.check_pkg_arch()
+            pkg_build.reviewed = True
 
     def build_packages(self) -> None:  # pylint: disable=too-many-branches
         if self.args.needed or self.args.devel:
@@ -706,13 +715,13 @@ class InstallPackagesCLI():
                 index = 0
 
             pkg_name = packages_to_be_built[index]
-            repo_status = self.package_builds_by_name[pkg_name]
-            if self.args.needed and repo_status.version_already_installed:
+            pkg_build = self.package_builds_by_name[pkg_name]
+            if self.args.needed and pkg_build.version_already_installed:
                 packages_to_be_built.remove(pkg_name)
                 continue
 
             try:
-                repo_status.build(
+                pkg_build.build(
                     all_package_builds=self.package_builds_by_name,
                     resolved_conflicts=self.resolved_conflicts
                 )
@@ -723,7 +732,7 @@ class InstallPackagesCLI():
                 )
                 # if not ask_to_continue():
                 #     raise SysExit(125)
-                for _pkg_name in repo_status.package_names:
+                for _pkg_name in pkg_build.package_names:
                     failed_to_build_package_names.append(_pkg_name)
                     self.discard_install_info(_pkg_name)
                     for remaining_aur_pkg_name in packages_to_be_built[:]:
@@ -731,7 +740,7 @@ class InstallPackagesCLI():
                             packages_to_be_built.remove(remaining_aur_pkg_name)
             except DependencyNotBuiltYet:
                 index += 1
-                for _pkg_name in repo_status.package_names:
+                for _pkg_name in pkg_build.package_names:
                     deps_fails_counter.setdefault(_pkg_name, 0)
                     deps_fails_counter[_pkg_name] += 1
                     if deps_fails_counter[_pkg_name] > len(self.all_aur_packages_names):
@@ -740,7 +749,7 @@ class InstallPackagesCLI():
                         )
                         raise SysExit(131)
             else:
-                for _pkg_name in repo_status.package_names:
+                for _pkg_name in pkg_build.package_names:
                     packages_to_be_built.remove(_pkg_name)
 
         self.failed_to_build_package_names = failed_to_build_package_names

@@ -459,6 +459,15 @@ def print_package_downgrading(package_name: str, downgrade_version: str) -> None
     )
 
 
+def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
+    print_warning(
+        _("{name} {version} AUR package marked as 'outofdate' - skipping").format(
+            name=package_info.name,
+            version=bold_line(package_info.new_version),
+        )
+    )
+
+
 # @TODO: weird pylint behavior if remove `return` from the end:
 def print_package_search_results(  # pylint:disable=useless-return,too-many-locals
         repo_packages: Iterable[AnyPackage],

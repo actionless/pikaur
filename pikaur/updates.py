@@ -17,6 +17,7 @@ from .args import parse_args
 from .config import PikaurConfig
 from .core import InstallInfo
 from .exceptions import PackagesNotFoundInRepo
+from .print_department import print_ignoring_outofdate_upgrade
 
 
 DEVEL_PKGS_POSTFIXES = (
@@ -123,13 +124,17 @@ def find_aur_updates() -> Tuple[List[InstallInfo], List[str]]:
         current_version = local_packages[pkg_name].version
         compare_aur_pkg = compare_versions(current_version, aur_version)
         if compare_aur_pkg < 0:
-            aur_updates.append(InstallInfo(
+            pkg_install_info = InstallInfo(
                 name=pkg_name,
                 new_version=aur_version,
                 current_version=current_version,
                 description=aur_pkg.desc,
                 package=aur_pkg,
-            ))
+            )
+            if args.ignore_outofdate and aur_pkg.outofdate:
+                print_ignoring_outofdate_upgrade(pkg_install_info)
+                continue
+            aur_updates.append(pkg_install_info)
         else:
             aur_pkgs_up_to_date.append(aur_pkg)
     if aur_pkgs_up_to_date:

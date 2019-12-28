@@ -97,6 +97,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'bool',
             'default': 'no',
         },
+        'IgnoreOutofdateAURUpgrades': {
+            'type': 'bool',
+            'default': 'no',
+        },
     },
     'build': {
         'KeepBuildDir': {

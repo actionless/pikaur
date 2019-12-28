@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "PIKAUR" "1" "November 2019" "" "Pikaur manual"
+.TH "PIKAUR" "1" "December 2019" "" "Pikaur manual"
 .
 .P
 AUR helper with minimal dependencies\. Review PKGBUILDs all in once, next build them all without user interaction\.
@@ -148,6 +148,9 @@ When upgrading packages, sort them by \fBversiondiff\fR, \fBpkgname\fR or \fBrep
 .
 .SS "ShowDownloadSize (default: no)"
 When installing repository packages, show their download size\.
+.
+.SS "IgnoreOutofdateAURUpgrades (default: no)"
+When doing sysupgrade ignore AUR packages which have \fBoutofdate\fR mark\.
 .
 .SS "[build]"
 .

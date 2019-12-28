@@ -92,6 +92,9 @@ When upgrading packages, sort them by `versiondiff`, `pkgname` or `repo`.
 ##### ShowDownloadSize (default: no)
 When installing repository packages, show their download size.
 
+##### IgnoreOutofdateAURUpgrades (default: no)
+When doing sysupgrade ignore AUR packages which have `outofdate` mark.
+
 
 #### [build]
 

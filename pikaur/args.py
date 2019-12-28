@@ -57,6 +57,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, 'install', None),
         ('G', 'getpkgbuild', None),
         (None, 'deps', None),
+        (None, 'ignore-outofdate', PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool()),
         # undocumented options:
         (None, 'print-commands', PikaurConfig().ui.PrintCommands.get_bool()),
         (None, 'hide-build-log', None),
@@ -484,6 +485,7 @@ def cli_print_help() -> None:
             ('', '--namesonly', _("search only in package names")),
             ('', '--devel', _("always sysupgrade '-git', '-svn' and other dev packages")),
             ('', '--nodiff', _("don't prompt to show the build files diff")),
+            ('', '--ignore-outofdate', _("ignore AUR packages' updates which marked 'outofdate'")),
         ]
     print(''.join([
         pacman_help,

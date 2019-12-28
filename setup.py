@@ -38,6 +38,7 @@ setup(
         'Operating System :: POSIX :: Linux',
 
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
 
         'Topic :: Software Development :: Build Tools',
         'Topic :: System :: Archiving :: Packaging',

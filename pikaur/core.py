@@ -10,7 +10,7 @@ from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import (
     TYPE_CHECKING,
-    Any, Callable, Iterable, List, Optional, Union, Tuple
+    Any, Callable, Iterable, List, Optional, Union, Tuple,
 )
 
 import pyalpm
@@ -25,10 +25,32 @@ if TYPE_CHECKING:
 NOT_FOUND_ATOM = object()
 
 
-class DataType():
+class ComparableType:
+
+    __ignore_in_eq__: Tuple[str, ...] = tuple()
 
     def _key_not_exists(self, key):
         return getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
+
+    __hash__ = object.__hash__
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            raise TypeError(f'{other} is not an instance of {self.__class__}')
+        if not self.__ignore_in_eq__:
+            return super().__eq__(other)
+        self_vars = {}
+        self_vars.update(vars(self))
+        other_vars = {}
+        other_vars.update(vars(other))
+        for var_dict in (self_vars, other_vars):
+            for skip_prop in self.__ignore_in_eq__:
+                if skip_prop in var_dict:
+                    del var_dict[skip_prop]
+        return self_vars == other_vars
+
+
+class DataType(ComparableType):
 
     def __init__(self, **kwargs) -> None:
         for key, value in kwargs.items():
@@ -71,6 +93,8 @@ class InstallInfo(DataType):
     members_of: Optional[List[str]] = None
     replaces: Optional[List[str]] = None
     pkgbuild_path: Optional[str] = None
+
+    __ignore_in_eq__ = ('package', 'provided_by', 'pkgbuild_path')
 
     @property
     def package_source(self) -> PackageSource:

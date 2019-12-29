@@ -40,6 +40,8 @@ class VersionMatcher():
         self._set_version_matcher_func()
 
     def add_version_matcher(self, version_matcher: 'VersionMatcher') -> None:
+        if version_matcher.line in self.line.split(','):
+            return
         self.version_matchers.append(version_matcher.version_matchers[0])
         self.line += ',' + version_matcher.line
         if self.version:

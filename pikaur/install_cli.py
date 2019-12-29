@@ -33,7 +33,7 @@ from .print_department import (
     print_package_downgrading, print_local_package_newer,
 )
 from .core import (
-    PackageSource, InstallInfo,
+    PackageSource,
     interactive_spawn, remove_dir, open_file, sudo, running_as_root,
 )
 from .conflicts import find_aur_conflicts
@@ -43,7 +43,7 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .news import News
-from .version import VersionMatcher, compare_versions
+from .version import compare_versions
 from .updates import is_devel_pkg
 
 
@@ -73,7 +73,6 @@ class InstallPackagesCLI():
     not_found_repo_pkgs_names: List[str]
     found_conflicts: Dict[str, List[str]]
     repo_packages_by_name: Dict[str, pyalpm.Package]
-    aur_deps_relations: Dict[str, List[str]]
     # pkgbuilds from cloned aur repos:
     package_builds_by_name: Dict[str, PackageBuild]
 
@@ -100,7 +99,6 @@ class InstallPackagesCLI():
 
         self.not_found_repo_pkgs_names = []
         self.repo_packages_by_name = {}
-        self.aur_deps_relations = {}
         self.package_builds_by_name = {}
 
         self.found_conflicts = {}
@@ -167,29 +165,12 @@ class InstallPackagesCLI():
             pass
 
     @property
-    def all_install_info(self) -> List[InstallInfo]:
-        return (
-            self.install_info.repo_packages_install_info +
-            self.install_info.new_repo_deps_install_info +
-            self.install_info.thirdparty_repo_packages_install_info +
-            self.install_info.aur_updates_install_info +
-            self.install_info.aur_deps_install_info
-        )
-
-    @property
-    def all_packages_names(self) -> List[str]:
-        return [info.name for info in self.all_install_info]
-
-    @property
     def aur_packages_names(self) -> List[str]:
         return self.install_info.aur_packages_names
 
     @property
     def aur_deps_names(self) -> List[str]:
-        _aur_deps_names: List[str] = []
-        for deps in self.aur_deps_relations.values():
-            _aur_deps_names += deps
-        return list(set(_aur_deps_names))
+        return self.install_info.aur_deps_names
 
     @property
     def all_aur_packages_names(self) -> List[str]:
@@ -238,8 +219,6 @@ class InstallPackagesCLI():
                 )
             )
             raise SysExit(131)
-        else:
-            self.aur_deps_relations = self.install_info.aur_deps_relations
 
         if self.args.repo and self.not_found_repo_pkgs_names:
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)
@@ -248,7 +227,12 @@ class InstallPackagesCLI():
         if self.args.needed:
             # check if there are really any new packages need to be installed
             need_refetch_info = False
-            for install_info in self.all_install_info:
+            for install_info in (
+                    self.install_info.repo_packages_install_info +
+                    self.install_info.new_repo_deps_install_info +
+                    self.install_info.thirdparty_repo_packages_install_info +
+                    self.install_info.aur_updates_install_info
+            ):
                 if (
                         # devel packages will be checked later
                         # after retrieving their sources
@@ -272,7 +256,12 @@ class InstallPackagesCLI():
                 return
 
         # check if we really need to build/install anything
-        if not self.all_install_info:
+        if not (
+                self.install_info.repo_packages_install_info or
+                self.install_info.new_repo_deps_install_info or
+                self.install_info.thirdparty_repo_packages_install_info or
+                self.install_info.aur_updates_install_info
+        ):
             if not self.args.aur and self.args.sysupgrade:
                 self.install_repo_packages()
             else:
@@ -375,53 +364,60 @@ class InstallPackagesCLI():
                 raise SysExit(125)
             break
 
-    def discard_install_info(
-            self, canceled_pkg_name: str, already_discarded: List[str] = None
-    ) -> None:
-        if canceled_pkg_name in self.install_package_names:
-            self.install_package_names.remove(canceled_pkg_name)
-        if canceled_pkg_name in self.not_found_repo_pkgs_names:
-            self.not_found_repo_pkgs_names.remove(canceled_pkg_name)
-        already_discarded = (already_discarded or []) + [canceled_pkg_name]
-        for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
-            if canceled_pkg_name in aur_deps + [aur_pkg_name]:
-                for pkg_name in aur_deps + [aur_pkg_name]:
-                    if pkg_name not in already_discarded:
-                        self.discard_install_info(pkg_name, already_discarded)
-                if aur_pkg_name in self.aur_deps_relations:
-                    del self.aur_deps_relations[aur_pkg_name]
-        for pkg_name in already_discarded:
+    def discard_install_info(self, canceled_pkg_name: str) -> None:
+        for pkg_name in self.install_info.discard_package(canceled_pkg_name):
+            if pkg_name in self.install_package_names:
+                self.install_package_names.remove(pkg_name)
+            if pkg_name in self.not_found_repo_pkgs_names:
+                self.not_found_repo_pkgs_names.remove(pkg_name)
             if pkg_name in list(self.package_builds_by_name.keys()):
                 del self.package_builds_by_name[pkg_name]
 
     def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]):
+        need_to_show_install_prompt = False
         for pkgbuild in all_package_builds.values():
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
 
+            install_infos = [
+                info
+                for container in self.install_info.all_install_info
+                for info in container
+                if info.name in pkgbuild.package_names
+            ]
             aur_rpc_deps = set(
-                pkg
-                for pkg_name in pkgbuild.package_names
-                for pkg in self.aur_deps_relations.get(pkg_name, [])
-            )
-
-            new_build_deps_found_for_pkg = set(
-                VersionMatcher(dep_line).pkg_name
+                dep_line
+                for info in install_infos
                 for dep_line in (
-                    pkgbuild.new_deps_to_install + pkgbuild.new_make_deps_to_install
+                    info.package.depends +
+                    info.package.makedepends +  # type: ignore
+                    info.package.checkdepends  # type: ignore
                 )
-                if VersionMatcher(dep_line).pkg_name not in self.all_packages_names
             )
 
-            if aur_rpc_deps != new_build_deps_found_for_pkg:
+            srcinfo_deps: Set[str] = set()
+            for package_name in pkgbuild.package_names:
+                src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
+                srcinfo_deps.update(set(
+                    dep_line
+                    for matcher in
+                    list(src_info.get_depends().values()) +
+                    list(src_info.get_build_makedepends().values()) +
+                    list(src_info.get_build_checkdepends().values())
+                    for dep_line in matcher.line.split(',')
+                ))
+
+            if aur_rpc_deps != srcinfo_deps:
                 print_warning(_("New build deps found for {pkg} package: {deps}").format(
                     pkg=bold_line(', '.join(pkgbuild.package_names)),
                     deps=bold_line(', '.join(
-                        aur_rpc_deps.symmetric_difference(new_build_deps_found_for_pkg)
+                        aur_rpc_deps.symmetric_difference(srcinfo_deps)
                     )),
                 ))
                 self.pkgbuilds_paths.add(pkgbuild.pkgbuild_path)
-                self.main_sequence()
-                raise self.ExitMainSequence()
+                need_to_show_install_prompt = True
+        if need_to_show_install_prompt:
+            self.main_sequence()
+            raise self.ExitMainSequence()
 
     def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:

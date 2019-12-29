@@ -364,16 +364,12 @@ class InstallPackagesCLI():
                 raise SysExit(125)
             break
 
-    def discard_install_info(
-            self, canceled_pkg_name: str, already_discarded: List[str] = None
-    ) -> None:
-        self.install_info.discard_package(canceled_pkg_name)
-        if canceled_pkg_name in self.install_package_names:
-            self.install_package_names.remove(canceled_pkg_name)
-        if canceled_pkg_name in self.not_found_repo_pkgs_names:
-            self.not_found_repo_pkgs_names.remove(canceled_pkg_name)
-        already_discarded = (already_discarded or []) + [canceled_pkg_name]
-        for pkg_name in already_discarded:
+    def discard_install_info(self, canceled_pkg_name: str) -> None:
+        for pkg_name in self.install_info.discard_package(canceled_pkg_name):
+            if pkg_name in self.install_package_names:
+                self.install_package_names.remove(pkg_name)
+            if pkg_name in self.not_found_repo_pkgs_names:
+                self.not_found_repo_pkgs_names.remove(pkg_name)
             if pkg_name in list(self.package_builds_by_name.keys()):
                 del self.package_builds_by_name[pkg_name]
 

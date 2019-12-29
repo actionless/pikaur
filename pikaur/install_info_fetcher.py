@@ -107,7 +107,7 @@ class InstallInfoFetcher(ComparableType):
 
     def discard_package(
             self, canceled_pkg_name: str, already_discarded: List[str] = None
-    ) -> None:
+    ) -> List[str]:
         for container in self.all_install_info:
             for info in container[:]:
                 if info.name == canceled_pkg_name:
@@ -118,9 +118,10 @@ class InstallInfoFetcher(ComparableType):
             if canceled_pkg_name in aur_deps + [aur_pkg_name]:
                 for pkg_name in aur_deps + [aur_pkg_name]:
                     if pkg_name not in already_discarded:
-                        self.discard_package(pkg_name, already_discarded)
+                        already_discarded += self.discard_package(pkg_name, already_discarded)
                 if aur_pkg_name in self.aur_deps_relations:
                     del self.aur_deps_relations[aur_pkg_name]
+        return already_discarded
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """

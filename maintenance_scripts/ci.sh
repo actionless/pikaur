@@ -9,5 +9,5 @@ ping 8.8.8.8 -c 1 || {
 	exit 1
 }
 
-./maintenance_scripts/lint.sh
+./maintenance_scripts/lint.sh || true
 ./maintenance_scripts/coverage.sh "${1:---local}" "${2:---write-db}"

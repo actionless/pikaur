@@ -1,7 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 from multiprocessing.pool import ThreadPool
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Iterable
 
 from .i18n import _
 from .core import PackageSource, InstallInfo, ComparableType
@@ -106,7 +106,7 @@ class InstallInfoFetcher(ComparableType):
         )
 
     def discard_package(self, pkg_name: str) -> None:
-        for container in self.all_install_infos:
+        for container in self.all_install_info:
             for info in container[:]:
                 if info.name == pkg_name:
                     container.remove(info)

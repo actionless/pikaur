@@ -409,10 +409,9 @@ class InstallPackagesCLI():
                 for info in install_infos
                 for dep_line in (
                     info.package.depends +
-                    info.package.makedepends +
-                    info.package.checkdepends
+                    info.package.makedepends +  # type: ignore
+                    info.package.checkdepends  # type: ignore
                 )
-                if isinstance(info.package, AURPackageInfo)  # mypy
             )
 
             srcinfo_deps: Set[str] = set()

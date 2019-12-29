@@ -378,6 +378,7 @@ class InstallPackagesCLI():
     def discard_install_info(
             self, canceled_pkg_name: str, already_discarded: List[str] = None
     ) -> None:
+        self.install_info.discard_package(canceled_pkg_name)
         if canceled_pkg_name in self.install_package_names:
             self.install_package_names.remove(canceled_pkg_name)
         if canceled_pkg_name in self.not_found_repo_pkgs_names:
@@ -411,6 +412,7 @@ class InstallPackagesCLI():
                     info.package.makedepends +
                     info.package.checkdepends
                 )
+                if isinstance(info.package, AURPackageInfo)  # mypy
             )
 
             srcinfo_deps: Set[str] = set()

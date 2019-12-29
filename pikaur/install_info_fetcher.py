@@ -95,6 +95,19 @@ class InstallInfoFetcher(ComparableType):
             _aur_deps_names += deps
         return list(set(_aur_deps_names))
 
+    def discard_package(self, pkg_name: str) -> None:
+        for container in (
+                self.repo_packages_install_info,
+                self.new_repo_deps_install_info,
+                self.thirdparty_repo_packages_install_info,
+                self.aur_updates_install_info,
+                self.aur_deps_install_info,
+        ):
+            for info in container[:]:
+                if info.name == pkg_name:
+                    container.remove(info)
+                    return
+
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """
         Retrieve info (`InstallInfo` objects) of packages

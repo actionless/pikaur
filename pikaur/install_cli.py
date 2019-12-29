@@ -403,9 +403,10 @@ class InstallPackagesCLI():
                 if info.name in pkgbuild.package_names
             ]
             new_aur_rpc_deps = set(
-                dep_name
+                # VersionMatcher(dep_line).pkg_name
+                dep_line
                 for info in install_infos
-                for dep_name in (info.package.depends + info.package.makedepends + info.package.checkdepends)
+                for dep_line in (info.package.depends + info.package.makedepends + info.package.checkdepends)
                 # if dep_name not in self.all_packages_names
             )
             # new_aur_rpc_deps = set(
@@ -419,11 +420,11 @@ class InstallPackagesCLI():
             for package_name in pkgbuild.package_names:
                 src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
                 new_build_deps_found_for_pkg.update(set(
-                    # VersionMatcher(dep_line).pkg_name
-                    # for dep_line in
-                    list(src_info.get_build_depends().keys()) +
-                    list(src_info.get_build_makedepends().keys()) +
-                    list(src_info.get_build_checkdepends().keys())
+                    matcher.pkg_name
+                    for matcher in
+                    list(src_info.get_depends().values()) +
+                    list(src_info.get_build_makedepends().values()) +
+                    list(src_info.get_build_checkdepends().values())
                 ))
             # new_build_deps_found_for_pkg = set(
             #     VersionMatcher(dep_line).pkg_name

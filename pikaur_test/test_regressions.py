@@ -115,3 +115,17 @@ class RegressionTest(PikaurDbTestCase):
             "nothing to do",
             result_sy.stdout.lower()
         )
+
+    def test_aur_rpc_didnt_fully_parsed_srcinfo(self):
+        """
+        AUR RPC doesn't preserve architecture information:
+        https://aur.archlinux.org/rpc/?v=5&type=info&arg[]=mongodb-bin
+
+        the dependencies should be recomputed after cloning AUR repos
+
+        see #427
+        """
+        self.remove_if_installed('mongodb-bin', 'libcurl-openssl-1.0')
+        fake_pikaur('-S mongodb-bin')
+        self.assertInstalled('mongodb-bin')
+        self.assertNotInstalled('libcurl-openssl-1.0')

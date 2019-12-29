@@ -43,7 +43,7 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .news import News
-from .version import VersionMatcher, compare_versions
+from .version import compare_versions
 from .updates import is_devel_pkg
 
 
@@ -395,6 +395,7 @@ class InstallPackagesCLI():
                 del self.package_builds_by_name[pkg_name]
 
     def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]):
+        need_to_show_install_prompt = False
         for pkgbuild in all_package_builds.values():
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
 
@@ -402,24 +403,20 @@ class InstallPackagesCLI():
                 info for info in self.all_install_info
                 if info.name in pkgbuild.package_names
             ]
-            new_aur_rpc_deps = set(
-                # VersionMatcher(dep_line).pkg_name
+            aur_rpc_deps = set(
                 dep_line
                 for info in install_infos
-                for dep_line in (info.package.depends + info.package.makedepends + info.package.checkdepends)
-                # if dep_name not in self.all_packages_names
+                for dep_line in (
+                    info.package.depends +
+                    info.package.makedepends +
+                    info.package.checkdepends
+                )
             )
-            # new_aur_rpc_deps = set(
-            #     dep_name
-            #     for pkg_name in pkgbuild.package_names
-            #     for dep_name in self.aur_deps_relations.get(pkg_name, [])
-            #     # if dep_name not in self.all_packages_names
-            # )
 
-            new_build_deps_found_for_pkg: Set[str] = set()
+            srcinfo_deps: Set[str] = set()
             for package_name in pkgbuild.package_names:
                 src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
-                new_build_deps_found_for_pkg.update(set(
+                srcinfo_deps.update(set(
                     dep_line
                     for matcher in
                     list(src_info.get_depends().values()) +
@@ -427,29 +424,19 @@ class InstallPackagesCLI():
                     list(src_info.get_build_checkdepends().values())
                     for dep_line in matcher.line.split(',')
                 ))
-            # new_build_deps_found_for_pkg = set(
-            #     VersionMatcher(dep_line).pkg_name
-            #     for dep_line in (
-            #         pkgbuild.new_deps_to_install + pkgbuild.new_make_deps_to_install
-            #     )
-            #     # if VersionMatcher(dep_line).pkg_name not in self.all_packages_names
-            # )
 
-            print_warning(str(self.all_packages_names))
-            print_warning(str(pkgbuild.package_names))
-            print_warning(str(new_aur_rpc_deps))
-            print_warning(str(new_build_deps_found_for_pkg))
-            print_warning('--------')
-            if new_aur_rpc_deps != new_build_deps_found_for_pkg:
+            if aur_rpc_deps != srcinfo_deps:
                 print_warning(_("New build deps found for {pkg} package: {deps}").format(
                     pkg=bold_line(', '.join(pkgbuild.package_names)),
                     deps=bold_line(', '.join(
-                        new_aur_rpc_deps.symmetric_difference(new_build_deps_found_for_pkg)
+                        aur_rpc_deps.symmetric_difference(srcinfo_deps)
                     )),
                 ))
                 self.pkgbuilds_paths.add(pkgbuild.pkgbuild_path)
-                self.main_sequence()
-                raise self.ExitMainSequence()
+                need_to_show_install_prompt = True
+        if need_to_show_install_prompt:
+            self.main_sequence()
+            raise self.ExitMainSequence()
 
     def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:

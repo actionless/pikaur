@@ -44,13 +44,13 @@ class InstallInfoFetcher(ComparableType):
             install_package_names: List[str],
             not_found_repo_pkgs_names: List[str],
             manually_excluded_packages_names: List[str],
-            pkgbuilds_paths: List[str],
+            pkgbuilds_packagelists: Dict[str, List[str]],
     ) -> None:
         self.args = parse_args()
         self.install_package_names = install_package_names
         self.not_found_repo_pkgs_names = not_found_repo_pkgs_names
         self.manually_excluded_packages_names = manually_excluded_packages_names
-        self.pkgbuilds_paths = pkgbuilds_paths
+        self.pkgbuilds_packagelists = pkgbuilds_packagelists
 
         self.replacements = find_replacements() if self.args.sysupgrade else {}
 
@@ -149,7 +149,7 @@ class InstallInfoFetcher(ComparableType):
         # and their upgrades if --sysupgrade was passed
         if not self.args.repo:
             self.get_aur_pkgs_info(self.not_found_repo_pkgs_names)
-        if self.pkgbuilds_paths:
+        if self.pkgbuilds_packagelists:
             self.get_info_from_pkgbuilds()
 
         # try to find AUR deps for AUR packages
@@ -388,10 +388,12 @@ class InstallInfoFetcher(ComparableType):
     def get_info_from_pkgbuilds(self) -> None:
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
-        for path in self.pkgbuilds_paths:
-            common_srcinfo = SrcInfo(pkgbuild_path=path)
-            common_srcinfo.regenerate()
-            for pkg_name in common_srcinfo.pkgnames:
+        for path, pkg_names in self.pkgbuilds_packagelists.items():
+            if not pkg_names:
+                common_srcinfo = SrcInfo(pkgbuild_path=path)
+                common_srcinfo.regenerate()
+                pkg_names = common_srcinfo.pkgnames
+            for pkg_name in pkg_names:
                 srcinfo = SrcInfo(pkgbuild_path=path, package_name=pkg_name)
                 aur_pkg = AURPackageInfo.from_srcinfo(srcinfo)
                 if pkg_name in aur_updates_install_info_by_name:

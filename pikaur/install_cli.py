@@ -67,7 +67,8 @@ class InstallPackagesCLI():
     install_package_names: List[str]
     manually_excluded_packages_names: List[str]
     resolved_conflicts: List[List[str]]
-    pkgbuilds_paths: Set[str]
+    # pkgbuild_path: [pkg_name, ...]  -- needed for split pkgs to install only some of them
+    pkgbuilds_packagelists: Dict[str, List[str]]
 
     # computed package lists:
     not_found_repo_pkgs_names: List[str]
@@ -93,7 +94,7 @@ class InstallPackagesCLI():
         self.args = parse_args()
         self.install_package_names = self.args.positional[:]
 
-        self.pkgbuilds_paths = set()
+        self.pkgbuilds_packagelists = {}
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
 
@@ -179,7 +180,10 @@ class InstallPackagesCLI():
     def get_info_from_pkgbuilds(self) -> None:
         self.install_package_names = []
         self.not_found_repo_pkgs_names = []
-        self.pkgbuilds_paths = set(self.args.positional or ['PKGBUILD'])
+        self.pkgbuilds_packagelists = {
+            path: [] for path in
+            self.args.positional or ['PKGBUILD']
+        }
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """
@@ -198,7 +202,7 @@ class InstallPackagesCLI():
             self.install_info = InstallInfoFetcher(
                 install_package_names=self.install_package_names,
                 not_found_repo_pkgs_names=self.not_found_repo_pkgs_names,
-                pkgbuilds_paths=list(self.pkgbuilds_paths),
+                pkgbuilds_packagelists=self.pkgbuilds_packagelists,
                 manually_excluded_packages_names=self.manually_excluded_packages_names,
             )
         except PackagesNotFoundInAUR as exc:
@@ -413,7 +417,7 @@ class InstallPackagesCLI():
                         aur_rpc_deps.symmetric_difference(srcinfo_deps)
                     )),
                 ))
-                self.pkgbuilds_paths.add(pkgbuild.pkgbuild_path)
+                self.pkgbuilds_packagelists[pkgbuild.pkgbuild_path] = pkgbuild.package_names
                 need_to_show_install_prompt = True
         if need_to_show_install_prompt:
             self.main_sequence()
@@ -435,7 +439,8 @@ class InstallPackagesCLI():
                         pkg_base = info.package.packagebase
                         if pkg_base not in pkgbuilds_by_base:
                             pkgbuilds_by_base[pkg_base] = PackageBuild(
-                                pkgbuild_path=info.pkgbuild_path
+                                pkgbuild_path=info.pkgbuild_path,
+                                package_names=self.pkgbuilds_packagelists.get(info.pkgbuild_path)
                             )
                         pkgbuilds_by_name[info.name] = pkgbuilds_by_base[pkg_base]
                     else:
@@ -704,9 +709,9 @@ class InstallPackagesCLI():
 
         # recompute AUR deps:
         old_install_info = self.install_info
-        self.pkgbuilds_paths.add(pkg_build.pkgbuild_path)
+        self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
         self.get_all_packages_info()
-        old_install_info.pkgbuilds_paths = self.install_info.pkgbuilds_paths
+        old_install_info.pkgbuilds_packagelists = self.install_info.pkgbuilds_packagelists
         if old_install_info != self.install_info:
             print_warning(_("New build deps found for {pkg} package").format(
                 pkg=bold_line(', '.join(pkg_build.package_names)),

@@ -398,10 +398,11 @@ class InstallPackagesCLI():
         for pkgbuild in all_package_builds.values():
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
 
-            aur_rpc_deps = set(
-                pkg
+            new_aur_rpc_deps = set(
+                dep_name
                 for pkg_name in pkgbuild.package_names
-                for pkg in self.aur_deps_relations.get(pkg_name, [])
+                for dep_name in self.aur_deps_relations.get(pkg_name, [])
+                # if dep_name not in self.all_packages_names
             )
 
             new_build_deps_found_for_pkg = set(
@@ -412,11 +413,16 @@ class InstallPackagesCLI():
                 if VersionMatcher(dep_line).pkg_name not in self.all_packages_names
             )
 
-            if aur_rpc_deps != new_build_deps_found_for_pkg:
+            print_warning(str(self.all_packages_names))
+            print_warning(str(pkgbuild.package_names))
+            print_warning(str(new_aur_rpc_deps))
+            print_warning(str(new_build_deps_found_for_pkg))
+            print_warning('--------')
+            if new_aur_rpc_deps != new_build_deps_found_for_pkg:
                 print_warning(_("New build deps found for {pkg} package: {deps}").format(
                     pkg=bold_line(', '.join(pkgbuild.package_names)),
                     deps=bold_line(', '.join(
-                        aur_rpc_deps.symmetric_difference(new_build_deps_found_for_pkg)
+                        new_aur_rpc_deps.symmetric_difference(new_build_deps_found_for_pkg)
                     )),
                 ))
                 self.pkgbuilds_paths.add(pkgbuild.pkgbuild_path)

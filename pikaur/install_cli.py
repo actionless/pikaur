@@ -420,7 +420,7 @@ class InstallPackagesCLI():
             for package_name in pkgbuild.package_names:
                 src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
                 new_build_deps_found_for_pkg.update(set(
-                    matcher.pkg_name
+                    matcher.line
                     for matcher in
                     list(src_info.get_depends().values()) +
                     list(src_info.get_build_makedepends().values()) +

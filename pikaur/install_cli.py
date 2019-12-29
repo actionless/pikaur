@@ -33,7 +33,7 @@ from .print_department import (
     print_package_downgrading, print_local_package_newer,
 )
 from .core import (
-    PackageSource, InstallInfo,
+    PackageSource,
     interactive_spawn, remove_dir, open_file, sudo, running_as_root,
 )
 from .conflicts import find_aur_conflicts
@@ -167,20 +167,6 @@ class InstallPackagesCLI():
             pass
 
     @property
-    def all_install_info(self) -> List[InstallInfo]:
-        return (
-            self.install_info.repo_packages_install_info +
-            self.install_info.new_repo_deps_install_info +
-            self.install_info.thirdparty_repo_packages_install_info +
-            self.install_info.aur_updates_install_info +
-            self.install_info.aur_deps_install_info
-        )
-
-    @property
-    def all_packages_names(self) -> List[str]:
-        return [info.name for info in self.all_install_info]
-
-    @property
     def aur_packages_names(self) -> List[str]:
         return self.install_info.aur_packages_names
 
@@ -248,7 +234,12 @@ class InstallPackagesCLI():
         if self.args.needed:
             # check if there are really any new packages need to be installed
             need_refetch_info = False
-            for install_info in self.all_install_info:
+            for install_info in (
+                    self.install_info.repo_packages_install_info +
+                    self.install_info.new_repo_deps_install_info +
+                    self.install_info.thirdparty_repo_packages_install_info +
+                    self.install_info.aur_updates_install_info
+            ):
                 if (
                         # devel packages will be checked later
                         # after retrieving their sources
@@ -272,7 +263,12 @@ class InstallPackagesCLI():
                 return
 
         # check if we really need to build/install anything
-        if not self.all_install_info:
+        if not (
+                self.install_info.repo_packages_install_info or
+                self.install_info.new_repo_deps_install_info or
+                self.install_info.thirdparty_repo_packages_install_info or
+                self.install_info.aur_updates_install_info
+        ):
             if not self.args.aur and self.args.sysupgrade:
                 self.install_repo_packages()
             else:
@@ -401,7 +397,9 @@ class InstallPackagesCLI():
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
 
             install_infos = [
-                info for info in self.all_install_info
+                info
+                for container in self.install_info.all_install_info
+                for info in container
                 if info.name in pkgbuild.package_names
             ]
             aur_rpc_deps = set(

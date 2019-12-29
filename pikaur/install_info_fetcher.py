@@ -95,14 +95,18 @@ class InstallInfoFetcher(ComparableType):
             _aur_deps_names += deps
         return list(set(_aur_deps_names))
 
+    @property
+    def all_install_info(self) -> Iterable[List[InstallInfo]]:
+        return (
+            self.repo_packages_install_info,
+            self.new_repo_deps_install_info,
+            self.thirdparty_repo_packages_install_info,
+            self.aur_updates_install_info,
+            self.aur_deps_install_info,
+        )
+
     def discard_package(self, pkg_name: str) -> None:
-        for container in (
-                self.repo_packages_install_info,
-                self.new_repo_deps_install_info,
-                self.thirdparty_repo_packages_install_info,
-                self.aur_updates_install_info,
-                self.aur_deps_install_info,
-        ):
+        for container in self.all_install_infos:
             for info in container[:]:
                 if info.name == pkg_name:
                     container.remove(info)

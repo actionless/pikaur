@@ -398,20 +398,40 @@ class InstallPackagesCLI():
         for pkgbuild in all_package_builds.values():
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
 
+            install_infos = [
+                info for info in self.all_install_info
+                if info.name in pkgbuild.package_names
+            ]
             new_aur_rpc_deps = set(
                 dep_name
-                for pkg_name in pkgbuild.package_names
-                for dep_name in self.aur_deps_relations.get(pkg_name, [])
+                for info in install_infos
+                for dep_name in (info.package.depends + info.package.makedepends + info.package.checkdepends)
                 # if dep_name not in self.all_packages_names
             )
+            # new_aur_rpc_deps = set(
+            #     dep_name
+            #     for pkg_name in pkgbuild.package_names
+            #     for dep_name in self.aur_deps_relations.get(pkg_name, [])
+            #     # if dep_name not in self.all_packages_names
+            # )
 
-            new_build_deps_found_for_pkg = set(
-                VersionMatcher(dep_line).pkg_name
-                for dep_line in (
-                    pkgbuild.new_deps_to_install + pkgbuild.new_make_deps_to_install
-                )
-                if VersionMatcher(dep_line).pkg_name not in self.all_packages_names
-            )
+            new_build_deps_found_for_pkg: Set[str] = set()
+            for package_name in pkgbuild.package_names:
+                src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
+                new_build_deps_found_for_pkg.update(set(
+                    # VersionMatcher(dep_line).pkg_name
+                    # for dep_line in
+                    list(src_info.get_build_depends().keys()) +
+                    list(src_info.get_build_makedepends().keys()) +
+                    list(src_info.get_build_checkdepends().keys())
+                ))
+            # new_build_deps_found_for_pkg = set(
+            #     VersionMatcher(dep_line).pkg_name
+            #     for dep_line in (
+            #         pkgbuild.new_deps_to_install + pkgbuild.new_make_deps_to_install
+            #     )
+            #     # if VersionMatcher(dep_line).pkg_name not in self.all_packages_names
+            # )
 
             print_warning(str(self.all_packages_names))
             print_warning(str(pkgbuild.package_names))

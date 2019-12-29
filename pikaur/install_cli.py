@@ -22,7 +22,7 @@ from .exceptions import (
     SysExit, PackagesNotFoundInAUR, DependencyVersionMismatch,
     BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
 )
-from .build import PackageBuild, clone_aur_repos
+from .build import PackageBuild, clone_aur_repos, PkgbuildChanged
 from .pprint import (
     color_line, bold_line,
     print_stderr, print_stdout, print_warning, print_error,
@@ -681,23 +681,10 @@ class InstallPackagesCLI():
                     reason=_("already reviewed")
                 ))
 
-            src_info = SrcInfo(pkgbuild_path=pkg_build.pkgbuild_path)
             if self.ask_to_edit_file(
                     os.path.basename(pkg_build.pkgbuild_path), pkg_build
             ):
-                src_info.regenerate()
-
-                # recompute AUR deps:
-                old_install_info = self.install_info
-                self.pkgbuilds_paths.add(pkg_build.pkgbuild_path)
-                self.get_all_packages_info()
-                old_install_info.pkgbuilds_paths = self.install_info.pkgbuilds_paths
-                if old_install_info != self.install_info:
-                    print_warning(_("New build deps found for {pkg} package").format(
-                        pkg=bold_line(', '.join(pkg_build.package_names)),
-                    ))
-                    self.main_sequence()
-                    raise self.ExitMainSequence()
+                self.handle_pkgbuild_changed(pkg_build)
 
             for pkg_name in pkg_build.package_names:
                 install_src_info = SrcInfo(
@@ -710,6 +697,22 @@ class InstallPackagesCLI():
 
             pkg_build.check_pkg_arch()
             pkg_build.reviewed = True
+
+    def handle_pkgbuild_changed(self, pkg_build: PackageBuild) -> None:
+        src_info = SrcInfo(pkgbuild_path=pkg_build.pkgbuild_path)
+        src_info.regenerate()
+
+        # recompute AUR deps:
+        old_install_info = self.install_info
+        self.pkgbuilds_paths.add(pkg_build.pkgbuild_path)
+        self.get_all_packages_info()
+        old_install_info.pkgbuilds_paths = self.install_info.pkgbuilds_paths
+        if old_install_info != self.install_info:
+            print_warning(_("New build deps found for {pkg} package").format(
+                pkg=bold_line(', '.join(pkg_build.package_names)),
+            ))
+            self.main_sequence()
+            raise self.ExitMainSequence()
 
     def build_packages(self) -> None:  # pylint: disable=too-many-branches
         if self.args.needed or self.args.devel:
@@ -734,6 +737,8 @@ class InstallPackagesCLI():
                     all_package_builds=self.package_builds_by_name,
                     resolved_conflicts=self.resolved_conflicts
                 )
+            except PkgbuildChanged:
+                self.handle_pkgbuild_changed(pkg_build)
             except (BuildError, DependencyError) as exc:
                 print_stderr(exc)
                 print_stderr(

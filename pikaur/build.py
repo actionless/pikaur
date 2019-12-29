@@ -41,6 +41,10 @@ from .version import compare_versions, VersionMatcher
 from .makepkg_config import MakepkgConfig, MakePkgCommand, PKGDEST
 
 
+class PkgbuildChanged(Exception):
+    pass
+
+
 def mkdir(to_path) -> None:
     mkdir_result = spawn(isolate_root_cmd(['mkdir', '-p', to_path]))
     if mkdir_result.returncode != 0:
@@ -659,6 +663,7 @@ class PackageBuild(DataType):
                         self.pkgbuild_path,
                         os.path.join(self.build_dir, 'PKGBUILD')
                     ]))
+                    raise PkgbuildChanged()
                 continue
             if answer == _("a"):
                 raise SysExit(125)

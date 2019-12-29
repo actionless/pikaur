@@ -73,7 +73,6 @@ class InstallPackagesCLI():
     not_found_repo_pkgs_names: List[str]
     found_conflicts: Dict[str, List[str]]
     repo_packages_by_name: Dict[str, pyalpm.Package]
-    aur_deps_relations: Dict[str, List[str]]
     # pkgbuilds from cloned aur repos:
     package_builds_by_name: Dict[str, PackageBuild]
 
@@ -100,7 +99,6 @@ class InstallPackagesCLI():
 
         self.not_found_repo_pkgs_names = []
         self.repo_packages_by_name = {}
-        self.aur_deps_relations = {}
         self.package_builds_by_name = {}
 
         self.found_conflicts = {}
@@ -172,10 +170,7 @@ class InstallPackagesCLI():
 
     @property
     def aur_deps_names(self) -> List[str]:
-        _aur_deps_names: List[str] = []
-        for deps in self.aur_deps_relations.values():
-            _aur_deps_names += deps
-        return list(set(_aur_deps_names))
+        return self.install_info.aur_deps_names
 
     @property
     def all_aur_packages_names(self) -> List[str]:
@@ -224,8 +219,6 @@ class InstallPackagesCLI():
                 )
             )
             raise SysExit(131)
-        else:
-            self.aur_deps_relations = self.install_info.aur_deps_relations
 
         if self.args.repo and self.not_found_repo_pkgs_names:
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)
@@ -380,13 +373,6 @@ class InstallPackagesCLI():
         if canceled_pkg_name in self.not_found_repo_pkgs_names:
             self.not_found_repo_pkgs_names.remove(canceled_pkg_name)
         already_discarded = (already_discarded or []) + [canceled_pkg_name]
-        for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
-            if canceled_pkg_name in aur_deps + [aur_pkg_name]:
-                for pkg_name in aur_deps + [aur_pkg_name]:
-                    if pkg_name not in already_discarded:
-                        self.discard_install_info(pkg_name, already_discarded)
-                if aur_pkg_name in self.aur_deps_relations:
-                    del self.aur_deps_relations[aur_pkg_name]
         for pkg_name in already_discarded:
             if pkg_name in list(self.package_builds_by_name.keys()):
                 del self.package_builds_by_name[pkg_name]

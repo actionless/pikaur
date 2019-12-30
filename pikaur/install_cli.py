@@ -712,7 +712,9 @@ class InstallPackagesCLI():
         self.get_all_packages_info()
         old_install_info.pkgbuilds_packagelists = self.install_info.pkgbuilds_packagelists
         if old_install_info != self.install_info:
-            print_warning(_("Installation info changed (or new deps found) for {pkg} package").format(
+            print_warning(_(
+                "Installation info changed (or new deps found) for {pkg} package"
+            ).format(
                 pkg=bold_line(', '.join(pkg_build.package_names)),
             ))
             self.main_sequence()

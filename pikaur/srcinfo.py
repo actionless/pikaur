@@ -104,20 +104,14 @@ class SrcInfo():
     def _get_build_depends(self, field: str) -> Dict[str, VersionMatcher]:
         return self._get_depends(field=field, lines=self._common_lines)
 
-    def get_makedepends(self) -> Dict[str, VersionMatcher]:
-        return self._get_depends('makedepends')
-
     def get_depends(self) -> Dict[str, VersionMatcher]:
         return self._get_depends('depends')
 
-    def get_checkdepends(self) -> Dict[str, VersionMatcher]:
-        return self._get_depends('checkdepends')
+    def get_build_depends(self) -> Dict[str, VersionMatcher]:
+        return self._get_build_depends('depends')
 
     def get_build_makedepends(self) -> Dict[str, VersionMatcher]:
         return self._get_build_depends('makedepends')
-
-    def get_build_depends(self) -> Dict[str, VersionMatcher]:
-        return self._get_build_depends('depends')
 
     def get_build_checkdepends(self) -> Dict[str, VersionMatcher]:
         return self._get_build_depends('checkdepends')

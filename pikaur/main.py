@@ -27,7 +27,8 @@ from .core import (
 )
 from .pprint import color_line, bold_line, print_stderr, print_stdout, print_error
 from .print_department import (
-    pretty_format_upgradeable, print_version, print_not_found_packages,
+    pretty_format_upgradeable, print_version,
+    print_not_found_packages, print_ignored_package,
 )
 from .updates import find_repo_upgradeable, find_aur_updates
 from .prompt import ask_to_continue, get_input
@@ -42,7 +43,7 @@ from .search_cli import cli_search_packages
 from .info_cli import cli_info_packages
 from .aur import find_aur_packages, get_repo_url
 from .aur_deps import get_aur_deps_list
-from .pacman import PackageDB, PackagesNotFoundInRepo
+from .pacman import PackageDB, PackagesNotFoundInRepo, PacmanConfig
 
 
 def init_readline() -> None:
@@ -108,6 +109,12 @@ def cli_print_upgradeable() -> None:
         updates += find_repo_upgradeable()
     if not updates:
         return
+    for pkg in updates[:]:
+        if pkg.name in (
+                args.ignore + PacmanConfig().options.get('IgnorePkg', [])
+        ):
+            updates.remove(pkg)
+            print_ignored_package(package_name=pkg.name)
     if args.quiet:
         print_stdout('\n'.join([
             pkg_update.name for pkg_update in updates

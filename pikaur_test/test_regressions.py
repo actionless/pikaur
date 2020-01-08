@@ -125,7 +125,20 @@ class RegressionTest(PikaurDbTestCase):
 
         see #427
         """
-        self.remove_if_installed('mongodb-bin', 'libcurl-openssl-1.0')
-        fake_pikaur('-S mongodb-bin')
-        self.assertInstalled('mongodb-bin')
-        self.assertNotInstalled('libcurl-openssl-1.0')
+        pkg_name = 'mongodb-bin'
+        wrong_arch_dep_name = 'libcurl-openssl-1.0'
+        self.remove_if_installed(pkg_name, wrong_arch_dep_name)
+        fake_pikaur(f'-S {pkg_name}')
+        self.assertInstalled(pkg_name)
+        self.assertNotInstalled(wrong_arch_dep_name)
+
+    def test_aur_rpc_didnt_fully_parsed_srcinfo_2(self):
+        """
+        Similar situation as with mongodb-bin above
+        """
+        pkg_name = 'guitar-pro'
+        wrong_arch_dep_name = 'portaudio'
+        self.remove_if_installed(pkg_name, wrong_arch_dep_name)
+        fake_pikaur(f'-S {pkg_name}')
+        self.assertInstalled(pkg_name)
+        self.assertNotInstalled(wrong_arch_dep_name)

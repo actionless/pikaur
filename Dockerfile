@@ -12,7 +12,10 @@ ARG MODE=--local
 RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://archlinux.mirror.pcextreme.nl/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://archlinux.mirror.wearetriple.com/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
-	echo 'Server = https://mirror.mijn.host/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+	echo 'Server = https://mirror.mijn.host/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
+	\
+	echo '[multilib]' >> /etc/pacman.conf ; \
+	echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
 RUN rm /usr/share/libalpm/hooks/package-cleanup.hook ; \
 	pacman -Syu --noconfirm --needed sudo base-devel git && \
 	useradd -m user && \

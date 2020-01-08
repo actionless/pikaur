@@ -138,7 +138,9 @@ class RegressionTest(PikaurDbTestCase):
         """
         pkg_name = 'guitar-pro'
         wrong_arch_dep_name = 'portaudio'
+        correct_arch_dep_name = 'lib32-portaudio'
         self.remove_if_installed(pkg_name, wrong_arch_dep_name)
         fake_pikaur(f'-S {pkg_name}')
         self.assertInstalled(pkg_name)
+        self.assertInstalled(correct_arch_dep_name)
         self.assertNotInstalled(wrong_arch_dep_name)

@@ -64,13 +64,13 @@ class AURPackageInfo(DataType):
             version=srcinfo.get_value('pkgver') + '-' + srcinfo.get_value('pkgrel'),
             desc=srcinfo.get_value('pkgdesc'),
             packagebase=srcinfo.get_value('pkgbase'),
+            depends=list(srcinfo.get_depends().keys()),
+            makedepends=list(srcinfo.get_build_makedepends().keys()),
+            checkdepends=list(srcinfo.get_build_checkdepends().keys()),
             **{
                 key: srcinfo.get_values(key)
                 for key in [
-                    'depends',
-                    'makedepends',
                     'optdepends',
-                    'checkdepends',
                     'conflicts',
                     'replaces',
                     'provides',

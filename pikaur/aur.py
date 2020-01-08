@@ -64,9 +64,9 @@ class AURPackageInfo(DataType):
             version=srcinfo.get_value('pkgver') + '-' + srcinfo.get_value('pkgrel'),
             desc=srcinfo.get_value('pkgdesc'),
             packagebase=srcinfo.get_value('pkgbase'),
-            depends=list(srcinfo.get_depends().keys()),
-            makedepends=list(srcinfo.get_build_makedepends().keys()),
-            checkdepends=list(srcinfo.get_build_checkdepends().keys()),
+            depends=[dep.line for dep in srcinfo.get_build_depends().values()],
+            makedepends=[dep.line for dep in srcinfo.get_build_makedepends().values()],
+            checkdepends=[dep.line for dep in srcinfo.get_build_checkdepends().values()],
             **{
                 key: srcinfo.get_values(key)
                 for key in [

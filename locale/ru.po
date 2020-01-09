@@ -62,7 +62,7 @@ msgstr "Каталог репозитория AUR был перемещён из
 #: pikaur/search_cli.py:62
 #, python-brace-format
 msgid "AUR: Too many package results for '{query}'"
-msgstr ""
+msgstr "AUR: Слишком много пакетов в результатах для '{query}'"
 
 #: pikaur/args.py:446
 msgid ""
@@ -108,7 +108,7 @@ msgstr "Невозможно обновить пакет '{name}' из AUR по 
 #: pikaur/aur_deps.py:247
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
-msgstr "Не удается разрешить зависимости для пакета AUR '{pkg}':"
+msgstr "Не удается разрешить зависимости для пакета из AUR '{pkg}':"
 
 #: pikaur/info_cli.py:33
 msgid "Check Deps"
@@ -183,7 +183,7 @@ msgstr "Хотите {edit} {file} из пакета {name}?"
 #: pikaur/print_department.py:454
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
-msgstr ""
+msgstr "Понижение версии пакета из AUR {name} {version} до {downgrade_version}"
 
 #: pikaur/build.py:238
 msgid "Downloading the latest sources for a devel package {}"
@@ -222,7 +222,7 @@ msgstr "Группы"
 
 #: pikaur/print_department.py:410
 msgid "Ignoring package update {}"
-msgstr "пропуск обновления пакета {}"
+msgstr "Пропуск обновления пакета {}"
 
 #: pikaur/print_department.py:416
 msgid "Ignoring package {}"
@@ -231,7 +231,7 @@ msgstr "Пакет {} был проигнорирован"
 #: pikaur/install_cli.py:715
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
-msgstr ""
+msgstr "Информация об установке изменена (или найдены новые зависимости) для пакета {pkg}"
 
 #: pikaur/build.py:348
 msgid "Installing already built dependencies for {}"
@@ -345,7 +345,7 @@ msgstr "Опции pikaur:"
 msgid ""
 "Please enter the number of the package you want to install (default={}):"
 msgstr ""
-"Пожалуйста введите порядковый номер пакета, который вы хотите установить (по-"
+"Введите порядковый номер пакета, который вы хотите установить (по-"
 "умолчанию={}):"
 
 #: pikaur/info_cli.py:38
@@ -376,7 +376,7 @@ msgstr "Чтение баз данных пакетов из репозитор�
 
 #: pikaur/build.py:536
 msgid "Removing already installed dependencies for {}"
-msgstr "Удаление уже установленных зависимостей {}"
+msgstr "Удаление уже установленных для {} зависимостей"
 
 #: pikaur/info_cli.py:35
 msgid "Replaces"
@@ -423,7 +423,7 @@ msgstr "Начало сборки"
 
 #: pikaur/news.py:100
 msgid "The news feed could not be received or parsed."
-msgstr ""
+msgstr "Новостная лента не может быть получена или разобрана."
 
 #: pikaur/news.py:46
 msgid "There are news from archlinux.org!"
@@ -459,7 +459,7 @@ msgstr "Несовпадение версии:"
 
 #: pikaur/info_cli.py:37
 msgid "Votes"
-msgstr "Оценка"
+msgstr "Оценки"
 
 #: pikaur/prompt.py:115
 msgid "[N]o (--noconfirm)"
@@ -616,7 +616,7 @@ msgstr ""
 
 #: pikaur/args.py:488
 msgid "ignore AUR packages' updates which marked 'outofdate'"
-msgstr ""
+msgstr "игнорировать обновления пакетов из AUR, которые помечены как устаревшие"
 
 #: pikaur/argparse.py:140
 #, python-format
@@ -746,11 +746,11 @@ msgstr "требуются следующие аргументы: %s"
 
 #: pikaur/args.py:450
 msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
-msgstr "использование:  pikaur {-G --getpkgbuild} [options] <package(s)>"
+msgstr "использование:  pikaur {-G --getpkgbuild} [параметры] <пакет(ы)>"
 
 #: pikaur/args.py:445
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
-msgstr "использование:  pikaur {-P --pkgbuild} [options] <file(s)>"
+msgstr "использование:  pikaur {-P --pkgbuild} [параметры] <файл(ы)>"
 
 #: pikaur/install_cli.py:344 pikaur/install_cli.py:359
 msgid "v"

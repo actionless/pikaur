@@ -704,6 +704,8 @@ class InstallPackagesCLI():
             pkg_build.reviewed = True
 
     def handle_pkgbuild_changed(self, pkg_build: PackageBuild) -> None:
+        for pkg_name in pkg_build.package_names:
+            self.discard_install_info(pkg_name)
         src_info = SrcInfo(pkgbuild_path=pkg_build.pkgbuild_path)
         src_info.regenerate()
 

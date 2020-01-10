@@ -383,7 +383,7 @@ class InstallInfoFetcher(ComparableType):
                     install_info=aur_updates_install_info_by_name[pkg_name]
                 )
                 del aur_updates_install_info_by_name[pkg_name]
-        self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
+        self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
 
     def get_info_from_pkgbuilds(self) -> None:
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
@@ -407,7 +407,7 @@ class InstallInfoFetcher(ComparableType):
                     package=aur_pkg,
                     pkgbuild_path=path,
                 )
-        self.aur_updates_install_info = list(aur_updates_install_info_by_name.values())
+        self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
 
     def get_aur_deps_info(self) -> None:
         all_aur_pkgs = []

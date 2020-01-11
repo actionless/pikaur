@@ -43,29 +43,29 @@ class InstallTest(PikaurDbTestCase):
         self.assertNotInstalled(dep_name)
 
     def test_aur_package_with_alternative_aur_dep(self):
-        pkg_name = 'youtube-dl-gui-git'
-        dep2_name = 'youtube-dl'
-        dep2_alt_name = 'youtube-dl-git'
-        self.remove_if_installed(pkg_name, dep2_name, dep2_alt_name)
+        pkg_name = 'dwm'
+        dep_name = 'st'
+        dep_alt_name = 'st-git'
+        self.remove_if_installed(pkg_name, dep_name, dep_alt_name)
 
         # aur package with manually chosen aur dep:
-        pikaur(f'-S {pkg_name} {dep2_alt_name}')
+        pikaur(f'-S {pkg_name} {dep_alt_name}')
         self.assertInstalled(pkg_name)
-        self.assertProvidedBy(dep2_name, dep2_alt_name)
-        self.assertInstalled(dep2_alt_name)
-        self.assertNotInstalled(dep2_name)
+        self.assertProvidedBy(dep_name, dep_alt_name)
+        self.assertInstalled(dep_alt_name)
+        self.assertNotInstalled(dep_name)
 
     def test_aur_pkg_with_already_installed_alternative_aur_dep(self):
-        pkg_name = 'youtube-dl-gui-git'
-        dep2_name = 'youtube-dl'
-        dep2_alt_name = 'youtube-dl-git'
-        self.remove_if_installed(pkg_name, dep2_name, dep2_alt_name)
+        pkg_name = 'dwm'
+        dep_name = 'st'
+        dep_alt_name = 'st-git'
+        self.remove_if_installed(pkg_name, dep_name, dep_alt_name)
 
-        pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')
-        self.assertInstalled(dep2_alt_name)
-        self.assertProvidedBy(dep2_name, dep2_alt_name)
-        self.assertInstalled(dep2_alt_name)
-        self.assertNotInstalled(dep2_name)
+        pikaur(f'-S {dep_alt_name} --mflags=--skippgpcheck')
+        self.assertInstalled(dep_alt_name)
+        self.assertProvidedBy(dep_name, dep_alt_name)
+        self.assertInstalled(dep_alt_name)
+        self.assertNotInstalled(dep_name)
 
         # aur package with aur dep provided by another already installed AUR pkg
         pikaur(f'-S {pkg_name}')

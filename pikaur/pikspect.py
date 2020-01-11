@@ -12,7 +12,7 @@ import fcntl
 import os
 import re
 from multiprocessing.pool import ThreadPool
-from time import time, sleep
+from time import sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
 from .pprint import PrintLock, bold_line
@@ -24,8 +24,6 @@ from .core import get_sudo_refresh_command
 
 # SMALL_TIMEOUT = 0.1
 SMALL_TIMEOUT = 0.01
-
-WRITE_INTERVAL = 0.1
 
 
 TcAttrsType = List[Union[int, List[bytes]]]
@@ -110,7 +108,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     max_question_length = get_term_width() * 2  # preserve also at least last line
     # write buffer:
     _write_buffer: bytes = b''
-    _last_write: float = 0
     # some help for mypy:
     _wait: Callable
 
@@ -204,13 +201,10 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.historic_output = [b'']
 
     def write_buffer_contents(self) -> None:
-        if self._write_buffer and (
-                (self._last_write + WRITE_INTERVAL) < time()
-        ):
+        if self._write_buffer:
             sys.stdout.buffer.write(self._write_buffer)
             sys.stdout.buffer.flush()
             self._write_buffer = b''
-            self._last_write = time()
 
     def write_something(self, output: bytes) -> None:
         if not self.print_output:
@@ -236,7 +230,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                 self.write_buffer_contents()
                 continue
             pty_reader = readers[0]
-            output = pty_reader.read(1)
+            output = pty_reader.read(4096)
 
             self.historic_output = (
                 self.historic_output[-self.max_question_length:] + [output, ]

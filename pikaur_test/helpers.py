@@ -245,12 +245,12 @@ class PikaurTestCase(TestCase):
             self.fail(f'Package "{pkg_name}" is still installed.')
 
     def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:
-        cmd_result = pacman(f'-Qsq {dep_name}').stdout
+        cmd_result = pacman(f'-Qiq {dep_name}').stdout
         self.assertTrue(
             cmd_result
         )
         self.assertEqual(
-            cmd_result.strip(),  # type: ignore
+            cmd_result.splitlines()[0].split(':')[1].strip(),  # type: ignore
             provider_name
         )
 

@@ -28,26 +28,24 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled('flac')
 
     def test_aur_package_with_aur_dep(self):
-        pkg_name = 'pacaur'
-        dep_name = 'auracle-git'
-        dep2_name = 'expac'
-        dep2_alt_name = 'expac-git'
-        self.remove_if_installed(pkg_name, dep_name, dep2_name, dep2_alt_name)
+        # pikaur -Qi (pikaur -Qdmq) | grep -i -e Name -e 'Required By' -e '^$'
+        pkg_name = 'python-guessit'
+        dep_name = 'python-rebulk'
+        self.remove_if_installed(pkg_name, dep_name)
 
         pikaur(f'-S {pkg_name} --mflags=--skippgpcheck')
         self.assertInstalled(pkg_name)
         self.assertInstalled(dep_name)
 
         # package removal (pacman wrapping test)
-        pikaur(f'-Rs {pkg_name} {dep_name} {dep2_name} --noconfirm')
+        pikaur(f'-Rs {pkg_name} {dep_name} --noconfirm')
         self.assertNotInstalled(pkg_name)
         self.assertNotInstalled(dep_name)
-        self.assertNotInstalled(dep2_name)
 
     def test_aur_package_with_alternative_aur_dep(self):
-        pkg_name = 'pacaur'
-        dep2_name = 'expac'
-        dep2_alt_name = 'expac-git'
+        pkg_name = 'youtube-dl-gui-git'
+        dep2_name = 'youtube-dl'
+        dep2_alt_name = 'youtube-dl-git'
         self.remove_if_installed(pkg_name, dep2_name, dep2_alt_name)
 
         # aur package with manually chosen aur dep:
@@ -58,9 +56,9 @@ class InstallTest(PikaurDbTestCase):
         self.assertNotInstalled(dep2_name)
 
     def test_aur_pkg_with_already_installed_alternative_aur_dep(self):
-        pkg_name = 'pacaur'
-        dep2_name = 'expac'
-        dep2_alt_name = 'expac-git'
+        pkg_name = 'youtube-dl-gui-git'
+        dep2_name = 'youtube-dl'
+        dep2_alt_name = 'youtube-dl-git'
         self.remove_if_installed(pkg_name, dep2_name, dep2_alt_name)
 
         pikaur(f'-S {dep2_alt_name} --mflags=--skippgpcheck')

@@ -417,6 +417,8 @@ class InstallPackagesCLI():
                         aur_rpc_deps.symmetric_difference(srcinfo_deps)
                     )),
                 ))
+                for pkg_name in pkgbuild.package_names:
+                    self.discard_install_info(pkg_name)
                 self.pkgbuilds_packagelists[pkgbuild.pkgbuild_path] = pkgbuild.package_names
                 need_to_show_install_prompt = True
         if need_to_show_install_prompt:

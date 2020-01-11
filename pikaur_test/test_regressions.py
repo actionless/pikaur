@@ -104,7 +104,7 @@ class RegressionTest(PikaurDbTestCase):
         """
         pikaur('-Syu')
 
-        result_syu = pikaur('-Syu', capture_stdout=True)
+        result_syu = pikaur('-Syu --ignore pikaur-git', capture_stdout=True)
         self.assertIn(
             "nothing to do",
             result_syu.stdout.lower()

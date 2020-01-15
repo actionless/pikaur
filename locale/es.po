@@ -182,7 +182,7 @@ msgstr "¿Desea {edit} {file} para el paquete {name}?"
 #: pikaur/print_department.py:454
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
-msgstr "Bajando el paquete AUR {name} {version} to {downgrade_version}"
+msgstr "Bajando el paquete AUR {name} {version} a {downgrade_version}"
 
 #: pikaur/build.py:238
 msgid "Downloading the latest sources for a devel package {}"
@@ -786,7 +786,7 @@ msgstr ""
 #: pikaur/print_department.py:464
 #, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
-msgstr "{name} {version} Paquete AUR marcado como obsoleto - saltarse"
+msgstr "{name} {version} Paquete AUR marcado como 'obsoleto' - saltarse"
 
 # python-brace-format
 #: pikaur/print_department.py:444
@@ -796,7 +796,7 @@ msgid ""
 "skipping"
 msgstr ""
 "{name} {version} el paquete local es más nuevo que en AUR ({aur_version}) - "
-"ignorado"
+"saltarse"
 
 #: pikaur/print_department.py:434
 #, python-brace-format

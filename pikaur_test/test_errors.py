@@ -57,7 +57,7 @@ class FailureTest(PikaurDbTestCase):
             f'-Pi ./pikaur_test/PKGBUILD_not_found_dep',
             capture_stderr=True
         )
-        self.assertEqual(result.returncode, 131)
+        self.assertEqual(result.returncode, 125)
         self.assertIn(MSG_DEPS_MISSING, result.stderr)
         self.assertIn(pkg_name, result.stderr)
         self.assertIn(MSG_CANNOT_BE_FOUND, result.stderr)

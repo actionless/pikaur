@@ -60,6 +60,18 @@ def hash_file(filename: str) -> str:  # pragma: no cover
     return md5.hexdigest()
 
 
+def edit_file(filename: str) -> bool:  # pragma: no cover
+    editor_cmd = get_editor_or_exit()
+    if not editor_cmd:
+        return False
+    old_hash = hash_file(filename)
+    interactive_spawn(
+        editor_cmd + [filename]
+    )
+    new_hash = hash_file(filename)
+    return old_hash != new_hash
+
+
 class InstallPackagesCLI():
 
     # User input
@@ -185,6 +197,32 @@ class InstallPackagesCLI():
             self.args.positional or ['PKGBUILD']
         }
 
+    def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
+        prompt = '{} {}\n{}\n{}\n{}\n> '.format(
+            color_line('::', 11),
+            _("Try recovering?"),
+            _("[e] edit PKGBUILD"),
+            _("[s] skip this package"),
+            _("[A] abort")
+        )
+        answer = get_input(prompt, _('e') + _('s') + _('a').upper())
+
+        answer = answer.lower()[0]
+        if answer == _("e"):
+            self.package_builds_by_name.update(clone_aur_repos([pkg_name]))
+            pkg_build = self.package_builds_by_name[pkg_name]
+            if not edit_file(
+                    pkg_build.pkgbuild_path
+            ):
+                print_warning(_("PKGBUILD appears unchanged after editing"))
+            self.not_found_repo_pkgs_names.remove(pkg_name)
+            self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
+            self.main_sequence()
+        elif answer == _("s"):
+            self.not_found_repo_pkgs_names.remove(pkg_name)
+        else:
+            raise SysExit(125)
+
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """
         Retrieve info (`InstallInfo` objects) of packages
@@ -210,6 +248,11 @@ class InstallPackagesCLI():
                 print_error(bold_line(
                     _("Dependencies missing for {}").format(', '.join(exc.wanted_by))
                 ))
+                print_not_found_packages(exc.packages)
+                for pkg_name in exc.wanted_by:  # pylint: disable=not-an-iterable
+                    self.aur_pkg_not_found_prompt(pkg_name)
+                self.get_all_packages_info()
+                return
             print_not_found_packages(exc.packages)
             raise SysExit(131)
         except DependencyVersionMismatch as exc:
@@ -532,10 +575,6 @@ class InstallPackagesCLI():
     def ask_to_edit_file(
             self, filename: str, package_build: PackageBuild
     ) -> bool:  # pragma: no cover
-        editor_cmd = get_editor_or_exit()
-        if not editor_cmd:
-            return False
-
         noedit = not self.args.edit and (
             self.args.noedit
         )
@@ -563,12 +602,7 @@ class InstallPackagesCLI():
             package_build.repo_path,
             filename
         )
-        old_hash = hash_file(full_filename)
-        interactive_spawn(
-            editor_cmd + [full_filename]
-        )
-        new_hash = hash_file(full_filename)
-        return old_hash != new_hash
+        return edit_file(full_filename)
 
     def _get_installed_status(self) -> None:
         all_package_builds = set(self.package_builds_by_name.values())

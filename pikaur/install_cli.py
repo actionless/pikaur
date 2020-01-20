@@ -215,11 +215,11 @@ class InstallPackagesCLI():
                     pkg_build.pkgbuild_path
             ):
                 print_warning(_("PKGBUILD appears unchanged after editing"))
-            self.not_found_repo_pkgs_names.remove(pkg_name)
+            self._ignore_package(pkg_name)
             self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
             self.main_sequence()
         elif answer == _("s"):
-            self.not_found_repo_pkgs_names.remove(pkg_name)
+            self._ignore_package(pkg_name)
         else:
             raise SysExit(125)
 

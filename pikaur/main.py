@@ -188,7 +188,7 @@ def cli_clean_packages_cache() -> None:
                 print_stdout('\n' + "{}: {}".format(message, directory))
                 if ask_to_continue(text='{} {}'.format(
                         color_line('::', 12),
-                        _("Do you want to remove all files?")
+                        bold_line(_("Do you want to remove all files?"))
                 )):
                     remove_dir(directory)
     if not args.aur:

@@ -5,7 +5,7 @@ import sys
 import configparser
 import shutil
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
 from .i18n import _
 
@@ -248,6 +248,9 @@ class PikaurConfigItem:
 
     def __str__(self) -> str:
         return self.get_str()
+
+    def __eq__(self, item: Any) -> bool:
+        return self.get_str() == item
 
 
 class PikaurConfigSection():

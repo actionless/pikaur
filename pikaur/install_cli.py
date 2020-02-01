@@ -492,9 +492,14 @@ class InstallPackagesCLI():
                         clone_names.append(info.name)
                 cloned_pkgbuilds = clone_aur_repos(clone_names)
                 pkgbuilds_by_name.update(cloned_pkgbuilds)
-                self._find_extra_aur_build_deps(
-                    all_package_builds=pkgbuilds_by_name
-                )
+                for pkg_list in (self.aur_packages_names, self.aur_deps_names):
+                    self._find_extra_aur_build_deps(
+                        all_package_builds={
+                            pkg_name: pkgbuild for pkg_name, pkgbuild
+                            in pkgbuilds_by_name.items()
+                            if pkg_name in pkg_list
+                        }
+                    )
                 self.package_builds_by_name = pkgbuilds_by_name
                 break
 

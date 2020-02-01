@@ -31,7 +31,7 @@ from .print_department import (
     print_not_found_packages, print_ignored_package,
 )
 from .updates import find_repo_upgradeable, find_aur_updates
-from .prompt import ask_to_continue, get_input
+from .prompt import ask_to_continue, get_multiple_numbers_input, NotANumberInput
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT, CONFIG_PATH,
     AUR_REPOS_CACHE_PATH, PikaurConfig, migrate_old_aur_repos_dir,
@@ -212,30 +212,33 @@ def cli_dynamic_select() -> None:  # pragma: no cover
     if not packages:
         raise SysExit(1)
 
-    print_stderr(
-        '\n' +
-        _("Please enter the number of the package you want to install (default={}):").format(
-            1
-        )
-    )
-    answer = get_input('> ', [str(i) for i in range(1, len(packages) + 1)]) or '1'
-    print_stderr()
-    if answer.lower() == _('n'):
-        raise SysExit(128)
+    while True:
+        try:
+            print_stderr(
+                '\n' + _(
+                    "Please enter the number of the package(s) you want to install "
+                    "and press [Enter] (default={}):"
+                ).format(1)
+            )
+            answers = get_multiple_numbers_input('> ', list(range(1, len(packages) + 1))) or [1]
+            print_stderr()
+            selected_pkgs_idx = [idx - 1 for idx in answers]
+            restart_prompt = False
+            for idx in selected_pkgs_idx:
+                if not 0 <= idx < len(packages):
+                    print_error(_('invalid value: {} is not between {} and {}').format(
+                        idx + 1, 1, len(packages) + 1
+                    ))
+                    restart_prompt = True
+            if restart_prompt:
+                continue
+            break
+        except NotANumberInput as exc:
+            if exc.character.lower() == _('n'):
+                raise SysExit(128)
+            print_error(_('invalid number: {}').format(exc.character))
 
-    try:
-        selected_pkg_idx = int(answer) - 1
-    except ValueError:
-        print_error(_('invalid number: {}').format(answer))
-        raise SysExit(5)
-
-    if not 0 <= selected_pkg_idx < len(packages):
-        print_error(_('invalid value: {} is not between {} and {}').format(
-            answer, 1, len(packages)
-        ))
-        raise SysExit(5)
-
-    parse_args().positional = [packages[selected_pkg_idx].name, ]
+    parse_args().positional = [packages[idx].name for idx in selected_pkgs_idx]
     cli_install_packages()
 
 

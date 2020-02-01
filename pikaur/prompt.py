@@ -80,8 +80,7 @@ def split_last_line(text: str) -> str:
     return '\n'.join(prev_lines + [last_line])
 
 
-def get_input(prompt: str, answers: Iterable[str] = ()) -> str:
-    require_confirm = max(len(choice) > 1 for choice in answers) if answers else False
+def get_input(prompt: str, answers: Iterable[str] = (), require_confirm=False) -> str:
     with PrintLock():
         if not(
                 require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
@@ -102,6 +101,39 @@ def get_input(prompt: str, answers: Iterable[str] = ()) -> str:
                     if choice.isupper():
                         return choice.lower()
         return answer
+
+
+class NotANumberInput(Exception):
+    character: str
+
+    def __init__(self, character: str):
+        self.character = character
+        super().__init__(f'"{character} is not a number')
+
+
+def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> Iterable[int]:
+    str_result = get_input(prompt, [str(answer) for answer in answers], require_confirm=True)
+    if str_result == '':
+        return []
+    str_results = str_result.replace(',', ' ').split(' ')
+    int_results: List[int] = []
+    for block in str_results[:]:
+        if '..' in block:
+            block = block.replace('..', '-')
+        if '-' in block:
+            try:
+                range_start, range_end = [int(char) for char in block.split('-')]
+            except ValueError:
+                raise NotANumberInput(block)
+            if range_start > range_end:
+                raise NotANumberInput(block)
+            int_results += list(range(range_start, range_end + 1))
+        else:
+            try:
+                int_results.append(int(block))
+            except ValueError as exc:
+                raise NotANumberInput(exc.args[0].split("'")[-2])
+    return int_results
 
 
 def ask_to_continue(text: str = None, default_yes: bool = True) -> bool:

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-01 22:25+0100\n"
+"POT-Creation-Date: 2020-02-01 23:09+0100\n"
 "PO-Revision-Date: 2019-11-07 13:36+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
 "Language-Team: none\n"
@@ -76,12 +76,12 @@ msgstr ""
 msgid "Build directory"
 msgstr "Bouwmap"
 
-#: pikaur/install_cli.py:789
+#: pikaur/install_cli.py:800
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "Kan '{name}' niet bouwen."
 
-#: pikaur/install_cli.py:505
+#: pikaur/install_cli.py:516
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
 msgstr "Kan '{name}' niet klonen van AUR naar '{path}':"
@@ -100,7 +100,7 @@ msgstr "Kan doelmap '{to_path}' niet aanmaken."
 msgid "Can't get package name from PKGBUILD"
 msgstr "Kan pakketnaam niet ontleden uit PKGBUILD"
 
-#: pikaur/install_cli.py:507
+#: pikaur/install_cli.py:518
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "Kan '{name}' niet ophalen van AUR naar '{path}':"
@@ -142,7 +142,7 @@ msgstr "Kan '{}' niet bijwerken"
 msgid "Dependencies missing for {}"
 msgstr "De vereisten van '{}' ontbreken"
 
-#: pikaur/install_cli.py:806
+#: pikaur/install_cli.py:817
 msgid "Dependency cycle detected between {}"
 msgstr "Vereistencyclus gedetecteerd tussen {}"
 
@@ -170,12 +170,12 @@ msgstr "Wilt u alle bestanden verwijderen?"
 msgid "Do you want to retry?"
 msgstr "Wilt u het opnieuw proberen?"
 
-#: pikaur/install_cli.py:689
+#: pikaur/install_cli.py:700
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "Wilt u de bouwbestanden {diff} van het pakket '{name}' bekijken?"
 
-#: pikaur/install_cli.py:592
+#: pikaur/install_cli.py:603
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "Wilt u {file} voor pakket {name} {edit}?"
@@ -193,7 +193,7 @@ msgstr[0] ""
 msgstr[1] ""
 "Bezig met ophalen van recentste bronnen voor ontwikkelingspakketten '{}'..."
 
-#: pikaur/install_cli.py:965
+#: pikaur/install_cli.py:976
 msgid "Failed to build following packages:"
 msgstr "De volgende pakketten kunnen niet worden gebouwd:"
 
@@ -231,7 +231,7 @@ msgstr "De pakketupdate '{}' is genegeerd"
 msgid "Ignoring package {}"
 msgstr "Het pakket '{}' is genegeerd"
 
-#: pikaur/install_cli.py:754
+#: pikaur/install_cli.py:765
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
 msgstr ""
@@ -269,7 +269,7 @@ msgstr "Make-afhankelijkheden"
 msgid "Name"
 msgstr "Naam"
 
-#: pikaur/install_cli.py:457
+#: pikaur/install_cli.py:460
 #, fuzzy, python-brace-format
 msgid "New build deps found for {pkg} package: {deps}"
 msgstr "Nieuwe AUR-bouwafhankelijkheden aangetroffen voor {pkg}: {deps}"
@@ -294,7 +294,7 @@ msgstr[0] ""
 msgstr[1] ""
 "Er worden nieuwe afhankelijkheden geïnstalleerd uit externe pakketbron:"
 
-#: pikaur/install_cli.py:557
+#: pikaur/install_cli.py:568
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "De nieuwe pakketten '{new}' en '{other}' zijn in conflict."
@@ -303,7 +303,7 @@ msgstr "De nieuwe pakketten '{new}' en '{other}' zijn in conflict."
 msgid "None"
 msgstr "Geen"
 
-#: pikaur/install_cli.py:670
+#: pikaur/install_cli.py:681
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
 msgstr "Er wordt geen verschil getoond voor '{pkg}': {reason}"
@@ -407,7 +407,7 @@ msgstr[1] "Deze pakketbronpakketten worden geïnstalleerd:"
 msgid "Resolving AUR dependencies..."
 msgstr "Bezig met oplossen van AUR-afhankelijkheden..."
 
-#: pikaur/install_cli.py:849
+#: pikaur/install_cli.py:860
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "Bezig met terugdraaien van {target}-transactie..."
@@ -417,12 +417,17 @@ msgstr "Bezig met terugdraaien van {target}-transactie..."
 msgid "Searching... [{bar}]"
 msgstr "Bezig met zoeken... [{bar}]"
 
-#: pikaur/install_cli.py:584
+#: pikaur/install_cli.py:595
 #, python-brace-format
 msgid "Skipping review of {file} for {name} package ({flag})"
 msgstr ""
 "De controle van '{file}' voor het pakket '{name}' wordt overgeslagen "
 "({flag})..."
+
+#: pikaur/install_cli.py:465
+#, fuzzy, python-brace-format
+msgid "Some build deps removed for {pkg} package: {deps}"
+msgstr "Nieuwe AUR-bouwafhankelijkheden aangetroffen voor {pkg}: {deps}"
 
 #: pikaur/install_cli.py:149
 msgid "Starting full AUR upgrade..."
@@ -452,7 +457,7 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Dit externe pakket wordt geïnstalleerd:"
 msgstr[1] "Deze externe pakketten worden geïnstalleerd:"
 
-#: pikaur/install_cli.py:203 pikaur/install_cli.py:521 pikaur/build.py:621
+#: pikaur/install_cli.py:203 pikaur/install_cli.py:532 pikaur/build.py:621
 msgid "Try recovering?"
 msgstr "Wilt u een herstel uitvoeren?"
 
@@ -489,7 +494,7 @@ msgstr "[R] Opnieuw proberen"
 msgid "[Y]es (--noconfirm)"
 msgstr "[J]a (--noconfirm)"
 
-#: pikaur/install_cli.py:526
+#: pikaur/install_cli.py:537
 msgid "[a] abort"
 msgstr "[A]fbreken"
 
@@ -501,7 +506,7 @@ msgstr "[a] Bouwen van pakketten afbreken"
 msgid "[c] checksums skip"
 msgstr "[c] Alle controlegetallen overslaan"
 
-#: pikaur/install_cli.py:522
+#: pikaur/install_cli.py:533
 msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
@@ -531,7 +536,7 @@ msgid "[p] PGP check skip"
 msgstr "[p] PGP-controle overslaan"
 
 #. _("[c] git checkout -- '*' ; git clean -f -d -x"),
-#: pikaur/install_cli.py:524
+#: pikaur/install_cli.py:535
 msgid "[r] remove dir and clone again"
 msgstr "[r] Map verwijderen en opnieuw klonen"
 
@@ -539,7 +544,7 @@ msgstr "[r] Map verwijderen en opnieuw klonen"
 msgid "[s] skip building this package"
 msgstr "[s] Dit pakket niet bouwen"
 
-#: pikaur/install_cli.py:205 pikaur/install_cli.py:525
+#: pikaur/install_cli.py:205 pikaur/install_cli.py:536
 msgid "[s] skip this package"
 msgstr "[s] Dit pakket overslaan"
 
@@ -547,13 +552,13 @@ msgstr "[s] Dit pakket overslaan"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v] Pakketinformatie tonen \t[m] Handmatig selecteren"
 
-#: pikaur/install_cli.py:208 pikaur/install_cli.py:517
-#: pikaur/install_cli.py:528 pikaur/build.py:617 pikaur/build.py:637
+#: pikaur/install_cli.py:208 pikaur/install_cli.py:528
+#: pikaur/install_cli.py:539 pikaur/build.py:617 pikaur/build.py:637
 #: pikaur/build.py:668
 msgid "a"
 msgstr "a"
 
-#: pikaur/install_cli.py:675 pikaur/install_cli.py:722
+#: pikaur/install_cli.py:686 pikaur/install_cli.py:733
 msgid "already reviewed"
 msgstr "reeds nagekeken"
 
@@ -569,7 +574,7 @@ msgstr "AUR-pakketten altijd herbouwen"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "altijd '-git', '-svn' en andere ontwikkelingspakketten bijwerken"
 
-#: pikaur/install_cli.py:528 pikaur/install_cli.py:531 pikaur/build.py:636
+#: pikaur/install_cli.py:539 pikaur/install_cli.py:542 pikaur/build.py:636
 #: pikaur/build.py:646
 msgid "c"
 msgstr "c"
@@ -582,7 +587,7 @@ msgstr "de aan makepkg door te geven opdrachtregelopties"
 msgid "d"
 msgstr "d"
 
-#: pikaur/install_cli.py:690
+#: pikaur/install_cli.py:701
 msgid "diff"
 msgstr "verschil"
 
@@ -607,7 +612,7 @@ msgstr "Ook AUR-afhankelijkheden downloaden"
 msgid "e"
 msgstr "e"
 
-#: pikaur/install_cli.py:593
+#: pikaur/install_cli.py:604
 msgid "edit"
 msgstr "aanpassen"
 
@@ -645,7 +650,7 @@ msgstr "expliciet argument voor %r genegeerd"
 msgid "install built package"
 msgstr "gebouwd pakket installeren"
 
-#: pikaur/install_cli.py:717
+#: pikaur/install_cli.py:728
 msgid "installing for the first time"
 msgstr "eerste installatie"
 
@@ -657,7 +662,7 @@ msgstr "ongeldig getal: {}"
 msgid "invalid value: {} is not between {} and {}"
 msgstr "ongeldige waarde: '{}' ligt niet tussen '{}' en '{}'"
 
-#: pikaur/install_cli.py:543
+#: pikaur/install_cli.py:554
 msgid "looking for conflicting AUR packages..."
 msgstr "bezig met zoeken naar conflicterende AUR-pakketten..."
 
@@ -741,13 +746,13 @@ msgstr "alleen naar pakketten zoeken in AUR"
 msgid "query packages from repository only"
 msgstr "alleen naar pakketten zoeken in pakketbron"
 
-#: pikaur/install_cli.py:528 pikaur/install_cli.py:533 pikaur/build.py:636
+#: pikaur/install_cli.py:539 pikaur/install_cli.py:544 pikaur/build.py:636
 #: pikaur/build.py:641
 msgid "r"
 msgstr "r"
 
 #: pikaur/install_cli.py:208 pikaur/install_cli.py:221
-#: pikaur/install_cli.py:528 pikaur/install_cli.py:535 pikaur/build.py:615
+#: pikaur/install_cli.py:539 pikaur/install_cli.py:546 pikaur/build.py:615
 #: pikaur/build.py:637
 msgid "s"
 msgstr "s"
@@ -816,7 +821,7 @@ msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr ""
 "{name} {version} {package_source}-pakket is bijgewerkt - wordt overgeslagen"
 
-#: pikaur/install_cli.py:566
+#: pikaur/install_cli.py:577
 #, python-brace-format
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} en {installed} conflicteren. Wilt u {installed} verwijderen?"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-21 00:12+0100\n"
+"POT-Creation-Date: 2020-02-01 22:25+0100\n"
 "PO-Revision-Date: 2019-10-05 15:30+0200\n"
 "Last-Translator: Mattia Bertoni <mattia.b89@gmail.com>\n"
 "Language-Team: Italian <none>\n"
@@ -118,7 +118,7 @@ msgstr "Impossibile risolvere le dipendenze per il pacchetto AUR '{pkg}':"
 msgid "Check Deps"
 msgstr "Controllo Dipendenze"
 
-#: pikaur/build.py:611 pikaur/prompt.py:144
+#: pikaur/build.py:611 pikaur/prompt.py:176
 msgid "Command '{}' failed to execute."
 msgstr "L'esecuzione del comando '{}' è fallita."
 
@@ -158,11 +158,11 @@ msgstr "Dipende Da"
 msgid "Description"
 msgstr "Descrizione"
 
-#: pikaur/prompt.py:164
+#: pikaur/prompt.py:196
 msgid "Do you want to proceed without editing?"
 msgstr "Vuoi procedere senza modificare?"
 
-#: pikaur/prompt.py:110
+#: pikaur/prompt.py:142
 msgid "Do you want to proceed?"
 msgstr "Vuoi procedere?"
 
@@ -170,7 +170,7 @@ msgstr "Vuoi procedere?"
 msgid "Do you want to remove all files?"
 msgstr "Vuoi rimuovere tutti i file?"
 
-#: pikaur/prompt.py:148 pikaur/aur.py:88
+#: pikaur/prompt.py:180 pikaur/aur.py:88
 msgid "Do you want to retry?"
 msgstr "Vuoi riprovare?"
 
@@ -354,10 +354,11 @@ msgid "Pikaur-specific options:"
 msgstr "Opzioni specifiche di pikaur:"
 
 # package should be plural
-#: pikaur/main.py:217
+#: pikaur/main.py:219
 #, fuzzy
 msgid ""
-"Please enter the number of the package you want to install (default={}):"
+"Please enter the number of the package(s) you want to install and press "
+"[Enter] (default={}):"
 msgstr ""
 "Per favore inserire il numero del pacchetto che vuoi installare (default: 1):"
 
@@ -482,7 +483,7 @@ msgid "[A] abort"
 msgstr "[a] annulla"
 
 # 'N' stands for "No"
-#: pikaur/prompt.py:115
+#: pikaur/prompt.py:147
 msgid "[N]o (--noconfirm)"
 msgstr "[N]o (--noconfirm)"
 
@@ -492,7 +493,7 @@ msgid "[R] retry build"
 msgstr "[R] riprova"
 
 # 'S' stands for "Sì"
-#: pikaur/prompt.py:115
+#: pikaur/prompt.py:147
 msgid "[Y]es (--noconfirm)"
 msgstr "[S]ì (--noconfirm)"
 
@@ -676,11 +677,11 @@ msgstr "installa il pacchetto creato"
 msgid "installing for the first time"
 msgstr "sto installando per la prima volta"
 
-#: pikaur/main.py:229
+#: pikaur/main.py:239
 msgid "invalid number: {}"
 msgstr ""
 
-#: pikaur/main.py:233
+#: pikaur/main.py:229
 msgid "invalid value: {} is not between {} and {}"
 msgstr ""
 
@@ -694,11 +695,11 @@ msgid "m"
 msgstr "m"
 
 # 'n' stands for "no"
-#: pikaur/install_cli.py:387 pikaur/main.py:223 pikaur/prompt.py:20
+#: pikaur/install_cli.py:387 pikaur/prompt.py:20 pikaur/main.py:237
 msgid "n"
 msgstr "n"
 
-#: pikaur/prompt.py:163
+#: pikaur/prompt.py:195
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
 msgstr "nessun editor trovato. Prova impostando $VISUAL o $EDITOR."
 
@@ -734,7 +735,7 @@ msgstr "percorso del file di configurazione makepkg personalizzato"
 msgid "path to custom pikaur config"
 msgstr "percorso del file di configurazione pikaur personalizzato"
 
-#: pikaur/main.py:341
+#: pikaur/main.py:344
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur ha bisogno di Python >= 3.7 per essere eseguito."
 
@@ -742,7 +743,7 @@ msgstr "pikaur ha bisogno di Python >= 3.7 per essere eseguito."
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur ha bisogno di python-pysocks per usare un proxy socks5."
 
-#: pikaur/main.py:346
+#: pikaur/main.py:349
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur ha bisogno di systemd >= 235 (dynamic users) per essere eseguito come "

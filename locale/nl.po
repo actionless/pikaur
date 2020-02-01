@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-21 00:12+0100\n"
+"POT-Creation-Date: 2020-02-01 22:25+0100\n"
 "PO-Revision-Date: 2019-11-07 13:36+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
 "Language-Team: none\n"
@@ -114,7 +114,7 @@ msgstr "Kan afhankelijkheden van AUR-pakket '{pkg}' niet oplossen:"
 msgid "Check Deps"
 msgstr "Afhankelijkheden controleren"
 
-#: pikaur/build.py:611 pikaur/prompt.py:144
+#: pikaur/build.py:611 pikaur/prompt.py:176
 msgid "Command '{}' failed to execute."
 msgstr "De opdracht '{}' is mislukt."
 
@@ -154,11 +154,11 @@ msgstr "Afhankelijk van"
 msgid "Description"
 msgstr "Omschrijving"
 
-#: pikaur/prompt.py:164
+#: pikaur/prompt.py:196
 msgid "Do you want to proceed without editing?"
 msgstr "Wilt u doorgaan zonder bewerken?"
 
-#: pikaur/prompt.py:110
+#: pikaur/prompt.py:142
 msgid "Do you want to proceed?"
 msgstr "Wilt u doorgaan?"
 
@@ -166,7 +166,7 @@ msgstr "Wilt u doorgaan?"
 msgid "Do you want to remove all files?"
 msgstr "Wilt u alle bestanden verwijderen?"
 
-#: pikaur/prompt.py:148 pikaur/aur.py:88
+#: pikaur/prompt.py:180 pikaur/aur.py:88
 msgid "Do you want to retry?"
 msgstr "Wilt u het opnieuw proberen?"
 
@@ -350,9 +350,11 @@ msgstr "Pakketmap"
 msgid "Pikaur-specific options:"
 msgstr "Pikaur-specifieke opties:"
 
-#: pikaur/main.py:217
+#: pikaur/main.py:219
+#, fuzzy
 msgid ""
-"Please enter the number of the package you want to install (default={}):"
+"Please enter the number of the package(s) you want to install and press "
+"[Enter] (default={}):"
 msgstr "Voer het nummer in van het te installeren pakket (standaard: {}):"
 
 #: pikaur/info_cli.py:38
@@ -475,7 +477,7 @@ msgstr "Aantal stemmen"
 msgid "[A] abort"
 msgstr "[A]fbreken"
 
-#: pikaur/prompt.py:115
+#: pikaur/prompt.py:147
 msgid "[N]o (--noconfirm)"
 msgstr "[N]ee (--noconfirm)"
 
@@ -483,7 +485,7 @@ msgstr "[N]ee (--noconfirm)"
 msgid "[R] retry build"
 msgstr "[R] Opnieuw proberen"
 
-#: pikaur/prompt.py:115
+#: pikaur/prompt.py:147
 msgid "[Y]es (--noconfirm)"
 msgstr "[J]a (--noconfirm)"
 
@@ -647,11 +649,11 @@ msgstr "gebouwd pakket installeren"
 msgid "installing for the first time"
 msgstr "eerste installatie"
 
-#: pikaur/main.py:229
+#: pikaur/main.py:239
 msgid "invalid number: {}"
 msgstr "ongeldig getal: {}"
 
-#: pikaur/main.py:233
+#: pikaur/main.py:229
 msgid "invalid value: {} is not between {} and {}"
 msgstr "ongeldige waarde: '{}' ligt niet tussen '{}' en '{}'"
 
@@ -663,11 +665,11 @@ msgstr "bezig met zoeken naar conflicterende AUR-pakketten..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:387 pikaur/main.py:223 pikaur/prompt.py:20
+#: pikaur/install_cli.py:387 pikaur/prompt.py:20 pikaur/main.py:237
 msgid "n"
 msgstr "n"
 
-#: pikaur/prompt.py:163
+#: pikaur/prompt.py:195
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
 msgstr "Geen bewerker aangetroffen; stel $VISUAL of $EDITOR in."
 
@@ -701,7 +703,7 @@ msgstr "pad naar aangepaste makepkg-configuratie"
 msgid "path to custom pikaur config"
 msgstr "pad naar aangepaste pikaur-configuratie"
 
-#: pikaur/main.py:341
+#: pikaur/main.py:344
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur kan alleen worden uitgevoerd met Python >= 3.7."
 
@@ -709,7 +711,7 @@ msgstr "pikaur kan alleen worden uitgevoerd met Python >= 3.7."
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur kan alleen een socks5-proxy gebruiken middels python-pysocks."
 
-#: pikaur/main.py:346
+#: pikaur/main.py:349
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur kan alleen als root draaien (met dynamische gebruikers) met systemd "

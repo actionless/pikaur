@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-21 00:12+0100\n"
+"POT-Creation-Date: 2020-02-01 22:25+0100\n"
 "PO-Revision-Date: 2019-09-26 12:20+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -111,7 +111,7 @@ msgstr "AUR paketi '{pkg}' için bağımlılıklar çözülemedi:"
 msgid "Check Deps"
 msgstr "Bağımlılıkları Kontrol Et"
 
-#: pikaur/build.py:611 pikaur/prompt.py:144
+#: pikaur/build.py:611 pikaur/prompt.py:176
 msgid "Command '{}' failed to execute."
 msgstr "'{}' komutu çalıştırılamadı."
 
@@ -151,11 +151,11 @@ msgstr "Buna Bağımlı"
 msgid "Description"
 msgstr "Özet"
 
-#: pikaur/prompt.py:164
+#: pikaur/prompt.py:196
 msgid "Do you want to proceed without editing?"
 msgstr "Düzenlemeden devam etmek ister misiniz?"
 
-#: pikaur/prompt.py:110
+#: pikaur/prompt.py:142
 msgid "Do you want to proceed?"
 msgstr "Devam etmek ister misiniz?"
 
@@ -163,7 +163,7 @@ msgstr "Devam etmek ister misiniz?"
 msgid "Do you want to remove all files?"
 msgstr "Tüm dosyaları silmek ister misiniz?"
 
-#: pikaur/prompt.py:148 pikaur/aur.py:88
+#: pikaur/prompt.py:180 pikaur/aur.py:88
 msgid "Do you want to retry?"
 msgstr "Tekrar denemek ister misiniz?"
 
@@ -341,9 +341,11 @@ msgstr "Paketler dizini"
 msgid "Pikaur-specific options:"
 msgstr "Pikaur-özel seçenekler:"
 
-#: pikaur/main.py:217
+#: pikaur/main.py:219
+#, fuzzy
 msgid ""
-"Please enter the number of the package you want to install (default={}):"
+"Please enter the number of the package(s) you want to install and press "
+"[Enter] (default={}):"
 msgstr "Lütfen kurmak istediğiniz paketin numarasını girin (öntanımlı={}):"
 
 #: pikaur/info_cli.py:38
@@ -465,7 +467,7 @@ msgstr "Oylar"
 msgid "[A] abort"
 msgstr "[v] vazgeç"
 
-#: pikaur/prompt.py:115
+#: pikaur/prompt.py:147
 msgid "[N]o (--noconfirm)"
 msgstr "[H]ayır (--noconfirm)"
 
@@ -473,7 +475,7 @@ msgstr "[H]ayır (--noconfirm)"
 msgid "[R] retry build"
 msgstr "[R] tekrar inşa etmeyi dene"
 
-#: pikaur/prompt.py:115
+#: pikaur/prompt.py:147
 msgid "[Y]es (--noconfirm)"
 msgstr "[E]vet (--noconfirm)"
 
@@ -637,11 +639,11 @@ msgstr "inşa edilen paketi kur"
 msgid "installing for the first time"
 msgstr "ilk defa kuruluyor"
 
-#: pikaur/main.py:229
+#: pikaur/main.py:239
 msgid "invalid number: {}"
 msgstr "geçersiz numara: {}"
 
-#: pikaur/main.py:233
+#: pikaur/main.py:229
 msgid "invalid value: {} is not between {} and {}"
 msgstr "geçersiz değer: {} değeri {} ile {} arasında değil"
 
@@ -653,11 +655,11 @@ msgstr "çakışan paketlere bakılıyor..."
 msgid "m"
 msgstr "ç"
 
-#: pikaur/install_cli.py:387 pikaur/main.py:223 pikaur/prompt.py:20
+#: pikaur/install_cli.py:387 pikaur/prompt.py:20 pikaur/main.py:237
 msgid "n"
 msgstr "h"
 
-#: pikaur/prompt.py:163
+#: pikaur/prompt.py:195
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
 msgstr "düzenleyici bulanamadı. $VISUAL veya $EDITOR değişkenini ayarlayın."
 
@@ -691,7 +693,7 @@ msgstr "özel makepkg yapılandırması yolu"
 msgid "path to custom pikaur config"
 msgstr "özel pikaur yapılandırması yolu"
 
-#: pikaur/main.py:341
+#: pikaur/main.py:344
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur çalışabilmek için Python >= 3.7 gerektirir."
 
@@ -700,7 +702,7 @@ msgstr "pikaur çalışabilmek için Python >= 3.7 gerektirir."
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur çalışabilmek için Python >= 3.7 gerektirir."
 
-#: pikaur/main.py:346
+#: pikaur/main.py:349
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur root olabilmek için systemd >= 235 (dinamik kullanıcılar) gerektirir."

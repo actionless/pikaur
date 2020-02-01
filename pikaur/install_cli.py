@@ -454,12 +454,18 @@ class InstallPackagesCLI():
                 ))
 
             if aur_rpc_deps != srcinfo_deps:
-                print_warning(_("New build deps found for {pkg} package: {deps}").format(
-                    pkg=bold_line(', '.join(pkgbuild.package_names)),
-                    deps=bold_line(', '.join(
-                        aur_rpc_deps.symmetric_difference(srcinfo_deps)
-                    )),
-                ))
+                deps_added = srcinfo_deps.difference(aur_rpc_deps)
+                deps_removed = aur_rpc_deps.difference(srcinfo_deps)
+                if deps_added:
+                    print_warning(_("New build deps found for {pkg} package: {deps}").format(
+                        pkg=bold_line(', '.join(pkgbuild.package_names)),
+                        deps=bold_line(', '.join(deps_added)),
+                    ))
+                if deps_removed:
+                    print_warning(_("Some build deps removed for {pkg} package: {deps}").format(
+                        pkg=bold_line(', '.join(pkgbuild.package_names)),
+                        deps=bold_line(', '.join(deps_removed)),
+                    ))
                 for pkg_name in pkgbuild.package_names:
                     self.discard_install_info(pkg_name)
                 self.pkgbuilds_packagelists[pkgbuild.pkgbuild_path] = pkgbuild.package_names

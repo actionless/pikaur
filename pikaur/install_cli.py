@@ -644,7 +644,9 @@ class InstallPackagesCLI():
             return
         local_db = PackageDB.get_local_dict()
         for pkg_build in all_package_builds:
-            if not pkg_build.reviewed:
+            if not pkg_build.reviewed and (
+                    pkg_build.last_installed_hash != pkg_build.current_hash
+            ):
                 continue
             # pragma: no cover
             pkg_build.update_last_installed_file()
@@ -673,9 +675,6 @@ class InstallPackagesCLI():
 
     def review_build_files(self) -> None:  # pragma: no cover  pylint:disable=too-many-branches
         if self.args.needed or self.args.devel:
-            for pkg_build in set(self.package_builds_by_name.values()):
-                if pkg_build.last_installed_hash == pkg_build.current_hash:
-                    pkg_build.reviewed = True
             self._get_installed_status()
         for pkg_build in set(self.package_builds_by_name.values()):
             _pkg_label = bold_line(', '.join(pkg_build.package_names))

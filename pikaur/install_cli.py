@@ -412,6 +412,7 @@ class InstallPackagesCLI():
             break
 
     def discard_install_info(self, canceled_pkg_name: str) -> None:
+        self.manually_excluded_packages_names.append(canceled_pkg_name)
         for pkg_name in self.install_info.discard_package(canceled_pkg_name):
             if pkg_name in self.install_package_names:
                 self.install_package_names.remove(pkg_name)

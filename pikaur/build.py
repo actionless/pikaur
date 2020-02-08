@@ -256,7 +256,8 @@ class PackageBuild(DataType):
             print_stderr(pkgver_result.stdout_text)
             if not ask_to_continue(default_yes=False):
                 raise SysExit(125)
-        SrcInfo(self.build_dir).regenerate()
+        if self.reviewed:
+            SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True
 
     def get_version(self, package_name: str) -> str:

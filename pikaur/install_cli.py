@@ -72,7 +72,7 @@ def edit_file(filename: str) -> bool:  # pragma: no cover
     return old_hash != new_hash
 
 
-class InstallPackagesCLI():  # pylint:disable=too-many-public-methods
+class InstallPackagesCLI():
 
     # User input
     args: PikaurArgs
@@ -172,7 +172,6 @@ class InstallPackagesCLI():  # pylint:disable=too-many-public-methods
             if not self.args.downloadonly:
                 self.ask_about_package_conflicts()
             self.review_build_files()
-            self.find_extra_aur_deps()
 
             self.install_packages()
         except self.ExitMainSequence:
@@ -476,16 +475,6 @@ class InstallPackagesCLI():  # pylint:disable=too-many-public-methods
             self.main_sequence()
             raise self.ExitMainSequence()
 
-    def find_extra_aur_deps(self):
-        for pkg_list in (self.aur_packages_names, self.aur_deps_names):
-            self._find_extra_aur_build_deps(
-                all_package_builds={
-                    pkg_name: pkgbuild for pkg_name, pkgbuild
-                    in self.package_builds_by_name.items()
-                    if pkg_name in pkg_list
-                }
-            )
-
     def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:
             try:
@@ -510,6 +499,14 @@ class InstallPackagesCLI():  # pylint:disable=too-many-public-methods
                         clone_names.append(info.name)
                 cloned_pkgbuilds = clone_aur_repos(clone_names)
                 pkgbuilds_by_name.update(cloned_pkgbuilds)
+                for pkg_list in (self.aur_packages_names, self.aur_deps_names):
+                    self._find_extra_aur_build_deps(
+                        all_package_builds={
+                            pkg_name: pkgbuild for pkg_name, pkgbuild
+                            in pkgbuilds_by_name.items()
+                            if pkg_name in pkg_list
+                        }
+                    )
                 self.package_builds_by_name = pkgbuilds_by_name
                 break
 

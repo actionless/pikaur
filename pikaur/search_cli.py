@@ -64,7 +64,7 @@ def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:  # py
                             )
                         )
                         use_as_filters.append(query)
-                    if exc.error == "Query arg too small.":
+                    elif exc.error == "Query arg too small.":
                         print_error(
                             _("AUR: Query arg too small '{query}'").format(
                                 query=query

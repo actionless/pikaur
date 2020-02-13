@@ -131,6 +131,7 @@ if [[ "${answer}" = "y" ]] ; then
 	cd "${src_repo_dir}"
 	rm -fr ./dist
 	env PYPY_BUILD=1 python setup.py sdist
+	twine check ./dist/*
 	twine upload ./dist/*
 fi
 answer=

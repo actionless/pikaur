@@ -5,7 +5,7 @@ import os
 import hashlib
 from multiprocessing.pool import ThreadPool
 from tempfile import NamedTemporaryFile
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional, Set, Any
 
 import pyalpm
 
@@ -25,7 +25,7 @@ from .exceptions import (
 from .build import PackageBuild, clone_aur_repos, PkgbuildChanged
 from .pprint import (
     color_line, bold_line,
-    print_stderr, print_stdout, print_warning, print_error,
+    print_stderr, print_stdout, print_warning, print_error, print_debug,
 )
 from .print_department import (
     pretty_format_sysupgrade,
@@ -45,6 +45,10 @@ from .srcinfo import SrcInfo
 from .news import News
 from .version import compare_versions
 from .updates import is_devel_pkg
+
+
+def debug(msg: Any) -> None:
+    print_debug(f"install_cli: {str(msg)}")
 
 
 def hash_file(filename: str) -> str:  # pragma: no cover
@@ -412,8 +416,10 @@ class InstallPackagesCLI():
             break
 
     def discard_install_info(self, canceled_pkg_name: str) -> None:
+        debug(f"discarding install info for pkg... {canceled_pkg_name}")
         self.manually_excluded_packages_names.append(canceled_pkg_name)
         for pkg_name in self.install_info.discard_package(canceled_pkg_name):
+            debug(f"discarded install info for pkg: {pkg_name}")
             if pkg_name in self.install_package_names:
                 self.install_package_names.remove(pkg_name)
             if pkg_name in self.not_found_repo_pkgs_names:

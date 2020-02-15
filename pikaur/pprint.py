@@ -4,7 +4,7 @@ import sys
 import shutil
 from threading import Lock
 from string import printable
-from typing import List, Optional, TextIO
+from typing import List, Optional, TextIO, Any
 
 from .i18n import _
 from .args import parse_args
@@ -12,10 +12,11 @@ from .args import parse_args
 
 PADDING = 4
 PRINT_LOCK = Lock()
+ARGS = parse_args()
 
 
 def color_enabled() -> bool:
-    args = parse_args()
+    args = ARGS
     if args.color == 'never':
         return False
     if args.color == 'always' or (sys.stderr.isatty() and sys.stdout.isatty()):
@@ -81,6 +82,19 @@ def print_error(message: str) -> None:
     print_stderr(' '.join([
         color_line(':: ' + _("error:"), 9),
         message
+    ]))
+
+
+def print_debug(message: Any) -> None:
+    if not ARGS.pikaur_debug:
+        return
+    prefix = _("debug:")
+    if ARGS.debug:
+        # to avoid mixing together with pacman's debug messages:
+        prefix = _("pikaur debug:")
+    print_stderr(' '.join([
+        color_line(':: ' + prefix, 6),
+        str(message)
     ]))
 
 

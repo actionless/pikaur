@@ -36,6 +36,7 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     ('h', 'help', None),
     # universal options
     ('v', 'verbose', None),
+    (None, 'debug', None),
     (None, 'noconfirm', None),
     (None, 'needed', None),
 ]
@@ -62,6 +63,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, 'print-commands', PikaurConfig().ui.PrintCommands.get_bool()),
         (None, 'hide-build-log', None),
         (None, 'print-args-and-exit', None),
+        (None, 'pikaur-debug', None),
     ]
 
 
@@ -176,6 +178,9 @@ class PikaurArgs(Namespace):
         for ignored in self.ignore or []:
             new_ignore += ignored.split(',')
         self.ignore = new_ignore
+
+        if self.debug:
+            self.pikaur_debug = True
 
     def validate(self) -> None:
         if self.query:

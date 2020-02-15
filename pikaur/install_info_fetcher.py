@@ -1,7 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 from multiprocessing.pool import ThreadPool
-from typing import List, Optional, Dict, Iterable
+from typing import List, Optional, Dict, Iterable, Any
 
 from .i18n import _
 from .core import PackageSource, InstallInfo, ComparableType
@@ -20,6 +20,10 @@ from .print_department import print_ignored_package, print_not_found_packages
 from .updates import find_aur_updates
 from .replacements import find_replacements
 from .srcinfo import SrcInfo
+
+
+def debug(msg: Any) -> None:
+    print_debug(f"install_info_fetcher: {str(msg)}")
 
 
 class InstallInfoFetcher(ComparableType):
@@ -114,6 +118,7 @@ class InstallInfoFetcher(ComparableType):
     def discard_package(
             self, canceled_pkg_name: str, already_discarded: List[str] = None
     ) -> List[str]:
+        debug(f"discarding {canceled_pkg_name=}")
         for container in self.all_install_info:
             for info in container[:]:
                 if info.name == canceled_pkg_name:
@@ -122,12 +127,13 @@ class InstallInfoFetcher(ComparableType):
         already_discarded = (already_discarded or []) + [canceled_pkg_name]
         for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
             if canceled_pkg_name in aur_deps + [aur_pkg_name]:
+                debug(f"{aur_pkg_name=}: {aur_deps=}")
                 for pkg_name in aur_deps + [aur_pkg_name]:
                     if pkg_name not in already_discarded:
                         already_discarded += self.discard_package(pkg_name, already_discarded)
                 if aur_pkg_name in self.aur_deps_relations:
                     del self.aur_deps_relations[aur_pkg_name]
-        return already_discarded
+        return list(set(already_discarded))
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
         """

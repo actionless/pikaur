@@ -126,7 +126,7 @@ class InstallInfoFetcher(ComparableType):
 
         already_discarded = (already_discarded or []) + [canceled_pkg_name]
         for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
-            if canceled_pkg_name in aur_deps + [aur_pkg_name]:
+            if canceled_pkg_name == aur_pkg_name:
                 debug(f"{aur_pkg_name=}: {aur_deps=}")
                 for pkg_name in aur_deps + [aur_pkg_name]:
                     if pkg_name not in already_discarded:

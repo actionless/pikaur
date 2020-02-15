@@ -402,7 +402,7 @@ def main() -> None:
 
     atexit.register(restore_tty)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    if not args.verbose:
+    if not args.pikaur_debug:
         signal.signal(signal.SIGINT, handle_sig_int)
 
     try:

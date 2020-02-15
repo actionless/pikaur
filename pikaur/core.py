@@ -128,7 +128,7 @@ class InteractiveSpawn(subprocess.Popen):
     def communicate(self, _input=None, _timeout=None) -> Tuple[bytes, bytes]:
         #  pylint:disable=import-outside-toplevel
         from .args import parse_args
-        if parse_args().verbose:
+        if parse_args().print_commands:
             from .pprint import print_stderr, color_line
             if self.args != get_sudo_refresh_command():
                 print_stderr(

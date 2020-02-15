@@ -182,6 +182,9 @@ class PikaurArgs(Namespace):
         if self.debug:
             self.pikaur_debug = True
 
+        if self.pikaur_debug or self.verbose:
+            self.print_commands = True
+
     def validate(self) -> None:
         if self.query:
             if not self.sysupgrade:

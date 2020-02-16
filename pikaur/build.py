@@ -146,6 +146,8 @@ class PackageBuild(DataType):
             os.makedirs(self.repo_path)
             self.clone = True
 
+        self.reviewed = self.current_hash == self.last_installed_hash
+
     def git_reset_changed(self) -> InteractiveSpawn:
         return interactive_spawn(isolate_root_cmd([
             'git',
@@ -176,7 +178,9 @@ class PackageBuild(DataType):
             ]
         if not cmd_args:
             return NotImplemented
-        return spawn(isolate_root_cmd(cmd_args))
+        result = spawn(isolate_root_cmd(cmd_args))
+        self.reviewed = self.current_hash == self.last_installed_hash
+        return result
 
     @property
     def last_installed_file_path(self) -> str:
@@ -223,13 +227,13 @@ class PackageBuild(DataType):
             return current_hash_file.readlines()[0].strip()
 
     def get_latest_dev_sources(self, check_dev_pkgs=True) -> None:
+        if not self.reviewed:
+            return
         self.prepare_build_destination()
         if (
                 self._source_repo_updated
         ) or (
             not (is_devel_pkg(self.package_base) and check_dev_pkgs)
-        ) or (
-            (self.last_installed_hash != self.current_hash) and not self.reviewed
         ):
             return
         print_stdout('{} {}...'.format(
@@ -256,8 +260,7 @@ class PackageBuild(DataType):
             print_stderr(pkgver_result.stdout_text)
             if not ask_to_continue(default_yes=False):
                 raise SysExit(125)
-        if self.reviewed:
-            SrcInfo(self.build_dir).regenerate()
+        SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True
 
     def get_version(self, package_name: str) -> str:

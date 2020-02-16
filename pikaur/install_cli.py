@@ -650,9 +650,7 @@ class InstallPackagesCLI():
             return
         local_db = PackageDB.get_local_dict()
         for pkg_build in all_package_builds:
-            if not pkg_build.reviewed and (
-                    pkg_build.last_installed_hash != pkg_build.current_hash
-            ):
+            if not pkg_build.reviewed:
                 continue
             # pragma: no cover
             pkg_build.update_last_installed_file()
@@ -685,13 +683,6 @@ class InstallPackagesCLI():
         for pkg_build in set(self.package_builds_by_name.values()):
             _pkg_label = bold_line(', '.join(pkg_build.package_names))
             _skip_diff_label = _("Not showing diff for {pkg} package ({reason})")
-
-            if pkg_build.reviewed:
-                print_warning(_skip_diff_label.format(
-                    pkg=_pkg_label,
-                    reason=_("already reviewed")
-                ))
-                continue
 
             if (
                     pkg_build.last_installed_hash != pkg_build.current_hash

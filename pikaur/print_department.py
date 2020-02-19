@@ -105,7 +105,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             sort_by = pkg_update.name
         elif user_chosen_sorting == 'repo':
             sort_by = (
-                pkg_update.repository,
+                pkg_update.repository or 'zzz_(aur)',
                 pkg_update.name
             )
 

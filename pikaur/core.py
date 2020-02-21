@@ -110,10 +110,9 @@ class InstallInfo(DataType):
 
 
 def sudo(cmd: List[str]) -> List[str]:
-    privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
     if running_as_root():
         return cmd
-    return [privilege_escalation_tool, ] + cmd
+    return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), ] + cmd
 
 
 def get_sudo_refresh_command() -> List[str]:

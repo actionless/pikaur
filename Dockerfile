@@ -43,6 +43,8 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 RUN pacman -S --noconfirm --needed python-pip && pip install -U mypy==0.720  # @TODO: mypy 0.730 is broken
 # RUN pacman -S --noconfirm --needed python-pip && pip install -U git+https://github.com/python/mypy/  # @TODO: mypy 0.730 is broken
 
+RUN pacman -Rdd --noconfirm python-wrapt && pip install -U wrapt==1.11.2  # @TODO: pylint/wrapt deptree broken in current arch line
+
 RUN sudo -u user env \
 	TRAVIS=$TRAVIS \
 	TRAVIS_JOB_ID=$TRAVIS_JOB_ID \

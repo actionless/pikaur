@@ -43,6 +43,7 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 * [FAQ](#faq "")
 * [Contributing](#contributing "")
 * - [Translations](#translations "")
+* - [Documentation](#documentation "")
 * [Authors](#authors "")
 
 

@@ -174,6 +174,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
         },
     },
     'misc': {
+        'UseDoas': {
+            'type': 'bool',
+            'default': 'no',
+        },
         'SudoLoopInterval': {
             'type': 'int',
             'default': '59',

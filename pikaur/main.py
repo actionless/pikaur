@@ -358,7 +358,6 @@ def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
             dep_names = [
                 "fakeroot",
             ] + (['sudo'] if not running_as_root() else [])
- 
 
     for dep_bin in dep_names:
         if not shutil.which(dep_bin):

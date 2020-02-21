@@ -174,10 +174,6 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
         },
     },
     'misc': {
-        'UseDoas': {
-            'type': 'bool',
-            'default': 'no',
-        },
         'SudoLoopInterval': {
             'type': 'int',
             'default': '59',
@@ -193,6 +189,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
         'NewsUrl': {
             'type': 'str',
             'default': 'https://www.archlinux.org/feeds/news/',
+        },
+        'PrivilegeEscalationTool': {
+            'type': 'str',
+            'default': 'sudo',
         },
     },
     'network': {

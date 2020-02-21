@@ -112,6 +112,8 @@ class InstallInfo(DataType):
 def sudo(cmd: List[str]) -> List[str]:
     if running_as_root():
         return cmd
+    if PikaurConfig().misc.UseDoas.get_bool():
+        return ['doas', ] + cmd
     return ['sudo', ] + cmd
 
 

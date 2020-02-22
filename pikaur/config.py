@@ -79,7 +79,7 @@ def get_config_path() -> str:
 CONFIG_PATH = get_config_path()
 
 
-CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
+CONFIG_SCHEMA: Dict[str, Any] = {
     'sync': {
         'AlwaysShowPkgOrigin': {
             'type': 'bool',
@@ -216,6 +216,11 @@ def write_config(config: configparser.ConfigParser = None) -> None:
         if section_name not in config:
             config[section_name] = {}
         for option_name, option_schema in section.items():
+            if option_schema.get('migrated'):
+                need_write = True
+                continue
+            if option_schema.get('deprecated'):
+                continue
             if option_name not in config[section_name]:
                 config[section_name][option_name] = option_schema['default']
                 need_write = True
@@ -267,6 +272,9 @@ class PikaurConfigSection():
     def __getattr__(self, attr) -> PikaurConfigItem:
         return PikaurConfigItem(self.section, attr)
 
+    def __repr__(self) -> str:
+        return str(self.section)
+
 
 class PikaurConfig():
 
@@ -279,9 +287,47 @@ class PikaurConfig():
             if not os.path.exists(CONFIG_PATH):
                 write_config()
             cls._config.read(CONFIG_PATH, encoding='utf-8')
+            cls.migrate_config()
             write_config(config=cls._config)
             cls.validate_config()
         return cls._config
+
+    @classmethod
+    def migrate_config(cls) -> None:
+        for section_name, section in CONFIG_SCHEMA.items():
+            for option_name, option_schema in section.items():
+                if not option_schema.get('deprecated'):
+                    continue
+
+                new_section_name: str = option_schema['deprecated']['section']
+                new_option_name: str = option_schema['deprecated']['option']
+
+                old_value_was_migrated = False
+                if cls._config[new_section_name].get(new_option_name) is None:
+                    value_to_migrate = cls._config[section_name].get(option_name)
+                    if value_to_migrate is not None:
+                        cls._config[new_section_name][new_option_name] = value_to_migrate
+                        CONFIG_SCHEMA[new_section_name][new_option_name]['migrated'] = True
+                        old_value_was_migrated = True
+
+                old_value_was_removed = False
+                if option_name in cls._config[section_name]:
+                    del cls._config[section_name][option_name]
+                    CONFIG_SCHEMA[section_name][option_name]['migrated'] = True
+                    old_value_was_removed = True
+
+                if old_value_was_migrated or old_value_was_removed:
+                    print(' '.join([
+                        '\n',
+                        '::',
+                        _("warning:"),
+                        _('Migrating [{}]{} config option to [{}]{} = "{}"...').format(
+                            section_name, option_name,
+                            new_section_name, new_option_name,
+                            cls._config[new_section_name][new_option_name]
+                        ),
+                        '\n',
+                    ]))
 
     @classmethod
     def validate_config(cls) -> None:

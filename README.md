@@ -164,19 +164,13 @@ Reverse search results of the commands like `pikaur -Ss <query>` or `pikaur <que
 
 #### [misc]
 
+##### PacmanPath (default: pacman)
+Path to pacman executable.
+
 ##### SudoLoopInterval (default: 59)
 Interval in seconds in which `sudo` command will be spawned in the background
 to avoid asking for sudo password more than once
 (`-1` to disable sudo loop at all).
-
-##### PacmanPath (default: pacman)
-Path to pacman executable.
-
-##### AurHost (default: aur.archlinux.org)
-AUR Host, useful for users in China to use "aur.tuna.tsinghua.edu.cn".
-
-##### NewsUrl (default: https://www.archlinux.org/feeds/news/)
-Arch Linux News URL, useful for users of Parabola or other Arch derivatives.
 
 ##### PrivilegeEscalationTool (default: sudo)
 A tool used to escalate user privileges. If using `doas` then `persistent` option is required in `doas.conf`. For example:
@@ -185,7 +179,14 @@ permit persist :wheel
 ```
 Currently supported options are `sudo` and `doas`.
 
+
 #### [network]
+
+##### AurUrl (default: https://aur.archlinux.org)
+AUR Host, useful for users in China to use `https://aur.tuna.tsinghua.edu.cn`.
+
+##### NewsUrl (default: https://www.archlinux.org/feeds/news/)
+Arch Linux News URL, useful for users of Parabola or other Arch derivatives.
 
 ##### Socks5Proxy (default: )
 Specify a socks5 proxy which is used to get AUR package information.

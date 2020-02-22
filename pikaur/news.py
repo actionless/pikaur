@@ -23,7 +23,7 @@ DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
 
 
 class News:
-    URL = PikaurConfig().misc.NewsUrl.get_str()
+    URL = PikaurConfig().network.NewsUrl.get_str()
     CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
     _news_feed: Union[xml.etree.ElementTree.Element, None]
 

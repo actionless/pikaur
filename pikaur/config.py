@@ -218,20 +218,35 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'str',
             'default': 'pacman'
         },
+        'PrivilegeEscalationTool': {
+            'type': 'str',
+            'default': 'sudo',
+        },
         'AurHost': {
             'type': 'str',
-            'default': 'aur.archlinux.org',
+            'deprecated': {
+                'section': 'network',
+                'option': 'AurUrl',
+                'transform': lambda old_value, config: f'https://{old_value}'
+            },
+        },
+        'NewsUrl': {
+            'type': 'str',
+            'deprecated': {
+                'section': 'network',
+                'option': 'NewsUrl',
+            },
+        },
+    },
+    'network': {
+        'AurUrl': {
+            'type': 'str',
+            'default': 'https://aur.archlinux.org',
         },
         'NewsUrl': {
             'type': 'str',
             'default': 'https://www.archlinux.org/feeds/news/',
         },
-        'PrivilegeEscalationTool': {
-            'type': 'str',
-            'default': 'sudo',
-        },
-    },
-    'network': {
         'Socks5Proxy': {
             'type': 'str',
             'default': '',

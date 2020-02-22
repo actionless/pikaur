@@ -216,22 +216,22 @@ Reverse search results of the commands like \fBpikaur \-Ss <query>\fR or \fBpika
 .
 .SS "[misc]"
 .
-.SS "SudoLoopInterval (default: 59)"
-Interval in seconds in which \fBsudo\fR command will be spawned in the background to avoid asking for sudo password more than once (\fB\-1\fR to disable sudo loop at all)\.
-.
 .SS "PacmanPath (default: pacman)"
 Path to pacman executable\.
 .
-.SS "AurHost (default: aur\.archlinux\.org)"
-AUR Host, useful for users in China to use "aur\.tuna\.tsinghua\.edu\.cn"\.
-.
-.SS "NewsUrl (default: https://www\.archlinux\.org/feeds/news/)"
-Arch Linux News URL, useful for users of Parabola or other Arch derivatives\.
+.SS "SudoLoopInterval (default: 59)"
+Interval in seconds in which \fBsudo\fR command will be spawned in the background to avoid asking for sudo password more than once (\fB\-1\fR to disable sudo loop at all)\.
 .
 .SS "PrivilegeEscalationTool (default: sudo)"
 A tool used to escalate user privileges\. If using \fBdoas\fR then \fBpersistent\fR option is required in \fBdoas\.conf\fR\. For example: \fBpermit persist :wheel\fR Currently supported options are \fBsudo\fR and \fBdoas\fR\.
 .
 .SS "[network]"
+.
+.SS "AurUrl (default: https://aur\.archlinux\.org)"
+AUR Host, useful for users in China to use \fBhttps://aur\.tuna\.tsinghua\.edu\.cn\fR\.
+.
+.SS "NewsUrl (default: https://www\.archlinux\.org/feeds/news/)"
+Arch Linux News URL, useful for users of Parabola or other Arch derivatives\.
 .
 .SS "Socks5Proxy (default: )"
 Specify a socks5 proxy which is used to get AUR package information\.

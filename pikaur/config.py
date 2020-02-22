@@ -5,7 +5,7 @@ import sys
 import configparser
 import shutil
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, Callable
 
 from .i18n import _
 
@@ -337,6 +337,7 @@ class PikaurConfig():
 
                 new_section_name: str = option_schema['deprecated']['section']
                 new_option_name: str = option_schema['deprecated']['option']
+                transform: Optional[Callable] = option_schema['deprecated'].get('transform')
 
                 old_value_was_migrated = False
                 if (
@@ -346,6 +347,8 @@ class PikaurConfig():
                 ):
                     value_to_migrate = cls._config[section_name].get(option_name)
                     if value_to_migrate is not None:
+                        if transform:
+                            value_to_migrate = transform(value_to_migrate, cls._config)
                         if new_section_name not in cls._config:
                             cls._config[new_section_name] = {}
                         cls._config[new_section_name][new_option_name] = value_to_migrate

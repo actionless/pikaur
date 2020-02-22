@@ -357,7 +357,6 @@ class PikaurConfig():
 
                 if old_value_was_migrated or old_value_was_removed:
                     print(' '.join([
-                        '\n',
                         '::',
                         _("warning:"),
                         _('Migrating [{}]{} config option to [{}]{} = "{}"...').format(

@@ -138,7 +138,10 @@ CONFIG_SCHEMA: Dict[str, Any] = {
         },
         'GitDiffArgs': {
             'type': 'str',
-            'default': '--ignore-space-change,--ignore-all-space',
+            'deprecated': {
+                'section': 'ui',
+                'option': 'GitDiffArgs',
+            },
         },
     },
     'colors': {
@@ -163,6 +166,10 @@ CONFIG_SCHEMA: Dict[str, Any] = {
         'DiffPager': {
             'type': 'str',
             'default': 'auto'
+        },
+        'GitDiffArgs': {
+            'type': 'str',
+            'default': '--ignore-space-change,--ignore-all-space',
         },
         'PrintCommands': {
             'type': 'bool',

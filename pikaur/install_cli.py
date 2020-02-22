@@ -704,7 +704,7 @@ class InstallPackagesCLI():
                         '-C',
                         pkg_build.repo_path,
                         'diff',
-                    ] + PikaurConfig().build.GitDiffArgs.get_str().split(',') + [
+                    ] + PikaurConfig().ui.GitDiffArgs.get_str().split(',') + [
                         pkg_build.last_installed_hash,
                         pkg_build.current_hash,
                     ]

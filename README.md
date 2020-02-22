@@ -126,10 +126,6 @@ Will be overridden by `--noedit` and `--edit` flags.
 Don't prompt to show the build files diff.
 Will be overridden by `--nodiff` flag.
 
-##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
-Flags to be passed to `git diff` command when reviewing build files.
-Should be separated by commas (`,`).
-
 ##### AlwaysUseDynamicUsers (default: no)
 Always isolate the build using systemd dynamic users.
 Will be overridden by `--dynamic-users` flag.
@@ -150,6 +146,10 @@ Require enter key to be pressed when answering questions.
 
 ##### DiffPager (default: auto)
 Wherever to use `less` pager when viewing AUR packages diff. Choices are `always`, `auto` or `never`.
+
+##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
+Flags to be passed to `git diff` command when reviewing build files.
+Should be separated by commas (`,`).
 
 ##### PrintCommands (default: no)
 Print each command which pikaur is currently spawning.

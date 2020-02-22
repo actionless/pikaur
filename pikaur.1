@@ -183,9 +183,6 @@ Don\'t prompt to edit PKGBUILD and install files\. Will be overridden by \fB\-\-
 .SS "NoDiff (default: no)"
 Don\'t prompt to show the build files diff\. Will be overridden by \fB\-\-nodiff\fR flag\.
 .
-.SS "GitDiffArgs (default: \-\-ignore\-space\-change,\-\-ignore\-all\-space)"
-Flags to be passed to \fBgit diff\fR command when reviewing build files\. Should be separated by commas (\fB,\fR)\.
-.
 .SS "AlwaysUseDynamicUsers (default: no)"
 Always isolate the build using systemd dynamic users\. Will be overridden by \fB\-\-dynamic\-users\fR flag\.
 .
@@ -205,6 +202,9 @@ Require enter key to be pressed when answering questions\.
 .
 .SS "DiffPager (default: auto)"
 Wherever to use \fBless\fR pager when viewing AUR packages diff\. Choices are \fBalways\fR, \fBauto\fR or \fBnever\fR\.
+.
+.SS "GitDiffArgs (default: \-\-ignore\-space\-change,\-\-ignore\-all\-space)"
+Flags to be passed to \fBgit diff\fR command when reviewing build files\. Should be separated by commas (\fB,\fR)\.
 .
 .SS "PrintCommands (default: no)"
 Print each command which pikaur is currently spawning\.

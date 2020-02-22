@@ -123,7 +123,6 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'bool',
             'default': 'no',
         },
-        # @TODO: move above to new `review` section?
         'NoEdit': {
             'type': 'bool',
             'deprecated': {
@@ -340,7 +339,11 @@ class PikaurConfig():
                 new_option_name: str = option_schema['deprecated']['option']
 
                 old_value_was_migrated = False
-                if new_section_name not in cls._config or cls._config[new_section_name].get(new_option_name) is None:
+                if (
+                        new_section_name not in cls._config
+                ) or (
+                    cls._config[new_section_name].get(new_option_name) is None
+                ):
                     value_to_migrate = cls._config[section_name].get(option_name)
                     if value_to_migrate is not None:
                         if new_section_name not in cls._config:

@@ -5,7 +5,7 @@ echo Flake8:
 flake8 pikaur pikaur.py pikaur_test
 
 echo PyLint:
-pylint pikaur.py pikaur pikaur_test --score no
+python -m pylint pikaur.py pikaur pikaur_test --score no
 
 echo MyPy:
 env MYPYPATH=./maintenance_scripts/mypy_stubs python -m mypy pikaur.py pikaur_test

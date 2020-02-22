@@ -350,9 +350,11 @@ def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
         )
         sys.exit(65)
     if not dep_names:
-        dep_names = [
-            "fakeroot",
-        ] + (['sudo'] if not running_as_root() else [])
+        privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
+        dep_names = ["fakeroot", ] + (
+            [privilege_escalation_tool] if not running_as_root() else []
+        )
+
     for dep_bin in dep_names:
         if not shutil.which(dep_bin):
             print_error("'{}' {}.".format(

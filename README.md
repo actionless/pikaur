@@ -174,6 +174,12 @@ AUR Host, useful for users in China to use "aur.tuna.tsinghua.edu.cn".
 ##### NewsUrl (default: https://www.archlinux.org/feeds/news/)
 Arch Linux News URL, useful for users of Parabola or other Arch derivatives.
 
+##### PrivilegeEscalationTool (default: sudo)
+A tool used to escalate user privileges. If using `doas` then `persistent` option is required in `doas.conf`. For example:
+```
+permit persist :wheel
+```
+Currently supported options are `sudo` and `doas`.
 
 #### [network]
 

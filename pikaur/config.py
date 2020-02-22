@@ -190,6 +190,10 @@ CONFIG_SCHEMA: Dict[str, Dict[str, Dict[str, str]]] = {
             'type': 'str',
             'default': 'https://www.archlinux.org/feeds/news/',
         },
+        'PrivilegeEscalationTool': {
+            'type': 'str',
+            'default': 'sudo',
+        },
     },
     'network': {
         'Socks5Proxy': {

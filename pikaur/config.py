@@ -126,6 +126,36 @@ CONFIG_SCHEMA: Dict[str, Any] = {
         # @TODO: move above to new `review` section?
         'NoEdit': {
             'type': 'bool',
+            'deprecated': {
+                'section': 'review',
+                'option': 'NoEdit',
+            },
+        },
+        'DontEditByDefault': {
+            'type': 'bool',
+            'deprecated': {
+                'section': 'review',
+                'option': 'DontEditByDefault',
+            },
+        },
+        'NoDiff': {
+            'type': 'bool',
+            'deprecated': {
+                'section': 'review',
+                'option': 'NoDiff',
+            },
+        },
+        'GitDiffArgs': {
+            'type': 'str',
+            'deprecated': {
+                'section': 'review',
+                'option': 'GitDiffArgs',
+            },
+        },
+    },
+    'review': {
+        'NoEdit': {
+            'type': 'bool',
             'default': 'no',
         },
         'DontEditByDefault': {
@@ -138,10 +168,11 @@ CONFIG_SCHEMA: Dict[str, Any] = {
         },
         'GitDiffArgs': {
             'type': 'str',
-            'deprecated': {
-                'section': 'ui',
-                'option': 'GitDiffArgs',
-            },
+            'default': '--ignore-space-change,--ignore-all-space',
+        },
+        'DiffPager': {
+            'type': 'str',
+            'default': 'auto'
         },
     },
     'colors': {
@@ -165,11 +196,10 @@ CONFIG_SCHEMA: Dict[str, Any] = {
         },
         'DiffPager': {
             'type': 'str',
-            'default': 'auto'
-        },
-        'GitDiffArgs': {
-            'type': 'str',
-            'default': '--ignore-space-change,--ignore-all-space',
+            'deprecated': {
+                'section': 'review',
+                'option': 'DiffPager',
+            },
         },
         'PrintCommands': {
             'type': 'bool',

@@ -613,7 +613,7 @@ class InstallPackagesCLI():
                     name=bold_line(', '.join(package_build.package_names)),
                 ),
                 default_yes=not (package_build.last_installed_hash or
-                                 PikaurConfig().build.DontEditByDefault.get_bool())
+                                 PikaurConfig().review.DontEditByDefault.get_bool())
         ):
             return False
         full_filename = os.path.join(
@@ -704,11 +704,11 @@ class InstallPackagesCLI():
                         '-C',
                         pkg_build.repo_path,
                         'diff',
-                    ] + PikaurConfig().ui.GitDiffArgs.get_str().split(',') + [
+                    ] + PikaurConfig().review.GitDiffArgs.get_str().split(',') + [
                         pkg_build.last_installed_hash,
                         pkg_build.current_hash,
                     ]
-                    diff_pager = PikaurConfig().ui.DiffPager
+                    diff_pager = PikaurConfig().review.DiffPager
                     if diff_pager == 'always':
                         git_args = ['env', 'GIT_PAGER=less -+F'] + git_args
                     elif diff_pager == 'never':

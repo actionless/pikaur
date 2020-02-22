@@ -115,6 +115,13 @@ Will be overridden by `--keepbuilddeps` flag.
 ##### SkipFailedBuild (default: no)
 Always skip the build if it fails and don't show recovery prompt.
 
+##### AlwaysUseDynamicUsers (default: no)
+Always isolate the build using systemd dynamic users.
+Will be overridden by `--dynamic-users` flag.
+
+
+#### [review]
+
 ##### DontEditByDefault (default: no)
 Always default to no when prompting to edit PKGBUILD and install files.
 
@@ -126,9 +133,13 @@ Will be overridden by `--noedit` and `--edit` flags.
 Don't prompt to show the build files diff.
 Will be overridden by `--nodiff` flag.
 
-##### AlwaysUseDynamicUsers (default: no)
-Always isolate the build using systemd dynamic users.
-Will be overridden by `--dynamic-users` flag.
+##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
+Flags to be passed to `git diff` command when reviewing build files.
+Should be separated by commas (`,`).
+
+##### DiffPager (default: auto)
+Wherever to use `less` pager when viewing AUR packages diff. Choices are `always`, `auto` or `never`.
+
 
 #### [colors]
 
@@ -143,13 +154,6 @@ Terminal colors, from 0 to 15:
 
 ##### RequireEnterConfirm (default: yes)
 Require enter key to be pressed when answering questions.
-
-##### DiffPager (default: auto)
-Wherever to use `less` pager when viewing AUR packages diff. Choices are `always`, `auto` or `never`.
-
-##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
-Flags to be passed to `git diff` command when reviewing build files.
-Should be separated by commas (`,`).
 
 ##### PrintCommands (default: no)
 Print each command which pikaur is currently spawning.

@@ -44,14 +44,14 @@ PACMAN_BOOL_OPTS: ArgSchema = [
 
 def get_pikaur_bool_opts() -> ArgSchema:
     return [
-        (None, 'noedit', PikaurConfig().build.NoEdit.get_bool()),
+        (None, 'noedit', PikaurConfig().review.NoEdit.get_bool()),
         (None, 'edit', None),
         (None, 'namesonly', None),
         (None, 'repo', None),
         ('a', 'aur', None),
         (None, 'keepbuild', PikaurConfig().build.KeepBuildDir.get_bool()),
         (None, 'keepbuilddeps', PikaurConfig().build.KeepBuildDeps.get_bool()),
-        (None, 'nodiff', PikaurConfig().build.NoDiff.get_bool()),
+        (None, 'nodiff', PikaurConfig().review.NoDiff.get_bool()),
         (None, 'rebuild', None),
         (None, 'dynamic-users', PikaurConfig().build.AlwaysUseDynamicUsers.get_bool()),
         ('P', 'pkgbuild', None),

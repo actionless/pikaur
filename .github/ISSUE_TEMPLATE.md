@@ -11,7 +11,7 @@ pikaur -Vq
 ##### Attached log:
 
 ```
-pikaur -S my-precious-package
+pikaur -S my-precious-package --verbose --pikaur-debug
 
 
 ```

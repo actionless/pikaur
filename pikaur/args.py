@@ -59,11 +59,11 @@ def get_pikaur_bool_opts() -> ArgSchema:
         ('G', 'getpkgbuild', None),
         (None, 'deps', None),
         (None, 'ignore-outofdate', PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool()),
+        (None, 'pikaur-debug', None),
         # undocumented options:
         (None, 'print-commands', PikaurConfig().ui.PrintCommands.get_bool()),
         (None, 'hide-build-log', None),
         (None, 'print-args-and-exit', None),
-        (None, 'pikaur-debug', None),
     ]
 
 
@@ -495,6 +495,12 @@ def cli_print_help() -> None:
             ('', '--nodiff', _("don't prompt to show the build files diff")),
             ('', '--ignore-outofdate', _("ignore AUR packages' updates which marked 'outofdate'")),
         ]
+
+    if pikaur_options_help:  # if it's not just `pikaur --help`
+        pikaur_options_help += [
+            ('', '--pikaur-debug', _("show only debug messages specific to pikaur")),
+        ]
+
     print(''.join([
         pacman_help,
         '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',

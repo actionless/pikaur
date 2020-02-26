@@ -112,13 +112,13 @@ class PackageBuild(DataType):
     ) -> None:
         self.args = parse_args()
 
-        if pkgbuild_path and not package_names:
+        if pkgbuild_path:
             self.repo_path = dirname(pkgbuild_path)
             self.pkgbuild_path = pkgbuild_path
             srcinfo = SrcInfo(pkgbuild_path=pkgbuild_path)
             pkgbase = srcinfo.get_value('pkgbase')
             if pkgbase and srcinfo.pkgnames:
-                self.package_names = srcinfo.pkgnames
+                self.package_names = package_names or srcinfo.pkgnames
                 self.package_base = pkgbase
             else:
                 raise BuildError(_("Can't get package name from PKGBUILD"))

@@ -102,14 +102,10 @@ class RegressionTest(PikaurDbTestCase):
 
         see #339
         """
-        pikaur('-Syu')
-        # @TODO: fix somehow what next line won't fail
-        # if more packages got updates in the meanwhile
-        result_syu = pikaur('-Syu --ignore pikaur-git', capture_stdout=True)
-        self.assertIn(
-            "nothing to do",
-            result_syu.stdout.lower()
-        )
+        output = ""
+        while "nothing to do" not in output:
+            result_syu = pikaur('-Syu --ignore pikaur-git', capture_stdout=True)
+            output = result_syu.stdout.lower()
 
         result_sy = pikaur('-Sy', capture_stdout=True)
         self.assertNotIn(

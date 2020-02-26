@@ -112,7 +112,7 @@ class PackageBuild(DataType):
     ) -> None:
         self.args = parse_args()
 
-        if pkgbuild_path:
+        if pkgbuild_path and not package_names:
             self.repo_path = dirname(pkgbuild_path)
             self.pkgbuild_path = pkgbuild_path
             srcinfo = SrcInfo(pkgbuild_path=pkgbuild_path)

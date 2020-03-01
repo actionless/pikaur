@@ -1,20 +1,15 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-import gzip
-import json
 from multiprocessing.pool import ThreadPool
-from urllib import parse, request
+from urllib import parse
 from urllib.parse import quote
-from urllib.error import URLError
-from typing import List, Dict, Tuple, Union, Any, Optional
+from typing import List, Dict, Tuple, Union, Optional
 
-from .i18n import _
 from .core import DataType, get_chunks
-from .exceptions import AURError, SysExit
+from .exceptions import AURError
 from .progressbar import ThreadSafeProgressBar
-from .pprint import print_error
-from .prompt import ask_to_continue
 from .config import PikaurConfig
+from .urllib import get_gzip_from_url, get_json_from_url
 
 
 AUR_BASE_URL = PikaurConfig().network.AurUrl.get_str()
@@ -78,34 +73,6 @@ class AURPackageInfo(DataType):
         )
 
 
-def read_bytes_from_url(url: str) -> bytes:
-    req = request.Request(url)
-    try:
-        response = request.urlopen(req)
-    except URLError as exc:
-        print_error('urllib: ' + str(exc.reason))
-        if ask_to_continue(_('Do you want to retry?')):
-            return read_bytes_from_url(url)
-        raise SysExit(102)
-    result_bytes = response.read()
-    return result_bytes
-
-
-def get_json_from_url(url: str) -> Dict[str, Any]:
-    result_bytes = read_bytes_from_url(url)
-    result_json = json.loads(result_bytes.decode('utf-8'))
-    if 'error' in result_json:
-        raise AURError(url=url, error=result_json['error'])
-    return result_json
-
-
-def get_gzip_from_url(url: str) -> str:
-    result_bytes = read_bytes_from_url(url)
-    decompressed_bytes_response = gzip.decompress(result_bytes)
-    text_response = decompressed_bytes_response.decode('utf-8')
-    return text_response
-
-
 def construct_aur_rpc_url_from_uri(uri: str) -> str:
     url = AUR_BASE_URL + '/rpc/?' + uri
     return url
@@ -123,14 +90,15 @@ def strip_aur_repo_name(pkg_name: str) -> str:
 
 
 def aur_rpc_search_name_desc(search_query: str) -> List[AURPackageInfo]:
-    result_json = get_json_from_url(
-        construct_aur_rpc_url_from_params({
-            'v': 5,
-            'type': 'search',
-            'arg': strip_aur_repo_name(search_query),
-            'by': 'name-desc'
-        })
-    )
+    url = construct_aur_rpc_url_from_params({
+        'v': 5,
+        'type': 'search',
+        'arg': strip_aur_repo_name(search_query),
+        'by': 'name-desc'
+    })
+    result_json = get_json_from_url(url)
+    if 'error' in result_json:
+        raise AURError(url=url, error=result_json['error'])
     return [
         AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
         for aur_json in result_json.get('results', [])
@@ -144,9 +112,10 @@ def aur_rpc_info(search_queries: List[str]) -> List[AURPackageInfo]:
     })
     for package in search_queries:
         uri += '&arg[]=' + quote(strip_aur_repo_name(package))
-    result_json = get_json_from_url(
-        construct_aur_rpc_url_from_uri(uri)
-    )
+    url = construct_aur_rpc_url_from_uri(uri)
+    result_json = get_json_from_url(url)
+    if 'error' in result_json:
+        raise AURError(url=url, error=result_json['error'])
     return [
         AURPackageInfo(**{key.lower(): value for key, value in aur_json.items()})
         for aur_json in result_json.get('results', [])

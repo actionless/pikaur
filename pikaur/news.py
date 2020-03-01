@@ -1,12 +1,8 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import datetime
-import urllib.request
-import urllib.error
-import urllib.response
 import xml.etree.ElementTree
 import os
-from http.client import HTTPResponse
 from html.parser import HTMLParser
 
 from typing import TextIO, Union
@@ -17,6 +13,7 @@ from .pprint import (
     color_line, format_paragraph, print_stdout, print_error, bold_line,
 )
 from .pacman import PackageDB
+from .urllib import get_unicode_from_url
 
 
 DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
@@ -57,16 +54,9 @@ class News:
                         return
 
     def fetch_latest(self) -> None:
-        try:
-            http_response: Union[HTTPResponse, urllib.response.addinfourl] = \
-                urllib.request.urlopen(self.URL)
-        except urllib.error.URLError:
+        str_response = get_unicode_from_url(self.URL, retry=False)
+        if not str_response:
             print_error(_('Could not fetch archlinux.org news'))
-            return
-        str_response: str = ''
-        for line in http_response:
-            str_response += line.decode('UTF-8').strip()
-        if not str_response:  # could not get data
             return
         self._news_feed = xml.etree.ElementTree.fromstring(str_response)
 

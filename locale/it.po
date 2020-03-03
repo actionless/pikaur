@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-26 19:22+0100\n"
+"POT-Creation-Date: 2020-03-03 14:04+0100\n"
 "PO-Revision-Date: 2019-10-05 15:30+0200\n"
 "Last-Translator: Mattia Bertoni <mattia.b89@gmail.com>\n"
 "Language-Team: Italian <none>\n"
@@ -135,15 +135,15 @@ msgstr "Opzioni comuni con pacman:"
 msgid "Conflicts With"
 msgstr "Conflitti Con"
 
-#: pikaur/news.py:64
+#: pikaur/news.py:59
 msgid "Could not fetch archlinux.org news"
 msgstr "Non è stato possibile riportare le notizie da archlinux.org"
 
-#: pikaur/news.py:95
+#: pikaur/news.py:85
 msgid "Could not initialize {}"
 msgstr "Non è stato possibile inizializzare {}"
 
-#: pikaur/news.py:137
+#: pikaur/news.py:127
 msgid "Could not update {}"
 msgstr "Non è stato possibile aggiornare {}"
 
@@ -175,7 +175,7 @@ msgstr "Vuoi procedere?"
 msgid "Do you want to remove all files?"
 msgstr "Vuoi rimuovere tutti i file?"
 
-#: pikaur/prompt.py:180 pikaur/aur.py:87
+#: pikaur/urllib.py:25 pikaur/prompt.py:180
 msgid "Do you want to retry?"
 msgstr "Vuoi riprovare?"
 
@@ -451,11 +451,11 @@ msgstr "Inizio un aggiornamento completo di AUR..."
 msgid "Starting the build"
 msgstr "Sto iniziando la creazione del pacchetto"
 
-#: pikaur/news.py:100
+#: pikaur/news.py:90
 msgid "The news feed could not be received or parsed."
 msgstr ""
 
-#: pikaur/news.py:46
+#: pikaur/news.py:43
 msgid "There are news from archlinux.org!"
 msgstr "Ci sono notizie da archlinux.org!"
 
@@ -471,7 +471,7 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Pacchetto da repository di terze parti sarà installato:"
 msgstr[1] "Pacchetti da repository di terze parti saranno installati:"
 
-#: pikaur/install_cli.py:207 pikaur/install_cli.py:544 pikaur/build.py:625
+#: pikaur/build.py:625 pikaur/install_cli.py:207 pikaur/install_cli.py:544
 msgid "Try recovering?"
 msgstr "Provare a ripristinare?"
 
@@ -537,7 +537,7 @@ msgid "[d] delete build dir and try again"
 msgstr "[c] cancella la cartella di compilazione e riprova"
 
 # 'm' stands for "modifica"
-#: pikaur/install_cli.py:208 pikaur/build.py:632
+#: pikaur/build.py:632 pikaur/install_cli.py:208
 msgid "[e] edit PKGBUILD"
 msgstr "[m] modifica PKGBUILD"
 
@@ -580,9 +580,9 @@ msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v]edi i dettagli del pacchetto   seleziona [m]anualmente i pacchetti"
 
 # 'a' stands for "annulla"
+#: pikaur/build.py:621 pikaur/build.py:641 pikaur/build.py:672
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:540
-#: pikaur/install_cli.py:551 pikaur/build.py:621 pikaur/build.py:641
-#: pikaur/build.py:672
+#: pikaur/install_cli.py:551
 msgid "a"
 msgstr "a"
 
@@ -604,8 +604,8 @@ msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "aggiorna sempre i pacchetti '-git, '-svn' e gli altri pacchetti devel"
 
 # 'c' stands for "controlla"
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:554 pikaur/build.py:640
-#: pikaur/build.py:650
+#: pikaur/build.py:640 pikaur/build.py:650 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:554
 msgid "c"
 msgstr "c"
 
@@ -647,8 +647,8 @@ msgid "download also AUR dependencies"
 msgstr "scarica anche le dipendenze AUR"
 
 # 'm' stands for "modifica"
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:640
-#: pikaur/build.py:659
+#: pikaur/build.py:640 pikaur/build.py:659 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:215
 msgid "e"
 msgstr "m"
 
@@ -714,7 +714,7 @@ msgid "m"
 msgstr "m"
 
 # 'n' stands for "no"
-#: pikaur/install_cli.py:391 pikaur/prompt.py:20 pikaur/main.py:237
+#: pikaur/main.py:237 pikaur/prompt.py:20 pikaur/install_cli.py:391
 msgid "n"
 msgstr "n"
 
@@ -800,15 +800,15 @@ msgid "query packages from repository only"
 msgstr "ricerca pacchetti solo dal repository"
 
 # 'r' stands for "rimuovi"
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:556 pikaur/build.py:640
-#: pikaur/build.py:645
+#: pikaur/build.py:640 pikaur/build.py:645 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:556
 msgid "r"
 msgstr "r"
 
 # 's' stands for "salta"
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:225
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:558 pikaur/build.py:619
-#: pikaur/build.py:641
+#: pikaur/build.py:619 pikaur/build.py:641 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:225 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:558
 msgid "s"
 msgstr "s"
 
@@ -843,7 +843,7 @@ msgid "warning:"
 msgstr "attenzione:"
 
 # 's' stands for "sì"
-#: pikaur/install_cli.py:391 pikaur/install_cli.py:404 pikaur/prompt.py:19
+#: pikaur/prompt.py:19 pikaur/install_cli.py:391 pikaur/install_cli.py:404
 msgid "y"
 msgstr "s"
 

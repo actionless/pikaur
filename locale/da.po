@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-26 19:22+0100\n"
+"POT-Creation-Date: 2020-03-03 14:04+0100\n"
 "PO-Revision-Date: 2018-04-20 01:17+0200\n"
 "Last-Translator: \n"
 "Language-Team: none\n"
@@ -126,15 +126,15 @@ msgstr "Fælles pacman muligheder:"
 msgid "Conflicts With"
 msgstr ""
 
-#: pikaur/news.py:64
+#: pikaur/news.py:59
 msgid "Could not fetch archlinux.org news"
 msgstr ""
 
-#: pikaur/news.py:95
+#: pikaur/news.py:85
 msgid "Could not initialize {}"
 msgstr ""
 
-#: pikaur/news.py:137
+#: pikaur/news.py:127
 msgid "Could not update {}"
 msgstr ""
 
@@ -166,7 +166,7 @@ msgstr "Vil du fortsætte?"
 msgid "Do you want to remove all files?"
 msgstr "Vil du fjerne all filer?"
 
-#: pikaur/prompt.py:180 pikaur/aur.py:87
+#: pikaur/urllib.py:25 pikaur/prompt.py:180
 msgid "Do you want to retry?"
 msgstr "Vil du prøve igen?"
 
@@ -438,11 +438,11 @@ msgstr "Begynder fuld AUR upgradering..."
 msgid "Starting the build"
 msgstr ""
 
-#: pikaur/news.py:100
+#: pikaur/news.py:90
 msgid "The news feed could not be received or parsed."
 msgstr ""
 
-#: pikaur/news.py:46
+#: pikaur/news.py:43
 msgid "There are news from archlinux.org!"
 msgstr ""
 
@@ -459,7 +459,7 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Tredjeparts repository pakke vil blive installeret:"
 msgstr[1] "Tredjeparts repository pakker vil blive installeret:"
 
-#: pikaur/install_cli.py:207 pikaur/install_cli.py:544 pikaur/build.py:625
+#: pikaur/build.py:625 pikaur/install_cli.py:207 pikaur/install_cli.py:544
 msgid "Try recovering?"
 msgstr "Prøv at gendanne?"
 
@@ -518,7 +518,7 @@ msgstr "[c] git checkout -- '*'"
 msgid "[d] delete build dir and try again"
 msgstr "[f] fjern mappe og klon igen"
 
-#: pikaur/install_cli.py:208 pikaur/build.py:632
+#: pikaur/build.py:632 pikaur/install_cli.py:208
 msgid "[e] edit PKGBUILD"
 msgstr ""
 
@@ -557,9 +557,9 @@ msgstr "[s] spring denne pakke over"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[s]e pakke detaljer  [m]anuelt vælg pakker"
 
+#: pikaur/build.py:621 pikaur/build.py:641 pikaur/build.py:672
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:540
-#: pikaur/install_cli.py:551 pikaur/build.py:621 pikaur/build.py:641
-#: pikaur/build.py:672
+#: pikaur/install_cli.py:551
 msgid "a"
 msgstr "a"
 
@@ -580,8 +580,8 @@ msgstr ""
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sysupgrade '-git' og andre dev pakker ældre end 1 dag"
 
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:554 pikaur/build.py:640
-#: pikaur/build.py:650
+#: pikaur/build.py:640 pikaur/build.py:650 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:554
 msgid "c"
 msgstr "c"
 
@@ -619,8 +619,8 @@ msgstr "fjern ikke bygmappen efter byg"
 msgid "download also AUR dependencies"
 msgstr "Løser AUR afhængigheder..."
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:640
-#: pikaur/build.py:659
+#: pikaur/build.py:640 pikaur/build.py:659 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:215
 msgid "e"
 msgstr ""
 
@@ -682,7 +682,7 @@ msgstr "leder efter pakker der konflikter med hinanden..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:391 pikaur/prompt.py:20 pikaur/main.py:237
+#: pikaur/main.py:237 pikaur/prompt.py:20 pikaur/install_cli.py:391
 msgid "n"
 msgstr "n"
 
@@ -766,14 +766,14 @@ msgstr "forespørg kun pakker fra AUR"
 msgid "query packages from repository only"
 msgstr "forespørg kun pakker fra repository"
 
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:556 pikaur/build.py:640
-#: pikaur/build.py:645
+#: pikaur/build.py:640 pikaur/build.py:645 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:556
 msgid "r"
 msgstr "f"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:225
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:558 pikaur/build.py:619
-#: pikaur/build.py:641
+#: pikaur/build.py:619 pikaur/build.py:641 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:225 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:558
 msgid "s"
 msgstr "s"
 
@@ -806,7 +806,7 @@ msgstr "s"
 msgid "warning:"
 msgstr "advarsel:"
 
-#: pikaur/install_cli.py:391 pikaur/install_cli.py:404 pikaur/prompt.py:19
+#: pikaur/prompt.py:19 pikaur/install_cli.py:391 pikaur/install_cli.py:404
 msgid "y"
 msgstr "j"
 

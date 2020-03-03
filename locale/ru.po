@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-26 19:22+0100\n"
+"POT-Creation-Date: 2020-03-03 14:04+0100\n"
 "PO-Revision-Date: 2019-09-21 19:36+0200\n"
 "Last-Translator: Drommer <drommer@github.com>\n"
 "Language-Team: Russian <email@example.com>\n"
@@ -131,15 +131,15 @@ msgstr "Стандартные параметры pacman:"
 msgid "Conflicts With"
 msgstr "Конфликтует с"
 
-#: pikaur/news.py:64
+#: pikaur/news.py:59
 msgid "Could not fetch archlinux.org news"
 msgstr "Не удалось получить новости от archlinux.org"
 
-#: pikaur/news.py:95
+#: pikaur/news.py:85
 msgid "Could not initialize {}"
 msgstr "Не удалось инициализировать {}"
 
-#: pikaur/news.py:137
+#: pikaur/news.py:127
 msgid "Could not update {}"
 msgstr "Не удалось обновить {}"
 
@@ -171,7 +171,7 @@ msgstr "Продолжить?"
 msgid "Do you want to remove all files?"
 msgstr "Вы действительно хотите удалить все файлы?"
 
-#: pikaur/prompt.py:180 pikaur/aur.py:87
+#: pikaur/urllib.py:25 pikaur/prompt.py:180
 msgid "Do you want to retry?"
 msgstr "Попробовать снова?"
 
@@ -443,11 +443,11 @@ msgstr "Запуск полного обновления пакетов из AUR
 msgid "Starting the build"
 msgstr "Начало сборки"
 
-#: pikaur/news.py:100
+#: pikaur/news.py:90
 msgid "The news feed could not be received or parsed."
 msgstr "Новостная лента не может быть получена или разобрана."
 
-#: pikaur/news.py:46
+#: pikaur/news.py:43
 msgid "There are news from archlinux.org!"
 msgstr "Есть новости с archlinux.org!"
 
@@ -463,7 +463,7 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Будет установлен пакет из неофициального репозитория:"
 msgstr[1] "Будут установлены пакеты из неофициальных репозиториев:"
 
-#: pikaur/install_cli.py:207 pikaur/install_cli.py:544 pikaur/build.py:625
+#: pikaur/build.py:625 pikaur/install_cli.py:207 pikaur/install_cli.py:544
 msgid "Try recovering?"
 msgstr "Попробовать восстановить?"
 
@@ -520,7 +520,7 @@ msgstr "[c] git checkout -- '*'"
 msgid "[d] delete build dir and try again"
 msgstr "[d] удалить каталог сборки и попробовать заново"
 
-#: pikaur/install_cli.py:208 pikaur/build.py:632
+#: pikaur/build.py:632 pikaur/install_cli.py:208
 msgid "[e] edit PKGBUILD"
 msgstr "[e] редактировать PKGBUILD"
 
@@ -558,9 +558,9 @@ msgstr "[s] пропустить этот пакет"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v] посмотреть описание пакетов   [m] выбрать пакеты вручную"
 
+#: pikaur/build.py:621 pikaur/build.py:641 pikaur/build.py:672
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:540
-#: pikaur/install_cli.py:551 pikaur/build.py:621 pikaur/build.py:641
-#: pikaur/build.py:672
+#: pikaur/install_cli.py:551
 msgid "a"
 msgstr ""
 
@@ -580,8 +580,8 @@ msgstr "всегда пересобирать пакеты из AUR"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "всегда обновлять пакеты из '-git', '-svn' и другие нестабильные пакеты"
 
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:554 pikaur/build.py:640
-#: pikaur/build.py:650
+#: pikaur/build.py:640 pikaur/build.py:650 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:554
 msgid "c"
 msgstr ""
 
@@ -617,8 +617,8 @@ msgstr "не удалять каталог сборки после заверш�
 msgid "download also AUR dependencies"
 msgstr "загрузить также зависимости из AUR"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:640
-#: pikaur/build.py:659
+#: pikaur/build.py:640 pikaur/build.py:659 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:215
 msgid "e"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgstr "поиск конфликтующих пакетов..."
 msgid "m"
 msgstr ""
 
-#: pikaur/install_cli.py:391 pikaur/prompt.py:20 pikaur/main.py:237
+#: pikaur/main.py:237 pikaur/prompt.py:20 pikaur/install_cli.py:391
 msgid "n"
 msgstr ""
 
@@ -764,14 +764,14 @@ msgstr "запрашивать пакеты только из AUR"
 msgid "query packages from repository only"
 msgstr "запрашивать пакеты только из репозиториев"
 
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:556 pikaur/build.py:640
-#: pikaur/build.py:645
+#: pikaur/build.py:640 pikaur/build.py:645 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:556
 msgid "r"
 msgstr ""
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:225
-#: pikaur/install_cli.py:551 pikaur/install_cli.py:558 pikaur/build.py:619
-#: pikaur/build.py:641
+#: pikaur/build.py:619 pikaur/build.py:641 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:225 pikaur/install_cli.py:551
+#: pikaur/install_cli.py:558
 msgid "s"
 msgstr ""
 
@@ -804,7 +804,7 @@ msgstr ""
 msgid "warning:"
 msgstr "предупреждение:"
 
-#: pikaur/install_cli.py:391 pikaur/install_cli.py:404 pikaur/prompt.py:19
+#: pikaur/prompt.py:19 pikaur/install_cli.py:391 pikaur/install_cli.py:404
 msgid "y"
 msgstr ""
 

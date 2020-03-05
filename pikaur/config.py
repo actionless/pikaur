@@ -173,9 +173,9 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'str',
             'default': 'auto'
         },
-        'HideSrcInfoDiff': {
-            'type': 'bool',
-            'default': 'yes'
+        'HideDiffFiles': {
+            'type': 'str',
+            'default': '.SRCINFO'
         },
     },
     'colors': {

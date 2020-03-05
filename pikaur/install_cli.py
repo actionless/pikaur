@@ -725,10 +725,11 @@ class InstallPackagesCLI():
                         pkg_build.current_hash,
                         '--', '.',
                     ]
-                    if PikaurConfig().review.HideSrcInfoDiff.get_bool():
-                        git_args += [
-                            ':(exclude).SRCINFO',
-                        ]
+                    for file_path in PikaurConfig().review.HideDiffFiles.get_str().split(','):
+                        if file_path:
+                            git_args += [
+                                f':(exclude){file_path}',
+                            ]
                     interactive_spawn(git_args)
             elif self.args.noconfirm:
                 print_stdout(_skip_diff_label.format(

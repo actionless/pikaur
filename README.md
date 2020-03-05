@@ -140,6 +140,9 @@ Should be separated by commas (`,`).
 ##### DiffPager (default: auto)
 Wherever to use `less` pager when viewing AUR packages diff. Choices are `always`, `auto` or `never`.
 
+##### HideSrcInfoDiff (default: yes)
+Hide `git diff` for `.SRCINFO` file.
+
 
 #### [colors]
 

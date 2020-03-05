@@ -709,7 +709,13 @@ class InstallPackagesCLI():
                             name=_pkg_label
                         )
                 ):
-                    git_args = [
+                    git_args: List[str] = []
+                    diff_pager = PikaurConfig().review.DiffPager
+                    if diff_pager == 'always':
+                        git_args = ['env', 'GIT_PAGER=less -+F']
+                    elif diff_pager == 'never':
+                        git_args = ['env', 'GIT_PAGER=cat']
+                    git_args += [
                         'git',
                         '-C',
                         pkg_build.repo_path,
@@ -717,12 +723,12 @@ class InstallPackagesCLI():
                     ] + PikaurConfig().review.GitDiffArgs.get_str().split(',') + [
                         pkg_build.last_installed_hash,
                         pkg_build.current_hash,
+                        '--', '.',
                     ]
-                    diff_pager = PikaurConfig().review.DiffPager
-                    if diff_pager == 'always':
-                        git_args = ['env', 'GIT_PAGER=less -+F'] + git_args
-                    elif diff_pager == 'never':
-                        git_args = ['env', 'GIT_PAGER=cat'] + git_args
+                    if PikaurConfig().review.HideSrcInfoDiff.get_bool():
+                        git_args += [
+                            ':(exclude).SRCINFO',
+                        ]
                     interactive_spawn(git_args)
             elif self.args.noconfirm:
                 print_stdout(_skip_diff_label.format(

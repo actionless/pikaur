@@ -173,6 +173,10 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'str',
             'default': 'auto'
         },
+        'HideSrcInfoDiff': {
+            'type': 'bool',
+            'default': 'yes'
+        },
     },
     'colors': {
         'Version': {

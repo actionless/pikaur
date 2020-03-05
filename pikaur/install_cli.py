@@ -219,6 +219,8 @@ class InstallPackagesCLI():
                     pkg_build.pkgbuild_path
             ):
                 print_warning(_("PKGBUILD appears unchanged after editing"))
+            else:
+                self.handle_pkgbuild_changed(pkg_build)
             self._ignore_package(pkg_name)
             self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
             self.main_sequence()
@@ -418,6 +420,9 @@ class InstallPackagesCLI():
     def discard_install_info(self, canceled_pkg_name: str) -> None:
         debug(f"discarding install info for pkg... {canceled_pkg_name}")
         self.manually_excluded_packages_names.append(canceled_pkg_name)
+        if not getattr(self, 'install_info', None):  # @TODO: make it nicer?
+            debug("install info not initialized yet -- running on early stage?")
+            return
         for pkg_name in self.install_info.discard_package(canceled_pkg_name):
             debug(f"discarded install info for pkg: {pkg_name}")
             if pkg_name in self.install_package_names:
@@ -756,13 +761,28 @@ class InstallPackagesCLI():
         for pkg_name in pkg_build.package_names:
             self.discard_install_info(pkg_name)
         src_info = SrcInfo(pkgbuild_path=pkg_build.pkgbuild_path)
+        old_srcinfo_hash = hash_file(src_info.path)
         src_info.regenerate()
+        new_srcinfo_hash = hash_file(src_info.path)
+
+        self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
+
+        if not getattr(self, 'install_info', None):  # @TODO: make it nicer?
+            debug("install info not initialized yet -- running on early stage?")
+            if old_srcinfo_hash != new_srcinfo_hash:
+                print_warning(_(
+                    "Installation info changed (or new deps found) for {pkg} package"
+                ).format(
+                    pkg=bold_line(', '.join(pkg_build.package_names)),
+                ))
+                self.main_sequence()
+                raise self.ExitMainSequence()
+            return
 
         old_install_info = self.install_info
-        self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
         self.get_all_packages_info()
         old_install_info.pkgbuilds_packagelists = self.install_info.pkgbuilds_packagelists
-        if old_install_info != self.install_info:
+        if old_install_info != self.install_info or old_srcinfo_hash != new_srcinfo_hash:
             print_warning(_(
                 "Installation info changed (or new deps found) for {pkg} package"
             ).format(

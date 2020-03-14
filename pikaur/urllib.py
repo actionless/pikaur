@@ -21,10 +21,9 @@ def read_bytes_from_url(url: str, retry=True) -> bytes:
         response = request.urlopen(req)
     except URLError as exc:
         print_error('urllib: ' + str(exc.reason))
-        if retry:
-            if ask_to_continue(_('Do you want to retry?')):
-                return read_bytes_from_url(url)
-            raise SysExit(102)
+        if retry and ask_to_continue(_('Do you want to retry?')):
+            return read_bytes_from_url(url)
+        raise SysExit(102)
     result_bytes = response.read()
     return result_bytes
 

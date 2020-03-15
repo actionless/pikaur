@@ -11,7 +11,7 @@ from .exceptions import SysExit
 from .args import parse_args
 
 
-def read_bytes_from_url(url: str, retry=True) -> bytes:
+def read_bytes_from_url(url: str, optional=False) -> bytes:
     if parse_args().print_commands:
         print_stderr(
             color_line('=> ', 14) + f'GET {url}'
@@ -21,16 +21,17 @@ def read_bytes_from_url(url: str, retry=True) -> bytes:
         response = request.urlopen(req)
     except URLError as exc:
         print_error('urllib: ' + str(exc.reason))
-        if retry:
-            if ask_to_continue(_('Do you want to retry?')):
-                return read_bytes_from_url(url)
-            raise SysExit(102)
+        if optional:
+            return b''
+        if ask_to_continue(_('Do you want to retry?')):
+            return read_bytes_from_url(url, optional=optional)
+        raise SysExit(102)
     result_bytes = response.read()
     return result_bytes
 
 
-def get_unicode_from_url(url: str, retry=True) -> str:
-    result_bytes = read_bytes_from_url(url, retry=retry)
+def get_unicode_from_url(url: str, optional=False) -> str:
+    result_bytes = read_bytes_from_url(url, optional=optional)
     return result_bytes.decode('utf-8')
 
 

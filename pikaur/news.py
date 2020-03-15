@@ -54,7 +54,7 @@ class News:
                         return
 
     def fetch_latest(self) -> None:
-        str_response = get_unicode_from_url(self.URL, retry=False)
+        str_response = get_unicode_from_url(self.URL, optional=True)
         if not str_response:
             print_error(_('Could not fetch archlinux.org news'))
             return

@@ -834,6 +834,7 @@ class InstallPackagesCLI():
                 #     raise SysExit(125)
                 for _pkg_name in pkg_build.package_names:
                     failed_to_build_package_names.append(_pkg_name)
+                    packages_to_be_built.remove(_pkg_name)
                     self.discard_install_info(_pkg_name)
                     for remaining_aur_pkg_name in packages_to_be_built[:]:
                         if remaining_aur_pkg_name not in self.all_aur_packages_names:

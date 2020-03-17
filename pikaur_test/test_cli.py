@@ -16,7 +16,7 @@ class CliTest(PikaurTestCase):
             sorted(
                 pikaur('-Ssq oomox').stdout.splitlines()
             ),
-            ['oomox', 'oomox-git']
+            ['oomox', 'oomox-git', 'themix-full-git', 'themix-theme-oomox-git']
         )
 
     def test_search_multiword(self):

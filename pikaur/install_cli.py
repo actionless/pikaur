@@ -567,11 +567,11 @@ class InstallPackagesCLI():
                     raise SysExit(125)
 
     def ask_about_package_conflicts(self) -> None:
-        if self.aur_packages_names:
+        if self.aur_packages_names or self.aur_deps_names:
             print_stderr(_('looking for conflicting AUR packages...'))
             self.found_conflicts.update(
                 find_aur_conflicts(
-                    self.aur_packages_names,
+                    self.aur_packages_names + self.aur_deps_names,
                     self.install_package_names
                 )
             )

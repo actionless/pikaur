@@ -183,6 +183,7 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
         return cmd
     base_root_isolator = [
         'systemd-run',
+        '--service-type=oneshot',
         '--pipe', '--wait', '--pty',
         '-p', 'DynamicUser=yes',
         '-p', 'CacheDirectory=pikaur',
@@ -195,13 +196,7 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     ):
         if os.environ.get(env_var_name) is not None:
             base_root_isolator += ['-E', f'{env_var_name}={os.environ[env_var_name]}']
-    # return base_root_isolator + cmd
-
-    # even if SuccessExitStatus set to be empty and next reset to only 0
-    # systemd-run still handle Ctrl+C from subprocess as succesfull exit code
-    # so still trapping:
-    trap_cmd = ['sh', '-c', 'trap "exit 2" INT ; ' + ' '.join(cmd)]
-    return base_root_isolator + trap_cmd
+    return base_root_isolator + cmd
 
 
 def detect_bom_type(file_path: str) -> str:

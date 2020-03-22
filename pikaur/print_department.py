@@ -103,7 +103,6 @@ class ColorGenerator:
 
         cls._cache.setdefault(color_type, {})
         cls._cache[color_type][_id] = cls._type_storage[color_type]
-        print(color_type, _id, cls._cache[color_type][_id])
         return cls._cache[color_type][_id]
 
 

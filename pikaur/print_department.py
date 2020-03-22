@@ -115,7 +115,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         pkg_name = _bold_line(pkg_name)
         if (print_repo or verbose) and pkg_update.repository:
             pkg_name = '{}{}'.format(
-                _color_line(pkg_update.repository + '/', 13),
+                pretty_format_repo_name(pkg_update.repository),
                 pkg_name
             )
             pkg_len += len(pkg_update.repository) + 1

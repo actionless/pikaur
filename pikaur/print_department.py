@@ -72,6 +72,45 @@ def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
         print_stderr(format_paragraph(package))
 
 
+class ColorGenerator:
+
+    _type_storage: Dict[str, int] = {}
+    _cache: Dict[str, Dict[str, int]] = {}
+    _init_done = False
+
+    @classmethod
+    def do_init(cls) -> None:
+        if cls._init_done:
+            return
+
+        cls._init_done = True
+        for repo in PackageDB.get_alpm_handle().get_syncdbs():
+            cls.get_next('repo', repo.name)
+
+    @classmethod
+    def get_next(cls, color_type: str, _id: str) -> int:
+        cls.do_init()
+        if cls._cache.get(color_type, {}).get(_id):
+            return cls._cache[color_type][_id]
+
+        if (
+                not cls._type_storage.get(color_type) or
+                cls._type_storage[color_type] > 15
+        ):
+            cls._type_storage[color_type] = 10
+        else:
+            cls._type_storage[color_type] += 1
+
+        cls._cache.setdefault(color_type, {})
+        cls._cache[color_type][_id] = cls._type_storage[color_type]
+        print(color_type, _id, cls._cache[color_type][_id])
+        return cls._cache[color_type][_id]
+
+
+def pretty_format_repo_name(repo_name: str) -> str:
+    return color_line(f'{repo_name}/', ColorGenerator.get_next('repo', repo_name))
+
+
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         packages_updates: List['InstallInfo'],
         verbose=False, print_repo=False, color=True, template: str = None
@@ -387,10 +426,6 @@ def pretty_format_sysupgrade(
         ))
     result += ['']
     return '\n'.join(result)
-
-
-def pretty_format_repo_name(repo_name: str) -> str:
-    return color_line(f'{repo_name}/', len(repo_name) % 5 + 10)
 
 
 def print_ignored_package(

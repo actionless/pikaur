@@ -95,7 +95,7 @@ class ColorGenerator:
 
         if (
                 not cls._type_storage.get(color_type) or
-                cls._type_storage[color_type] > 15
+                cls._type_storage[color_type] >= 15
         ):
             cls._type_storage[color_type] = 10
         else:

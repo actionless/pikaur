@@ -16,7 +16,7 @@ from time import sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
 from .pprint import PrintLock, bold_line
-from .pacman import _p
+from .pacman_i18n import _p
 from .args import parse_args
 from .pprint import print_stderr, color_line, get_term_width
 from .core import get_sudo_refresh_command

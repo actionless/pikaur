@@ -20,7 +20,7 @@ from .aur import AURPackageInfo
 
 
 if TYPE_CHECKING:
-    # pylint: disable=unused-import
+    # pylint: disable=unused-import,cyclic-import
     from .install_info_fetcher import InstallInfoFetcher  # noqa
 
 

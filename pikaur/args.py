@@ -2,10 +2,10 @@
 
 import sys
 from argparse import Namespace  # pylint: disable=no-name-in-module
+from pprint import pprint  # pylint: disable=no-name-in-module
 from typing import Any, List, NoReturn, Optional, Tuple, Union
 
 from .argparse import ArgumentParserWithUnknowns
-from .core import spawn
 from .config import PikaurConfig
 from .i18n import _, _n
 
@@ -269,9 +269,6 @@ class CachedArgs():
 
 
 def debug_args(args: List[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
-    #  pylint:disable=import-outside-toplevel
-    from pprint import pprint  # pylint: disable=no-name-in-module
-
     print("Input:")
     print(args)
     print()
@@ -393,7 +390,8 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
         for key, value in vars(parsed_args).items()
         if value
         if key not in ignore_args + count_args + [
-            'raw', 'unknown_args', 'positional', 'color',
+            # @TODO: https://github.com/PyCQA/pylint/issues/214 :
+            'raw', 'unknown_args', 'positional', 'color',  # pylint:disable=all
             'dbpath',
             'root',
             'arch',
@@ -417,92 +415,3 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
             if value and opt == args_key and opt not in ignore_args and letter not in ignore_args:
                 result += ['--' + opt] * value
     return result
-
-
-def _format_options_help(options: List[Tuple[str, str, str]]) -> str:
-    return '\n'.join([
-        '{:>5} {:<16} {}'.format(
-            short_opt and (short_opt + ',') or '',
-            long_opt or '',
-            descr if ((len(short_opt) + len(long_opt)) < 16) else f"\n{23 * ' '}{descr}"
-        )
-        for short_opt, long_opt, descr in options
-    ])
-
-
-def cli_print_help() -> None:
-    args = parse_args()
-
-    pacman_help = spawn(
-        [PikaurConfig().misc.PacmanPath.get_str(), ] +
-        reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
-    ).stdout_text.replace(
-        'pacman', 'pikaur'
-    ).replace(
-        'options:', '\n' + _("Common pacman options:")
-    )
-    if '--help' in pacman_help:
-        pacman_help += (
-            "\n" +
-            _("pikaur-specific operations:") + "\n    " +
-            _("pikaur {-P --pkgbuild}    [options] <file(s)>") + '\n    ' +
-            _("pikaur {-G --getpkgbuild} [options] <package(s)>")
-        )
-    if args.pkgbuild:
-        pacman_help = (
-            _("usage:  pikaur {-P --pkgbuild} [options] <file(s)>") + "\n\n" +
-            _("All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -Uh`.")
-        )
-    if args.getpkgbuild:
-        pacman_help = (
-            _("usage:  pikaur {-G --getpkgbuild} [options] <package(s)>")
-        )
-
-    pikaur_options_help: List[Tuple[str, str, str]] = []
-    if args.getpkgbuild:
-        pikaur_options_help += [
-            ('-d', '--deps', _("download also AUR dependencies")),
-        ]
-    if args.pkgbuild:
-        pikaur_options_help += [
-            ('-i', '--install', _("install built package")),
-        ]
-    if args.sync or args.query or args.pkgbuild:
-        pikaur_options_help += [
-            ('-a', '--aur', _("query packages from AUR only")),
-        ]
-    if args.query:
-        pikaur_options_help += [
-            ('', '--repo', _("query packages from repository only")),
-        ]
-    if args.sync or args.pkgbuild:
-        pikaur_options_help += [
-            ('-o', '--repo', _("query packages from repository only")),
-            ('', '--noedit', _("don't prompt to edit PKGBUILDs and other build files")),
-            ('', '--edit', _("prompt to edit PKGBUILDs and other build files")),
-            ('-k', '--keepbuild', _("don't remove build dir after the build")),
-            ('', '--rebuild', _("always rebuild AUR packages")),
-            ('', '--mflags=<--flag1>,<--flag2>', _("cli args to pass to makepkg")),
-            ('', '--makepkg-config=<path>', _("path to custom makepkg config")),
-            ('', '--makepkg-path=<path>', _("override path to makepkg executable")),
-            ('', '--pikaur-config=<path>', _("path to custom pikaur config")),
-            ('', '--dynamic-users', _("always isolate with systemd dynamic users")),
-        ]
-    if args.sync:
-        pikaur_options_help += [
-            ('', '--namesonly', _("search only in package names")),
-            ('', '--devel', _("always sysupgrade '-git', '-svn' and other dev packages")),
-            ('', '--nodiff', _("don't prompt to show the build files diff")),
-            ('', '--ignore-outofdate', _("ignore AUR packages' updates which marked 'outofdate'")),
-        ]
-
-    if pikaur_options_help:  # if it's not just `pikaur --help`
-        pikaur_options_help += [
-            ('', '--pikaur-debug', _("show only debug messages specific to pikaur")),
-        ]
-
-    print(''.join([
-        pacman_help,
-        '\n\n' + _('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
-        _format_options_help(pikaur_options_help),
-    ]))

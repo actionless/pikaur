@@ -18,14 +18,19 @@ from typing import List, Optional, Callable, NoReturn
 
 from .i18n import _  # keep that first
 from .args import (
-    parse_args, reconstruct_args, cli_print_help
+    parse_args, reconstruct_args,
 )
+from .help_cli import cli_print_help
 from .core import (
     InstallInfo,
     spawn, interactive_spawn, remove_dir,
     running_as_root, sudo, isolate_root_cmd, run_with_sudo_loop,
 )
-from .pprint import color_line, bold_line, print_stderr, print_stdout, print_error
+from .pprint import (
+    color_line, bold_line,
+    print_stderr, print_stdout,
+    print_error, print_warning,
+)
 from .print_department import (
     pretty_format_upgradeable, print_version,
     print_not_found_packages, print_ignored_package,
@@ -34,7 +39,7 @@ from .updates import find_repo_upgradeable, find_aur_updates
 from .prompt import ask_to_continue, get_multiple_numbers_input, NotANumberInput
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT, CONFIG_PATH,
-    AUR_REPOS_CACHE_PATH, PikaurConfig, migrate_old_aur_repos_dir,
+    AUR_REPOS_CACHE_PATH, PikaurConfig, _OLD_AUR_REPOS_CACHE_PATH, DATA_ROOT,
 )
 from .exceptions import SysExit
 from .pikspect import TTYRestore
@@ -362,6 +367,25 @@ def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
                 "executable not found"
             ))
             sys.exit(2)
+
+
+def migrate_old_aur_repos_dir() -> None:
+    if not (
+            os.path.exists(_OLD_AUR_REPOS_CACHE_PATH) and not os.path.exists(AUR_REPOS_CACHE_PATH)
+    ):
+        return
+    if not os.path.exists(DATA_ROOT):
+        os.makedirs(DATA_ROOT)
+    shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
+
+    print_stderr()
+    print_warning(
+        _("AUR repos dir has been moved from '{old}' to '{new}'.".format(
+            old=_OLD_AUR_REPOS_CACHE_PATH,
+            new=AUR_REPOS_CACHE_PATH
+        ))
+    )
+    print_stderr()
 
 
 def create_dirs() -> None:

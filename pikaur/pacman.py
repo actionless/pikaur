@@ -1,6 +1,5 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-import gettext
 import re
 from threading import Lock
 from typing import (
@@ -11,6 +10,7 @@ from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
 
 from .i18n import _
+from .pacman_i18n import _p
 from .core import DataType, PackageSource
 from .version import VersionMatcher
 from .pprint import print_stderr, color_enabled, color_line
@@ -22,15 +22,8 @@ from .prompt import retry_interactive_command_or_exit, retry_interactive_command
 
 
 if TYPE_CHECKING:
-    # pylint: disable=unused-import
+    # pylint: disable=unused-import,cyclic-import
     from .aur import AURPackageInfo  # noqa
-
-
-PACMAN_TRANSLATION = gettext.translation('pacman', fallback=True)
-
-
-def _p(msg: str) -> str:
-    return PACMAN_TRANSLATION.gettext(msg)
 
 
 OFFICIAL_REPOS = (

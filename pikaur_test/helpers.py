@@ -52,7 +52,8 @@ def spawn(cmd: Union[str, List[str]], **kwargs) -> TestPopen:
             return proc
 
 
-def color_line(line: str, color_number: int) -> str:
+def color_line(line: str, color_number: int) -> str:  # pylint:disable=all
+    # @TODO: https://github.com/PyCQA/pylint/issues/214
     result = ''
     if color_number >= 8:
         result += "\033[0;1m"

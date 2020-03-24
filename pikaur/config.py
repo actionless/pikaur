@@ -3,7 +3,6 @@
 import os
 import sys
 import configparser
-import shutil
 from pathlib import Path
 from typing import Dict, Optional, Any, Callable
 
@@ -41,27 +40,6 @@ if RUNNING_AS_ROOT:
     AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
 else:
     AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
-
-
-def migrate_old_aur_repos_dir() -> None:
-    if not (
-            os.path.exists(_OLD_AUR_REPOS_CACHE_PATH) and not os.path.exists(AUR_REPOS_CACHE_PATH)
-    ):
-        return
-    if not os.path.exists(DATA_ROOT):
-        os.makedirs(DATA_ROOT)
-    shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
-
-    # pylint:disable=import-outside-toplevel
-    from .pprint import print_warning, print_stderr
-    print_stderr()
-    print_warning(
-        _("AUR repos dir has been moved from '{old}' to '{new}'.".format(
-            old=_OLD_AUR_REPOS_CACHE_PATH,
-            new=AUR_REPOS_CACHE_PATH
-        ))
-    )
-    print_stderr()
 
 
 def get_config_path() -> str:

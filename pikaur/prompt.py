@@ -14,6 +14,8 @@ from .pprint import (
     PrintLock, print_warning,
 )
 from .exceptions import SysExit
+from .pikspect import pikspect as pikspect_spawn
+from .pikspect import TTYRestore
 
 
 Y = _('y')
@@ -87,7 +89,6 @@ def get_input(prompt: str, answers: Iterable[str] = (), require_confirm=False) -
         ):
             answer = read_answer_from_tty(prompt, answers=answers)
         else:
-            from .pikspect import TTYRestore  # pylint:disable=import-outside-toplevel
             sub_tty = TTYRestore()
             TTYRestore.restore()
             try:
@@ -164,8 +165,6 @@ def retry_interactive_command(
     while True:
         good = None
         if pikspect:
-            # pylint:disable=import-outside-toplevel
-            from .pikspect import pikspect as pikspect_spawn
             good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
         else:
             if 'conflicts' in kwargs:

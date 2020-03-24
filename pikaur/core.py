@@ -16,9 +16,11 @@ from typing import (
 import pyalpm
 
 from .config import PikaurConfig
+from .args import parse_args
+from .pprint import print_stderr, color_line
 
 if TYPE_CHECKING:
-    # pylint: disable=unused-import
+    # pylint: disable=unused-import,cyclic-import
     from .aur import AURPackageInfo  # noqa
 
 
@@ -126,10 +128,7 @@ class InteractiveSpawn(subprocess.Popen):
     stderr_text: str
 
     def communicate(self, _input=None, _timeout=None) -> Tuple[bytes, bytes]:
-        #  pylint:disable=import-outside-toplevel
-        from .args import parse_args
         if parse_args().print_commands:
-            from .pprint import print_stderr, color_line
             if self.args != get_sudo_refresh_command():
                 print_stderr(
                     color_line('=> ', 14) +

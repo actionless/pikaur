@@ -15,7 +15,7 @@ from .args import parse_args
 from .core import PackageSource, InstallInfo
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
-from .pacman import PackageDB
+from .pacman import PackageDB, OFFICIAL_REPOS
 from .aur import AURPackageInfo
 
 
@@ -84,6 +84,8 @@ class ColorGenerator:
             return
 
         cls._init_done = True
+        for official_repo_name in OFFICIAL_REPOS:
+            cls.get_next('repo', official_repo_name)
         for repo in PackageDB.get_alpm_handle().get_syncdbs():
             cls.get_next('repo', repo.name)
 

@@ -34,13 +34,13 @@ def _p(msg: str) -> str:
 
 
 OFFICIAL_REPOS = (
-    'testing',
     'core',
     'extra',
-    'community-testing',
     'community',
-    'multilib-testing',
     'multilib',
+    'testing',
+    'community-testing',
+    'multilib-testing',
 )
 
 

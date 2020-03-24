@@ -13,4 +13,7 @@ env MYPYPATH=./maintenance_scripts/mypy_stubs python -m mypy pikaur.py pikaur_te
 echo Vulture:
 ./maintenance_scripts/vulture.sh
 
+echo Shellcheck...
+./maintenance_scripts/shellcheck.sh
+
 echo '== GOOD!'

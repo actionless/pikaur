@@ -16,7 +16,9 @@ echo Flake8...
 flake8 "${TARGETS[@]}"
 
 echo PyLint...
-python -m pylint --jobs="$(nproc)" "${TARGETS[@]}" --score no
+#python -m pylint --jobs="$(nproc)" "${TARGETS[@]}" --score no
+# --jobs is broken at the moment: https://github.com/PyCQA/pylint/issues/374
+python -m pylint "${TARGETS[@]}" --score no
 
 echo MyPy...
 env MYPYPATH=./maintenance_scripts/mypy_stubs python -m mypy "${TARGETS[@]}"

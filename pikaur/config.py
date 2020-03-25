@@ -31,9 +31,11 @@ CONFIG_ROOT = os.environ.get(
     os.path.join(Path.home(), ".config/")
 )
 
-DATA_ROOT = os.environ.get(
-    "XDG_DATA_HOME",
-    os.path.join(Path.home(), ".local/share/pikaur")
+DATA_ROOT = os.path.join(
+    os.environ.get(
+        "XDG_DATA_HOME",
+        os.path.join(Path.home(), ".local/share/")
+    ), "pikaur"
 )
 _OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
 if RUNNING_AS_ROOT:

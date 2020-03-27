@@ -108,8 +108,11 @@ class ColorGenerator:
         return cls._cache[color_type][_id]
 
 
-def pretty_format_repo_name(repo_name: str) -> str:
-    return color_line(f'{repo_name}/', ColorGenerator.get_next('repo', repo_name))
+def pretty_format_repo_name(repo_name: str, color=True) -> str:
+    result = f'{repo_name}/'
+    if not color:
+        return result
+    return color_line(result, ColorGenerator.get_next('repo', repo_name))
 
 
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements
@@ -155,7 +158,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         pkg_name = _bold_line(pkg_name)
         if (print_repo or verbose) and pkg_update.repository:
             pkg_name = '{}{}'.format(
-                pretty_format_repo_name(pkg_update.repository),
+                pretty_format_repo_name(pkg_update.repository, color=color),
                 pkg_name
             )
             pkg_len += len(pkg_update.repository) + 1

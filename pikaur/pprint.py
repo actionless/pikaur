@@ -51,8 +51,8 @@ def print_stderr(message='', end='\n', flush=False, lock=True) -> None:
     _print(sys.stderr, message=message, end=end, flush=flush, lock=lock)
 
 
-def color_line(line: str, color_number: int, reset=True) -> str:
-    if not color_enabled():
+def color_line(line: str, color_number: int, reset=True, force=False) -> str:
+    if not color_enabled() and not force:
         return line
     result = ''
     if color_number >= 8:

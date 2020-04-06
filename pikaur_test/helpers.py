@@ -4,7 +4,6 @@ import sys
 import os
 import tempfile
 from time import time
-from subprocess import Popen
 from unittest import TestCase
 from typing import Optional, List, NoReturn, Union
 
@@ -15,8 +14,9 @@ from pycman.config import PacmanConfig
 from pikaur.main import main
 from pikaur.args import CachedArgs, parse_args
 from pikaur.pacman import PackageDB
-from pikaur.pprint import get_term_width
+from pikaur.pprint import get_term_width, color_line
 from pikaur.makepkg_config import MakePkgCommand
+from pikaur.core import spawn as core_spawn, InteractiveSpawn
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -33,35 +33,10 @@ if WRITE_DB:
     PikaurConfig._config = None  # type: ignore
 
 
-class TestPopen(Popen):
-    stderr_text: Optional[str] = None
-    stdout_text: Optional[str] = None
-
-
-def spawn(cmd: Union[str, List[str]], **kwargs) -> TestPopen:
+def spawn(cmd: Union[str, List[str]], **kwargs) -> InteractiveSpawn:
     if isinstance(cmd, str):
         cmd = cmd.split(' ')
-    with tempfile.TemporaryFile() as out_file:
-        with tempfile.TemporaryFile() as err_file:
-            proc = TestPopen(cmd, stdout=out_file, stderr=err_file, **kwargs)
-            proc.communicate()
-            out_file.seek(0)
-            err_file.seek(0)
-            proc.stdout_text = out_file.read().decode('utf-8')
-            proc.stderr_text = err_file.read().decode('utf-8')
-            return proc
-
-
-def color_line(line: str, color_number: int) -> str:  # pylint:disable=all
-    # @TODO: https://github.com/PyCQA/pylint/issues/214
-    result = ''
-    if color_number >= 8:
-        result += "\033[0;1m"
-        color_number -= 8
-    result += f"\033[03{color_number}m{line}"
-    # reset font:
-    result += "\033[0;0m"
-    return result
+    return core_spawn(cmd, **kwargs)
 
 
 def log_stderr(line: str) -> None:
@@ -167,7 +142,7 @@ def pikaur(
         if '--mflags' not in cmd:
             new_args += ['--mflags=--noextract', ]
 
-    print(color_line('\n => ', 10) + ' '.join(new_args))
+    print(color_line('\n => ', 10, force=True) + ' '.join(new_args))
 
     intercepted: InterceptSysOutput
     with InterceptSysOutput(
@@ -225,7 +200,7 @@ def pkg_is_installed(pkg_name: str) -> bool:
 class PikaurTestCase(TestCase):
     # pylint: disable=invalid-name
 
-    separator = color_line(f"\n{'-' * get_term_width()}", 12)
+    separator = color_line(f"\n{'-' * get_term_width()}", 12, force=True)
 
     def run(self, result=None):
         time_started = time()

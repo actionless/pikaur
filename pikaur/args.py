@@ -144,9 +144,7 @@ class PikaurArgs(Namespace):
     owns: Optional[bool]
     check: Optional[bool]
     ignore: List[str]
-    # positional: List[str]
-    # @TODO: pylint bug:
-    positional: List[str] = []
+    positional: List[str]
 
     def __getattr__(self, name: str) -> Any:
         return getattr(super(), name, getattr(self, name.replace('-', '_')))

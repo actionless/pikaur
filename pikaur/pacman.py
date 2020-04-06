@@ -74,7 +74,7 @@ def get_pacman_command(ignore_args: Optional[List[str]] = None) -> List[str]:
             continue
         value = getattr(args, arg)
         if value:
-            pacman_cmd += ['--' + arg.replace('_', '-'), value]
+            pacman_cmd += ['--' + arg, value]
 
     for _short, arg, _default in PACMAN_APPEND_OPTS:
         if arg in ['ignore', ]:  # we reprocess it anyway
@@ -82,7 +82,7 @@ def get_pacman_command(ignore_args: Optional[List[str]] = None) -> List[str]:
         if arg in ignore_args:
             continue
         for value in getattr(args, arg) or []:
-            pacman_cmd += ['--' + arg.replace('_', '-'), value]
+            pacman_cmd += ['--' + arg, value]
 
     return pacman_cmd
 

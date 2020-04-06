@@ -149,10 +149,7 @@ class PikaurArgs(Namespace):
     positional: List[str] = []
 
     def __getattr__(self, name: str) -> Any:
-        """
-        this is a hack for typing/mypy
-        """
-        return getattr(super(), name)
+        return getattr(super(), name, getattr(self, name.replace('-', '_')))
 
     def handle_the_same_letter(self) -> None:
         # pylint: disable=attribute-defined-outside-init,access-member-before-definition

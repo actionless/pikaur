@@ -390,20 +390,10 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> 
         for key, value in vars(parsed_args).items()
         if value
         if key not in ignore_args + count_args + [
-            # @TODO: https://github.com/PyCQA/pylint/issues/214 :
-            'raw', 'unknown_args', 'positional', 'color',  # pylint:disable=all
-            'dbpath',
-            'root',
-            'arch',
-            'cachedir',
-            'config',
-            'gpgdir',
-            'hookdir',
-            'logfile',
-            'print_format',
-            'overwrite',
-            'assume_installed',
-            'ignoregroup',
+            'raw', 'unknown_args', 'positional',  # computed members
+        ] + [
+            long_arg
+            for _short_arg, long_arg, default in PACMAN_STR_OPTS + PACMAN_APPEND_OPTS
         ]
     }
     result = list(set(

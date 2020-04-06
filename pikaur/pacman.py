@@ -14,7 +14,7 @@ from .pacman_i18n import _p
 from .core import DataType, PackageSource
 from .version import VersionMatcher
 from .pprint import print_stderr, color_enabled, color_line
-from .args import parse_args, reconstruct_args
+from .args import parse_args, reconstruct_args, PACMAN_STR_OPTS, PACMAN_APPEND_OPTS
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo, DependencyError
 from .core import sudo, spawn
@@ -67,28 +67,18 @@ def get_pacman_command(ignore_args: Optional[List[str]] = None) -> List[str]:
     else:
         pacman_cmd += ['--color=never']
 
-    for arg in [
-            'dbpath',
-            'root',
-            'arch',
-            'cachedir',
-            'config',
-            'gpgdir',
-            'hookdir',
-            'logfile',
-            'print_format',
-    ]:
+    for _short, arg, _default in PACMAN_STR_OPTS:
+        if arg in ['color', ]:  # we force it anyway
+            continue
         if arg in ignore_args:
             continue
         value = getattr(args, arg)
         if value:
             pacman_cmd += ['--' + arg.replace('_', '-'), value]
 
-    for arg in [
-            'overwrite',
-            'assume_installed',
-            'ignoregroup',
-    ]:
+    for _short, arg, _default in PACMAN_APPEND_OPTS:
+        if arg in ['ignore', ]:  # we reprocess it anyway
+            continue
         if arg in ignore_args:
             continue
         for value in getattr(args, arg) or []:

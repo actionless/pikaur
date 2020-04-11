@@ -9,7 +9,7 @@ TARGETS=(
 	'pikaur_test'
 )
 
-export PYTHONWARNINGS=ignore,error:::pikaur,error:::pikaur_test
+export PYTHONWARNINGS='default,error:::pikaur[.*],error:::pikaur_test[.*]'
 
 echo Python compile...
 python3 -O -m compileall "${TARGETS[@]}" | (grep -v -e '^Listing' -e '^Compiling' || true)

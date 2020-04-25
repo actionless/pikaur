@@ -68,7 +68,7 @@ def cli_info_packages() -> None:
         pkg_info_lines = []
         for key, display_name in INFO_FIELDS.items():
             value = getattr(aur_pkg, key, None)
-            if key in ['firstsubmitted', 'lastmodified']:
+            if key in ['firstsubmitted', 'lastmodified', 'outofdate'] and value:
                 value = datetime.fromtimestamp(value).strftime('%c')
             elif isinstance(value, list):
                 value = ', '.join(value) or _("None")

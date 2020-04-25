@@ -2,7 +2,7 @@
 
 filter="cat"
 if [[ "${1:-}" = '-c' ]] ; then
-	filter="grep -v -i -E -e (typing|typehint|coverage|travis|docker|vulture) -e actionless\s[^[:print:]][^\s]*(chore|test|style|doc|Revert|Merge|locale)"
+	filter="grep -v -i -E -e (typing|typehint|coverage|travis|docker|vulture) -e actionless\s[^[:print:]][^\s]*(chore|test|style|doc|Revert|Merge|locale|lint)"
 	shift
 fi
 

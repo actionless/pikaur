@@ -544,7 +544,8 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
         aur_packages,
         key=get_aur_sort_key
     ))
-    sorted_packages: List[AnyPackage] = sorted_repo_pkgs + sorted_aur_pkgs  # type: ignore
+    sorted_packages: List[AnyPackage] = [*sorted_repo_pkgs, *sorted_aur_pkgs]
+    # mypy is always funny ^^ https://github.com/python/mypy/issues/5492#issuecomment-545992992
 
     enumerated_packages = list(enumerate(sorted_packages))
     if PikaurConfig().ui.ReverseSearchSorting.get_bool():

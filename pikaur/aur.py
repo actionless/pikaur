@@ -171,8 +171,8 @@ def find_aur_packages(
             pool.join()
             for result in results:
                 for aur_pkg in result:
-                    _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg  # type: ignore
-                    json_results.append(aur_pkg)  # type: ignore
+                    _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg
+                    json_results.append(aur_pkg)
 
     found_aur_packages = [
         result.name for result in json_results

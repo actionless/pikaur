@@ -509,28 +509,43 @@ def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
 
 # @TODO: weird pylint behavior if remove `return` from the end:
 def print_package_search_results(  # pylint:disable=useless-return,too-many-locals
-        repo_packages: Iterable[AnyPackage],
-        aur_packages: Iterable[AnyPackage],
+        repo_packages: Iterable[pyalpm.Package],
+        aur_packages: Iterable[AURPackageInfo],
         local_pkgs_versions: Dict[str, str],
         enumerated=False,
 ) -> List[AnyPackage]:
 
-    def get_sort_key(pkg: AnyPackage) -> float:
+    repos = [db.name for db in PackageDB.get_alpm_handle().get_syncdbs()]
+
+    def get_repo_sort_key(pkg: pyalpm.Package) -> Tuple[int, str]:
+        return (
+            repos.index(pkg.db.name)
+            if pkg.db.name in repos
+            else 999,
+            pkg.name
+        )
+
+    def get_aur_sort_key(pkg: AURPackageInfo) -> Tuple[float, str]:
         if (
-                isinstance(pkg, AURPackageInfo) and
                 isinstance(pkg.numvotes, int) and
                 isinstance(pkg.popularity, float)
         ):
-            return (pkg.numvotes + 1) * (pkg.popularity + 1)
-        return 1
+            return (-(pkg.numvotes + 1) * (pkg.popularity + 1), pkg.name)
+        return (-1.0, pkg.name)
 
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
-    sorted_packages: List[AnyPackage] = list(repo_packages) + list(sorted(
-        aur_packages,
-        key=get_sort_key,
-        reverse=True
+
+    sorted_repo_pkgs: List[pyalpm.Package] = list(sorted(
+        repo_packages,
+        key=get_repo_sort_key
     ))
+    sorted_aur_pkgs: List[AURPackageInfo] = list(sorted(
+        aur_packages,
+        key=get_aur_sort_key
+    ))
+    sorted_packages: List[AnyPackage] = sorted_repo_pkgs + sorted_aur_pkgs  # type: ignore
+
     enumerated_packages = list(enumerate(sorted_packages))
     if PikaurConfig().ui.ReverseSearchSorting.get_bool():
         enumerated_packages = list(reversed(enumerated_packages))

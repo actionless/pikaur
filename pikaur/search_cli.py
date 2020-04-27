@@ -2,7 +2,7 @@
 
 import sys
 from multiprocessing.pool import ThreadPool
-from typing import Any, Dict, List, Iterable, Union, Set, Sequence
+from typing import Any, Dict, List, Iterable, Set, TypeVar
 
 import pyalpm
 
@@ -16,6 +16,9 @@ from .aur import (
 )
 from .args import parse_args
 from .exceptions import AURError, SysExit
+
+
+SamePackageType = TypeVar('SamePackageType', AURPackageInfo, pyalpm.Package)
 
 
 def package_search_thread_repo(query: str) -> List[pyalpm.Package]:
@@ -109,8 +112,8 @@ def package_search_thread_local() -> Dict[str, str]:
 
 
 def join_search_results(
-        all_search_results: Sequence[Union[List[AURPackageInfo], List[pyalpm.Package]]]
-) -> Iterable[Union[AURPackageInfo, pyalpm.Package]]:
+        all_search_results: List[List[SamePackageType]]
+) -> Iterable[SamePackageType]:
     pkgnames_set: Set[str] = set()
     for search_results in all_search_results:
         new_pkgnames_set = set(get_pkg_id(result) for result in search_results)

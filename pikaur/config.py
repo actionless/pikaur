@@ -266,6 +266,12 @@ def write_config(config: configparser.ConfigParser = None) -> None:
             config.write(configfile)
 
 
+def str_to_bool(value: str) -> bool:
+    # pylint:disable=protected-access
+    raw_convert_func = configparser.RawConfigParser()._convert_to_boolean  # type: ignore
+    return raw_convert_func(value)
+
+
 class PikaurConfigItem:
 
     def __init__(self, section: configparser.SectionProxy, key: str) -> None:
@@ -274,10 +280,9 @@ class PikaurConfigItem:
         self.value = self.section.get(key)
 
     def get_bool(self) -> bool:
-        # pylint:disable=protected-access
         if get_key_type(self.section.name, self.key) != 'bool':
             raise TypeError(f"{self.key} is not 'bool'")
-        return configparser.RawConfigParser()._convert_to_boolean(self.value)  # type: ignore
+        return str_to_bool(self.value)
 
     def get_int(self) -> int:
         if get_key_type(self.section.name, self.key) != 'int':

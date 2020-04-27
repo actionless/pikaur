@@ -437,19 +437,19 @@ class InstallPackagesCLI():
         for pkgbuild in all_package_builds.values():
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
 
-            install_infos = [
-                info
+            aur_pkgs: List[AURPackageInfo] = [  # type: ignore
+                info.package
                 for container in self.install_info.all_install_info
                 for info in container
                 if info.name in pkgbuild.package_names
             ]
             aur_rpc_deps = set(
                 dep_line
-                for info in install_infos
+                for pkg in aur_pkgs
                 for dep_line in (
-                    info.package.depends +
-                    info.package.makedepends +  # type: ignore
-                    info.package.checkdepends  # type: ignore
+                    pkg.depends +
+                    pkg.makedepends +
+                    pkg.checkdepends
                 )
             )
 

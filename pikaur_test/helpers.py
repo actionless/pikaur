@@ -260,7 +260,7 @@ class PikaurDbTestCase(PikaurTestCase):
         self.remove_if_installed(repo_pkg_name)
         spawn(f'rm -fr ./{repo_pkg_name}')
         pikaur(f'-G {repo_pkg_name}')
-        some_older_commit = spawn(  # type: ignore
+        some_older_commit = spawn(
             f'git -C ./{repo_pkg_name} log --format=%h'
         ).stdout_text.splitlines()[10]
         spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
@@ -281,7 +281,7 @@ class PikaurDbTestCase(PikaurTestCase):
         self.remove_if_installed(aur_pkg_name)
         spawn(f'rm -fr ./{aur_pkg_name}')
         pikaur(f'-G {aur_pkg_name}')
-        prev_commit = spawn(  # type: ignore
+        prev_commit = spawn(
             f'git -C ./{aur_pkg_name} log --format=%h'
         ).stdout_text.splitlines()[count]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')

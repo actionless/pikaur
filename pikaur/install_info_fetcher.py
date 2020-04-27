@@ -541,7 +541,7 @@ class InstallInfoFetcher(ComparableType):
             )
             for dep_install_info in all_deps_install_infos:
                 for name_and_version in (
-                        [dep_install_info.package.name, ] +  # type: ignore
+                        [dep_install_info.package.name, ] +
                         (dep_install_info.package.provides or [])
                 ):
                     name = VersionMatcher(name_and_version).pkg_name

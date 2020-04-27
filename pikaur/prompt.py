@@ -44,7 +44,7 @@ def read_answer_from_tty(question: str, answers: Iterable[str] = (Y_UP, N, )) ->
         return default
 
     print_stderr(question, flush=True, end=" ", lock=False)
-    previous_tty_settings = tty.tcgetattr(sys.stdin.fileno())  # type: ignore
+    previous_tty_settings = tty.tcgetattr(sys.stdin.fileno())  # type: ignore[attr-defined]
     try:
         tty.setraw(sys.stdin.fileno())
         answer = sys.stdin.read(1).lower()
@@ -62,9 +62,11 @@ def read_answer_from_tty(question: str, answers: Iterable[str] = (Y_UP, N, )) ->
     except Exception:
         return ' '
     finally:
-        tty.tcsetattr(sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings)  # type: ignore
+        tty.tcsetattr(  # type: ignore[attr-defined]
+            sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings  # type: ignore[attr-defined]
+        )
         sys.stdout.write('{}\r\n'.format(answer))
-        tty.tcdrain(sys.stdin.fileno())  # type: ignore
+        tty.tcdrain(sys.stdin.fileno())  # type: ignore[attr-defined]
 
 
 def split_last_line(text: str) -> str:

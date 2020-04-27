@@ -268,8 +268,7 @@ def write_config(config: configparser.ConfigParser = None) -> None:
 
 def str_to_bool(value: str) -> bool:
     # pylint:disable=protected-access
-    raw_convert_func = configparser.RawConfigParser()._convert_to_boolean  # type: ignore
-    return raw_convert_func(value)
+    return configparser.RawConfigParser()._convert_to_boolean(value)  # type: ignore[attr-defined]
 
 
 class PikaurConfigItem:

@@ -437,7 +437,7 @@ class InstallPackagesCLI():
         for pkgbuild in all_package_builds.values():
             pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
 
-            aur_pkgs: List[AURPackageInfo] = [  # type: ignore
+            aur_pkgs: List[AURPackageInfo] = [  # type: ignore[arg-type]
                 info.package
                 for container in self.install_info.all_install_info
                 for info in container

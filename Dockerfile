@@ -29,18 +29,26 @@ ENV LANG=en_US.utf8 \
 	LC_ALL=en_US.UTF-8
 
 COPY . /opt/app-build/
-RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
+RUN echo ">>>> Installing doc and opt deps:" && \
+	pacman -Sy ruby-ronn asp --noconfirm --needed && \
+	echo ">>>> Preparing build directory:" && \
 	chown -R user /opt/app-build/ && \
+	echo ">>>> Fetching git tags:" && \
 	sudo -u user git fetch -t || true && \
+	echo ">>>> Validating man page:" && \
 	sudo -u user make check_man && \
+	echo ">>>> Preparing build files:" && \
 	sudo -u user tar --transform 's,^,pikaur-git/,' -cf pikaur-git.tar.gz . && \
 	sudo -u user sed -i 's/"$pkgname::.*"/"pikaur-git.tar.gz"/' PKGBUILD && \
+	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	sleep 0.1 && \
+	echo ">>>> Installing test deps using Pikaur itself:" && \
 	sudo -u user pikaur -S --noconfirm --color=always iputils python-virtualenv \
 		python-pylint flake8 mypy python-vulture python-coveralls shellcheck
 
-RUN sudo -u user env \
+RUN echo ">>>> Starting CI testsuite:" && \
+	sudo -u user env \
 	TRAVIS=$TRAVIS \
 	TRAVIS_JOB_ID=$TRAVIS_JOB_ID \
 	TRAVIS_BRANCH=$TRAVIS_BRANCH \

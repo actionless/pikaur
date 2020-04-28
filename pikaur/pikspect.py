@@ -69,7 +69,9 @@ TTYRestore.save()
 
 def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
     term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
-    fcntl.ioctl(file_descriptor, termios.TIOCSWINSZ, term_geometry_struct)
+    fcntl.ioctl(
+        file_descriptor, termios.TIOCSWINSZ, term_geometry_struct
+    )  # type: ignore[call-overload]
 
 
 class NestedTerminal():
@@ -130,7 +132,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         self.pty_user_master, self.pty_user_slave = pty.openpty()
         self.pty_cmd_master, self.pty_cmd_slave = pty.openpty()
 
-        super().__init__(
+        super().__init__(  # type: ignore[call-arg]
             args=args,
             stdin=self.pty_user_slave,
             stdout=self.pty_cmd_slave,

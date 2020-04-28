@@ -40,9 +40,6 @@ RUN pacman -Sy ruby-ronn asp --noconfirm --needed && \
 	sudo -u user pikaur -S --noconfirm --color=always iputils python-virtualenv \
 		python-pylint flake8 mypy python-vulture python-coveralls shellcheck
 
-RUN pacman -S --noconfirm --needed python-pip && pip install -U mypy==0.720  # @TODO: mypy 0.730 is broken
-# RUN pacman -S --noconfirm --needed python-pip && pip install -U git+https://github.com/python/mypy/  # @TODO: mypy 0.730 is broken
-
 RUN sudo -u user env \
 	TRAVIS=$TRAVIS \
 	TRAVIS_JOB_ID=$TRAVIS_JOB_ID \

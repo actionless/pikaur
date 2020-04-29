@@ -111,6 +111,12 @@ class VersionMatcher():
         self.version = version
         self.version_matchers = [version_matcher]
 
+    def __repr__(self) -> str:
+        return (
+            f'<{self.__class__.__name__} '
+            f'{self.pkg_name}{[m.__name__ for m in self.version_matchers]}{self.version}>'
+        )
+
 
 def split_version(version: str) -> List[str]:
     splitted_version = []

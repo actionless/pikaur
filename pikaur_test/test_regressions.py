@@ -139,3 +139,14 @@ class RegressionTest(PikaurDbTestCase):
         fake_pikaur(f'-S {pkg_name}')
         self.assertInstalled(pkg_name)
         self.assertInstalled(correct_arch_dep_name)
+
+    def test_version_matcher_on_pkg_install(self):
+        """
+        https://github.com/actionless/pikaur/issues/474
+        """
+        aur_pkg_name = 'inxi'
+        self.remove_if_installed(aur_pkg_name)
+        fake_pikaur(f'-S {aur_pkg_name}>=99.9.9.9')
+        self.assertNotInstalled(aur_pkg_name)
+        fake_pikaur(f'-S {aur_pkg_name}>=1.0')
+        self.assertInstalled(aur_pkg_name)

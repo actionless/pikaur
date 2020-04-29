@@ -355,17 +355,27 @@ class InstallInfoFetcher(ComparableType):
             else:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
-    def get_aur_pkgs_info(self, aur_packages_names: List[str]) -> None:
-        print_debug(f"gonna get AUR pkgs install info... {self.aur_updates_install_info=}")
+    def get_aur_pkgs_info(self, aur_packages_versionmatchers: List[str]) -> None:
+        print_debug(
+            f"gonna get AUR pkgs install info for {aur_packages_versionmatchers=}... "
+            f"{self.aur_updates_install_info=}"
+        )
+        aur_packages_names_to_versions = {}
+        for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]:
+            aur_packages_names_to_versions[version_matcher.pkg_name] = version_matcher
         local_pkgs = PackageDB.get_local_dict()
-        aur_pkg_list, not_found_aur_pkgs = find_aur_packages(aur_packages_names)
+        aur_pkg_list, not_found_aur_pkgs = find_aur_packages(
+            list(aur_packages_names_to_versions.keys())
+        )
+        aur_pkgs = {}
+        for aur_pkg in aur_pkg_list:
+            if aur_packages_names_to_versions[aur_pkg.name](aur_pkg.version):
+                aur_pkgs[aur_pkg.name] = aur_pkg
+            else:
+                not_found_aur_pkgs.append(aur_packages_names_to_versions[aur_pkg.name].line)
         if not_found_aur_pkgs:
             print_not_found_packages(sorted(not_found_aur_pkgs))
             raise SysExit(6)
-        aur_pkgs = {
-            aur_pkg.name: aur_pkg
-            for aur_pkg in aur_pkg_list
-        }
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         if self.args.sysupgrade:
             aur_updates_list, not_found_aur_pkgs = find_aur_updates()

@@ -966,6 +966,7 @@ class InstallPackagesCLI():
                             'sysupgrade',
                             'refresh',
                             'ignore',
+                            'search',
                         ]) + list(aur_packages_to_install.values())
                     ),
                     pikspect=True,

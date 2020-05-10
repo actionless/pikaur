@@ -13,7 +13,7 @@ from .pacman import (
 )
 from .aur import find_aur_packages, AURPackageInfo
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
-from .pprint import print_stdout, print_debug
+from .pprint import print_stdout, print_debug, color_line
 from .args import PikaurArgs, parse_args, reconstruct_args
 from .exceptions import DependencyVersionMismatch, SysExit
 from .print_department import print_ignored_package, print_not_found_packages
@@ -23,7 +23,7 @@ from .srcinfo import SrcInfo
 
 
 def debug(msg: Any) -> None:
-    print_debug(f"install_info_fetcher: {str(msg)}")
+    print_debug(f"{color_line('install_info_fetcher', 5)}: {str(msg)}")
 
 
 class InstallInfoFetcher(ComparableType):
@@ -50,7 +50,7 @@ class InstallInfoFetcher(ComparableType):
             manually_excluded_packages_names: List[str],
             pkgbuilds_packagelists: Dict[str, List[str]],
     ) -> None:
-        print_debug(f"""Gonna fetch install info for:
+        debug(f"""Gonna fetch install info for:
     {install_package_names=}
     {not_found_repo_pkgs_names=}
     {pkgbuilds_packagelists=}
@@ -155,6 +155,7 @@ class InstallInfoFetcher(ComparableType):
         # retrieve InstallInfo objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed
         if not self.args.aur:
+            debug("Gonna get repo pkgs install info...")
             self.get_repo_pkgs_info()
 
         # retrieve InstallInfo objects for AUR packages to be installed
@@ -356,7 +357,7 @@ class InstallInfoFetcher(ComparableType):
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
     def get_aur_pkgs_info(self, aur_packages_versionmatchers: List[str]) -> None:
-        print_debug(
+        debug(
             f"gonna get AUR pkgs install info for {aur_packages_versionmatchers=}... "
             f"{self.aur_updates_install_info=}"
         )
@@ -408,10 +409,10 @@ class InstallInfoFetcher(ComparableType):
                 )
                 del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
-        print_debug(f"got AUR pkgs install info: {self.aur_updates_install_info=}")
+        debug(f"got AUR pkgs install info: {self.aur_updates_install_info=}")
 
     def get_info_from_pkgbuilds(self) -> None:
-        print_debug(f"gonna get install info from PKGBUILDs... {self.aur_updates_install_info=}")
+        debug(f"gonna get install info from PKGBUILDs... {self.aur_updates_install_info=}")
         aur_updates_install_info_by_name: Dict[str, InstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path, pkg_names in self.pkgbuilds_packagelists.items():
@@ -434,7 +435,7 @@ class InstallInfoFetcher(ComparableType):
                     pkgbuild_path=path,
                 )
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
-        print_debug(f"got install info from PKGBUILDs... {self.aur_updates_install_info=}")
+        debug(f"got install info from PKGBUILDs... {self.aur_updates_install_info=}")
 
     def get_aur_deps_info(self) -> None:
         all_aur_pkgs = []

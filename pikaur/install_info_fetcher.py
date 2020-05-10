@@ -262,7 +262,7 @@ class InstallInfoFetcher(ComparableType):
             return []
         all_local_pkgs = PackageDB.get_local_dict()
         pkg_install_infos = []
-        for pkg in find_sysupgrade_packages():
+        for pkg in find_sysupgrade_packages(ignore_pkgs=self.manually_excluded_packages_names):
             local_pkg = all_local_pkgs.get(pkg.name)
             install_info = InstallInfo(
                 name=pkg.name,

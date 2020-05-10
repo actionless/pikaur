@@ -377,10 +377,10 @@ class PackageDB(PackageDBCommon):
         return int(packages_by_date[0].installdate)
 
     @classmethod
-    def get_print_format_output(cls, cmd_args: List[str], cache=True) -> List[PacmanPrint]:
+    def get_print_format_output(cls, cmd_args: List[str]) -> List[PacmanPrint]:
         cache_index = ' '.join(sorted(cmd_args))
         cached_pkg = cls._pacman_find_cache.get(cache_index)
-        if cache and cached_pkg is not None:
+        if cached_pkg is not None:
             return cached_pkg
         results: List[PacmanPrint] = []
         found_packages_output = spawn(
@@ -538,8 +538,7 @@ def find_sysupgrade_packages(ignore_pkgs: Optional[List[str]] = None) -> List[py
     results = PackageDB.get_print_format_output(
         get_pacman_command() + ['--sync'] +
         ['--sysupgrade'] * parse_args().sysupgrade +
-        extra_args,
-        cache=False
+        extra_args
     )
     return [
         all_repo_pkgs[result.full_name] for result in results

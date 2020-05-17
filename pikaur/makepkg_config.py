@@ -109,6 +109,7 @@ PKGDEST: Optional[str] = os.environ.get(
     MakepkgConfig.get('PKGDEST')
 )
 if PKGDEST:
+    PKGDEST = PKGDEST.replace('$HOME', '~')
     PKGDEST = os.path.expanduser(PKGDEST)
 
 

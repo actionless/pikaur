@@ -140,7 +140,6 @@ def cli_pkgbuild() -> None:
 
 
 def cli_getpkgbuild() -> None:
-    check_runtime_deps(['asp'])
     args = parse_args()
     pwd = os.path.abspath(os.path.curdir)
     aur_pkg_names = args.positional
@@ -155,6 +154,9 @@ def cli_getpkgbuild() -> None:
             not_found_repo_pkgs.append(pkg_name)
         else:
             repo_pkgs.append(repo_pkg)
+
+    if repo_pkgs:
+        check_runtime_deps(['asp'])
 
     if not_found_repo_pkgs:
         print_not_found_packages(not_found_repo_pkgs)

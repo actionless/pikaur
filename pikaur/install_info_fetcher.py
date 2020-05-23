@@ -362,9 +362,10 @@ class InstallInfoFetcher(ComparableType):
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]
         }
         debug(
-            f"gonna get AUR pkgs install info for {aur_packages_versionmatchers=}... "
-            f"{self.aur_updates_install_info=} "
-            f"{aur_packages_names_to_versions=}"
+            f"gonna get AUR pkgs install info for:\n"
+            f"    {aur_packages_versionmatchers=}\n"
+            f"    {self.aur_updates_install_info=}\n"
+            f"    {aur_packages_names_to_versions=}"
         )
         local_pkgs = PackageDB.get_local_dict()
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(

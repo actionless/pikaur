@@ -11,7 +11,7 @@ from .pacman import (
     PackageDB, PacmanConfig, PacmanPrint,
     find_sysupgrade_packages, get_pacman_command, strip_repo_name,
 )
-from .aur import find_aur_packages, AURPackageInfo
+from .aur import find_aur_packages, AURPackageInfo, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .pprint import print_stdout, print_debug, color_line
 from .args import PikaurArgs, parse_args, reconstruct_args
@@ -357,14 +357,15 @@ class InstallInfoFetcher(ComparableType):
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
     def get_aur_pkgs_info(self, aur_packages_versionmatchers: List[str]) -> None:
-        debug(
-            f"gonna get AUR pkgs install info for {aur_packages_versionmatchers=}... "
-            f"{self.aur_updates_install_info=}"
-        )
         aur_packages_names_to_versions = {
-            version_matcher.pkg_name: version_matcher
+            strip_aur_repo_name(version_matcher.pkg_name): version_matcher
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]
         }
+        debug(
+            f"gonna get AUR pkgs install info for {aur_packages_versionmatchers=}... "
+            f"{self.aur_updates_install_info=} "
+            f"{aur_packages_names_to_versions=}"
+        )
         local_pkgs = PackageDB.get_local_dict()
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(
             list(aur_packages_names_to_versions.keys())

@@ -140,7 +140,7 @@ def cli_pkgbuild() -> None:
 
 
 def cli_getpkgbuild() -> None:
-    check_runtime_deps(['asp'])
+    check_runtime_deps(False)
     args = parse_args()
     pwd = os.path.abspath(os.path.curdir)
     aur_pkg_names = args.positional
@@ -161,6 +161,14 @@ def cli_getpkgbuild() -> None:
 
     if args.deps:
         aur_pkgs = aur_pkgs + get_aur_deps_list(aur_pkgs)
+
+    if repo_pkgs and not shutil.which('asp'):
+        # Only check for `asp` if needed and do this before any download is started.
+        print_error("'{}' {}.".format(
+            bold_line('asp'),
+            "executable not found, required for downloading PKGBUILD from ABS."
+        ))
+        sys.exit(2)
 
     for aur_pkg in aur_pkgs:
         name = aur_pkg.name
@@ -343,7 +351,7 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
     return version >= 235
 
 
-def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
+def check_runtime_deps(needs_root: bool = True):
     if sys.version_info.major < 3 or sys.version_info.minor < 7:
         print_error(
             _("pikaur requires Python >= 3.7 to run."),
@@ -354,11 +362,13 @@ def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
             _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         )
         sys.exit(65)
-    if not dep_names:
+    if needs_root:
         privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
         dep_names = ["fakeroot", ] + (
             [privilege_escalation_tool] if not running_as_root() else []
         )
+    else:
+        dep_names = []
 
     for dep_bin in dep_names:
         if not shutil.which(dep_bin):

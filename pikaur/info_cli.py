@@ -1,5 +1,6 @@
 from datetime import datetime
 from multiprocessing.pool import ThreadPool
+from unicodedata import east_asian_width
 
 from .i18n import _
 from .aur import find_aur_packages, get_all_aur_names
@@ -72,9 +73,19 @@ def cli_info_packages() -> None:
                 value = datetime.fromtimestamp(value).strftime('%c')
             elif isinstance(value, list):
                 value = ', '.join(value) or _("None")
-            pkg_info_lines.append('{key:26}: {value}'.format(
-                key=bold_line(display_name), value=value))
+            pkg_info_lines.append('{key}: {value}'.format(
+                key=_rightpad(bold_line(display_name), 26), value=value))
         print(
             _decorate_info_output('\n'.join(pkg_info_lines)) +
             ('\n' if i + 1 < num_found else '')
         )
+
+
+def _rightpad(text: str, num: int) -> str:
+    space = num
+    for i in text:
+        if east_asian_width(i) in ["F", "W", "A"]:
+            space -= 2
+        else:
+            space -= 1
+    return text + " " * space

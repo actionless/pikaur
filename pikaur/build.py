@@ -258,7 +258,11 @@ class PackageBuild(DataType):
         if pkgver_result.returncode != 0:
             print_error(_("failed to retrieve latest dev sources:"))
             print_stderr(pkgver_result.stdout_text)
-            if not ask_to_continue(default_yes=False):
+            if (
+                    not PikaurConfig().build.SkipFailedBuild.get_bool()
+            ) and (
+                not ask_to_continue(default_yes=False)
+            ):
                 raise SysExit(125)
         SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True

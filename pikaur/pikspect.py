@@ -71,7 +71,7 @@ def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None
     term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
     fcntl.ioctl(
         file_descriptor, termios.TIOCSWINSZ, term_geometry_struct
-    )  # type: ignore[call-overload]
+    )
 
 
 class NestedTerminal():

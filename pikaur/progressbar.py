@@ -26,7 +26,7 @@ class ProgressBar():
         sys.stderr.write(message)
         if color_enabled():
             sys.stderr.write(self.LEFT_DECORATION + self.EMPTY * width + self.RIGHT_DECORATION)
-            sys.stderr.write(f'{(chr(27))}[\bb' * (width + len(self.RIGHT_DECORATION)))
+            sys.stderr.write(f'{(chr(27))}[1D' * (width + len(self.RIGHT_DECORATION)))
 
     def update(self) -> None:
         self.index += 1

@@ -201,7 +201,8 @@ def find_missing_deps_for_aur_pkg(
     return not_found_repo_pkgs
 
 
-def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:  # pylint: disable=too-many-locals
+def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:
+    # pylint: disable=too-many-locals,too-many-branches
     new_aur_deps: List[str] = []
     package_names = [
         aur_pkg.name
@@ -249,7 +250,8 @@ def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:
                     raise exc
                 not_found_local_pkgs += results
                 for dep_pkg_name in results:
-                    result_aur_deps.setdefault(aur_pkg_name, []).append(dep_pkg_name)
+                    if dep_pkg_name not in package_names:
+                        result_aur_deps.setdefault(aur_pkg_name, []).append(dep_pkg_name)
 
         iter_package_names = []
         for pkg_name in not_found_local_pkgs:

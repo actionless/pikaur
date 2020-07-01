@@ -213,7 +213,10 @@ class InstallPackagesCLI():
 
         answer = answer.lower()[0]
         if answer == _("e"):
-            self.package_builds_by_name.update(clone_aur_repos([pkg_name]))
+            updated_pkgbuilds = self._clone_aur_repos([pkg_name])
+            if not updated_pkgbuilds:
+                return
+            self.package_builds_by_name.update(updated_pkgbuilds)
             pkg_build = self.package_builds_by_name[pkg_name]
             if not edit_file(
                     pkg_build.pkgbuild_path
@@ -486,85 +489,89 @@ class InstallPackagesCLI():
             self.main_sequence()
             raise self.ExitMainSequence()
 
+    def _clone_aur_repos(self, package_names: List[str]) -> Optional[Dict[str, PackageBuild]]:
+        try:
+            return clone_aur_repos(package_names=package_names)
+        except CloneError as err:
+            package_build = err.build
+            print_stderr(color_line(
+                (
+                    _("Can't clone '{name}' in '{path}' from AUR:")
+                    if package_build.clone else
+                    _("Can't pull '{name}' in '{path}' from AUR:")
+                ).format(
+                    name=', '.join(package_build.package_names),
+                    path=package_build.repo_path
+                ),
+                9
+            ))
+            print_stderr(err.result.stdout_text)
+            print_stderr(err.result.stderr_text)
+            if self.args.noconfirm:
+                answer = _("a")
+            else:  # pragma: no cover
+                prompt = '{} {}\n{}\n{}\n{}\n{}\n> '.format(
+                    color_line('::', 11),
+                    _("Try recovering?"),
+                    _("[c] git checkout -- '*'"),
+                    # _("[c] git checkout -- '*' ; git clean -f -d -x"),
+                    _("[r] remove dir and clone again"),
+                    _("[s] skip this package"),
+                    _("[a] abort")
+                )
+                answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
+
+            answer = answer.lower()[0]
+            if answer == _("c"):  # pragma: no cover
+                package_build.git_reset_changed()
+            elif answer == _("r"):  # pragma: no cover
+                remove_dir(package_build.repo_path)
+            elif answer == _("s"):  # pragma: no cover
+                for skip_pkg_name in package_build.package_names:
+                    self.discard_install_info(skip_pkg_name)
+            else:
+                raise SysExit(125)
+        return None
+
     def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:
-            try:
-                clone_names = []
-                pkgbuilds_by_base: Dict[str, PackageBuild] = {}
-                pkgbuilds_by_name = {}
-                for info in (
-                        self.install_info.aur_updates_install_info +
-                        self.install_info.aur_deps_install_info
-                ):
-                    if info.pkgbuild_path:
-                        if not isinstance(info.package, AURPackageInfo):
-                            raise TypeError()
-                        pkg_base = info.package.packagebase
-                        if pkg_base not in pkgbuilds_by_base:
-                            package_names = self.pkgbuilds_packagelists.get(info.pkgbuild_path)
-                            print_debug(
-                                f"Initializing build info for {pkg_base=}, "
-                                f"{info.pkgbuild_path=}, {package_names=}"
-                            )
-                            pkgbuilds_by_base[pkg_base] = PackageBuild(
-                                pkgbuild_path=info.pkgbuild_path,
-                                package_names=package_names
-                            )
-                        pkgbuilds_by_name[info.name] = pkgbuilds_by_base[pkg_base]
-                    else:
-                        clone_names.append(info.name)
-                cloned_pkgbuilds = clone_aur_repos(clone_names)
-                pkgbuilds_by_name.update(cloned_pkgbuilds)
-                for pkg_list in (self.aur_packages_names, self.aur_deps_names):
-                    self._find_extra_aur_build_deps(
-                        all_package_builds={
-                            pkg_name: pkgbuild for pkg_name, pkgbuild
-                            in pkgbuilds_by_name.items()
-                            if pkg_name in pkg_list
-                        }
-                    )
-                self.package_builds_by_name = pkgbuilds_by_name
-                break
-
-            except CloneError as err:
-                package_build = err.build
-                print_stderr(color_line(
-                    (
-                        _("Can't clone '{name}' in '{path}' from AUR:")
-                        if package_build.clone else
-                        _("Can't pull '{name}' in '{path}' from AUR:")
-                    ).format(
-                        name=', '.join(package_build.package_names),
-                        path=package_build.repo_path
-                    ),
-                    9
-                ))
-                print_stderr(err.result.stdout_text)
-                print_stderr(err.result.stderr_text)
-                if self.args.noconfirm:
-                    answer = _("a")
-                else:  # pragma: no cover
-                    prompt = '{} {}\n{}\n{}\n{}\n{}\n> '.format(
-                        color_line('::', 11),
-                        _("Try recovering?"),
-                        _("[c] git checkout -- '*'"),
-                        # _("[c] git checkout -- '*' ; git clean -f -d -x"),
-                        _("[r] remove dir and clone again"),
-                        _("[s] skip this package"),
-                        _("[a] abort")
-                    )
-                    answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
-
-                answer = answer.lower()[0]
-                if answer == _("c"):  # pragma: no cover
-                    package_build.git_reset_changed()
-                elif answer == _("r"):  # pragma: no cover
-                    remove_dir(package_build.repo_path)
-                elif answer == _("s"):  # pragma: no cover
-                    for skip_pkg_name in package_build.package_names:
-                        self.discard_install_info(skip_pkg_name)
+            clone_names = []
+            pkgbuilds_by_base: Dict[str, PackageBuild] = {}
+            pkgbuilds_by_name = {}
+            for info in (
+                    self.install_info.aur_updates_install_info +
+                    self.install_info.aur_deps_install_info
+            ):
+                if info.pkgbuild_path:
+                    if not isinstance(info.package, AURPackageInfo):
+                        raise TypeError()
+                    pkg_base = info.package.packagebase
+                    if pkg_base not in pkgbuilds_by_base:
+                        package_names = self.pkgbuilds_packagelists.get(info.pkgbuild_path)
+                        print_debug(
+                            f"Initializing build info for {pkg_base=}, "
+                            f"{info.pkgbuild_path=}, {package_names=}"
+                        )
+                        pkgbuilds_by_base[pkg_base] = PackageBuild(
+                            pkgbuild_path=info.pkgbuild_path,
+                            package_names=package_names
+                        )
+                    pkgbuilds_by_name[info.name] = pkgbuilds_by_base[pkg_base]
                 else:
-                    raise SysExit(125)
+                    clone_names.append(info.name)
+            cloned_pkgbuilds = self._clone_aur_repos(clone_names)
+            if cloned_pkgbuilds:
+                pkgbuilds_by_name.update(cloned_pkgbuilds)
+            for pkg_list in (self.aur_packages_names, self.aur_deps_names):
+                self._find_extra_aur_build_deps(
+                    all_package_builds={
+                        pkg_name: pkgbuild for pkg_name, pkgbuild
+                        in pkgbuilds_by_name.items()
+                        if pkg_name in pkg_list
+                    }
+                )
+            self.package_builds_by_name = pkgbuilds_by_name
+            break
 
     def ask_about_package_conflicts(self) -> None:
         if self.aur_packages_names or self.aur_deps_names:

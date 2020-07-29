@@ -250,13 +250,18 @@ For more info see `makepkg` documentation.
 
 ##### How to clean old or uninstalled AUR packages in ~/.cache/pikaur/pkg?
 
-This can be achieved using a pacman-hook (paccache-clear.hook). For both official and AUR packages, the last 3 packages are kept if the package is still installed, and one package is kept if the package is uninstalled.
+Use `paccache(8)` with the `--cachedir` option.
 
-```
-Exec = /usr/bin/env bash -c "/usr/bin/paccache -vrk3; /usr/bin/paccache -vruk1; /usr/bin/paccache --cachedir PATH/TO/.cache/pikaur/pkg/ -vrk3; /usr/bin/paccache --cachedir PATH/TO/.cache/pikaur/pkg/ -vruk1"
-```
+To clean them up automatically, you may:
 
-Change the numbers, and you are good to go.
+- use a pacman hook.  Start with the provided
+  `/usr/share/pikaur/examples/pikaur-cache.hook`, remember to update the
+  cache's path.
+
+- use a systemd service & timer (provided `pikaur-cache.service` and
+  `pikaur-cache.timer`).  Configure it with `systemctl --user edit
+  --full pikaur-cache.service` and activate it with `systemctl --user
+  enable --now pikaur-cache.timer`.
 
 
 ##### How to see upgrade list without syncing the database? (like "checkupdates" tool from pacman)

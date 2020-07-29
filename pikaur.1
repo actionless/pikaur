@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "PIKAUR" "1" "September 2020" "" "Pikaur manual"
+.TH "PIKAUR" "1" "November 2020" "" "Pikaur manual"
 .
 .P
 AUR helper with minimal dependencies\. Review PKGBUILDs all in once, next build them all without user interaction\.
@@ -286,20 +286,18 @@ Set \fBSRCDEST\fR, \fBBUILDDIR\fR or \fBPKGDEST\fR accordingly in \fBmakepkg\.co
 For more info see \fBmakepkg\fR documentation\.
 .
 .SS "How to clean old or uninstalled AUR packages in ~/\.cache/pikaur/pkg?"
-This can be achieved using a pacman\-hook (paccache\-clear\.hook)\. For both official and AUR packages, the last 3 packages are kept if the package is still installed, and one package is kept if the package is uninstalled\.
-.
-.IP "" 4
-.
-.nf
-
-Exec = /usr/bin/env bash \-c "/usr/bin/paccache \-vrk3; /usr/bin/paccache \-vruk1; /usr/bin/paccache \-\-cachedir PATH/TO/\.cache/pikaur/pkg/ \-vrk3; /usr/bin/paccache \-\-cachedir PATH/TO/\.cache/pikaur/pkg/ \-vruk1"
-.
-.fi
-.
-.IP "" 0
+Use \fBpaccache(8)\fR with the \fB\-\-cachedir\fR option\.
 .
 .P
-Change the numbers, and you are good to go\.
+To clean them up automatically, you may:
+.
+.IP "\(bu" 4
+use a pacman hook\. Start with the provided \fB/usr/share/pikaur/examples/pikaur\-cache\.hook\fR, remember to update the cache\'s path\.
+.
+.IP "\(bu" 4
+use a systemd service & timer (provided \fBpikaur\-cache\.service\fR and \fBpikaur\-cache\.timer\fR)\. Configure it with \fBsystemctl \-\-user edit \-\-full pikaur\-cache\.service\fR and activate it with \fBsystemctl \-\-user enable \-\-now pikaur\-cache\.timer\fR\.
+.
+.IP "" 0
 .
 .SS "How to see upgrade list without syncing the database? (like 'checkupdates' tool from pacman)"
 Actually use \fBcheckupdates\fR tool to check the repo updates and use pikaur only for AUR (\fB\-a\fR/\fB\-\-aur\fR switch):

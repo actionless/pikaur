@@ -490,48 +490,48 @@ class InstallPackagesCLI():
             raise self.ExitMainSequence()
 
     def _clone_aur_repos(self, package_names: List[str]) -> Optional[Dict[str, PackageBuild]]:
-        try:
-            return clone_aur_repos(package_names=package_names)
-        except CloneError as err:
-            package_build = err.build
-            print_stderr(color_line(
-                (
-                    _("Can't clone '{name}' in '{path}' from AUR:")
-                    if package_build.clone else
-                    _("Can't pull '{name}' in '{path}' from AUR:")
-                ).format(
-                    name=', '.join(package_build.package_names),
-                    path=package_build.repo_path
-                ),
-                9
-            ))
-            print_stderr(err.result.stdout_text)
-            print_stderr(err.result.stderr_text)
-            if self.args.noconfirm:
-                answer = _("a")
-            else:  # pragma: no cover
-                prompt = '{} {}\n{}\n{}\n{}\n{}\n> '.format(
-                    color_line('::', 11),
-                    _("Try recovering?"),
-                    _("[c] git checkout -- '*'"),
-                    # _("[c] git checkout -- '*' ; git clean -f -d -x"),
-                    _("[r] remove dir and clone again"),
-                    _("[s] skip this package"),
-                    _("[a] abort")
-                )
-                answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
+        while True:
+            try:
+                return clone_aur_repos(package_names=package_names)
+            except CloneError as err:
+                package_build = err.build
+                print_stderr(color_line(
+                    (
+                        _("Can't clone '{name}' in '{path}' from AUR:")
+                        if package_build.clone else
+                        _("Can't pull '{name}' in '{path}' from AUR:")
+                    ).format(
+                        name=', '.join(package_build.package_names),
+                        path=package_build.repo_path
+                    ),
+                    9
+                ))
+                print_stderr(err.result.stdout_text)
+                print_stderr(err.result.stderr_text)
+                if self.args.noconfirm:
+                    answer = _("a")
+                else:  # pragma: no cover
+                    prompt = '{} {}\n{}\n{}\n{}\n{}\n> '.format(
+                        color_line('::', 11),
+                        _("Try recovering?"),
+                        _("[c] git checkout -- '*'"),
+                        # _("[c] git checkout -- '*' ; git clean -f -d -x"),
+                        _("[r] remove dir and clone again"),
+                        _("[s] skip this package"),
+                        _("[A] abort")
+                    )
+                    answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
 
-            answer = answer.lower()[0]
-            if answer == _("c"):  # pragma: no cover
-                package_build.git_reset_changed()
-            elif answer == _("r"):  # pragma: no cover
-                remove_dir(package_build.repo_path)
-            elif answer == _("s"):  # pragma: no cover
-                for skip_pkg_name in package_build.package_names:
-                    self.discard_install_info(skip_pkg_name)
-            else:
-                raise SysExit(125)
-        return None
+                answer = answer.lower()[0]
+                if answer == _("c"):  # pragma: no cover
+                    package_build.git_reset_changed()
+                elif answer == _("r"):  # pragma: no cover
+                    remove_dir(package_build.repo_path)
+                elif answer == _("s"):  # pragma: no cover
+                    for skip_pkg_name in package_build.package_names:
+                        self.discard_install_info(skip_pkg_name)
+                else:
+                    raise SysExit(125)
 
     def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:

@@ -39,6 +39,7 @@ from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .version import compare_versions, VersionMatcher
 from .makepkg_config import MakepkgConfig, MakePkgCommand, PKGDEST
+from .urllib import wrap_proxy_env
 
 
 class PkgbuildChanged(Exception):
@@ -149,22 +150,20 @@ class PackageBuild(DataType):
         self.reviewed = self.current_hash == self.last_installed_hash
 
     def git_reset_changed(self) -> InteractiveSpawn:
-        return interactive_spawn(isolate_root_cmd([
+        return interactive_spawn(isolate_root_cmd(wrap_proxy_env([
             'git',
-            '-C',
-            self.repo_path,
+            '-C', self.repo_path,
             'checkout',
             '--',
             "*"
-        ]))
+        ])))
 
     def update_aur_repo(self) -> InteractiveSpawn:
         cmd_args: List[str]
         if self.pull:
             cmd_args = [
                 'git',
-                '-C',
-                self.repo_path,
+                '-C', self.repo_path,
                 'pull',
                 'origin',
                 'master'
@@ -178,7 +177,7 @@ class PackageBuild(DataType):
             ]
         if not cmd_args:
             return NotImplemented
-        result = spawn(isolate_root_cmd(cmd_args))
+        result = spawn(isolate_root_cmd(wrap_proxy_env(cmd_args)))
         self.reviewed = self.current_hash == self.last_installed_hash
         return result
 

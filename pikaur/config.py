@@ -235,6 +235,14 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'str',
             'default': '',
         },
+        'AurHttpProxy': {
+            'type': 'str',
+            'default': '',
+        },
+        'AurHttpsProxy': {
+            'type': 'str',
+            'default': '',
+        },
     },
 }
 

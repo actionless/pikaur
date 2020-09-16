@@ -198,10 +198,22 @@ The format is `[host[:port]]`, and the default port is 1080.
 PySocks module (`python-pysocks` package) should be installed in order to use this option.
 
 Note that any downloads by `pacman`, `git` or `makepkg` will NOT use this proxy.
-If that's needed, setting proxy options in their own config files will take effect (such as `~/.gitconfig`, `~/.curlrc`).
+If that's needed, setting proxy options in their own config files will take effect
+(such as `~/.gitconfig`, `~/.curlrc`).
 
+##### AurHttpProxy (default: )
+Specify a HTTP proxy which is used to get AUR package information and to `git`-clone from AUR.
 
+Note that any downloads by `pacman`, `git` (inside the build) or `makepkg` will NOT use this proxy.
+If that's needed, setting proxy options in their own config files will take effect
+(such as `env HTTP_PROXY=`, `~/.gitconfig`, `~/.curlrc`).
 
+##### AurHttpsProxy (default: )
+Specify a HTTPS proxy which is used to get AUR package information and to `git`-clone from AUR.
+
+Note that any downloads by `pacman`, `git` (inside the build) or `makepkg` will NOT use this proxy.
+If that's needed, setting proxy options in their own config files will take effect
+(such as `env HTTPS_PROXY=`, `~/.gitconfig`, `~/.curlrc`).
 
 
 

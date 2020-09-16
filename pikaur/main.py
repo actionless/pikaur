@@ -12,7 +12,6 @@ import codecs
 import shutil
 import atexit
 import io
-import socket
 from argparse import ArgumentError  # pylint: disable=no-name-in-module
 from typing import List, Optional, Callable, NoReturn
 
@@ -49,6 +48,7 @@ from .info_cli import cli_info_packages
 from .aur import find_aur_packages, get_repo_url
 from .aur_deps import get_aur_deps_list
 from .pacman import PackageDB, PackagesNotFoundInRepo, PacmanConfig
+from .urllib import init_proxy, ProxyInitSocks5Error
 
 
 def init_readline() -> None:
@@ -82,26 +82,6 @@ def init_output_encoding() -> None:
 
 
 init_output_encoding()
-
-
-def init_proxy() -> None:
-    proxy = PikaurConfig().network.Socks5Proxy.get_str()
-    if proxy:  # pragma: no cover
-        port = 1080
-        idx = proxy.find(':')
-        if idx >= 0:
-            port = int(proxy[idx + 1:])
-            proxy = proxy[:idx]
-
-        try:
-            import socks  # type: ignore[import] #  pylint:disable=import-outside-toplevel
-        except ImportError:
-            print_error(
-                _("pikaur requires python-pysocks to use a socks5 proxy.")
-            )
-            sys.exit(2)
-        socks.set_default_proxy(socks.PROXY_TYPE_SOCKS5, proxy, port)
-        socket.socket = socks.socksocket  # type: ignore[misc]
 
 
 def cli_print_upgradeable() -> None:
@@ -252,7 +232,11 @@ def cli_dynamic_select() -> None:  # pragma: no cover
 def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
 
-    init_proxy()
+    try:
+        init_proxy()
+    except ProxyInitSocks5Error as exc:
+        print_error(''.join(exc.args))
+        sys.exit(2)
 
     # operations are parsed in order what the less destructive (like info and query)
     # are being handled first, for cases when user by mistake

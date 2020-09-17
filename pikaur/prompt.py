@@ -95,8 +95,8 @@ def get_input(prompt: str, answers: Iterable[str] = (), require_confirm=False) -
             TTYRestore.restore()
             try:
                 answer = input(split_last_line(prompt)).lower()
-            except EOFError:
-                raise SysExit(125)
+            except EOFError as exc:
+                raise SysExit(125) from exc
             finally:
                 sub_tty.restore_new()
             if not answer:
@@ -126,8 +126,8 @@ def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> Iter
         if '-' in block:
             try:
                 range_start, range_end = [int(char) for char in block.split('-')]
-            except ValueError:
-                raise NotANumberInput(block)
+            except ValueError as exc:
+                raise NotANumberInput(block) from exc
             if range_start > range_end:
                 raise NotANumberInput(block)
             int_results += list(range(range_start, range_end + 1))
@@ -135,7 +135,7 @@ def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> Iter
             try:
                 int_results.append(int(block))
             except ValueError as exc:
-                raise NotANumberInput(exc.args[0].split("'")[-2])
+                raise NotANumberInput(exc.args[0].split("'")[-2]) from exc
     return int_results
 
 

@@ -263,7 +263,7 @@ class InstallPackagesCLI():
                 self.get_all_packages_info()
                 return
             print_not_found_packages(exc.packages)
-            raise SysExit(131)
+            raise SysExit(131) from exc
         except DependencyVersionMismatch as exc:
             print_stderr(color_line(_("Version mismatch:"), 11))
             print_stderr(
@@ -274,7 +274,7 @@ class InstallPackagesCLI():
                     version=exc.version_found,
                 )
             )
-            raise SysExit(131)
+            raise SysExit(131) from exc
 
         if self.args.repo and self.not_found_repo_pkgs_names:
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)
@@ -531,7 +531,7 @@ class InstallPackagesCLI():
                     for skip_pkg_name in package_build.package_names:
                         self.discard_install_info(skip_pkg_name)
                 else:
-                    raise SysExit(125)
+                    raise SysExit(125) from err
 
     def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
         while self.all_aur_packages_names:
@@ -846,7 +846,7 @@ class InstallPackagesCLI():
                     for remaining_aur_pkg_name in packages_to_be_built[:]:
                         if remaining_aur_pkg_name not in self.all_aur_packages_names:
                             packages_to_be_built.remove(remaining_aur_pkg_name)
-            except DependencyNotBuiltYet:
+            except DependencyNotBuiltYet as exc:
                 index += 1
                 for _pkg_name in pkg_build.package_names:
                     deps_fails_counter.setdefault(_pkg_name, 0)
@@ -855,7 +855,7 @@ class InstallPackagesCLI():
                         print_error(
                             _("Dependency cycle detected between {}").format(deps_fails_counter)
                         )
-                        raise SysExit(131)
+                        raise SysExit(131) from exc
             else:
                 print_debug(
                     f"Build done for packages {pkg_build.package_names=}, removing from queue"
@@ -948,10 +948,10 @@ class InstallPackagesCLI():
                 deps_names_and_paths=new_aur_deps_to_install,
                 resolved_conflicts=self.resolved_conflicts
             )
-        except DependencyError:
+        except DependencyError as exc:
             if not ask_to_continue(default_yes=False):
                 self._revert_transaction(PackageSource.AUR)
-                raise SysExit(125)
+                raise SysExit(125) from exc
         else:
             self._save_transaction(
                 PackageSource.AUR, installed=list(new_aur_deps_to_install.keys())

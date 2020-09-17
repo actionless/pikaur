@@ -27,7 +27,7 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
             return b''
         if ask_to_continue(_('Do you want to retry?')):
             return read_bytes_from_url(url, optional=optional)
-        raise SysExit(102)
+        raise SysExit(102) from exc
     result_bytes = response.read()
     return result_bytes
 
@@ -66,10 +66,10 @@ def init_proxy() -> None:
 
         try:
             import socks  # type: ignore[import] #  pylint:disable=import-outside-toplevel
-        except ImportError:
+        except ImportError as exc:
             raise ProxyInitSocks5Error(
                 _("pikaur requires python-pysocks to use a socks5 proxy.")
-            )
+            ) from exc
         socks.set_default_proxy(socks.PROXY_TYPE_SOCKS5, socks_proxy_addr, port)
         socket.socket = socks.socksocket  # type: ignore[misc]
 

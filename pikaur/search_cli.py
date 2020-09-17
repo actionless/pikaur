@@ -162,7 +162,7 @@ def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disabl
             result_aur = request_aur.get() if request_aur else None
         except AURError as exc:
             print_stderr('AUR returned error: {}'.format(exc))
-            raise SysExit(121)
+            raise SysExit(121) from exc
         pool.join()
 
     if not args.quiet:

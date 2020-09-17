@@ -222,7 +222,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
             break
         except NotANumberInput as exc:
             if exc.character.lower() == _('n'):
-                raise SysExit(128)
+                raise SysExit(128) from exc
             print_error(_('invalid number: {}').format(exc.character))
 
     parse_args().positional = [packages[idx].name for idx in selected_pkgs_idx]

@@ -48,7 +48,7 @@ from .info_cli import cli_info_packages
 from .aur import find_aur_packages, get_repo_url
 from .aur_deps import get_aur_deps_list
 from .pacman import PackageDB, PackagesNotFoundInRepo, PacmanConfig
-from .urllib import init_proxy, ProxyInitSocks5Error
+from .urllib import init_proxy, ProxyInitSocks5Error, wrap_proxy_env
 
 
 def init_readline() -> None:
@@ -148,12 +148,12 @@ def cli_getpkgbuild() -> None:
         name = aur_pkg.name
         repo_path = os.path.join(pwd, name)
         print_stdout()
-        interactive_spawn([
+        interactive_spawn(wrap_proxy_env([
             'git',
             'clone',
             get_repo_url(aur_pkg.packagebase),
             repo_path,
-        ])
+        ]))
 
     for repo_pkg in repo_pkgs:
         print_stdout()

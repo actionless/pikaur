@@ -448,7 +448,7 @@ msgid "The news feed could not be received or parsed."
 msgstr "Новостная лента не может быть получена или разобрана."
 
 #: pikaur/news.py:43
-msgid "There are news from archlinux.org!"
+msgid "There is news from archlinux.org!"
 msgstr "Есть новости с archlinux.org!"
 
 #: pikaur/print_department.py:351

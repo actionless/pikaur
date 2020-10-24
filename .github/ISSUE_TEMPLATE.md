@@ -8,7 +8,7 @@ pikaur -Vq
 
 
 
-##### Description
+##### Description:
 
 
 

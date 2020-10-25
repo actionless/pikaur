@@ -31,21 +31,21 @@ REPLACEMENTS_COLOR = 14
 AnyPackage = Union[AURPackageInfo, pyalpm.Package]
 
 
-def print_version(pacman_version: str, quiet=False) -> None:
+def print_version(pacman_version: str, pyalpm_version: str, quiet=False) -> None:
     if quiet:
         print(f'Pikaur v{VERSION}')
-        print(pacman_version)
+        print(f'{pacman_version} - pyalpm v{pyalpm_version}')
     else:
         sys.stdout.write(r"""
       /:}               _
      /--1             / :}
     /   |           / `-/
-   |  ,  --------  /   /
-   |'                 Y      Pikaur v""" + VERSION + r"""
-  /                   l      (C) 2018-2020 Pikaur development team
-  l  /       \        l      Licensed under GPLv3
-  j  ●   .   ●        l
- { )  ._,.__,   , -.  {      """ + pacman_version + r"""
+   |  ,  --------  /   /     Pikaur v""" + VERSION + r"""
+   |'                 Y      (C) 2018-2020 Pikaur development team
+  /                   l      Licensed under GPLv3
+  l  /       \        l
+  j  ●   .   ●        l      """ + pacman_version + r"""
+ { )  ._,.__,   , -.  {      pyalpm v""" + pyalpm_version + r"""
   У    \  _/     ._/   \
 
 """)

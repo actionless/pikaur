@@ -15,6 +15,8 @@ import io
 from argparse import ArgumentError  # pylint: disable=no-name-in-module
 from typing import List, Optional, Callable, NoReturn
 
+import pyalpm
+
 from .i18n import _  # keep that first
 from .args import (
     parse_args, reconstruct_args,
@@ -191,7 +193,10 @@ def cli_print_version() -> None:
     pacman_version = spawn(
         [PikaurConfig().misc.PacmanPath.get_str(), '--version', ],
     ).stdout_text.splitlines()[1].strip(' .-')
-    print_version(pacman_version, quiet=args.quiet)
+    print_version(
+        pacman_version=pacman_version, pyalpm_version=pyalpm.version(),
+        quiet=args.quiet
+    )
 
 
 def cli_dynamic_select() -> None:  # pragma: no cover

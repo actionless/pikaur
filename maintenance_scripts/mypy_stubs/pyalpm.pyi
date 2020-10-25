@@ -3,6 +3,7 @@ from typing import List
 
 def vercmp(x: str, y: str) -> int: ...
 
+def version() -> str: ...
 
 class DB:
     name: str

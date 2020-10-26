@@ -188,6 +188,14 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'bool',
             'default': 'no'
         },
+        'AurSearchSorting': {
+            'type': 'str',
+            'default': 'hottest'
+        },
+        'GroupByRepository': {
+            'type': 'bool',
+            'default': 'yes'
+        },
         'ReverseSearchSorting': {
             'type': 'bool',
             'default': 'no'

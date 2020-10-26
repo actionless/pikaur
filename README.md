@@ -161,6 +161,12 @@ Require enter key to be pressed when answering questions.
 ##### PrintCommands (default: no)
 Print each command which pikaur is currently spawning.
 
+##### GroupByRepo (default: yes)
+Groups official packages by repository when using commands like `pikaur -Ss <query>` or `pikaur <query>`.
+
+##### AurSearchSorting (default: hottest)
+Sorting key for AUR packages when using commands like `pikaur -Ss <query>` or `pikaur <query>`. Accepts `hottest`, `numvotes`, `lastmodified`, `popularity`, `pkgname`. Only `pkgname` is sorted ascendingly. The metric for `hottest` is weighted by both `numvotes` and `popularity`.
+
 ##### ReverseSearchSorting (default: no)
 Reverse search results of the commands like `pikaur -Ss <query>` or `pikaur <query>`.
 

@@ -508,7 +508,7 @@ def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
 
 
 # @TODO: weird pylint behavior if remove `return` from the end:
-def print_package_search_results(  # pylint:disable=useless-return,too-many-locals
+def print_package_search_results(  # pylint:disable=useless-return,too-many-locals,too-many-statements,too-many-branches
         repo_packages: Iterable[pyalpm.Package],
         aur_packages: Iterable[AURPackageInfo],
         local_pkgs_versions: Dict[str, str],
@@ -516,22 +516,37 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
 ) -> List[AnyPackage]:
 
     repos = [db.name for db in PackageDB.get_alpm_handle().get_syncdbs()]
+    user_config = PikaurConfig()
+    group_by_repo = user_config.ui.GroupByRepository.get_bool()
 
     def get_repo_sort_key(pkg: pyalpm.Package) -> Tuple[int, str]:
         return (
             repos.index(pkg.db.name)
-            if pkg.db.name in repos
+            if group_by_repo and pkg.db.name in repos
             else 999,
             pkg.name
         )
 
-    def get_aur_sort_key(pkg: AURPackageInfo) -> Tuple[float, str]:
-        if (
-                isinstance(pkg.numvotes, int) and
-                isinstance(pkg.popularity, float)
-        ):
-            return (-(pkg.numvotes + 1) * (pkg.popularity + 1), pkg.name)
-        return (-1.0, pkg.name)
+    AurSortKey = Union[Tuple[float, float], float]
+
+    def get_aur_sort_key(pkg: AURPackageInfo) -> Tuple[AurSortKey, str]:
+        user_aur_sort = user_config.ui.AurSearchSorting
+        pkg_numvotes = pkg.numvotes if isinstance(pkg.numvotes, int) else 0
+        pkg_popularity = pkg.popularity if isinstance(pkg.popularity, float) else 0.0
+
+        if user_aur_sort == 'pkgname':
+            return (-1.0, pkg.name)
+        if user_aur_sort == 'popularity':
+            return ((-pkg_popularity, -pkg_numvotes), pkg.name)
+        if user_aur_sort == 'numvotes':
+            return ((-pkg_numvotes, -pkg_popularity), pkg.name)
+        if user_aur_sort == 'lastmodified':
+            return (
+                -pkg.lastmodified
+                if isinstance(pkg.lastmodified, int)
+                else 0,
+                pkg.name)
+        return (-(pkg_numvotes + 1) * (pkg_popularity + 1), pkg.name)
 
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
@@ -548,7 +563,7 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
     # mypy is always funny ^^ https://github.com/python/mypy/issues/5492#issuecomment-545992992
 
     enumerated_packages = list(enumerate(sorted_packages))
-    if PikaurConfig().ui.ReverseSearchSorting.get_bool():
+    if user_config.ui.ReverseSearchSorting.get_bool():
         enumerated_packages = list(reversed(enumerated_packages))
 
     for pkg_idx, package in enumerated_packages:
@@ -592,7 +607,7 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
                     package.popularity
                 ), 3)
 
-            color_config = PikaurConfig().colors
+            color_config = user_config.colors
             version_color = color_config.Version.get_int()
             version = package.version
 
@@ -614,4 +629,5 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
                 rating
             ))
             print(format_paragraph(f'{package.desc}'))
+
     return sorted_packages

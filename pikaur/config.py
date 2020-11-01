@@ -192,6 +192,10 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'str',
             'default': 'hottest'
         },
+        'DisplayLastUpdated': {
+            'type': 'bool',
+            'default': 'no'
+        },
         'GroupByRepository': {
             'type': 'bool',
             'default': 'yes'

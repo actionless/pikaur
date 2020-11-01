@@ -619,15 +619,30 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
                     datetime.fromtimestamp(package.outofdate).strftime('%Y/%m/%d')
                 )
 
-            print("{}{}{} {} {}{}{}".format(
+            last_updated = ""
+            if user_config.ui.DisplayLastUpdated.get_bool():
+                last_update_date = None
+
+                if isinstance(package, pyalpm.Package):
+                    last_update_date = package.builddate
+                if isinstance(package, AURPackageInfo):
+                    last_update_date = package.lastmodified
+
+                last_updated = color_line(' (last updated: {})'.format(
+                    datetime.fromtimestamp(last_update_date).strftime('%Y/%m/%d')
+                    if last_update_date is not None
+                    else 'unknown'
+                ), 8)
+
+            print("{}{}{} {} {}{}{}{}".format(
                 idx,
                 repo,
                 bold_line(pkg_name),
                 color_line(version, version_color),
                 groups,
                 installed,
-                rating
+                rating,
+                last_updated
             ))
             print(format_paragraph(f'{package.desc}'))
-
     return sorted_packages

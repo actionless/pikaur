@@ -1,0 +1,10 @@
+[Unit]
+Description=Remove unused package files cached by pikaur weekly
+
+[Timer]
+OnCalendar=weekly
+AccuracySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

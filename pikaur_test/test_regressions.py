@@ -26,8 +26,8 @@ class RegressionTest(PikaurDbTestCase):
 
     def test_double_requirements_aur(self):
         # with doubled aur dep
-        # ruby-google-cloud-env>=1, ruby-google-cloud-env<2
-        pkg_name = 'ruby-google-cloud-core'
+        # python-xdis>=5.0.4, python-xdis<5.1.0
+        pkg_name = 'python-uncompyle6'
 
         fake_pikaur(f'-S {pkg_name}')
         # pikaur(f'-S {pkg_name}')

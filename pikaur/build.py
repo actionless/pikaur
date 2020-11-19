@@ -3,7 +3,6 @@
 import os
 import shutil
 import subprocess
-import fcntl
 from multiprocessing.pool import ThreadPool
 from glob import glob
 from typing import List, Dict, Set, Optional, Any
@@ -41,6 +40,7 @@ from .updates import is_devel_pkg
 from .version import compare_versions, VersionMatcher
 from .makepkg_config import MakepkgConfig, MakePkgCommand, PKGDEST
 from .urllib import wrap_proxy_env
+from .filelock import FileLock
 
 
 BUILD_DEPS_LOCK = '/tmp/pikaur_build_deps.lock'
@@ -110,6 +110,7 @@ class PackageBuild(DataType):
     args: PikaurArgs
     resolved_conflicts: Optional[List[List[str]]] = None
 
+    _local_pkgs_wo_build_deps: Set[str]
     _local_pkgs_with_build_deps: Set[str]
     _local_provided_pkgs_with_build_deps: Dict[str, List[ProvidedDependency]]
 
@@ -156,6 +157,7 @@ class PackageBuild(DataType):
 
         self.reviewed = self.current_hash == self.last_installed_hash
 
+        self._local_pkgs_wo_build_deps = set()
         self._local_pkgs_with_build_deps = set()
         self._local_provided_pkgs_with_build_deps = {}
 
@@ -505,41 +507,39 @@ class PackageBuild(DataType):
                 bold_line(', '.join(self.package_names)))
         ))
 
-        with open(BUILD_DEPS_LOCK, 'a') as lock_file:
-            while True:
-                try:
-                    fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                    break
-                except BlockingIOError as err:
-                    print_error(_("Can't lock {lock_file}: {reason}").format(
-                        lock_file=BUILD_DEPS_LOCK,
-                        reason=err.strerror
-                    ))
-                    if not ask_to_continue(_('Do you want to retry?')):
-                        raise SysExit(128) from err
+        retry_interactive_command_or_exit(
+            sudo(
+                self._get_pacman_command() + [
+                    '--sync',
+                    '--asdeps',
+                ] + self.all_deps_to_install
+            ),
+            pikspect=True,
+            conflicts=self.resolved_conflicts,
+        )
+        PackageDB.discard_local_cache()
+        self._local_pkgs_with_build_deps = set(PackageDB.get_local_dict().keys())
+        self._local_provided_pkgs_with_build_deps = PackageDB.get_local_provided_dict()
 
-            retry_interactive_command_or_exit(
-                sudo(
-                    self._get_pacman_command() + [
-                        '--sync',
-                        '--asdeps',
-                    ] + self.all_deps_to_install
-                ),
-                pikspect=True,
-                conflicts=self.resolved_conflicts,
-            )
-            PackageDB.discard_local_cache()
-            self._local_pkgs_with_build_deps = set(PackageDB.get_local_dict().keys())
-            self._local_provided_pkgs_with_build_deps = PackageDB.get_local_provided_dict()
+    def install_all_deps(self, all_package_builds: Dict[str, 'PackageBuild']) -> None:
+        with FileLock(BUILD_DEPS_LOCK):
+            self.get_deps(all_package_builds)
+            if self.all_deps_to_install or self.built_deps_to_install:
+                PackageDB.discard_local_cache()
+                self._local_pkgs_wo_build_deps = set(PackageDB.get_local_dict().keys())
+            self.install_built_deps(all_package_builds)
+            self._install_repo_deps()
 
-            fcntl.flock(lock_file, fcntl.LOCK_UN)
-
-    def _remove_installed_deps(self, local_packages_before: Set[str]) -> None:
-        if not local_packages_before:
+    def _remove_installed_deps(self) -> None:
+        if not self._local_pkgs_wo_build_deps:
             return
 
-        deps_packages_installed = self._local_pkgs_with_build_deps.difference(local_packages_before)
-        deps_packages_removed = local_packages_before.difference(self._local_pkgs_with_build_deps)
+        deps_packages_installed = self._local_pkgs_with_build_deps.difference(
+            self._local_pkgs_wo_build_deps
+        )
+        deps_packages_removed = self._local_pkgs_wo_build_deps.difference(
+            self._local_pkgs_with_build_deps
+        )
 
         # check if there is diff incosistency because of the package replacement:
         if deps_packages_removed:
@@ -716,14 +716,7 @@ class PackageBuild(DataType):
 
         self.prepare_build_destination()
 
-        local_packages_before: Set[str] = set()
-        self.get_deps(all_package_builds)
-        if self.all_deps_to_install or self.built_deps_to_install:
-            PackageDB.discard_local_cache()
-            local_packages_before = set(PackageDB.get_local_dict().keys())
-
-        self.install_built_deps(all_package_builds)
-        self._install_repo_deps()
+        self.install_all_deps(all_package_builds)
 
         if self.check_if_already_built():
             build_succeeded = True
@@ -731,10 +724,10 @@ class PackageBuild(DataType):
             try:
                 build_succeeded = self.build_with_makepkg()
             except SysExit as exc:
-                self._remove_installed_deps(local_packages_before)
+                self._remove_installed_deps()
                 raise exc
 
-        self._remove_installed_deps(local_packages_before)
+        self._remove_installed_deps()
 
         if not build_succeeded:
             self.failed = True

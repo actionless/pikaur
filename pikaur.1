@@ -308,6 +308,9 @@ use a systemd service & timer (provided \fBpikaur\-cache\.service\fR and \fBpika
 .
 .IP "" 0
 .
+.SS "How to restore original PKGBUILD after editing?"
+Go to the package\'s directory, \fBcd ~/\.local/share/pikaur/aur_repos/${PACKAGE_NAME}\fR\. Review the current PKGBUILD file changes with \fBgit diff\fR and then reset with \fBgit checkout \-\- \'*\'\fR\.
+.
 .SS "How to see upgrade list without syncing the database? (like 'checkupdates' tool from pacman)"
 Actually use \fBcheckupdates\fR tool to check the repo updates and use pikaur only for AUR (\fB\-a\fR/\fB\-\-aur\fR switch):
 .

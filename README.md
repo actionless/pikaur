@@ -275,7 +275,8 @@ To clean them up automatically, you may:
 
 ##### How to restore original PKGBUILD after editing?
 
-`rm -r ~/.local/share/pikaur/aur_repos/${PACKAGE_NAME}`
+Go to the package's directory, `cd ~/.local/share/pikaur/aur_repos/${PACKAGE_NAME}`.
+Reset the PKGBUILD file with `git diff` and then `git checkout -- '*'`.
 
 
 ##### How to see upgrade list without syncing the database? (like "checkupdates" tool from pacman)

@@ -273,6 +273,11 @@ To clean them up automatically, you may:
   enable --now pikaur-cache.timer`.
 
 
+##### How to restore original PKGBUILD after editing?
+
+`rm -r ~/.local/share/pikaur/aur_repos/${PACKAGE_NAME}`
+
+
 ##### How to see upgrade list without syncing the database? (like "checkupdates" tool from pacman)
 
 Actually use `checkupdates` tool to check the repo updates and use pikaur only for AUR (`-a`/`--aur` switch):

@@ -9,3 +9,4 @@ coverage_env/
 dist/
 MANIFEST
 *.egg-info/
+pikaur.1

@@ -27,3 +27,4 @@ class FileLock():
 
     def __exit__(self, *_exc_details) -> None:
         fcntl.flock(self.lock_file, fcntl.LOCK_UN)
+        self.lock_file.close()

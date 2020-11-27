@@ -30,14 +30,7 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
         self.out(self.escape(text))
 
     def text(self, node, _entering=None):
-        parent_type = node.parent and node.parent.t
-        if parent_type == "heading":
-            # self.out('''.SH "''')
-            self.text_out(node.literal)
-            # self.out('''"
-# .''')
-        else:
-            self.text_out(node.literal)
+        self.text_out(node.literal)
 
     def softbreak(self, _node, _entering):
         self.out(' ')

@@ -1,6 +1,14 @@
 """
 Licensed under GPLv3
 (C) 2020 Y Kirylau
+
+References:
+    troff/nroff quick reference
+    http://www.quut.com/berlin/ms/troff.html
+
+    Basic Formatting with troff/nroff
+    by James C. Armstrong and David B. Horvath, CCP
+    https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
 """
 
 import sys

@@ -64,7 +64,12 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
         self.cr()
         if entering:
             if gradparent_type == 'list':
-                self.lit(r'.IP "\(bu" 4')
+                list_deco = r"\(bu"  # bullet
+                if node.parent.list_data.get('type') == 'ordered':
+                    list_deco = node.parent.list_data['start']
+                elif node.parent.list_data.get('bullet_char') == '-':
+                    list_deco = '-'
+                self.lit(rf'.IP "{list_deco}" 4')
             else:
                 self.lit('.P')
         else:

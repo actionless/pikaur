@@ -33,10 +33,9 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
         self.section = self.options.get('section', 1)
 
     def render(self, ast):
-        date = datetime.now()
         self.buf = f""".\" generated with Pikaman
 .
-.TH "{self.name.upper()}" "{self.section}" "{date.strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
+.TH "{self.name.upper()}" "{self.section}" "{datetime.now().strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
 .
 """
         walker = ast.walker()

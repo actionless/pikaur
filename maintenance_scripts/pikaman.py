@@ -1,5 +1,5 @@
 """
-Licensed under GPLv3
+NRoff renderer for CommonMark
 (C) 2020 Y Kirylau
 
 References:
@@ -12,6 +12,7 @@ References:
 """
 
 import sys
+from datetime import datetime
 
 import commonmark
 
@@ -20,25 +21,49 @@ README_PATH = sys.argv[1]
 OUTPUT_PATH = sys.argv[2]
 
 
-PREFIX = """.\" generated with Pikaman
-.\" Licensed under GPLv3
+class NroffRenderer(commonmark.render.renderer.Renderer):
+
+    buf: str
+    last_out: str
+
+    def __init__(self, options=None):
+        self.options = options or {}
+        super().__init__()
+        self.name = self.options.get('name', 'test')
+        self.section = self.options.get('section', 1)
+
+    def render(self, ast):
+        date = datetime.now()
+        self.buf = f""".\" generated with Pikaman
 .
-.TH "PIKAUR" "1" "November 2020" "" "Pikaur manual"
+.TH "{self.name.upper()}" "{self.section}" "{date.strftime("%B")} {date.year}" "" "{self.name.capitalize()} manual"
 .
 """
-
-
-class NroffRenderer(commonmark.render.renderer.Renderer):
+        walker = ast.walker()
+        self.last_out = '\n'
+        event = walker.nxt()
+        while event is not None:
+            type_ = event['node'].t
+            if hasattr(self, type_):
+                getattr(self, type_)(event['node'], event['entering'])
+            event = walker.nxt()
+        return self.buf
 
     @staticmethod
     def escape(text):
         return text.replace('-', r'\-').replace("'", r"\'")
 
-    def text_out(self, text):
-        self.out(self.escape(text))
+    @staticmethod
+    def is_url(text):
+        return text.startswith('http://') or text.startswith('https://')
 
-    def text(self, node, _entering=None):
-        self.text_out(node.literal)
+    def out(self, s: str):
+        self.lit(self.escape(s))
+
+    ####################### Node methods: #######################
+
+    def text(self, node, _entering):
+        self.out(node.literal)
 
     def softbreak(self, _node, _entering):
         self.out(' ')
@@ -48,53 +73,49 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
         self.cr()
         if entering:
             if gradparent_type == 'list':
-                self.out(r'.IP "\(bu" 4')
+                self.lit(r'.IP "\(bu" 4')
             else:
-                self.out('.P')
+                self.lit('.P')
         else:
-            self.out('.')
+            self.lit('.')
         self.cr()
 
     def code(self, node, _entering):
-        self.out(r'\fB')
-        self.text_out(node.literal)
-        self.out(r'\fR')
+        self.lit(r'\fB')
+        self.out(node.literal)
+        self.lit(r'\fR')
 
     def code_block(self, node, _entering):
-        self.out('''.nf
-
-''')
-        self.text_out(node.literal)
-        self.out('''
-.
-.fi
-''')
+        self.lit('.nf\n\n')
+        self.out(node.literal)
+        self.lit('\n.\n.fi\n')
 
     def link(self, node, entering):
         if entering:
-            self.out(r'\fI')
+            self.lit(r'\fI')
         else:
-            self.out(r'\fR')
-            if node.destination and node.destination.startswith('http'):
-                self.out(' (')
-                self.text_out(node.destination)
-                self.out(')')
+            self.lit(r'\fR')
+            if self.is_url(node.destination):
+                self.lit(' (')
+                self.out(node.destination)
+                self.lit(')')
 
     def heading(self, node, entering):
         if entering:
             if node.level <= 2:
-                self.out('.SH "')
+                self.lit('.SH "')
             else:
-                self.out('.SS "')
+                self.lit('.SS "')
         else:
-            self.out('''"
-.
-''')
+            self.lit('"\n.\n')
 
 
 with open(README_PATH) as fobj:
-    nroff = PREFIX + NroffRenderer().render(
-        commonmark.Parser().parse(fobj.read())
-    )
     with open(OUTPUT_PATH, 'w') as wfobj:
-        wfobj.write(nroff)
+        wfobj.write(
+            NroffRenderer(options=dict(name='pikaur')).render(
+                commonmark.Parser().parse(
+                    fobj.read()
+                )
+            )
+        )

@@ -42,6 +42,9 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
 
     ####################### Node methods: #######################
 
+    # Note: it's intentionally not implementing `image` node handler.
+    #       While `list` and `item` types are handled by `paragraph()`.
+
     def document(self, _node, entering):
         if entering:
             self.lit(rf""".\" generated with Pikaman

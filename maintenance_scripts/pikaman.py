@@ -23,30 +23,11 @@ OUTPUT_PATH = sys.argv[2]
 
 class NroffRenderer(commonmark.render.renderer.Renderer):
 
-    buf: str
-    last_out: str
-
     def __init__(self, options=None):
         self.options = options or {}
         super().__init__()
         self.name = self.options.get('name', 'test')
         self.section = self.options.get('section', 1)
-
-    def render(self, ast):
-        self.buf = f""".\" generated with Pikaman
-.
-.TH "{self.name.upper()}" "{self.section}" "{datetime.now().strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
-.
-"""
-        walker = ast.walker()
-        self.last_out = '\n'
-        event = walker.nxt()
-        while event is not None:
-            type_ = event['node'].t
-            if hasattr(self, type_):
-                getattr(self, type_)(event['node'], event['entering'])
-            event = walker.nxt()
-        return self.buf
 
     @staticmethod
     def escape(text):
@@ -60,6 +41,14 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
         self.lit(self.escape(s))
 
     ####################### Node methods: #######################
+
+    def document(self, _node, entering):
+        if entering:
+            self.lit(f""".\" generated with Pikaman
+.
+.TH "{self.name.upper()}" "{self.section}" "{datetime.now().strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
+.
+""")
 
     def text(self, node, _entering):
         self.out(node.literal)

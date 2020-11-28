@@ -69,7 +69,7 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
                     list_deco = node.parent.list_data['start']
                 else:
                     bullet_char = node.parent.list_data.get('bullet_char')
-                    if bullet_char and (bullet_char != '*'):
+                    if bullet_char not in (None, '*'):
                         list_deco = bullet_char
                 self.lit(rf'.IP "{list_deco}" 4')
             else:

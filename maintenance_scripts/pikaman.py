@@ -36,7 +36,7 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
         date = datetime.now()
         self.buf = f""".\" generated with Pikaman
 .
-.TH "{self.name.upper()}" "{self.section}" "{date.strftime("%B")} {date.year}" "" "{self.name.capitalize()} manual"
+.TH "{self.name.upper()}" "{self.section}" "{date.strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
 .
 """
         walker = ast.walker()

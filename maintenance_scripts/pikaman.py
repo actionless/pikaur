@@ -78,6 +78,12 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
             self.lit('.')
         self.cr()
 
+    def strong(self, _node, entering):
+        if entering:
+            self.lit(r'\fB')
+        else:
+            self.lit(r'\fR')
+
     def code(self, node, _entering):
         self.lit(r'\fB')
         self.out(node.literal)
@@ -87,6 +93,12 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
         self.lit('.nf\n\n')
         self.out(node.literal)
         self.lit('\n.\n.fi\n')
+
+    def emph(self, _node, entering):
+        if entering:
+            self.lit(r'\fI')
+        else:
+            self.lit(r'\fR')
 
     def link(self, node, entering):
         if entering:

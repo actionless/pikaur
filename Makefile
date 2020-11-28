@@ -42,7 +42,6 @@ man: clean_man
 	sed -i \
 		-e '/travis/d' \
 		-e '/Screenshot/d' \
-		-e 's/\(^\.SS.*\)\\"\(.*\)\\"/\1'"'"'\2'"'"'/g' \
 		$(MAN_FILE)
 
 .PHONY: all clean $(POTFILE) clean_man man

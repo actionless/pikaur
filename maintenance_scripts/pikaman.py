@@ -98,12 +98,12 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
             self.lit('"\n.\n')
 
 
-with open(README_PATH) as fobj:
-    with open(OUTPUT_PATH, 'w') as wfobj:
-        wfobj.write(
-            NroffRenderer(options=dict(name='pikaur')).render(
+with open(README_PATH) as input_fobj:
+    with open(OUTPUT_PATH, 'w') as output_fobj:
+        output_fobj.write(
+            NroffRenderer(options=dict(name='pikaur', section=1)).render(
                 commonmark.Parser().parse(
-                    fobj.read()
+                    input_fobj.read()
                 )
             )
         )

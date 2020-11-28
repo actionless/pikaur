@@ -44,7 +44,7 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
 
     def document(self, _node, entering):
         if entering:
-            self.lit(f""".\" generated with Pikaman
+            self.lit(rf""".\" generated with Pikaman
 .
 .TH "{self.name.upper()}" "{self.section}" "{datetime.now().strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
 .

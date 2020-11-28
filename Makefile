@@ -30,19 +30,17 @@ $(LOCALEDIR)/%.po: $(POTFILE)
 %.mo: %.po
 	msgfmt -o $@ $<
 
-clean_man:
-	$(RM) $(MAN_FILE)
-
-clean: clean_man
+clean:
 	$(RM) $(LANGS_MO)
 	$(RM) $(POTEMPFILES)
+	$(RM) $(MAN_FILE)
 
-man: clean_man
+man:
 	$(PIKAMAN) $(README_FILE) $(MAN_FILE)
 	sed -i \
 		-e '/travis/d' \
 		-e '/Screenshot/d' \
 		$(MAN_FILE)
 
-.PHONY: all clean $(POTFILE) clean_man man
+.PHONY: all clean $(POTFILE) man
 .PRECIOUS: $(LOCALEDIR)/%.po

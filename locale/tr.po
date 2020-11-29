@@ -2,14 +2,14 @@
 # Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2018.
-# Osman Karagöz <osmank3@gmail.com>, 2019.
+# Osman Karagöz <osmank3@gmail.com>, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-21 22:32+0100\n"
-"PO-Revision-Date: 2019-09-26 12:20+0300\n"
+"PO-Revision-Date: 2020-11-29 14:42+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.4.1\n"
 
 #: pikaur/replacements.py:42
 #, python-brace-format
@@ -59,12 +59,12 @@ msgstr "AUR depo dizini '{old}'dan '{new}'a taşındı."
 #: pikaur/search_cli.py:72
 #, python-brace-format
 msgid "AUR: Query arg too small '{query}'"
-msgstr ""
+msgstr "AUR: Sorgu argümanı çok kısa '{query}'"
 
 #: pikaur/search_cli.py:65
 #, python-brace-format
 msgid "AUR: Too many package results for '{query}'"
-msgstr ""
+msgstr "AUR: '{query}' sorgusu için çok fazla paket sonucu var"
 
 #: pikaur/help_cli.py:44
 msgid ""
@@ -105,7 +105,7 @@ msgstr "PKGBUILD'den paket adı alınamadı"
 #: pikaur/filelock.py:21
 #, python-brace-format
 msgid "Can't lock {lock_file}: {reason}"
-msgstr ""
+msgstr "{lock_file} kilitlenemedi: {reason}"
 
 #: pikaur/install_cli.py:502
 #, python-brace-format
@@ -180,17 +180,19 @@ msgstr "Tekrar denemek ister misiniz?"
 #: pikaur/install_cli.py:714
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
-msgstr "{name} paketi için inşa dosyaları {diff} görmek ister misiniz?"
+msgstr "{name} paketi için inşa dosyaları {diff}ını görmek ister misiniz?"
 
 #: pikaur/install_cli.py:627
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
-msgstr "{name} paketi için {file} {edit} ister misiniz?"
+msgstr "{name} paketi için {file} {edit}yi ister misiniz?"
 
 #: pikaur/print_department.py:493
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr ""
+"AUR paketi {name}, {version} sürümünden {downgrade_version} sürümüne "
+"indiriliyor"
 
 #: pikaur/build.py:253
 msgid "Downloading the latest sources for a devel package {}"
@@ -238,6 +240,7 @@ msgstr "Paket gözardı ediliyor {}"
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
 msgstr ""
+"{pkg} paketi için kurulum bilgisi değişti (veya yeni bağımlılık bulundu)"
 
 #: pikaur/build.py:367
 msgid "Installing already built dependencies for {}"
@@ -269,7 +272,7 @@ msgstr "İnşa Bağımlılıkları"
 
 #: pikaur/config.py:391
 msgid "Migrating [{}]{} config option to [{}]{} = \"{}\"..."
-msgstr ""
+msgstr "[{}]{} yapılandırması [{}]{} olarak taşınıyor = \"{}\"..."
 
 #. id=_("id"),
 #: pikaur/info_cli.py:21
@@ -277,9 +280,9 @@ msgid "Name"
 msgstr "İsim"
 
 #: pikaur/install_cli.py:475
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "New build deps found for {pkg} package: {deps}"
-msgstr "{pkg} için yeni AUR inşa bağımlılıkları bulundu: {deps}"
+msgstr "{pkg} için yeni inşa bağımlılıkları bulundu: {deps}"
 
 #: pikaur/print_department.py:423
 msgid "New dependency will be installed from AUR:"
@@ -327,7 +330,7 @@ msgstr "Güncel-değil"
 
 #: pikaur/install_cli.py:224
 msgid "PKGBUILD appears unchanged after editing"
-msgstr ""
+msgstr "Düzenlemeden sonra PKGBUILD değişmemiş"
 
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:23
@@ -342,10 +345,10 @@ msgid_plural ""
 "Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
 msgstr[0] ""
 "{pkg} paketi zaten inşa edilmiş. Tekrar inşaya zorlamak için '--rebuild' "
-"argünamını kullanın"
+"argünamını kullanın."
 msgstr[1] ""
 "{pkg} paketleri zaten inşa edilmiş. Tekrar inşaya zorlamak için '--rebuild' "
-"argünamını kullanın"
+"argünamını kullanın."
 
 #: pikaur/main.py:174
 msgid "Packages directory"
@@ -356,11 +359,12 @@ msgid "Pikaur-specific options:"
 msgstr "Pikaur-özel seçenekler:"
 
 #: pikaur/main.py:211
-#, fuzzy
 msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
-msgstr "Lütfen kurmak istediğiniz paketin numarasını girin (öntanımlı={}):"
+msgstr ""
+"Lütfen kurmak istediğiniz paket(ler)in numarasını girin ve [Enter]'a basın "
+"(öntanımlı={}):"
 
 #: pikaur/info_cli.py:39
 msgid "Popularity"
@@ -429,9 +433,9 @@ msgstr ""
 "{name} paketindeki {file} dosyanın gösden geçirilmesi atlanıyor ({flag})"
 
 #: pikaur/install_cli.py:480
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Some build deps removed for {pkg} package: {deps}"
-msgstr "{pkg} için yeni AUR inşa bağımlılıkları bulundu: {deps}"
+msgstr "{pkg} için bazı inşa bağımlılıkları silindi: {deps}"
 
 #: pikaur/install_cli.py:153
 msgid "Starting full AUR upgrade..."
@@ -443,11 +447,11 @@ msgstr "İnşa başlatılıyor"
 
 #: pikaur/news.py:90
 msgid "The news feed could not be received or parsed."
-msgstr ""
+msgstr "Haber beslemeleri alınamadı veya ayrıştırılamadı."
 
 #: pikaur/news.py:43
 msgid "There is news from archlinux.org!"
-msgstr "Archlinux.org'dan haberler var!"
+msgstr "Archlinux.org'dan haber var!"
 
 #: pikaur/print_department.py:351
 msgid "Third-party repository package suggested as a replacement:"
@@ -482,9 +486,8 @@ msgid "Votes"
 msgstr "Oylar"
 
 #: pikaur/install_cli.py:210 pikaur/install_cli.py:521
-#, fuzzy
 msgid "[A] abort"
-msgstr "[v] vazgeç"
+msgstr "[V] vazgeç"
 
 #: pikaur/prompt.py:150
 msgid "[N]o (--noconfirm)"
@@ -589,7 +592,7 @@ msgstr "s"
 
 #: pikaur/pprint.py:91
 msgid "debug:"
-msgstr ""
+msgstr "hata ayıklama:"
 
 #: pikaur/install_cli.py:715
 msgid "diff"
@@ -618,7 +621,7 @@ msgstr "d"
 
 #: pikaur/install_cli.py:628
 msgid "edit"
-msgstr "düzenlemek"
+msgstr "düzenleme"
 
 #: pikaur/pprint.py:83
 msgid "error:"
@@ -643,7 +646,7 @@ msgstr "m"
 
 #: pikaur/help_cli.py:86
 msgid "ignore AUR packages' updates which marked 'outofdate'"
-msgstr ""
+msgstr "'eski' olarak işaretlenmiş AUR paketlerini güncelleme"
 
 #: pikaur/argparse.py:140
 #, python-format
@@ -715,16 +718,16 @@ msgstr "özel pikaur yapılandırması yolu"
 #. to avoid mixing together with pacman's debug messages:
 #: pikaur/pprint.py:94
 msgid "pikaur debug:"
-msgstr ""
+msgstr "pikaur hata ayıklama:"
 
 #: pikaur/main.py:340
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur çalışabilmek için Python >= 3.7 gerektirir."
 
 #: pikaur/urllib.py:71
-#, fuzzy
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
-msgstr "pikaur çalışabilmek için Python >= 3.7 gerektirir."
+msgstr ""
+"pikaur socks5 protokolünü kullanabilmek için python-pysocks gerektirir."
 
 #: pikaur/main.py:345
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
@@ -772,7 +775,7 @@ msgstr "sadece paket adlarında ara"
 
 #: pikaur/help_cli.py:91
 msgid "show only debug messages specific to pikaur"
-msgstr ""
+msgstr "sadece pikaur'a özel hata mesajlarını göster"
 
 #: pikaur/argparse.py:250
 #, python-format
@@ -813,16 +816,17 @@ msgid ""
 msgstr "{name} bu mimaride inşa edilemez ({arch}). Destek: {suparch}"
 
 #: pikaur/print_department.py:503
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
-msgstr "{name} {version} {package_source} paketi güncel - atlanıyor"
+msgstr "{name} {version} AUR paketi eski olarak işaretlenmiş - atlanıyor"
 
 #: pikaur/print_department.py:483
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid ""
 "{name} {version} local package is newer than in AUR ({aur_version}) - "
 "skipping"
-msgstr "{name} {version} {package_source} paketi güncel - atlanıyor"
+msgstr ""
+"{name} {version} paketi AUR ({aur_version}) paketinden güncel - atlanıyor"
 
 #: pikaur/print_department.py:473
 #, python-brace-format
@@ -847,9 +851,3 @@ msgid ""
 msgstr ""
 "{what} bağımlılığı: '{dep}'\n"
 "'{location}' konumunda: '{version}'"
-
-#~ msgid "[a] abort"
-#~ msgstr "[v] vazgeç"
-
-#~ msgid "{} does not exist on the filesystem."
-#~ msgstr "{} dosya sisteminde mevcut değil."

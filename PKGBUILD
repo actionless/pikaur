@@ -18,6 +18,9 @@ depends=(
 	'pyalpm'
 	'git'
 )
+makedepends=(
+	'python-commonmark'
+)
 optdepends=(
 	'asp: for ABS support in -G/--getpkgbuild operation'
 	'python-pysocks: for socks5 proxy support'

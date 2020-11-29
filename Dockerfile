@@ -35,8 +35,6 @@ RUN echo ">>>> Installing doc and opt deps:" && \
 	chown -R user /opt/app-build/ && \
 	echo ">>>> Fetching git tags:" && \
 	sudo -u user git fetch -t || true && \
-	echo ">>>> Validating man page:" && \
-	sudo -u user make check_man && \
 	echo ">>>> Preparing build files:" && \
 	sudo -u user tar --transform 's,^,pikaur-git/,' -cf pikaur-git.tar.gz . && \
 	sudo -u user sed -i 's/"$pkgname::.*"/"pikaur-git.tar.gz"/' PKGBUILD && \

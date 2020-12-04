@@ -7,15 +7,20 @@ try:
 except ModuleNotFoundError:
     import sys
     sys.path.append('/usr/lib/python%PYTHON_BUILD_VERSION%/site-packages/')
-    from pikaur.main import main
-    from pikaur.i18n import _
-    from pikaur.pprint import print_warning
-    print_warning()
-    print_warning(_('System Python had minor version update. You need to rebuild Pikaur:'))
-    print_warning('    pikaur -S --rebuild pikaur')
-    print_warning(_('or'))
-    print_warning('    pikaur -S --rebuild pikaur-git')
-    print_warning()
+    try:
+        from pikaur.main import main
+        from pikaur.i18n import _
+        from pikaur.pprint import print_warning
+    except:
+        print('System Python had breaking version update. You need to rebuild Pikaur manually.')
+        sys.exit(1)
+    else:
+        print_warning()
+        print_warning(_('System Python had minor version update. You need to rebuild Pikaur:'))
+        print_warning('    pikaur -S --rebuild pikaur')
+        print_warning(_('or'))
+        print_warning('    pikaur -S --rebuild pikaur-git')
+        print_warning()
 
 
 if __name__ == '__main__':

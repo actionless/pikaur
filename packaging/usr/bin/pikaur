@@ -2,7 +2,20 @@
 # -*- coding: utf-8 -*-
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-from pikaur.main import main
+try:
+    from pikaur.main import main
+except ModuleNotFoundError:
+    import sys
+    sys.path.append('/usr/lib/python%PYTHON_BUILD_VERSION%/site-packages/')
+    from pikaur.main import main
+    from pikaur.i18n import _
+    from pikaur.pprint import print_warning
+    print_warning()
+    print_warning(_('System Python had minor version update. You need to rebuild Pikaur:'))
+    print_warning('    pikaur -S --rebuild pikaur')
+    print_warning(_('or'))
+    print_warning('    pikaur -S --rebuild pikaur-git')
+    print_warning()
 
 
 if __name__ == '__main__':

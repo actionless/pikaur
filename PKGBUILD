@@ -50,4 +50,5 @@ package() {
 	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 	install -Dm644 pikaur.1 "$pkgdir/usr/share/man/man1/pikaur.1"
 	cp -r ./packaging/* "${pkgdir}"
+	cp -r ./dist/* "${pkgdir}"
 }

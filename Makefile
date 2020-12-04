@@ -7,14 +7,17 @@ POTFILE := $(LOCALEDIR)/pikaur.pot
 POFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po,$(LANGS)))
 POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
 MOFILES = $(POFILES:.po=.mo)
+DISTDIR := dist
 
 PIKAMAN := python ./maintenance_scripts/pikaman.py
 README_FILE := README.md
 MAN_FILE := pikaur.1
 
-all: locale man
+all: locale man bin
 
 locale: $(MOFILES)
+man: $(MAN_FILE)
+bin: $(DISTDIR)/usr/bin/pikaur
 
 $(POTFILE):
 	# find pikaur -type f -name '*.py' -not -name 'argparse.py' \
@@ -30,17 +33,27 @@ $(LOCALEDIR)/%.po: $(POTFILE)
 %.mo: %.po
 	msgfmt -o $@ $<
 
+$(MAN_FILE): $(README_FILE)
+	$(PIKAMAN) $< $@
+	sed -i \
+		-e '/travis/d' \
+		-e '/Screenshot/d' \
+		$@
+
+$(DISTDIR)/usr/bin:
+	mkdir -p $@
+
+$(DISTDIR)/usr/bin/pikaur: $(DISTDIR)/usr/bin
+	sed \
+		-e "s/%PYTHON_BUILD_VERSION%/$$(python -c 'import sys ; print(f"{sys.version_info.major}.{sys.version_info.minor}")')/g" \
+		packaging/usr/bin/pikaur > $@
+	chmod +x $@
+
 clean:
 	$(RM) $(LANGS_MO)
 	$(RM) $(POTEMPFILES)
 	$(RM) $(MAN_FILE)
+	$(RM) -r $(DISTDIR)
 
-man:
-	$(PIKAMAN) $(README_FILE) $(MAN_FILE)
-	sed -i \
-		-e '/travis/d' \
-		-e '/Screenshot/d' \
-		$(MAN_FILE)
-
-.PHONY: all clean $(POTFILE) man
+.PHONY: all clean $(POTFILE) man bin $(DISTDIR)/usr/bin/pikaur
 .PRECIOUS: $(LOCALEDIR)/%.po

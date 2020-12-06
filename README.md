@@ -250,7 +250,7 @@ If that's needed, setting proxy options in their own config files will take effe
 (`--needed` option will make sure what the same package version won't be rebuilt again and `-a/--aur` will ensure what only AUR packages will be upgraded)
 
 
-##### How to automatically remove unneeded dependencies
+##### How to manually remove unneeded dependencies?
 
 Pikaur is not needed for that, use just Pacman itself:
 

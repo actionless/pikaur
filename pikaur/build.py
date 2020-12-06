@@ -547,6 +547,8 @@ class PackageBuild(DataType):
         )
         debug(f"{deps_packages_installed=}")
         debug(f"{deps_packages_removed=}")
+        if not deps_packages_installed:
+            return
 
         # check if there is diff incosistency because of the package replacement:
         if deps_packages_removed:

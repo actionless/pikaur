@@ -25,7 +25,7 @@ from .pacman import (
 from .args import PikaurArgs, parse_args
 from .pprint import (
     color_line, bold_line, color_enabled,
-    print_stdout, print_stderr, print_error,
+    print_stdout, print_stderr, print_error, print_debug,
 )
 from .prompt import (
     retry_interactive_command_or_exit, ask_to_continue,
@@ -44,6 +44,10 @@ from .filelock import FileLock
 
 
 BUILD_DEPS_LOCK = '/tmp/pikaur_build_deps.lock'
+
+
+def debug(msg: Any) -> None:
+    print_debug(f"{color_line('build', 5)}: {str(msg)}")
 
 
 class PkgbuildChanged(Exception):
@@ -534,12 +538,15 @@ class PackageBuild(DataType):
         if not self._local_pkgs_wo_build_deps:
             return
 
+        debug("Gonna compute diff of installed pkgs")
         deps_packages_installed = self._local_pkgs_with_build_deps.difference(
             self._local_pkgs_wo_build_deps
         )
         deps_packages_removed = self._local_pkgs_wo_build_deps.difference(
             self._local_pkgs_with_build_deps
         )
+        debug(f"{deps_packages_installed=}")
+        debug(f"{deps_packages_removed=}")
 
         # check if there is diff incosistency because of the package replacement:
         if deps_packages_removed:

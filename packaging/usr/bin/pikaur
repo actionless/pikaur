@@ -10,7 +10,7 @@ except ModuleNotFoundError:
     try:
         import pyalpm
     except:
-        print("Can't import pyalpm. "
+        print("Can't import Pyalpm. "
               "Probably it's not installed or system Python had breaking version update.")
         sys.exit(1)
 

@@ -6,6 +6,14 @@ try:
     from pikaur.main import main
 except ModuleNotFoundError:
     import sys
+
+    try:
+        import pyalpm
+    except:
+        print("Can't import pyalpm. "
+              "Probably it's not installed or system Python had breaking version update.")
+        sys.exit(1)
+
     sys.path.append('/usr/lib/python%PYTHON_BUILD_VERSION%/site-packages/')
     try:
         from pikaur.main import main
@@ -14,6 +22,7 @@ except ModuleNotFoundError:
     except:
         print('System Python had breaking version update. You need to rebuild Pikaur manually.')
         sys.exit(1)
+
     else:
         print_warning()
         print_warning(_('System Python had minor version update. You need to rebuild Pikaur:'))

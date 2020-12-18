@@ -276,7 +276,11 @@ def get_editor() -> Optional[List[str]]:
     editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
     if editor_line:
         return editor_line.split(' ')
-    for editor in ('vim', 'nano', 'mcedit', 'edit'):
+    for editor in (
+            'vim', 'nano', 'mcedit', 'edit', 'emacs', 'nvim', 'kak',
+            'e3', 'atom', 'adie', 'dedit', 'gedit', 'jedit', 'kate', 'kwrite', 'leafpad',
+            'mousepad', 'notepadqq', 'pluma', 'code', 'xed', 'nvim-qt', 'geany',
+    ):
         path = shutil.which(editor)
         if path:
             return [path, ]

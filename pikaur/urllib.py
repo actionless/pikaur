@@ -22,6 +22,7 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
     try:
         response = request.urlopen(req)
     except URLError as exc:
+        print_error(f'GET {url}')
         print_error('urllib: ' + str(exc.reason))
         if optional:
             return b''
@@ -44,7 +45,14 @@ def get_json_from_url(url: str) -> Dict[str, Any]:
 
 def get_gzip_from_url(url: str) -> str:
     result_bytes = read_bytes_from_url(url)
-    decompressed_bytes_response = gzip.decompress(result_bytes)
+    try:
+        decompressed_bytes_response = gzip.decompress(result_bytes)
+    except EOFError as exc:
+        print_error(f'GET {url}')
+        print_error('urllib: ' + str(exc))
+        if ask_to_continue(_('Do you want to retry?')):
+            return get_gzip_from_url(url)
+        raise SysExit(102) from exc
     text_response = decompressed_bytes_response.decode('utf-8')
     return text_response
 

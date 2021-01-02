@@ -530,6 +530,8 @@ class InstallPackagesCLI():
                 elif answer == _("s"):  # pragma: no cover
                     for skip_pkg_name in package_build.package_names:
                         self.discard_install_info(skip_pkg_name)
+                        if skip_pkg_name in package_names:
+                            package_names.remove(skip_pkg_name)
                 else:
                     raise SysExit(125) from err
 

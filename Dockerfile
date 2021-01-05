@@ -29,8 +29,8 @@ ENV LANG=en_US.utf8 \
 	LC_ALL=en_US.UTF-8
 
 COPY . /opt/app-build/
-RUN echo ">>>> Installing doc and opt deps:" && \
-	pacman -Sy ruby-ronn asp --noconfirm --needed && \
+RUN echo ">>>> Installing opt deps:" && \
+	pacman -Sy asp python-pysocks --noconfirm --needed && \
 	echo ">>>> Preparing build directory:" && \
 	chown -R user /opt/app-build/ && \
 	echo ">>>> Fetching git tags:" && \

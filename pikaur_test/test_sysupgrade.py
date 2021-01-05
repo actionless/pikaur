@@ -15,7 +15,7 @@ class SysupgradeTest(PikaurDbTestCase):
     sysupgrade-related test cases
     """
 
-    repo_pkg_name = 'expac'
+    repo_pkg_name = 'sed'
     repo_old_version: str
 
     repo2_pkg_name = 'tree'
@@ -35,7 +35,6 @@ class SysupgradeTest(PikaurDbTestCase):
         # just update to make sure everything is on the latest version,
         # except for test subject packages
         pikaur('-Syu --noconfirm')
-        self.remove_if_installed('pacaur', 'expac', 'expac-git')
 
     def downgrade_repo1_pkg(self):
         self.repo_old_version = self.downgrade_repo_pkg(self.repo_pkg_name)

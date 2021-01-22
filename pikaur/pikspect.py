@@ -41,14 +41,14 @@ class TTYRestore():
 
     @classmethod
     def _restore(cls, what: Optional[TcAttrsType] = None) -> None:
-        if sys.stdout.isatty():
+        # if sys.stdout.isatty():
             # termios.tcdrain(sys.stdout.fileno())
             # if sys.stderr.isatty():
             #     termios.tcdrain(sys.stderr.fileno())
             # if sys.stdin.isatty():
             #     termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
-            if what:
-                termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
+        if what:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
 
     @classmethod
     def restore(cls, *_whatever) -> None:  # pylint:disable=method-hidden

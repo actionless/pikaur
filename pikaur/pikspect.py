@@ -26,7 +26,7 @@ from .core import get_sudo_refresh_command
 SMALL_TIMEOUT = 0.01
 
 
-TcAttrsType = List[Union[int, List[bytes]]]
+TcAttrsType = List[Union[int, List[Union[bytes, int]]]]
 
 
 class TTYRestore():

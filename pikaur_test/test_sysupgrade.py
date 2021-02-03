@@ -37,16 +37,18 @@ class SysupgradeTest(PikaurDbTestCase):
         pikaur('-Syu --noconfirm')
 
     def downgrade_repo1_pkg(self):
-        self.repo_old_version = self.downgrade_repo_pkg(self.repo_pkg_name)
+        self.repo_old_version = self.downgrade_repo_pkg(self.repo_pkg_name, fake_makepkg=True)
 
     def downgrade_repo2_pkg(self):
-        self.repo2_old_version = self.downgrade_repo_pkg(self.repo2_pkg_name)
+        self.repo2_old_version = self.downgrade_repo_pkg(self.repo2_pkg_name, fake_makepkg=True)
 
     def downgrade_aur1_pkg(self):
-        self.aur_old_version = self.downgrade_aur_pkg(self.aur_pkg_name)
+        self.aur_old_version = self.downgrade_aur_pkg(self.aur_pkg_name, fake_makepkg=True)
 
     def downgrade_aur2_pkg(self):
-        self.aur2_old_version = self.downgrade_aur_pkg(self.aur2_pkg_name, count=1)
+        self.aur2_old_version = self.downgrade_aur_pkg(
+            self.aur2_pkg_name, count=1, fake_makepkg=True
+        )
 
     def downgrade_dev_pkg(self):
         # test -P <custom_name> and -G -d during downgrading

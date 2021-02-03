@@ -256,7 +256,7 @@ class PikaurDbTestCase(PikaurTestCase):
             if pkg_is_installed(pkg_name):
                 self.remove_packages(pkg_name)
 
-    def downgrade_repo_pkg(self, repo_pkg_name: str) -> str:
+    def downgrade_repo_pkg(self, repo_pkg_name: str, fake_makepkg=False) -> str:
         self.remove_if_installed(repo_pkg_name)
         spawn(f'rm -fr ./{repo_pkg_name}')
         pikaur(f'-G {repo_pkg_name}')
@@ -265,7 +265,7 @@ class PikaurDbTestCase(PikaurTestCase):
         ).stdout_text.splitlines()[10]
         spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
         pikaur(f'-P -i --noconfirm --mflags=--skippgpcheck '
-               f'./{repo_pkg_name}/trunk/PKGBUILD')
+               f'./{repo_pkg_name}/trunk/PKGBUILD', fake_makepkg=fake_makepkg)
         self.assertInstalled(repo_pkg_name)
         return PackageDB.get_local_dict()[repo_pkg_name].version
 

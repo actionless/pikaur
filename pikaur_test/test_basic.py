@@ -29,8 +29,8 @@ class InstallTest(PikaurDbTestCase):
 
     def test_aur_package_with_aur_dep(self):
         # pikaur -Qi (pikaur -Qdmq) | grep -i -e Name -e 'Required By' -e '^$'
-        pkg_name = 'python-guessit'
-        dep_name = 'python-rebulk'
+        pkg_name = 'python-gaphor'
+        dep_name = 'python-generic'
         self.remove_if_installed(pkg_name, dep_name)
 
         pikaur(f'-S {pkg_name} --mflags=--skippgpcheck')

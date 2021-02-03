@@ -15,7 +15,7 @@ class SysupgradeTest(PikaurDbTestCase):
     sysupgrade-related test cases
     """
 
-    repo_pkg_name = 'w3m'
+    repo_pkg_name = 'ncdu'
     repo_old_version: str
 
     repo2_pkg_name = 'tree'

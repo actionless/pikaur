@@ -2,12 +2,12 @@
 
 # This file is licensed under GPLv3, see https://www.gnu.org/licenses/
 
-if [[ ! "$(grep foobz1 PKGBUILD)" ]]  && [[ ! "$(grep foobz2 PKGBUILD)" ]] ; then
+if [[ ! "$(grep pikaur_fake_makepkg_package PKGBUILD)" ]]  && [[ ! "$(grep pikaur_fake_makepkg_prepare PKGBUILD)" ]] ; then
 	for line in $(grep "^prepare_.\+()" PKGBUILD -o) ; do
-		echo -e "$line {\n echo \"foo_$line\"\n }" >> PKGBUILD
+		echo -e "$line {\n echo \"fake_$line\"\n }" >> PKGBUILD
 	done
 	for line in $(grep "^package_.\+()" PKGBUILD -o) ; do
-		echo -e "$line {\n echo \"foo_$line\"\n }" >> PKGBUILD
+		echo -e "$line {\n echo \"fake_$line\"\n }" >> PKGBUILD
 	done
 
 source ./PKGBUILD
@@ -15,17 +15,17 @@ source ./PKGBUILD
 
 prepare() {
 	echo "======= Fake prepare() ======="
-	echo "foobz2"
+	echo "pikaur_fake_makepkg_prepare"
 }
 
 build() {
 	echo "======= Fake build() ======="
-	echo "foobz3"
+	echo "pikaur_fake_makepkg_build"
 }
 
 check() {
-	echo "======= Fake build() ======="
-	echo "foobz3"
+	echo "======= Fake check() ======="
+	echo "pikaur_fake_makepkg_check"
 }
 ' >> ./PKGBUILD
 
@@ -34,7 +34,7 @@ if [ "${#pkgname[@]}" -eq 1 ] ; then
 		echo "
 package() {
 	echo '======= Fake package() ======='
-	echo 'foobz1'
+	echo 'pikaur_fake_makepkg_package'
 }
 	" >> ./PKGBUILD
 else
@@ -43,7 +43,7 @@ else
 		echo "
 package_${_pkg_name}() {
 	echo '======= Fake package() ======='
-	echo 'foobz1'
+	echo 'pikaur_fake_makepkg_package'
 }
 	" >> ./PKGBUILD
 	done

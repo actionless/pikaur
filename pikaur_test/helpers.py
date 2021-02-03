@@ -133,7 +133,7 @@ def pikaur(
     new_args = ['pikaur'] + cmd.split(' ')
     if '-S ' in cmd:
         new_args += [
-            '--noconfirm', '--hide-build-log',
+            '--noconfirm',
         ]
     if fake_makepkg:
         new_args += [

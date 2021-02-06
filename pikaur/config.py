@@ -12,7 +12,7 @@ from .i18n import _
 RUNNING_AS_ROOT = os.geteuid() == 0
 
 
-VERSION = '1.6.16-dev'
+VERSION = '1.6.16.1-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",

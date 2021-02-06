@@ -15,10 +15,12 @@ from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
-from .pprint import PrintLock, bold_line
+from .pprint import (
+    PrintLock, print_debug, print_stderr,
+    get_term_width, bold_line, color_line,
+)
 from .pacman_i18n import _p
 from .args import parse_args
-from .pprint import print_stderr, color_line, get_term_width
 from .core import get_sudo_refresh_command
 
 
@@ -48,7 +50,10 @@ class TTYRestore():
         # if sys.stdin.isatty():
         #     termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
         if what:
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
+            try:
+                termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
+            except termios.error as exc:
+                print_debug(','.join(arg for arg in exc.args))
 
     @classmethod
     def restore(cls, *_whatever) -> None:  # pylint:disable=method-hidden

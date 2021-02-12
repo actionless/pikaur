@@ -53,7 +53,7 @@ class TTYRestore():
             try:
                 termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
             except termios.error as exc:
-                print_debug(','.join(arg for arg in exc.args))
+                print_debug(','.join(str(arg) for arg in exc.args))
 
     @classmethod
     def restore(cls, *_whatever) -> None:  # pylint:disable=method-hidden

@@ -9,7 +9,7 @@ POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
 MOFILES = $(POFILES:.po=.mo)
 DISTDIR := dist
 
-PIKAMAN := python ./maintenance_scripts/pikaman.py
+PIKAMAN := $(shell which python) ./maintenance_scripts/pikaman.py
 README_FILE := README.md
 MAN_FILE := pikaur.1
 

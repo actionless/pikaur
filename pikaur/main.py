@@ -13,7 +13,7 @@ import shutil
 import atexit
 import io
 from argparse import ArgumentError  # pylint: disable=no-name-in-module
-from typing import List, Optional, Callable, NoReturn
+from typing import List, Optional, Callable
 
 import pyalpm
 
@@ -43,7 +43,7 @@ from .config import (
     AUR_REPOS_CACHE_PATH, PikaurConfig, _OLD_AUR_REPOS_CACHE_PATH, DATA_ROOT,
 )
 from .exceptions import SysExit
-from .pikspect import TTYRestore
+from .pikspect import TTYRestore, PikspectSignalHandler
 from .install_cli import InstallPackagesCLI
 from .search_cli import cli_search_packages
 from .info_cli import cli_info_packages
@@ -400,14 +400,18 @@ def restore_tty() -> None:
     TTYRestore.restore()
 
 
-def handle_sig_int(*_whatever) -> NoReturn:  # pragma: no cover
+def handle_sig_int(*_whatever) -> None:  # pragma: no cover
+    if signal_handler := PikspectSignalHandler.get():
+        return signal_handler(*_whatever)  # pylint: disable=not-callable
+    if parse_args().pikaur_debug:
+        raise KeyboardInterrupt()
     print_stderr("\n\nCanceled by user (SIGINT)", lock=False)
     raise SysExit(125)
 
 
 def main() -> None:
     try:
-        args = parse_args()
+        parse_args()
     except ArgumentError as exc:
         print_stderr(exc)
         sys.exit(22)
@@ -419,8 +423,7 @@ def main() -> None:
 
     atexit.register(restore_tty)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    if not args.pikaur_debug:
-        signal.signal(signal.SIGINT, handle_sig_int)
+    signal.signal(signal.SIGINT, handle_sig_int)
 
     try:
         cli_entry_point()

@@ -11,6 +11,7 @@ import struct
 import fcntl
 import os
 import re
+import signal
 from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
@@ -103,6 +104,23 @@ def _match(pattern: str, line: str) -> bool:
     )
 
 
+class PikspectSignalHandler():
+
+    signal_handler: Optional[Callable] = None
+
+    @classmethod
+    def set(cls, signal_handler: Callable) -> None:
+        cls.signal_handler = signal_handler
+
+    @classmethod
+    def clear(cls) -> None:
+        cls.signal_handler = None
+
+    @classmethod
+    def get(cls) -> Optional[Callable]:
+        return cls.signal_handler
+
+
 class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attributes
 
     print_output: bool
@@ -157,30 +175,34 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         return self._wait(None)
 
     def run(self) -> None:
-        with NestedTerminal() as real_term_geometry:
-            if 'sudo' in self.args:
-                subprocess.run(get_sudo_refresh_command(), check=True)
-            with open(self.pty_user_master, 'w') as self.pty_in:
-                with open(self.pty_cmd_master, 'rb', buffering=0) as self.pty_out:
-                    set_terminal_geometry(
-                        self.pty_out.fileno(),
-                        columns=real_term_geometry.columns,
-                        rows=real_term_geometry.lines
-                    )
-                    with ThreadPool(processes=3) as pool:
-                        output_task = pool.apply_async(self.cmd_output_reader_thread, ())
-                        input_task = pool.apply_async(self.user_input_reader_thread, ())
-                        communicate_task = pool.apply_async(self.communicator_thread, ())
-                        pool.close()
+        PikspectSignalHandler.set(lambda *_whatever: self.send_signal(signal.SIGINT))
+        try:
+            with NestedTerminal() as real_term_geometry:
+                if 'sudo' in self.args:
+                    subprocess.run(get_sudo_refresh_command(), check=True)
+                with open(self.pty_user_master, 'w') as self.pty_in:
+                    with open(self.pty_cmd_master, 'rb', buffering=0) as self.pty_out:
+                        set_terminal_geometry(
+                            self.pty_out.fileno(),
+                            columns=real_term_geometry.columns,
+                            rows=real_term_geometry.lines
+                        )
+                        with ThreadPool(processes=3) as pool:
+                            output_task = pool.apply_async(self.cmd_output_reader_thread, ())
+                            input_task = pool.apply_async(self.user_input_reader_thread, ())
+                            communicate_task = pool.apply_async(self.communicator_thread, ())
+                            pool.close()
 
-                        output_task.get()
-                        sys.stdout.buffer.write(self._write_buffer)
-                        sys.stdout.buffer.flush()
-                        communicate_task.get()
-                        input_task.get()
-                        pool.join()
-        os.close(self.pty_cmd_slave)
-        os.close(self.pty_user_slave)
+                            output_task.get()
+                            sys.stdout.buffer.write(self._write_buffer)
+                            sys.stdout.buffer.flush()
+                            communicate_task.get()
+                            input_task.get()
+                            pool.join()
+        finally:
+            PikspectSignalHandler.clear()
+            os.close(self.pty_cmd_slave)
+            os.close(self.pty_user_slave)
 
     def check_questions(self) -> None:
         # pylint: disable=too-many-branches

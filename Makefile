@@ -9,7 +9,9 @@ POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
 MOFILES = $(POFILES:.po=.mo)
 DISTDIR := dist
 
-PIKAMAN := python ./maintenance_scripts/pikaman.py
+# A $(which python) is necessary here to avoid a bug in make that would
+# try to execute a directory named "python". See https://savannah.gnu.org/bugs/?57962
+PIKAMAN := $(shell which python) ./maintenance_scripts/pikaman.py
 README_FILE := README.md
 MAN_FILE := pikaur.1
 

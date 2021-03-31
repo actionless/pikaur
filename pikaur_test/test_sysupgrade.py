@@ -79,12 +79,8 @@ class SysupgradeTest(PikaurDbTestCase):
 
         self.downgrade_dev_pkg()
 
-        query_result = pikaur('-Qu').stdout
-        upgradeable_pkgs = query_result.splitlines()
-        if self.self_name in upgradeable_pkgs:
-            upgradeable_pkgs.remove(self.self_name)
         self.assertEqual(
-            upgradeable_pkgs, []
+            self.upgradeable_pkgs_list, []
         )
 
         # and finally test the sysupgrade itself
@@ -95,6 +91,28 @@ class SysupgradeTest(PikaurDbTestCase):
             self.dev_old_version
         )
 
+    @property
+    def upgradeable_pkgs_list(self):
+        query_result = pikaur('-Quq').stdout
+        upgradeable_pkgs = query_result.splitlines()
+        if self.self_name in upgradeable_pkgs:
+            upgradeable_pkgs.remove(self.self_name)
+        return upgradeable_pkgs
+
+    @property
+    def upgradeable_repo_pkgs_list(self):
+        query_result = pikaur('-Quq --repo').stdout
+        upgradeable_repo_pkgs = query_result.splitlines()
+        return upgradeable_repo_pkgs
+
+    @property
+    def upgradeable_aur_pkgs_list(self):
+        query_result = pikaur('-Quq --aur').stdout
+        upgradeable_aur_pkgs = query_result.splitlines()
+        if self.self_name in upgradeable_aur_pkgs:
+            upgradeable_aur_pkgs.remove(self.self_name)
+        return upgradeable_aur_pkgs
+
     def test_syu(self):
         """
         test upgrade of repo and AUR packages
@@ -103,31 +121,14 @@ class SysupgradeTest(PikaurDbTestCase):
         self.downgrade_repo1_pkg()
         self.downgrade_aur1_pkg()
 
-        query_result = pikaur('-Quq --aur').stdout
-        upgradeable_aur_pkgs = query_result.splitlines()
-        if self.self_name in upgradeable_aur_pkgs:
-            upgradeable_aur_pkgs.remove(self.self_name)
         self.assertEqual(
-            upgradeable_aur_pkgs, [self.aur_pkg_name]
+            self.upgradeable_aur_pkgs_list, [self.aur_pkg_name]
         )
-
-        query_result = pikaur('-Quq --repo').stdout
         self.assertEqual(
-            query_result.splitlines(), [self.repo_pkg_name]
+            self.upgradeable_repo_pkgs_list, [self.repo_pkg_name]
         )
-
-        query_result = pikaur('-Qu').stdout
-        upgradeable_pkgs = query_result.splitlines()
-        if self.self_name in upgradeable_pkgs:
-            upgradeable_pkgs.remove(self.self_name)
         self.assertEqual(
-            upgradeable_pkgs, [self.repo_pkg_name, self.aur_pkg_name]
-        )
-        self.assertIn(
-            self.aur_pkg_name, query_result
-        )
-        self.assertIn(
-            self.repo_pkg_name, query_result
+            self.upgradeable_pkgs_list, [self.repo_pkg_name, self.aur_pkg_name]
         )
 
         # and finally test the sysupgrade itself

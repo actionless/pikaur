@@ -18,7 +18,7 @@ RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pac
 	echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
 RUN rm /usr/share/libalpm/hooks/package-cleanup.hook ; \
 	pacman -Syu --noconfirm --needed sudo base-devel git && \
-	useradd -m user && \
+	(useradd -m user || true) && \
 	echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 	echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 	echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \

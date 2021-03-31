@@ -99,8 +99,12 @@ class SysupgradeTest(PikaurDbTestCase):
         self.downgrade_aur1_pkg()
 
         query_result = pikaur('-Quq --aur').stdout
+        upgradeable_aur_pkgs = query_result.splitlines()
+        self_name = 'pikaur-git'
+        if self_name in upgradeable_aur_pkgs:
+            upgradeable_aur_pkgs.remove(self_name)
         self.assertEqual(
-            query_result.splitlines(), [self.aur_pkg_name]
+            upgradeable_aur_pkgs, [self.aur_pkg_name]
         )
 
         query_result = pikaur('-Quq --repo').stdout

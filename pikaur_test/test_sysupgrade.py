@@ -84,7 +84,7 @@ class SysupgradeTest(PikaurDbTestCase):
         if self.self_name in upgradeable_pkgs:
             upgradeable_pkgs.remove(self.self_name)
         self.assertEqual(
-            len(upgradeable_pkgs), 0
+            upgradeable_pkgs, []
         )
 
         # and finally test the sysupgrade itself
@@ -121,7 +121,7 @@ class SysupgradeTest(PikaurDbTestCase):
         if self.self_name in upgradeable_pkgs:
             upgradeable_pkgs.remove(self.self_name)
         self.assertEqual(
-            len(query_result.splitlines()), 2
+            upgradeable_pkgs, [self.repo_pkg_name, self.aur_pkg_name]
         )
         self.assertIn(
             self.aur_pkg_name, query_result

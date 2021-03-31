@@ -15,6 +15,8 @@ class SysupgradeTest(PikaurDbTestCase):
     sysupgrade-related test cases
     """
 
+    self_name = 'pikaur-git'
+
     repo_pkg_name = 'ncdu'
     repo_old_version: str
 
@@ -78,8 +80,11 @@ class SysupgradeTest(PikaurDbTestCase):
         self.downgrade_dev_pkg()
 
         query_result = pikaur('-Qu').stdout
+        upgradeable_pkgs = query_result.splitlines()
+        if self.self_name in upgradeable_pkgs:
+            upgradeable_pkgs.remove(self.self_name)
         self.assertEqual(
-            len(query_result.splitlines()), 0
+            len(upgradeable_pkgs), 0
         )
 
         # and finally test the sysupgrade itself
@@ -100,9 +105,8 @@ class SysupgradeTest(PikaurDbTestCase):
 
         query_result = pikaur('-Quq --aur').stdout
         upgradeable_aur_pkgs = query_result.splitlines()
-        self_name = 'pikaur-git'
-        if self_name in upgradeable_aur_pkgs:
-            upgradeable_aur_pkgs.remove(self_name)
+        if self.self_name in upgradeable_aur_pkgs:
+            upgradeable_aur_pkgs.remove(self.self_name)
         self.assertEqual(
             upgradeable_aur_pkgs, [self.aur_pkg_name]
         )

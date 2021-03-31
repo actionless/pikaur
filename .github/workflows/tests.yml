@@ -1,0 +1,19 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: switch base image
+      run: sed -i -e 's|FROM archlinux/base|FROM actionless/pikaur|' Dockerfile
+    - name: run tests in docker
+      run: ./maintenance_scripts/docker_test.sh --coveralls

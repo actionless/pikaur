@@ -117,6 +117,9 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
         query_result = pikaur('-Qu').stdout
+        upgradeable_pkgs = query_result.splitlines()
+        if self.self_name in upgradeable_pkgs:
+            upgradeable_pkgs.remove(self.self_name)
         self.assertEqual(
             len(query_result.splitlines()), 2
         )

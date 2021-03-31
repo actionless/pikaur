@@ -16,7 +16,7 @@ jobs:
     - name: switch base image
       run: sed -i -e 's|FROM archlinux/base|FROM actionless/pikaur|' Dockerfile
     - name: run tests in docker
-      run: ./maintenance_scripts/docker_test.sh --coveralls
+      run: ./maintenance_scripts/docker_test.sh
 
     - name: Coveralls
       uses: coverallsapp/github-action@master

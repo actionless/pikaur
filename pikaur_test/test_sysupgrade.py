@@ -18,7 +18,7 @@ class SysupgradeTest(PikaurDbTestCase):
     repo_pkg_name = 'ncdu'
     repo_old_version: str
 
-    repo2_pkg_name = 'which'
+    repo2_pkg_name = 'xsel'
     repo2_old_version: str
 
     aur_pkg_name = 'etc-update'

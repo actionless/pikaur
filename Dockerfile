@@ -41,7 +41,7 @@ RUN echo ">>>> Installing opt deps:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	sleep 0.1 && \
 	echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -S --noconfirm --color=always iputils python-virtualenv \
+	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv \
 		python-pylint flake8 mypy python-vulture python-coveralls shellcheck
 
 RUN echo ">>>> Starting CI testsuite:" && \

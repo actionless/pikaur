@@ -128,7 +128,8 @@ class SysupgradeTest(PikaurDbTestCase):
             self.upgradeable_repo_pkgs_list, [self.repo_pkg_name]
         )
         self.assertEqual(
-            self.upgradeable_pkgs_list, [self.repo_pkg_name, self.aur_pkg_name]
+            list(sorted(self.upgradeable_pkgs_list)),
+            list(sorted([self.repo_pkg_name, self.aur_pkg_name]))
         )
 
         # and finally test the sysupgrade itself

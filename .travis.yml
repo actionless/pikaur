@@ -3,4 +3,5 @@ dist: bionic
 services:
   - docker
 script:
+  - sed -i -e 's|FROM archlinux/base|FROM actionless/pikaur|' Dockerfile
   - ./maintenance_scripts/docker_test.sh --coveralls

@@ -38,7 +38,7 @@ $(LOCALEDIR)/%.po: $(POTFILE)
 $(MAN_FILE): $(README_FILE)
 	$(PIKAMAN) $< $@
 	sed -i \
-		-e '/travis/d' \
+		-e '/coveralls/d' \
 		-e '/Screenshot/d' \
 		$@
 

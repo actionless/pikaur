@@ -44,4 +44,5 @@ RUN echo ">>>> Installing opt deps:" && \
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
 	GITHUB_TOKEN=$GITHUB_TOKEN \
+	COVERALLS_REPO_TOKEN=$GITHUB_TOKEN \
 	./maintenance_scripts/ci.sh $MODE --write-db

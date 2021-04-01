@@ -45,7 +45,7 @@ RUN echo ">>>> Installing opt deps:" && \
 
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
-	COVERALLS_SERVICE_NAME=github \
+	GITHUB_ACTIONS=1 \
 	GITHUB_TOKEN=$GITHUB_TOKEN \
 	GITHUB_RUN_ID=$GITHUB_RUN_ID \
 	GITHUB_REF=$GITHUB_REF \

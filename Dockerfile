@@ -3,10 +3,7 @@
 FROM archlinux/base
 WORKDIR /opt/app-build/
 
-ARG TRAVIS
-ARG TRAVIS_JOB_ID
-ARG TRAVIS_BRANCH
-ARG TRAVIS_PULL_REQUEST
+ARG GITHUB_TOKEN
 ARG MODE=--local
 
 RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
@@ -46,8 +43,5 @@ RUN echo ">>>> Installing opt deps:" && \
 
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
-	TRAVIS=$TRAVIS \
-	TRAVIS_JOB_ID=$TRAVIS_JOB_ID \
-	TRAVIS_BRANCH=$TRAVIS_BRANCH \
-	TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST \
+	GITHUB_TOKEN=$GITHUB_TOKEN \
 	./maintenance_scripts/ci.sh $MODE --write-db

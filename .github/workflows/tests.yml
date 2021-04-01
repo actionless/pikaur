@@ -19,4 +19,4 @@ jobs:
     - name: run tests in docker
       run: ./maintenance_scripts/docker_test.sh --coveralls
       env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -19,6 +19,8 @@ fi
 return_code=0
 sudo docker build ./ \
 	--build-arg GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
+	--build-arg GITHUB_RUN_ID="${GITHUB_RUN_ID:-}" \
+	--build-arg GITHUB_REF="${GITHUB_REF:-}" \
 	--build-arg MODE="${1:---local}" \
 	-t pikaur -f ./Dockerfile \
 	|| return_code=$?

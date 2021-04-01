@@ -4,6 +4,8 @@ FROM archlinux/base
 WORKDIR /opt/app-build/
 
 ARG GITHUB_TOKEN
+ARG GITHUB_RUN_ID
+ARG GITHUB_REF
 ARG MODE=--local
 
 RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
@@ -43,6 +45,8 @@ RUN echo ">>>> Installing opt deps:" && \
 
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
+	COVERALLS_SERVICE_NAME=github \
 	GITHUB_TOKEN=$GITHUB_TOKEN \
-	COVERALLS_REPO_TOKEN=$GITHUB_TOKEN \
+	GITHUB_RUN_ID=$GITHUB_RUN_ID \
+	GITHUB_REF=$GITHUB_REF \
 	./maintenance_scripts/ci.sh $MODE --write-db

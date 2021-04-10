@@ -298,6 +298,15 @@ checkupdates ; pikaur -Qua 2>/dev/null
 
 If you find the command takes a long time to initialize, make sure to periodically clear your cache: `pikaur -Scc`. Root pikaur is using SystemD Dynamic Users to isolate build process from the root, and it takes some time to change the owner of build cache to dynamic temporary user.
 
+##### How to migrate from Yay?
+
+This will migrate the cache of what AUR packages have been installed, so you can still see a Git diff for the next update of each package:
+
+```sh
+mv ~/.cache/yay/* ~/.local/share/pikaur/aur_repos/
+find ~/.local/share/pikaur/aur_repos -mindepth 1 -maxdepth 1 -type d | xargs -r -I '{}' -- sh -c 'cd "{}" && git rev-parse HEAD > last_installed.txt'
+```
+
 
 
 ## Contributing

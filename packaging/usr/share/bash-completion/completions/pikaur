@@ -50,6 +50,51 @@ _pacman_pkg() {
   )"
 }
 
+_pikaur_get_aur_packages() {
+  local cacheFile=$1
+  local aurPackagesURL='https://aur.archlinux.org/packages.gz'
+  local tmpFile
+  tmpFile="$(mktemp)"
+  curl -f -s "${aurPackagesURL}" -o "${tmpFile}"
+  local returnStatus=$?
+  if [ "${returnStatus}" -eq 0 ]; then
+    mv "${tmpFile}" "${cacheFile}" 2>/dev/null
+  else
+    rm "${tmpFile}"
+  fi
+}
+
+_pikaur_cached_search() {
+  local repoPackageNames
+  repoPackageNames="$(\pacman -Ssq)" # pacman is faster then pikaur -Ssqo
+  local cacheDir
+  if [ -n "${XDG_CACHE_HOME+x}" ]; then
+    cacheDir="${XDG_CACHE_HOME}/pikaur"
+  else
+    cacheDir="${HOME}/.cache/pikaur"
+  fi
+  if [ ! -e "${cacheDir}" ]; then
+    mkdir -p "${cacheDir}" || return
+    chmod 0700 "${cacheDir}"
+  fi
+  local cacheFile="${cacheDir}/aur-packages.gz"
+  local maxCacheFileAge=86400 # 24 hours * 60 minutes * 60 seconds
+  local cacheFileAge=${maxCacheFileAge}
+  if [ -f "${cacheFile}" ]; then
+    cacheFileAge="$(($(date +"%s") - $(date -r "${cacheFile}" +%s)))"
+  fi
+  local aurPackageNames=""
+  local fileReadStatus
+  if [ -r "${cacheFile}" ]; then
+    aurPackageNames="$(zcat "${cacheFile}" 2>/dev/null | tail -n+2)"
+    fileReadStatus=$?
+  fi
+  if [ ! -e "${cacheFile}" ] || [ "${fileReadStatus}" -ne 0 ] || [ "${cacheFileAge}" -ge "${maxCacheFileAge}" ]; then
+    (_pikaur_get_aur_packages "${cacheFile}" &)
+  fi
+  _arch_compgen "${repoPackageNames} ${aurPackageNames}"
+}
+
 _pacman() {
   local common core cur database files prev query remove sync upgrade o
   COMPREPLY=()
@@ -81,7 +126,7 @@ _pacman() {
       D|R)
           _pacman_pkg Qq;;
       F)
-          _arch_incomp 'l list'   && _pacman_pkg Ssq;
+          _arch_incomp 'l list'   && _pikaur_cached_search
           ;;
       Q)
         { _arch_incomp 'g groups' && _pacman_pkg Qg sort; }    ||
@@ -91,7 +136,7 @@ _pacman() {
       S)
         { _arch_incomp 'g groups' && _pacman_pkg Sg; }      ||
         { _arch_incomp 'l list'   && _pacman_pkg Sl sort; } ||
-          _pacman_pkg Ssq;;
+          _pikaur_cached_search;;
       U)
           _pacman_file;;
       esac

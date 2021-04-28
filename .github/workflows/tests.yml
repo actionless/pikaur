@@ -17,6 +17,11 @@ jobs:
       run: sed -i -e 's|FROM archlinux/base|FROM actionless/pikaur|' Dockerfile
 
     - name: run tests in docker
+      if: ${{ github.repository_owner != 'actionless' }}
+      run: ./maintenance_scripts/docker_test.sh --local
+
+    - name: run tests in docker and upload coverage
+      if: ${{ github.repository_owner == 'actionless' }}
       run: ./maintenance_scripts/docker_test.sh --coveralls
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

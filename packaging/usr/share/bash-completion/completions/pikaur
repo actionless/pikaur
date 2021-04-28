@@ -67,12 +67,7 @@ _pikaur_get_aur_packages() {
 _pikaur_cached_search() {
   local repoPackageNames
   repoPackageNames="$(\pacman -Ssq)" # pacman is faster then pikaur -Ssqo
-  local cacheDir
-  if [ -n "${XDG_CACHE_HOME+x}" ]; then
-    cacheDir="${XDG_CACHE_HOME}/pikaur"
-  else
-    cacheDir="${HOME}/.cache/pikaur"
-  fi
+  local cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/pikaur_bash-completion"
   if [ ! -e "${cacheDir}" ]; then
     mkdir -p "${cacheDir}" || return
     chmod 0700 "${cacheDir}"

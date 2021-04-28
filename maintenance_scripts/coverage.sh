@@ -12,7 +12,7 @@ fi
 coverage run --source=pikaur -m unittest -v
 
 if [[ "${1:-}" == "--coveralls" ]] ; then
-	coveralls
+	coveralls --service=github
 else
 	coverage report
 	coverage html

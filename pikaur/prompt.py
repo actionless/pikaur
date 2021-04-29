@@ -166,7 +166,7 @@ def retry_interactive_command(
     args = parse_args()
     while True:
         good = None
-        if pikspect:
+        if pikspect and ('--noconfirm' not in cmd_args):
             good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
         else:
             if 'conflicts' in kwargs:

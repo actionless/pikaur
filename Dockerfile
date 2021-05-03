@@ -1,6 +1,6 @@
 # This file is licensed under GPLv3, see https://www.gnu.org/licenses/
 
-FROM archlinux/base
+FROM archlinux:base-devel
 WORKDIR /opt/app-build/
 
 ARG GITHUB_TOKEN

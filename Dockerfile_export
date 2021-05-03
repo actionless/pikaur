@@ -1,0 +1,40 @@
+# This file is licensed under GPLv3, see https://www.gnu.org/licenses/
+
+FROM archlinux:base-devel
+WORKDIR /opt/app-build/
+
+RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
+	echo 'Server = https://archlinux.mirror.pcextreme.nl/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
+	echo 'Server = https://archlinux.mirror.wearetriple.com/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
+	echo 'Server = https://mirror.mijn.host/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
+	\
+	echo '[multilib]' >> /etc/pacman.conf ; \
+	echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
+RUN pacman -Syu --noconfirm --needed sudo base-devel git && \
+	useradd -m user && \
+	echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+	echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+	echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+	echo "LANG=en_US.UTF-8" > /etc/locale.conf && \
+	locale-gen
+ENV LANG=en_US.utf8 \
+	LANGUAGE=en_US.UTF-8 \
+	LC_ALL=en_US.UTF-8
+
+RUN echo ">>>> Installing opt deps:" && \
+	pacman -Sy asp python-pysocks --noconfirm --needed && \
+	echo ">>>> Installing test deps:" && \
+	pacman -S --noconfirm --needed --color=always iputils python-virtualenv \
+		python-pylint flake8 shellcheck && \
+	echo ">>>> Preparing build directory:" && \
+	chown -R user /opt/app-build/
+
+RUN git clone https://github.com/actionless/pikaur.git /opt/app-build/
+
+RUN	echo ">>>> Starting the build:" && \
+	sudo -u user makepkg -fsi --noconfirm && \
+	sleep 0.1 && \
+	echo ">>>> Installing test deps using Pikaur itself:" && \
+	sudo -u user pikaur -S --noconfirm --color=always python-vulture mypy python-coveralls
+
+# vim: set ft=dockerfile :

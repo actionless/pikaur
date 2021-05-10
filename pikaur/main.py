@@ -158,11 +158,17 @@ def cli_getpkgbuild() -> None:
         ]))
 
     for repo_pkg in repo_pkgs:
+        name = repo_pkg.name
+        repo_path = os.path.join(pwd, name)
+        action = 'checkout'
+        if os.path.exists(repo_path):
+            action = 'update'
         print_stdout()
+        print_stdout(_(f"Package '{name}' going to be cloned into '{repo_path}'..."))
         interactive_spawn([
             'asp',
-            'checkout',
-            repo_pkg.name,
+            action,
+            name,
         ])
 
 

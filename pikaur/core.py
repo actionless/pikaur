@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import sys
 from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import (
@@ -15,9 +16,10 @@ from typing import (
 
 import pyalpm
 
-from .config import PikaurConfig
 from .args import parse_args
-from .pprint import print_stderr, color_line
+from .config import PikaurConfig
+from .i18n import _
+from .pprint import print_stderr, color_line, print_error, bold_line
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,cyclic-import
@@ -324,3 +326,40 @@ def run_with_sudo_loop(function: Callable) -> Optional[Any]:
         if result:
             return result
         return None
+
+
+def check_systemd_dynamic_users() -> bool:  # pragma: no cover
+    try:
+        out = subprocess.check_output(['systemd-run', '--version'],
+                                      universal_newlines=True)
+    except FileNotFoundError:
+        return False
+    first_line = out.split('\n')[0]
+    version = int(first_line.split()[1])
+    return version >= 235
+
+
+def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
+    if sys.version_info.major < 3 or sys.version_info.minor < 7:
+        print_error(
+            _("pikaur requires Python >= 3.7 to run."),
+        )
+        sys.exit(65)
+    if running_as_root() and not check_systemd_dynamic_users():
+        print_error(
+            _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
+        )
+        sys.exit(65)
+    if not dep_names:
+        privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
+        dep_names = ["fakeroot", ] + (
+            [privilege_escalation_tool] if not running_as_root() else []
+        )
+
+    for dep_bin in dep_names:
+        if not shutil.which(dep_bin):
+            print_error("'{}' {}.".format(
+                bold_line(dep_bin),
+                "executable not found"
+            ))
+            sys.exit(2)

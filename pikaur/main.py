@@ -7,7 +7,6 @@ import os
 import sys
 import readline
 import signal
-import subprocess
 import codecs
 import shutil
 import atexit
@@ -24,7 +23,7 @@ from .args import (
 from .help_cli import cli_print_help
 from .core import (
     InstallInfo,
-    spawn, interactive_spawn, remove_dir,
+    spawn, interactive_spawn, remove_dir, check_runtime_deps,
     running_as_root, sudo, isolate_root_cmd, run_with_sudo_loop,
 )
 from .pprint import (
@@ -34,7 +33,7 @@ from .pprint import (
 )
 from .print_department import (
     pretty_format_upgradeable, print_version,
-    print_not_found_packages, print_ignored_package,
+    print_ignored_package,
 )
 from .updates import find_repo_upgradeable, find_aur_updates
 from .prompt import ask_to_continue, get_multiple_numbers_input, NotANumberInput
@@ -47,10 +46,9 @@ from .pikspect import TTYRestore, PikspectSignalHandler
 from .install_cli import InstallPackagesCLI
 from .search_cli import cli_search_packages
 from .info_cli import cli_info_packages
-from .aur import find_aur_packages, get_repo_url
-from .aur_deps import get_aur_deps_list
-from .pacman import PackageDB, PackagesNotFoundInRepo, PacmanConfig
-from .urllib import init_proxy, ProxyInitSocks5Error, wrap_proxy_env
+from .pacman import PacmanConfig
+from .urllib import init_proxy, ProxyInitSocks5Error
+from .getpkgbuild_cli import cli_getpkgbuild
 
 
 def init_readline() -> None:
@@ -119,57 +117,6 @@ def cli_install_packages() -> None:
 
 def cli_pkgbuild() -> None:
     cli_install_packages()
-
-
-def cli_getpkgbuild() -> None:
-    args = parse_args()
-    pwd = os.path.abspath(os.path.curdir)
-    aur_pkg_names = args.positional
-
-    aur_pkgs, not_found_aur_pkgs = find_aur_packages(aur_pkg_names)
-    repo_pkgs = []
-    not_found_repo_pkgs = []
-    for pkg_name in not_found_aur_pkgs:
-        try:
-            repo_pkg = PackageDB.find_repo_package(pkg_name)
-        except PackagesNotFoundInRepo:
-            not_found_repo_pkgs.append(pkg_name)
-        else:
-            repo_pkgs.append(repo_pkg)
-
-    if repo_pkgs:
-        check_runtime_deps(['asp'])
-
-    if not_found_repo_pkgs:
-        print_not_found_packages(not_found_repo_pkgs)
-
-    if args.deps:
-        aur_pkgs = aur_pkgs + get_aur_deps_list(aur_pkgs)
-
-    for aur_pkg in aur_pkgs:
-        name = aur_pkg.name
-        repo_path = os.path.join(pwd, name)
-        print_stdout()
-        interactive_spawn(wrap_proxy_env([
-            'git',
-            'clone',
-            get_repo_url(aur_pkg.packagebase),
-            repo_path,
-        ]))
-
-    for repo_pkg in repo_pkgs:
-        name = repo_pkg.name
-        repo_path = os.path.join(pwd, name)
-        action = 'checkout'
-        if os.path.exists(repo_path):
-            action = 'update'
-        print_stdout()
-        print_stdout(_(f"Package '{name}' going to be cloned into '{repo_path}'..."))
-        interactive_spawn([
-            'asp',
-            action,
-            name,
-        ])
 
 
 def cli_clean_packages_cache() -> None:
@@ -327,43 +274,6 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         sys.exit(
             interactive_spawn(pacman_args).returncode
         )
-
-
-def check_systemd_dynamic_users() -> bool:  # pragma: no cover
-    try:
-        out = subprocess.check_output(['systemd-run', '--version'],
-                                      universal_newlines=True)
-    except FileNotFoundError:
-        return False
-    first_line = out.split('\n')[0]
-    version = int(first_line.split()[1])
-    return version >= 235
-
-
-def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
-    if sys.version_info.major < 3 or sys.version_info.minor < 7:
-        print_error(
-            _("pikaur requires Python >= 3.7 to run."),
-        )
-        sys.exit(65)
-    if running_as_root() and not check_systemd_dynamic_users():
-        print_error(
-            _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
-        )
-        sys.exit(65)
-    if not dep_names:
-        privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
-        dep_names = ["fakeroot", ] + (
-            [privilege_escalation_tool] if not running_as_root() else []
-        )
-
-    for dep_bin in dep_names:
-        if not shutil.which(dep_bin):
-            print_error("'{}' {}.".format(
-                bold_line(dep_bin),
-                "executable not found"
-            ))
-            sys.exit(2)
 
 
 def migrate_old_aur_repos_dir() -> None:

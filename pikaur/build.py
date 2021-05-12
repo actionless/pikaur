@@ -148,6 +148,7 @@ class PackageBuild(DataType):
         self.keep_build_dir = self.args.keepbuild or (
             is_devel_pkg(self.package_base) and PikaurConfig().build.KeepDevBuildDir.get_bool()
         )
+        self.skip_carch_check = PikaurConfig().build.IgnoreArch.get_bool()
 
         if os.path.exists(self.repo_path):
             # pylint: disable=simplifiable-if-statement
@@ -594,6 +595,9 @@ class PackageBuild(DataType):
         PackageDB.discard_local_cache()
 
     def check_pkg_arch(self) -> None:
+        if self.skip_carch_check:
+            return
+
         src_info = SrcInfo(pkgbuild_path=self.pkgbuild_path)
         arch = MakepkgConfig.get('CARCH')
         supported_archs = src_info.get_values('arch')

@@ -119,6 +119,9 @@ Always skip the build if it fails and don't show recovery prompt.
 Always isolate the build using systemd dynamic users.
 Will be overridden by `--dynamic-users` flag.
 
+##### IgnoreArch (default: no)
+Ignore specified architectures (`arch`-array) in PKGBUILDs.
+
 
 #### [review]
 

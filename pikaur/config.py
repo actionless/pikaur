@@ -131,6 +131,10 @@ CONFIG_SCHEMA: Dict[str, Any] = {
                 'option': 'GitDiffArgs',
             },
         },
+        'IgnoreArch': {
+            'type': 'bool',
+            'default': 'no'
+        },
     },
     'review': {
         'NoEdit': {

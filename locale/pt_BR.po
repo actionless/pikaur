@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-15 10:53-0300\n"
+"POT-Creation-Date: 2021-05-18 20:16+0200\n"
 "PO-Revision-Date: 2021-04-15 14:22-0300\n"
+"Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
 "Language-Team: \n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.4.1\n"
-"Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
-"Language: pt_BR\n"
 
 #: pikaur/replacements.py:42
 #, python-brace-format
@@ -53,7 +53,7 @@ msgid_plural "AUR packages will be installed:"
 msgstr[0] "O pacote AUR será instalado:"
 msgstr[1] "Os pacotes AUR serão instalados:"
 
-#: pikaur/main.py:374
+#: pikaur/main.py:290
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "Diretório dos repos AUR movido de '{old}' para '{new}'."
@@ -76,7 +76,7 @@ msgstr ""
 "Todas as opções comuns do pacman como ao fazer `pacman -U <arquivo_pkg>`. "
 "Veja `pacman -Uh`."
 
-#: pikaur/main.py:173
+#: pikaur/main.py:126
 msgid "Build directory"
 msgstr "Diretório de compilação"
 
@@ -123,7 +123,7 @@ msgstr "Não é possível resolver as dependências para o pacote AUR '{pkg}':"
 msgid "Check Deps"
 msgstr "Verificar dependências"
 
-#: pikaur/prompt.py:177 pikaur/build.py:655
+#: pikaur/build.py:659 pikaur/prompt.py:177
 msgid "Command '{}' failed to execute."
 msgstr "Comando '{}' falhou ao executar."
 
@@ -171,12 +171,12 @@ msgstr "Deseja continuar sem editar?"
 msgid "Do you want to proceed?"
 msgstr "Deseja continuar?"
 
-#: pikaur/main.py:180
+#: pikaur/main.py:133
 msgid "Do you want to remove all files?"
 msgstr "Deseja remover todos os arquivos?"
 
-#: pikaur/prompt.py:181 pikaur/filelock.py:25 pikaur/urllib.py:29
-#: pikaur/urllib.py:53
+#: pikaur/urllib.py:29 pikaur/urllib.py:53 pikaur/prompt.py:181
+#: pikaur/filelock.py:25
 msgid "Do you want to retry?"
 msgstr "Deseja tentar novamente?"
 
@@ -195,7 +195,7 @@ msgstr "Deseja {edit} {file} para o pacote {name}?"
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr "Desatualizando o pacote AUR {name} {version} para {downgrade_version}"
 
-#: pikaur/build.py:257
+#: pikaur/build.py:258
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Baixando as fontes mais recentes para um pacote devel {}"
@@ -205,7 +205,7 @@ msgstr[1] "Baixando as fontes mais recentes para os pacotes devel {}"
 msgid "Failed to build following packages:"
 msgstr "Falha ao compilar os seguintes pacotes:"
 
-#: pikaur/build.py:569
+#: pikaur/build.py:570
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr ""
 "Falha ao remover dependências instaladas, inconsistência de pacotes: {}"
@@ -245,11 +245,11 @@ msgstr ""
 "Informações de instalação alteradas (ou novas dependências encontradas) para "
 "o pacote {pkg}"
 
-#: pikaur/build.py:371
+#: pikaur/build.py:372
 msgid "Installing already built dependencies for {}"
 msgstr "Instalando dependências já compiladas para {}"
 
-#: pikaur/build.py:510
+#: pikaur/build.py:511
 msgid "Installing repository dependencies for {}"
 msgstr "Instalando dependências do repositório para {}"
 
@@ -273,7 +273,7 @@ msgstr "Mantenedor"
 msgid "Make Deps"
 msgstr "Dependências de compilação"
 
-#: pikaur/config.py:391
+#: pikaur/config.py:395
 msgid "Migrating [{}]{} config option to [{}]{} = \"{}\"..."
 msgstr "Migrando opção de configuração [{}]{} para [{}]{} = \"{}\"..."
 
@@ -337,12 +337,17 @@ msgstr "Obsoleto"
 msgid "PKGBUILD appears unchanged after editing"
 msgstr "PKGBUILD parece inalterado após a edição"
 
+#: pikaur/getpkgbuild_cli.py:57
+#, python-brace-format
+msgid "Package '{name}' going to be cloned into '{repo_path}'..."
+msgstr ""
+
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:23
 msgid "Package Base"
 msgstr "Pacote base"
 
-#: pikaur/build.py:438
+#: pikaur/build.py:439
 #, python-brace-format
 msgid ""
 "Package {pkg} is already built. Pass '--rebuild' flag to force the build."
@@ -355,7 +360,7 @@ msgstr[1] ""
 "Os pacotes {pkg} já estão compilados. Passe a opção '--rebuild' para forçar "
 "a compilação."
 
-#: pikaur/main.py:174
+#: pikaur/main.py:127
 msgid "Packages directory"
 msgstr "Diretório de pacotes"
 
@@ -363,7 +368,7 @@ msgstr "Diretório de pacotes"
 msgid "Pikaur-specific options:"
 msgstr "Opções específicas do pikaur:"
 
-#: pikaur/main.py:211
+#: pikaur/main.py:164
 msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
@@ -397,7 +402,7 @@ msgstr "Lendo base de dados de pacote local..."
 msgid "Reading repository package databases..."
 msgstr "Lendo bases de dados de pacote de repositório..."
 
-#: pikaur/build.py:580
+#: pikaur/build.py:581
 msgid "Removing already installed dependencies for {}"
 msgstr "Removendo dependências já instaladas para {}"
 
@@ -446,7 +451,7 @@ msgstr ""
 msgid "Starting full AUR upgrade..."
 msgstr "Iniciando atualização completa do AUR..."
 
-#: pikaur/build.py:625
+#: pikaur/build.py:629
 msgid "Starting the build"
 msgstr "Iniciando a compilação"
 
@@ -470,7 +475,7 @@ msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "O pacote de repositório de terceiros será instalado:"
 msgstr[1] "Os pacotes de repositório de terceiros será instalado:"
 
-#: pikaur/install_cli.py:207 pikaur/install_cli.py:516 pikaur/build.py:665
+#: pikaur/install_cli.py:207 pikaur/install_cli.py:516 pikaur/build.py:669
 msgid "Try recovering?"
 msgstr "Tentar recuperar?"
 
@@ -498,7 +503,7 @@ msgstr "[A] abortar"
 msgid "[N]o (--noconfirm)"
 msgstr "[N]ão (--noconfirm)"
 
-#: pikaur/build.py:667
+#: pikaur/build.py:671
 msgid "[R] retry build"
 msgstr "[R] tentar compilar novamente"
 
@@ -506,11 +511,11 @@ msgstr "[R] tentar compilar novamente"
 msgid "[Y]es (--noconfirm)"
 msgstr "[S]im (--noconfirm)"
 
-#: pikaur/build.py:675
+#: pikaur/build.py:679
 msgid "[a] abort building all the packages"
 msgstr "[a] abortar a compilação de todos os pacotes"
 
-#: pikaur/build.py:669
+#: pikaur/build.py:673
 msgid "[c] checksums skip"
 msgstr "[c] pular checksums"
 
@@ -518,15 +523,15 @@ msgstr "[c] pular checksums"
 msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
-#: pikaur/build.py:671
+#: pikaur/build.py:675
 msgid "[d] delete build dir and try again"
 msgstr "[d] deletar diretório de compilação e tentar novamente"
 
-#: pikaur/install_cli.py:208 pikaur/build.py:672
+#: pikaur/install_cli.py:208 pikaur/build.py:676
 msgid "[e] edit PKGBUILD"
 msgstr "[e] editar PKGBUILD"
 
-#: pikaur/build.py:670
+#: pikaur/build.py:674
 msgid "[i] ignore architecture"
 msgstr "[i] ignorar arquitetura"
 
@@ -539,7 +544,7 @@ msgstr "[instalado: {version}]"
 msgid "[installed]"
 msgstr "[instalado]"
 
-#: pikaur/build.py:668
+#: pikaur/build.py:672
 msgid "[p] PGP check skip"
 msgstr "[p] pular a verificação PGP"
 
@@ -548,7 +553,7 @@ msgstr "[p] pular a verificação PGP"
 msgid "[r] remove dir and clone again"
 msgstr "[r] remover diretório e clonar novamente"
 
-#: pikaur/build.py:674
+#: pikaur/build.py:678
 msgid "[s] skip building this package"
 msgstr "[s] pular a compilação deste pacote"
 
@@ -561,8 +566,8 @@ msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v]er detalhes do pacote   [m]anualmente selecionar os pacotes"
 
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:512
-#: pikaur/install_cli.py:523 pikaur/build.py:661 pikaur/build.py:681
-#: pikaur/build.py:712
+#: pikaur/install_cli.py:523 pikaur/build.py:665 pikaur/build.py:685
+#: pikaur/build.py:716
 msgid "a"
 msgstr "a"
 
@@ -582,8 +587,8 @@ msgstr "sempre recompilar pacotes AUR"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sempre sysupgrade '-git', '-svn' e outros pacotes dev"
 
-#: pikaur/install_cli.py:523 pikaur/install_cli.py:526 pikaur/build.py:680
-#: pikaur/build.py:690
+#: pikaur/install_cli.py:523 pikaur/install_cli.py:526 pikaur/build.py:684
+#: pikaur/build.py:694
 msgid "c"
 msgstr "c"
 
@@ -591,7 +596,7 @@ msgstr "c"
 msgid "cli args to pass to makepkg"
 msgstr "args. cli para passar para o makepkg"
 
-#: pikaur/build.py:680 pikaur/build.py:696
+#: pikaur/build.py:684 pikaur/build.py:700
 msgid "d"
 msgstr "d"
 
@@ -619,8 +624,8 @@ msgstr "não remove o diretório de compilação após a compilação"
 msgid "download also AUR dependencies"
 msgstr "baixa também dependências AUR"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:680
-#: pikaur/build.py:699
+#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:684
+#: pikaur/build.py:703
 msgid "e"
 msgstr "e"
 
@@ -636,7 +641,7 @@ msgstr "erro:"
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "falha ao gerar .SRCINFO de {}:"
 
-#: pikaur/build.py:274
+#: pikaur/build.py:275
 msgid "failed to retrieve latest dev sources:"
 msgstr "falha ao recuperar as fontes de dev mais recentes:"
 
@@ -645,7 +650,7 @@ msgstr "falha ao recuperar as fontes de dev mais recentes:"
 msgid "for {pkg}"
 msgstr "para {pkg}"
 
-#: pikaur/build.py:680 pikaur/build.py:693
+#: pikaur/build.py:684 pikaur/build.py:697
 msgid "i"
 msgstr "i"
 
@@ -666,11 +671,11 @@ msgstr "instala o pacote compilado"
 msgid "installing for the first time"
 msgstr "instalando pela primeira vez"
 
-#: pikaur/main.py:231
+#: pikaur/main.py:184
 msgid "invalid number: {}"
 msgstr "número inválido: {}"
 
-#: pikaur/main.py:221
+#: pikaur/main.py:174
 msgid "invalid value: {} is not between {} and {}"
 msgstr "valor inválido: {} não está entre {} e {}"
 
@@ -682,7 +687,7 @@ msgstr "procurando pacotes AUR conflitantes..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/main.py:229 pikaur/prompt.py:22 pikaur/install_cli.py:396
+#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:182
 msgid "n"
 msgstr "n"
 
@@ -708,7 +713,7 @@ msgstr "obsoleto"
 msgid "override path to makepkg executable"
 msgstr "sobrescreve o caminho para o executável makepkg"
 
-#: pikaur/build.py:680 pikaur/build.py:687
+#: pikaur/build.py:684 pikaur/build.py:691
 msgid "p"
 msgstr "p"
 
@@ -725,7 +730,7 @@ msgstr "caminho para configuração customizada do pikaur"
 msgid "pikaur debug:"
 msgstr "depuração do pikaur:"
 
-#: pikaur/main.py:340
+#: pikaur/core.py:345
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur requer Python >= 3.7 para ser executado."
 
@@ -733,7 +738,7 @@ msgstr "pikaur requer Python >= 3.7 para ser executado."
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur requer python-pysocks para usar um proxy socks5."
 
-#: pikaur/main.py:345
+#: pikaur/core.py:350
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur requer systemd >= 235 (usuários dinâmicos) para ser executado como "
@@ -763,14 +768,14 @@ msgstr "consulta apenas pacotes do AUR"
 msgid "query packages from repository only"
 msgstr "consulta apenas pacotes do repositório"
 
-#: pikaur/install_cli.py:523 pikaur/install_cli.py:528 pikaur/build.py:680
-#: pikaur/build.py:685
+#: pikaur/install_cli.py:523 pikaur/install_cli.py:528 pikaur/build.py:684
+#: pikaur/build.py:689
 msgid "r"
 msgstr "r"
 
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:230
-#: pikaur/install_cli.py:523 pikaur/install_cli.py:530 pikaur/build.py:659
-#: pikaur/build.py:681
+#: pikaur/install_cli.py:523 pikaur/install_cli.py:530 pikaur/build.py:663
+#: pikaur/build.py:685
 msgid "s"
 msgstr "s"
 
@@ -799,11 +804,11 @@ msgstr "uso:  pikaur {-P --pkgbuild} [opções] <arquivos(s)>"
 msgid "v"
 msgstr "v"
 
-#: pikaur/pprint.py:76 pikaur/config.py:390
+#: pikaur/pprint.py:76 pikaur/config.py:394
 msgid "warning:"
 msgstr "atenção:"
 
-#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
+#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
 msgid "y"
 msgstr "s"
 
@@ -814,7 +819,7 @@ msgid_plural "{grp} groups"
 msgstr[0] "grupo {grp}"
 msgstr[1] "grupos {grp}"
 
-#: pikaur/build.py:606
+#: pikaur/build.py:610
 #, python-brace-format
 msgid ""
 "{name} can't be built on the current arch ({arch}). Supported: {suparch}"

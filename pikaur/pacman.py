@@ -1,6 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import re
+import fnmatch
 from threading import Lock
 from typing import (
     List, Dict, Optional, Union, Pattern, TYPE_CHECKING
@@ -629,3 +630,16 @@ def install_built_deps(
 
 def strip_repo_name(pkg_name: str) -> str:
     return pkg_name.split('/', 1)[-1]
+
+
+def get_ignored_pkgnames_from_patterns(
+        orig_pkg_names: List[str],
+        ignore_patterns: List[str]
+) -> List[str]:
+    ignored_pkg_names: List[str] = []
+    for pkg_name in orig_pkg_names:
+        for ignore_pattern in ignore_patterns:
+            if fnmatch.fnmatch(pkg_name, ignore_pattern):
+                ignored_pkg_names.append(pkg_name)
+                break
+    return ignored_pkg_names

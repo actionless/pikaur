@@ -10,6 +10,7 @@ from .pacman import (
     OFFICIAL_REPOS,
     PackageDB, PacmanConfig, PacmanPrint,
     find_sysupgrade_packages, get_pacman_command, strip_repo_name,
+    get_ignored_pkgnames_from_patterns,
 )
 from .aur import find_aur_packages, AURPackageInfo, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
@@ -67,10 +68,12 @@ class InstallInfoFetcher(ComparableType):
         self.get_all_packages_info()
 
     def package_is_ignored(self, package_name: str) -> bool:
+        ignored_pkg_names = get_ignored_pkgnames_from_patterns(
+            [package_name],
+            self.args.ignore + PacmanConfig().options.get('IgnorePkg', [])
+        )
         if (
-                package_name in (
-                    self.args.ignore + PacmanConfig().options.get('IgnorePkg', [])
-                )
+                package_name in ignored_pkg_names
         ) and not (
             package_name in self.install_package_names or
             package_name in self.not_found_repo_pkgs_names

@@ -46,7 +46,7 @@ from .pikspect import TTYRestore, PikspectSignalHandler
 from .install_cli import InstallPackagesCLI
 from .search_cli import cli_search_packages
 from .info_cli import cli_info_packages
-from .pacman import PacmanConfig
+from .pacman import PacmanConfig, get_ignored_pkgnames_from_patterns
 from .urllib import init_proxy, ProxyInitSocks5Error
 from .getpkgbuild_cli import cli_getpkgbuild
 
@@ -94,12 +94,14 @@ def cli_print_upgradeable() -> None:
         updates += find_repo_upgradeable()
     if not updates:
         return
+    ignored_pkg_names = get_ignored_pkgnames_from_patterns(
+        [pkg.name for pkg in updates],
+        args.ignore + PacmanConfig().options.get('IgnorePkg', [])
+    )
     for pkg in updates[:]:
-        if pkg.name in (
-                args.ignore + PacmanConfig().options.get('IgnorePkg', [])
-        ):
+        if pkg.name in ignored_pkg_names:
             updates.remove(pkg)
-            print_ignored_package(package_name=pkg.name)
+            print_ignored_package(install_info=pkg)
     if args.quiet:
         print_stdout('\n'.join([
             pkg_update.name for pkg_update in updates

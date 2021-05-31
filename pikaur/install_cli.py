@@ -420,9 +420,11 @@ class InstallPackagesCLI():
                 raise SysExit(125)
             break
 
-    def discard_install_info(self, canceled_pkg_name: str) -> None:
+    def discard_install_info(self, canceled_pkg_name: str, ignore=True) -> None:
         debug(f"discarding install info for pkg... {canceled_pkg_name}")
-        self.manually_excluded_packages_names.append(canceled_pkg_name)
+        if ignore:
+            debug(f"ignoring pkg... {canceled_pkg_name}")
+            self.manually_excluded_packages_names.append(canceled_pkg_name)
         if not getattr(self, 'install_info', None):  # @TODO: make it nicer?
             debug("install info not initialized yet -- running on early stage?")
             return
@@ -482,7 +484,7 @@ class InstallPackagesCLI():
                         deps=bold_line(', '.join(deps_removed)),
                     ))
                 for pkg_name in pkgbuild.package_names:
-                    self.discard_install_info(pkg_name)
+                    self.discard_install_info(pkg_name, ignore=False)
                 self.pkgbuilds_packagelists[pkgbuild.pkgbuild_path] = pkgbuild.package_names
                 need_to_show_install_prompt = True
         if need_to_show_install_prompt:

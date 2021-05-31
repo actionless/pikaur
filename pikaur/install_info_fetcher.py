@@ -426,6 +426,8 @@ class InstallInfoFetcher(ComparableType):
                 common_srcinfo.regenerate()
                 pkg_names = common_srcinfo.pkgnames
             for pkg_name in pkg_names:
+                if pkg_name in self.manually_excluded_packages_names:
+                    continue
                 srcinfo = SrcInfo(pkgbuild_path=path, package_name=pkg_name)
                 aur_pkg = AURPackageInfo.from_srcinfo(srcinfo)
                 if pkg_name in aur_updates_install_info_by_name:

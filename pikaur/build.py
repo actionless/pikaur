@@ -468,12 +468,16 @@ class PackageBuild(DataType):
     def get_deps(
             self,
             all_package_builds: Dict[str, 'PackageBuild'],
-            filter_built=True
+            filter_built=True,
+            exclude_pkg_names: Optional[List[str]] = None,
     ) -> None:
+        exclude_pkg_names = exclude_pkg_names or []
         self.new_deps_to_install = []
         new_make_deps_to_install: List[str] = []
         new_check_deps_to_install: List[str] = []
         for package_name in self.package_names:
+            if package_name in exclude_pkg_names:
+                continue
             src_info = SrcInfo(pkgbuild_path=self.pkgbuild_path, package_name=package_name)
             for new_deps_version_matchers, deps_destination in (
                     (

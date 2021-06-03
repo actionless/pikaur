@@ -440,7 +440,11 @@ class InstallPackagesCLI():
     def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]):
         need_to_show_install_prompt = False
         for pkgbuild in all_package_builds.values():
-            pkgbuild.get_deps(all_package_builds=all_package_builds, filter_built=False)
+            pkgbuild.get_deps(
+                all_package_builds=all_package_builds,
+                filter_built=False,
+                exclude_pkg_names=self.manually_excluded_packages_names
+            )
 
             aur_pkgs: List[AURPackageInfo] = [
                 info.package  # type: ignore[misc]
@@ -460,6 +464,8 @@ class InstallPackagesCLI():
 
             srcinfo_deps: Set[str] = set()
             for package_name in pkgbuild.package_names:
+                if package_name in self.manually_excluded_packages_names:
+                    continue
                 src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
                 srcinfo_deps.update(set(
                     dep_line
@@ -865,7 +871,8 @@ class InstallPackagesCLI():
                     f"Build done for packages {pkg_build.package_names=}, removing from queue"
                 )
                 for _pkg_name in pkg_build.package_names:
-                    packages_to_be_built.remove(_pkg_name)
+                    if _pkg_name not in self.manually_excluded_packages_names:
+                        packages_to_be_built.remove(_pkg_name)
 
         self.failed_to_build_package_names = failed_to_build_package_names
 

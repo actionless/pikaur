@@ -497,10 +497,17 @@ class InstallPackagesCLI():
             self.main_sequence()
             raise self.ExitMainSequence()
 
-    def _clone_aur_repos(self, package_names: List[str]) -> Optional[Dict[str, PackageBuild]]:
+    def _clone_aur_repos(  # pylint: disable=too-many-branches
+            self, package_names: List[str]
+    ) -> Optional[Dict[str, PackageBuild]]:
+        stash_pop_list: List[str] = []
         while True:
             try:
-                return clone_aur_repos(package_names=package_names)
+                pkgbuild_by_name = clone_aur_repos(package_names=package_names)
+                for pkg_build in pkgbuild_by_name.values():
+                    if pkg_build.package_base in stash_pop_list:
+                        pkg_build.git_stash_pop()
+                return pkgbuild_by_name
             except CloneError as err:
                 package_build = err.build
                 print_stderr(color_line(
@@ -519,20 +526,26 @@ class InstallPackagesCLI():
                 if self.args.noconfirm:
                     answer = _("a")
                 else:  # pragma: no cover
-                    prompt = '{} {}\n{}\n{}\n{}\n{}\n> '.format(
+                    prompt = '{} {}\n> '.format(
                         color_line('::', 11),
-                        _("Try recovering?"),
-                        _("[c] git checkout -- '*'"),
-                        # _("[c] git checkout -- '*' ; git clean -f -d -x"),
-                        _("[r] remove dir and clone again"),
-                        _("[s] skip this package"),
-                        _("[A] abort")
+                        '\n'.join((
+                            _("Try recovering?"),
+                            _("[c] git checkout -- '*'"),
+                            # _("[c] git checkout -- '*' ; git clean -f -d -x"),
+                            _("[r] remove dir and clone again"),
+                            _("[p] git stash && ... && git stash pop"),
+                            _("[s] skip this package"),
+                            _("[A] abort")
+                        ))
                     )
                     answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
 
                 answer = answer.lower()[0]
                 if answer == _("c"):  # pragma: no cover
                     package_build.git_reset_changed()
+                elif answer == _("p"):  # pragma: no cover
+                    package_build.git_stash()
+                    stash_pop_list.append(package_build.package_base)
                 elif answer == _("r"):  # pragma: no cover
                     remove_dir(package_build.repo_path)
                 elif answer == _("s"):  # pragma: no cover

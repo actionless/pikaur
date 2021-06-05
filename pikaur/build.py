@@ -54,7 +54,11 @@ class PkgbuildChanged(Exception):
     pass
 
 
-def mkdir(to_path) -> None:
+def _shell(cmds: List[str]) -> InteractiveSpawn:
+    return interactive_spawn(isolate_root_cmd(wrap_proxy_env(cmds)))
+
+
+def _mkdir(to_path) -> None:
     mkdir_result = spawn(isolate_root_cmd(['mkdir', '-p', to_path]))
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
@@ -66,7 +70,7 @@ def copy_aur_repo(from_path, to_path) -> None:
     from_path = os.path.realpath(from_path)
     to_path = os.path.realpath(to_path)
     if not os.path.exists(to_path):
-        mkdir(to_path)
+        _mkdir(to_path)
 
     from_paths = []
     for src_path in glob(f'{from_path}/*') + glob(f'{from_path}/.*'):
@@ -80,13 +84,13 @@ def copy_aur_repo(from_path, to_path) -> None:
     if result.returncode != 0:
         if os.path.exists(to_path):
             remove_dir(to_path)
-            mkdir(to_path)
+            _mkdir(to_path)
         result = interactive_spawn(cmd_args)
         if result.returncode != 0:
             raise Exception(_(f"Can't copy '{from_path}' to '{to_path}'."))
 
 
-class PackageBuild(DataType):
+class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     # pylint: disable=too-many-instance-attributes
     clone = False
     pull = False
@@ -167,13 +171,28 @@ class PackageBuild(DataType):
         self._local_provided_pkgs_with_build_deps = {}
 
     def git_reset_changed(self) -> InteractiveSpawn:
-        return interactive_spawn(isolate_root_cmd(wrap_proxy_env([
+        return _shell([
             'git',
             '-C', self.repo_path,
             'checkout',
             '--',
             "*"
-        ])))
+        ])
+
+    def git_stash(self) -> InteractiveSpawn:
+        return _shell([
+            'git',
+            '-C', self.repo_path,
+            'stash',
+        ])
+
+    def git_stash_pop(self) -> InteractiveSpawn:
+        return _shell([
+            'git',
+            '-C', self.repo_path,
+            'stash',
+            'pop',
+        ])
 
     def update_aur_repo(self) -> InteractiveSpawn:
         cmd_args: List[str]

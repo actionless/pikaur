@@ -783,7 +783,7 @@ class InstallPackagesCLI():
 
     def handle_pkgbuild_changed(self, pkg_build: PackageBuild) -> None:
         for pkg_name in pkg_build.package_names:
-            self.discard_install_info(pkg_name)
+            self.discard_install_info(pkg_name, ignore=False)
         src_info = SrcInfo(pkgbuild_path=pkg_build.pkgbuild_path)
         old_srcinfo_hash = hash_file(src_info.path)
         src_info.regenerate()

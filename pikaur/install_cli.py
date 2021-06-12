@@ -15,7 +15,7 @@ from .args import reconstruct_args, PikaurArgs, parse_args
 from .aur import AURPackageInfo
 from .pacman import (
     PackageDB,
-    get_pacman_command, refresh_pkg_db, install_built_deps, strip_repo_name,
+    get_pacman_command, refresh_pkg_db_if_needed, install_built_deps, strip_repo_name,
 )
 from .install_info_fetcher import InstallInfoFetcher
 from .exceptions import (
@@ -133,7 +133,7 @@ class InstallPackagesCLI():
                     )
                 if self.args.refresh:
                     threads.append(
-                        pool.apply_async(refresh_pkg_db, ())
+                        pool.apply_async(refresh_pkg_db_if_needed, ())
                     )
                 pool.close()
                 for thread in threads:

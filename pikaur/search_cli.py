@@ -9,7 +9,7 @@ import pyalpm
 from .i18n import _
 from .pprint import print_stderr, print_error
 from .print_department import print_package_search_results, AnyPackage
-from .pacman import PackageDB, get_pkg_id, refresh_pkg_db
+from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
 from .aur import (
     AURPackageInfo,
     aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names,
@@ -129,7 +129,7 @@ def join_search_results(
 
 
 def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disable=too-many-locals
-    refresh_pkg_db()
+    refresh_pkg_db_if_needed()
 
     args = parse_args()
     search_query = args.positional or []

@@ -204,6 +204,14 @@ class PikaurArgs(Namespace):
         result.post_process_args()
         return result
 
+    @property
+    def raw_without_pikaur_specific(self) -> List[str]:
+        result = self.raw[:]
+        for arg in ('--pikaur-debug', ):
+            if arg in result:
+                result.remove(arg)
+        return result
+
 
 class PikaurArgumentParser(ArgumentParserWithUnknowns):
 

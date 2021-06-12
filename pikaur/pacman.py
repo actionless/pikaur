@@ -556,7 +556,7 @@ def find_packages_not_from_repo() -> List[str]:
     return not_found_packages
 
 
-def refresh_pkg_db() -> None:
+def refresh_pkg_db_if_needed() -> None:
     args = parse_args()
     if args.refresh:
         pacman_args = (sudo(

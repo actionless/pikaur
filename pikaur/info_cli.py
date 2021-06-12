@@ -4,15 +4,17 @@ from unicodedata import east_asian_width
 
 from .i18n import _
 from .aur import find_aur_packages, get_all_aur_names
-from .args import parse_args
+from .args import parse_args, reconstruct_args
 from .core import spawn
-from .pacman import get_pacman_command
+from .pacman import get_pacman_command, refresh_pkg_db_if_needed
 from .pprint import bold_line, color_line
 
 
 def _info_packages_thread_repo() -> str:
     args = parse_args()
-    return spawn(get_pacman_command() + args.raw).stdout_text
+    return spawn(
+        get_pacman_command() + reconstruct_args(args, ignore_args=['refresh']) + args.positional
+    ).stdout_text
 
 
 INFO_FIELDS = dict(
@@ -50,6 +52,8 @@ def _decorate_info_output(output: str) -> str:
 
 
 def cli_info_packages() -> None:
+    refresh_pkg_db_if_needed()
+
     args = parse_args()
     aur_pkg_names = args.positional or get_all_aur_names()
     with ThreadPool() as pool:

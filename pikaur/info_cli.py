@@ -76,6 +76,7 @@ def cli_info_packages() -> None:
 
     aur_pkgs = aur_result[0]
     num_found = len(aur_pkgs)
+    longest_field_length = max(len(field) for field in INFO_FIELDS.values())
     for i, aur_pkg in enumerate(aur_pkgs):
         pkg_info_lines = []
         for key, display_name in INFO_FIELDS.items():
@@ -85,7 +86,9 @@ def cli_info_packages() -> None:
             elif isinstance(value, list):
                 value = ', '.join(value) or _("None")
             pkg_info_lines.append('{key}: {value}'.format(
-                key=_rightpad(bold_line(display_name), 26), value=value))
+                key=bold_line(_rightpad(display_name, longest_field_length + 1)),
+                value=value
+            ))
         print(
             _decorate_aur_info_output('\n'.join(pkg_info_lines)) +
             ('\n' if i + 1 < num_found else '')
@@ -95,7 +98,7 @@ def cli_info_packages() -> None:
 def _rightpad(text: str, num: int) -> str:
     space = num
     for i in text:
-        if east_asian_width(i) in ["F", "W", "A"]:
+        if east_asian_width(i) in ["F", "W", ]:
             space -= 2
         else:
             space -= 1

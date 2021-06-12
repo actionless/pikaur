@@ -58,7 +58,7 @@ def _decorate_aur_info_output(output: str) -> str:
     )
 
 
-def cli_info_packages() -> None:
+def cli_info_packages() -> None:  # pylint: disable=too-many-locals
     refresh_pkg_db_if_needed()
 
     args = parse_args()

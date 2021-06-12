@@ -3,6 +3,7 @@ from multiprocessing.pool import ThreadPool
 from unicodedata import east_asian_width
 
 from .i18n import _
+from .pacman_i18n import _p
 from .aur import find_aur_packages, get_all_aur_names
 from .args import parse_args, reconstruct_args
 from .core import spawn
@@ -47,7 +48,7 @@ INFO_FIELDS = dict(
 
 def _decorate_info_output(output: str) -> str:
     return output.replace(
-        _('None'), color_line(_('None'), 8)
+        _p('None'), color_line(_p('None'), 8)
     )
 
 

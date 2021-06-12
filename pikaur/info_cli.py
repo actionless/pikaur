@@ -46,9 +46,15 @@ INFO_FIELDS = dict(
 )
 
 
-def _decorate_info_output(output: str) -> str:
+def _decorate_repo_info_output(output: str) -> str:
     return output.replace(
         _p('None'), color_line(_p('None'), 8)
+    )
+
+
+def _decorate_aur_info_output(output: str) -> str:
+    return output.replace(
+        _('None'), color_line(_('None'), 8)
     )
 
 
@@ -66,7 +72,7 @@ def cli_info_packages() -> None:
         aur_result = aur_thread.get()
 
     if repo_result:
-        print(_decorate_info_output(repo_result), end='')
+        print(_decorate_repo_info_output(repo_result), end='')
 
     aur_pkgs = aur_result[0]
     num_found = len(aur_pkgs)
@@ -81,7 +87,7 @@ def cli_info_packages() -> None:
             pkg_info_lines.append('{key}: {value}'.format(
                 key=_rightpad(bold_line(display_name), 26), value=value))
         print(
-            _decorate_info_output('\n'.join(pkg_info_lines)) +
+            _decorate_aur_info_output('\n'.join(pkg_info_lines)) +
             ('\n' if i + 1 < num_found else '')
         )
 

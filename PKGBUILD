@@ -15,6 +15,7 @@ md5sums=(
 	"SKIP"
 )
 depends=(
+	'fakeroot'
 	'pyalpm'
 	'git'
 )

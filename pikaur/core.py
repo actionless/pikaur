@@ -134,7 +134,11 @@ class InteractiveSpawn(subprocess.Popen):
             if self.args != get_sudo_refresh_command():
                 print_stderr(
                     color_line('=> ', 14) +
-                    ' '.join(str(arg) for arg in self.args)
+                    (
+                        ' '.join(str(arg) for arg in self.args)
+                        if isinstance(self.args, list) else
+                        str(self.args)
+                    )
                 )
 
         stdout, stderr = super().communicate(_input, _timeout)

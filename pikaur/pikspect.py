@@ -175,9 +175,12 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
         return self._wait(None)
 
     def run(self) -> None:
+        if not isinstance(self.args, list):
+            raise TypeError('self.args should be list')
         PikspectSignalHandler.set(lambda *_whatever: self.send_signal(signal.SIGINT))
         try:
             with NestedTerminal() as real_term_geometry:
+
                 if 'sudo' in self.args:
                     subprocess.run(get_sudo_refresh_command(), check=True)
                 with open(self.pty_user_master, 'w') as self.pty_in:

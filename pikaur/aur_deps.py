@@ -43,10 +43,42 @@ def get_aur_pkg_deps_and_version_matchers(aur_pkg: AURPackageInfo) -> Dict[str, 
     return deps
 
 
-def handle_not_found_aur_pkgs(
+def find_dep_graph_to(
+        from_pkg: AURPackageInfo,
+        to_pkgs: List[AURPackageInfo],
+        all_pkgs: List[AURPackageInfo]
+) -> List[AURPackageInfo]:
+    result: List[AURPackageInfo] = []
+    if len(to_pkgs) == 1:
+        possible_end_pkg = to_pkgs[0]
+        possible_end_pkgs_deps = (
+            possible_end_pkg.depends + possible_end_pkg.checkdepends +
+            possible_end_pkg.makedepends
+        )
+        if from_pkg.name in possible_end_pkgs_deps:
+            result.append(possible_end_pkg)
+        for pkg in all_pkgs:
+            if pkg.name in possible_end_pkgs_deps:
+                result += find_dep_graph_to(
+                    from_pkg=from_pkg,
+                    to_pkgs=[pkg, ],
+                    all_pkgs=all_pkgs
+                )
+        return result
+    for possible_end_pkg in to_pkgs:
+        result += find_dep_graph_to(
+            from_pkg=from_pkg,
+            to_pkgs=[possible_end_pkg, ],
+            all_pkgs=all_pkgs
+        )
+    return result
+
+
+def handle_not_found_aur_pkgs(  # pylint: disable=too-many-locals
         aur_pkg_name: str,
         aur_pkgs_info: List[AURPackageInfo],
         not_found_aur_deps: List[str],
+        requested_aur_pkgs_info: List[AURPackageInfo],
 ) -> None:
     if not not_found_aur_deps:
         return
@@ -94,6 +126,12 @@ def handle_not_found_aur_pkgs(
                     )
 
                 problem_packages_names.append(aur_pkg.name)
+                for dependant_pkg in find_dep_graph_to(
+                        from_pkg=aur_pkg,
+                        to_pkgs=requested_aur_pkgs_info,
+                        all_pkgs=aur_pkgs_info
+                ):
+                    problem_packages_names.append(dependant_pkg.name)
                 break
 
     raise PackagesNotFoundInAUR(
@@ -142,7 +180,8 @@ def check_requested_pkgs(
 def find_missing_deps_for_aur_pkg(
         aur_pkg_name: str,
         version_matchers: Dict[str, VersionMatcher],
-        aur_pkgs_info: List[AURPackageInfo]
+        aur_pkgs_info: List[AURPackageInfo],
+        requested_aur_pkgs_info: List[AURPackageInfo]
 ) -> List[str]:
 
     # check if any of packages requested to install by user
@@ -182,6 +221,7 @@ def find_missing_deps_for_aur_pkg(
         aur_pkg_name=aur_pkg_name,
         aur_pkgs_info=aur_pkgs_info,
         not_found_aur_deps=not_found_aur_deps,
+        requested_aur_pkgs_info=requested_aur_pkgs_info,
     )
 
     # check versions of found AUR packages:
@@ -210,7 +250,7 @@ def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:
     ]
     result_aur_deps: Dict[str, List[str]] = {}
 
-    initial_pkg_infos = aur_pkgs_infos[:]
+    initial_pkg_infos = initial_pkg_infos2_todo = aur_pkgs_infos[:]  # @TODO: var name
     iter_package_names: List[str] = []
     while iter_package_names or initial_pkg_infos:
         all_deps_for_aur_packages = {}
@@ -236,6 +276,7 @@ def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:
                         aur_pkg_name,
                         deps_for_aur_package,
                         aur_pkgs_info,
+                        initial_pkg_infos2_todo,
                     )
                 )
             pool.close()

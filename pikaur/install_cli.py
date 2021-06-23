@@ -204,7 +204,7 @@ class InstallPackagesCLI():
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
         prompt = '{} {}\n{}\n{}\n{}\n> '.format(
             color_line('::', 11),
-            _("Try recovering?"),
+            _("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
             _("[e] edit PKGBUILD"),
             _("[s] skip this package"),
             _("[A] abort")

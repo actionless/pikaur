@@ -55,15 +55,19 @@ def find_dep_graph_to(
             possible_end_pkg.depends + possible_end_pkg.checkdepends +
             possible_end_pkg.makedepends
         )
-        if from_pkg.name in possible_end_pkgs_deps:
-            result.append(possible_end_pkg)
+        for name in [from_pkg.name, ] + from_pkg.provides:
+            if name in possible_end_pkgs_deps:
+                result.append(possible_end_pkg)
+                break
         for pkg in all_pkgs:
-            if pkg.name in possible_end_pkgs_deps:
-                result += find_dep_graph_to(
-                    from_pkg=from_pkg,
-                    to_pkgs=[pkg, ],
-                    all_pkgs=all_pkgs
-                )
+            for name in [pkg.name, ] + pkg.provides:
+                if name in possible_end_pkgs_deps:
+                    result += find_dep_graph_to(
+                        from_pkg=from_pkg,
+                        to_pkgs=[pkg, ],
+                        all_pkgs=all_pkgs
+                    )
+                    break
         return result
     for possible_end_pkg in to_pkgs:
         result += find_dep_graph_to(

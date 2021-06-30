@@ -194,6 +194,8 @@ def get_common_version(version1: str, version2: str) -> Tuple[str, int]:
                 if diff_weight == 0 and block1 not in VERSION_SEPARATORS:
                     diff_weight += weight
             weight -= 1
+    if version2 == 'devel':
+        diff_weight = 9999
     return common_string, diff_weight
 
 

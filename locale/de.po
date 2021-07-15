@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-23 15:55+0200\n"
+"POT-Creation-Date: 2021-07-15 02:13+0200\n"
 "PO-Revision-Date: 2020-08-18 00:08+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: de <>\n"
@@ -114,7 +114,7 @@ msgstr ""
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "'{name}' in '{path}' kann nicht vom AUR bezogen werden:"
 
-#: pikaur/aur_deps.py:289
+#: pikaur/aur_deps.py:293
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
 msgstr "Kann Abhängigkeiten für AUR-Paket '{pkg}' nicht auflösen:"
@@ -123,7 +123,7 @@ msgstr "Kann Abhängigkeiten für AUR-Paket '{pkg}' nicht auflösen:"
 msgid "Check Deps"
 msgstr "Check-Abhängigkeiten"
 
-#: pikaur/build.py:682 pikaur/prompt.py:177
+#: pikaur/prompt.py:177 pikaur/build.py:682
 msgid "Command '{}' failed to execute."
 msgstr "Ausführung des Befehls '{}' ist fehlgeschlagen."
 
@@ -175,8 +175,8 @@ msgstr "Fortsetzen?"
 msgid "Do you want to remove all files?"
 msgstr "Sollen alle Dateien gelöscht werden?"
 
-#: pikaur/urllib.py:29 pikaur/urllib.py:53 pikaur/prompt.py:181
-#: pikaur/filelock.py:25
+#: pikaur/prompt.py:181 pikaur/filelock.py:25 pikaur/urllib.py:29
+#: pikaur/urllib.py:53
 msgid "Do you want to retry?"
 msgstr "Erneut versuchen?"
 
@@ -694,7 +694,7 @@ msgstr "Suche nach in Konflikt stehenden AUR-Paketen..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:184
+#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:396
 msgid "n"
 msgstr "n"
 
@@ -816,7 +816,7 @@ msgstr "p"
 msgid "warning:"
 msgstr "Warnung:"
 
-#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
 msgid "y"
 msgstr "j"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-23 15:55+0200\n"
+"POT-Creation-Date: 2021-07-15 02:13+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -114,7 +114,7 @@ msgstr "No puedo cerrar {lock_file}: {reason}"
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "No puede repatriar '{name}' a '{path}' desde AUR:"
 
-#: pikaur/aur_deps.py:289
+#: pikaur/aur_deps.py:293
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
 msgstr "No se pueden resolver las dependencias del paquete AUR '{pkg}':"
@@ -123,7 +123,7 @@ msgstr "No se pueden resolver las dependencias del paquete AUR '{pkg}':"
 msgid "Check Deps"
 msgstr "Verificar dependencias"
 
-#: pikaur/build.py:682 pikaur/prompt.py:177
+#: pikaur/prompt.py:177 pikaur/build.py:682
 msgid "Command '{}' failed to execute."
 msgstr "El comando '{}' falló."
 
@@ -175,8 +175,8 @@ msgstr "¿Continuar?"
 msgid "Do you want to remove all files?"
 msgstr "¿Suprimir todos los archivos?"
 
-#: pikaur/urllib.py:29 pikaur/urllib.py:53 pikaur/prompt.py:181
-#: pikaur/filelock.py:25
+#: pikaur/prompt.py:181 pikaur/filelock.py:25 pikaur/urllib.py:29
+#: pikaur/urllib.py:53
 msgid "Do you want to retry?"
 msgstr "¿Intentarlo de nuevo?"
 
@@ -343,7 +343,7 @@ msgstr "El PKGBUILD aparece sin cambios después de la edición"
 #: pikaur/getpkgbuild_cli.py:57
 #, python-brace-format
 msgid "Package '{name}' going to be cloned into '{repo_path}'..."
-msgstr ""
+msgstr "El paquete '{name}' va a ser clonado en '{repo_path}'..."
 
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:26
@@ -479,9 +479,9 @@ msgstr[0] "Se instalará el paquete de repositorio de terceros:"
 msgstr[1] "Se instalarán los paquetes de repositorios de terceros:"
 
 #: pikaur/install_cli.py:207
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Try recovering {pkg_name}?"
-msgstr "¿Intentar recuperarte?"
+msgstr "¿Intentar recuperarte {pkg_name}?"
 
 #: pikaur/install_cli.py:532 pikaur/build.py:692
 msgid "Try recovering?"
@@ -558,7 +558,7 @@ msgstr "[p] salto de verificación PGP"
 
 #: pikaur/install_cli.py:536
 msgid "[p] git stash && ... && git stash pop"
-msgstr ""
+msgstr "[p] git stash && ... && git stash pop"
 
 #. _("[c] git checkout -- '*' ; git clean -f -d -x"),
 #: pikaur/install_cli.py:535
@@ -610,7 +610,7 @@ msgstr "cli args para pasar a makepkg"
 
 #: pikaur/build.py:707 pikaur/build.py:723
 msgid "d"
-msgstr ""
+msgstr "d"
 
 #: pikaur/pprint.py:91
 msgid "debug:"
@@ -700,7 +700,7 @@ msgstr "en busca de paquetes AUR conflictivos..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:184
+#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:396
 msgid "n"
 msgstr "n"
 
@@ -728,7 +728,7 @@ msgstr "ruta de anulación al ejecutable makepkg"
 
 #: pikaur/install_cli.py:546 pikaur/build.py:707 pikaur/build.py:714
 msgid "p"
-msgstr ""
+msgstr "p"
 
 #: pikaur/help_cli.py:76
 msgid "path to custom makepkg config"
@@ -820,7 +820,7 @@ msgstr "v"
 msgid "warning:"
 msgstr "atención:"
 
-#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
 msgid "y"
 msgstr "s"
 

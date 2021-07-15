@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-23 15:55+0200\n"
+"POT-Creation-Date: 2021-07-15 02:13+0200\n"
 "PO-Revision-Date: 2020-11-29 14:42+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -112,7 +112,7 @@ msgstr "{lock_file} kilitlenemedi: {reason}"
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "AUR'dan '{path}' içindeki '{name}' çekilemedi:"
 
-#: pikaur/aur_deps.py:289
+#: pikaur/aur_deps.py:293
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
 msgstr "AUR paketi '{pkg}' için bağımlılıklar çözülemedi:"
@@ -121,7 +121,7 @@ msgstr "AUR paketi '{pkg}' için bağımlılıklar çözülemedi:"
 msgid "Check Deps"
 msgstr "Bağımlılıkları Kontrol Et"
 
-#: pikaur/build.py:682 pikaur/prompt.py:177
+#: pikaur/prompt.py:177 pikaur/build.py:682
 msgid "Command '{}' failed to execute."
 msgstr "'{}' komutu çalıştırılamadı."
 
@@ -173,8 +173,8 @@ msgstr "Devam etmek ister misiniz?"
 msgid "Do you want to remove all files?"
 msgstr "Tüm dosyaları silmek ister misiniz?"
 
-#: pikaur/urllib.py:29 pikaur/urllib.py:53 pikaur/prompt.py:181
-#: pikaur/filelock.py:25
+#: pikaur/prompt.py:181 pikaur/filelock.py:25 pikaur/urllib.py:29
+#: pikaur/urllib.py:53
 msgid "Do you want to retry?"
 msgstr "Tekrar denemek ister misiniz?"
 
@@ -692,7 +692,7 @@ msgstr "çakışan paketlere bakılıyor..."
 msgid "m"
 msgstr "ç"
 
-#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:184
+#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:396
 msgid "n"
 msgstr "h"
 
@@ -813,7 +813,7 @@ msgstr "g"
 msgid "warning:"
 msgstr "uyarı:"
 
-#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
 msgid "y"
 msgstr "e"
 

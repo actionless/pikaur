@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-23 15:55+0200\n"
+"POT-Creation-Date: 2021-07-15 02:13+0200\n"
 "PO-Revision-Date: 2018-03-03 16:29+0100\n"
 "Last-Translator: Bundy01\n"
 "Language-Team: none\n"
@@ -115,7 +115,7 @@ msgstr "Impossible de verrouiller {lock_file} : {reason}"
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "Impossible de rapatrier '{name}' dans '{path}' depuis l'AUR :"
 
-#: pikaur/aur_deps.py:289
+#: pikaur/aur_deps.py:293
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
 msgstr ""
@@ -125,7 +125,7 @@ msgstr ""
 msgid "Check Deps"
 msgstr "Vérifier Deps"
 
-#: pikaur/build.py:682 pikaur/prompt.py:177
+#: pikaur/prompt.py:177 pikaur/build.py:682
 msgid "Command '{}' failed to execute."
 msgstr "La commande '{}' a échoué."
 
@@ -177,8 +177,8 @@ msgstr "Continuer ?"
 msgid "Do you want to remove all files?"
 msgstr "Supprimer tous les fichiers ?"
 
-#: pikaur/urllib.py:29 pikaur/urllib.py:53 pikaur/prompt.py:181
-#: pikaur/filelock.py:25
+#: pikaur/prompt.py:181 pikaur/filelock.py:25 pikaur/urllib.py:29
+#: pikaur/urllib.py:53
 msgid "Do you want to retry?"
 msgstr "Réessayer ?"
 
@@ -345,7 +345,7 @@ msgstr "Le PKGBUILD apparaît inchangé après édition"
 #: pikaur/getpkgbuild_cli.py:57
 #, python-brace-format
 msgid "Package '{name}' going to be cloned into '{repo_path}'..."
-msgstr ""
+msgstr "Le paquet '{name}' va être cloné dans '{repo_path}'…"
 
 #. packagebaseid=_(""),
 #: pikaur/info_cli.py:26
@@ -480,9 +480,9 @@ msgstr[0] "Le paquet du dépôt tiers sera installé :"
 msgstr[1] "Les paquets du dépôt tiers seront installés :"
 
 #: pikaur/install_cli.py:207
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Try recovering {pkg_name}?"
-msgstr "Essayer de récupérer ?"
+msgstr "Essayer de récupérer {pkg_name} ?"
 
 #: pikaur/install_cli.py:532 pikaur/build.py:692
 msgid "Try recovering?"
@@ -559,7 +559,7 @@ msgstr "[p] ignorer le contrôle PGP"
 
 #: pikaur/install_cli.py:536
 msgid "[p] git stash && ... && git stash pop"
-msgstr ""
+msgstr "[p] git stash && … && git stash pop"
 
 #. _("[c] git checkout -- '*' ; git clean -f -d -x"),
 #: pikaur/install_cli.py:535
@@ -704,7 +704,7 @@ msgstr "à la recherche des paquets conflictuels…"
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:184
+#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:396
 msgid "n"
 msgstr "n"
 
@@ -824,7 +824,7 @@ msgstr "v"
 msgid "warning:"
 msgstr "attention :"
 
-#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
 msgid "y"
 msgstr "o"
 

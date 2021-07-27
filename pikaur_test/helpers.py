@@ -83,6 +83,8 @@ class InterceptSysOutput():
     stderr_text: str
     returncode: int
 
+    _exited = False
+
     def _fake_exit(self, code: int = 0) -> NoReturn:
         self.returncode = code
         raise FakeExit()
@@ -110,6 +112,8 @@ class InterceptSysOutput():
         return self
 
     def __exit__(self, *_exc_details) -> None:
+        if self._exited:
+            return
         sys.stdout = self._real_stdout
         sys.stderr = self._real_stderr
         sys.exit = self._real_exit
@@ -122,6 +126,8 @@ class InterceptSysOutput():
         self.stderr_text = self.err_file.read()
         self.out_file.close()
         self.err_file.close()
+
+        self._exited = True
 
     def __del__(self):
         self.__exit__()

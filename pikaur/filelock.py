@@ -8,6 +8,8 @@ from .prompt import ask_to_continue
 
 class FileLock():
 
+    locked = False
+
     def __init__(self, lock_file_path: str) -> None:
         self.lock_file_path = lock_file_path
         self.lock_file = open(lock_file_path, 'a')  # pylint: disable=consider-using-with
@@ -16,6 +18,7 @@ class FileLock():
         while True:
             try:
                 fcntl.flock(self.lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                self.locked = True
                 break
             except BlockingIOError as err:
                 print_error(_("Can't lock {lock_file}: {reason}").format(
@@ -26,8 +29,11 @@ class FileLock():
                     raise SysExit(128) from err
 
     def __exit__(self, *_exc_details) -> None:
-        fcntl.flock(self.lock_file, fcntl.LOCK_UN)
-        self.lock_file.close()
+        if self.locked:
+            fcntl.flock(self.lock_file, fcntl.LOCK_UN)
+            self.locked = False
+        if not self.lock_file.closed:
+            self.lock_file.close()
 
     def __del__(self):
         self.__exit__()

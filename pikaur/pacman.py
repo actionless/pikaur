@@ -129,7 +129,8 @@ class DbLockRepo():
         DB_LOCK_REPO.acquire()  # pylint: disable=consider-using-with
 
     def __exit__(self, *_exc_details) -> None:
-        DB_LOCK_REPO.release()
+        if DB_LOCK_REPO.locked():
+            DB_LOCK_REPO.release()
 
     def __del__(self):
         self.__exit__()
@@ -141,7 +142,8 @@ class DbLockLocal():
         DB_LOCK_LOCAL.acquire()  # pylint: disable=consider-using-with
 
     def __exit__(self, *_exc_details) -> None:
-        DB_LOCK_LOCAL.release()
+        if DB_LOCK_LOCAL.locked():
+            DB_LOCK_LOCAL.release()
 
     def __del__(self):
         self.__exit__()

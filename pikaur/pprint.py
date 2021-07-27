@@ -30,7 +30,8 @@ class PrintLock():
         PRINT_LOCK.acquire()  # pylint: disable=consider-using-with
 
     def __exit__(self, *_exc_details) -> None:
-        PRINT_LOCK.release()
+        if PRINT_LOCK.locked():
+            PRINT_LOCK.release()
 
     def __del__(self):
         self.__exit__()

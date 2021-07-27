@@ -50,12 +50,11 @@ class ThreadSafeProgressBar():
     @classmethod
     def get(cls, progressbar_length: int, progressbar_id: str) -> ProgressBar:
         if progressbar_id not in cls._progressbar_storage:
-            cls._progressbar_lock.acquire()
-            if progressbar_id not in cls._progressbar_storage:
-                sys.stderr.write('\n')
-                cls._progressbar_storage[progressbar_id] = ProgressBar(
-                    length=progressbar_length,
-                    message="Synchronizing AUR database... "
-                )
-            cls._progressbar_lock.release()
+            with cls._progressbar_lock:
+                if progressbar_id not in cls._progressbar_storage:
+                    sys.stderr.write('\n')
+                    cls._progressbar_storage[progressbar_id] = ProgressBar(
+                        length=progressbar_length,
+                        message="Synchronizing AUR database... "
+                    )
         return cls._progressbar_storage[progressbar_id]

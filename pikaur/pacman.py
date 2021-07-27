@@ -126,19 +126,25 @@ DB_LOCK_LOCAL = Lock()
 class DbLockRepo():
 
     def __enter__(self) -> None:
-        DB_LOCK_REPO.acquire()
+        DB_LOCK_REPO.acquire()  # pylint: disable=consider-using-with
 
     def __exit__(self, *_exc_details) -> None:
         DB_LOCK_REPO.release()
+
+    def __del__(self):
+        self.__exit__()
 
 
 class DbLockLocal():
 
     def __enter__(self) -> None:
-        DB_LOCK_LOCAL.acquire()
+        DB_LOCK_LOCAL.acquire()  # pylint: disable=consider-using-with
 
     def __exit__(self, *_exc_details) -> None:
         DB_LOCK_LOCAL.release()
+
+    def __del__(self):
+        self.__exit__()
 
 
 def get_db_lock(package_source: PackageSource):

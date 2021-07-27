@@ -92,8 +92,8 @@ class InterceptSysOutput():
         self.capture_stderr = capture_stderr
 
     def __enter__(self) -> 'InterceptSysOutput':
-        self.out_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
-        self.err_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
+        self.out_file = tempfile.TemporaryFile('w+', encoding='UTF-8')  # pylint: disable=consider-using-with
+        self.err_file = tempfile.TemporaryFile('w+', encoding='UTF-8')  # pylint: disable=consider-using-with
         self.out_file.isatty = lambda: False  # type: ignore
         self.err_file.isatty = lambda: False  # type: ignore
 
@@ -122,6 +122,9 @@ class InterceptSysOutput():
         self.stderr_text = self.err_file.read()
         self.out_file.close()
         self.err_file.close()
+
+    def __del__(self):
+        self.__exit__()
 
 
 def pikaur(

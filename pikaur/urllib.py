@@ -20,7 +20,9 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
         )
     req = request.Request(url)
     try:
-        response = request.urlopen(req)
+        with request.urlopen(req) as response:
+            result_bytes = response.read()
+            return result_bytes
     except URLError as exc:
         print_error(f'GET {url}')
         print_error('urllib: ' + str(exc.reason))
@@ -29,8 +31,6 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
         if ask_to_continue(_('Do you want to retry?')):
             return read_bytes_from_url(url, optional=optional)
         raise SysExit(102) from exc
-    result_bytes = response.read()
-    return result_bytes
 
 
 def get_unicode_from_url(url: str, optional=False) -> str:

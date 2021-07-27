@@ -10,7 +10,7 @@ class FileLock():
 
     def __init__(self, lock_file_path: str) -> None:
         self.lock_file_path = lock_file_path
-        self.lock_file = open(lock_file_path, 'a')
+        self.lock_file = open(lock_file_path, 'a')  # pylint: disable=consider-using-with
 
     def __enter__(self) -> None:
         while True:
@@ -28,3 +28,6 @@ class FileLock():
     def __exit__(self, *_exc_details) -> None:
         fcntl.flock(self.lock_file, fcntl.LOCK_UN)
         self.lock_file.close()
+
+    def __del__(self):
+        self.__exit__()

@@ -245,7 +245,7 @@ def open_file(
         encoding = detect_bom_type(file_path)
     if encoding:
         kwargs['encoding'] = encoding
-    return codecs.open(
+    return codecs.open(  # pylint: disable=consider-using-with
         file_path, mode, errors='ignore', **kwargs
     )
 

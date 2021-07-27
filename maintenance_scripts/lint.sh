@@ -23,11 +23,7 @@ echo PyLint...
 python -m pylint "${TARGETS[@]}" --score no
 
 echo MyPy...
-env MYPYPATH=./maintenance_scripts/mypy_stubs \
-	python -m mypy \
-	--warn-unused-ignores \
-	--show-error-codes \
-	"${TARGETS[@]}"
+python -m mypy "${TARGETS[@]}"
 
 echo Vulture...
 	#--exclude argparse.py \

@@ -17,7 +17,6 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     # sync options
     ('S', 'sync', None),
     ('g', 'groups', None),
-    ('i', 'info', None),
     ('w', 'downloadonly', None),
     ('q', 'quiet', None),
     ('s', 'search', None),
@@ -95,6 +94,7 @@ PACMAN_COUNT_OPTS: ArgSchema = [
     ('u', 'sysupgrade', 0),
     ('c', 'clean', 0),
     ('k', 'check', 0),
+    ('i', 'info', 0),
 ]
 
 

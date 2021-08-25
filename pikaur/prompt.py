@@ -10,8 +10,8 @@ from .config import PikaurConfig
 from .core import interactive_spawn, get_editor
 from .i18n import _
 from .pprint import (
-    color_line, print_stderr, get_term_width, range_printable,
-    PrintLock, print_warning,
+    color_line, get_term_width, range_printable,
+    PrintLock, print_stderr, print_warning, print_debug,
 )
 from .exceptions import SysExit
 from .pikspect import pikspect as pikspect_spawn
@@ -84,26 +84,67 @@ def split_last_line(text: str) -> str:
     return '\n'.join(prev_lines + [last_line])
 
 
-def get_input(prompt: str, answers: Iterable[str] = (), require_confirm=False) -> str:
+def _debug(message, *args, **kwargs):
+    nice_message = f'PROMPT: {message}'
+    print_debug(nice_message, *args, **kwargs)
+
+
+def _debug_nolock(*args):
+    _debug(*args, lock=False)
+
+
+def get_input(  # pylint: disable=too-many-branches
+        prompt: str, answers: Iterable[str] = (), require_confirm=False
+) -> str:
+    is_pipe = not sys.stdin.isatty()
+    tty_opened = False
+
+    _debug(f'Gonna get input from user... {is_pipe=}')
+    answer = ''
     with PrintLock():
-        if not(
-                require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
-        ):
-            answer = read_answer_from_tty(prompt, answers=answers)
-        else:
-            sub_tty = TTYRestore()
-            TTYRestore.restore()
-            try:
-                answer = input(split_last_line(prompt)).lower()
-            except EOFError as exc:
-                raise SysExit(125) from exc
-            finally:
-                sub_tty.restore_new()
-            if not answer:
-                for choice in answers:
-                    if choice.isupper():
-                        return choice.lower()
-        return answer
+
+        try:
+            if is_pipe:
+                old_stdin = sys.stdin
+                try:
+                    _debug_nolock('Attaching to TTY manually...')
+                    sys.stdin = open('/dev/tty', encoding='utf8')  # pylint:disable=consider-using-with
+                    tty_opened = True
+                except Exception as exc:
+                    _debug_nolock(exc)
+
+            if not(
+                    require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
+            ):
+                _debug_nolock('Using custom input reader...')
+                answer = read_answer_from_tty(prompt, answers=answers)
+            else:
+                _debug_nolock('Restoring TTY...')
+                sub_tty = TTYRestore()
+                TTYRestore.restore()
+                try:
+                    _debug_nolock('Using standard input reader...')
+                    answer = input(split_last_line(prompt)).lower()
+                except EOFError as exc:
+                    _debug_nolock(exc)
+                    raise SysExit(125) from exc
+                finally:
+                    _debug_nolock('Reverting to prev TTY state...')
+                    sub_tty.restore_new()
+
+        finally:
+            if is_pipe and tty_opened:
+                _debug_nolock('Restoring stdin...')
+                sys.stdin.close()
+                sys.stdin = old_stdin
+
+    if not answer:
+        for choice in answers:
+            if choice.isupper():
+                _debug(f'No answer provided - using "{choice}".')
+                return choice.lower()
+    _debug(f"Got answer: '{answer}'")
+    return answer
 
 
 class NotANumberInput(Exception):

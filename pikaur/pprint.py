@@ -89,7 +89,7 @@ def print_error(message: str) -> None:
     ]))
 
 
-def print_debug(message: Any) -> None:
+def print_debug(message: Any, lock=True) -> None:
     if not ARGS.pikaur_debug:
         return
     prefix = _("debug:")
@@ -99,7 +99,7 @@ def print_debug(message: Any) -> None:
     print_stderr(' '.join([
         color_line(':: ' + prefix, 6),
         str(message)
-    ]))
+    ]), lock=lock)
 
 
 def get_term_width() -> int:

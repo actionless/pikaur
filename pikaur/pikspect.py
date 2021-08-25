@@ -358,7 +358,10 @@ def pikspect(
         return bold_line(" {} {} ".format(_p(message), question))
 
     class Questions:
-        PROCEED = format_pacman_question('Proceed with installation?')
+        PROCEED = [
+            format_pacman_question('Proceed with installation?'),
+            format_pacman_question('Proceed with download?'),
+        ]
         REMOVE = format_pacman_question('Do you want to remove these packages?')
         CONFLICT = format_pacman_question(
             '%s and %s are in conflict. Remove %s?', YesNo.QUESTION_YN_NO
@@ -383,8 +386,7 @@ def pikspect(
     default_questions: Dict[str, List[str]] = {}
     if auto_proceed:
         default_questions = {
-            YesNo.ANSWER_Y: [
-                Questions.PROCEED,
+            YesNo.ANSWER_Y: Questions.PROCEED + [
                 Questions.REMOVE,
             ],
             YesNo.ANSWER_N: [],

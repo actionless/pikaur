@@ -32,6 +32,10 @@ SMALL_TIMEOUT = 0.01
 TcAttrsType = List[Union[int, List[Union[bytes, int]]]]
 
 
+def _debug(message):
+    print_debug(f"pikspect: {message}", lock=False)
+
+
 class TTYRestore():
 
     old_tcattrs = None
@@ -80,19 +84,46 @@ def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None
     )
 
 
-class NestedTerminal():
+class TTYInputWrapper():
 
-    def __enter__(self) -> os.terminal_size:
-        real_term_geometry = shutil.get_terminal_size((80, 80))
-        if sys.stdin.isatty():
-            tty.setcbreak(sys.stdin.fileno())
-            if sys.stderr.isatty():
-                tty.setcbreak(sys.stderr.fileno())
-            if sys.stdout.isatty():
-                tty.setcbreak(sys.stdout.fileno())
-        return real_term_geometry
+    def __init__(self):
+        self.is_pipe = not sys.stdin.isatty()
+
+    def __enter__(self):
+        if self.is_pipe:
+            self.old_stdin = sys.stdin
+            try:
+                _debug('Attaching to TTY manually...')
+                sys.stdin = open('/dev/tty', encoding=DEFAULT_INPUT_ENCODING)  # pylint:disable=consider-using-with
+                self.tty_opened = True
+            except Exception as exc:
+                _debug(exc)
 
     def __exit__(self, *_exc_details) -> None:
+        if self.is_pipe and self.tty_opened:
+            _debug('Restoring stdin...')
+            sys.stdin.close()
+            sys.stdin = self.old_stdin
+
+
+class NestedTerminal():
+
+    def __init__(self):
+        self.tty_wrapper = TTYInputWrapper()
+
+    def __enter__(self) -> os.terminal_size:
+        _debug("Opening virtual terminal...")
+        self.tty_wrapper.__enter__()
+        real_term_geometry = shutil.get_terminal_size((80, 80))
+        tty.setcbreak(sys.stdin.fileno())
+        if sys.stderr.isatty():
+            tty.setcbreak(sys.stderr.fileno())
+        if sys.stdout.isatty():
+            tty.setcbreak(sys.stdout.fileno())
+        return real_term_geometry
+
+    def __exit__(self, *exc_details) -> None:
+        self.tty_wrapper.__exit__(*exc_details)
         TTYRestore.restore()
 
 
@@ -375,7 +406,7 @@ def pikspect(
         proc.add_answers(extra_questions)
 
     if parse_args().print_commands:
-        print_stderr(color_line('=> ', 14) + ' '.join(cmd))
+        print_stderr(color_line('pikspect => ', 14) + ' '.join(cmd))
     proc.run()
     return proc
 

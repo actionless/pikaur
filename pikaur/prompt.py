@@ -7,7 +7,7 @@ from typing import List, Optional, Iterable
 from .args import parse_args
 from .config import PikaurConfig
 
-from .core import interactive_spawn, get_editor, DEFAULT_INPUT_ENCODING
+from .core import interactive_spawn, get_editor
 from .i18n import _
 from .pprint import (
     color_line, get_term_width, range_printable,
@@ -15,7 +15,7 @@ from .pprint import (
 )
 from .exceptions import SysExit
 from .pikspect import pikspect as pikspect_spawn
-from .pikspect import TTYRestore
+from .pikspect import TTYRestore, TTYInputWrapper
 
 
 Y = _('y')
@@ -96,22 +96,10 @@ def _debug_nolock(*args):
 def get_input(  # pylint: disable=too-many-branches
         prompt: str, answers: Iterable[str] = (), require_confirm=False
 ) -> str:
-    is_pipe = not sys.stdin.isatty()
-    tty_opened = False
-
-    _debug(f'Gonna get input from user... {is_pipe=}')
+    _debug('Gonna get input from user...')
     answer = ''
     with PrintLock():
-
-        try:
-            if is_pipe:
-                old_stdin = sys.stdin
-                try:
-                    _debug_nolock('Attaching to TTY manually...')
-                    sys.stdin = open('/dev/tty', encoding=DEFAULT_INPUT_ENCODING)  # pylint:disable=consider-using-with
-                    tty_opened = True
-                except Exception as exc:
-                    _debug_nolock(exc)
+        with TTYInputWrapper():
 
             if not(
                     require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
@@ -131,12 +119,6 @@ def get_input(  # pylint: disable=too-many-branches
                 finally:
                     _debug_nolock('Reverting to prev TTY state...')
                     sub_tty.restore_new()
-
-        finally:
-            if is_pipe and tty_opened:
-                _debug_nolock('Restoring stdin...')
-                sys.stdin.close()
-                sys.stdin = old_stdin
 
     if not answer:
         for choice in answers:

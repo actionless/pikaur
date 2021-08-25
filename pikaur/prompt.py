@@ -7,7 +7,7 @@ from typing import List, Optional, Iterable
 from .args import parse_args
 from .config import PikaurConfig
 
-from .core import interactive_spawn, get_editor
+from .core import interactive_spawn, get_editor, DEFAULT_INPUT_ENCODING
 from .i18n import _
 from .pprint import (
     color_line, get_term_width, range_printable,
@@ -108,7 +108,7 @@ def get_input(  # pylint: disable=too-many-branches
                 old_stdin = sys.stdin
                 try:
                     _debug_nolock('Attaching to TTY manually...')
-                    sys.stdin = open('/dev/tty', encoding='utf8')  # pylint:disable=consider-using-with
+                    sys.stdin = open('/dev/tty', encoding=DEFAULT_INPUT_ENCODING)  # pylint:disable=consider-using-with
                     tty_opened = True
                 except Exception as exc:
                     _debug_nolock(exc)

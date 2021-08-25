@@ -14,6 +14,7 @@ from .pprint import (
 )
 from .pacman import PackageDB
 from .urllib import get_unicode_from_url
+from .core import open_file
 
 
 DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
@@ -63,7 +64,7 @@ class News:
     def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: TextIO
         try:
-            with open(self.CACHE_FILE) as last_seen_fd:
+            with open_file(self.CACHE_FILE) as last_seen_fd:
                 return datetime.datetime.strptime(
                     last_seen_fd.readline().strip(), DT_FORMAT
                 )
@@ -79,7 +80,7 @@ class News:
             )
             time_formatted: str = last_pkg_date.strftime(DT_FORMAT)
             try:
-                with open(self.CACHE_FILE, 'w') as last_seen_fd:
+                with open_file(self.CACHE_FILE, 'w') as last_seen_fd:
                     last_seen_fd.write(time_formatted)
             except IOError:
                 print_error(_('Could not initialize {}').format(self.CACHE_FILE))
@@ -121,7 +122,7 @@ class News:
                 pub_date = str(child.text)
                 break
         try:
-            with open(self.CACHE_FILE, 'w') as last_seen_fd:
+            with open_file(self.CACHE_FILE, 'w') as last_seen_fd:
                 last_seen_fd.write(pub_date)
         except IOError:
             print_error(_('Could not update {}').format(self.CACHE_FILE))

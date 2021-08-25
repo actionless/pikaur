@@ -9,6 +9,9 @@ from typing import Dict, Optional, Any, Callable
 from .i18n import _
 
 
+DEFAULT_CONFIG_ENCODING = 'utf-8'
+
+
 RUNNING_AS_ROOT = os.geteuid() == 0
 
 
@@ -286,7 +289,7 @@ def write_config(config: configparser.ConfigParser = None) -> None:
     if need_write:
         if not os.path.exists(CONFIG_ROOT):
             os.makedirs(CONFIG_ROOT)
-        with open(CONFIG_PATH, 'w') as configfile:
+        with open(CONFIG_PATH, 'w', encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
 
 
@@ -349,7 +352,7 @@ class PikaurConfig():
             cls._config = configparser.ConfigParser()
             if not os.path.exists(CONFIG_PATH):
                 write_config()
-            cls._config.read(CONFIG_PATH, encoding='utf-8')
+            cls._config.read(CONFIG_PATH, encoding=DEFAULT_CONFIG_ENCODING)
             cls.migrate_config()
             write_config(config=cls._config)
             cls.validate_config()

@@ -22,7 +22,7 @@ from .args import (
 )
 from .help_cli import cli_print_help
 from .core import (
-    InstallInfo,
+    DEFAULT_INPUT_ENCODING, InstallInfo,
     spawn, interactive_spawn, remove_dir, check_runtime_deps,
     running_as_root, sudo, isolate_root_cmd, run_with_sudo_loop,
 )
@@ -70,9 +70,9 @@ def init_output_encoding() -> None:
         try:
             setattr(
                 sys, attr,
-                codecs.open(
+                codecs.open(  # pylint: disable=consider-using-with
                     real_stream.fileno(),
-                    mode='w', buffering=0, encoding='utf-8'
+                    mode='w', buffering=0, encoding=DEFAULT_INPUT_ENCODING
                 )
             )
         except io.UnsupportedOperation:

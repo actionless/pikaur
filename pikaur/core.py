@@ -29,6 +29,9 @@ if TYPE_CHECKING:
 NOT_FOUND_ATOM = object()
 
 
+DEFAULT_INPUT_ENCODING = 'utf-8'
+
+
 class ComparableType:
 
     __ignore_in_eq__: Tuple[str, ...] = tuple()
@@ -142,8 +145,8 @@ class InteractiveSpawn(subprocess.Popen):
                 )
 
         stdout, stderr = super().communicate(_input, _timeout)
-        self.stdout_text = stdout.decode('utf-8') if stdout else None
-        self.stderr_text = stderr.decode('utf-8') if stderr else None
+        self.stdout_text = stdout.decode(DEFAULT_INPUT_ENCODING) if stdout else None
+        self.stderr_text = stderr.decode(DEFAULT_INPUT_ENCODING) if stderr else None
         return stdout, stderr
 
     def __repr__(self) -> str:
@@ -166,8 +169,8 @@ def spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
             proc = interactive_spawn(cmd, stdout=out_file, stderr=err_file, **kwargs)
             out_file.seek(0)
             err_file.seek(0)
-            proc.stdout_text = out_file.read().decode('utf-8')
-            proc.stderr_text = err_file.read().decode('utf-8')
+            proc.stdout_text = out_file.read().decode(DEFAULT_INPUT_ENCODING)
+            proc.stderr_text = err_file.read().decode(DEFAULT_INPUT_ENCODING)
     return proc
 
 
@@ -175,7 +178,7 @@ def joined_spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
     with tempfile.TemporaryFile() as out_file:
         proc = interactive_spawn(cmd, stdout=out_file, stderr=out_file, **kwargs)
         out_file.seek(0)
-        proc.stdout_text = out_file.read().decode('utf-8')
+        proc.stdout_text = out_file.read().decode(DEFAULT_INPUT_ENCODING)
     return proc
 
 
@@ -214,7 +217,7 @@ def detect_bom_type(file_path: str) -> str:
         first_bytes = test_file.read(4)
 
     if first_bytes[0:3] == b'\xef\xbb\xbf':
-        return "utf8"
+        return "utf-8"
 
     # Python automatically detects endianness if utf-16 bom is present
     # write endianness generally determined by endianness of CPU
@@ -338,8 +341,8 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
                                       universal_newlines=True)
     except FileNotFoundError:
         return False
-    first_line = out.split('\n')[0]
-    version = int(first_line.split()[1])
+    first_line = out.split('\n', maxsplit=1)[0]
+    version = int(first_line.split(maxsplit=2)[1])
     return version >= 235
 
 

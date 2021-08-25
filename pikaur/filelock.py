@@ -4,6 +4,7 @@ from .i18n import _
 from .exceptions import SysExit
 from .pprint import print_error
 from .prompt import ask_to_continue
+from .core import DEFAULT_INPUT_ENCODING
 
 
 class FileLock():
@@ -12,7 +13,9 @@ class FileLock():
 
     def __init__(self, lock_file_path: str) -> None:
         self.lock_file_path = lock_file_path
-        self.lock_file = open(lock_file_path, 'a')  # pylint: disable=consider-using-with
+        self.lock_file = open(  # pylint: disable=consider-using-with
+            lock_file_path, 'a', encoding=DEFAULT_INPUT_ENCODING
+        )
 
     def __enter__(self) -> None:
         while True:

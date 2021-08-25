@@ -13,6 +13,9 @@ from .args import parse_args
 from .config import PikaurConfig
 
 
+DEFAULT_WEB_ENCODING = 'utf-8'
+
+
 def read_bytes_from_url(url: str, optional=False) -> bytes:
     if parse_args().print_commands:
         print_stderr(
@@ -35,7 +38,7 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
 
 def get_unicode_from_url(url: str, optional=False) -> str:
     result_bytes = read_bytes_from_url(url, optional=optional)
-    return result_bytes.decode('utf-8')
+    return result_bytes.decode(DEFAULT_WEB_ENCODING)
 
 
 def get_json_from_url(url: str) -> Dict[str, Any]:
@@ -53,7 +56,7 @@ def get_gzip_from_url(url: str) -> str:
         if ask_to_continue(_('Do you want to retry?')):
             return get_gzip_from_url(url)
         raise SysExit(102) from exc
-    text_response = decompressed_bytes_response.decode('utf-8')
+    text_response = decompressed_bytes_response.decode(DEFAULT_WEB_ENCODING)
     return text_response
 
 
@@ -73,7 +76,7 @@ def init_proxy() -> None:
             socks_proxy_addr = socks_proxy_addr[:idx]
 
         try:
-            import socks  # type: ignore[import] #  pylint:disable=import-outside-toplevel
+            import socks  # type: ignore[import]  # pylint:disable=import-outside-toplevel
         except ImportError as exc:
             raise ProxyInitSocks5Error(
                 _("pikaur requires python-pysocks to use a socks5 proxy.")

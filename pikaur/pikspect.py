@@ -22,7 +22,7 @@ from .pprint import (
 )
 from .pacman_i18n import _p
 from .args import parse_args
-from .core import get_sudo_refresh_command
+from .core import get_sudo_refresh_command, DEFAULT_INPUT_ENCODING
 
 
 # SMALL_TIMEOUT = 0.1
@@ -168,7 +168,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.default_questions[answer] = self.default_questions.get(answer, []) + questions
             for question in questions:
                 if len(question) > self.max_question_length:
-                    self.max_question_length = len(question.encode('utf-8'))
+                    self.max_question_length = len(question.encode(DEFAULT_INPUT_ENCODING))
         self.check_questions()
 
     def communicator_thread(self) -> int:
@@ -183,7 +183,9 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
 
                 if 'sudo' in self.args:
                     subprocess.run(get_sudo_refresh_command(), check=True)
-                with open(self.pty_user_master, 'w') as self.pty_in:
+                with open(
+                        self.pty_user_master, 'w', encoding=DEFAULT_INPUT_ENCODING
+                ) as self.pty_in:
                     with open(self.pty_cmd_master, 'rb', buffering=0) as self.pty_out:
                         set_terminal_geometry(
                             self.pty_out.fileno(),
@@ -210,7 +212,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     def check_questions(self) -> None:
         # pylint: disable=too-many-branches
         try:
-            historic_output = b''.join(self.historic_output).decode('utf-8')
+            historic_output = b''.join(self.historic_output).decode(DEFAULT_INPUT_ENCODING)
         except UnicodeDecodeError:
             return
 
@@ -220,7 +222,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             for question in questions:
                 if not _match(question, historic_output):
                     continue
-                self.write_something((answer + '\n').encode('utf-8'))
+                self.write_something((answer + '\n').encode(DEFAULT_INPUT_ENCODING))
                 with PrintLock():
                     self.pty_in.write(answer)
                     sleep(SMALL_TIMEOUT)
@@ -294,13 +296,15 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
                     if ord(char) == 23:  # Ctrl+W
                         sys.stdout.write(
                             '\r' + ' ' * get_term_width() + '\r' +
-                            b''.join(self.historic_output).decode('utf-8').splitlines()[-1]
+                            b''.join(
+                                self.historic_output
+                            ).decode(DEFAULT_INPUT_ENCODING).splitlines()[-1]
                         )
                     self.pty_in.write(char)
                     self.pty_in.flush()
             except ValueError as exc:
                 print(exc)
-            self.write_something(char.encode('utf-8'))
+            self.write_something(char.encode(DEFAULT_INPUT_ENCODING))
 
 
 # pylint: disable=too-many-locals,too-many-arguments

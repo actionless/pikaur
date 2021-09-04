@@ -117,12 +117,13 @@ class NestedTerminal():
         _debug("Opening virtual terminal...")
         self.tty_wrapper.__enter__()
         real_term_geometry = shutil.get_terminal_size((80, 80))
-        if sys.stdin.isatty():
-            tty.setcbreak(sys.stdin.fileno())
-        if sys.stderr.isatty():
-            tty.setcbreak(sys.stderr.fileno())
-        if sys.stdout.isatty():
-            tty.setcbreak(sys.stdout.fileno())
+        for stream in (
+                sys.stdin,
+                sys.stderr,
+                sys.stdout,
+        ):
+            if stream.isatty():
+                tty.setcbreak(stream.fileno())
         return real_term_geometry
 
     def __exit__(self, *exc_details) -> None:

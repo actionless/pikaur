@@ -117,7 +117,8 @@ class NestedTerminal():
         _debug("Opening virtual terminal...")
         self.tty_wrapper.__enter__()
         real_term_geometry = shutil.get_terminal_size((80, 80))
-        tty.setcbreak(sys.stdin.fileno())
+        if sys.stdin.isatty():
+            tty.setcbreak(sys.stdin.fileno())
         if sys.stderr.isatty():
             tty.setcbreak(sys.stderr.fileno())
         if sys.stdout.isatty():

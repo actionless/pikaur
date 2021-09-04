@@ -23,7 +23,7 @@ class SysupgradeTest(PikaurDbTestCase):
     repo2_pkg_name = 'xsel'
     repo2_old_version: str
 
-    aur_pkg_name = 'bluez-firmware'
+    aur_pkg_name = 'fbcat'
     aur_old_version: str
 
     aur2_pkg_name = 'inxi'

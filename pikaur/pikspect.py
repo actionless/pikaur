@@ -86,6 +86,8 @@ def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None
 
 class TTYInputWrapper():
 
+    tty_opened = False
+
     def __init__(self):
         self.is_pipe = not sys.stdin.isatty()
 

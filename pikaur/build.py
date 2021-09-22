@@ -271,7 +271,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             not (is_devel_pkg(self.package_base) and check_dev_pkgs)
         ):
             return
-        print_stdout('{} {}...'.format(
+        print_stdout('{} {}...'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 15),
             _n(
                 "Downloading the latest sources for a devel package {}",
@@ -386,7 +386,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not self.built_deps_to_install:
             return
 
-        print_stderr('{} {}:'.format(
+        print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 13),
             _("Installing already built dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
@@ -395,7 +395,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         try:
             update_self_deps = False
             for pkg_name, pkg_build in all_package_builds.items():
-                if pkg_name in self.built_deps_to_install.keys():
+                if pkg_name in self.built_deps_to_install:
                     pkg_build.install_built_deps(all_package_builds)
                     update_self_deps = True
             if update_self_deps:
@@ -452,7 +452,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 not self.args.rebuild and
                 len(self.built_packages_paths) == len(self.package_names)
         ):
-            print_stderr("{} {}\n".format(
+            print_stderr("{} {}\n".format(  # pylint: disable=consider-using-f-string
                 color_line("::", 10),
                 _n(
                     "Package {pkg} is already built. Pass '--rebuild' flag to force the build.",
@@ -529,7 +529,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not self.all_deps_to_install:
             return
 
-        print_stderr('{} {}:'.format(
+        print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 13),
             _("Installing repository dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
@@ -599,7 +599,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not deps_packages_installed or self.args.keepbuilddeps:
             return
 
-        print_stderr('{} {}:'.format(
+        print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 13),
             _("Removing already installed dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
@@ -647,7 +647,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not color_enabled():
             makepkg_args.append('--nocolor')
 
-        print_stderr('\n{} {}:'.format(
+        print_stderr('\n{} {}:'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 13),
             _('Starting the build')
         ))
@@ -687,7 +687,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             elif self.args.noconfirm:
                 answer = _("a")
             else:  # pragma: no cover
-                prompt = '{} {}\n{}\n> '.format(
+                prompt = '{} {}\n{}\n> '.format(  # pylint: disable=consider-using-f-string
                     color_line('::', 11),
                     _("Try recovering?"),
                     "\n".join((

@@ -118,13 +118,10 @@ class SrcInfo():
 
     def get_version(self) -> str:
         epoch = self.get_value('epoch')
+        epoch_display = (epoch + ':') if epoch else ''
         version = self.get_value('pkgver')
         release = self.get_value('pkgrel')
-        return '{}{}-{}'.format(
-            (epoch + ':') if epoch else '',
-            version,
-            release
-        )
+        return f'{epoch_display}{version}-{release}'
 
     def regenerate(self) -> None:
         result = spawn(

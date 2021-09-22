@@ -359,7 +359,7 @@ def pikspect(
         QUESTION_YN_NO = _p("[y/N]")
 
     def format_pacman_question(message: str, question=YesNo.QUESTION_YN_YES) -> str:
-        return bold_line(" {} {} ".format(_p(message), question))
+        return bold_line(f" {_p(message)} {question} ")
 
     class Questions:
         PROCEED = [

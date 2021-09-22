@@ -11,7 +11,7 @@ from .core import spawn
 
 def _format_options_help(options: List[Tuple[str, str, str]]) -> str:
     return '\n'.join([
-        '{:>5} {:<16} {}'.format(
+        '{:>5} {:<16} {}'.format(  # pylint: disable=consider-using-f-string
             short_opt and (short_opt + ',') or '',
             long_opt or '',
             descr if ((len(short_opt) + len(long_opt)) < 16) else f"\n{23 * ' '}{descr}"

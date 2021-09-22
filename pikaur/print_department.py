@@ -157,20 +157,20 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
 
         pkg_name = _bold_line(pkg_name)
         if (print_repo or verbose) and pkg_update.repository:
-            pkg_name = '{}{}'.format(
+            pkg_name = '{}{}'.format(  # pylint: disable=consider-using-f-string
                 pretty_format_repo_name(pkg_update.repository, color=color),
                 pkg_name
             )
             pkg_len += len(pkg_update.repository) + 1
         elif print_repo:
-            pkg_name = '{}{}'.format(
+            pkg_name = '{}{}'.format(  # pylint: disable=consider-using-f-string
                 _color_line('aur/', 9),
                 pkg_name
             )
             pkg_len += len('aur/')
 
         if pkg_update.required_by:
-            required_by = ' ({})'.format(
+            required_by = ' ({})'.format(  # pylint: disable=consider-using-f-string
                 _('for {pkg}').format(
                     pkg=', '.join([p.package.name for p in pkg_update.required_by])
                 )
@@ -186,13 +186,13 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             )
             pkg_name += required_by
         if pkg_update.provided_by:
-            provided_by = ' ({})'.format(
+            provided_by = ' ({})'.format(  # pylint: disable=consider-using-f-string
                 ' # '.join([p.name for p in pkg_update.provided_by])
             )
             pkg_len += len(provided_by)
             pkg_name += _color_line(provided_by, 2)
         if pkg_update.members_of:
-            members_of = ' ({})'.format(
+            members_of = ' ({})'.format(  # pylint: disable=consider-using-f-string
                 _n('{grp} group', '{grp} groups', len(pkg_update.members_of)).format(
                     grp=', '.join(g for g in pkg_update.members_of),
                 )
@@ -207,7 +207,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             )
             pkg_name += _color_line(members_of, GROUP_COLOR)
         if pkg_update.replaces:
-            replaces = ' (replaces {})'.format(
+            replaces = ' (replaces {})'.format(  # pylint: disable=consider-using-f-string
                 ', '.join(g for g in pkg_update.replaces)
             )
             pkg_len += len(replaces)
@@ -232,7 +232,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 pkg_update.package.outofdate is not None
         ):
             out_of_date = _color_line(
-                " [{}: {}]".format(
+                " [{}: {}]".format(  # pylint: disable=consider-using-f-string
                     _("outofdate"),
                     datetime.fromtimestamp(pkg_update.package.outofdate).strftime('%Y/%m/%d')
                 ),
@@ -332,7 +332,7 @@ def pretty_format_sysupgrade(
     result = []
 
     if repo_replacements:
-        result.append('\n{} {}'.format(
+        result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
             _color_line('::', 12),
             _bold_line(_n(
                 "Repository package suggested as a replacement:",
@@ -345,7 +345,7 @@ def pretty_format_sysupgrade(
             print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if thirdparty_repo_replacements:
-        result.append('\n{} {}'.format(
+        result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
             _color_line('::', 12),
             _bold_line(_n(
                 "Third-party repository package suggested as a replacement:",
@@ -359,7 +359,7 @@ def pretty_format_sysupgrade(
         ))
 
     if repo_packages_updates:
-        result.append('\n{} {}'.format(
+        result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
             _color_line('::', 12),
             _bold_line(_n(
                 "Repository package will be installed:",
@@ -372,7 +372,7 @@ def pretty_format_sysupgrade(
             print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if new_repo_deps:
-        result.append('\n{} {}'.format(
+        result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
             _color_line('::', 11),
             _bold_line(_n("New dependency will be installed from repository:",
                           "New dependencies will be installed from repository:",
@@ -384,7 +384,7 @@ def pretty_format_sysupgrade(
             print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if thirdparty_repo_packages_updates:
-        result.append('\n{} {}'.format(
+        result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
             _color_line('::', 12),
             _bold_line(_n("Third-party repository package will be installed:",
                           "Third-party repository packages will be installed:",
@@ -395,7 +395,7 @@ def pretty_format_sysupgrade(
             verbose=verbose, color=color, print_repo=True
         ))
     if new_thirdparty_repo_deps:
-        result.append('\n{} {}'.format(
+        result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
             _color_line('::', 11),
             _bold_line(_n("New dependency will be installed from third-party repository:",
                           "New dependencies will be installed from third-party repository:",
@@ -407,7 +407,7 @@ def pretty_format_sysupgrade(
             print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
         ))
     if aur_updates:
-        result.append('\n{} {}'.format(
+        result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
             _color_line('::', 14),
             _bold_line(_n("AUR package will be installed:",
                           "AUR packages will be installed:",
@@ -418,7 +418,7 @@ def pretty_format_sysupgrade(
             verbose=verbose, color=color, print_repo=False
         ))
     if new_aur_deps:
-        result.append('\n{} {}'.format(
+        result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
             _color_line('::', 11),
             _bold_line(_n("New dependency will be installed from AUR:",
                           "New dependencies will be installed from AUR:",
@@ -444,7 +444,7 @@ def print_ignored_package(
         new_version='',
         package=None,
     )
-    print_stderr('{} {}'.format(
+    print_stderr('{} {}'.format(  # pylint: disable=consider-using-f-string
         color_line('::', 11),
         _("Ignoring package update {}").format(
             pretty_format_upgradeable(
@@ -583,7 +583,9 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
 
             groups = ''
             if getattr(package, 'groups', None):
-                groups = color_line('({}) '.format(' '.join(package.groups)), GROUP_COLOR)
+                groups = color_line('({}) '.format(  # pylint: disable=consider-using-f-string
+                    ' '.join(package.groups)
+                ), GROUP_COLOR)
 
             installed = ''
             if pkg_name in local_pkgs_names:
@@ -602,10 +604,7 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
             ) and (
                 package.popularity is not None
             ):
-                rating = color_line('({}, {:.2f})'.format(
-                    package.numvotes,
-                    package.popularity
-                ), 3)
+                rating = color_line(f'({package.numvotes}, {package.popularity:.2f})', 3)
 
             color_config = user_config.colors
             version_color = color_config.Version.get_int()
@@ -613,7 +612,7 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
 
             if isinstance(package, AURPackageInfo) and package.outofdate is not None:
                 version_color = color_config.VersionDiffOld.get_int()
-                version = "{} [{}: {}]".format(
+                version = "{} [{}: {}]".format(  # pylint: disable=consider-using-f-string
                     package.version,
                     _("outofdate"),
                     datetime.fromtimestamp(package.outofdate).strftime('%Y/%m/%d')
@@ -628,13 +627,13 @@ def print_package_search_results(  # pylint:disable=useless-return,too-many-loca
                 if isinstance(package, AURPackageInfo):
                     last_update_date = package.lastmodified
 
-                last_updated = color_line(' (last updated: {})'.format(
+                last_updated = color_line(' (last updated: {})'.format(  # pylint: disable=consider-using-f-string
                     datetime.fromtimestamp(last_update_date).strftime('%Y/%m/%d')
                     if last_update_date is not None
                     else 'unknown'
                 ), 8)
 
-            print("{}{}{} {} {}{}{}{}".format(
+            print("{}{}{} {} {}{}{}{}".format(  # pylint: disable=consider-using-f-string
                 idx,
                 repo,
                 bold_line(pkg_name),

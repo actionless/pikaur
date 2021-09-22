@@ -365,8 +365,8 @@ def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
 
     for dep_bin in dep_names:
         if not shutil.which(dep_bin):
-            print_error("'{}' {}.".format(
+            print_error("'{}' {}.".format(  # pylint: disable=consider-using-f-string
                 bold_line(dep_bin),
-                "executable not found"
+                _("executable not found")
             ))
             sys.exit(2)

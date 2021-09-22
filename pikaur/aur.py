@@ -79,7 +79,6 @@ class AURPackageInfo(DataType):
         )
 
 
-
 def construct_aur_rpc_url_from_uri(uri: str) -> str:
     url = AUR_BASE_URL + '/rpc/?' + uri
     return url

@@ -335,7 +335,7 @@ class PackageDB(PackageDBCommon):
             provided_pkg_names = super()._get_provided_dict(package_source)
             if package_source == PackageSource.REPO:
                 for _what_provides, provided_pkgs in provided_pkg_names.items():
-                    provided_pkgs.sort(key=lambda p: "{}{}".format(
+                    provided_pkgs.sort(key=lambda p: "{}{}".format(  # pylint: disable=consider-using-f-string
                         cls.get_repo_priority(p.package.db.name),
                         p.package.name
                     ))

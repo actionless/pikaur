@@ -65,7 +65,7 @@ def read_answer_from_tty(question: str, answers: Iterable[str] = (Y_UP, N, )) ->
         tty.tcsetattr(  # type: ignore[attr-defined]
             sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings  # type: ignore[attr-defined]
         )
-        sys.stdout.write('{}\r\n'.format(answer))
+        sys.stdout.write(f'{answer}\r\n')
         tty.tcdrain(sys.stdin.fileno())  # type: ignore[attr-defined]
 
 
@@ -77,7 +77,7 @@ def split_last_line(text: str) -> str:
     if len(last_line) < term_width:
         return text
     prev_lines = all_lines[:n_lines - 1]
-    last_line = "{}\n{}".format(
+    last_line = "{}\n{}".format(  # pylint: disable=consider-using-f-string
         range_printable(last_line, 0, term_width),
         range_printable(last_line, term_width)
     )
@@ -168,13 +168,11 @@ def ask_to_continue(text: str = None, default_yes: bool = True) -> bool:
         text = _('Do you want to proceed?')
 
     if args.noconfirm:
-        print_stderr('{} {}'.format(
-            text,
-            _("[Y]es (--noconfirm)") if default_yes else _("[N]o (--noconfirm)")
-        ))
+        default_option = ("[Y]es (--noconfirm)") if default_yes else _("[N]o (--noconfirm)")
+        print_stderr(f'{text} {default_option}')
         return default_yes
 
-    prompt = text + (' [%s/%s] ' % (Y_UP, N) if default_yes else ' [%s/%s] ' % (Y, N_UP))
+    prompt = text + (f' [{Y_UP}/{N}] ' if default_yes else f' [{Y}/{N_UP}] ')
     answers = Y_UP + N if default_yes else Y + N_UP
 
     answer = get_input(prompt, answers)

@@ -148,7 +148,7 @@ class InstallPackagesCLI():
                 print_stdout()
 
         if self.args.sysupgrade and not self.args.repo:
-            print_stderr('{} {}'.format(
+            print_stderr('{} {}'.format(  # pylint: disable=consider-using-f-string
                 color_line('::', 12),
                 bold_line(_("Starting full AUR upgrade..."))
             ))
@@ -202,7 +202,7 @@ class InstallPackagesCLI():
         }
 
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
-        prompt = '{} {}\n{}\n{}\n{}\n> '.format(
+        prompt = '{} {}\n{}\n{}\n{}\n> '.format(  # pylint: disable=consider-using-f-string
             color_line('::', 11),
             _("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
             _("[e] edit PKGBUILD"),
@@ -321,7 +321,7 @@ class InstallPackagesCLI():
             if not self.args.aur and self.args.sysupgrade:
                 self.install_repo_packages()
             else:
-                print_stdout('{} {}'.format(
+                print_stdout('{} {}'.format(  # pylint: disable=consider-using-f-string
                     color_line('::', 10),
                     _("Nothing to do."),
                 ))
@@ -387,7 +387,7 @@ class InstallPackagesCLI():
 
         def _confirm_sysupgrade(verbose=False) -> str:
             _print_sysupgrade(verbose=verbose)
-            prompt = '{} {}\n{} {}\n>> '.format(
+            prompt = '{} {}\n{} {}\n>> '.format(  # pylint: disable=consider-using-f-string
                 color_line('::', 12),
                 bold_line(_('Proceed with installation? [Y/n] ')),
                 color_line('::', 12),
@@ -526,7 +526,7 @@ class InstallPackagesCLI():
                 if self.args.noconfirm:
                     answer = _("a")
                 else:  # pragma: no cover
-                    prompt = '{} {}\n> '.format(
+                    prompt = '{} {}\n> '.format(  # pylint: disable=consider-using-f-string
                         color_line('::', 11),
                         '\n'.join((
                             _("Try recovering?"),
@@ -618,7 +618,7 @@ class InstallPackagesCLI():
                     raise SysExit(131)
         for new_pkg_name, new_pkg_conflicts in self.found_conflicts.items():
             for pkg_conflict in new_pkg_conflicts:
-                answer = ask_to_continue('{} {}'.format(
+                answer = ask_to_continue('{} {}'.format(  # pylint: disable=consider-using-f-string
                     color_line('::', 11),
                     bold_line(_(
                         "{new} and {installed} are in conflict. Remove {installed}?"
@@ -637,7 +637,7 @@ class InstallPackagesCLI():
             self.args.noedit
         )
         if noedit or self.args.noconfirm:
-            print_stderr('{} {}'.format(
+            print_stderr('{} {}'.format(  # pylint: disable=consider-using-f-string
                 color_line('::', 11),
                 _("Skipping review of {file} for {name} package ({flag})").format(
                     file=filename,

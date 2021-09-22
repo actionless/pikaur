@@ -129,8 +129,8 @@ def cli_clean_packages_cache() -> None:
                 (PACKAGE_CACHE_PATH, _("Packages directory"), 2, ),
         ):
             if minimal_clean_level <= args.clean and os.path.exists(directory):
-                print_stdout('\n' + "{}: {}".format(message, directory))
-                if ask_to_continue(text='{} {}'.format(
+                print_stdout(f"\n{message}: {directory}")
+                if ask_to_continue(text='{} {}'.format(  # pylint: disable=consider-using-f-string
                         color_line('::', 12),
                         bold_line(_("Do you want to remove all files?"))
                 )):
@@ -294,7 +294,7 @@ def migrate_old_aur_repos_dir() -> None:
 
     print_stderr()
     print_warning(
-        _("AUR repos dir has been moved from '{old}' to '{new}'.".format(
+        _("AUR repos dir has been moved from '{old}' to '{new}'.".format(  # pylint: disable=consider-using-f-string
             old=_OLD_AUR_REPOS_CACHE_PATH,
             new=AUR_REPOS_CACHE_PATH
         ))

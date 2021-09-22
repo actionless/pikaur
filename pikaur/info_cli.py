@@ -85,10 +85,8 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
                 value = datetime.fromtimestamp(value).strftime('%c')
             elif isinstance(value, list):
                 value = ', '.join(value) or _("None")
-            pkg_info_lines.append('{key}: {value}'.format(
-                key=bold_line(_rightpad(display_name, longest_field_length + 1)),
-                value=value
-            ))
+            key_display = bold_line(_rightpad(display_name, longest_field_length + 1))
+            pkg_info_lines.append(f'{key_display}: {value}')
         print(
             _decorate_aur_info_output('\n'.join(pkg_info_lines)) +
             ('\n' if i + 1 < num_found else '')

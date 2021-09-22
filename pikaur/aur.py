@@ -179,18 +179,19 @@ def find_aur_packages(
             for result in results:
                 for aur_pkg in result:
                     _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg
-                    json_results.append(aur_pkg)
+                    if aur_pkg.name in package_names:
+                        json_results.append(aur_pkg)
 
     found_aur_packages = [
         result.name for result in json_results
     ]
-    not_found_packages: List[str] = []
-    if num_packages != len(found_aur_packages):
-        not_found_packages = [
+    not_found_packages: List[str] = (
+        [] if num_packages == len(found_aur_packages)
+        else [
             package for package in package_names
             if package not in found_aur_packages
         ]
-
+    )
     return json_results, not_found_packages
 
 

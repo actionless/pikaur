@@ -374,6 +374,11 @@ class InstallInfoFetcher(ComparableType):
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(
             list(aur_packages_names_to_versions.keys())
         )
+        debug(
+            f"found AUR pkgs:\n"
+            f"    {aur_pkg_list=}\n"
+            f"    {not_found_aur_pkgs=}\n"
+        )
         aur_pkgs = {}
         for aur_pkg in aur_pkg_list:
             if aur_packages_names_to_versions[aur_pkg.name](aur_pkg.version):

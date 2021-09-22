@@ -72,6 +72,13 @@ class AURPackageInfo(DataType):
             }
         )
 
+    def __repr__(self) -> str:
+        return (
+            f'<{self.__class__.__name__} "{self.name}" '
+            f'{self.version}>'
+        )
+
+
 
 def construct_aur_rpc_url_from_uri(uri: str) -> str:
     url = AUR_BASE_URL + '/rpc/?' + uri

@@ -99,6 +99,8 @@ _pikaur_action_sync() {
 		state=sync_search
 	elif (( $+words[(r)--search] )); then
 		state=sync_search
+	elif [[ ${words[CURRENT][1]} == '-' ]]; then
+		state=sync_opts
 	fi
 
 	case $state in
@@ -108,6 +110,13 @@ _pikaur_action_sync() {
 				"$_pacman_opts_sync_modifiers[@]" \
 				"$_pikaur_opts_sync_search_modifiers[@]" \
 				'*:search text: '
+			;;
+		sync_opts)
+			_arguments -s : \
+				"$_pacman_opts_common[@]" \
+				"$_pacman_opts_sync_actions[@]" \
+				"$_pacman_opts_sync_modifiers[@]" \
+				"$_pikaur_opts_sync_modifiers[@]"
 			;;
 		*)
 			_arguments -s : \

@@ -79,7 +79,7 @@ _pikaur_completions_all_packages() {
 		typeset -U packages
 		${seq} _wanted repo_packages expl "repository/package" compadd ${sep[@]} ${(@)packages}
 	else
-		packages=( $(_call_program packages $cmd[@] -Ssq) )
+		packages=( $(_call_program packages $cmd[@] --namesonly -Ssq ${words[CURRENT]}) )
 		typeset -U packages
 		${seq} _wanted packages expl "packages" compadd ${sep[@]} - "${(@)packages}"
 

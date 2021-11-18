@@ -205,6 +205,8 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     ):
         if os.environ.get(env_var_name) is not None:
             base_root_isolator += ['-E', f'{env_var_name}={os.environ[env_var_name]}']
+    if cmd == ['makepkg','--printsrcinfo','-p','PKGBUILD']:
+        raise Exception("Please run pikaur -P as a standard user")
     return base_root_isolator + cmd
 
 

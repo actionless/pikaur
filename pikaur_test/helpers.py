@@ -273,8 +273,11 @@ class PikaurDbTestCase(PikaurTestCase):
             f'git -C ./{repo_pkg_name} log --format=%h'
         ).stdout_text.splitlines()[10]
         spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
-        pikaur(f'-P -i --noconfirm --mflags=--skippgpcheck '
-               f'./{repo_pkg_name}/trunk/PKGBUILD', fake_makepkg=fake_makepkg)
+        pikaur(
+            f'-P -i --noconfirm --mflags=--skippgpcheck '
+            f'./{repo_pkg_name}/trunk/PKGBUILD',
+            fake_makepkg=fake_makepkg
+        )
         self.assertInstalled(repo_pkg_name)
         return PackageDB.get_local_dict()[repo_pkg_name].version
 
@@ -295,7 +298,8 @@ class PikaurDbTestCase(PikaurTestCase):
         ).stdout_text.splitlines()[count]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
         pikaur(
-            f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD',
+            f'-P -i --noconfirm  --mflags=--skippgpcheck '
+            f'./{aur_pkg_name}/PKGBUILD',
             fake_makepkg=fake_makepkg
         )
         self.assertInstalled(aur_pkg_name)

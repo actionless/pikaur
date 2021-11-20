@@ -274,8 +274,11 @@ class PikaurDbTestCase(PikaurTestCase):
         ).stdout_text.splitlines()[10]
         spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
         pikaur(
-            f'-P -i --noconfirm --mflags=--skippgpcheck '
-            f'./{repo_pkg_name}/trunk/PKGBUILD',
+            (
+                '-P -i --noconfirm --mflags=--skippgpcheck,--noextract '
+                if fake_makepkg else
+                '-P -i --noconfirm --mflags=--skippgpcheck '
+            ) + f'./{repo_pkg_name}/trunk/PKGBUILD',
             fake_makepkg=fake_makepkg
         )
         self.assertInstalled(repo_pkg_name)

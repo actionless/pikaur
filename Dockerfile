@@ -43,6 +43,10 @@ RUN echo ">>>> Installing opt deps:" && \
 	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv \
 		python-pylint flake8 mypy python-vulture python-coveralls shellcheck
 
+# workaround broken deps for pylint:
+RUN	echo ">>>> Installing test deps using Pikaur itself:" && \
+	sudo -u user pikaur -S --noconfirm --needed --color=always python-tomli
+
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
 	GITHUB_ACTIONS=1 \

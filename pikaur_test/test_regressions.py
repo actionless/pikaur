@@ -107,9 +107,15 @@ class RegressionTest(PikaurDbTestCase):
         see #339
         """
         output = ""
-        while "nothing to do" not in output:
+        attempts = 0
+        while ("nothing to do" not in output) and (attempts < 5):
             result_syu = pikaur('-Syu --ignore pikaur-git', capture_stdout=True)
             output = result_syu.stdout.lower()
+            attempts += 1
+        self.assertIn(
+            "nothing to do",
+            output
+        )
 
         result_sy = pikaur('-Sy', capture_stdout=True)
         self.assertNotIn(

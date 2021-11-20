@@ -301,8 +301,11 @@ class PikaurDbTestCase(PikaurTestCase):
         ).stdout_text.splitlines()[count]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
         pikaur(
-            f'-P -i --noconfirm  --mflags=--skippgpcheck '
-            f'./{aur_pkg_name}/PKGBUILD',
+            (
+                '-P -i --noconfirm --mflags=--skippgpcheck,--noextract '
+                if fake_makepkg else
+                '-P -i --noconfirm --mflags=--skippgpcheck '
+            ) + f'./{aur_pkg_name}/PKGBUILD',
             fake_makepkg=fake_makepkg
         )
         self.assertInstalled(aur_pkg_name)

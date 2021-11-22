@@ -447,6 +447,7 @@ class InstallInfoFetcher(ComparableType):
                     new_version=aur_pkg.version,
                     description=aur_pkg.desc,
                     package=aur_pkg,
+                    maintainer=maintainer,
                     pkgbuild_path=path,
                 )
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())

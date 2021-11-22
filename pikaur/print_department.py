@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 
 GROUP_COLOR = 4
 REPLACEMENTS_COLOR = 14
+ORPHANED_COLOR = 9
 
 
 AnyPackage = Union[AURPackageInfo, pyalpm.Package]
@@ -225,6 +226,14 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         days_old = ''
         if pkg_update.devel_pkg_age_days:
             days_old = ' ' + _('({} days old)').format(pkg_update.devel_pkg_age_days)
+
+        if (
+                isinstance(pkg_update.package, AURPackageInfo) and
+                pkg_update.package.maintainer is None
+        ):
+            orphaned = ' [orphaned]'
+            pkg_len += len(orphaned)
+            pkg_name += _color_line(orphaned, ORPHANED_COLOR)
 
         out_of_date = ''
         if (

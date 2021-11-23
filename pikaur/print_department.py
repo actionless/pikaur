@@ -129,7 +129,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
 
     SortKey = Union[Tuple, str]
 
-    def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, SortKey]:  # pylint:disable=too-many-locals
+    def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, SortKey]:  # pylint:disable=too-many-locals,R0912
         common_version, diff_weight = get_common_version(
             pkg_update.current_version or '', pkg_update.new_version or ''
         )

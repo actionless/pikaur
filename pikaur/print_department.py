@@ -231,7 +231,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 isinstance(pkg_update.package, AURPackageInfo) and
                 pkg_update.package.maintainer is None
         ):
-            orphaned = ' [orphaned]'
+            orphaned = f" [{_('orphaned')}]"
             pkg_len += len(orphaned)
             pkg_name += _color_line(orphaned, ORPHANED_COLOR)
 

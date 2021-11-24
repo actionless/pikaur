@@ -406,6 +406,7 @@ class InstallInfoFetcher(ComparableType):
                 current_version=local_pkg.version if local_pkg else ' ',
                 new_version=aur_pkg.version,
                 description=aur_pkg.desc,
+                maintainer=aur_pkg.maintainer,
                 package=aur_pkg,
             )
         for pkg_name in list(aur_updates_install_info_by_name.keys())[:]:
@@ -491,6 +492,7 @@ class InstallInfoFetcher(ComparableType):
                 current_version=local_pkg.version if local_pkg else ' ',
                 new_version=aur_pkg.version,
                 description=aur_pkg.desc,
+                maintainer=aur_pkg.maintainer,
                 package=aur_pkg,
             ))
 

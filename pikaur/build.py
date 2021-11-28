@@ -654,6 +654,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         build_succeeded = False
         skip_pgp_check = False
         skip_file_checksums = False
+        skip_check = False
         while True:
             cmd_args = MakePkgCommand.get() + makepkg_args
             if skip_pgp_check:
@@ -662,6 +663,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 cmd_args += ['--skipchecksums']
             if self.skip_carch_check:
                 cmd_args += ['--ignorearch']
+            if skip_check:
+                cmd_args += ['--nocheck']
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir)
             spawn_kwargs: Dict[str, Any] = {}
             if self.args.hide_build_log:
@@ -694,6 +697,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                         _("[R] retry build"),
                         _("[p] PGP check skip"),
                         _("[c] checksums skip"),
+                        _("[f] check() skip"),
                         _("[i] ignore architecture"),
                         _("[d] delete build dir and try again"),
                         _("[e] edit PKGBUILD"),
@@ -704,7 +708,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 )
                 answer = get_input(
                     prompt,
-                    _('r').upper() + _('p') + _('c') + _('i') + _('d') + _('e') +
+                    _('r').upper() + _('p') + _('c') + _('f') + _('i') + _('d') + _('e') +
                     _('s') + _('a')
                 )
 
@@ -716,6 +720,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 continue
             if answer == _("c"):  # pragma: no cover
                 skip_file_checksums = True
+                continue
+            if answer == _("f"):  # pragma: no cover
+                skip_check = True
                 continue
             if answer == _("i"):  # pragma: no cover
                 self.skip_carch_check = True

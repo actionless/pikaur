@@ -1,8 +1,8 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import sys
-from argparse import Namespace  # pylint: disable=no-name-in-module
-from pprint import pprint  # pylint: disable=no-name-in-module
+from argparse import Namespace
+from pprint import pprint
 from typing import Any, List, NoReturn, Optional, Tuple, Union
 
 from .argparse import ArgumentParserWithUnknowns

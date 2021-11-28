@@ -18,9 +18,15 @@ echo Flake8...
 flake8 "${TARGETS[@]}"
 
 echo PyLint...
-#python -m pylint --jobs="$(nproc)" "${TARGETS[@]}" --score no
+#python -m pylint --jobs="$(nproc)" "${TARGETS[@]}" --score no 2>&1 \
 # @TODO: --jobs is broken at the moment: https://github.com/PyCQA/pylint/issues/374
-python -m pylint "${TARGETS[@]}" --score no
+python -m pylint "${TARGETS[@]}" --score no 2>&1 \
+| (
+	grep -v \
+		-e "^  warnings.warn($" \
+		-e "^/usr/lib/python3.9/site-packages/" \
+	|| true \
+)
 
 echo MyPy...
 python -m mypy "${TARGETS[@]}"

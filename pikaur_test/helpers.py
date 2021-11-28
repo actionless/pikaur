@@ -134,12 +134,15 @@ class InterceptSysOutput():
 
 
 def pikaur(
-        cmd: str, capture_stdout=True, capture_stderr=False, fake_makepkg=False
+        cmd: str, capture_stdout=True, capture_stderr=False,
+        fake_makepkg=False, skippgpcheck=False
 ) -> CmdResult:
 
     PackageDB.discard_local_cache()
 
     new_args = ['pikaur'] + cmd.split(' ')
+    mflags = []
+
     if '-S ' in cmd:
         new_args += [
             '--noconfirm',
@@ -148,8 +151,18 @@ def pikaur(
         new_args += [
             '--makepkg-path=' + os.path.join(TEST_DIR, 'fake_makepkg')
         ]
-        if '--mflags' not in cmd:
-            new_args += ['--mflags=--noextract', ]
+        mflags.append('--noextract')
+    if skippgpcheck:
+        mflags.append('--skippgpcheck')
+    if '--mflags' in cmd:
+        for arg in new_args[::]:
+            if arg.startswith('--mflags'):
+                for mflag in arg.split('=', maxsplit=1)[1].split(','):
+                    mflags.append(mflag)
+                new_args.remove(arg)
+                break
+    if mflags:
+        new_args += [f"--mflags={','.join(mflags)}", ]
 
     print(color_line('\n => ', 10, force=True) + ' '.join(new_args))
 
@@ -265,21 +278,31 @@ class PikaurDbTestCase(PikaurTestCase):
             if pkg_is_installed(pkg_name):
                 self.remove_packages(pkg_name)
 
-    def downgrade_repo_pkg(self, repo_pkg_name: str, fake_makepkg=False) -> str:
+    def downgrade_repo_pkg(
+            self, repo_pkg_name: str,
+            fake_makepkg=False, skippgpcheck=False,
+            count=10
+    ) -> str:
         self.remove_if_installed(repo_pkg_name)
         spawn(f'rm -fr ./{repo_pkg_name}')
         pikaur(f'-G {repo_pkg_name}')
         some_older_commit = spawn(
             f'git -C ./{repo_pkg_name} log --format=%h'
-        ).stdout_text.splitlines()[10]
+        ).stdout_text.splitlines()[count]
         spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
-        pikaur(f'-P -i --noconfirm --mflags=--skippgpcheck '
-               f'./{repo_pkg_name}/trunk/PKGBUILD', fake_makepkg=fake_makepkg)
+        pikaur(
+            '-P -i --noconfirm '
+            f'./{repo_pkg_name}/trunk/PKGBUILD',
+            fake_makepkg=fake_makepkg,
+            skippgpcheck=skippgpcheck
+        )
         self.assertInstalled(repo_pkg_name)
         return PackageDB.get_local_dict()[repo_pkg_name].version
 
     def downgrade_aur_pkg(
-            self, aur_pkg_name: str, fake_makepkg=False, count=1
+            self, aur_pkg_name: str,
+            fake_makepkg=False, skippgpcheck=False,
+            count=1
     ) -> str:
         # and test -P and -G during downgrading :-)
         old_version = (
@@ -295,8 +318,10 @@ class PikaurDbTestCase(PikaurTestCase):
         ).stdout_text.splitlines()[count]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
         pikaur(
-            f'-P -i --noconfirm ./{aur_pkg_name}/PKGBUILD',
-            fake_makepkg=fake_makepkg
+            '-P -i --noconfirm '
+            f'./{aur_pkg_name}/PKGBUILD',
+            fake_makepkg=fake_makepkg,
+            skippgpcheck=skippgpcheck
         )
         self.assertInstalled(aur_pkg_name)
         new_version = PackageDB.get_local_dict()[aur_pkg_name].version

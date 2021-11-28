@@ -36,7 +36,7 @@ class SysupgradeTest(PikaurDbTestCase):
     def setUp(self):
         # just update to make sure everything is on the latest version,
         # except for test subject packages
-        pikaur('-Syu --noconfirm')
+        pikaur('-Syu --noconfirm', skippgpcheck=True)
 
     def downgrade_repo1_pkg(self):
         self.repo_old_version = self.downgrade_repo_pkg(self.repo_pkg_name, fake_makepkg=True)
@@ -45,7 +45,9 @@ class SysupgradeTest(PikaurDbTestCase):
         self.repo2_old_version = self.downgrade_repo_pkg(self.repo2_pkg_name, fake_makepkg=True)
 
     def downgrade_aur1_pkg(self):
-        self.aur_old_version = self.downgrade_aur_pkg(self.aur_pkg_name, fake_makepkg=True)
+        self.aur_old_version = self.downgrade_aur_pkg(
+            self.aur_pkg_name, count=2, fake_makepkg=True, skippgpcheck=True
+        )
 
     def downgrade_aur2_pkg(self):
         self.aur2_old_version = self.downgrade_aur_pkg(
@@ -133,7 +135,7 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
         # and finally test the sysupgrade itself
-        pikaur('-Su --noconfirm')
+        pikaur('-Su --noconfirm', skippgpcheck=True)
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version

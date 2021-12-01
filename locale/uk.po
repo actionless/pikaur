@@ -73,8 +73,8 @@ msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
 msgstr ""
-"Всі стандартні параметри pacman відповідають виконанню `pacman-U"
-"<pkg_file>`. Дивіться `pacman -Uh`."
+"Всі стандартні параметри pacman відповідають виконанню `pacman -U <pkg_file>`."
+"Дивіться `pacman -Uh`."
 
 #: pikaur/main.py:128
 msgid "Build directory"

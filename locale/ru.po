@@ -316,7 +316,7 @@ msgstr "Не задано"
 #: pikaur/install_cli.py:725
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
-msgstr "Не показывать различия для пакета {pkg} ({reason})"
+msgstr "Различия для пакета {pkg} не отображаны ({reason})"
 
 #: pikaur/install_cli.py:326
 msgid "Nothing to do."
@@ -324,7 +324,7 @@ msgstr "Нечего делать."
 
 #: pikaur/info_cli.py:35
 msgid "Optional Deps"
-msgstr "Рекомендованные зависимости"
+msgstr "Дополнительные зависимости"
 
 #: pikaur/info_cli.py:45
 msgid "Out-of-date"

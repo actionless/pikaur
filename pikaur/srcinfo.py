@@ -1,9 +1,11 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import os
+import shutil
 from typing import List, Dict, Optional
 
-from .core import open_file, spawn, isolate_root_cmd, dirname
+from .config import BUILD_CACHE_PATH, CACHE_ROOT
+from .core import open_file, spawn, isolate_root_cmd, dirname, running_as_root
 from .version import VersionMatcher
 from .makepkg_config import MakepkgConfig, MakePkgCommand
 from .pprint import print_stderr, print_error
@@ -124,12 +126,21 @@ class SrcInfo():
         return f'{epoch_display}{version}-{release}'
 
     def regenerate(self) -> None:
+        working_directory = self.repo_path
+        if running_as_root() and not self.repo_path.startswith(CACHE_ROOT):
+            working_directory = os.path.join(
+                BUILD_CACHE_PATH,
+                '_info_' + (self.get_value('pkgbase') or 'unknown')
+            )
+            if not os.path.exists(working_directory):
+                os.mkdir(working_directory)
+            shutil.copy(self.pkgbuild_path, working_directory)
         result = spawn(
             isolate_root_cmd(
                 MakePkgCommand.get() + ['--printsrcinfo'] +
                 ['-p', os.path.basename(self.pkgbuild_path)],
-                cwd=self.repo_path
-            ), cwd=self.repo_path
+                cwd=working_directory
+            ), cwd=working_directory
         )
         if result.returncode != 0:
             print_error(_("failed to generate .SRCINFO from {}:").format(self.pkgbuild_path))

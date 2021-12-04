@@ -183,7 +183,7 @@ msgstr "Спробувати знову?"
 #: pikaur/install_cli.py:737
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
-msgstr "Хочете переглянути {diff} файлів збірки для пакета {name}?"
+msgstr "Хочете переглянути {diff} файлів збирання для пакета {name}?"
 
 #: pikaur/install_cli.py:650
 #, python-brace-format

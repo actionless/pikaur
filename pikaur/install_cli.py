@@ -434,7 +434,7 @@ class InstallPackagesCLI():
                 self.install_package_names.remove(pkg_name)
             if pkg_name in self.not_found_repo_pkgs_names:
                 self.not_found_repo_pkgs_names.remove(pkg_name)
-            if pkg_name in list(self.package_builds_by_name.keys()):
+            if pkg_name in self.package_builds_by_name:
                 del self.package_builds_by_name[pkg_name]
 
     def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]):

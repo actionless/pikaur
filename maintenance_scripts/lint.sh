@@ -24,7 +24,7 @@ python -m pylint "${TARGETS[@]}" --score no 2>&1 \
 | (
 	grep -v \
 		-e "^  warnings.warn($" \
-		-e "^/usr/lib/python3.9/site-packages/" \
+		-e "^/usr/lib/python3.10/site-packages/" \
 	|| true \
 )
 

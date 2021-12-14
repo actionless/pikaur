@@ -26,9 +26,9 @@ except ModuleNotFoundError:
     else:
         print_warning()
         print_warning(_('System Python had minor version update. You need to rebuild Pikaur:'))
-        print_warning('    pikaur -S --rebuild aur/pikaur')
+        print_warning('    pikaur -S --rebuild --aur pikaur')
         print_warning(_('or'))
-        print_warning('    pikaur -S --rebuild aur/pikaur-git')
+        print_warning('    pikaur -S --rebuild --aur pikaur-git')
         print_warning()
 
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-15 02:13+0200\n"
+"POT-Creation-Date: 2021-12-14 19:39+0100\n"
 "PO-Revision-Date: 2019-11-07 13:36+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
 "Language-Team: none\n"
@@ -30,7 +30,7 @@ msgstr[1] ""
 "De pakketten, {packages}, zijn beschikbaar in de pakketbron, maar kunnen "
 "niet worden geïnstalleerd"
 
-#: pikaur/print_department.py:227
+#: pikaur/print_department.py:228
 msgid "({} days old)"
 msgstr "({} dagen oud)"
 
@@ -48,7 +48,7 @@ msgstr ":: fout: de opties '{}' kunnen niet worden gebruikt zonder '{}'."
 msgid "AUR Git URL"
 msgstr "AUR-giturl"
 
-#: pikaur/print_department.py:412
+#: pikaur/print_department.py:421
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "Dit AUR-pakket wordt geïnstalleerd:"
@@ -81,7 +81,7 @@ msgstr ""
 msgid "Build directory"
 msgstr "Bouwmap"
 
-#: pikaur/install_cli.py:861
+#: pikaur/install_cli.py:862
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "Kan '{name}' niet bouwen."
@@ -105,7 +105,7 @@ msgstr "Kan doelmap '{to_path}' niet aanmaken."
 msgid "Can't get package name from PKGBUILD"
 msgstr "Kan pakketnaam niet ontleden uit PKGBUILD"
 
-#: pikaur/filelock.py:21
+#: pikaur/filelock.py:27
 #, python-brace-format
 msgid "Can't lock {lock_file}: {reason}"
 msgstr ""
@@ -124,7 +124,7 @@ msgstr "Kan afhankelijkheden van AUR-pakket '{pkg}' niet oplossen:"
 msgid "Check Deps"
 msgstr "Afhankelijkheden controleren"
 
-#: pikaur/prompt.py:177 pikaur/build.py:682
+#: pikaur/build.py:685 pikaur/prompt.py:198
 msgid "Command '{}' failed to execute."
 msgstr "De opdracht '{}' is mislukt."
 
@@ -136,15 +136,15 @@ msgstr "Veelgebruikte pacman-opties:"
 msgid "Conflicts With"
 msgstr "In conflict met"
 
-#: pikaur/news.py:59
+#: pikaur/news.py:60
 msgid "Could not fetch archlinux.org news"
 msgstr "Kan archlinux.org-nieuws niet ophalen"
 
-#: pikaur/news.py:85
+#: pikaur/news.py:86
 msgid "Could not initialize {}"
 msgstr "Kan '{}' niet initialiseren"
 
-#: pikaur/news.py:127
+#: pikaur/news.py:128
 msgid "Could not update {}"
 msgstr "Kan '{}' niet bijwerken"
 
@@ -152,7 +152,7 @@ msgstr "Kan '{}' niet bijwerken"
 msgid "Dependencies missing for {}"
 msgstr "De vereisten van '{}' ontbreken"
 
-#: pikaur/install_cli.py:879
+#: pikaur/install_cli.py:881
 msgid "Dependency cycle detected between {}"
 msgstr "Vereistencyclus gedetecteerd tussen {}"
 
@@ -164,11 +164,11 @@ msgstr "Afhankelijk van"
 msgid "Description"
 msgstr "Omschrijving"
 
-#: pikaur/prompt.py:197
+#: pikaur/prompt.py:218
 msgid "Do you want to proceed without editing?"
 msgstr "Wilt u doorgaan zonder bewerken?"
 
-#: pikaur/prompt.py:145
+#: pikaur/prompt.py:168
 msgid "Do you want to proceed?"
 msgstr "Wilt u doorgaan?"
 
@@ -176,8 +176,8 @@ msgstr "Wilt u doorgaan?"
 msgid "Do you want to remove all files?"
 msgstr "Wilt u alle bestanden verwijderen?"
 
-#: pikaur/prompt.py:181 pikaur/filelock.py:25 pikaur/urllib.py:29
-#: pikaur/urllib.py:53
+#: pikaur/urllib.py:34 pikaur/urllib.py:56 pikaur/prompt.py:202
+#: pikaur/filelock.py:31
 msgid "Do you want to retry?"
 msgstr "Wilt u het opnieuw proberen?"
 
@@ -191,7 +191,7 @@ msgstr "Wilt u de bouwbestanden {diff} van het pakket '{name}' bekijken?"
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "Wilt u {file} voor pakket {name} {edit}?"
 
-#: pikaur/print_department.py:493
+#: pikaur/print_department.py:502
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr ""
@@ -204,7 +204,7 @@ msgstr[0] ""
 msgstr[1] ""
 "Bezig met ophalen van recentste bronnen voor ontwikkelingspakketten '{}'..."
 
-#: pikaur/install_cli.py:1042
+#: pikaur/install_cli.py:1044
 msgid "Failed to build following packages:"
 msgstr "De volgende pakketten kunnen niet worden gebouwd:"
 
@@ -218,13 +218,13 @@ msgstr ""
 msgid "First Submitted"
 msgstr "Voor het eerst ingediend op"
 
-#: pikaur/print_department.py:65
+#: pikaur/print_department.py:66
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
 msgstr[0] "Het volgende pakket is niet aangetroffen in AUR:"
 msgstr[1] "De volgende pakketten zijn niet aangetroffen in AUR:"
 
-#: pikaur/print_department.py:59
+#: pikaur/print_department.py:60
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
 msgstr[0] "Het volgende pakket is niet aangetroffen in de pakketbronnen:"
@@ -234,15 +234,15 @@ msgstr[1] "De volgende pakketten zijn niet aangetroffen in de pakketbronnen:"
 msgid "Groups"
 msgstr "Groepen"
 
-#: pikaur/print_department.py:449
+#: pikaur/print_department.py:458
 msgid "Ignoring package update {}"
 msgstr "De pakketupdate '{}' is genegeerd"
 
-#: pikaur/print_department.py:455
+#: pikaur/print_department.py:464
 msgid "Ignoring package {}"
 msgstr "Het pakket '{}' is genegeerd"
 
-#: pikaur/install_cli.py:811 pikaur/install_cli.py:824
+#: pikaur/install_cli.py:812 pikaur/install_cli.py:825
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
 msgstr ""
@@ -275,7 +275,7 @@ msgstr "Onderhouder"
 msgid "Make Deps"
 msgstr "Make-afhankelijkheden"
 
-#: pikaur/config.py:395
+#: pikaur/config.py:398
 msgid "Migrating [{}]{} config option to [{}]{} = \"{}\"..."
 msgstr ""
 
@@ -289,19 +289,19 @@ msgstr "Naam"
 msgid "New build deps found for {pkg} package: {deps}"
 msgstr "Nieuwe AUR-bouwafhankelijkheden aangetroffen voor {pkg}: {deps}"
 
-#: pikaur/print_department.py:423
+#: pikaur/print_department.py:432
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "Er wordt een nieuwe afhankelijkheid geïnstalleerd uit AUR:"
 msgstr[1] "Er worden nieuwe afhankelijkheden geïnstalleerd uit AUR:"
 
-#: pikaur/print_department.py:377
+#: pikaur/print_department.py:386
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "Er wordt een nieuwe afhankelijkheid geïnstalleerd uit pakketbron:"
 msgstr[1] "Er worden nieuwe afhankelijkheden geïnstalleerd uit pakketbron:"
 
-#: pikaur/print_department.py:400
+#: pikaur/print_department.py:409
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] ""
@@ -395,11 +395,11 @@ msgid_plural "Reading AUR packages info..."
 msgstr[0] "Bezig met uitlezen van AUR-pakketinformatie..."
 msgstr[1] "Bezig met uitlezen van AUR-pakketinformatie..."
 
-#: pikaur/pacman.py:307
+#: pikaur/pacman.py:315
 msgid "Reading local package database..."
 msgstr "Bezig met uitlezen van lokale pakketdatabank..."
 
-#: pikaur/pacman.py:362
+#: pikaur/pacman.py:370
 msgid "Reading repository package databases..."
 msgstr "Bezig met uitlezen van pakketbrondatabanken..."
 
@@ -411,23 +411,23 @@ msgstr "Bezig met verwijderen van geïnstalleerde afhankelijkheden van {}"
 msgid "Replaces"
 msgstr "Vervangt"
 
-#: pikaur/print_department.py:338
+#: pikaur/print_department.py:347
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "Suggestie uit pakketbron:"
 msgstr[1] "Suggesties uit pakketbron:"
 
-#: pikaur/print_department.py:365
+#: pikaur/print_department.py:374
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "Dit pakketbronpakket wordt geïnstalleerd:"
 msgstr[1] "Deze pakketbronpakketten worden geïnstalleerd:"
 
-#: pikaur/install_info_fetcher.py:458
+#: pikaur/install_info_fetcher.py:464
 msgid "Resolving AUR dependencies..."
 msgstr "Bezig met oplossen van AUR-afhankelijkheden..."
 
-#: pikaur/install_cli.py:926
+#: pikaur/install_cli.py:928
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "Bezig met terugdraaien van {target}-transactie..."
@@ -457,21 +457,21 @@ msgstr "Bezig met voorbereiden van volledige AUR-upgrade..."
 msgid "Starting the build"
 msgstr "Bezig met voorbereiden..."
 
-#: pikaur/news.py:90
+#: pikaur/news.py:91
 msgid "The news feed could not be received or parsed."
 msgstr ""
 
-#: pikaur/news.py:43
+#: pikaur/news.py:44
 msgid "There is news from archlinux.org!"
 msgstr "Er is nieuws van archlinux.org!"
 
-#: pikaur/print_department.py:351
+#: pikaur/print_department.py:360
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "Suggestie uit externe pakketbron:"
 msgstr[1] "Suggesties uit externe pakketbron:"
 
-#: pikaur/print_department.py:389
+#: pikaur/print_department.py:398
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Dit externe pakket wordt geïnstalleerd:"
@@ -482,7 +482,7 @@ msgstr[1] "Deze externe pakketten worden geïnstalleerd:"
 msgid "Try recovering {pkg_name}?"
 msgstr "Wilt u een herstel uitvoeren?"
 
-#: pikaur/install_cli.py:532 pikaur/build.py:692
+#: pikaur/install_cli.py:532 pikaur/build.py:695
 msgid "Try recovering?"
 msgstr "Wilt u een herstel uitvoeren?"
 
@@ -507,23 +507,19 @@ msgstr "Aantal stemmen"
 msgid "[A] abort"
 msgstr "[A]fbreken"
 
-#: pikaur/prompt.py:150
+#: pikaur/prompt.py:171
 msgid "[N]o (--noconfirm)"
 msgstr "[N]ee (--noconfirm)"
 
-#: pikaur/build.py:694
+#: pikaur/build.py:697
 msgid "[R] retry build"
 msgstr "[R] Opnieuw proberen"
 
-#: pikaur/prompt.py:150
-msgid "[Y]es (--noconfirm)"
-msgstr "[J]a (--noconfirm)"
-
-#: pikaur/build.py:702
+#: pikaur/build.py:706
 msgid "[a] abort building all the packages"
 msgstr "[a] Bouwen van pakketten afbreken"
 
-#: pikaur/build.py:696
+#: pikaur/build.py:699
 msgid "[c] checksums skip"
 msgstr "[c] Alle controlegetallen overslaan"
 
@@ -531,28 +527,33 @@ msgstr "[c] Alle controlegetallen overslaan"
 msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
-#: pikaur/build.py:698
+#: pikaur/build.py:702
 msgid "[d] delete build dir and try again"
 msgstr "[d] Bouwmap verwijderen en opnieuw proberen"
 
-#: pikaur/install_cli.py:208 pikaur/build.py:699
+#: pikaur/install_cli.py:208 pikaur/build.py:703
 msgid "[e] edit PKGBUILD"
 msgstr "[e] PKGBUILD aanpassen"
 
-#: pikaur/build.py:697
+#: pikaur/build.py:700
+#, fuzzy
+msgid "[f] check() skip"
+msgstr "[c] Alle controlegetallen overslaan"
+
+#: pikaur/build.py:701
 msgid "[i] ignore architecture"
 msgstr "[i] Architectuur negeren"
 
-#: pikaur/print_department.py:591
+#: pikaur/print_department.py:602
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[geïnstalleerd: {version}]"
 
-#: pikaur/print_department.py:595
+#: pikaur/print_department.py:606
 msgid "[installed]"
 msgstr "[geïnstalleerd]"
 
-#: pikaur/build.py:695
+#: pikaur/build.py:698
 msgid "[p] PGP check skip"
 msgstr "[p] PGP-controle overslaan"
 
@@ -565,7 +566,7 @@ msgstr ""
 msgid "[r] remove dir and clone again"
 msgstr "[r] Map verwijderen en opnieuw klonen"
 
-#: pikaur/build.py:701
+#: pikaur/build.py:705
 msgid "[s] skip building this package"
 msgstr "[s] Dit pakket niet bouwen"
 
@@ -578,8 +579,8 @@ msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v] Pakketinformatie tonen \t[m] Handmatig selecteren"
 
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:527
-#: pikaur/install_cli.py:541 pikaur/build.py:688 pikaur/build.py:708
-#: pikaur/build.py:739
+#: pikaur/install_cli.py:541 pikaur/build.py:691 pikaur/build.py:712
+#: pikaur/build.py:746
 msgid "a"
 msgstr "a"
 
@@ -599,8 +600,8 @@ msgstr "AUR-pakketten altijd herbouwen"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "altijd '-git', '-svn' en andere ontwikkelingspakketten bijwerken"
 
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:544 pikaur/build.py:707
-#: pikaur/build.py:717
+#: pikaur/install_cli.py:541 pikaur/install_cli.py:544 pikaur/build.py:711
+#: pikaur/build.py:721
 msgid "c"
 msgstr "c"
 
@@ -608,11 +609,11 @@ msgstr "c"
 msgid "cli args to pass to makepkg"
 msgstr "de aan makepkg door te geven opdrachtregelopties"
 
-#: pikaur/build.py:707 pikaur/build.py:723
+#: pikaur/build.py:711 pikaur/build.py:730
 msgid "d"
 msgstr "d"
 
-#: pikaur/pprint.py:91
+#: pikaur/pprint.py:95
 msgid "debug:"
 msgstr ""
 
@@ -636,8 +637,8 @@ msgstr "bouwmap niet verwijderen na bouwen"
 msgid "download also AUR dependencies"
 msgstr "Ook AUR-afhankelijkheden downloaden"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:707
-#: pikaur/build.py:726
+#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:711
+#: pikaur/build.py:733
 msgid "e"
 msgstr "e"
 
@@ -645,11 +646,19 @@ msgstr "e"
 msgid "edit"
 msgstr "aanpassen"
 
-#: pikaur/pprint.py:83
+#: pikaur/pprint.py:87
 msgid "error:"
 msgstr "fout:"
 
-#: pikaur/srcinfo.py:138
+#: pikaur/core.py:371
+msgid "executable not found"
+msgstr ""
+
+#: pikaur/build.py:711 pikaur/build.py:724
+msgid "f"
+msgstr ""
+
+#: pikaur/srcinfo.py:146
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "kan .SRCINFO niet genereren uit '{}':"
 
@@ -657,12 +666,13 @@ msgstr "kan .SRCINFO niet genereren uit '{}':"
 msgid "failed to retrieve latest dev sources:"
 msgstr "kan nieuwste ontwikkelingsbronnen niet ophalen:"
 
-#: pikaur/print_department.py:174 pikaur/print_department.py:181
+#. pylint: disable=consider-using-f-string
+#: pikaur/print_department.py:175 pikaur/print_department.py:182
 #, python-brace-format
 msgid "for {pkg}"
 msgstr "voor {pkg}"
 
-#: pikaur/build.py:707 pikaur/build.py:720
+#: pikaur/build.py:711 pikaur/build.py:727
 msgid "i"
 msgstr "i"
 
@@ -699,11 +709,11 @@ msgstr "bezig met zoeken naar conflicterende AUR-pakketten..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:396
+#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:184
 msgid "n"
 msgstr "n"
 
-#: pikaur/prompt.py:196
+#: pikaur/prompt.py:217
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
 msgstr "Geen bewerker aangetroffen; stel $VISUAL of $EDITOR in."
 
@@ -717,7 +727,8 @@ msgstr "niet toegestaan met optie %s"
 msgid "one of the arguments %s is required"
 msgstr "één van de argumenten %s is vereist"
 
-#: pikaur/print_department.py:236 pikaur/print_department.py:618
+#. pylint: disable=consider-using-f-string
+#: pikaur/print_department.py:245 pikaur/print_department.py:626
 msgid "outofdate"
 msgstr "verouderd"
 
@@ -725,7 +736,7 @@ msgstr "verouderd"
 msgid "override path to makepkg executable"
 msgstr "pad naar makepkg uitvoerbaar bestand overschrijven"
 
-#: pikaur/install_cli.py:546 pikaur/build.py:707 pikaur/build.py:714
+#: pikaur/install_cli.py:546 pikaur/build.py:711 pikaur/build.py:718
 msgid "p"
 msgstr "p"
 
@@ -738,19 +749,19 @@ msgid "path to custom pikaur config"
 msgstr "pad naar aangepaste pikaur-configuratie"
 
 #. to avoid mixing together with pacman's debug messages:
-#: pikaur/pprint.py:94
+#: pikaur/pprint.py:98
 msgid "pikaur debug:"
 msgstr ""
 
-#: pikaur/core.py:349
+#: pikaur/core.py:353
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur kan alleen worden uitgevoerd met Python >= 3.7."
 
-#: pikaur/urllib.py:79
+#: pikaur/urllib.py:82
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur kan alleen een socks5-proxy gebruiken middels python-pysocks."
 
-#: pikaur/core.py:354
+#: pikaur/core.py:358
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur kan alleen als root draaien (met dynamische gebruikers) met systemd "
@@ -780,14 +791,14 @@ msgstr "alleen naar pakketten zoeken in AUR"
 msgid "query packages from repository only"
 msgstr "alleen naar pakketten zoeken in pakketbron"
 
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:549 pikaur/build.py:707
-#: pikaur/build.py:712
+#: pikaur/install_cli.py:541 pikaur/install_cli.py:549 pikaur/build.py:711
+#: pikaur/build.py:716
 msgid "r"
 msgstr "r"
 
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:230
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:551 pikaur/build.py:686
-#: pikaur/build.py:708
+#: pikaur/install_cli.py:541 pikaur/install_cli.py:551 pikaur/build.py:689
+#: pikaur/build.py:712
 msgid "s"
 msgstr "s"
 
@@ -816,15 +827,16 @@ msgstr "gebruik:  pikaur {-P --pkgbuild} [opties] <bestand(en)>"
 msgid "v"
 msgstr "v"
 
-#: pikaur/pprint.py:76 pikaur/config.py:394
+#: pikaur/pprint.py:80 pikaur/config.py:397
 msgid "warning:"
 msgstr "waarschuwing:"
 
-#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
+#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
 msgid "y"
 msgstr "j"
 
-#: pikaur/print_department.py:196 pikaur/print_department.py:202
+#. pylint: disable=consider-using-f-string
+#: pikaur/print_department.py:197 pikaur/print_department.py:203
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
@@ -839,13 +851,13 @@ msgstr ""
 "{name} kan niet worden gebouwd op de huidige architectuur ({arch}). "
 "Ondersteund: {suparch}"
 
-#: pikaur/print_department.py:503
+#: pikaur/print_department.py:512
 #, fuzzy, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr ""
 "{name} {version} {package_source}-pakket is bijgewerkt - wordt overgeslagen"
 
-#: pikaur/print_department.py:483
+#: pikaur/print_department.py:492
 #, fuzzy, python-brace-format
 msgid ""
 "{name} {version} local package is newer than in AUR ({aur_version}) - "
@@ -853,7 +865,7 @@ msgid ""
 msgstr ""
 "{name} {version} {package_source}-pakket is bijgewerkt - wordt overgeslagen"
 
-#: pikaur/print_department.py:473
+#: pikaur/print_department.py:482
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr ""
@@ -864,7 +876,7 @@ msgstr ""
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} en {installed} conflicteren. Wilt u {installed} verwijderen?"
 
-#: pikaur/install_info_fetcher.py:437
+#: pikaur/install_info_fetcher.py:443
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr "'{pkg_name}' is al toegevoegd aan de lijst"
@@ -877,6 +889,9 @@ msgid ""
 msgstr ""
 "{what} hangt af van '{dep}'\n"
 " aangetroffen in '{location}': '{version}'"
+
+#~ msgid "[Y]es (--noconfirm)"
+#~ msgstr "[J]a (--noconfirm)"
 
 #~ msgid "[a] abort"
 #~ msgstr "[A]fbreken"

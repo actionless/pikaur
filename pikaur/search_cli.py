@@ -139,7 +139,7 @@ def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disabl
     if not args.quiet:
         progressbar_length = max(len(search_query), 1) + (not REPO_ONLY) + (not AUR_ONLY)
         print_stderr(_("Searching... [{bar}]").format(bar='-' * progressbar_length), end='')
-        print_stderr('\x1b[\bb' * (progressbar_length + 1), end='')
+        print_stderr('\x1b[1D' * (progressbar_length + 1), end='')
 
     with ThreadPool() as pool:
         request_local = pool.apply_async(package_search_thread_local, ())

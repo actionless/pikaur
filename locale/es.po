@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-14 19:39+0100\n"
+"POT-Creation-Date: 2021-12-17 21:55+0100\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -175,8 +175,8 @@ msgstr "¿Continuar?"
 msgid "Do you want to remove all files?"
 msgstr "¿Suprimir todos los archivos?"
 
-#: pikaur/urllib.py:34 pikaur/urllib.py:56 pikaur/prompt.py:202
-#: pikaur/filelock.py:31
+#: pikaur/filelock.py:31 pikaur/urllib.py:34 pikaur/urllib.py:56
+#: pikaur/prompt.py:202
 msgid "Do you want to retry?"
 msgstr "¿Intentarlo de nuevo?"
 
@@ -483,7 +483,7 @@ msgstr[1] "Se instalarán los paquetes de repositorios de terceros:"
 msgid "Try recovering {pkg_name}?"
 msgstr "¿Intentar recuperarte {pkg_name}?"
 
-#: pikaur/install_cli.py:532 pikaur/build.py:695
+#: pikaur/build.py:695 pikaur/install_cli.py:532
 msgid "Try recovering?"
 msgstr "¿Intentar recuperarte?"
 
@@ -531,14 +531,13 @@ msgstr "[c] git checkout -- '*'"
 msgid "[d] delete build dir and try again"
 msgstr "[d] borrar el directorio de compilación e intentarlo de nuevo"
 
-#: pikaur/install_cli.py:208 pikaur/build.py:703
+#: pikaur/build.py:703 pikaur/install_cli.py:208
 msgid "[e] edit PKGBUILD"
 msgstr "[e] editar el PKGBUILD"
 
 #: pikaur/build.py:700
-#, fuzzy
-msgid "[f] check() skip"
-msgstr "[c] omisión de sumas de comprobación"
+msgid "[f] skip 'check()' function of PKGBUILD"
+msgstr "[f] omitir la función 'check()' de PKGBUILD"
 
 #: pikaur/build.py:701
 msgid "[i] ignore architecture"
@@ -578,9 +577,9 @@ msgstr "[s] omitir este paquete"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v]er detalles del paquete   seleccionar los paquetes [m]anualmente"
 
+#: pikaur/build.py:691 pikaur/build.py:712 pikaur/build.py:746
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:527
-#: pikaur/install_cli.py:541 pikaur/build.py:691 pikaur/build.py:712
-#: pikaur/build.py:746
+#: pikaur/install_cli.py:541
 msgid "a"
 msgstr "a"
 
@@ -600,8 +599,8 @@ msgstr "siempre reconstruir los paquetes AUR"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "siempre sysupgrade '-git', '-svn' y otros paquetes dev"
 
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:544 pikaur/build.py:711
-#: pikaur/build.py:721
+#: pikaur/build.py:711 pikaur/build.py:721 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:544
 msgid "c"
 msgstr "c"
 
@@ -637,14 +636,14 @@ msgstr "no borrar el directorio de construcción después de la compilación"
 msgid "download also AUR dependencies"
 msgstr "descargar también dependencias AUR"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:711
-#: pikaur/build.py:733
+#: pikaur/build.py:711 pikaur/build.py:733 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:215
 msgid "e"
 msgstr "e"
 
 #: pikaur/install_cli.py:651
 msgid "edit"
-msgstr "Modificar"
+msgstr "editar"
 
 #: pikaur/pprint.py:87
 msgid "error:"
@@ -652,11 +651,11 @@ msgstr "error:"
 
 #: pikaur/core.py:371
 msgid "executable not found"
-msgstr ""
+msgstr "ejecutable no encontrado"
 
 #: pikaur/build.py:711 pikaur/build.py:724
 msgid "f"
-msgstr ""
+msgstr "f"
 
 #: pikaur/srcinfo.py:146
 msgid "failed to generate .SRCINFO from {}:"
@@ -710,7 +709,7 @@ msgstr "en busca de paquetes AUR conflictivos..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:184
+#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:396
 msgid "n"
 msgstr "n"
 
@@ -737,7 +736,7 @@ msgstr "obsoleto"
 msgid "override path to makepkg executable"
 msgstr "ruta de anulación al ejecutable makepkg"
 
-#: pikaur/install_cli.py:546 pikaur/build.py:711 pikaur/build.py:718
+#: pikaur/build.py:711 pikaur/build.py:718 pikaur/install_cli.py:546
 msgid "p"
 msgstr "p"
 
@@ -752,7 +751,7 @@ msgstr "ruta a la configuración personalizada de pikaur"
 #. to avoid mixing together with pacman's debug messages:
 #: pikaur/pprint.py:98
 msgid "pikaur debug:"
-msgstr "depuración de pikaur"
+msgstr "depuración de pikaur:"
 
 #: pikaur/core.py:353
 msgid "pikaur requires Python >= 3.7 to run."
@@ -791,14 +790,14 @@ msgstr "consultar sólo los paquetes desde AUR"
 msgid "query packages from repository only"
 msgstr "consultar sólo los paquetes desde el repositorio"
 
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:549 pikaur/build.py:711
-#: pikaur/build.py:716
+#: pikaur/build.py:711 pikaur/build.py:716 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:549
 msgid "r"
 msgstr "r"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:230
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:551 pikaur/build.py:689
-#: pikaur/build.py:712
+#: pikaur/build.py:689 pikaur/build.py:712 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:230 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:551
 msgid "s"
 msgstr "s"
 
@@ -831,7 +830,7 @@ msgstr "v"
 msgid "warning:"
 msgstr "atención:"
 
-#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
 msgid "y"
 msgstr "s"
 
@@ -890,6 +889,10 @@ msgid ""
 msgstr ""
 "{what} depende de: '{dep}'\n"
 " encontrado en '{location}': '{version}'"
+
+#, fuzzy
+#~ msgid "[f] check() skip"
+#~ msgstr "[c] omisión de sumas de comprobación"
 
 #~ msgid "[Y]es (--noconfirm)"
 #~ msgstr "[S]i (--noconfirm)"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-14 19:39+0100\n"
+"POT-Creation-Date: 2021-12-17 21:55+0100\n"
 "PO-Revision-Date: 2020-05-31 11:23+0900\n"
 "Last-Translator: Kasmide <kasmide@zohomail.com>\n"
 "Language: ja\n"
@@ -169,8 +169,8 @@ msgstr "続行しますか？"
 msgid "Do you want to remove all files?"
 msgstr "すべてのファイルを削除しますか？"
 
-#: pikaur/urllib.py:34 pikaur/urllib.py:56 pikaur/prompt.py:202
-#: pikaur/filelock.py:31
+#: pikaur/filelock.py:31 pikaur/urllib.py:34 pikaur/urllib.py:56
+#: pikaur/prompt.py:202
 msgid "Do you want to retry?"
 msgstr "再試行しますか？"
 
@@ -461,7 +461,7 @@ msgstr[0] "サードパーティのリポジトリから次のパッケージが
 msgid "Try recovering {pkg_name}?"
 msgstr "リカバリしますか？"
 
-#: pikaur/install_cli.py:532 pikaur/build.py:695
+#: pikaur/build.py:695 pikaur/install_cli.py:532
 msgid "Try recovering?"
 msgstr "リカバリしますか？"
 
@@ -509,14 +509,13 @@ msgstr "[c] git checkout -- '*'"
 msgid "[d] delete build dir and try again"
 msgstr "[d] ビルドディレクトリを削除して再試行"
 
-#: pikaur/install_cli.py:208 pikaur/build.py:703
+#: pikaur/build.py:703 pikaur/install_cli.py:208
 msgid "[e] edit PKGBUILD"
 msgstr "[e] PKGBUILD を編集"
 
 #: pikaur/build.py:700
-#, fuzzy
-msgid "[f] check() skip"
-msgstr "[c] チェックサムをスキップ"
+msgid "[f] skip 'check()' function of PKGBUILD"
+msgstr ""
 
 #: pikaur/build.py:701
 msgid "[i] ignore architecture"
@@ -556,9 +555,9 @@ msgstr "[s] このパッケージをスキップ"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v]パッケージ情報を表示   [m]手動でパッケージを選択"
 
+#: pikaur/build.py:691 pikaur/build.py:712 pikaur/build.py:746
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:527
-#: pikaur/install_cli.py:541 pikaur/build.py:691 pikaur/build.py:712
-#: pikaur/build.py:746
+#: pikaur/install_cli.py:541
 msgid "a"
 msgstr "a"
 
@@ -578,8 +577,8 @@ msgstr "常に AUR パッケージをビルドしなおす"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "常に '-git' や '-svn' などの開発版パッケージを更新"
 
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:544 pikaur/build.py:711
-#: pikaur/build.py:721
+#: pikaur/build.py:711 pikaur/build.py:721 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:544
 msgid "c"
 msgstr "c"
 
@@ -615,8 +614,8 @@ msgstr "ビルド後にビルドディレクトリを削除しない"
 msgid "download also AUR dependencies"
 msgstr "AUR の依存関係もダウンロード"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:711
-#: pikaur/build.py:733
+#: pikaur/build.py:711 pikaur/build.py:733 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:215
 msgid "e"
 msgstr "e"
 
@@ -687,7 +686,7 @@ msgstr "競合する AUR パッケージを検索中..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:184
+#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:396
 msgid "n"
 msgstr "n"
 
@@ -715,7 +714,7 @@ msgstr "outofdate"
 msgid "override path to makepkg executable"
 msgstr "makepkg 実行ファイルへのパスを上書き"
 
-#: pikaur/install_cli.py:546 pikaur/build.py:711 pikaur/build.py:718
+#: pikaur/build.py:711 pikaur/build.py:718 pikaur/install_cli.py:546
 msgid "p"
 msgstr "p"
 
@@ -769,14 +768,14 @@ msgstr "AUR のみからパッケージをクエリ"
 msgid "query packages from repository only"
 msgstr "リポジトリのみからパッケージをクエリ"
 
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:549 pikaur/build.py:711
-#: pikaur/build.py:716
+#: pikaur/build.py:711 pikaur/build.py:716 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:549
 msgid "r"
 msgstr "r"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:230
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:551 pikaur/build.py:689
-#: pikaur/build.py:712
+#: pikaur/build.py:689 pikaur/build.py:712 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:230 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:551
 msgid "s"
 msgstr "s"
 
@@ -809,7 +808,7 @@ msgstr "v"
 msgid "warning:"
 msgstr "警告:"
 
-#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
 msgid "y"
 msgstr "y"
 
@@ -869,6 +868,10 @@ msgid ""
 msgstr ""
 "{what} は次のパッケージに依存しています: '{dep}'\n"
 "'{location}' で見つかったパッケージ: '{version}'"
+
+#, fuzzy
+#~ msgid "[f] check() skip"
+#~ msgstr "[c] チェックサムをスキップ"
 
 #~ msgid "[Y]es (--noconfirm)"
 #~ msgstr "[Y]はい (--noconfirm)"

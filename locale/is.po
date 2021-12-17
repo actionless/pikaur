@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-14 19:39+0100\n"
+"POT-Creation-Date: 2021-12-17 21:55+0100\n"
 "PO-Revision-Date: 2018-04-16 18:27+0000\n"
 "Last-Translator: Andri Viðar Tryggvason (andri@arivarton.com)\n"
 "Language-Team: none\n"
@@ -169,8 +169,8 @@ msgstr "Vilt þú halda áfram?"
 msgid "Do you want to remove all files?"
 msgstr "Vilt þú fjarlægja allar skrár?"
 
-#: pikaur/urllib.py:34 pikaur/urllib.py:56 pikaur/prompt.py:202
-#: pikaur/filelock.py:31
+#: pikaur/filelock.py:31 pikaur/urllib.py:34 pikaur/urllib.py:56
+#: pikaur/prompt.py:202
 msgid "Do you want to retry?"
 msgstr "Vilt þú reyna aftur?"
 
@@ -471,7 +471,7 @@ msgstr[1] "Þriðja aðila gagnahírtir pakkar verða uppsettir:"
 msgid "Try recovering {pkg_name}?"
 msgstr "Prufa að endurétta?"
 
-#: pikaur/install_cli.py:532 pikaur/build.py:695
+#: pikaur/build.py:695 pikaur/install_cli.py:532
 msgid "Try recovering?"
 msgstr "Prufa að endurétta?"
 
@@ -522,12 +522,12 @@ msgstr "[c] git checkout -- '*'"
 msgid "[d] delete build dir and try again"
 msgstr "[f] fjarlægja efnisskrá og klóna aftur"
 
-#: pikaur/install_cli.py:208 pikaur/build.py:703
+#: pikaur/build.py:703 pikaur/install_cli.py:208
 msgid "[e] edit PKGBUILD"
 msgstr ""
 
 #: pikaur/build.py:700
-msgid "[f] check() skip"
+msgid "[f] skip 'check()' function of PKGBUILD"
 msgstr ""
 
 #: pikaur/build.py:701
@@ -569,9 +569,9 @@ msgstr "[h] hoppa yfir pakka"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[s]oða pakka upplýsingar   [v]elja pakka handvirkt"
 
+#: pikaur/build.py:691 pikaur/build.py:712 pikaur/build.py:746
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:527
-#: pikaur/install_cli.py:541 pikaur/build.py:691 pikaur/build.py:712
-#: pikaur/build.py:746
+#: pikaur/install_cli.py:541
 msgid "a"
 msgstr "s"
 
@@ -592,8 +592,8 @@ msgstr ""
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sysupgrade '-git' og aðrir dev pakkar eru eldri enn 1 dagur"
 
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:544 pikaur/build.py:711
-#: pikaur/build.py:721
+#: pikaur/build.py:711 pikaur/build.py:721 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:544
 msgid "c"
 msgstr "c"
 
@@ -631,8 +631,8 @@ msgstr "ekki fjarlægja smíðaskrá eftir smíði"
 msgid "download also AUR dependencies"
 msgstr "Leysir AUR ákvæði..."
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:711
-#: pikaur/build.py:733
+#: pikaur/build.py:711 pikaur/build.py:733 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:215
 msgid "e"
 msgstr ""
 
@@ -703,7 +703,7 @@ msgstr "leita eftir pakka sem eru í árekstri..."
 msgid "m"
 msgstr "v"
 
-#: pikaur/install_cli.py:396 pikaur/prompt.py:22 pikaur/main.py:184
+#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:396
 msgid "n"
 msgstr "n"
 
@@ -730,7 +730,7 @@ msgstr "Úrelt"
 msgid "override path to makepkg executable"
 msgstr ""
 
-#: pikaur/install_cli.py:546 pikaur/build.py:711 pikaur/build.py:718
+#: pikaur/build.py:711 pikaur/build.py:718 pikaur/install_cli.py:546
 msgid "p"
 msgstr ""
 
@@ -790,14 +790,14 @@ msgstr "bara fyrirspurja pakka frá AUR"
 msgid "query packages from repository only"
 msgstr "bara fyrirspurja pakka frá gagnahírslu"
 
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:549 pikaur/build.py:711
-#: pikaur/build.py:716
+#: pikaur/build.py:711 pikaur/build.py:716 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:549
 msgid "r"
 msgstr "f"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:230
-#: pikaur/install_cli.py:541 pikaur/install_cli.py:551 pikaur/build.py:689
-#: pikaur/build.py:712
+#: pikaur/build.py:689 pikaur/build.py:712 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:230 pikaur/install_cli.py:541
+#: pikaur/install_cli.py:551
 msgid "s"
 msgstr "h"
 
@@ -830,7 +830,7 @@ msgstr "s"
 msgid "warning:"
 msgstr "Viðvörun:"
 
-#: pikaur/install_cli.py:396 pikaur/install_cli.py:409 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:396 pikaur/install_cli.py:409
 msgid "y"
 msgstr "j"
 

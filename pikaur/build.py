@@ -697,7 +697,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                         _("[R] retry build"),
                         _("[p] PGP check skip"),
                         _("[c] checksums skip"),
-                        _("[f] check() skip"),
+                        _("[f] skip 'check()' function of PKGBUILD"),
                         _("[i] ignore architecture"),
                         _("[d] delete build dir and try again"),
                         _("[e] edit PKGBUILD"),

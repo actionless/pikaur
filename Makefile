@@ -26,7 +26,9 @@ $(POTFILE):
 		#
 	find pikaur -type f -name '*.py' \
 		| xargs xgettext --language=python --add-comments --sort-output \
-			--default-domain=pikaur --from-code=UTF-8 --keyword='_n:1,2' --output=$@
+			--default-domain=pikaur --from-code=UTF-8 \
+			--keyword='translate' --keyword='translate_many:1,2' \
+			--output=$@
 
 $(LOCALEDIR)/%.po: $(POTFILE)
 	test -f $@ || msginit --locale=$* --no-translator --input=$< --output=$@

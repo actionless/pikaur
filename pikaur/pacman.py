@@ -10,7 +10,7 @@ from typing import (
 from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
 
-from .i18n import _
+from .i18n import translate
 from .pacman_i18n import _p
 from .core import DataType, PackageSource
 from .version import VersionMatcher
@@ -312,7 +312,7 @@ class PackageDB(PackageDBCommon):
         if not cls._packages_list_cache.get(PackageSource.LOCAL):
             with DbLockLocal():
                 if not quiet:
-                    print_stderr(_("Reading local package database..."))
+                    print_stderr(translate("Reading local package database..."))
                 cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local('')
         return cls._packages_list_cache[PackageSource.LOCAL]
 
@@ -367,7 +367,7 @@ class PackageDB(PackageDBCommon):
         if not cls._packages_list_cache.get(PackageSource.REPO):
             with DbLockRepo():
                 if not quiet:
-                    print_stderr(_("Reading repository package databases..."))
+                    print_stderr(translate("Reading repository package databases..."))
                 cls._packages_list_cache[PackageSource.REPO] = cls.search_repo(
                     search_query=''
                 )

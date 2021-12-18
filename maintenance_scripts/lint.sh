@@ -15,7 +15,13 @@ echo Python compile...
 python3 -O -m compileall "${TARGETS[@]}" | (grep -v -e '^Listing' -e '^Compiling' || true)
 
 echo Flake8...
-flake8 "${TARGETS[@]}"
+flake8 "${TARGETS[@]}" 2>&1 \
+| (
+	grep -v \
+		-e "^  warnings.warn($" \
+		-e "^/usr/lib/python3.10/site-packages/" \
+	|| true \
+)
 
 echo PyLint...
 #python -m pylint --jobs="$(nproc)" "${TARGETS[@]}" --score no 2>&1 \

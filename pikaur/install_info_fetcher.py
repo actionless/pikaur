@@ -3,7 +3,7 @@
 from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Dict, Iterable, Any
 
-from .i18n import _
+from .i18n import translate
 from .core import PackageSource, InstallInfo, ComparableType
 from .version import VersionMatcher
 from .pacman import (
@@ -440,7 +440,7 @@ class InstallInfoFetcher(ComparableType):
                 srcinfo = SrcInfo(pkgbuild_path=path, package_name=pkg_name)
                 aur_pkg = AURPackageInfo.from_srcinfo(srcinfo)
                 if pkg_name in aur_updates_install_info_by_name:
-                    raise Exception(_(f"{pkg_name} already added to the list"))
+                    raise Exception(translate(f"{pkg_name} already added to the list"))
                 local_pkg = local_pkgs.get(pkg_name)
                 aur_updates_install_info_by_name[pkg_name] = InstallInfo(
                     name=pkg_name,
@@ -461,7 +461,7 @@ class InstallInfoFetcher(ComparableType):
             else:
                 raise TypeError()
         if all_aur_pkgs:
-            print_stdout(_("Resolving AUR dependencies..."))
+            print_stdout(translate("Resolving AUR dependencies..."))
         try:
             self.aur_deps_relations = find_aur_deps(all_aur_pkgs)
         except DependencyVersionMismatch as exc:

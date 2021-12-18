@@ -1,6 +1,6 @@
 import fcntl
 
-from .i18n import _
+from .i18n import translate
 from .exceptions import SysExit
 from .pprint import print_error
 from .prompt import ask_to_continue
@@ -24,11 +24,11 @@ class FileLock():
                 self.locked = True
                 break
             except BlockingIOError as err:
-                print_error(_("Can't lock {lock_file}: {reason}").format(
+                print_error(translate("Can't lock {lock_file}: {reason}").format(
                     lock_file=self.lock_file_path,
                     reason=err.strerror
                 ))
-                if not ask_to_continue(_('Do you want to retry?')):
+                if not ask_to_continue(translate('Do you want to retry?')):
                     raise SysExit(128) from err
 
     def __exit__(self, *_exc_details) -> None:

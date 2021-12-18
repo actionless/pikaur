@@ -6,9 +6,9 @@ import gettext
 TRANSLATION = gettext.translation('pikaur', fallback=True)
 
 
-def _(msg: str) -> str:
+def translate(msg: str) -> str:
     return TRANSLATION.gettext(msg)
 
 
-def _n(singular: str, plural: str, count: int) -> str:
+def translate_many(singular: str, plural: str, count: int) -> str:
     return TRANSLATION.ngettext(singular, plural, count)

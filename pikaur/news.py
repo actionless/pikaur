@@ -7,7 +7,7 @@ from html.parser import HTMLParser
 
 from typing import TextIO, Union
 
-from .i18n import _
+from .i18n import translate
 from .config import CACHE_ROOT, PikaurConfig
 from .pprint import (
     color_line, format_paragraph, print_stdout, print_error, bold_line,
@@ -41,7 +41,9 @@ class News:
                     if self._is_new(str(child.text)):
                         if first_news:
                             print_stdout(
-                                '\n' + color_line(_('There is news from archlinux.org!'), 9) + '\n'
+                                '\n' +
+                                color_line(translate('There is news from archlinux.org!'), 9) +
+                                '\n'
                             )
                         self._print_one_entry(news_entry)
                         # news are in inverse chronological order (newest first).
@@ -57,7 +59,7 @@ class News:
     def fetch_latest(self) -> None:
         str_response = get_unicode_from_url(self.URL, optional=True)
         if not str_response:
-            print_error(_('Could not fetch archlinux.org news'))
+            print_error(translate('Could not fetch archlinux.org news'))
             return
         self._news_feed = xml.etree.ElementTree.fromstring(str_response)
 
@@ -83,12 +85,12 @@ class News:
                 with open_file(self.CACHE_FILE, 'w') as last_seen_fd:
                     last_seen_fd.write(time_formatted)
             except IOError:
-                print_error(_('Could not initialize {}').format(self.CACHE_FILE))
+                print_error(translate('Could not initialize {}').format(self.CACHE_FILE))
             return last_pkg_date
 
     def _is_new(self, last_online_news: str) -> bool:
         if not last_online_news:
-            print_error(_('The news feed could not be received or parsed.'))
+            print_error(translate('The news feed could not be received or parsed.'))
             return False
         last_online_news_date: datetime.datetime = datetime.datetime.strptime(
             last_online_news, DT_FORMAT
@@ -125,7 +127,7 @@ class News:
             with open_file(self.CACHE_FILE, 'w') as last_seen_fd:
                 last_seen_fd.write(pub_date)
         except IOError:
-            print_error(_('Could not update {}').format(self.CACHE_FILE))
+            print_error(translate('Could not update {}').format(self.CACHE_FILE))
 
 
 class MLStripper(HTMLParser):

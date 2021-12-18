@@ -5,7 +5,7 @@ from typing import List, Tuple, Optional, Union
 
 import pyalpm
 
-from .i18n import _n
+from .i18n import translate_many
 from .version import compare_versions
 from .pacman import (
     PackageDB,
@@ -109,7 +109,7 @@ def find_aur_devel_updates(
 def find_aur_updates() -> Tuple[List[InstallInfo], List[str]]:
     args = parse_args()
     package_names = find_packages_not_from_repo()
-    print_stderr(_n(
+    print_stderr(translate_many(
         "Reading AUR package info...",
         "Reading AUR packages info...",
         len(package_names)

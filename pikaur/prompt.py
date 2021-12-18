@@ -8,7 +8,7 @@ from .args import parse_args
 from .config import PikaurConfig
 
 from .core import interactive_spawn, get_editor
-from .i18n import _
+from .i18n import translate
 from .pprint import (
     color_line, get_term_width, range_printable,
     PrintLock, print_stderr, print_warning, print_debug,
@@ -18,8 +18,8 @@ from .pikspect import pikspect as pikspect_spawn
 from .pikspect import TTYRestore, TTYInputWrapper
 
 
-Y = _('y')
-N = _('n')
+Y = translate('y')
+N = translate('n')
 
 Y_UP = Y.upper()
 N_UP = N.upper()
@@ -165,10 +165,10 @@ def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> Iter
 def ask_to_continue(text: str = None, default_yes: bool = True) -> bool:
     args = parse_args()
     if text is None:
-        text = _('Do you want to proceed?')
+        text = translate('Do you want to proceed?')
 
     if args.noconfirm:
-        default_option = ("[Y]es (--noconfirm)") if default_yes else _("[N]o (--noconfirm)")
+        default_option = ("[Y]es (--noconfirm)") if default_yes else translate("[N]o (--noconfirm)")
         print_stderr(f'{text} {default_option}')
         return default_yes
 
@@ -195,11 +195,11 @@ def retry_interactive_command(
             good = interactive_spawn(cmd_args, **kwargs).returncode == 0
         if good:
             return good
-        print_stderr(color_line(_("Command '{}' failed to execute.").format(
+        print_stderr(color_line(translate("Command '{}' failed to execute.").format(
             ' '.join(cmd_args)
         ), 9))
         if not ask_to_continue(
-                text=_("Do you want to retry?"),
+                text=translate("Do you want to retry?"),
                 default_yes=not args.noconfirm
         ):
             return False
@@ -214,7 +214,9 @@ def retry_interactive_command_or_exit(cmd_args: List[str], **kwargs) -> None:
 def get_editor_or_exit() -> Optional[List[str]]:
     editor = get_editor()
     if not editor:
-        print_warning(_("no editor found. Try setting $VISUAL or $EDITOR."))
-        if not ask_to_continue(_("Do you want to proceed without editing?")):  # pragma: no cover
+        print_warning(translate("no editor found. Try setting $VISUAL or $EDITOR."))
+        if not ask_to_continue(
+                translate("Do you want to proceed without editing?")
+        ):  # pragma: no cover
             raise SysExit(125)
     return editor

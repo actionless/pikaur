@@ -13,7 +13,7 @@ from .core import (
     joined_spawn, spawn, interactive_spawn, InteractiveSpawn,
     sudo, running_as_root, isolate_root_cmd,
 )
-from .i18n import _, _n
+from .i18n import translate, translate_many
 from .config import (
     PikaurConfig,
     AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
@@ -63,7 +63,7 @@ def _mkdir(to_path) -> None:
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
         print_stderr(mkdir_result.stderr_text)
-        raise Exception(_(f"Can't create destination directory '{to_path}'."))
+        raise Exception(translate(f"Can't create destination directory '{to_path}'."))
 
 
 def copy_aur_repo(from_path, to_path) -> None:
@@ -87,7 +87,7 @@ def copy_aur_repo(from_path, to_path) -> None:
             _mkdir(to_path)
         result = interactive_spawn(cmd_args)
         if result.returncode != 0:
-            raise Exception(_(f"Can't copy '{from_path}' to '{to_path}'."))
+            raise Exception(translate(f"Can't copy '{from_path}' to '{to_path}'."))
 
 
 class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
@@ -138,7 +138,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 self.package_names = package_names or srcinfo.pkgnames
                 self.package_base = pkgbase
             else:
-                raise BuildError(_("Can't get package name from PKGBUILD"))
+                raise BuildError(translate("Can't get package name from PKGBUILD"))
         elif package_names:
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
@@ -273,7 +273,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return
         print_stdout('{} {}...'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 15),
-            _n(
+            translate_many(
                 "Downloading the latest sources for a devel package {}",
                 "Downloading the latest sources for devel packages {}",
                 len(self.package_names)
@@ -291,7 +291,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             cwd=self.build_dir,
         )
         if pkgver_result.returncode != 0:
-            print_error(_("failed to retrieve latest dev sources:"))
+            print_error(translate("failed to retrieve latest dev sources:"))
             print_stderr(pkgver_result.stdout_text)
             if (
                     not PikaurConfig().build.SkipFailedBuild.get_bool()
@@ -388,7 +388,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 13),
-            _("Installing already built dependencies for {}").format(
+            translate("Installing already built dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
         ))
 
@@ -454,7 +454,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         ):
             print_stderr("{} {}\n".format(  # pylint: disable=consider-using-f-string
                 color_line("::", 10),
-                _n(
+                translate_many(
                     "Package {pkg} is already built. Pass '--rebuild' flag to force the build.",
                     "Packages {pkg} are already built. Pass '--rebuild' flag to force the build.",
                     len(self.package_names)
@@ -531,7 +531,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 13),
-            _("Installing repository dependencies for {}").format(
+            translate("Installing repository dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
         ))
 
@@ -590,7 +590,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         if deps_packages_removed:
             print_error(
-                _("Failed to remove installed dependencies, packages inconsistency: {}").format(
+                translate(
+                    "Failed to remove installed dependencies, packages inconsistency: {}"
+                ).format(
                     bold_line(', '.join(deps_packages_removed))
                 )
             )
@@ -601,7 +603,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 13),
-            _("Removing already installed dependencies for {}").format(
+            translate("Removing already installed dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
         ))
         retry_interactive_command_or_exit(
@@ -630,11 +632,16 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             arch not in supported_archs
         ):
             print_error(
-                _("{name} can't be built on the current arch ({arch}). "
-                  "Supported: {suparch}").format(
-                      name=bold_line(', '.join(self.package_names)),
-                      arch=arch,
-                      suparch=', '.join(supported_archs))
+                translate(
+                    (
+                        "{name} can't be built on the current arch ({arch}). "
+                        "Supported: {suparch}"
+                    )
+                ).format(
+                    name=bold_line(', '.join(self.package_names)),
+                    arch=arch,
+                    suparch=', '.join(supported_archs)
+                )
             )
             if not ask_to_continue():
                 raise SysExit(95)
@@ -649,7 +656,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         print_stderr('\n{} {}:'.format(  # pylint: disable=consider-using-f-string
             color_line('::', 13),
-            _('Starting the build')
+            translate('Starting the build')
         ))
         build_succeeded = False
         skip_pgp_check = False
@@ -682,55 +689,56 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             if build_succeeded:
                 break
 
-            print_stderr(color_line(_("Command '{}' failed to execute.").format(
+            print_stderr(color_line(translate("Command '{}' failed to execute.").format(
                 ' '.join(cmd_args)
             ), 9))
             if PikaurConfig().build.SkipFailedBuild.get_bool():
-                answer = _("s")
+                answer = translate("s")
             elif self.args.noconfirm:
-                answer = _("a")
+                answer = translate("a")
             else:  # pragma: no cover
                 prompt = '{} {}\n{}\n> '.format(  # pylint: disable=consider-using-f-string
                     color_line('::', 11),
-                    _("Try recovering?"),
+                    translate("Try recovering?"),
                     "\n".join((
-                        _("[R] retry build"),
-                        _("[p] PGP check skip"),
-                        _("[c] checksums skip"),
-                        _("[f] skip 'check()' function of PKGBUILD"),
-                        _("[i] ignore architecture"),
-                        _("[d] delete build dir and try again"),
-                        _("[e] edit PKGBUILD"),
+                        translate("[R] retry build"),
+                        translate("[p] PGP check skip"),
+                        translate("[c] checksums skip"),
+                        translate("[f] skip 'check()' function of PKGBUILD"),
+                        translate("[i] ignore architecture"),
+                        translate("[d] delete build dir and try again"),
+                        translate("[e] edit PKGBUILD"),
                         "-" * 24,
-                        _("[s] skip building this package"),
-                        _("[a] abort building all the packages"),
+                        translate("[s] skip building this package"),
+                        translate("[a] abort building all the packages"),
                     ))
                 )
                 answer = get_input(
                     prompt,
-                    _('r').upper() + _('p') + _('c') + _('f') + _('i') + _('d') + _('e') +
-                    _('s') + _('a')
+                    translate('r').upper() + translate('p') + translate('c') +
+                    translate('f') + translate('i') + translate('d') +
+                    translate('e') + translate('s') + translate('a')
                 )
 
             answer = answer.lower()[0]
-            if answer == _("r"):  # pragma: no cover
+            if answer == translate("r"):  # pragma: no cover
                 continue
-            if answer == _("p"):  # pragma: no cover
+            if answer == translate("p"):  # pragma: no cover
                 skip_pgp_check = True
                 continue
-            if answer == _("c"):  # pragma: no cover
+            if answer == translate("c"):  # pragma: no cover
                 skip_file_checksums = True
                 continue
-            if answer == _("f"):  # pragma: no cover
+            if answer == translate("f"):  # pragma: no cover
                 skip_check = True
                 continue
-            if answer == _("i"):  # pragma: no cover
+            if answer == translate("i"):  # pragma: no cover
                 self.skip_carch_check = True
                 continue
-            if answer == _("d"):  # pragma: no cover
+            if answer == translate("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)
                 continue
-            if answer == _('e'):  # pragma: no cover
+            if answer == translate('e'):  # pragma: no cover
                 editor_cmd = get_editor_or_exit()
                 if editor_cmd:
                     interactive_spawn(
@@ -743,7 +751,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     ]))
                     raise PkgbuildChanged()
                 continue
-            if answer == _("a"):
+            if answer == translate("a"):
                 raise SysExit(125)
             # "s"kip
             break

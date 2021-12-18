@@ -4,7 +4,7 @@ from .args import parse_args
 from .aur_deps import get_aur_deps_list
 from .aur import find_aur_packages, get_repo_url
 from .core import check_runtime_deps, interactive_spawn
-from .i18n import _
+from .i18n import translate
 from .pacman import PackageDB, PackagesNotFoundInRepo
 from .pprint import print_stdout
 from .print_department import print_not_found_packages
@@ -54,7 +54,7 @@ def cli_getpkgbuild() -> None:
         if os.path.exists(repo_path):
             action = 'update'
         print_stdout()
-        print_stdout(_(f"Package '{name}' going to be cloned into '{repo_path}'..."))
+        print_stdout(translate(f"Package '{name}' going to be cloned into '{repo_path}'..."))
         interactive_spawn([
             'asp',
             action,

@@ -5,7 +5,7 @@ from urllib import request
 from urllib.error import URLError
 from typing import Any, Dict, List
 
-from .i18n import _
+from .i18n import translate
 from .pprint import print_error, print_stderr, color_line
 from .prompt import ask_to_continue
 from .exceptions import SysExit
@@ -31,7 +31,7 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
         print_error('urllib: ' + str(exc.reason))
         if optional:
             return b''
-        if ask_to_continue(_('Do you want to retry?')):
+        if ask_to_continue(translate('Do you want to retry?')):
             return read_bytes_from_url(url, optional=optional)
         raise SysExit(102) from exc
 
@@ -53,7 +53,7 @@ def get_gzip_from_url(url: str) -> str:
     except EOFError as exc:
         print_error(f'GET {url}')
         print_error('urllib: ' + str(exc))
-        if ask_to_continue(_('Do you want to retry?')):
+        if ask_to_continue(translate('Do you want to retry?')):
             return get_gzip_from_url(url)
         raise SysExit(102) from exc
     text_response = decompressed_bytes_response.decode(DEFAULT_WEB_ENCODING)
@@ -79,7 +79,7 @@ def init_proxy() -> None:
             import socks  # type: ignore[import]  # pylint:disable=import-outside-toplevel
         except ImportError as exc:
             raise ProxyInitSocks5Error(
-                _("pikaur requires python-pysocks to use a socks5 proxy.")
+                translate("pikaur requires python-pysocks to use a socks5 proxy.")
             ) from exc
         socks.set_default_proxy(socks.PROXY_TYPE_SOCKS5, socks_proxy_addr, port)
         socket.socket = socks.socksocket  # type: ignore[misc]

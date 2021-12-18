@@ -16,7 +16,7 @@ from typing import List, Optional, Callable
 
 import pyalpm
 
-from .i18n import _  # keep that first
+from .i18n import translate  # keep that first
 from .args import (
     parse_args, reconstruct_args,
 )
@@ -125,14 +125,14 @@ def cli_clean_packages_cache() -> None:
     args = parse_args()
     if not args.repo:
         for directory, message, minimal_clean_level in (
-                (BUILD_CACHE_PATH, _("Build directory"), 1, ),
-                (PACKAGE_CACHE_PATH, _("Packages directory"), 2, ),
+                (BUILD_CACHE_PATH, translate("Build directory"), 1, ),
+                (PACKAGE_CACHE_PATH, translate("Packages directory"), 2, ),
         ):
             if minimal_clean_level <= args.clean and os.path.exists(directory):
                 print_stdout(f"\n{message}: {directory}")
                 if ask_to_continue(text='{} {}'.format(  # pylint: disable=consider-using-f-string
                         color_line('::', 12),
-                        bold_line(_("Do you want to remove all files?"))
+                        bold_line(translate("Do you want to remove all files?"))
                 )):
                     remove_dir(directory)
     if not args.aur:
@@ -162,7 +162,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
     while True:
         try:
             print_stderr(
-                '\n' + _(
+                '\n' + translate(
                     "Please enter the number of the package(s) you want to install "
                     "and press [Enter] (default={}):"
                 ).format(1)
@@ -173,7 +173,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
             restart_prompt = False
             for idx in selected_pkgs_idx:
                 if not 0 <= idx < len(packages):
-                    print_error(_('invalid value: {} is not between {} and {}').format(
+                    print_error(translate('invalid value: {} is not between {} and {}').format(
                         idx + 1, 1, len(packages) + 1
                     ))
                     restart_prompt = True
@@ -181,9 +181,9 @@ def cli_dynamic_select() -> None:  # pragma: no cover
                 continue
             break
         except NotANumberInput as exc:
-            if exc.character.lower() == _('n'):
+            if exc.character.lower() == translate('n'):
                 raise SysExit(128) from exc
-            print_error(_('invalid number: {}').format(exc.character))
+            print_error(translate('invalid number: {}').format(exc.character))
 
     parse_args().positional = [packages[idx].name for idx in selected_pkgs_idx]
     cli_install_packages()
@@ -294,10 +294,12 @@ def migrate_old_aur_repos_dir() -> None:
 
     print_stderr()
     print_warning(
-        _("AUR repos dir has been moved from '{old}' to '{new}'.".format(  # pylint: disable=consider-using-f-string
+        translate(
+            "AUR repos dir has been moved from '{old}' to '{new}'."
+        ).format(
             old=_OLD_AUR_REPOS_CACHE_PATH,
             new=AUR_REPOS_CACHE_PATH
-        ))
+        )
     )
     print_stderr()
 

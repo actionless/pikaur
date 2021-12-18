@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Iterable, Set, TypeVar
 
 import pyalpm
 
-from .i18n import _
+from .i18n import translate
 from .pprint import print_stderr, print_error
 from .print_department import print_package_search_results, AnyPackage
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
@@ -62,14 +62,14 @@ def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:  # py
                 except AURError as exc:
                     if exc.error == "Too many package results.":
                         print_error(
-                            _("AUR: Too many package results for '{query}'").format(
+                            translate("AUR: Too many package results for '{query}'").format(
                                 query=query
                             )
                         )
                         use_as_filters.append(query)
                     elif exc.error == "Query arg too small.":
                         print_error(
-                            _("AUR: Query arg too small '{query}'").format(
+                            translate("AUR: Query arg too small '{query}'").format(
                                 query=query
                             )
                         )
@@ -138,7 +138,7 @@ def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disabl
 
     if not args.quiet:
         progressbar_length = max(len(search_query), 1) + (not REPO_ONLY) + (not AUR_ONLY)
-        print_stderr(_("Searching... [{bar}]").format(bar='-' * progressbar_length), end='')
+        print_stderr(translate("Searching... [{bar}]").format(bar='-' * progressbar_length), end='')
         print_stderr('\x1b[1D' * (progressbar_length + 1), end='')
 
     with ThreadPool() as pool:
@@ -161,7 +161,7 @@ def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disabl
         try:
             result_aur = request_aur.get() if request_aur else None
         except AURError as exc:
-            print_stderr(f'_("AUR returned error:") {exc}')
+            print_stderr(f'translate("AUR returned error:") {exc}')
             raise SysExit(121) from exc
         pool.join()
 

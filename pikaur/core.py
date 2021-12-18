@@ -18,7 +18,7 @@ import pyalpm
 
 from .args import parse_args
 from .config import PikaurConfig
-from .i18n import _
+from .i18n import translate
 from .pprint import print_stderr, color_line, print_error, bold_line
 
 if TYPE_CHECKING:
@@ -350,12 +350,12 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
 def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
     if sys.version_info.major < 3 or sys.version_info.minor < 7:
         print_error(
-            _("pikaur requires Python >= 3.7 to run."),
+            translate("pikaur requires Python >= 3.7 to run."),
         )
         sys.exit(65)
     if running_as_root() and not check_systemd_dynamic_users():
         print_error(
-            _("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
+            translate("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         )
         sys.exit(65)
     if not dep_names:
@@ -368,6 +368,6 @@ def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
         if not shutil.which(dep_bin):
             print_error("'{}' {}.".format(  # pylint: disable=consider-using-f-string
                 bold_line(dep_bin),
-                _("executable not found")
+                translate("executable not found")
             ))
             sys.exit(2)

@@ -2,7 +2,7 @@ from datetime import datetime
 from multiprocessing.pool import ThreadPool
 from unicodedata import east_asian_width
 
-from .i18n import _
+from .i18n import translate
 from .pacman_i18n import _p
 from .aur import find_aur_packages, get_all_aur_names
 from .args import parse_args, reconstruct_args
@@ -19,30 +19,30 @@ def _info_packages_thread_repo() -> str:
 
 
 INFO_FIELDS = dict(
-    git_url=_("AUR Git URL"),
-    # id=_("id"),
-    name=_("Name"),
-    # packagebaseid=_(""),
-    packagebase=_("Package Base"),
-    version=_("Version"),
-    desc=_("Description"),
-    url=_("URL"),
-    keywords=_("Keywords"),
-    license=_("Licenses"),
-    groups=_("Groups"),
-    provides=_("Provides"),
-    depends=_("Depends On"),
-    optdepends=_("Optional Deps"),
-    makedepends=_("Make Deps"),
-    checkdepends=_("Check Deps"),
-    conflicts=_("Conflicts With"),
-    replaces=_("Replaces"),
-    maintainer=_("Maintainer"),
-    numvotes=_("Votes"),
-    popularity=_("Popularity"),
-    firstsubmitted=_("First Submitted"),
-    lastmodified=_("Last Updated"),
-    outofdate=_("Out-of-date"),
+    git_url=translate("AUR Git URL"),
+    # id=translate("id"),
+    name=translate("Name"),
+    # packagebaseid=translate(""),
+    packagebase=translate("Package Base"),
+    version=translate("Version"),
+    desc=translate("Description"),
+    url=translate("URL"),
+    keywords=translate("Keywords"),
+    license=translate("Licenses"),
+    groups=translate("Groups"),
+    provides=translate("Provides"),
+    depends=translate("Depends On"),
+    optdepends=translate("Optional Deps"),
+    makedepends=translate("Make Deps"),
+    checkdepends=translate("Check Deps"),
+    conflicts=translate("Conflicts With"),
+    replaces=translate("Replaces"),
+    maintainer=translate("Maintainer"),
+    numvotes=translate("Votes"),
+    popularity=translate("Popularity"),
+    firstsubmitted=translate("First Submitted"),
+    lastmodified=translate("Last Updated"),
+    outofdate=translate("Out-of-date"),
 )
 
 
@@ -54,7 +54,7 @@ def _decorate_repo_info_output(output: str) -> str:
 
 def _decorate_aur_info_output(output: str) -> str:
     return output.replace(
-        _('None'), color_line(_('None'), 8)
+        translate('None'), color_line(translate('None'), 8)
     )
 
 
@@ -84,7 +84,7 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
             if key in ['firstsubmitted', 'lastmodified', 'outofdate'] and value:
                 value = datetime.fromtimestamp(value).strftime('%c')
             elif isinstance(value, list):
-                value = ', '.join(value) or _("None")
+                value = ', '.join(value) or translate("None")
             key_display = bold_line(_rightpad(display_name, longest_field_length + 1))
             pkg_info_lines.append(f'{key_display}: {value}')
         print(

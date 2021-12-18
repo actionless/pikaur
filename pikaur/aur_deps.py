@@ -3,7 +3,7 @@
 from multiprocessing.pool import ThreadPool
 from typing import List, Dict
 
-from .i18n import _
+from .i18n import translate
 from .pacman import PackageDB
 from .version import VersionMatcher
 from .aur import AURPackageInfo, find_aur_packages
@@ -289,7 +289,7 @@ def find_aur_deps(aur_pkgs_infos: List[AURPackageInfo]) -> Dict[str, List[str]]:
                 try:
                     results = request.get()
                 except Exception as exc:
-                    print_error(_(
+                    print_error(translate(
                         "Can't resolve dependencies for AUR package '{pkg}':"
                     ).format(pkg=aur_pkg_name))
                     raise exc

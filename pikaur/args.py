@@ -7,7 +7,7 @@ from typing import Any, List, NoReturn, Optional, Tuple, Union
 
 from .argparse import ArgumentParserWithUnknowns
 from .config import PikaurConfig
-from .i18n import _, _n
+from .i18n import translate, translate_many
 
 
 ArgSchema = List[Tuple[Optional[str], str, Union[None, bool, str, int]]]
@@ -354,13 +354,13 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     try:
         parsed_args.validate()
     except IncompatibleArguments as exc:
-        print(_(":: error: options {} can't be used together.").format(
+        print(translate(":: error: options {} can't be used together.").format(
             ", ".join([f"'--{opt}'" for opt in exc.args])
         ))
         sys.exit(1)
     except MissingArgument as exc:
         print(
-            _n(
+            translate_many(
                 ":: error: option {} can't be used without {}.",
                 ":: error: options {} can't be used without {}.",
                 len(exc.args[1:])

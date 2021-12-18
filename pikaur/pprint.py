@@ -6,7 +6,7 @@ from threading import Lock
 from string import printable
 from typing import List, Optional, TextIO, Any
 
-from .i18n import _
+from .i18n import translate
 from .args import parse_args
 
 
@@ -77,14 +77,14 @@ def bold_line(line: str) -> str:
 
 def print_warning(message: str = '') -> None:
     print_stderr(' '.join([
-        color_line(':: ' + _("warning:"), 11),
+        color_line(':: ' + translate("warning:"), 11),
         message
     ]))
 
 
 def print_error(message: str) -> None:
     print_stderr(' '.join([
-        color_line(':: ' + _("error:"), 9),
+        color_line(':: ' + translate("error:"), 9),
         message
     ]))
 
@@ -92,10 +92,10 @@ def print_error(message: str) -> None:
 def print_debug(message: Any, lock=True) -> None:
     if not ARGS.pikaur_debug:
         return
-    prefix = _("debug:")
+    prefix = translate("debug:")
     if ARGS.debug:
         # to avoid mixing together with pacman's debug messages:
-        prefix = _("pikaur debug:")
+        prefix = translate("pikaur debug:")
     print_stderr(' '.join([
         color_line(':: ' + prefix, 6),
         str(message)

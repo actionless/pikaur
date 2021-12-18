@@ -9,7 +9,7 @@ from typing import List, Dict, Optional, Set, Any
 
 import pyalpm
 
-from .i18n import _
+from .i18n import translate
 from .config import PikaurConfig
 from .args import reconstruct_args, PikaurArgs, parse_args
 from .aur import AURPackageInfo
@@ -150,7 +150,7 @@ class InstallPackagesCLI():
         if self.args.sysupgrade and not self.args.repo:
             print_stderr('{} {}'.format(  # pylint: disable=consider-using-f-string
                 color_line('::', 12),
-                bold_line(_("Starting full AUR upgrade..."))
+                bold_line(translate("Starting full AUR upgrade..."))
             ))
         if self.args.aur:
             self.not_found_repo_pkgs_names = self.install_package_names
@@ -204,15 +204,15 @@ class InstallPackagesCLI():
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
         prompt = '{} {}\n{}\n{}\n{}\n> '.format(  # pylint: disable=consider-using-f-string
             color_line('::', 11),
-            _("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
-            _("[e] edit PKGBUILD"),
-            _("[s] skip this package"),
-            _("[A] abort")
+            translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
+            translate("[e] edit PKGBUILD"),
+            translate("[s] skip this package"),
+            translate("[A] abort")
         )
-        answer = get_input(prompt, _('e') + _('s') + _('a').upper())
+        answer = get_input(prompt, translate('e') + translate('s') + translate('a').upper())
 
         answer = answer.lower()[0]
-        if answer == _("e"):
+        if answer == translate("e"):
             updated_pkgbuilds = self._clone_aur_repos([pkg_name])
             if not updated_pkgbuilds:
                 return
@@ -221,13 +221,13 @@ class InstallPackagesCLI():
             if not edit_file(
                     pkg_build.pkgbuild_path
             ):
-                print_warning(_("PKGBUILD appears unchanged after editing"))
+                print_warning(translate("PKGBUILD appears unchanged after editing"))
             else:
                 self.handle_pkgbuild_changed(pkg_build)
             self._ignore_package(pkg_name)
             self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
             self.main_sequence()
-        elif answer == _("s"):
+        elif answer == translate("s"):
             self._ignore_package(pkg_name)
         else:
             raise SysExit(125)
@@ -255,7 +255,7 @@ class InstallPackagesCLI():
         except PackagesNotFoundInAUR as exc:
             if exc.wanted_by:
                 print_error(bold_line(
-                    _("Dependencies missing for {}").format(', '.join(exc.wanted_by))
+                    translate("Dependencies missing for {}").format(', '.join(exc.wanted_by))
                 ))
                 print_not_found_packages(exc.packages)
                 for pkg_name in exc.wanted_by:  # pylint: disable=not-an-iterable
@@ -265,9 +265,9 @@ class InstallPackagesCLI():
             print_not_found_packages(exc.packages)
             raise SysExit(131) from exc
         except DependencyVersionMismatch as exc:
-            print_stderr(color_line(_("Version mismatch:"), 11))
+            print_stderr(color_line(translate("Version mismatch:"), 11))
             print_stderr(
-                _("{what} depends on: '{dep}'\n found in '{location}': '{version}'").format(
+                translate("{what} depends on: '{dep}'\n found in '{location}': '{version}'").format(
                     what=bold_line(exc.who_depends),
                     dep=exc.dependency_line,
                     location=exc.location,
@@ -323,7 +323,7 @@ class InstallPackagesCLI():
             else:
                 print_stdout('{} {}'.format(  # pylint: disable=consider-using-f-string
                     color_line('::', 10),
-                    _("Nothing to do."),
+                    translate("Nothing to do."),
                 ))
             raise SysExit(0)
 
@@ -389,11 +389,14 @@ class InstallPackagesCLI():
             _print_sysupgrade(verbose=verbose)
             prompt = '{} {}\n{} {}\n>> '.format(  # pylint: disable=consider-using-f-string
                 color_line('::', 12),
-                bold_line(_('Proceed with installation? [Y/n] ')),
+                bold_line(translate('Proceed with installation? [Y/n] ')),
                 color_line('::', 12),
-                bold_line(_('[v]iew package details   [m]anually select packages')))
+                bold_line(translate('[v]iew package details   [m]anually select packages')))
 
-            answer = get_input(prompt, _('y').upper() + _('n') + _('v') + _('m'))
+            answer = get_input(
+                prompt,
+                translate('y').upper() + translate('n') + translate('v') + translate('m')
+            )
 
             return answer
 
@@ -406,12 +409,12 @@ class InstallPackagesCLI():
                 answer = _confirm_sysupgrade()
             if answer:
                 letter = answer.lower()[0]
-                if letter == _("y"):
+                if letter == translate("y"):
                     break
-                if letter == _("v"):
+                if letter == translate("v"):
                     answer = _confirm_sysupgrade(verbose=True)
                     continue
-                if letter == _("m"):
+                if letter == translate("m"):
                     print_stdout()
                     self.manual_package_selection()
                     self.get_all_packages_info()
@@ -480,15 +483,19 @@ class InstallPackagesCLI():
                 deps_added = srcinfo_deps.difference(aur_rpc_deps)
                 deps_removed = aur_rpc_deps.difference(srcinfo_deps)
                 if deps_added:
-                    print_warning(_("New build deps found for {pkg} package: {deps}").format(
-                        pkg=bold_line(', '.join(pkgbuild.package_names)),
-                        deps=bold_line(', '.join(deps_added)),
-                    ))
+                    print_warning(
+                        translate("New build deps found for {pkg} package: {deps}").format(
+                            pkg=bold_line(', '.join(pkgbuild.package_names)),
+                            deps=bold_line(', '.join(deps_added)),
+                        )
+                    )
                 if deps_removed:
-                    print_warning(_("Some build deps removed for {pkg} package: {deps}").format(
-                        pkg=bold_line(', '.join(pkgbuild.package_names)),
-                        deps=bold_line(', '.join(deps_removed)),
-                    ))
+                    print_warning(
+                        translate("Some build deps removed for {pkg} package: {deps}").format(
+                            pkg=bold_line(', '.join(pkgbuild.package_names)),
+                            deps=bold_line(', '.join(deps_removed)),
+                        )
+                    )
                 for pkg_name in pkgbuild.package_names:
                     self.discard_install_info(pkg_name, ignore=False)
                 self.pkgbuilds_packagelists[pkgbuild.pkgbuild_path] = pkgbuild.package_names
@@ -512,9 +519,9 @@ class InstallPackagesCLI():
                 package_build = err.build
                 print_stderr(color_line(
                     (
-                        _("Can't clone '{name}' in '{path}' from AUR:")
+                        translate("Can't clone '{name}' in '{path}' from AUR:")
                         if package_build.clone else
-                        _("Can't pull '{name}' in '{path}' from AUR:")
+                        translate("Can't pull '{name}' in '{path}' from AUR:")
                     ).format(
                         name=', '.join(package_build.package_names),
                         path=package_build.repo_path
@@ -524,31 +531,34 @@ class InstallPackagesCLI():
                 print_stderr(err.result.stdout_text)
                 print_stderr(err.result.stderr_text)
                 if self.args.noconfirm:
-                    answer = _("a")
+                    answer = translate("a")
                 else:  # pragma: no cover
                     prompt = '{} {}\n> '.format(  # pylint: disable=consider-using-f-string
                         color_line('::', 11),
                         '\n'.join((
-                            _("Try recovering?"),
-                            _("[c] git checkout -- '*'"),
-                            # _("[c] git checkout -- '*' ; git clean -f -d -x"),
-                            _("[r] remove dir and clone again"),
-                            _("[p] git stash && ... && git stash pop"),
-                            _("[s] skip this package"),
-                            _("[A] abort")
+                            translate("Try recovering?"),
+                            translate("[c] git checkout -- '*'"),
+                            # translate("[c] git checkout -- '*' ; git clean -f -d -x"),
+                            translate("[r] remove dir and clone again"),
+                            translate("[p] git stash && ... && git stash pop"),
+                            translate("[s] skip this package"),
+                            translate("[A] abort")
                         ))
                     )
-                    answer = get_input(prompt, _('c') + _('r') + _('s') + _('a').upper())
+                    answer = get_input(
+                        prompt,
+                        translate('c') + translate('r') + translate('s') + translate('a').upper()
+                    )
 
                 answer = answer.lower()[0]
-                if answer == _("c"):  # pragma: no cover
+                if answer == translate("c"):  # pragma: no cover
                     package_build.git_reset_changed()
-                elif answer == _("p"):  # pragma: no cover
+                elif answer == translate("p"):  # pragma: no cover
                     package_build.git_stash()
                     stash_pop_list.append(package_build.package_base)
-                elif answer == _("r"):  # pragma: no cover
+                elif answer == translate("r"):  # pragma: no cover
                     remove_dir(package_build.repo_path)
-                elif answer == _("s"):  # pragma: no cover
+                elif answer == translate("s"):  # pragma: no cover
                     for skip_pkg_name in package_build.package_names:
                         self.discard_install_info(skip_pkg_name)
                         if skip_pkg_name in package_names:
@@ -598,7 +608,7 @@ class InstallPackagesCLI():
 
     def ask_about_package_conflicts(self) -> None:
         if self.aur_packages_names or self.aur_deps_names:
-            print_stderr(_('looking for conflicting AUR packages...'))
+            print_stderr(translate('looking for conflicting AUR packages...'))
             self.found_conflicts.update(
                 find_aur_conflicts(
                     self.aur_packages_names + self.aur_deps_names,
@@ -612,7 +622,7 @@ class InstallPackagesCLI():
             for pkg_conflict in new_pkg_conflicts:
                 if pkg_conflict in all_new_packages_names:
                     print_stderr(color_line(
-                        _("New packages '{new}' and '{other}' are in conflict.").format(
+                        translate("New packages '{new}' and '{other}' are in conflict.").format(
                             new=new_pkg_name, other=pkg_conflict),
                         9))
                     raise SysExit(131)
@@ -620,7 +630,7 @@ class InstallPackagesCLI():
             for pkg_conflict in new_pkg_conflicts:
                 answer = ask_to_continue('{} {}'.format(  # pylint: disable=consider-using-f-string
                     color_line('::', 11),
-                    bold_line(_(
+                    bold_line(translate(
                         "{new} and {installed} are in conflict. Remove {installed}?"
                     ).format(
                         new=new_pkg_name, installed=pkg_conflict
@@ -639,7 +649,7 @@ class InstallPackagesCLI():
         if noedit or self.args.noconfirm:
             print_stderr('{} {}'.format(  # pylint: disable=consider-using-f-string
                 color_line('::', 11),
-                _("Skipping review of {file} for {name} package ({flag})").format(
+                translate("Skipping review of {file} for {name} package ({flag})").format(
                     file=filename,
                     name=', '.join(package_build.package_names),
                     flag=(noedit and '--noedit') or
@@ -647,8 +657,8 @@ class InstallPackagesCLI():
             ))
             return False
         if not ask_to_continue(
-                _("Do you want to {edit} {file} for {name} package?").format(
-                    edit=bold_line(_("edit")),
+                translate("Do you want to {edit} {file} for {name} package?").format(
+                    edit=bold_line(translate("edit")),
                     file=filename,
                     name=bold_line(', '.join(package_build.package_names)),
                 ),
@@ -722,7 +732,7 @@ class InstallPackagesCLI():
             self._get_installed_status()
         for pkg_build in set(self.package_builds_by_name.values()):
             _pkg_label = bold_line(', '.join(pkg_build.package_names))
-            _skip_diff_label = _("Not showing diff for {pkg} package ({reason})")
+            _skip_diff_label = translate("Not showing diff for {pkg} package ({reason})")
 
             if (
                     pkg_build.last_installed_hash != pkg_build.current_hash
@@ -734,8 +744,10 @@ class InstallPackagesCLI():
                 not self.args.noconfirm
             ):
                 if not self.args.nodiff and ask_to_continue(
-                        _("Do you want to see build files {diff} for {name} package?").format(
-                            diff=bold_line(_("diff")),
+                        translate(
+                            "Do you want to see build files {diff} for {name} package?"
+                        ).format(
+                            diff=bold_line(translate("diff")),
                             name=_pkg_label
                         )
                 ):
@@ -769,12 +781,12 @@ class InstallPackagesCLI():
             elif not pkg_build.last_installed_hash:
                 print_warning(_skip_diff_label.format(
                     pkg=_pkg_label,
-                    reason=_("installing for the first time")
+                    reason=translate("installing for the first time")
                 ))
             else:
                 print_warning(_skip_diff_label.format(
                     pkg=_pkg_label,
-                    reason=_("already reviewed")
+                    reason=translate("already reviewed")
                 ))
 
             if self.ask_to_edit_file(
@@ -808,7 +820,7 @@ class InstallPackagesCLI():
         if not getattr(self, 'install_info', None):  # @TODO: make it nicer?
             debug("install info not initialized yet -- running on early stage?")
             if old_srcinfo_hash != new_srcinfo_hash:
-                print_warning(_(
+                print_warning(translate(
                     "Installation info changed (or new deps found) for {pkg} package"
                 ).format(
                     pkg=bold_line(', '.join(pkg_build.package_names)),
@@ -821,7 +833,7 @@ class InstallPackagesCLI():
         self.get_all_packages_info()
         old_install_info.pkgbuilds_packagelists = self.install_info.pkgbuilds_packagelists
         if old_install_info != self.install_info or old_srcinfo_hash != new_srcinfo_hash:
-            print_warning(_(
+            print_warning(translate(
                 "Installation info changed (or new deps found) for {pkg} package"
             ).format(
                 pkg=bold_line(', '.join(pkg_build.package_names)),
@@ -859,7 +871,7 @@ class InstallPackagesCLI():
             except (BuildError, DependencyError) as exc:
                 print_stderr(exc)
                 print_stderr(
-                    color_line(_("Can't build '{name}'.").format(name=pkg_name) + '\n', 9)
+                    color_line(translate("Can't build '{name}'.").format(name=pkg_name) + '\n', 9)
                 )
                 # if not ask_to_continue():
                 #     raise SysExit(125)
@@ -878,7 +890,9 @@ class InstallPackagesCLI():
                     deps_fails_counter[_pkg_name] += 1
                     if deps_fails_counter[_pkg_name] > len(self.all_aur_packages_names):
                         print_error(
-                            _("Dependency cycle detected between {}").format(deps_fails_counter)
+                            translate(
+                                "Dependency cycle detected between {}"
+                            ).format(deps_fails_counter)
                         )
                         raise SysExit(131) from exc
             else:
@@ -925,7 +939,7 @@ class InstallPackagesCLI():
         if not target_transaction:
             return
         print_warning(
-            _("Reverting {target} transaction...").format(target=target)
+            translate("Reverting {target} transaction...").format(target=target)
         )
         removed = target_transaction.get('removed')
         installed = target_transaction.get('installed')
@@ -1041,7 +1055,7 @@ class InstallPackagesCLI():
 
         if self.failed_to_build_package_names:
             print_stderr('\n'.join(
-                [color_line(_("Failed to build following packages:"), 9), ] +
+                [color_line(translate("Failed to build following packages:"), 9), ] +
                 self.failed_to_build_package_names
             ))
             raise SysExit(1)

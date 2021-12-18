@@ -9,7 +9,7 @@ from .core import open_file, spawn, isolate_root_cmd, dirname, running_as_root
 from .version import VersionMatcher
 from .makepkg_config import MakepkgConfig, MakePkgCommand
 from .pprint import print_stderr, print_error
-from .i18n import _
+from .i18n import translate
 from .exceptions import SysExit
 
 
@@ -143,7 +143,9 @@ class SrcInfo():
             ), cwd=working_directory
         )
         if result.returncode != 0:
-            print_error(_("failed to generate .SRCINFO from {}:").format(self.pkgbuild_path))
+            print_error(
+                translate("failed to generate .SRCINFO from {}:").format(self.pkgbuild_path)
+            )
             print_stderr(result.stderr_text)
             raise SysExit(5)
         with open_file(self.path, 'w') as srcinfo_file:

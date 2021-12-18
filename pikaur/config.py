@@ -6,7 +6,7 @@ import configparser
 from pathlib import Path
 from typing import Dict, Optional, Any, Callable
 
-from .i18n import _
+from .i18n import translate
 
 
 DEFAULT_CONFIG_ENCODING = 'utf-8'
@@ -394,8 +394,8 @@ class PikaurConfig():
                 if old_value_was_migrated or old_value_was_removed:
                     print(' '.join([
                         '::',
-                        _("warning:"),
-                        _('Migrating [{}]{} config option to [{}]{} = "{}"...').format(
+                        translate("warning:"),
+                        translate('Migrating [{}]{} config option to [{}]{} = "{}"...').format(
                             section_name, option_name,
                             new_section_name, new_option_name,
                             cls._config[new_section_name][new_option_name]

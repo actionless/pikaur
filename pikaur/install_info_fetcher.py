@@ -1,7 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 from multiprocessing.pool import ThreadPool
-from typing import List, Optional, Dict, Iterable, Any
+from typing import List, Optional, Dict, Sequence, Any
 
 from .i18n import translate
 from .core import PackageSource, InstallInfo, ComparableType
@@ -109,7 +109,7 @@ class InstallInfoFetcher(ComparableType):
         return list(set(_aur_deps_names))
 
     @property
-    def all_install_info(self) -> Iterable[List[InstallInfo]]:
+    def all_install_info(self) -> Sequence[List[InstallInfo]]:
         return (
             self.repo_packages_install_info,
             self.new_repo_deps_install_info,

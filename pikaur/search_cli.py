@@ -158,26 +158,28 @@ def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disabl
             pkgs_found = request_repo.get()
             if pkgs_found:
                 result_repo.append(pkgs_found)
-        try:
-            result_aur = request_aur.get() if request_aur else None
-        except AURError as exc:
-            print_stderr(f'translate("AUR returned error:") {exc}')
-            raise SysExit(121) from exc
+        result_aur = None
+        if request_aur:
+            try:
+                result_aur = request_aur.get()
+            except AURError as exc:
+                print_stderr(f'translate("AUR returned error:") {exc}')
+                raise SysExit(121) from exc
         pool.join()
 
     if not args.quiet:
         sys.stderr.write('\n')
 
-    repo_result = (
-        join_search_results(result_repo)
-    ) if result_repo and not AUR_ONLY else []
-    aur_result = (
-        join_search_results(list(result_aur.values()))
-    ) if result_aur and not REPO_ONLY else []
+    joined_repo_results: Iterable[pyalpm.Package] = []
+    if result_repo:
+        joined_repo_results = join_search_results(result_repo)
+    joined_aur_results: Iterable[AURPackageInfo] = []
+    if result_aur:
+        joined_aur_results = join_search_results(list(result_aur.values()))
 
     return print_package_search_results(
-        repo_packages=repo_result,
-        aur_packages=aur_result,
+        repo_packages=joined_repo_results,
+        aur_packages=joined_aur_results,
         local_pkgs_versions=result_local,
         enumerated=enumerated,
     )

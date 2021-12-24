@@ -2,7 +2,7 @@
 
 import sys
 import tty
-from typing import List, Optional, Iterable
+from typing import List, Optional, Iterable, Sequence
 
 from .args import parse_args
 from .config import PikaurConfig
@@ -25,7 +25,7 @@ Y_UP = Y.upper()
 N_UP = N.upper()
 
 
-def read_answer_from_tty(question: str, answers: Iterable[str] = (Y_UP, N, )) -> str:
+def read_answer_from_tty(question: str, answers: Sequence[str] = (Y_UP, N, )) -> str:
     '''
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
@@ -94,7 +94,7 @@ def _debug_nolock(*args):
 
 
 def get_input(  # pylint: disable=too-many-branches
-        prompt: str, answers: Iterable[str] = (), require_confirm=False
+        prompt: str, answers: Sequence[str] = (), require_confirm=False
 ) -> str:
     _debug('Gonna get input from user...')
     answer = ''
@@ -137,7 +137,7 @@ class NotANumberInput(Exception):
         super().__init__(f'"{character} is not a number')
 
 
-def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> Iterable[int]:
+def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> List[int]:
     str_result = get_input(prompt, [str(answer) for answer in answers], require_confirm=True)
     if str_result == '':
         return []

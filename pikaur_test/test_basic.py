@@ -87,9 +87,9 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name)
 
     def test_pkgbuild_split_packages(self):
-        pkg_base = 'python-pyprind'
+        pkg_base = 'python-pyalsaaudio'
         pkg_name1 = pkg_base
-        pkg_name2 = 'python2-pyprind'
+        pkg_name2 = 'python2-pyalsaaudio'
 
         self.remove_if_installed(pkg_name1)
         self.remove_if_installed(pkg_name2)

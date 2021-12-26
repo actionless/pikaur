@@ -46,6 +46,11 @@ if RUNNING_AS_ROOT:
 else:
     AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
 
+if RUNNING_AS_ROOT:
+    BUILD_DEPS_LOCK = os.path.join(_USER_CACHE_HOME, 'pikaur_build_deps.lock')
+else:
+    BUILD_DEPS_LOCK = '/tmp/pikaur_build_deps.lock'
+
 
 def get_config_path() -> str:
     config_flag = '--pikaur-config'

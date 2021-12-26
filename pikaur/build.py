@@ -15,7 +15,7 @@ from .core import (
 )
 from .i18n import translate, translate_many
 from .config import (
-    PikaurConfig,
+    BUILD_DEPS_LOCK, PikaurConfig,
     AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
 )
 from .aur import get_repo_url, find_aur_packages
@@ -41,9 +41,6 @@ from .version import compare_versions, VersionMatcher
 from .makepkg_config import MakepkgConfig, MakePkgCommand, PKGDEST
 from .urllib import wrap_proxy_env
 from .filelock import FileLock
-
-
-BUILD_DEPS_LOCK = '/tmp/pikaur_build_deps.lock'
 
 
 def debug(msg: Any) -> None:

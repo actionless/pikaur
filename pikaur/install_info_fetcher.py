@@ -159,6 +159,15 @@ class InstallInfoFetcher(ComparableType):
         # and their upgrades if --sysupgrade was passed
         if not self.args.aur:
             debug("Gonna get repo pkgs install info...")
+            # if pikaur is added as an argument for --sync
+            # add it to self.not_found_repo_pkgs_names
+            if ("pikaur" in self.install_package_names):
+                debug("Gonna add pikaur to packages to fetch from AUR...")
+                self.not_found_repo_pkgs_names.append('pikaur')
+                # we have to drop pikaur from the packages to install, otherwise
+                # since chaotic-aur/pikaur-git provides pikaur, we would install
+                # both, which is a conflict.
+                self.install_package_names.remove('pikaur')
             self.get_repo_pkgs_info()
 
         # retrieve InstallInfo objects for AUR packages to be installed
@@ -313,7 +322,7 @@ class InstallInfoFetcher(ComparableType):
             ):
                 print_ignored_package(install_info=pkg_update)
                 continue
-
+                    
             if pkg_update.current_version == '' and (
                     (
                         pkg_name not in self.install_package_names

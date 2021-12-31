@@ -36,6 +36,9 @@ RUN	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	sleep 0.1 && \
 	echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -S --noconfirm --color=always python-vulture mypy python-coveralls
+	sudo -u user pikaur -S --noconfirm --color=always python-vulture mypy # python-coveralls
+# Workaround for broken coveralls:
+ADD ./maintenance_scripts/coveralls_PKGBUILD ./coveralls_PKGBUILD
+RUN sudo -u user pikaur -Pi --noconfirm --color=always coveralls_PKGBUILD
 
 # vim: set ft=dockerfile :

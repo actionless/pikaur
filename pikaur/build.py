@@ -152,7 +152,6 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self.skip_carch_check = PikaurConfig().build.IgnoreArch.get_bool()
 
         if os.path.exists(self.repo_path):
-            # pylint: disable=simplifiable-if-statement
             if os.path.exists(os.path.join(self.repo_path, '.git')):
                 self.pull = True
             else:
@@ -694,7 +693,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             elif self.args.noconfirm:
                 answer = translate("a")
             else:  # pragma: no cover
-                prompt = '{} {}\n{}\n> '.format(  # pylint: disable=consider-using-f-string
+                prompt = '{} {}\n{}\n> '.format(
                     color_line('::', 11),
                     translate("Try recovering?"),
                     "\n".join((

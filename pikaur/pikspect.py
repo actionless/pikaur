@@ -61,7 +61,7 @@ class TTYRestore():
                 print_debug(','.join(str(arg) for arg in exc.args))
 
     @classmethod
-    def restore(cls, *_whatever) -> None:  # pylint:disable=method-hidden
+    def restore(cls, *_whatever) -> None:
         cls._restore(cls.old_tcattrs)
 
     def __init__(self) -> None:
@@ -96,7 +96,7 @@ class TTYInputWrapper():
             self.old_stdin = sys.stdin
             try:
                 _debug('Attaching to TTY manually...')
-                sys.stdin = open('/dev/tty', encoding=DEFAULT_INPUT_ENCODING)  # pylint:disable=consider-using-with
+                sys.stdin = open('/dev/tty', encoding=DEFAULT_INPUT_ENCODING)
                 self.tty_opened = True
             except Exception as exc:
                 _debug(exc)
@@ -156,7 +156,7 @@ class PikspectSignalHandler():
         return cls.signal_handler
 
 
-class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attributes
+class PikspectPopen(subprocess.Popen):
 
     print_output: bool
     capture_input: bool
@@ -171,7 +171,7 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
     # some help for mypy:
     _wait: Callable
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
             self,
             args: List[str],
             print_output: bool = True,
@@ -245,7 +245,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             os.close(self.pty_user_slave)
 
     def check_questions(self) -> None:
-        # pylint: disable=too-many-branches
         try:
             historic_output = b''.join(self.historic_output).decode(DEFAULT_INPUT_ENCODING)
         except UnicodeDecodeError:
@@ -342,7 +341,6 @@ class PikspectPopen(subprocess.Popen):  # pylint: disable=too-many-instance-attr
             self.write_something(char.encode(DEFAULT_INPUT_ENCODING))
 
 
-# pylint: disable=too-many-locals,too-many-arguments
 def pikspect(
         cmd: List[str],
         print_output=True,

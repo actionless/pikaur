@@ -20,7 +20,7 @@ from .aur import AURPackageInfo
 
 
 if TYPE_CHECKING:
-    # pylint: disable=unused-import,cyclic-import
+    # pylint: disable=cyclic-import
     from .install_info_fetcher import InstallInfoFetcher  # noqa
 
 
@@ -529,7 +529,7 @@ def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
 
 
 # @TODO: weird pylint behavior if remove `return` from the end:
-def print_package_search_results(  # pylint:disable=useless-return,too-many-locals,too-many-statements,too-many-branches
+def print_package_search_results(  # pylint:disable=too-many-locals,too-many-statements,too-many-branches
         repo_packages: Iterable[pyalpm.Package],
         aur_packages: Iterable[AURPackageInfo],
         local_pkgs_versions: Dict[str, str],

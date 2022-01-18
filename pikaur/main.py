@@ -11,7 +11,7 @@ import codecs
 import shutil
 import atexit
 import io
-from argparse import ArgumentError  # pylint: disable=no-name-in-module
+from argparse import ArgumentError
 from typing import List, Optional, Callable
 
 import pyalpm

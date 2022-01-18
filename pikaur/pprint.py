@@ -27,7 +27,7 @@ def color_enabled() -> bool:
 class PrintLock():
 
     def __enter__(self) -> None:
-        PRINT_LOCK.acquire()  # pylint: disable=consider-using-with
+        PRINT_LOCK.acquire()
 
     def __exit__(self, *_exc_details) -> None:
         if PRINT_LOCK.locked():

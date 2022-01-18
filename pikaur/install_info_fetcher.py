@@ -138,7 +138,7 @@ class InstallInfoFetcher(ComparableType):
                     del self.aur_deps_relations[aur_pkg_name]
         return list(set(already_discarded))
 
-    def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
+    def get_all_packages_info(self) -> None:
         """
         Retrieve info (`InstallInfo` objects) of packages
         which are going to be installed/upgraded and their dependencies
@@ -177,7 +177,7 @@ class InstallInfoFetcher(ComparableType):
 
         self.mark_dependent()
 
-    def _get_repo_pkgs_info(  # pylint: disable=too-many-locals
+    def _get_repo_pkgs_info(
             self, pkg_lines: List[str], extra_args: Optional[List[str]] = None
     ) -> List[InstallInfo]:
         if not pkg_lines:
@@ -496,7 +496,7 @@ class InstallInfoFetcher(ComparableType):
                 package=aur_pkg,
             ))
 
-    def mark_dependent(self) -> None:  # pylint: disable=too-many-locals
+    def mark_dependent(self) -> None:
         """
         update packages' install info to show deps in prompt:
         """

@@ -152,7 +152,7 @@ class PikaurArgs(Namespace):
         return getattr(super(), name, getattr(self, name.replace('-', '_')))
 
     def handle_the_same_letter(self) -> None:
-        # pylint: disable=attribute-defined-outside-init,access-member-before-definition
+        # pylint: disable=attribute-defined-outside-init
         if self.pkgbuild and self.info:  # handle "-i"
             self.install = self.info
             self.info = False
@@ -168,7 +168,7 @@ class PikaurArgs(Namespace):
                 self.check = None
 
     def post_process_args(self) -> None:
-        # pylint: disable=attribute-defined-outside-init,access-member-before-definition
+        # pylint: disable=attribute-defined-outside-init
         self.handle_the_same_letter()
 
         new_ignore: List[str] = []

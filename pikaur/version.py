@@ -50,7 +50,7 @@ class VersionMatcher():
         else:
             self.version = version_matcher.version
 
-    def _set_version_matcher_func(self) -> None:  # pylint: disable=too-many-locals
+    def _set_version_matcher_func(self) -> None:
         # pylint: disable=invalid-name
 
         version: Optional[str] = None

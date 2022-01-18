@@ -23,7 +23,7 @@ from .prompt import retry_interactive_command_or_exit, retry_interactive_command
 
 
 if TYPE_CHECKING:
-    # pylint: disable=unused-import,cyclic-import
+    # pylint: disable=cyclic-import
     from .aur import AURPackageInfo  # noqa
 
 
@@ -126,7 +126,7 @@ DB_LOCK_LOCAL = Lock()
 class DbLockRepo():
 
     def __enter__(self) -> None:
-        DB_LOCK_REPO.acquire()  # pylint: disable=consider-using-with
+        DB_LOCK_REPO.acquire()
 
     def __exit__(self, *_exc_details) -> None:
         if DB_LOCK_REPO.locked():
@@ -139,7 +139,7 @@ class DbLockRepo():
 class DbLockLocal():
 
     def __enter__(self) -> None:
-        DB_LOCK_LOCAL.acquire()  # pylint: disable=consider-using-with
+        DB_LOCK_LOCAL.acquire()
 
     def __exit__(self, *_exc_details) -> None:
         if DB_LOCK_LOCAL.locked():

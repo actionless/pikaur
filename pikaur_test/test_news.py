@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from pikaur_test.helpers import InterceptSysOutput
 
-from pikaur.news import News  # pylint: disable=no-name-in-module
+from pikaur.news import News
 from pikaur.core import open_file
 
 

@@ -9,8 +9,6 @@ from typing import Optional, List, NoReturn, Union
 
 from pycman.config import PacmanConfig
 
-# pylint:disable=no-name-in-module
-
 from pikaur.main import main
 from pikaur.args import CachedArgs, parse_args
 from pikaur.pacman import PackageDB
@@ -94,8 +92,8 @@ class InterceptSysOutput():
         self.capture_stderr = capture_stderr
 
     def __enter__(self) -> 'InterceptSysOutput':
-        self.out_file = tempfile.TemporaryFile('w+', encoding='UTF-8')  # pylint: disable=consider-using-with
-        self.err_file = tempfile.TemporaryFile('w+', encoding='UTF-8')  # pylint: disable=consider-using-with
+        self.out_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
+        self.err_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
         self.out_file.isatty = lambda: False  # type: ignore
         self.err_file.isatty = lambda: False  # type: ignore
 
@@ -175,11 +173,11 @@ def pikaur(
 
             # re-parse args:
             sys.argv = new_args
-            CachedArgs.args = None  # pylint:disable=protected-access
-            MakePkgCommand._cmd = None  # pylint:disable=protected-access
+            CachedArgs.args = None
+            MakePkgCommand._cmd = None  # pylint: disable=protected-access
             parse_args()
             # monkey-patch to force always uncolored output:
-            CachedArgs.args.color = 'never'  # type: ignore # pylint:disable=protected-access
+            CachedArgs.args.color = 'never'  # type: ignore
 
             # finally run pikaur's mainloop
             main()

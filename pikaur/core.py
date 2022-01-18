@@ -22,7 +22,7 @@ from .i18n import translate
 from .pprint import print_stderr, color_line, print_error, bold_line
 
 if TYPE_CHECKING:
-    # pylint: disable=unused-import,cyclic-import
+    # pylint: disable=cyclic-import
     from .aur import AURPackageInfo  # noqa
 
 
@@ -249,7 +249,7 @@ def open_file(
         encoding = detect_bom_type(file_path)
     if encoding:
         kwargs['encoding'] = encoding
-    return codecs.open(  # pylint: disable=consider-using-with
+    return codecs.open(
         file_path, mode, errors='ignore', **kwargs
     )
 
@@ -330,7 +330,7 @@ def run_with_sudo_loop(function: Callable) -> Optional[Any]:
         finally:
             pool.terminate()
         if catched_exc:
-            raise catched_exc  # pylint: disable=raising-bad-type
+            raise catched_exc
         if result:
             return result
         return None

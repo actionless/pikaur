@@ -1,13 +1,11 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-# pylint: disable=no-name-in-module
-
 from pikaur_test.helpers import (
     PikaurDbTestCase,
     pikaur, spawn,
 )
 
-from pikaur.pacman import PackageDB  # pylint: disable=no-name-in-module
+from pikaur.pacman import PackageDB
 
 
 class SysupgradeTest(PikaurDbTestCase):

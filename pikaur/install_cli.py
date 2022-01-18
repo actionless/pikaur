@@ -533,7 +533,7 @@ class InstallPackagesCLI():
                 if self.args.noconfirm:
                     answer = translate("a")
                 else:  # pragma: no cover
-                    prompt = '{} {}\n> '.format(  # pylint: disable=consider-using-f-string
+                    prompt = '{} {}\n> '.format(
                         color_line('::', 11),
                         '\n'.join((
                             translate("Try recovering?"),
@@ -566,7 +566,7 @@ class InstallPackagesCLI():
                 else:
                     raise SysExit(125) from err
 
-    def get_package_builds(self) -> None:  # pylint: disable=too-many-branches
+    def get_package_builds(self) -> None:
         while self.all_aur_packages_names:
             clone_names = []
             pkgbuilds_by_base: Dict[str, PackageBuild] = {}

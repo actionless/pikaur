@@ -93,7 +93,7 @@ def _debug_nolock(*args):
     _debug(*args, lock=False)
 
 
-def get_input(  # pylint: disable=too-many-branches
+def get_input(
         prompt: str, answers: Sequence[str] = (), require_confirm=False
 ) -> str:
     _debug('Gonna get input from user...')

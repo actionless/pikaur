@@ -1,6 +1,6 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-# pylint: disable=no-name-in-module,invalid-name
+# pylint: disable=invalid-name
 
 import os
 

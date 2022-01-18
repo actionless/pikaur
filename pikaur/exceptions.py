@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, List, Optional
 from .core import DataType
 
 if TYPE_CHECKING:
-    # pylint: disable=unused-import,cyclic-import
+    # pylint: disable=cyclic-import
     from .build import PackageBuild  # noqa
     from .version import VersionMatcher  # noqa
     from .core import InteractiveSpawn  # noqa

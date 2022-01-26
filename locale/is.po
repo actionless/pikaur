@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-18 17:18+0100\n"
+"POT-Creation-Date: 2022-01-27 00:15+0100\n"
 "PO-Revision-Date: 2018-04-16 18:27+0000\n"
 "Last-Translator: Andri Viðar Tryggvason (andri@arivarton.com)\n"
 "Language-Team: none\n"
@@ -84,17 +84,17 @@ msgstr "Get ekki smíðað '{name}'."
 msgid "Can't clone '{name}' in '{path}' from AUR:"
 msgstr "Get ekki klónað '{name}' í '{path}' frá AUR:"
 
-#: pikaur/build.py:90
+#: pikaur/build.py:87
 #, python-brace-format
 msgid "Can't copy '{from_path}' to '{to_path}'."
 msgstr ""
 
-#: pikaur/build.py:66
+#: pikaur/build.py:63
 #, python-brace-format
 msgid "Can't create destination directory '{to_path}'."
 msgstr ""
 
-#: pikaur/build.py:141
+#: pikaur/build.py:138
 msgid "Can't get package name from PKGBUILD"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Check Deps"
 msgstr ""
 
-#: pikaur/build.py:692 pikaur/prompt.py:198
+#: pikaur/build.py:688 pikaur/prompt.py:198
 msgid "Command '{}' failed to execute."
 msgstr "Inning af skipun '{}' mistókst."
 
@@ -169,8 +169,8 @@ msgstr "Vilt þú halda áfram?"
 msgid "Do you want to remove all files?"
 msgstr "Vilt þú fjarlægja allar skrár?"
 
-#: pikaur/urllib.py:34 pikaur/urllib.py:56 pikaur/prompt.py:202
-#: pikaur/filelock.py:31
+#: pikaur/filelock.py:31 pikaur/urllib.py:34 pikaur/urllib.py:56
+#: pikaur/prompt.py:202
 msgid "Do you want to retry?"
 msgstr "Vilt þú reyna aftur?"
 
@@ -189,7 +189,7 @@ msgstr "Vilt þú {edit} {file} fyrir {name} pakkan?"
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr ""
 
-#: pikaur/build.py:277
+#: pikaur/build.py:273
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Niðurhleðsla af frumkóta í gángi fyrir devel pakkan {}"
@@ -199,7 +199,7 @@ msgstr[1] "Niðurhleðsla af frumkóta í gángi fyrir devel pakka {}"
 msgid "Failed to build following packages:"
 msgstr "Mistókst að smíða eftirfarandi pakka:"
 
-#: pikaur/build.py:594
+#: pikaur/build.py:590
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr "Mistókst að fjarlægja uppsett ákvæði, pakka ósamræmi: {}"
 
@@ -239,11 +239,11 @@ msgstr "Sé framhjá pakka {}"
 msgid "Installation info changed (or new deps found) for {pkg} package"
 msgstr ""
 
-#: pikaur/build.py:391
+#: pikaur/build.py:387
 msgid "Installing already built dependencies for {}"
 msgstr "Set upp smíðuð ákvæði fyrir {}"
 
-#: pikaur/build.py:534
+#: pikaur/build.py:530
 msgid "Installing repository dependencies for {}"
 msgstr "Set upp gagnahírslu ákvæði fyrir {}"
 
@@ -267,7 +267,7 @@ msgstr ""
 msgid "Make Deps"
 msgstr ""
 
-#: pikaur/config.py:398
+#: pikaur/config.py:403
 msgid "Migrating [{}]{} config option to [{}]{} = \"{}\"..."
 msgstr ""
 
@@ -342,7 +342,7 @@ msgstr ""
 msgid "Package Base"
 msgstr ""
 
-#: pikaur/build.py:458
+#: pikaur/build.py:454
 #, python-brace-format
 msgid ""
 "Package {pkg} is already built. Pass '--rebuild' flag to force the build."
@@ -391,7 +391,7 @@ msgstr "Les staðvært pakkasafn..."
 msgid "Reading repository package databases..."
 msgstr "Les gagnahírt pakkasafn..."
 
-#: pikaur/build.py:606
+#: pikaur/build.py:602
 #, fuzzy
 msgid "Removing already installed dependencies for {}"
 msgstr "Fjarlægir uppsetta gagnahirslu ákvæði fyrir {}"
@@ -441,7 +441,7 @@ msgstr ""
 msgid "Starting full AUR upgrade..."
 msgstr "Byrja heila AUR uppfærslu..."
 
-#: pikaur/build.py:659
+#: pikaur/build.py:655
 msgid "Starting the build"
 msgstr ""
 
@@ -471,7 +471,7 @@ msgstr[1] "Þriðja aðila gagnahírtir pakkar verða uppsettir:"
 msgid "Try recovering {pkg_name}?"
 msgstr "Prufa að endurétta?"
 
-#: pikaur/install_cli.py:539 pikaur/build.py:702
+#: pikaur/build.py:698 pikaur/install_cli.py:539
 msgid "Try recovering?"
 msgstr "Prufa að endurétta?"
 
@@ -500,16 +500,16 @@ msgstr "[s] slíta vinnslu"
 msgid "[N]o (--noconfirm)"
 msgstr "[N]ei (--noconfirm)"
 
-#: pikaur/build.py:704
+#: pikaur/build.py:700
 msgid "[R] retry build"
 msgstr ""
 
-#: pikaur/build.py:713
+#: pikaur/build.py:709
 #, fuzzy
 msgid "[a] abort building all the packages"
 msgstr "Mistókst að smíða eftirfarandi pakka:"
 
-#: pikaur/build.py:706
+#: pikaur/build.py:702
 msgid "[c] checksums skip"
 msgstr ""
 
@@ -517,20 +517,20 @@ msgstr ""
 msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
-#: pikaur/build.py:709
+#: pikaur/build.py:705
 #, fuzzy
 msgid "[d] delete build dir and try again"
 msgstr "[f] fjarlægja efnisskrá og klóna aftur"
 
-#: pikaur/install_cli.py:208 pikaur/build.py:710
+#: pikaur/build.py:706 pikaur/install_cli.py:208
 msgid "[e] edit PKGBUILD"
 msgstr ""
 
-#: pikaur/build.py:707
+#: pikaur/build.py:703
 msgid "[f] skip 'check()' function of PKGBUILD"
 msgstr ""
 
-#: pikaur/build.py:708
+#: pikaur/build.py:704
 msgid "[i] ignore architecture"
 msgstr ""
 
@@ -543,7 +543,7 @@ msgstr "[upsett: {version}]"
 msgid "[installed]"
 msgstr "[uppsett]"
 
-#: pikaur/build.py:705
+#: pikaur/build.py:701
 msgid "[p] PGP check skip"
 msgstr ""
 
@@ -556,7 +556,7 @@ msgstr ""
 msgid "[r] remove dir and clone again"
 msgstr "[f] fjarlægja efnisskrá og klóna aftur"
 
-#: pikaur/build.py:712
+#: pikaur/build.py:708
 #, fuzzy
 msgid "[s] skip building this package"
 msgstr "[h] hoppa yfir pakka"
@@ -569,9 +569,9 @@ msgstr "[h] hoppa yfir pakka"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[s]oða pakka upplýsingar   [v]elja pakka handvirkt"
 
+#: pikaur/build.py:694 pikaur/build.py:716 pikaur/build.py:750
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:534
-#: pikaur/install_cli.py:550 pikaur/build.py:698 pikaur/build.py:720
-#: pikaur/build.py:754
+#: pikaur/install_cli.py:550
 msgid "a"
 msgstr "s"
 
@@ -592,8 +592,8 @@ msgstr ""
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sysupgrade '-git' og aðrir dev pakkar eru eldri enn 1 dagur"
 
-#: pikaur/install_cli.py:550 pikaur/install_cli.py:554 pikaur/build.py:718
-#: pikaur/build.py:729
+#: pikaur/build.py:714 pikaur/build.py:725 pikaur/install_cli.py:550
+#: pikaur/install_cli.py:554
 msgid "c"
 msgstr "c"
 
@@ -601,7 +601,7 @@ msgstr "c"
 msgid "cli args to pass to makepkg"
 msgstr ""
 
-#: pikaur/build.py:719 pikaur/build.py:738
+#: pikaur/build.py:715 pikaur/build.py:734
 msgid "d"
 msgstr ""
 
@@ -631,8 +631,8 @@ msgstr "ekki fjarlægja smíðaskrá eftir smíði"
 msgid "download also AUR dependencies"
 msgstr "Leysir AUR ákvæði..."
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:215 pikaur/build.py:720
-#: pikaur/build.py:741
+#: pikaur/build.py:716 pikaur/build.py:737 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:215
 msgid "e"
 msgstr ""
 
@@ -648,7 +648,7 @@ msgstr "Villa:"
 msgid "executable not found"
 msgstr ""
 
-#: pikaur/build.py:719 pikaur/build.py:732
+#: pikaur/build.py:715 pikaur/build.py:728
 msgid "f"
 msgstr ""
 
@@ -656,7 +656,7 @@ msgstr ""
 msgid "failed to generate .SRCINFO from {}:"
 msgstr ""
 
-#: pikaur/build.py:294
+#: pikaur/build.py:290
 msgid "failed to retrieve latest dev sources:"
 msgstr ""
 
@@ -666,7 +666,7 @@ msgstr ""
 msgid "for {pkg}"
 msgstr ""
 
-#: pikaur/build.py:719 pikaur/build.py:735
+#: pikaur/build.py:715 pikaur/build.py:731
 msgid "i"
 msgstr ""
 
@@ -703,7 +703,7 @@ msgstr "leita eftir pakka sem eru í árekstri..."
 msgid "m"
 msgstr "v"
 
-#: pikaur/install_cli.py:398 pikaur/prompt.py:22 pikaur/main.py:184
+#: pikaur/main.py:184 pikaur/prompt.py:22 pikaur/install_cli.py:398
 msgid "n"
 msgstr "n"
 
@@ -730,7 +730,7 @@ msgstr "Úrelt"
 msgid "override path to makepkg executable"
 msgstr ""
 
-#: pikaur/install_cli.py:556 pikaur/build.py:718 pikaur/build.py:726
+#: pikaur/build.py:714 pikaur/build.py:722 pikaur/install_cli.py:556
 msgid "p"
 msgstr ""
 
@@ -790,14 +790,14 @@ msgstr "bara fyrirspurja pakka frá AUR"
 msgid "query packages from repository only"
 msgstr "bara fyrirspurja pakka frá gagnahírslu"
 
-#: pikaur/install_cli.py:550 pikaur/install_cli.py:559 pikaur/build.py:718
-#: pikaur/build.py:724
+#: pikaur/build.py:714 pikaur/build.py:720 pikaur/install_cli.py:550
+#: pikaur/install_cli.py:559
 msgid "r"
 msgstr "f"
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:230
-#: pikaur/install_cli.py:550 pikaur/install_cli.py:561 pikaur/build.py:696
-#: pikaur/build.py:720
+#: pikaur/build.py:692 pikaur/build.py:716 pikaur/install_cli.py:212
+#: pikaur/install_cli.py:230 pikaur/install_cli.py:550
+#: pikaur/install_cli.py:561
 msgid "s"
 msgstr "h"
 
@@ -826,11 +826,11 @@ msgstr ""
 msgid "v"
 msgstr "s"
 
-#: pikaur/pprint.py:80 pikaur/config.py:397
+#: pikaur/pprint.py:80 pikaur/config.py:402
 msgid "warning:"
 msgstr "Viðvörun:"
 
-#: pikaur/install_cli.py:398 pikaur/install_cli.py:412 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:398 pikaur/install_cli.py:412
 msgid "y"
 msgstr "j"
 

@@ -369,7 +369,7 @@ msgstr "Répertoire des paquets"
 
 #: pikaur/help_cli.py:100
 msgid "Pikaur-specific options:"
-msgstr "Options spécifiques pikaur :"
+msgstr "Options spécifiques à pikaur :"
 
 #: pikaur/main.py:166
 msgid ""
@@ -708,7 +708,7 @@ msgstr "valeur non valide : {} n'est pas entre {} et {}"
 
 #: pikaur/install_cli.py:611
 msgid "looking for conflicting AUR packages..."
-msgstr "recherche des paquetes de l'AUR en conflit…"
+msgstr "recherche des paquets de l'AUR en conflit…"
 
 #: pikaur/install_cli.py:398 pikaur/install_cli.py:417
 msgid "m"

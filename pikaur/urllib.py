@@ -21,7 +21,7 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
         print_stderr(
             color_line('=> ', 14) + f'GET {url}'
         )
-    req = request.Request(url)
+    req = request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     try:
         with request.urlopen(req) as response:
             result_bytes = response.read()

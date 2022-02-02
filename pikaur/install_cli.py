@@ -832,7 +832,10 @@ class InstallPackagesCLI():
         old_install_info = self.install_info
         self.get_all_packages_info()
         old_install_info.pkgbuilds_packagelists = self.install_info.pkgbuilds_packagelists
-        if old_install_info != self.install_info or old_srcinfo_hash != new_srcinfo_hash:
+        if (
+                old_install_info != self.install_info or
+                old_srcinfo_hash != new_srcinfo_hash
+        ):
             print_warning(translate(
                 "Installation info changed (or new deps found) for {pkg} package"
             ).format(

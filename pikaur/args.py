@@ -72,7 +72,7 @@ PACMAN_STR_OPTS: ArgSchema = [
     ('r', 'root', None),
     (None, 'arch', None),  # @TODO
     (None, 'cachedir', None),  # @TODO
-    (None, 'config', None),  # @TODO
+    (None, 'config', None),
     (None, 'gpgdir', None),
     (None, 'hookdir', None),
     (None, 'logfile', None),

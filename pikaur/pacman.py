@@ -98,7 +98,7 @@ class PacmanPrint(DataType):
 class PacmanConfig(PycmanConfig):
 
     def __init__(self) -> None:
-        super().__init__(conf='/etc/pacman.conf')
+        super().__init__(conf=parse_args().config or '/etc/pacman.conf')
 
 
 class ProvidedDependency(DataType):

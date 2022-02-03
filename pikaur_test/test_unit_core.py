@@ -93,7 +93,6 @@ class DataTypeTest(PikaurTestCase):
             a1.baz = 'baz'  # pylint: disable=attribute-defined-outside-init
 
 
-
 class InstallInfoTest(PikaurTestCase):
 
     @classmethod

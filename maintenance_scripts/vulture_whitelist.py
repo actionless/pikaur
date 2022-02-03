@@ -28,5 +28,7 @@ whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict
 
-whitelist.test_unit.foo
-whitelist.test_unit.bar
+whitelist.pikaur_test.setUpClass
+whitelist.pikaur_test.foo
+whitelist.pikaur_test.bar
+whitelist.pikaur_test.baz

@@ -1,6 +1,6 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-# pylint: disable=invalid-name,protected-access,pointless-statement
+# pylint: disable=protected-access,pointless-statement
 
 from vulture.whitelist_utils import Whitelist  # pylint: disable=import-error,no-name-in-module
 
@@ -27,3 +27,5 @@ whitelist.main.socket.socket
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict
+
+whitelist.test_unit.foo

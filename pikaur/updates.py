@@ -101,6 +101,7 @@ def find_aur_devel_updates(
                 new_version='devel',
                 description=aur_pkg.desc,
                 devel_pkg_age_days=pkg_age_days,
+                maintainer=aur_pkg.maintainer,
                 package=aur_pkg,
             ))
     return aur_updates
@@ -129,6 +130,7 @@ def find_aur_updates() -> Tuple[List[InstallInfo], List[str]]:
                 new_version=aur_version,
                 current_version=current_version,
                 description=aur_pkg.desc,
+                maintainer=aur_pkg.maintainer,
                 package=aur_pkg,
             )
             if args.ignore_outofdate and aur_pkg.outofdate:

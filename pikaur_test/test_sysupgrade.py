@@ -15,7 +15,12 @@ class SysupgradeTest(PikaurDbTestCase):
 
     self_name = 'pikaur-git'
 
-    repo_pkg_name = 'ncdu'
+    """
+    pikaur -Qi (pikaur -Qnq) | grep -e '^Name' -e '^Installed Size' -e '^Depends On' | less -r
+    """
+
+    # repo_pkg_name = 'ncdu'
+    repo_pkg_name = 'xmlto'
     repo_old_version: str
 
     repo2_pkg_name = 'xsel'

@@ -2,14 +2,14 @@
 # Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2018.
-# Osman Karagöz <osmank3@gmail.com>, 2020.
+# Osman Karagöz <osmank3@gmail.com>, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-27 00:15+0100\n"
-"PO-Revision-Date: 2020-11-29 14:42+0300\n"
+"PO-Revision-Date: 2022-02-03 09:49+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 3.0\n"
 
 #: pikaur/replacements.py:42
 #, python-brace-format
@@ -336,7 +336,7 @@ msgstr "Düzenlemeden sonra PKGBUILD değişmemiş"
 #: pikaur/getpkgbuild_cli.py:57
 #, python-brace-format
 msgid "Package '{name}' going to be cloned into '{repo_path}'..."
-msgstr ""
+msgstr "'{name}' paketi '{repo_path}' içine klonlanacak"
 
 #. packagebaseid=translate(""),
 #: pikaur/info_cli.py:26
@@ -472,9 +472,9 @@ msgstr[0] "Üçüncü-parti depo paketi kurulacak:"
 msgstr[1] "Üçüncü-parti depo paketleri kurulacak:"
 
 #: pikaur/install_cli.py:207
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "Try recovering {pkg_name}?"
-msgstr "Kurtarmayı dene?"
+msgstr "{pkg_name} paketini kurtarmayı dene?"
 
 #: pikaur/build.py:698 pikaur/install_cli.py:539
 msgid "Try recovering?"
@@ -530,7 +530,7 @@ msgstr "[d] PKGBUILD'i düzenle"
 
 #: pikaur/build.py:703
 msgid "[f] skip 'check()' function of PKGBUILD"
-msgstr ""
+msgstr "[f] PKGBUILD'deki 'check()' fonksiyonunu atla"
 
 #: pikaur/build.py:704
 msgid "[i] ignore architecture"
@@ -551,7 +551,7 @@ msgstr "[p] PGP doğrulamayı atla"
 
 #: pikaur/install_cli.py:543
 msgid "[p] git stash && ... && git stash pop"
-msgstr ""
+msgstr "[p] git stash && ... && git stash pop"
 
 #. translate("[c] git checkout -- '*' ; git clean -f -d -x"),
 #: pikaur/install_cli.py:542
@@ -644,11 +644,11 @@ msgstr "hata:"
 
 #: pikaur/core.py:371
 msgid "executable not found"
-msgstr ""
+msgstr "çalıştırılabilir dosya bulunamadı"
 
 #: pikaur/build.py:715 pikaur/build.py:728
 msgid "f"
-msgstr ""
+msgstr "f"
 
 #: pikaur/srcinfo.py:147
 msgid "failed to generate .SRCINFO from {}:"

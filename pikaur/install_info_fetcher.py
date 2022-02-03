@@ -447,6 +447,7 @@ class InstallInfoFetcher(ComparableType):
                     current_version=local_pkg.version if local_pkg else ' ',
                     new_version=aur_pkg.version,
                     description=aur_pkg.desc,
+                    maintainer='local user',
                     package=aur_pkg,
                     pkgbuild_path=path,
                 )

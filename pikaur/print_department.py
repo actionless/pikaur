@@ -229,7 +229,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
 
         if (
                 isinstance(pkg_update.package, AURPackageInfo) and
-                pkg_update.package.maintainer is None
+                pkg_update.maintainer is None
         ):
             orphaned = f" [{translate('orphaned')}]"
             pkg_len += len(orphaned)

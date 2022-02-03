@@ -40,21 +40,36 @@ class ComparableType:
         return getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
 
     __hash__ = object.__hash__
+    __compare_stack__: Optional[List[Any]] = None
+
+    @property
+    def public_vars(self):
+        return {
+            var: val for var, val in vars(self).items()
+            if not var.startswith('__')
+        }
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
-            raise TypeError(f'{other} is not an instance of {self.__class__}')
-        if not self.__ignore_in_eq__:
+            raise TypeError(
+                f"'{other.__class__.__name__}' is not an instance of '{self.__class__.__name__}'"
+            )
+        if not self.__compare_stack__:
+            self.__compare_stack__ = []
+        elif other in self.__compare_stack__:
             return super().__eq__(other)
+        self.__compare_stack__.append(other)
         self_vars = {}
-        self_vars.update(vars(self))
+        self_vars.update(self.public_vars)
         other_vars = {}
-        other_vars.update(vars(other))
+        other_vars.update(other.public_vars)
         for var_dict in (self_vars, other_vars):
             for skip_prop in self.__ignore_in_eq__:
                 if skip_prop in var_dict:
                     del var_dict[skip_prop]
-        return self_vars == other_vars
+        result = self_vars == other_vars
+        self.__compare_stack__ = None
+        return result
 
 
 class DataType(ComparableType):

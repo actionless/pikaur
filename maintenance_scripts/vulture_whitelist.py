@@ -29,3 +29,4 @@ whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict
 
 whitelist.test_unit.foo
+whitelist.test_unit.bar

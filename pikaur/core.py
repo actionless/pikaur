@@ -36,9 +36,6 @@ class ComparableType:
 
     __ignore_in_eq__: Tuple[str, ...] = tuple()
 
-    def _key_not_exists(self, key):
-        return getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
-
     __hash__ = object.__hash__
     __compare_stack__: Optional[List[Any]] = None
 
@@ -73,6 +70,9 @@ class ComparableType:
 
 
 class DataType(ComparableType):
+
+    def _key_not_exists(self, key):
+        return getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
 
     def __init__(self, **kwargs) -> None:
         for key, value in kwargs.items():

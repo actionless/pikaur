@@ -9,36 +9,40 @@ from pikaur.pacman import PackageDB
 from pikaur.aur import find_aur_packages
 
 
-class ClassA(ComparableType):
-    __ignore_in_eq__ = ('bar', )
-    foo: Any
-    bar: Any
-
-
-class ClassB(ComparableType):
-    pass
-
-
 class ComparableTypeTest(PikaurTestCase):
 
+    @classmethod
+    def setUpClass(cls):
+
+        class ClassA(ComparableType):
+            __ignore_in_eq__ = ('bar', )
+            foo: Any
+            bar: Any
+
+        class ClassB(ComparableType):
+            pass
+
+        cls.ClassA = ClassA
+        cls.ClassB = ClassB
+
     def test_eq(self):
-        a1 = ClassA()
+        a1 = self.ClassA()
         a1.foo = 1
-        a2 = ClassA()
+        a2 = self.ClassA()
         a2.foo = 1
         self.assertEqual(a1, a2)
 
     def test_neq(self):
-        a1 = ClassA()
+        a1 = self.ClassA()
         a1.foo = 1
-        a2 = ClassA()
+        a2 = self.ClassA()
         a2.foo = 2
         self.assertNotEqual(a1, a2)
 
     def test_ignore_1(self):
-        a1 = ClassA()
+        a1 = self.ClassA()
         a1.foo = 1
-        a2 = ClassA()
+        a2 = self.ClassA()
         a2.foo = 1
         self.assertEqual(a1, a2)
         a1.bar = 2
@@ -46,49 +50,53 @@ class ComparableTypeTest(PikaurTestCase):
         self.assertEqual(a1, a2)
 
     def test_different_types(self):
-        a1 = ClassA()
-        b1 = ClassB()
+        a1 = self.ClassA()
+        b1 = self.ClassB()
         with self.assertRaises(TypeError):
             _ = a1 == b1
 
     def test_recursion_1(self):
-        a1 = ClassA()
+        a1 = self.ClassA()
         a1.foo = a1
-        a2 = ClassA()
+        a2 = self.ClassA()
         a2.foo = a2
         self.assertNotEqual(a1, a2)
 
     def test_recursion_2(self):
-        a1 = ClassA()
+        a1 = self.ClassA()
         a1.foo = a1
         self.assertEqual(a1, a1)
 
     def test_recursion_3(self):
-        a1 = ClassA()
+        a1 = self.ClassA()
         a1.foo = a1
-        a2 = ClassA()
+        a2 = self.ClassA()
         a2.foo = a1
         self.assertEqual(a1, a2)
 
 
-class DataClass1(DataType):
-    foo: int
-    bar: str
-
-
 class DataTypeTest(PikaurTestCase):
 
+    @classmethod
+    def setUpClass(cls):
+
+        class DataClass1(DataType):
+            foo: int
+            bar: str
+
+        cls.DataClass1 = DataClass1
+
     def test_attr(self):
-        a1 = DataClass1(foo=1, bar='a')
+        a1 = self.DataClass1(foo=1, bar='a')
         self.assertEqual(a1.foo, 1)
         self.assertEqual(a1.bar, 'a')
 
     def test_init_err(self):
         with self.assertRaises(TypeError):
-            DataClass1(foo=1)
+            self.DataClass1(foo=1)
 
     def test_set_unknown(self):
-        a1 = DataClass1(foo=1, bar='a')
+        a1 = self.DataClass1(foo=1, bar='a')
         with self.assertRaises(TypeError):
             a1.baz = 'baz'  # pylint: disable=attribute-defined-outside-init
 

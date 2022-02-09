@@ -46,9 +46,10 @@ def filter_aur_results(
     return filtered_results
 
 
-def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:  # pylint: disable=too-many-branches
+def package_search_thread_aur(queries: List[str]) -> List[Any]:  # pylint: disable=too-many-branches
     args = parse_args()
     result = {}
+    filtered_result = {}
     if queries:
         use_as_filters: List[str] = []
         with ThreadPool() as pool:
@@ -59,6 +60,7 @@ def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:  # py
             for query, request in requests.items():
                 try:
                     result[query] = request.get()
+                    filtered_result[query] = result[query]
                 except AURError as exc:
                     if exc.error == "Too many package results.":
                         print_error(
@@ -76,9 +78,16 @@ def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:  # py
                         use_as_filters.append(query)
                     else:
                         raise
+                else:
+                    # @TODO:
+                    # https://github.com/actionless/pikaur/issues/298
+                    #  - broken in a different way in AUR RPC now?
+                    if len(result[query]) == 5000:
+                        use_as_filters.append(query)
+                        del filtered_result[query]
             pool.join()
         for query in use_as_filters:
-            result = filter_aur_results(result, query)
+            filtered_result = filter_aur_results(filtered_result, query)
         if args.namesonly:
             for subindex, subresult in result.items():
                 result[subindex] = [
@@ -98,7 +107,11 @@ def package_search_thread_aur(queries: List[str]) -> Dict[str, List[Any]]:  # py
             result = {'all': get_all_aur_packages()}
     if not args.quiet:
         sys.stderr.write('#')
-    return result
+    joined_aur_results = list(set(
+        list(join_search_results(list(result.values()))) +
+        list(join_search_results(list(filtered_result.values())))
+    ))
+    return joined_aur_results
 
 
 def package_search_thread_local() -> Dict[str, str]:
@@ -114,6 +127,8 @@ def package_search_thread_local() -> Dict[str, str]:
 def join_search_results(
         all_search_results: List[List[SamePackageType]]
 ) -> Iterable[SamePackageType]:
+    if not all_search_results:
+        return []
     pkgnames_set: Set[str] = set()
     for search_results in all_search_results:
         new_pkgnames_set = set(get_pkg_id(result) for result in search_results)
@@ -173,9 +188,7 @@ def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disabl
     joined_repo_results: Iterable[pyalpm.Package] = []
     if result_repo:
         joined_repo_results = join_search_results(result_repo)
-    joined_aur_results: Iterable[AURPackageInfo] = []
-    if result_aur:
-        joined_aur_results = join_search_results(list(result_aur.values()))
+    joined_aur_results: Iterable[AURPackageInfo] = result_aur or []
 
     return print_package_search_results(
         repo_packages=joined_repo_results,

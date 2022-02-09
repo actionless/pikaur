@@ -688,7 +688,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             print_stderr(color_line(translate("Command '{}' failed to execute.").format(
                 ' '.join(cmd_args)
             ), 9))
-            if PikaurConfig().build.SkipFailedBuild.get_bool():
+            if self.args.skip_failed_build:
                 answer = translate("s")
             elif self.args.noconfirm:
                 answer = translate("a")

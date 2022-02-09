@@ -69,10 +69,11 @@ class CliTest(PikaurTestCase):
         self.assertEqual(len(result_all), len(result_aur) + len(result_repo))
 
     def test_aur_package_info(self):
-        result = pikaur('-Si themix')
+        exact_pkg_name = 'themix-full-git'
+        result = pikaur(f'-Si {exact_pkg_name}')
         pkg_name_found = False
         for line in result.stdout.splitlines():
-            if 'name' in line.lower() and 'themix' in line:
+            if 'name' in line.lower() and exact_pkg_name in line:
                 pkg_name_found = True
         self.assertTrue(pkg_name_found)
 

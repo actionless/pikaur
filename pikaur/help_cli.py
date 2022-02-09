@@ -88,6 +88,9 @@ def cli_print_help() -> None:
             ('', '--ignore-outofdate', translate(
                 "ignore AUR packages' updates which marked 'outofdate'"
             )),
+            ('', '--ignore-mssing-aur', translate(
+                "do not exit when packages do not exist in AUR (anymore)"
+            )),
         ]
 
     if pikaur_options_help:  # if it's not just `pikaur --help`

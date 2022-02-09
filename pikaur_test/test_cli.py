@@ -12,12 +12,15 @@ class CliTest(PikaurTestCase):
         self.assertEqual(pikaur('-Zyx').returncode, 1)
 
     def test_search(self):
-        self.assertEqual(
-            sorted(
-                pikaur('-Ssq oomox').stdout.splitlines()
-            ),
-            ['oomox', 'oomox-git', 'themix-full-git', 'themix-theme-oomox-git']
+        search_results = (
+            pikaur('-Ssq oomox').stdout.splitlines()
         )
+        for oomox_pkg_name in [
+                'oomox', 'oomox-git', 'themix-full-git', 'themix-theme-oomox-git'
+        ]:
+            self.assertIn(
+                oomox_pkg_name, search_results
+            )
 
     def test_search_multiword(self):
         result_first = pikaur('-Ssq aur').stdout.splitlines()
@@ -54,9 +57,9 @@ class CliTest(PikaurTestCase):
         result_all = pikaur('-Ssq').stdout.splitlines()
         result_aur = pikaur('-Ssq --aur').stdout.splitlines()
         result_repo = pikaur('-Ssq --repo').stdout.splitlines()
-        self.assertIn('oomox-git', result_all)
-        self.assertIn('oomox-git', result_aur)
-        self.assertNotIn('oomox-git', result_repo)
+        self.assertIn('themix-full-git', result_all)
+        self.assertIn('themix-full-git', result_aur)
+        self.assertNotIn('themix-full-git', result_repo)
         self.assertIn('pacman', result_all)
         self.assertNotIn('pacman', result_aur)
         self.assertIn('pacman', result_repo)
@@ -65,10 +68,10 @@ class CliTest(PikaurTestCase):
         self.assertEqual(len(result_all), len(result_aur) + len(result_repo))
 
     def test_aur_package_info(self):
-        result = pikaur('-Si oomox')
+        result = pikaur('-Si themix')
         pkg_name_found = False
         for line in result.stdout.splitlines():
-            if 'name' in line.lower() and 'oomox' in line:
+            if 'name' in line.lower() and 'themix' in line:
                 pkg_name_found = True
         self.assertTrue(pkg_name_found)
 

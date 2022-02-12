@@ -132,6 +132,14 @@ class InstallInfo(DataType):
         )
 
 
+class RepoInstallInfo(InstallInfo):
+    package: 'pyalpm.Package'
+
+
+class AURInstallInfo(InstallInfo):
+    package: 'AURPackageInfo'
+
+
 def sudo(cmd: List[str]) -> List[str]:
     if running_as_root():
         return cmd

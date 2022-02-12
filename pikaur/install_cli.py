@@ -287,7 +287,7 @@ class InstallPackagesCLI():
                     self.install_info.repo_packages_install_info +
                     self.install_info.new_repo_deps_install_info +
                     self.install_info.thirdparty_repo_packages_install_info +
-                    self.install_info.aur_updates_install_info
+                    self.install_info.aur_updates_install_info  # type: ignore[operator]
             ):
                 if (
                         # devel packages will be checked later
@@ -451,8 +451,8 @@ class InstallPackagesCLI():
             )
 
             aur_pkgs: List[AURPackageInfo] = [
-                info.package  # type: ignore[misc]
-                for container in self.install_info.all_install_info
+                info.package
+                for container in self.install_info.aur_install_info
                 for info in container
                 if info.name in pkgbuild.package_names
             ]
@@ -612,7 +612,8 @@ class InstallPackagesCLI():
             print_stderr(translate('looking for conflicting AUR packages...'))
             self.found_conflicts.update(
                 find_aur_conflicts(
-                    self.aur_packages_names + self.aur_deps_names,
+                    self.install_info.aur_updates_install_info +
+                    self.install_info.aur_deps_install_info,
                     self.install_package_names
                 )
             )

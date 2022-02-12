@@ -2,11 +2,12 @@
 
 from typing import List, Dict
 
-from .pacman import PackageDB
-from .aur import find_aur_packages
+from .aur import AURPackageInfo
 from .aur_deps import find_repo_deps_of_aur_pkgs
-from .version import VersionMatcher
+from .core import AURInstallInfo
+from .pacman import PackageDB
 from .updates import get_remote_package_version
+from .version import VersionMatcher
 
 
 def get_new_repo_pkgs_conflicts(repo_packages: List[str]) -> Dict[str, List[str]]:
@@ -23,10 +24,9 @@ def get_new_repo_pkgs_conflicts(repo_packages: List[str]) -> Dict[str, List[str]
     return new_pkgs_conflicts_lists
 
 
-def get_new_aur_pkgs_conflicts(aur_packages_names: List[str]) -> Dict[str, List[str]]:
+def get_new_aur_pkgs_conflicts(aur_packages: List[AURPackageInfo]) -> Dict[str, List[str]]:
     new_pkgs_conflicts_lists = {}
-    aur_pkgs_info, _not_founds_pkgs = find_aur_packages(aur_packages_names)
-    for aur_json in aur_pkgs_info:
+    for aur_json in aur_packages:
         conflicts: List[str] = []
         conflicts += aur_json.conflicts or []
         conflicts += aur_json.replaces or []
@@ -117,11 +117,11 @@ def find_conflicting_with_local_pkgs(
 
 
 def find_aur_conflicts(
-        aur_packages_names: List[str],
+        aur_pkgs_install_infos: List[AURInstallInfo],
         repo_packages_names: List[str]
 ) -> Dict[str, List[str]]:
-
-    aur_pkgs, _not_found_aur_pkgs = find_aur_packages(aur_packages_names)
+    aur_pkgs: List[AURPackageInfo] = [ii.package for ii in aur_pkgs_install_infos]
+    aur_packages_names = [ii.name for ii in aur_pkgs_install_infos]
     repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(aur_pkgs)
     repo_deps_names = [vm.pkg_name for vm in repo_deps_version_matchers]
     all_pkgs_to_be_installed = aur_packages_names + repo_deps_names
@@ -134,7 +134,7 @@ def find_aur_conflicts(
         get_new_repo_pkgs_conflicts(repo_deps_names)
     )
     new_pkgs_conflicts_lists.update(
-        get_new_aur_pkgs_conflicts(aur_packages_names)
+        get_new_aur_pkgs_conflicts(aur_pkgs)
     )
     all_local_pgks_conflicts_lists = get_all_local_pkgs_conflicts()
 

@@ -15,7 +15,7 @@ from .aur import AURPackageInfo, find_aur_packages
 from .pprint import print_stderr
 from .args import parse_args
 from .config import PikaurConfig
-from .core import InstallInfo
+from .core import AURInstallInfo, RepoInstallInfo
 from .exceptions import PackagesNotFoundInRepo
 from .print_department import print_ignoring_outofdate_upgrade
 
@@ -60,13 +60,13 @@ def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
     return None
 
 
-def find_repo_upgradeable() -> List[InstallInfo]:
+def find_repo_upgradeable() -> List[RepoInstallInfo]:
     all_local_pkgs = PackageDB.get_local_dict()
     repo_packages_updates = []
     for repo_pkg in find_upgradeable_packages():
         local_pkg = all_local_pkgs[repo_pkg.name]
         repo_packages_updates.append(
-            InstallInfo(
+            RepoInstallInfo(
                 name=local_pkg.name,
                 new_version=repo_pkg.version,
                 current_version=local_pkg.version,
@@ -81,7 +81,7 @@ def find_repo_upgradeable() -> List[InstallInfo]:
 def find_aur_devel_updates(
         aur_pkgs_info: List[AURPackageInfo],
         package_ttl_days: int
-) -> List[InstallInfo]:
+) -> List[AURInstallInfo]:
     local_packages = PackageDB.get_local_dict()
     now = datetime.now()
     aur_updates = []
@@ -95,7 +95,7 @@ def find_aur_devel_updates(
         )
         pkg_age_days = (now - pkg_install_datetime).days
         if pkg_age_days >= package_ttl_days:
-            aur_updates.append(InstallInfo(
+            aur_updates.append(AURInstallInfo(
                 name=pkg_name,
                 current_version=local_pkg.version,
                 new_version='devel',
@@ -107,7 +107,7 @@ def find_aur_devel_updates(
     return aur_updates
 
 
-def find_aur_updates() -> Tuple[List[InstallInfo], List[str]]:
+def find_aur_updates() -> Tuple[List[AURInstallInfo], List[str]]:
     args = parse_args()
     package_names = find_packages_not_from_repo()
     print_stderr(translate_many(
@@ -125,7 +125,7 @@ def find_aur_updates() -> Tuple[List[InstallInfo], List[str]]:
         current_version = local_packages[pkg_name].version
         compare_aur_pkg = compare_versions(current_version, aur_version)
         if compare_aur_pkg < 0:
-            pkg_install_info = InstallInfo(
+            pkg_install_info = AURInstallInfo(
                 name=pkg_name,
                 new_version=aur_version,
                 current_version=current_version,

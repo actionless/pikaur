@@ -2,7 +2,9 @@
 
 import sys
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Tuple, Iterable, Union, Dict, Optional
+from typing import (
+    TYPE_CHECKING, List, Tuple, Iterable, Union, Dict, Optional, Sequence,
+)
 
 import pyalpm
 
@@ -12,7 +14,7 @@ from .pprint import (
     print_warning,
 )
 from .args import parse_args
-from .core import PackageSource, InstallInfo
+from .core import PackageSource, InstallInfo, RepoInstallInfo, AURInstallInfo
 from .config import VERSION, PikaurConfig
 from .version import get_common_version, get_version_diff
 from .pacman import PackageDB, OFFICIAL_REPOS
@@ -117,7 +119,7 @@ def pretty_format_repo_name(repo_name: str, color=True) -> str:
 
 
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements
-        packages_updates: List['InstallInfo'],
+        packages_updates: Sequence[InstallInfo],
         verbose=False, print_repo=False, color=True, template: str = None
 ) -> str:
 
@@ -319,11 +321,11 @@ def pretty_format_sysupgrade(
     repo_replacements = install_info.repo_replacements_install_info
     thirdparty_repo_replacements = install_info.thirdparty_repo_replacements_install_info
 
-    new_repo_deps: Optional[List['InstallInfo']] = \
+    new_repo_deps: Optional[List[RepoInstallInfo]] = \
         install_info.new_repo_deps_install_info
-    new_thirdparty_repo_deps: Optional[List['InstallInfo']] = \
+    new_thirdparty_repo_deps: Optional[List[RepoInstallInfo]] = \
         install_info.new_thirdparty_repo_deps_install_info
-    new_aur_deps: Optional[List['InstallInfo']] = \
+    new_aur_deps: Optional[List[AURInstallInfo]] = \
         install_info.aur_deps_install_info
 
     if manual_package_selection:

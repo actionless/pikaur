@@ -11,7 +11,7 @@ from multiprocessing.pool import ThreadPool
 from time import sleep
 from typing import (
     TYPE_CHECKING,
-    Any, Callable, Iterable, List, Optional, Union, Tuple,
+    Any, Callable, Iterable, List, Optional, Union, Tuple, Dict,
 )
 
 import pyalpm
@@ -70,16 +70,16 @@ class DataType(ComparableType):
 
     @classmethod
     @property
-    def __all_annotations__(cls):
-        annotations = {}
+    def __all_annotations__(cls) -> Dict[str, Any]:
+        annotations: Dict[str, Any] = {}
         for parent_class in reversed(cls.mro()):
             annotations.update(**getattr(parent_class, '__annotations__', {}))
         return annotations
 
-    def _key_exists(self, key):
+    def _key_exists(self, key: str) -> bool:
         return key in self.__dir__()
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         for key, value in kwargs.items():
             setattr(self, key, value)
         for key in self.__all_annotations__:

@@ -49,7 +49,6 @@ def filter_aur_results(
 def package_search_thread_aur(queries: List[str]) -> List[Any]:  # pylint: disable=too-many-branches
     args = parse_args()
     result = {}
-    filtered_result = {}
     if queries:
         use_as_filters: List[str] = []
         with ThreadPool() as pool:
@@ -60,7 +59,6 @@ def package_search_thread_aur(queries: List[str]) -> List[Any]:  # pylint: disab
             for query, request in requests.items():
                 try:
                     result[query] = request.get()
-                    filtered_result[query] = result[query]
                 except AURError as exc:
                     if exc.error == "Too many package results.":
                         print_error(
@@ -78,16 +76,9 @@ def package_search_thread_aur(queries: List[str]) -> List[Any]:  # pylint: disab
                         use_as_filters.append(query)
                     else:
                         raise
-                else:
-                    # @TODO:
-                    # https://github.com/actionless/pikaur/issues/298
-                    #  - broken in a different way in AUR RPC now?
-                    if len(result[query]) == 5000:
-                        use_as_filters.append(query)
-                        del filtered_result[query]
             pool.join()
         for query in use_as_filters:
-            filtered_result = filter_aur_results(filtered_result, query)
+            result = filter_aur_results(result, query)
         if args.namesonly:
             for subindex, subresult in result.items():
                 result[subindex] = [
@@ -107,11 +98,7 @@ def package_search_thread_aur(queries: List[str]) -> List[Any]:  # pylint: disab
             result = {'all': get_all_aur_packages()}
     if not args.quiet:
         sys.stderr.write('#')
-    joined_aur_results = list(set(
-        list(join_search_results(list(result.values()))) +
-        list(join_search_results(list(filtered_result.values())))
-    ))
-    return joined_aur_results
+    return list(join_search_results(list(result.values())))
 
 
 def package_search_thread_local() -> Dict[str, str]:

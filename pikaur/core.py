@@ -26,9 +26,6 @@ if TYPE_CHECKING:
     from .aur import AURPackageInfo  # noqa
 
 
-NOT_FOUND_ATOM = object()
-
-
 DEFAULT_INPUT_ENCODING = 'utf-8'
 
 
@@ -71,24 +68,33 @@ class ComparableType:
 
 class DataType(ComparableType):
 
-    def _key_not_exists(self, key):
-        return getattr(self, key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM
+    @classmethod
+    @property
+    def __all_annotations__(cls):
+        annotations = {}
+        for parent_class in reversed(cls.mro()):
+            annotations.update(**getattr(parent_class, '__annotations__', {}))
+        return annotations
+
+    def _key_exists(self, key):
+        return key in self.__dir__()
 
     def __init__(self, **kwargs) -> None:
         for key, value in kwargs.items():
             setattr(self, key, value)
-        for key in self.__annotations__:  # pylint: disable=no-member
-            if self._key_not_exists(key):
+        for key in self.__all_annotations__:
+            if not self._key_exists(key):
                 raise TypeError(
                     f"'{self.__class__.__name__}' does "
                     f"not have required attribute '{key}' set"
                 )
 
     def __setattr__(self, key: str, value: Any) -> None:
-        if (
-                not getattr(self, "__annotations__", None) or
-                self.__annotations__.get(key, NOT_FOUND_ATOM) is NOT_FOUND_ATOM  # pylint: disable=no-member
-        ) and self._key_not_exists(key):
+        if not (
+            (
+                key in self.__all_annotations__
+            ) or self._key_exists(key)
+        ):
             raise TypeError(
                 f"'{self.__class__.__name__}' does "
                 f"not have attribute '{key}'"

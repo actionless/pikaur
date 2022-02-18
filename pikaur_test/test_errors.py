@@ -28,7 +28,7 @@ class FailureTest(PikaurDbTestCase):
             result.stderr.splitlines()[-1].strip(),
             not_existing_pkg_name
         )
-        
+
     def test_install_not_found_ignore(self):
         pkg_name = 'pikaur-git'
         not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
@@ -38,12 +38,15 @@ class FailureTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name)
         pikaur(f'-R --noconfirm {pkg_name}')
         self.assertNotInstalled(pkg_name)
-    
+
     def test_install_not_found_ignore_repo(self):
         pkg_name = 'gtksourceview4'
         not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
         self.assertNotInstalled(pkg_name)
-        result = pikaur(f'-S --repo --ignore-missing-aur --noconfirm {not_existing_pkg_name} {pkg_name}',capture_stderr=True)
+        result = pikaur(
+            f'-S --repo --ignore-missing-aur --noconfirm {not_existing_pkg_name} {pkg_name}', 
+            capture_stderr=True
+        )
         self.assertEqual(result.returncode, 6)
         self.assertIn(MSG_CANNOT_BE_FOUND, result.stderr)
         self.assertEqual(
@@ -51,7 +54,7 @@ class FailureTest(PikaurDbTestCase):
             not_existing_pkg_name
         )
         self.assertNotInstalled(pkg_name)
-        
+
     def test_install_not_found_repo(self):
         """
         package can't be found in AUR

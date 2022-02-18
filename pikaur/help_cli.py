@@ -79,6 +79,7 @@ def cli_print_help() -> None:
             ('', '--makepkg-path=<path>', translate("override path to makepkg executable")),
             ('', '--pikaur-config=<path>', translate("path to custom pikaur config")),
             ('', '--dynamic-users', translate("always isolate with systemd dynamic users")),
+            ('', '--skip-failed-build', translate("automatically skip packages on build error")),
         ]
     if args.sync:
         pikaur_options_help += [
@@ -87,6 +88,9 @@ def cli_print_help() -> None:
             ('', '--nodiff', translate("don't prompt to show the build files diff")),
             ('', '--ignore-outofdate', translate(
                 "ignore AUR packages' updates which marked 'outofdate'"
+            )),
+            ('', '--ignore-mssing-aur', translate(
+                "do not exit when packages do not exist in AUR (anymore)"
             )),
         ]
 

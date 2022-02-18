@@ -53,11 +53,13 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, 'nodiff', PikaurConfig().review.NoDiff.get_bool()),
         (None, 'rebuild', None),
         (None, 'dynamic-users', PikaurConfig().build.AlwaysUseDynamicUsers.get_bool()),
+        (None, 'skip-failed-build', PikaurConfig().build.SkipFailedBuild.get_bool()),
         ('P', 'pkgbuild', None),
         (None, 'install', None),
         ('G', 'getpkgbuild', None),
         (None, 'deps', None),
         (None, 'ignore-outofdate', PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool()),
+        (None, 'ignore-missing-aur', None),
         (None, 'pikaur-debug', None),
         # undocumented options:
         (None, 'print-commands', PikaurConfig().ui.PrintCommands.get_bool()),

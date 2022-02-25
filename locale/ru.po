@@ -317,7 +317,7 @@ msgstr "Не задано"
 #: pikaur/install_cli.py:735
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
-msgstr "Различия для пакета {pkg} не отображаны ({reason})"
+msgstr "Различия для пакета {pkg} не отображены ({reason})"
 
 #: pikaur/install_cli.py:326
 msgid "Nothing to do."

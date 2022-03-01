@@ -44,7 +44,7 @@ class FailureTest(PikaurDbTestCase):
         not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
         self.assertNotInstalled(pkg_name)
         result = pikaur(
-            f'-S --repo --ignore-missing-aur --noconfirm {not_existing_pkg_name} {pkg_name}', 
+            f'-S --repo --ignore-missing-aur --noconfirm {not_existing_pkg_name} {pkg_name}',
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 6)

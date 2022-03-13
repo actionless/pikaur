@@ -198,7 +198,7 @@ Currently supported options are `sudo` and `doas`.
 #### [network]
 
 ##### AurUrl (default: https://aur.archlinux.org)
-AUR Host, useful for users in China to use `https://aur.tuna.tsinghua.edu.cn`.
+AUR Host.
 
 ##### NewsUrl (default: https://www.archlinux.org/feeds/news/)
 Arch Linux News URL, useful for users of Parabola or other Arch derivatives.

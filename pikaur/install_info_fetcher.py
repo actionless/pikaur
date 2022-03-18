@@ -374,7 +374,7 @@ class InstallInfoFetcher(ComparableType):
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
     def get_aur_pkgs_info(self, aur_packages_versionmatchers: List[str]) -> None:
-        #pylint: disable-next=too-many-branches
+        # pylint: disable-next=too-many-branches
         aur_packages_names_to_versions = {
             strip_aur_repo_name(version_matcher.pkg_name): version_matcher
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]

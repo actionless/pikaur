@@ -278,7 +278,8 @@ class InstallPackagesCLI():
 
         if self.args.repo and self.not_found_repo_pkgs_names:
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)
-            raise SysExit(6)
+            if not self.args.ignore_missing:
+                raise SysExit(6)
 
         if self.args.needed:
             # check if there are really any new packages need to be installed

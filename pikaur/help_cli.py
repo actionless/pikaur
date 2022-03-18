@@ -89,8 +89,8 @@ def cli_print_help() -> None:
             ('', '--ignore-outofdate', translate(
                 "ignore AUR packages' updates which marked 'outofdate'"
             )),
-            ('', '--ignore-missing-aur', translate(
-                "do not exit when packages do not exist in AUR (anymore)"
+            ('', '--ignore-missing', translate(
+                "do not exit when packages do not exist (anymore)"
             )),
         ]
 

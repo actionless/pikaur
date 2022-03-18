@@ -349,7 +349,7 @@ class InstallInfoFetcher(ComparableType):
                 self.repo_packages_install_info.append(pkg_update)
             else:
                 self.thirdparty_repo_packages_install_info.append(pkg_update)
-    
+
     def get_repo_deps_info(self) -> None:
         all_aur_pkgs: List[AURPackageInfo] = [
             pkg_info.package

@@ -401,7 +401,7 @@ class InstallInfoFetcher(ComparableType):
                 not_found_aur_pkgs.append(aur_packages_names_to_versions[aur_pkg.name].line)
         if not_found_aur_pkgs:
             print_not_found_packages(sorted(not_found_aur_pkgs))
-            if not self.args.ignore_missing_aur:
+            if not self.args.ignore_missing:
                 raise SysExit(6)
         aur_updates_install_info_by_name: Dict[str, AURInstallInfo] = {}
         if self.args.sysupgrade:

@@ -5,10 +5,11 @@ import os
 import tempfile
 from time import time
 from unittest import TestCase
-from typing import Optional, List, NoReturn, Union
+from typing import Optional, List, NoReturn, Union, Tuple
 
 from pycman.config import PacmanConfig
 
+import pikaur as pikaur_module
 from pikaur.main import main
 from pikaur.args import CachedArgs, parse_args
 from pikaur.pacman import PackageDB
@@ -92,6 +93,13 @@ class InterceptSysOutput():
         self.capture_stderr = capture_stderr
 
     def __enter__(self) -> 'InterceptSysOutput':
+
+        class PrintInteractiveSpawn(InteractiveSpawn):
+            def __init__(self, *args, **kwargs):
+                kwargs.setdefault('stdout', sys.stdout)
+                kwargs.setdefault('stderr', sys.stderr)
+                super().__init__(*args, **kwargs)
+
         self.out_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
         self.err_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
         self.out_file.isatty = lambda: False  # type: ignore
@@ -104,6 +112,9 @@ class InterceptSysOutput():
         if self.capture_stderr:
             sys.stderr = self.err_file  # type: ignore
 
+        self._real_interactive_spawn = InteractiveSpawn
+        pikaur_module.core.InteractiveSpawn = PrintInteractiveSpawn
+
         self._real_exit = sys.exit
         sys.exit = self._fake_exit  # type: ignore
 
@@ -115,6 +126,7 @@ class InterceptSysOutput():
         sys.stdout = self._real_stdout
         sys.stderr = self._real_stderr
         sys.exit = self._real_exit
+        pikaur_module.core.InteractiveSpawn = self._real_interactive_spawn
 
         self.out_file.flush()
         self.err_file.flush()

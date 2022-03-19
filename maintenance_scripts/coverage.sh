@@ -2,6 +2,10 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+if [[ "${1:-}" == "--help" ]] ; then
+	echo "Usage: $0 SUBMIT_COVERAGE WRITE_DB"
+	exit 0
+fi
 
 if [[ "${2:-}" == "--write-db" ]] ; then
 	export WRITE_DB=True

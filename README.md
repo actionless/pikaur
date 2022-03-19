@@ -321,7 +321,7 @@ You can start from [this list of issues](https://github.com/actionless/pikaur/is
 
 #### Running CI locally
 
-##### Linters
+##### Linters (code quality check)
 
 ```sh
 ./maintenance_scripts/lint.sh

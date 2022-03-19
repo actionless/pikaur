@@ -319,6 +319,27 @@ find ~/.local/share/pikaur/aur_repos -mindepth 1 -maxdepth 1 -type d | xargs -r 
 
 You can start from [this list of issues](https://github.com/actionless/pikaur/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22 ""). Grep-ing `@TODO` comments also useful if you're itching to write something.
 
+#### Running CI locally
+
+##### Linters
+
+```sh
+./maintenance_scripts/lint.sh
+```
+
+##### Tests
+
+```sh
+./maintenance_scripts/coverage.sh
+```
+
+For running DESTRUCTIVE tests, which modify installed packages,
+run (inside virtual machine or docker, etc):
+
+```sh
+./maintenance_scripts/coverage.sh --local --write-db
+```
+
 
 ### Translations
 

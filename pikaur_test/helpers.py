@@ -176,13 +176,11 @@ def pikaur(
 
     print(color_line('\n => ', 10, force=True) + ' '.join(new_args))
 
-    returncode: int
-    stdout_text: str
-    stderr_text: str
+    intercepted: InterceptSysOutput
     with InterceptSysOutput(
             capture_stderr=capture_stderr,
             capture_stdout=capture_stdout
-    ) as intercepted:
+    ) as _intercepted:
         try:
 
             # re-parse args:
@@ -198,17 +196,15 @@ def pikaur(
 
         except FakeExit:
             pass
-        returncode = intercepted.returncode
-        stdout_text = intercepted.stdout_text
-        stderr_text = intercepted.stderr_text
+        intercepted = _intercepted
 
     PackageDB.discard_local_cache()
     PackageDB.discard_repo_cache()
 
     return CmdResult(
-        returncode=returncode,
-        stdout=stdout_text,
-        stderr=stderr_text,
+        returncode=intercepted.returncode,
+        stdout=intercepted.stdout_text,
+        stderr=intercepted.stderr_text,
     )
 
 

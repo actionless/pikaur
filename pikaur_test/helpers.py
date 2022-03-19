@@ -29,7 +29,7 @@ if WRITE_DB:
     from pikaur.config import CONFIG_PATH, PikaurConfig
     if os.path.exists(CONFIG_PATH):
         os.unlink(CONFIG_PATH)
-    PikaurConfig._config = None  # type: ignore
+    PikaurConfig._config = None  # type: ignore[assignment]
 
 
 def spawn(cmd: Union[str, List[str]], **kwargs) -> InteractiveSpawn:
@@ -102,21 +102,21 @@ class InterceptSysOutput():
 
         self.out_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
         self.err_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
-        self.out_file.isatty = lambda: False  # type: ignore
-        self.err_file.isatty = lambda: False  # type: ignore
+        self.out_file.isatty = lambda: False  # type: ignore[assignment]
+        self.err_file.isatty = lambda: False  # type: ignore[assignment]
 
         self._real_stdout = sys.stdout
         self._real_stderr = sys.stderr
         if self.capture_stdout:
-            sys.stdout = self.out_file  # type: ignore
+            sys.stdout = self.out_file  # type: ignore[assignment]
         if self.capture_stderr:
-            sys.stderr = self.err_file  # type: ignore
+            sys.stderr = self.err_file  # type: ignore[assignment]
 
         self._real_interactive_spawn = InteractiveSpawn
         pikaur_module.core.InteractiveSpawn = PrintInteractiveSpawn  # type: ignore[misc]
 
         self._real_exit = sys.exit
-        sys.exit = self._fake_exit  # type: ignore
+        sys.exit = self._fake_exit  # type: ignore[assignment]
 
         return self
 
@@ -189,7 +189,7 @@ def pikaur(
             MakePkgCommand._cmd = None  # pylint: disable=protected-access
             parse_args()
             # monkey-patch to force always uncolored output:
-            CachedArgs.args.color = 'never'  # type: ignore
+            CachedArgs.args.color = 'never'  # type: ignore[attr-defined]
 
             # finally run pikaur's mainloop
             main()
@@ -253,12 +253,12 @@ class PikaurTestCase(TestCase):
             self.fail(f'Package "{pkg_name}" is still installed.')
 
     def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:
-        cmd_result = pacman(f'-Qiq {dep_name}').stdout
+        cmd_result: str = pacman(f'-Qiq {dep_name}').stdout  # type: ignore[assignment]
         self.assertTrue(
             cmd_result
         )
         self.assertEqual(
-            cmd_result.splitlines()[0].split(':')[1].strip(),  # type: ignore
+            cmd_result.splitlines()[0].split(':')[1].strip(),
             provider_name
         )
 

@@ -38,8 +38,8 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
+* [File locations](#File locations "")
 * [Config file](#configuration "")
-* [Directories](#directories "")
 * [FAQ](#faq "")
 * [Contributing](#contributing "")
 * - [Code](#code "")
@@ -68,6 +68,20 @@ makepkg -fsri
 git clone https://github.com/actionless/pikaur.git
 cd pikaur
 python3 ./pikaur.py -S AUR_PACKAGE_NAME
+```
+
+
+
+## File locations
+
+```sh
+~/.cache/pikaur/
+├── build/  # build directory (removed after successful build)
+├── pkg/  # built packages directory
+~/.config/pikaur.conf  # config file
+~/.local/share/pikaur/
+└── aur_repos/  # keep aur repos there; show diff when updating
+    └── last_installed.txt  # aur repo hash of last successfully installed package
 ```
 
 
@@ -227,20 +241,6 @@ Specify a HTTPS proxy which is used to get AUR package information and to `git`-
 Note that any downloads by `pacman`, `git` (inside the build) or `makepkg` will NOT use this proxy.
 If that's needed, setting proxy options in their own config files will take effect
 (such as `env HTTPS_PROXY=`, `~/.gitconfig`, `~/.curlrc`).
-
-
-
-## Directories
-
-```sh
-~/.cache/pikaur/
-├── build/  # build directory (removed after successful build)
-├── pkg/  # built packages directory
-~/.config/pikaur.conf  # config file
-~/.local/share/pikaur/
-└── aur_repos/  # keep aur repos there; show diff when updating
-    └── last_installed.txt  # aur repo hash of last successfully installed package
-```
 
 
 

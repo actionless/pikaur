@@ -33,7 +33,7 @@ class SysupgradeTest(PikaurDbTestCase):
     aur2_old_version: str
 
     dev_pkg_name = 'xst-git'
-    dev_pkg_url = 'git://github.com/gnotclub/xst.git'
+    dev_pkg_url = 'https://github.com/gnotclub/xst.git'
     dev_old_version: str
 
     def setUp(self):

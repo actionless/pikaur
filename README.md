@@ -88,7 +88,7 @@ python3 ./pikaur.py -S AUR_PACKAGE_NAME
 
 ## Configuration
 
-~/.config/pikaur.conf
+`~/.config/pikaur.conf`
 
 
 #### [sync]

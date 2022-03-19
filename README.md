@@ -38,7 +38,7 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
-* [File locations](#File locations "")
+* [File locations](#file-locations "")
 * [Config file](#configuration "")
 * [FAQ](#faq "")
 * [Contributing](#contributing "")

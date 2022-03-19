@@ -5,7 +5,7 @@ import os
 import tempfile
 from time import time
 from unittest import TestCase
-from typing import Optional, List, NoReturn, Union, Tuple
+from typing import Optional, List, NoReturn, Union
 
 from pycman.config import PacmanConfig
 
@@ -113,7 +113,7 @@ class InterceptSysOutput():
             sys.stderr = self.err_file  # type: ignore
 
         self._real_interactive_spawn = InteractiveSpawn
-        pikaur_module.core.InteractiveSpawn = PrintInteractiveSpawn
+        pikaur_module.core.InteractiveSpawn = PrintInteractiveSpawn  # type: ignore[misc]
 
         self._real_exit = sys.exit
         sys.exit = self._fake_exit  # type: ignore
@@ -126,7 +126,7 @@ class InterceptSysOutput():
         sys.stdout = self._real_stdout
         sys.stderr = self._real_stderr
         sys.exit = self._real_exit
-        pikaur_module.core.InteractiveSpawn = self._real_interactive_spawn
+        pikaur_module.core.InteractiveSpawn = self._real_interactive_spawn  # type: ignore[misc]
 
         self.out_file.flush()
         self.err_file.flush()

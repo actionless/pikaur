@@ -52,8 +52,7 @@ class ComparableTypeTest(PikaurTestCase):
     def test_different_types(self):
         a1 = self.ClassA()
         b1 = self.ClassB()
-        with self.assertRaises(TypeError):
-            _ = a1 == b1
+        self.assertNotEqual(a1, b1)
 
     def test_recursion_1(self):
         a1 = self.ClassA()

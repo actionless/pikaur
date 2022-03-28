@@ -434,7 +434,7 @@ class InstallInfoFetcher(ComparableType):
                 )
                 del aur_updates_install_info_by_name[pkg_name]
             for pkg_list in self.pkgbuilds_packagelists.values():
-                if pkg_name in pkg_list:
+                if pkg_name in pkg_list and pkg_name in aur_updates_install_info_by_name:
                     del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
         debug(f"got AUR pkgs install info: {self.aur_updates_install_info=}")

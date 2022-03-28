@@ -407,11 +407,14 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             PackageDB.discard_local_cache()
 
     def _set_built_package_path(self) -> None:
-        pkg_paths = spawn(
+        pkg_paths_spawn = spawn(
             isolate_root_cmd(MakePkgCommand.get() + ['--packagelist'],
                              cwd=self.build_dir),
             cwd=self.build_dir
-        ).stdout_text.splitlines()
+        )
+        if pkg_paths_spawn.returncode != 0:
+            return
+        pkg_paths = pkg_paths_spawn.stdout_text.splitlines()
         if not pkg_paths:
             return
         pkg_paths.sort(key=len)

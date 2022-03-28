@@ -18,7 +18,7 @@ from .args import parse_args
 from .exceptions import AURError, SysExit
 
 
-SamePackageType = TypeVar('SamePackageType', AURPackageInfo, pyalpm.Package)
+SamePackageTypeT = TypeVar('SamePackageTypeT', AURPackageInfo, pyalpm.Package)
 
 
 def package_search_thread_repo(query: str) -> List[pyalpm.Package]:
@@ -112,8 +112,8 @@ def package_search_thread_local() -> Dict[str, str]:
 
 
 def join_search_results(
-        all_search_results: List[List[SamePackageType]]
-) -> Iterable[SamePackageType]:
+        all_search_results: List[List[SamePackageTypeT]]
+) -> Iterable[SamePackageTypeT]:
     if not all_search_results:
         return []
     pkgnames_set: Set[str] = set()

@@ -45,9 +45,7 @@ class ComparableType:
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
-            raise TypeError(
-                f"'{other.__class__.__name__}' is not an instance of '{self.__class__.__name__}'"
-            )
+            return False
         if not self.__compare_stack__:
             self.__compare_stack__ = []
         elif other in self.__compare_stack__:

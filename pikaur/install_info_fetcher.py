@@ -373,7 +373,7 @@ class InstallInfoFetcher(ComparableType):
             else:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
-    def get_aur_pkgs_info(self, aur_packages_versionmatchers: List[str]) -> None:
+    def get_aur_pkgs_info(self, aur_packages_versionmatchers: List[str]) -> None:  # pylint: disable=too-many-branches
         aur_packages_names_to_versions = {
             strip_aur_repo_name(version_matcher.pkg_name): version_matcher
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]
@@ -424,6 +424,8 @@ class InstallInfoFetcher(ComparableType):
                 package=aur_pkg,
             )
         for pkg_name in list(aur_updates_install_info_by_name.keys())[:]:
+            if pkg_name not in aur_updates_install_info_by_name:
+                continue
             if (
                     self.package_is_manually_excluded(pkg_name)
             ) or (
@@ -434,7 +436,7 @@ class InstallInfoFetcher(ComparableType):
                 )
                 del aur_updates_install_info_by_name[pkg_name]
             for pkg_list in self.pkgbuilds_packagelists.values():
-                if pkg_name in pkg_list and pkg_name in aur_updates_install_info_by_name:
+                if pkg_name in pkg_list:
                     del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
         debug(f"got AUR pkgs install info: {self.aur_updates_install_info=}")

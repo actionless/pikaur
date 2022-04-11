@@ -311,7 +311,22 @@ mv ~/.cache/yay/* ~/.local/share/pikaur/aur_repos/
 find ~/.local/share/pikaur/aur_repos -mindepth 1 -maxdepth 1 -type d | xargs -r -I '{}' -- sh -c 'cd "{}" && git rev-parse HEAD > last_installed.txt'
 ```
 
+##### How to downgrade a package?
 
+This will show a list of commits to choose one to downgarade to.
+
+```sh
+pikaur -G <package> # choose commit from the list
+pikaur -P <package>
+```
+
+If this doesn't work you can always re-clone the package, select the desired version and reinstall:
+```sh
+git clone https://aur.archlinux.org/<package>.git
+git checkout <commit>
+pikaur -Rns <package>
+makepkg -si
+```
 
 ## Contributing
 

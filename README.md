@@ -311,7 +311,20 @@ mv ~/.cache/yay/* ~/.local/share/pikaur/aur_repos/
 find ~/.local/share/pikaur/aur_repos -mindepth 1 -maxdepth 1 -type d | xargs -r -I '{}' -- sh -c 'cd "{}" && git rev-parse HEAD > last_installed.txt'
 ```
 
+##### How to downgrade a package?
 
+This will show a list of commits to choose one to downgarade to.
+
+```sh
+pikaur -G <package> 
+cd <package>
+git log # choose <commit> from the list
+git checkout <commit>
+pikaur -Rns <package> # Uninstal current version
+pikaur -P  # Uninstal current version
+makepkg -si # If previous command failed to install
+cd .. && rm -rf <package> # Remove the temp directory
+```
 
 ## Contributing
 

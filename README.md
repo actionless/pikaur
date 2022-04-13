@@ -316,16 +316,14 @@ find ~/.local/share/pikaur/aur_repos -mindepth 1 -maxdepth 1 -type d | xargs -r 
 This will show a list of commits to choose one to downgarade to.
 
 ```sh
-pikaur -G <package> # choose commit from the list
-pikaur -P <package>
-```
-
-If this doesn't work you can always re-clone the package, select the desired version and reinstall:
-```sh
-git clone https://aur.archlinux.org/<package>.git
+pikaur -G <package> 
+cd <package>
+git log # choose <commit> from the list
 git checkout <commit>
-pikaur -Rns <package>
-makepkg -si
+pikaur -Rns <package> # Uninstal current version
+pikaur -P  # Uninstal current version
+makepkg -si # If previous command failed to install
+cd .. && rm -rf <package> # Remove the temp directory
 ```
 
 ## Contributing

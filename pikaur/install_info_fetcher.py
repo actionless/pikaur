@@ -565,8 +565,7 @@ class InstallInfoFetcher(ComparableType):
                     ], [])
                     if pkg_name in all_requested_pkg_names
                 ]
-            if providing_for:
-                provided_name = providing_for[0]
+            for provided_name in providing_for:
                 if provided_name in all_provided_pkgs:
                     pkg_install_info.name = provided_name
                     pkg_install_info.provided_by = [

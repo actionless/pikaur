@@ -95,7 +95,7 @@ class SrcInfo():
                 self.get_values(field, lines=lines) +
                 self.get_values(f'{field}_{carch}', lines=lines)
         ):
-            version_matcher = VersionMatcher(dep_line)
+            version_matcher = VersionMatcher(dep_line, is_pkg_deps=True)
             pkg_name = version_matcher.pkg_name
             if pkg_name not in dependencies:
                 dependencies[pkg_name] = version_matcher

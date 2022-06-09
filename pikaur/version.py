@@ -35,9 +35,9 @@ class VersionMatcher():
             for version_matcher in self.version_matchers
         )
 
-    def __init__(self, depend_line: str) -> None:
+    def __init__(self, depend_line: str, is_pkg_deps=False) -> None:
         self.line = depend_line
-        self._set_version_matcher_func()
+        self._set_version_matcher_func(is_pkg_deps=is_pkg_deps)
 
     def add_version_matcher(self, version_matcher: 'VersionMatcher') -> None:
         if version_matcher.line in self.line.split(','):
@@ -50,7 +50,7 @@ class VersionMatcher():
         else:
             self.version = version_matcher.version
 
-    def _set_version_matcher_func(self) -> None:
+    def _set_version_matcher_func(self, is_pkg_deps=False) -> None:  # pylint: disable=too-many-locals
         # pylint: disable=invalid-name
 
         version: Optional[str] = None
@@ -74,6 +74,10 @@ class VersionMatcher():
             self_version = get_version()
             if not self_version:
                 return cmp_default(v)
+            if is_pkg_deps:
+                common_version, _ = get_common_version(v, self_version)
+                if common_version == self_version:
+                    return True
             return compare_versions(v, self_version) == 0
 
         def cmp_le(v: str) -> int:

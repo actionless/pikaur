@@ -233,12 +233,12 @@ class PackageDBCommon():
                     ProvidedDependency(
                         name=pkg.name,
                         package=pkg,
-                        version_matcher=VersionMatcher(pkg.name)
+                        version_matcher=VersionMatcher(pkg.name, is_pkg_deps=True)
                     )
                 )
                 if pkg.provides:
                     for provided_pkg_line in pkg.provides:
-                        version_matcher = VersionMatcher(provided_pkg_line)
+                        version_matcher = VersionMatcher(provided_pkg_line, is_pkg_deps=True)
                         provided_name = version_matcher.pkg_name
                         provided_pkg_names.setdefault(provided_name, []).append(
                             ProvidedDependency(

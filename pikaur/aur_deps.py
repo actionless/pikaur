@@ -34,7 +34,7 @@ def get_aur_pkg_deps_and_version_matchers(aur_pkg: AURPackageInfo) -> Dict[str, 
     for dep_line in (
             (aur_pkg.depends or []) + (aur_pkg.makedepends or []) + (aur_pkg.checkdepends or [])
     ):
-        version_matcher = VersionMatcher(dep_line)
+        version_matcher = VersionMatcher(dep_line, is_pkg_deps=True)
         name = version_matcher.pkg_name
         if name not in deps:
             deps[name] = version_matcher
@@ -232,7 +232,6 @@ def find_missing_deps_for_aur_pkg(
     for aur_dep_info in aur_deps_info:
         aur_dep_name = aur_dep_info.name
         version_matcher = version_matchers[aur_dep_name]
-        # print(aur_dep_info)
         if not version_matcher(aur_dep_info.version):
             raise DependencyVersionMismatch(
                 version_found=aur_dep_info.version,

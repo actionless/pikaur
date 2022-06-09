@@ -36,7 +36,7 @@ def _debug(message):
     print_debug(f"pikspect: {message}", lock=False)
 
 
-class TTYRestore():
+class TTYRestore():  # pragma: no cover
 
     old_tcattrs = None
     sub_tty_old_tcattrs = None
@@ -84,7 +84,7 @@ def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None
     )
 
 
-class TTYInputWrapper():
+class TTYInputWrapper():  # pragma: no cover
 
     tty_opened = False
 
@@ -160,6 +160,7 @@ class PikspectPopen(subprocess.Popen):
 
     print_output: bool
     capture_input: bool
+    capture_output: bool
     historic_output: List[bytes]
     pty_in: TextIO
     pty_out: BinaryIO
@@ -170,18 +171,21 @@ class PikspectPopen(subprocess.Popen):
     _write_buffer: bytes = b''
     # some help for mypy:
     _wait: Callable
+    output: bytes = b''
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
             self,
             args: List[str],
             print_output: bool = True,
             capture_input: bool = True,
+            capture_output: bool = False,
             default_questions: Dict[str, List[str]] = None,
             **kwargs
     ) -> None:
         self.args = args
         self.print_output = print_output
         self.capture_input = capture_input
+        self.capture_output = capture_output
         self.default_questions = {}
         self.historic_output = []
         if default_questions:
@@ -211,12 +215,12 @@ class PikspectPopen(subprocess.Popen):
 
     def run(self) -> None:
         if not isinstance(self.args, list):
-            raise TypeError('self.args should be list')
+            raise TypeError('`args` should be list')
         PikspectSignalHandler.set(lambda *_whatever: self.send_signal(signal.SIGINT))
         try:
             with NestedTerminal() as real_term_geometry:
 
-                if 'sudo' in self.args:
+                if 'sudo' in self.args:  # pragma: no cover
                     subprocess.run(get_sudo_refresh_command(), check=True)
                 with open(
                         self.pty_user_master, 'w', encoding=DEFAULT_INPUT_ENCODING
@@ -247,7 +251,7 @@ class PikspectPopen(subprocess.Popen):
     def check_questions(self) -> None:
         try:
             historic_output = b''.join(self.historic_output).decode(DEFAULT_INPUT_ENCODING)
-        except UnicodeDecodeError:
+        except UnicodeDecodeError:  # pragma: no cover
             return
 
         clear_buffer = False
@@ -275,9 +279,11 @@ class PikspectPopen(subprocess.Popen):
             self._write_buffer = b''
 
     def write_something(self, output: bytes) -> None:
-        if not self.print_output:
+        if not (self.print_output or self.capture_output):
             return
         with PrintLock():
+            if self.capture_output:
+                self.output += output
             self._write_buffer += output
             self.write_buffer_contents()
 
@@ -286,7 +292,7 @@ class PikspectPopen(subprocess.Popen):
 
             try:
                 selected = select.select([self.pty_out, ], [], [], SMALL_TIMEOUT)
-            except ValueError:
+            except ValueError:  # pragma: no cover
                 return
             else:
                 readers = selected[0]

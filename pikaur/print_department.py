@@ -20,7 +20,6 @@ from .version import get_common_version, get_version_diff
 from .pacman import PackageDB, OFFICIAL_REPOS
 from .aur import AURPackageInfo
 
-
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
     from .install_info_fetcher import InstallInfoFetcher  # noqa
@@ -123,11 +122,11 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         verbose=False, print_repo=False, color=True, template: str = None
 ) -> str:
 
-    _color_line = color_line
-    _bold_line = bold_line
-    if not color:
-        _color_line = lambda line, *args, **kwargs: line  # noqa
-        _bold_line = lambda line: line  # noqa
+    def _color_line(line, *args, **kwargs):
+        return color_line(line, *args, **kwargs) if color else line
+
+    def _bold_line(line):
+        return bold_line(line) if color else line
 
     SortKey = Union[Tuple, str]
 
@@ -334,11 +333,11 @@ def pretty_format_sysupgrade(
         new_thirdparty_repo_deps = None
         new_aur_deps = None
 
-    _color_line = color_line
-    _bold_line = bold_line
-    if not color:
-        _color_line = lambda line, *args: line  # noqa
-        _bold_line = lambda line: line  # noqa
+    def _color_line(line, *args, **kwargs):
+        return color_line(line, *args, **kwargs) if color else line
+
+    def _bold_line(line):
+        return bold_line(line) if color else line
 
     result = []
 

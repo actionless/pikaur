@@ -97,7 +97,6 @@ class News:
         )
         return last_online_news_date > self._get_last_seen_news_date()
 
-    # noinspection PyUnboundLocalVariable
     @staticmethod
     def _print_one_entry(news_entry: xml.etree.ElementTree.Element) -> None:
         child: xml.etree.ElementTree.Element
@@ -116,7 +115,6 @@ class News:
         )
         print_stdout()
 
-    # noinspection PyUnboundLocalVariable
     def _update_last_seen_news(self, news_entry: xml.etree.ElementTree.Element) -> None:
         child: xml.etree.ElementTree.Element
         for child in news_entry:

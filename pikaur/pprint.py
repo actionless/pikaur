@@ -38,6 +38,7 @@ class PrintLock():
 
 
 def _print(destination: TextIO, message='', end='\n', flush=False, lock=True) -> None:
+    # pylint: disable=unnecessary-dunder-call
     if lock:
         PrintLock().__enter__()
     destination.write(f'{message}{end}')

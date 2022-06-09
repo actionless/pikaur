@@ -5,7 +5,7 @@ from pikaur_test.helpers import PikaurDbTestCase, pikaur, fake_pikaur
 
 class ArchWikiTest(PikaurDbTestCase):
     """
-    criterias from arch wiki
+    criteria from arch wiki
     """
 
     # def test_reliable_parser(self):

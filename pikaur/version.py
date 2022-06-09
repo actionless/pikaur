@@ -30,10 +30,10 @@ class VersionMatcher():
     def __call__(self, version: Optional[str]) -> int:
         if not version:
             return True
-        return min([
+        return min(
             version_matcher(version)
             for version_matcher in self.version_matchers
-        ])
+        )
 
     def __init__(self, depend_line: str) -> None:
         self.line = depend_line

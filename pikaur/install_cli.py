@@ -911,7 +911,6 @@ class InstallPackagesCLI():
         self.failed_to_build_package_names = failed_to_build_package_names
 
     def _remove_packages(self, packages_to_be_removed: List[str]) -> None:
-        # pylint: disable=no-self-use
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
                 sudo(

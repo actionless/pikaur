@@ -191,7 +191,7 @@ def pikaur(
             # monkey-patch to force always uncolored output:
             CachedArgs.args.color = 'never'  # type: ignore[attr-defined]
 
-            # finally run pikaur's mainloop
+            # finally run pikaur's main loop
             main()
 
         except FakeExit:

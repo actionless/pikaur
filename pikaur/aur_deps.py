@@ -166,10 +166,10 @@ def check_requested_pkgs(
             ):
                 continue
             if not version_matcher(aur_pkg.version):
-                if not aur_pkg.provides or not min([
+                if not aur_pkg.provides or not min(
                         version_matcher(VersionMatcher(prov_line).version)
                         for prov_line in aur_pkg.provides
-                ]):
+                ):
                     raise DependencyVersionMismatch(
                         version_found=aur_pkg.version,
                         dependency_line=version_matcher.line,

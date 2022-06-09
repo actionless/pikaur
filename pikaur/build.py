@@ -304,14 +304,14 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def _compare_versions(self, compare_to: int) -> bool:
         local_db = PackageDB.get_local_dict()
         self.get_latest_dev_sources(check_dev_pkgs=self.args.needed)
-        return min([
+        return min(
             compare_versions(
                 local_db[pkg_name].version,
                 self.get_version(pkg_name)
             ) == compare_to
             if pkg_name in local_db else False
             for pkg_name in self.package_names
-        ])
+        )
 
     @property
     def version_already_installed(self) -> bool:

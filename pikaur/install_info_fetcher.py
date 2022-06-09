@@ -560,6 +560,7 @@ class InstallInfoFetcher(ComparableType):
             ):
                 providing_for = [
                     pkg_name for pkg_name in sum([
+                        # pylint: disable=unnecessary-direct-lambda-call
                         (lambda vm: [vm.line, vm.pkg_name])(VersionMatcher(prov))
                         for prov in provides
                     ], [])

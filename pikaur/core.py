@@ -75,7 +75,7 @@ class DataType(ComparableType):
         return annotations
 
     def _key_exists(self, key: str) -> bool:
-        return key in self.__dir__()
+        return key in dir(self)
 
     def __init__(self, **kwargs: Any) -> None:
         for key, value in kwargs.items():

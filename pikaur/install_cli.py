@@ -278,6 +278,9 @@ class InstallPackagesCLI():
                 )
             )
             raise SysExit(131) from exc
+        except DependencyError as exc:
+            print_stderr(str(exc))
+            raise SysExit(131) from exc
 
         if self.args.repo and self.not_found_repo_pkgs_names:
             print_not_found_packages(self.not_found_repo_pkgs_names, repo=True)

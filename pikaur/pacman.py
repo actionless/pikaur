@@ -392,9 +392,12 @@ class PackageDB(PackageDBCommon):
         if cached_pkg is not None:
             return cached_pkg
         results: List[PacmanPrint] = []
-        found_packages_output = spawn(
+        proc = spawn(
             cmd_args + ['--print-format', '%r/%n']
-        ).stdout_text
+        )
+        if proc.returncode != 0:
+            raise DependencyError(proc.stderr_text + proc.stdout_text)
+        found_packages_output = proc.stdout_text
         if found_packages_output:
             for line in found_packages_output.splitlines():
                 try:

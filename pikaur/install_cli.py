@@ -81,6 +81,7 @@ class InstallPackagesCLI():
     # User input
     args: PikaurArgs
     install_package_names: List[str]
+    # @TODO: define @property for manually_excluded_packages_names+args.ignore:
     manually_excluded_packages_names: List[str]
     resolved_conflicts: List[List[str]]
     # pkgbuild_path: [pkg_name, ...]  -- needed for split pkgs to install only some of them
@@ -250,7 +251,9 @@ class InstallPackagesCLI():
                 install_package_names=self.install_package_names,
                 not_found_repo_pkgs_names=self.not_found_repo_pkgs_names,
                 pkgbuilds_packagelists=self.pkgbuilds_packagelists,
-                manually_excluded_packages_names=self.manually_excluded_packages_names,
+                manually_excluded_packages_names=(
+                    self.manually_excluded_packages_names + self.args.ignore
+                ),
             )
         except PackagesNotFoundInAUR as exc:
             if exc.wanted_by:

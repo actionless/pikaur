@@ -459,11 +459,12 @@ class InstallPackagesCLI():
             aur_rpc_deps = set(
                 dep_line
                 for pkg in aur_pkgs
-                for dep_line in (
+                for matcher in (
                     pkg.depends +
                     pkg.makedepends +
                     pkg.checkdepends
                 )
+                for dep_line in matcher.split(',')
             )
 
             srcinfo_deps: Set[str] = set()

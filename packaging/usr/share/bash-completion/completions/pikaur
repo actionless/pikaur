@@ -58,9 +58,9 @@ _pikaur_get_aur_packages() {
   curl -f -s "${aurPackagesURL}" -o "${tmpFile}"
   local returnStatus=$?
   if [ "${returnStatus}" -eq 0 ]; then
-    mv "${tmpFile}" "${cacheFile}" 2>/dev/null
+    \mv "${tmpFile}" "${cacheFile}" 2>/dev/null
   else
-    rm "${tmpFile}"
+    \rm "${tmpFile}"
   fi
 }
 
@@ -69,8 +69,8 @@ _pikaur_cached_search() {
   repoPackageNames="$(\pacman -Ssq)" # pacman is faster then pikaur -Ssqo
   local cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/pikaur_bash-completion"
   if [ ! -e "${cacheDir}" ]; then
-    mkdir -p "${cacheDir}" || return
-    chmod 0700 "${cacheDir}"
+    \mkdir -p "${cacheDir}" || return
+    \chmod 0700 "${cacheDir}"
   fi
   local cacheFile="${cacheDir}/aur-packages.gz"
   local maxCacheFileAge=86400 # 24 hours * 60 minutes * 60 seconds

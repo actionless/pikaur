@@ -18,7 +18,7 @@ from .aur import find_aur_packages, AURPackageInfo, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .pprint import print_stdout, print_debug, color_line
 from .args import PikaurArgs, parse_args, reconstruct_args
-from .exceptions import DependencyVersionMismatch, SysExit
+from .exceptions import DependencyVersionMismatch, DependencyError, SysExit
 from .print_department import print_ignored_package, print_not_found_packages
 from .updates import find_aur_updates
 from .replacements import find_replacements
@@ -242,13 +242,16 @@ class InstallInfoFetcher(ComparableType):
                 install_infos.append(install_info)
             return install_infos
 
-        composed_result = PackageDB.get_print_format_output(
-            pacman_args + [
-                pkg
-                for pkg_line in pkg_lines
-                for pkg in pkg_line.split(',')
-            ]
-        )
+        try:
+            composed_result = PackageDB.get_print_format_output(
+                pacman_args + [
+                    pkg
+                    for pkg_line in pkg_lines
+                    for pkg in pkg_line.split(',')
+                ]
+            )
+        except DependencyError:
+            composed_result = []
         if composed_result:
             return _get_pkg_install_infos(composed_result)
 
@@ -263,7 +266,10 @@ class InstallInfoFetcher(ComparableType):
             pool.close()
             pool.join()
             for pkg_name, request in all_requests.items():
-                all_results[pkg_name] = request.get()
+                try:
+                    all_results[pkg_name] = request.get()
+                except DependencyError:
+                    all_results[pkg_name] = []
         pkg_install_infos: List[RepoInstallInfo] = []
         for pkg_name, results in all_results.items():
             if not results:

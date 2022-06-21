@@ -490,11 +490,12 @@ class PackageDB(PackageDBCommon):
         if cls._pacman_repo_pkg_present_cache.get(pkg_name) is False:
             raise PackagesNotFoundInRepo(packages=[pkg_name])
         all_repo_pkgs = PackageDB.get_repo_dict()
-        results = cls.get_print_format_output(
-            get_pacman_command() + ['--sync'] + pkg_name.split(',')
-        )
-        if not results:
-            raise PackagesNotFoundInRepo(packages=[pkg_name])
+        try:
+            results = cls.get_print_format_output(
+                get_pacman_command() + ['--sync'] + pkg_name.split(',')
+            )
+        except DependencyError as exc:
+            raise PackagesNotFoundInRepo(packages=[pkg_name]) from exc
         found_pkgs = [all_repo_pkgs[result.full_name] for result in results]
         if len(results) == 1:
             return found_pkgs[0]

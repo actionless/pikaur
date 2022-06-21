@@ -530,9 +530,14 @@ def find_upgradeable_packages() -> List[pyalpm.Package]:
         return []
 
     all_local_pkgs = PackageDB.get_local_dict()
-    results = PackageDB.get_print_format_output(
-        get_pacman_command() + ['--sync'] + pkg_names
-    )
+    results = []
+    for pkg_name in pkg_names:
+        try:
+            results += PackageDB.get_print_format_output(
+                get_pacman_command() + ['--sync'] + [pkg_name, ]
+            )
+        except DependencyError as exc:
+            print_stderr(str(exc))
     return [
         all_repo_pkgs[result.full_name] for result in results
         if result.name in all_local_pkgs

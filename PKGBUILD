@@ -11,7 +11,7 @@ license=('GPL3')
 source=(
 	"$pkgname::git+https://github.com/actionless/pikaur.git#branch=master"
 )
-md5sums=(
+b2sums=(
 	"SKIP"
 )
 depends=(

@@ -1,6 +1,6 @@
 [MASTER]
 extension-pkg-whitelist=pyalpm
-ignore=CVS,argparse.py
+ignore=CVS,ignoreme.py
 ignore-patterns=
 persistent=yes
 unsafe-load-any-extension=no

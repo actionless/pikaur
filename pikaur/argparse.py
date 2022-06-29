@@ -1,11 +1,15 @@
 # Forked from python's stdlib argparse.ArgumentParser
 # Original author: Steven J. Bethard <steven.bethard@gmail.com>.
+# pylint: disable=too-many-statements,too-many-locals,too-many-branches,protected-access
 
 from argparse import (
     SUPPRESS,
     ArgumentParser, ArgumentError,
-    _get_action_name,
+    Action, _get_action_name,
 )
+import typing as t
+
+from .i18n import translate as _
 
 
 class ArgumentParserWithUnknowns(ArgumentParser):
@@ -17,7 +21,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
         # map all mutually exclusive arguments to the other arguments
         # they can't occur with
-        action_conflicts = {}
+        action_conflicts: t.Dict[Action, t.List[Action]] = {}
         for mutex_group in self._mutually_exclusive_groups:
             group_actions = mutex_group._group_actions
             for i, mutex_action in enumerate(mutex_group._group_actions):
@@ -80,7 +84,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         # function to convert arg_strings into an optional action
         def consume_optional(start_index):
 
-            unknown_args = []
+            unknown_args: t.List[str] = []
 
             # get the optional identified at this index
             option_tuple = option_string_indices[start_index]
@@ -89,7 +93,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             # identify additional optionals in the same arg string
             # (e.g. -xyz is the same as -x -y -z if no args are required)
             match_argument = self._match_argument
-            action_tuples = []
+            action_tuples: t.List[t.Tuple[Action, t.List[str], str]] = []
             while True:
 
                 # if we found no optional action, skip it
@@ -193,10 +197,10 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         while start_index <= max_option_string_index:
 
             # consume any Positionals preceding the next option
-            next_option_string_index = min([
+            next_option_string_index = min(
                 index
                 for index in option_string_indices
-                if index >= start_index])
+                if index >= start_index)
             if start_index != next_option_string_index:
                 positionals_end_index = consume_positionals(start_index)
 
@@ -205,8 +209,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 if positionals_end_index > start_index:
                     start_index = positionals_end_index
                     continue
-                else:
-                    start_index = positionals_end_index
+                start_index = positionals_end_index
 
             # if we consumed all the positionals we could and we're not
             # at the index of an option string, there were extra arguments
@@ -227,11 +230,12 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
         # make sure all required actions were present and also convert
         # action defaults which were not given as arguments
-        required_actions = []
+        required_actions: t.List[str] = []
         for action in self._actions:
             if action not in seen_actions:
-                if action.required:
-                    required_actions.append(_get_action_name(action))
+                action_name = _get_action_name(action)
+                if action.required and action_name:
+                    required_actions.append(action_name)
                 else:
                     # Convert action default now instead of doing it before
                     # parsing arguments to avoid calling convert functions
@@ -259,9 +263,14 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
                 # if no actions were used, report the error
                 else:
-                    names = [_get_action_name(action)
-                             for action in group._group_actions
-                             if action.help is not SUPPRESS]
+                    names: t.List[str] = []
+                    for action in group._group_actions:
+                        if (
+                                action.help is not SUPPRESS
+                        ) and (
+                            name := _get_action_name(action)
+                        ):
+                            names.append(name)
                     msg = _('one of the arguments %s is required')
                     self.error(msg % ' '.join(names))
 

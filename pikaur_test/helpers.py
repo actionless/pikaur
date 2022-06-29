@@ -55,10 +55,8 @@ class CmdResult:
             stderr: Optional[str] = None
     ) -> None:
         self.returncode = returncode
-        if not stdout or not stderr:
-            raise RuntimeError()
-        self.stdout = stdout
-        self.stderr = stderr
+        self.stdout = stdout or ''
+        self.stderr = stderr or ''
 
     def __repr__(self) -> str:
         return (

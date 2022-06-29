@@ -45,6 +45,9 @@ def log_stderr(line: str) -> None:
 
 class CmdResult:
 
+    stdout: str
+    stderr: str
+
     def __init__(
             self,
             returncode: Optional[int] = None,
@@ -52,6 +55,8 @@ class CmdResult:
             stderr: Optional[str] = None
     ) -> None:
         self.returncode = returncode
+        if not stdout or not stderr:
+            raise RuntimeError()
         self.stdout = stdout
         self.stderr = stderr
 
@@ -253,7 +258,7 @@ class PikaurTestCase(TestCase):
             self.fail(f'Package "{pkg_name}" is still installed.')
 
     def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:
-        cmd_result: str = pacman(f'-Qiq {dep_name}').stdout  # type: ignore[assignment]
+        cmd_result: str = pacman(f'-Qiq {dep_name}').stdout
         self.assertTrue(
             cmd_result
         )

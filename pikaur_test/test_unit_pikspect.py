@@ -7,7 +7,7 @@ class PikspectTest(PikaurTestCase):
 
     def test_error_argstype(self):
         with self.assertRaises(TypeError):
-            pikspect(cmd='echo')
+            pikspect(cmd='echo')  # type: ignore[arg-type]
 
     def test_basic(self):
         result = pikspect(cmd=['echo', 'test'])

@@ -119,11 +119,13 @@ class MakePkgCommand:
     pkgdest_skipped = False
 
     @classmethod
-    def _apply_dynamic_users_workaround(cls):
+    def _apply_dynamic_users_workaround(cls) -> None:
         if running_as_root() and PKGDEST and (
                 PKGDEST.startswith('/tmp') or
                 PKGDEST.startswith('/var/tmp')
         ):
+            if not cls._cmd:
+                raise RuntimeError()
             cls._cmd = ['env', 'PKGDEST='] + cls._cmd
             cls.pkgdest_skipped = True
 

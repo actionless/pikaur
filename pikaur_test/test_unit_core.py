@@ -1,7 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 # pylint: disable=invalid-name,disallowed-name
 
-from typing import Any
+from typing import Any, Type
 
 from pikaur_test.helpers import PikaurTestCase
 from pikaur.core import ComparableType, DataType, InstallInfo, PackageSource
@@ -10,6 +10,9 @@ from pikaur.aur import find_aur_packages
 
 
 class ComparableTypeTest(PikaurTestCase):
+
+    ClassA: Type
+    ClassB: Type
 
     @classmethod
     def setUpClass(cls):
@@ -76,6 +79,8 @@ class ComparableTypeTest(PikaurTestCase):
 
 class DataTypeTest(PikaurTestCase):
 
+    DataClass1: Type
+
     @classmethod
     def setUpClass(cls):
 
@@ -97,10 +102,13 @@ class DataTypeTest(PikaurTestCase):
     def test_set_unknown(self):
         a1 = self.DataClass1(foo=1, bar='a')
         with self.assertRaises(TypeError):
-            a1.baz = 'baz'  # pylint: disable=attribute-defined-outside-init
+            a1.baz = 'baz'
 
 
 class InstallInfoTest(PikaurTestCase):
+
+    repo_install_info: InstallInfo
+    aur_install_info: InstallInfo
 
     @classmethod
     def setUpClass(cls):
@@ -111,7 +119,7 @@ class InstallInfoTest(PikaurTestCase):
             new_version=420,
             package=repo_pkg
         )
-        aur_pkg = find_aur_packages(('pikaur', ))[0][0]
+        aur_pkg = find_aur_packages(['pikaur', ])[0][0]
         cls.aur_install_info = InstallInfo(
             name=aur_pkg.name,
             current_version=aur_pkg.version,

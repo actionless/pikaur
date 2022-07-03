@@ -42,27 +42,32 @@ class News:
             return
         news_entry: 'Element'
         first_news = True
-        for news_entry in self._news_feed.iter('item'):
-            child: 'Element'
-            for child in news_entry:
-                if 'pubDate' in child.tag:
-                    if self._is_new(str(child.text)):
-                        if first_news:
-                            print_stdout(
-                                '\n' +
-                                color_line(translate('There is news from archlinux.org!'), 9) +
-                                '\n'
-                            )
-                        self._print_one_entry(news_entry)
-                        # news are in inverse chronological order (newest first).
-                        # if there is something to print, we save this date
-                        # in our cache
-                        if first_news:
-                            first_news = False
-                            self._update_last_seen_news(news_entry)
-                    else:
-                        # no more news
-                        return
+        news_entry_to_update_last_seen_date = None
+        try:  # pylint: disable=too-many-nested-blocks
+            for news_entry in self._news_feed.iter('item'):
+                child: 'Element'
+                for child in news_entry:
+                    if 'pubDate' in child.tag:
+                        if self._is_new(str(child.text)):
+                            if first_news:
+                                print_stdout(
+                                    '\n' +
+                                    color_line(translate('There is news from archlinux.org!'), 9) +
+                                    '\n'
+                                )
+                            self._print_one_entry(news_entry)
+                            # news are in inverse chronological order (newest first).
+                            # if there is something to print, we save this date
+                            # in our cache
+                            if first_news:
+                                first_news = False
+                                news_entry_to_update_last_seen_date = news_entry
+                        else:
+                            # no more news
+                            return
+        finally:
+            if news_entry_to_update_last_seen_date:
+                self._update_last_seen_news(news_entry_to_update_last_seen_date)
 
     def fetch_latest(self) -> None:
         print_debug('NEWS: fetch_latest')

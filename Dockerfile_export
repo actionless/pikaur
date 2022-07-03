@@ -34,6 +34,7 @@ RUN git clone https://github.com/actionless/pikaur.git /opt/app-build/
 
 RUN	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
+	rm -fr ./src/ ./pkg/ && \
 	sleep 0.1 && \
 	echo ">>>> Installing test deps using Pikaur itself:" && \
 	sudo -u user pikaur -S --noconfirm --color=always vulture mypy # python-coveralls

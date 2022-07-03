@@ -38,6 +38,7 @@ RUN echo ">>>> Installing opt deps:" && \
 	sudo -u user sed -i 's/"$pkgname::.*"/"pikaur-git.tar.gz"/' PKGBUILD && \
 	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
+	rm -fr ./src/ ./pkg/ && \
 	sleep 0.1 && \
 	echo ">>>> Installing test deps using Pikaur itself:" && \
 	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv \

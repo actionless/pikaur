@@ -1,0 +1,4 @@
+skips:
+  - B404
+
+# vim: set ft=yaml :

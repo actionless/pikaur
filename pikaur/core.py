@@ -218,7 +218,7 @@ def isolate_root_cmd(cmd: List[str], cwd=None) -> List[str]:
     if not running_as_root():
         return cmd
     base_root_isolator = [
-        'systemd-run',
+        '/usr/sbin/systemd-run',
         '--service-type=oneshot',
         '--pipe', '--wait', '--pty',
         '-p', 'DynamicUser=yes',
@@ -365,7 +365,7 @@ def run_with_sudo_loop(function: Callable) -> Optional[Any]:
 
 def check_systemd_dynamic_users() -> bool:  # pragma: no cover
     try:
-        out = subprocess.check_output(['systemd-run', '--version'],
+        out = subprocess.check_output(['/usr/sbin/systemd-run', '--version'],  # nosec B603
                                       universal_newlines=True)
     except FileNotFoundError:
         return False

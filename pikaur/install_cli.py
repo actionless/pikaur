@@ -52,7 +52,7 @@ def debug(msg: Any) -> None:
 
 
 def hash_file(filename: str) -> str:  # pragma: no cover
-    md5 = hashlib.md5()
+    md5 = hashlib.new('md5', usedforsecurity=False)
     with open(filename, 'rb') as file:
         eof = False
         while not eof:

@@ -23,7 +23,7 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
         )
     req = request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     try:
-        with request.urlopen(req) as response:
+        with request.urlopen(req) as response:  # nosec B310
             result_bytes = response.read()
             return result_bytes
     except URLError as exc:

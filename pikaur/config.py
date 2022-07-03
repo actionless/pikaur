@@ -49,7 +49,7 @@ else:
 if RUNNING_AS_ROOT:
     BUILD_DEPS_LOCK = os.path.join(_USER_CACHE_HOME, 'pikaur_build_deps.lock')
 else:
-    BUILD_DEPS_LOCK = '/tmp/pikaur_build_deps.lock'
+    BUILD_DEPS_LOCK = '/tmp/pikaur_build_deps.lock'  # nosec B108
 
 
 def get_config_path() -> str:

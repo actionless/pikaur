@@ -1,20 +1,26 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 import datetime
-import xml.etree.ElementTree
 import os
 from html.parser import HTMLParser
+from typing import TextIO, Union, TYPE_CHECKING
 
-from typing import TextIO, Union
+try:
+    from defusedxml.ElementTree import fromstring  # type: ignore[import]
+except ModuleNotFoundError:
+    from xml.etree.ElementTree import fromstring  # nosec B405
 
 from .i18n import translate
 from .config import CACHE_ROOT, PikaurConfig
 from .pprint import (
-    color_line, format_paragraph, print_stdout, print_error, bold_line,
+    color_line, format_paragraph, print_stdout, print_error, bold_line, print_debug
 )
 from .pacman import PackageDB
 from .urllib import get_unicode_from_url
 from .core import open_file
+
+if TYPE_CHECKING:
+    from xml.etree.ElementTree import Element  # noqa  # nosec B405
 
 
 DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
@@ -23,19 +29,21 @@ DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
 class News:
     URL = PikaurConfig().network.NewsUrl.get_str()
     CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
-    _news_feed: Union[xml.etree.ElementTree.Element, None]
+    _news_feed: Union['Element', None]
 
     def __init__(self) -> None:
         self._news_feed = None
+        print_debug('NEWS: init')
 
     def print_news(self) -> None:
-        # check if we got a valid news feed by checking if we got an xml structure
-        if not isinstance(self._news_feed, xml.etree.ElementTree.Element):
+        print_debug('NEWS: print')
+        if self._news_feed is None:
+            print_error(translate('Could not fetch archlinux.org news'))
             return
-        news_entry: xml.etree.ElementTree.Element
+        news_entry: 'Element'
         first_news = True
         for news_entry in self._news_feed.iter('item'):
-            child: xml.etree.ElementTree.Element
+            child: 'Element'
             for child in news_entry:
                 if 'pubDate' in child.tag:
                     if self._is_new(str(child.text)):
@@ -50,26 +58,31 @@ class News:
                         # if there is something to print, we save this date
                         # in our cache
                         if first_news:
-                            self._update_last_seen_news(news_entry)
                             first_news = False
+                            self._update_last_seen_news(news_entry)
                     else:
                         # no more news
                         return
 
     def fetch_latest(self) -> None:
+        print_debug('NEWS: fetch_latest')
         str_response = get_unicode_from_url(self.URL, optional=True)
         if not str_response:
             print_error(translate('Could not fetch archlinux.org news'))
             return
-        self._news_feed = xml.etree.ElementTree.fromstring(str_response)
+        self._news_feed = fromstring(str_response)  # nosec B314
 
     def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: TextIO
         try:
+            print_debug(f"NEWS: loading date from {self.CACHE_FILE}")
             with open_file(self.CACHE_FILE) as last_seen_fd:
-                return datetime.datetime.strptime(
-                    last_seen_fd.readline().strip(), DT_FORMAT
+                file_data = last_seen_fd.readline().strip()
+                parsed_date = datetime.datetime.strptime(
+                    file_data, DT_FORMAT
                 )
+                print_debug(f"NEWS: {file_data=}, {parsed_date=}")
+                return parsed_date
         except (IOError, ValueError):
             # if file doesn't exist or corrupted,
             # this feature was run the first time
@@ -95,11 +108,13 @@ class News:
         last_online_news_date: datetime.datetime = datetime.datetime.strptime(
             last_online_news, DT_FORMAT
         )
-        return last_online_news_date > self._get_last_seen_news_date()
+        last_seen_news_date = self._get_last_seen_news_date()
+        print_debug(f'NEWS: is_new, {last_online_news_date=}, {last_seen_news_date=}')
+        return last_online_news_date > last_seen_news_date
 
     @staticmethod
-    def _print_one_entry(news_entry: xml.etree.ElementTree.Element) -> None:
-        child: xml.etree.ElementTree.Element
+    def _print_one_entry(news_entry: 'Element') -> None:
+        child: 'Element'
         for child in news_entry:
             if 'title' in child.tag:
                 title = str(child.text)
@@ -115,8 +130,8 @@ class News:
         )
         print_stdout()
 
-    def _update_last_seen_news(self, news_entry: xml.etree.ElementTree.Element) -> None:
-        child: xml.etree.ElementTree.Element
+    def _update_last_seen_news(self, news_entry: 'Element') -> None:
+        child: 'Element'
         for child in news_entry:
             if 'pubDate' in child.tag:
                 pub_date = str(child.text)

@@ -44,10 +44,8 @@ vulture "${TARGETS[@]}" \
 	--min-confidence=1 \
 	--sort-by-size
 
-if [[ -n ${BANDIT:-} ]] ; then
-	echo Bandit...
-	bandit "${TARGETS[@]}" -r
-fi
+echo Bandit...
+bandit . --recursive --silent
 
 echo Shellcheck...
 (

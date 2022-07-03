@@ -41,7 +41,7 @@ RUN echo ">>>> Installing opt deps:" && \
 	sleep 0.1 && \
 	echo ">>>> Installing test deps using Pikaur itself:" && \
 	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv \
-		python-pylint flake8 mypy vulture python-coveralls shellcheck
+		python-pylint flake8 mypy vulture python-coveralls shellcheck bandit
 
 # workaround broken deps for pylint:
 RUN	echo ">>>> Installing test deps using Pikaur itself:" && \

@@ -1,4 +1,5 @@
-skips:
-  - B404
+[bandit]
+exclude = ./dumpster,./maintenance_scripts
+skips = B404
 
-# vim: set ft=yaml :
+# vim: set ft=conf :

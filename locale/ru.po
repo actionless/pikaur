@@ -2,7 +2,7 @@
 # Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2018.
-# Drommer <drommer@github.com>, 2021.
+# Drommer <drommer@github.com>, 2022.
 #
 msgid ""
 msgstr ""
@@ -521,7 +521,7 @@ msgstr "[c] пропустить проверку целостности (кон
 
 #: pikaur/install_cli.py:541
 msgid "[c] git checkout -- '*'"
-msgstr ""
+msgstr "[c] откат изменений (git checkout -- '*')"
 
 #: pikaur/build.py:705
 msgid "[d] delete build dir and try again"
@@ -533,7 +533,7 @@ msgstr "[e] редактировать PKGBUILD"
 
 #: pikaur/build.py:703
 msgid "[f] skip 'check()' function of PKGBUILD"
-msgstr ""
+msgstr "[f] пропустить функцию 'check()' в PKGBUILD"
 
 #: pikaur/build.py:704
 msgid "[i] ignore architecture"
@@ -554,7 +554,7 @@ msgstr "[p] пропустить проверку PGP-подписи"
 
 #: pikaur/install_cli.py:544
 msgid "[p] git stash && ... && git stash pop"
-msgstr ""
+msgstr "[p] отложить и применить отложенные изменения (git stash && ... && git stash pop)"
 
 #. translate("[c] git checkout -- '*' ; git clean -f -d -x"),
 #: pikaur/install_cli.py:543

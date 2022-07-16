@@ -34,7 +34,7 @@ from .print_department import (
 )
 from .core import (
     PackageSource,
-    interactive_spawn, remove_dir, open_file, sudo, running_as_root,
+    interactive_spawn, remove_dir, open_file, sudo, running_as_root, isolate_root_cmd
 )
 from .conflicts import find_aur_conflicts
 from .prompt import (
@@ -781,7 +781,7 @@ class InstallPackagesCLI():
                             git_args += [
                                 f':(exclude){file_path}',
                             ]
-                    interactive_spawn(git_args)
+                    interactive_spawn(isolate_root_cmd(git_args))
             elif self.args.noconfirm:
                 print_stdout(_skip_diff_label.format(
                     pkg=_pkg_label,

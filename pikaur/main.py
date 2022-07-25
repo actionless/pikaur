@@ -11,6 +11,7 @@ import codecs
 import shutil
 import atexit
 import io
+import http.client as httplib
 from argparse import ArgumentError
 from typing import List, Optional, Callable
 
@@ -334,6 +335,17 @@ def handle_sig_int(*_whatever) -> None:  # pragma: no cover
     raise SysExit(125)
 
 
+def verify_network():
+    conn = httplib.HTTPSConnection("8.8.8.8", timeout=10) # '8.8.8.8' is a Google DNS Server
+    try:
+        conn.request("HEAD", "/")
+        return True
+    except Exception:
+        return False
+    finally:
+        conn.close()
+
+
 def main() -> None:
     try:
         parse_args()
@@ -341,6 +353,10 @@ def main() -> None:
         print_stderr(exc)
         sys.exit(22)
     check_runtime_deps()
+    
+    if not verify_network(): 
+        print_error('Check Network Connection')
+        sys.exit(1)
 
     create_dirs()
     # initialize config to avoid race condition in threads:

@@ -9,7 +9,7 @@ arch=('any')
 url="https://github.com/actionless/pikaur"
 license=('GPL3')
 source=(
-	"$pkgname::git+https://github.com/actionless/pikaur.git#branch=master"
+	"$pkgname::git+https://github.com/lcarland/pikaur.git#branch=master"
 )
 b2sums=(
 	"SKIP"

@@ -10,3 +10,5 @@ dist/
 MANIFEST
 *.egg-info/
 pikaur.1
+pikaur-git/
+pikaur-git*

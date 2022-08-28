@@ -114,6 +114,10 @@ When doing sysupgrade ignore AUR packages which have `outofdate` mark.
 
 #### [build]
 
+##### GnupgHome (default: None)
+Provides an override path for the `GNUPGHOME` to use when building packages from the aur.
+See explanations of `--homedir` and `${GNUPGHOME}` in the gpg man pages for more details.
+
 ##### KeepBuildDir (default: no)
 Don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the builds.
 Will be overridden by `-k/--keepbuild` flag.

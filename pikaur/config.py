@@ -103,6 +103,10 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'bool',
             'default': 'no',
         },
+        'GnupgHome': {
+            'type': 'str',
+            'default': ''
+        },
         'SkipFailedBuild': {
             'type': 'bool',
             'default': 'no',

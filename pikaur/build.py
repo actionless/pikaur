@@ -671,16 +671,24 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 cmd_args += ['--ignorearch']
             if skip_check:
                 cmd_args += ['--nocheck']
-            cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir)
+
+            env = {}
+
+            if PikaurConfig().build.GnupgHome.get_str() != '':
+                env['GNUPGHOME'] = PikaurConfig().build.GnupgHome.get_str()
+
+            cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
             spawn_kwargs: Dict[str, Any] = {}
             if self.args.hide_build_log:
                 spawn_kwargs = dict(
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE
                 )
+
             result = interactive_spawn(
                 cmd_args,
                 cwd=self.build_dir,
+                env=env,
                 **spawn_kwargs
             )
             print_stdout()

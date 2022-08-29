@@ -16,7 +16,7 @@ class CliTest(PikaurTestCase):
             pikaur('-Ssq oomox').stdout.splitlines()
         )
         for oomox_pkg_name in [
-                'oomox', 'oomox-git', 'themix-full-git', 'themix-theme-oomox-git'
+                'omnu-ice', 'themix-full-git', 'themix-theme-oomox-git',
         ]:
             self.assertIn(
                 oomox_pkg_name, search_results

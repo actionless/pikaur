@@ -5,7 +5,7 @@ pkgdesc="Full featured CLI system information tool"
 arch=('any')
 url="https://example.com/test_app"
 license=('GPL')
-depends=('coreutils' 'pciutils' 'perl' 'procps-ng' 'oomox=9998765')
+depends=('coreutils' 'pciutils' 'perl' 'procps-ng' 'pikaur=9998765')
 optdepends=(
   "bind-tools: -i wlan IP"
 )

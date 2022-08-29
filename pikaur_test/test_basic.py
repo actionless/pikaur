@@ -102,12 +102,20 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name2)
 
     def test_conflicting_aur_packages(self):
-        self.remove_if_installed('oomox-git', 'oomox')
-        self.assertEqual(
-            pikaur('-S oomox-git oomox').returncode, 131
+        conflicting_aur_package1 = 'resvg'
+        conflicting_aur_package2 = 'resvg-git'
+        self.remove_if_installed(
+            conflicting_aur_package1,
+            conflicting_aur_package2
         )
-        self.assertNotInstalled('oomox')
-        self.assertNotInstalled('oomox-git')
+        self.assertEqual(
+            pikaur(
+                f'-S {conflicting_aur_package1}'
+                f' {conflicting_aur_package2}'
+            ).returncode, 131
+        )
+        self.assertNotInstalled(conflicting_aur_package1)
+        self.assertNotInstalled(conflicting_aur_package2)
 
     def test_conflicting_aur_and_repo_packages(self):
         self.remove_if_installed('pacaur', 'expac-git', 'expac')

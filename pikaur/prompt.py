@@ -101,7 +101,7 @@ def get_input(
     with PrintLock():
         with TTYInputWrapper():
 
-            if not(
+            if not (
                     require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
             ):
                 _debug_nolock('Using custom input reader...')

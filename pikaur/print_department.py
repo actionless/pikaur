@@ -451,9 +451,9 @@ def pretty_format_sysupgrade(
     if PikaurConfig().sync.ShowDownloadSize.get_bool():
         result.append(
             f'\n{_bold_line("Total Download Size:")}'
-            f'{str(round(install_info.get_total_size()["total_download_size"], 2)).rjust(10)} MiB'
+            f'{str(round(install_info.get_total_download_size(), 2)).rjust(10)} MiB'
             f'\n{_bold_line("Total Installed Size:")}'
-            f'{str(round(install_info.get_total_size()["total_installed_size"], 2)).rjust(9)} MiB\n'
+            f'{str(round(install_info.get_total_installed_size(), 2)).rjust(9)} MiB\n'
         )
     else:
         result += ['']

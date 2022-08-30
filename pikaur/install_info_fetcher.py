@@ -1,5 +1,5 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
-
+from itertools import chain
 from multiprocessing.pool import ThreadPool
 from typing import List, Optional, Dict, Any, Sequence, Union
 
@@ -617,15 +617,14 @@ class InstallInfoFetcher(ComparableType):
                             dep_install_info.name = name
                             dep_install_info.new_version = dep_install_info.package.version
 
-    def get_total_size(self) -> Dict[str, float]:
+    def get_total_download_size(self) -> float:
         total_download_size = 0.0
+        for install_info in chain.from_iterable(self.repo_install_info):
+            total_download_size += install_info.package.size / 1024 ** 2
+        return total_download_size
+
+    def get_total_installed_size(self) -> float:
         total_installed_size = 0.0
-        for pkg_update in (
-                self.repo_packages_install_info + self.thirdparty_repo_packages_install_info
-        ):
-            total_download_size += pkg_update.package.size / 1024 ** 2
-            total_installed_size += pkg_update.package.isize / 1024 ** 2
-        return {
-            "total_download_size": total_download_size,
-            "total_installed_size": total_installed_size
-        }
+        for install_info in chain.from_iterable(self.repo_install_info):
+            total_installed_size += install_info.package.isize / 1024 ** 2
+        return total_installed_size

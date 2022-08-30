@@ -616,3 +616,16 @@ class InstallInfoFetcher(ComparableType):
                             dep_install_info.provided_by = None
                             dep_install_info.name = name
                             dep_install_info.new_version = dep_install_info.package.version
+
+    def get_total_size(self) -> Dict[str, float]:
+        total_download_size = 0.0
+        total_installed_size = 0.0
+        for pkg_update in (
+                self.repo_packages_install_info + self.thirdparty_repo_packages_install_info
+        ):
+            total_download_size += pkg_update.package.size / 1024 ** 2
+            total_installed_size += pkg_update.package.isize / 1024 ** 2
+        return {
+            "total_download_size": total_download_size,
+            "total_installed_size": total_installed_size
+        }

@@ -280,7 +280,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         pkgver_result = joined_spawn(
             isolate_root_cmd(
                 MakePkgCommand.get() + [
-                    '--nobuild', '--noprepare', '--nocheck', '--nodeps'
+                    '--nobuild', '--nocheck', '--nodeps'
                 ],
                 cwd=self.build_dir
             ),

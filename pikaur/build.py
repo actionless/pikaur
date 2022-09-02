@@ -98,6 +98,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     repo_path: str
     pkgbuild_path: str
     build_dir: str
+    build_gpgdir: str
     built_packages_paths: Dict[str, str]
 
     reviewed = False
@@ -145,6 +146,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             raise NotImplementedError('Either `package_names` or `pkgbuild_path` should be set')
 
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
+        self.build_gpgdir = self.args.build_gpgdir or PikaurConfig().build.GpgDir.get_str()
         self.built_packages_paths = {}
         self.keep_build_dir = self.args.keepbuild or (
             is_devel_pkg(self.package_base) and PikaurConfig().build.KeepDevBuildDir.get_bool()
@@ -673,9 +675,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 cmd_args += ['--nocheck']
 
             env = {}
-
-            if PikaurConfig().build.GnupgHome.get_str() != '':
-                env['GNUPGHOME'] = PikaurConfig().build.GnupgHome.get_str()
+            if self.build_gpgdir != '':
+                env['GNUPGHOME'] = self.build_gpgdir
 
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
             spawn_kwargs: Dict[str, Any] = {}

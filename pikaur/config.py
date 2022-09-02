@@ -103,7 +103,7 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             'type': 'bool',
             'default': 'no',
         },
-        'GnupgHome': {
+        'GpgDir': {
             'type': 'str',
             'default': ''
         },

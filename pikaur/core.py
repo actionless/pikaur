@@ -227,7 +227,7 @@ def isolate_root_cmd(cmd: List[str], cwd=None, env=None) -> List[str]:
     ]
     if env is not None:
         for env_var_name, env_var_value in env.items():
-            base_root_isolator += [ '-E', f'{env_var_name}={env_var_value}' ]
+            base_root_isolator += ['-E', f'{env_var_name}={env_var_value}']
     if cwd is not None:
         base_root_isolator += ['-p', 'WorkingDirectory=' + os.path.abspath(cwd)]
     for env_var_name in (

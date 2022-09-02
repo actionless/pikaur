@@ -114,7 +114,7 @@ When doing sysupgrade ignore AUR packages which have `outofdate` mark.
 
 #### [build]
 
-##### GnupgHome (default: None)
+##### GnupgHome (default: )
 Provides an override path for the `GNUPGHOME` to use when building packages from the aur.
 See explanations of `--homedir` and `${GNUPGHOME}` in the gpg man pages for more details.
 
@@ -328,6 +328,22 @@ pikaur -Rns <package> # Uninstal current version
 pikaur -P  # Uninstal current version
 makepkg -si # If previous command failed to install
 cd .. && rm -rf <package> # Remove the temp directory
+```
+
+##### How to add additional trusted keys when building with systemd dynamic users?
+When using systemd dynamic users, there is no a persistent home directory and therefore no persist home. You can set the configuration option build.gnupghome in the root pikaur configuration file `/root/.config/pikaur.conf` The below example configures makepkg to use a hypothetical gpg home directory at `/etc/pikaur.d/gnupg` when validating source files.
+
+```ini
+[build]
+gnupghome=/etc/pikaur.d/gnupg
+```
+
+You can initialize a minimal gnupghome at the example path by executing the below commands as root.
+
+```sh
+export GNUPGHOME="/etc/pikaur.d/gnupg"
+mkdir -p "${GNUPGHOME}"
+gpg --batch --passphrase '' --quick-gen-key "pikaur@localhost" rsa sign 0
 ```
 
 ## Contributing

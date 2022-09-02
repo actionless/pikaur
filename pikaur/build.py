@@ -688,7 +688,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             result = interactive_spawn(
                 cmd_args,
                 cwd=self.build_dir,
-                env=env,
+                env={**os.environ, **env},
                 **spawn_kwargs
             )
             print_stdout()

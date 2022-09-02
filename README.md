@@ -114,7 +114,7 @@ When doing sysupgrade ignore AUR packages which have `outofdate` mark.
 
 #### [build]
 
-##### GpgDir (default: )
+##### GpgDir (default: ) (root default: /etc/pacman.d/gnupg)
 Provides an override path for the GPG home directory used when validating aur package sources.
 See explanations of `--homedir` and `${GNUPGHOME}` in the gpg man pages for more details.
 Will be overridden by `--build_gpgdir` argument.

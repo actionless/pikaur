@@ -105,7 +105,7 @@ CONFIG_SCHEMA: Dict[str, Any] = {
         },
         'GpgDir': {
             'type': 'str',
-            'default': ''
+            'default': ('/etc/pacman.d/gnupg/' if RUNNING_AS_ROOT else '')
         },
         'SkipFailedBuild': {
             'type': 'bool',

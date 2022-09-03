@@ -104,22 +104,25 @@ class InstallTest(PikaurDbTestCase):
 
     def test_pkgbuild_custom_gpgdir(self):
         pkg_name = "zfs-utils"
-        pkg_keys = ["4F3BA9AB6D1F8D683DC2DFB56AD860EED4598027", "C33DF142657ED1F7C328A2960AB9E991C6AF658B"]
+        pkg_keys = [
+            "4F3BA9AB6D1F8D683DC2DFB56AD860EED4598027",
+            "C33DF142657ED1F7C328A2960AB9E991C6AF658B"
+        ]
         keyserver = "hkp://keyserver.ubuntu.com:11371"
 
         with tempfile.TemporaryDirectory() as tmpdirname:
+            env = {**os.environ, "GNUPGHOME": tmpdirname}
             commands = [
-                f"gpg --homedir {tmpdirname} --batch --passphrase  --quick-generate-key 'pikaur@localhost' rsa sign 0",
-                *map(lambda key: f'gpg --homedir {tmpdirname} --keyserver {keyserver} --receive-keys {key}', pkg_keys),
-                *map(lambda key: f'gpg --homedir {tmpdirname} --quick-lsign-key {key}', pkg_keys),
+                "gpg --batch --passphrase  --quick-generate-key 'pikaur@localhost' rsa sign 0",
+                *map(lambda key: f'gpg --keyserver {keyserver} --receive-keys {key}', pkg_keys),
+                *map(lambda key: f'gpg --quick-lsign-key {key}', pkg_keys),
                 f"chmod 755 {tmpdirname}",
                 f"chmod 644 {tmpdirname}/pubring.gpg",
                 f"chmod 644 {tmpdirname}/trust.gpg"
             ]
 
-            print(f'Configuring {tmpdirname}')
             for command in commands:
-                spawn(command)
+                spawn(command, env=env)
 
             pikaur(f'--build-gpgdir {tmpdirname} -S {pkg_name}')
             self.assertInstalled(pkg_name)

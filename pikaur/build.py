@@ -146,7 +146,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             raise NotImplementedError('Either `package_names` or `pkgbuild_path` should be set')
 
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
-        self.build_gpgdir = self.args.build_gpgdir or PikaurConfig().build.GpgDir.get_str()
+        self.build_gpgdir = self.args.build_gpgdir
         self.built_packages_paths = {}
         self.keep_build_dir = self.args.keepbuild or (
             is_devel_pkg(self.package_base) and PikaurConfig().build.KeepDevBuildDir.get_bool()

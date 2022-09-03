@@ -82,7 +82,7 @@ PACMAN_STR_OPTS: ArgSchema = [
 
 def get_pikaur_str_opts() -> ArgSchema:
     return [
-        (None, 'build-gpgdir', None),
+        (None, 'build-gpgdir', PikaurConfig().build.GpgDir.get_str()),
         (None, 'mflags', None),
         (None, 'makepkg-config', None),
         (None, 'makepkg-path', None),

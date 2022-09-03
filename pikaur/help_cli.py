@@ -79,7 +79,8 @@ def cli_print_help() -> None:
             ('', '--makepkg-path=<path>', translate("override path to makepkg executable")),
             ('', '--pikaur-config=<path>', translate("path to custom pikaur config")),
             ('', '--dynamic-users', translate("always isolate with systemd dynamic users")),
-            ('', '--build-gpgdir=<path>', translate("set GnuPG home directory used when validating package sources")),
+            ('', '--build-gpgdir=<path>',
+                translate("set GnuPG home directory used when validating package sources")),
         ]
     if args.sync:
         pikaur_options_help += [

@@ -98,7 +98,7 @@ class InstallTest(PikaurDbTestCase):
         self.remove_if_installed(pkg_name2)
 
         pikaur(f'-G {pkg_base}')
-        pikaur(f'-P ./{pkg_base}/PKGBUILD --noconfirm --install')
+        fake_pikaur(f'-P ./{pkg_base}/PKGBUILD --noconfirm --install --mflags=--skippgpcheck')
         self.assertInstalled(pkg_name1)
         self.assertInstalled(pkg_name2)
 

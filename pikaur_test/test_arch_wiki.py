@@ -21,7 +21,7 @@ class ArchWikiTest(PikaurDbTestCase):
 
     def test_split_packages_2(self):
         # Split packages 2: libc++
-        fake_pikaur('-S libc++ --mflags=--skippgpcheck,--noextract')
+        fake_pikaur('-S libc++ --mflags=--skippgpcheck')
         self.assertInstalled('libc++')
 
         # Split packages 2: libc++abi (installing already built package)
@@ -37,7 +37,7 @@ class ArchWikiTest(PikaurDbTestCase):
         self.remove_packages('python-pyalsaaudio')
 
         # Split packages 3: 2 split packages
-        pikaur('-S python2-pyalsaaudio python-pyalsaaudio')
+        fake_pikaur('-S python2-pyalsaaudio python-pyalsaaudio --mflags=--skippgpcheck')
         self.assertInstalled('python2-pyalsaaudio')
         self.assertInstalled('python-pyalsaaudio')
 

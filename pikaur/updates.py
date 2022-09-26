@@ -8,16 +8,20 @@ import pyalpm
 from .i18n import translate_many
 from .version import compare_versions
 from .pacman import (
-    PackageDB,
+    PackageDB, PacmanConfig,
     find_packages_not_from_repo, find_upgradeable_packages,
+    get_ignored_pkgnames_from_patterns,
 )
 from .aur import AURPackageInfo, find_aur_packages
-from .pprint import print_stderr
+from .pprint import print_stderr, print_stdout
 from .args import parse_args
 from .config import PikaurConfig
-from .core import AURInstallInfo, RepoInstallInfo
+from .core import AURInstallInfo, RepoInstallInfo, InstallInfo
 from .exceptions import PackagesNotFoundInRepo
-from .print_department import print_ignoring_outofdate_upgrade
+from .print_department import (
+    print_ignoring_outofdate_upgrade, print_ignored_package,
+    pretty_format_upgradeable,
+)
 
 
 DEVEL_PKGS_POSTFIXES = (
@@ -150,3 +154,34 @@ def find_aur_updates() -> Tuple[List[AURInstallInfo], List[str]]:
                 package_ttl_days=devel_packages_expiration
             )
     return aur_updates, not_found_aur_pkgs
+
+
+def print_upgradeable(ignored_only=False) -> None:
+    args = parse_args()
+    updates: List[InstallInfo] = []
+    if not args.repo:
+        aur_updates, _not_found_aur_pkgs = find_aur_updates()
+        updates += aur_updates
+    if not args.aur:
+        updates += find_repo_upgradeable()
+    if not updates:
+        return
+    ignored_pkg_names = get_ignored_pkgnames_from_patterns(
+        [pkg.name for pkg in updates],
+        args.ignore + PacmanConfig().options.get('IgnorePkg', [])
+    )
+    for pkg in updates[:]:
+        if pkg.name in ignored_pkg_names:
+            updates.remove(pkg)
+            print_ignored_package(install_info=pkg)
+    if ignored_only:
+        return
+    if args.quiet:
+        print_stdout('\n'.join([
+            pkg_update.name for pkg_update in updates
+        ]))
+    else:
+        print_stdout(pretty_format_upgradeable(
+            updates,
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
+        ))

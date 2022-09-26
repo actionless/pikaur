@@ -20,7 +20,7 @@ from .pprint import print_stdout, print_debug, color_line
 from .args import PikaurArgs, parse_args, reconstruct_args
 from .exceptions import DependencyVersionMismatch, DependencyError, SysExit
 from .print_department import print_ignored_package, print_not_found_packages
-from .updates import find_aur_updates
+from .updates import find_aur_updates, print_upgradeable
 from .replacements import find_replacements
 from .srcinfo import SrcInfo
 
@@ -168,6 +168,8 @@ class InstallInfoFetcher(ComparableType):
         self.thirdparty_repo_replacements_install_info = []
         self.aur_updates_install_info = []
         self.aur_deps_install_info = []
+
+        print_upgradeable(ignored_only=True)
 
         # retrieve InstallInfo objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed
@@ -331,6 +333,7 @@ class InstallInfoFetcher(ComparableType):
             ) or (
                 self.package_is_ignored(pkg_name)
             ):
+                # @TODO: probably this branch is never called anymore
                 print_ignored_package(install_info=pkg_update)
                 continue
 

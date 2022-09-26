@@ -12,7 +12,7 @@ import shutil
 import atexit
 import io
 from argparse import ArgumentError
-from typing import List, Optional, Callable
+from typing import Optional, Callable
 
 import pyalpm
 
@@ -22,7 +22,7 @@ from .args import (
 )
 from .help_cli import cli_print_help
 from .core import (
-    DEFAULT_INPUT_ENCODING, InstallInfo,
+    DEFAULT_INPUT_ENCODING,
     spawn, interactive_spawn, remove_dir, check_runtime_deps,
     running_as_root, sudo, isolate_root_cmd, run_with_sudo_loop,
 )
@@ -31,11 +31,8 @@ from .pprint import (
     print_stderr, print_stdout,
     print_error, print_warning, print_debug,
 )
-from .print_department import (
-    pretty_format_upgradeable, print_version,
-    print_ignored_package,
-)
-from .updates import find_repo_upgradeable, find_aur_updates
+from .print_department import print_version
+from .updates import print_upgradeable
 from .prompt import ask_to_continue, get_multiple_numbers_input, NotANumberInput
 from .config import (
     BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT, CONFIG_PATH,
@@ -46,7 +43,6 @@ from .pikspect import TTYRestore, PikspectSignalHandler
 from .install_cli import InstallPackagesCLI
 from .search_cli import cli_search_packages
 from .info_cli import cli_info_packages
-from .pacman import PacmanConfig, get_ignored_pkgnames_from_patterns
 from .urllib import init_proxy, ProxyInitSocks5Error
 from .getpkgbuild_cli import cli_getpkgbuild
 
@@ -85,32 +81,7 @@ init_output_encoding()
 
 
 def cli_print_upgradeable() -> None:
-    args = parse_args()
-    updates: List[InstallInfo] = []
-    if not args.repo:
-        aur_updates, _not_found_aur_pkgs = find_aur_updates()
-        updates += aur_updates
-    if not args.aur:
-        updates += find_repo_upgradeable()
-    if not updates:
-        return
-    ignored_pkg_names = get_ignored_pkgnames_from_patterns(
-        [pkg.name for pkg in updates],
-        args.ignore + PacmanConfig().options.get('IgnorePkg', [])
-    )
-    for pkg in updates[:]:
-        if pkg.name in ignored_pkg_names:
-            updates.remove(pkg)
-            print_ignored_package(install_info=pkg)
-    if args.quiet:
-        print_stdout('\n'.join([
-            pkg_update.name for pkg_update in updates
-        ]))
-    else:
-        print_stdout(pretty_format_upgradeable(
-            updates,
-            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
-        ))
+    print_upgradeable()
 
 
 def cli_install_packages() -> None:

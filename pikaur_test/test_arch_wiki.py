@@ -30,7 +30,7 @@ class ArchWikiTest(PikaurDbTestCase):
 
     def test_split_packages_3(self):
         # Split packages 3: 1 split package
-        pikaur('-S python-pyalsaaudio')
+        fake_pikaur('-S python-pyalsaaudio --mflags=--skippgpcheck')
         self.assertInstalled('python-pyalsaaudio')
         self.assertNotInstalled('python2-pyalsaaudio')
 

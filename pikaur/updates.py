@@ -5,7 +5,7 @@ from typing import List, Tuple, Optional, Union
 
 import pyalpm
 
-from .i18n import translate_many
+from .i18n import translate, translate_many
 from .version import compare_versions
 from .pacman import (
     PackageDB, PacmanConfig,
@@ -166,14 +166,23 @@ def print_upgradeable(ignored_only=False) -> None:
         updates += find_repo_upgradeable()
     if not updates:
         return
-    ignored_pkg_names = get_ignored_pkgnames_from_patterns(
-        [pkg.name for pkg in updates],
-        args.ignore + PacmanConfig().options.get('IgnorePkg', [])
+    pkg_names = [pkg.name for pkg in updates]
+    manually_ignored_pkg_names = get_ignored_pkgnames_from_patterns(
+        pkg_names,
+        args.ignore
     )
+    config_ignored_pkg_names = get_ignored_pkgnames_from_patterns(
+        pkg_names,
+        PacmanConfig().options.get('IgnorePkg', [])
+    )
+    ignored_pkg_names = manually_ignored_pkg_names + config_ignored_pkg_names
     for pkg in updates[:]:
         if pkg.name in ignored_pkg_names:
             updates.remove(pkg)
-            print_ignored_package(install_info=pkg)
+            ignored_from = None
+            if pkg.name in config_ignored_pkg_names:
+                ignored_from = translate("(ignored in Pacman config)")
+            print_ignored_package(install_info=pkg, ignored_from=ignored_from)
     if ignored_only:
         return
     if args.quiet:

@@ -463,6 +463,7 @@ def pretty_format_sysupgrade(
 def print_ignored_package(
         package_name: Optional[str] = None,
         install_info: Optional[InstallInfo] = None,
+        ignored_from: Optional[str] = None
 ) -> None:
     if not (package_name or install_info):
         raise TypeError("Either 'package_name' or 'install_info' should be specified")
@@ -472,7 +473,7 @@ def print_ignored_package(
         new_version='',
         package=None,
     )
-    print_stderr('{} {}'.format(  # pylint: disable=consider-using-f-string
+    message = '{} {}'.format(  # pylint: disable=consider-using-f-string
         color_line('::', 11),
         translate("Ignoring package update {}").format(
             pretty_format_upgradeable(
@@ -489,7 +490,10 @@ def print_ignored_package(
                     "{pkg_name} {new_version}"
                 )
             ))
-    ))
+    )
+    if ignored_from:
+        message += f" {ignored_from}"
+    print_stderr(message)
 
 
 def _get_local_version(package_name: str) -> str:

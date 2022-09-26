@@ -64,9 +64,10 @@ class InstallInfoFetcher(ComparableType):
         self.not_found_repo_pkgs_names = not_found_repo_pkgs_names
         self.manually_excluded_packages_names = manually_excluded_packages_names
         self.pkgbuilds_packagelists = pkgbuilds_packagelists
-
         self.replacements = find_replacements() if self.args.sysupgrade else {}
 
+        if self.args.sysupgrade:
+            print_upgradeable(ignored_only=True)
         self.get_all_packages_info()
 
     def package_is_ignored(self, package_name: str) -> bool:
@@ -168,8 +169,6 @@ class InstallInfoFetcher(ComparableType):
         self.thirdparty_repo_replacements_install_info = []
         self.aur_updates_install_info = []
         self.aur_deps_install_info = []
-
-        print_upgradeable(ignored_only=True)
 
         # retrieve InstallInfo objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed

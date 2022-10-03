@@ -591,7 +591,7 @@ class InstallPackagesCLI():
                     pkg_base = info.package.packagebase
                     if pkg_base not in pkgbuilds_by_base:
                         package_names = self.pkgbuilds_packagelists.get(info.pkgbuild_path)
-                        print_debug(
+                        debug(
                             f"Initializing build info for {pkg_base=}, "
                             f"{info.pkgbuild_path=}, {package_names=}"
                         )
@@ -875,7 +875,7 @@ class InstallPackagesCLI():
         packages_to_be_built = self.all_aur_packages_names[:]
         index = 0
         while packages_to_be_built:
-            print_debug(f"Gonna build {self.package_builds_by_name=}")
+            debug(f"Gonna build {self.package_builds_by_name=}")
             if index >= len(packages_to_be_built):
                 index = 0
 
@@ -886,7 +886,7 @@ class InstallPackagesCLI():
                 continue
 
             try:
-                print_debug(f"Gonna build {pkg_build.package_names=}")
+                debug(f"Gonna build {pkg_build.package_names=}")
                 pkg_build.build(
                     all_package_builds=self.package_builds_by_name,
                     resolved_conflicts=self.resolved_conflicts
@@ -921,7 +921,7 @@ class InstallPackagesCLI():
                         )
                         raise SysExit(131) from exc
             else:
-                print_debug(
+                debug(
                     f"Build done for packages {pkg_build.package_names=}, removing from queue"
                 )
                 for _pkg_name in pkg_build.package_names:

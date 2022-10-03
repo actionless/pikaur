@@ -293,7 +293,7 @@ class InstallPackagesCLI():
                     self.install_info.repo_packages_install_info +
                     self.install_info.new_repo_deps_install_info +
                     self.install_info.thirdparty_repo_packages_install_info +
-                    self.install_info.aur_updates_install_info  # type: ignore[operator]
+                    self.install_info.aur_updates_install_info
             ):
                 if (
                         # devel packages will be checked later

@@ -194,7 +194,7 @@ class PikspectPopen(subprocess.Popen):
         self.pty_user_master, self.pty_user_slave = pty.openpty()
         self.pty_cmd_master, self.pty_cmd_slave = pty.openpty()
 
-        super().__init__(  # type: ignore[call-arg]
+        super().__init__(
             args=args,
             stdin=self.pty_user_slave,
             stdout=self.pty_cmd_slave,

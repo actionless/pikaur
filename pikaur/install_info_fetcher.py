@@ -533,10 +533,10 @@ class InstallInfoFetcher(ComparableType):
             self.thirdparty_repo_packages_install_info +
             self.new_repo_deps_install_info +
             self.new_thirdparty_repo_deps_install_info +
-            self.aur_updates_install_info +  # type: ignore[operator]
-            self.aur_deps_install_info +  # type: ignore[operator]
+            self.aur_updates_install_info +
+            self.aur_deps_install_info +
             self.repo_replacements_install_info +
-            self.thirdparty_repo_replacements_install_info
+            self.thirdparty_repo_replacements_install_info  # type: ignore[operator]
         )
         all_deps_install_infos: Sequence[InstallInfo] = (
             self.new_repo_deps_install_info +

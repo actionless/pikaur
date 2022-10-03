@@ -66,7 +66,7 @@ class ComparableType:
 
 class DataType(ComparableType):
 
-    @classmethod
+    @classmethod  # type: ignore[misc]
     @property
     def __all_annotations__(cls) -> Dict[str, Any]:
         annotations: Dict[str, Any] = {}

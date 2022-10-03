@@ -84,6 +84,7 @@ class InstallPackagesCLI():
     # @TODO: define @property for manually_excluded_packages_names+args.ignore:
     manually_excluded_packages_names: List[str]
     resolved_conflicts: List[List[str]]
+    reviewed_package_bases: List[str]
     # pkgbuild_path: [pkg_name, ...]  -- needed for split pkgs to install only some of them
     pkgbuilds_packagelists: Dict[str, List[str]]
 
@@ -114,6 +115,7 @@ class InstallPackagesCLI():
         self.pkgbuilds_packagelists = {}
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
+        self.reviewed_package_bases = []
 
         self.not_found_repo_pkgs_names = []
         self.repo_packages_by_name = {}
@@ -744,6 +746,15 @@ class InstallPackagesCLI():
             _skip_diff_label = translate("Not showing diff for {pkg} package ({reason})")
 
             if (
+                    pkg_build.package_base in self.reviewed_package_bases
+            ):
+                print_warning(_skip_diff_label.format(
+                    pkg=_pkg_label,
+                    reason=translate("already reviewed")
+                ))
+                continue
+
+            if (
                     pkg_build.last_installed_hash != pkg_build.current_hash
             ) and (
                 pkg_build.last_installed_hash
@@ -814,6 +825,7 @@ class InstallPackagesCLI():
 
             pkg_build.check_pkg_arch()
             pkg_build.reviewed = True
+            self.reviewed_package_bases.append(pkg_build.package_base)
 
     def handle_pkgbuild_changed(self, pkg_build: PackageBuild) -> None:
         debug(f'handle pkgbuild changed {pkg_build=}')
@@ -825,6 +837,7 @@ class InstallPackagesCLI():
         new_srcinfo_hash = hash_file(src_info.path)
 
         self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
+        self.reviewed_package_bases.append(pkg_build.package_base)
 
         if not getattr(self, 'install_info', None):  # @TODO: make it nicer?
             debug("install info not initialized yet -- running on early stage?")

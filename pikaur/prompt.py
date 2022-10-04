@@ -10,7 +10,7 @@ from .config import PikaurConfig
 from .core import interactive_spawn, get_editor
 from .i18n import translate
 from .pprint import (
-    color_line, get_term_width, range_printable,
+    color_line, get_term_width, range_printable, ColorsHighlight,
     PrintLock, print_stderr, print_warning, create_debug_logger,
 )
 from .exceptions import SysExit
@@ -189,9 +189,12 @@ def retry_interactive_command(
             good = interactive_spawn(cmd_args, **kwargs).returncode == 0
         if good:
             return good
-        print_stderr(color_line(translate("Command '{}' failed to execute.").format(
-            ' '.join(cmd_args)
-        ), 9))
+        print_stderr(color_line(
+            translate("Command '{}' failed to execute.").format(
+                ' '.join(cmd_args)
+            ),
+            ColorsHighlight.red
+        ))
         if not ask_to_continue(
                 text=translate("Do you want to retry?"),
                 default_yes=not args.noconfirm

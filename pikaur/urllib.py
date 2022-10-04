@@ -6,7 +6,7 @@ from urllib.error import URLError
 from typing import Any, Dict, List
 
 from .i18n import translate
-from .pprint import print_error, print_stderr, color_line
+from .pprint import print_error, print_stderr, color_line, ColorsHighlight
 from .prompt import ask_to_continue
 from .exceptions import SysExit
 from .args import parse_args
@@ -19,7 +19,7 @@ DEFAULT_WEB_ENCODING = 'utf-8'
 def read_bytes_from_url(url: str, optional=False) -> bytes:
     if parse_args().print_commands:
         print_stderr(
-            color_line('=> ', 14) + f'GET {url}'
+            color_line('=> ', ColorsHighlight.cyan) + f'GET {url}'
         )
     req = request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     try:

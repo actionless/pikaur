@@ -30,7 +30,7 @@ from .pprint import (
     color_line, bold_line,
     print_stderr, print_stdout,
     print_error, print_warning,
-    create_debug_logger,
+    create_debug_logger, ColorsHighlight,
 )
 from .print_department import print_version
 from .updates import print_upgradeable
@@ -105,7 +105,7 @@ def cli_clean_packages_cache() -> None:
             if minimal_clean_level <= args.clean and os.path.exists(directory):
                 print_stdout(f"\n{message}: {directory}")
                 if ask_to_continue(text='{} {}'.format(  # pylint: disable=consider-using-f-string
-                        color_line('::', 12),
+                        color_line('::', ColorsHighlight.blue),
                         bold_line(translate("Do you want to remove all files?"))
                 )):
                     remove_dir(directory)

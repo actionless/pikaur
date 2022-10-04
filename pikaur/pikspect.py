@@ -18,7 +18,7 @@ from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
 from .pprint import (
     PrintLock, print_stderr, create_debug_logger,
-    get_term_width, bold_line, color_line,
+    get_term_width, bold_line, color_line, ColorsHighlight,
 )
 from .pacman_i18n import _p
 from .args import parse_args
@@ -415,7 +415,10 @@ def pikspect(
         proc.add_answers(extra_questions)
 
     if parse_args().print_commands:
-        print_stderr(color_line('pikspect => ', 14) + ' '.join(cmd))
+        print_stderr(
+            color_line('pikspect => ', ColorsHighlight.cyan) +
+            ' '.join(cmd)
+        )
     proc.run()
     return proc
 

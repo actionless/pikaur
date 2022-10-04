@@ -19,7 +19,9 @@ import pyalpm
 from .args import parse_args
 from .config import PikaurConfig
 from .i18n import translate
-from .pprint import print_stderr, color_line, print_error, bold_line
+from .pprint import (
+    print_stderr, color_line, print_error, bold_line, ColorsHighlight,
+)
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
@@ -164,7 +166,7 @@ class InteractiveSpawn(subprocess.Popen):
         if parse_args().print_commands:
             if self.args != get_sudo_refresh_command():
                 print_stderr(
-                    color_line('=> ', 14) +
+                    color_line('=> ', ColorsHighlight.cyan) +
                     (
                         ' '.join(str(arg) for arg in self.args)
                         if isinstance(self.args, list) else

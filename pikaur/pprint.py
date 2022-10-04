@@ -57,26 +57,6 @@ def print_stderr(message='', end='\n', flush=False, lock=True) -> None:
     _print(sys.stderr, message=message, end=end, flush=flush, lock=lock)
 
 
-def color_line(line: str, color_number: int, reset=True, force=False) -> str:
-    if not color_enabled() and not force:
-        return line
-    result = ''
-    if color_number >= 8:
-        result += "\033[0;1m"
-        color_number -= 8
-    result += f"\033[03{color_number}m{line}"
-    # reset font:
-    if reset:
-        result += "\033[0;0m"
-    return result
-
-
-def bold_line(line: str) -> str:
-    if not color_enabled():
-        return line
-    return f'\033[0;1m{line}\033[0m'
-
-
 class Colors:
     black = 0
     red = 1
@@ -97,6 +77,26 @@ class ColorsHighlight:
     purple = 13
     cyan = 14
     white = 15
+
+
+def color_line(line: str, color_number: int, reset=True, force=False) -> str:
+    if not color_enabled() and not force:
+        return line
+    result = ''
+    if color_number >= 8:
+        result += "\033[0;1m"
+        color_number -= 8
+    result += f"\033[03{color_number}m{line}"
+    # reset font:
+    if reset:
+        result += "\033[0;0m"
+    return result
+
+
+def bold_line(line: str) -> str:
+    if not color_enabled():
+        return line
+    return f'\033[0;1m{line}\033[0m'
 
 
 def print_warning(message: str = '') -> None:
@@ -179,7 +179,7 @@ def range_printable(text: str, start: int = 0, end: Optional[int] = None) -> str
     return result
 
 
-class ColorCounter:
+class DebugColorCounter:
 
     # cyan is purposely skipped as it's used in print_debug itself,
     # highlight-red is purposely skipped as it's used in print_error,
@@ -209,7 +209,7 @@ class ColorCounter:
 
 
 def create_debug_logger(module_name: str, **kwargs) -> t.Callable[..., None]:
-    color = ColorCounter.next()
+    color = DebugColorCounter.next()
 
     def debug(msg: Any, *args2, **kwargs2) -> None:
         kwargs2.update(kwargs)

@@ -26,6 +26,7 @@ from .args import PikaurArgs, parse_args
 from .pprint import (
     color_line, bold_line, color_enabled,
     print_stdout, print_stderr, print_error, create_debug_logger,
+    ColorsHighlight,
 )
 from .prompt import (
     retry_interactive_command_or_exit, ask_to_continue,
@@ -269,7 +270,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         ):
             return
         print_stdout('{} {}...'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', 15),
+            color_line('::', ColorsHighlight.white),
             translate_many(
                 "Downloading the latest sources for a devel package {}",
                 "Downloading the latest sources for devel packages {}",
@@ -384,7 +385,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return
 
         print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', 13),
+            color_line('::', ColorsHighlight.purple),
             translate("Installing already built dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
         ))
@@ -453,7 +454,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 len(self.built_packages_paths) == len(self.package_names)
         ):
             print_stderr("{} {}\n".format(  # pylint: disable=consider-using-f-string
-                color_line("::", 10),
+                color_line("::", ColorsHighlight.green),
                 translate_many(
                     "Package {pkg} is already built. Pass '--rebuild' flag to force the build.",
                     "Packages {pkg} are already built. Pass '--rebuild' flag to force the build.",
@@ -530,7 +531,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return
 
         print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', 13),
+            color_line('::', ColorsHighlight.purple),
             translate("Installing repository dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
         ))
@@ -602,7 +603,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return
 
         print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', 13),
+            color_line('::', ColorsHighlight.purple),
             translate("Removing already installed dependencies for {}").format(
                 bold_line(', '.join(self.package_names)))
         ))
@@ -655,7 +656,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             makepkg_args.append('--nocolor')
 
         print_stderr('\n{} {}:'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', 13),
+            color_line('::', ColorsHighlight.purple),
             translate('Starting the build')
         ))
         build_succeeded = False
@@ -696,16 +697,21 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             if build_succeeded:
                 break
 
-            print_stderr(color_line(translate("Command '{}' failed to execute.").format(
-                ' '.join(cmd_args)
-            ), 9))
+            print_stderr(
+                color_line(
+                    translate("Command '{}' failed to execute.").format(
+                        ' '.join(cmd_args)
+                    ),
+                    ColorsHighlight.red
+                )
+            )
             if PikaurConfig().build.SkipFailedBuild.get_bool():
                 answer = translate("s")
             elif self.args.noconfirm:
                 answer = translate("a")
             else:  # pragma: no cover
                 prompt = '{} {}\n{}\n> '.format(
-                    color_line('::', 11),
+                    color_line('::', ColorsHighlight.yellow),
                     translate("Try recovering?"),
                     "\n".join((
                         translate("[R] retry build"),

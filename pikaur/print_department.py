@@ -11,7 +11,7 @@ import pyalpm
 from .i18n import translate, translate_many
 from .pprint import (
     print_stderr, color_line, bold_line, format_paragraph, get_term_width,
-    print_warning,
+    print_warning, Colors, ColorsHighlight,
 )
 from .args import parse_args
 from .core import PackageSource, InstallInfo, RepoInstallInfo, AURInstallInfo
@@ -25,9 +25,9 @@ if TYPE_CHECKING:
     from .install_info_fetcher import InstallInfoFetcher  # noqa
 
 
-GROUP_COLOR = 4
-REPLACEMENTS_COLOR = 14
-ORPHANED_COLOR = 9
+GROUP_COLOR = Colors.blue
+REPLACEMENTS_COLOR = ColorsHighlight.cyan
+ORPHANED_COLOR = ColorsHighlight.red
 
 
 AnyPackage = Union[AURPackageInfo, pyalpm.Package]
@@ -74,7 +74,7 @@ def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
         print_stderr(format_paragraph(package))
 
 
-class ColorGenerator:
+class RepoColorGenerator:
 
     _type_storage: Dict[str, int] = {}
     _cache: Dict[str, Dict[str, int]] = {}
@@ -114,7 +114,7 @@ def pretty_format_repo_name(repo_name: str, color=True) -> str:
     result = f'{repo_name}/'
     if not color:
         return result
-    return color_line(result, ColorGenerator.get_next('repo', repo_name))
+    return color_line(result, RepoColorGenerator.get_next('repo', repo_name))
 
 
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements
@@ -166,7 +166,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             pkg_len += len(pkg_update.repository) + 1
         elif print_repo:
             pkg_name = '{}{}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('aur/', 9),
+                _color_line('aur/', ColorsHighlight.red),
                 pkg_name
             )
             pkg_len += len('aur/')
@@ -178,7 +178,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 )
             )
             pkg_len += len(required_by)
-            dep_color = 3
+            dep_color = Colors.yellow
             required_by = _color_line(' ({})', dep_color).format(
                 translate('for {pkg}').format(
                     pkg=_color_line(', ', dep_color).join([
@@ -192,7 +192,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 ' # '.join([p.name for p in pkg_update.provided_by])
             )
             pkg_len += len(provided_by)
-            pkg_name += _color_line(provided_by, 2)
+            pkg_name += _color_line(provided_by, Colors.green)
         if pkg_update.members_of:
             members_of = ' ({})'.format(  # pylint: disable=consider-using-f-string
                 translate_many('{grp} group', '{grp} groups', len(pkg_update.members_of)).format(
@@ -343,7 +343,7 @@ def pretty_format_sysupgrade(
 
     if repo_replacements:
         result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-            _color_line('::', 12),
+            _color_line('::', ColorsHighlight.blue),
             _bold_line(translate_many(
                 "Repository package suggested as a replacement:",
                 "Repository packages suggested as a replacement:",
@@ -356,7 +356,7 @@ def pretty_format_sysupgrade(
         ))
     if thirdparty_repo_replacements:
         result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-            _color_line('::', 12),
+            _color_line('::', ColorsHighlight.blue),
             _bold_line(translate_many(
                 "Third-party repository package suggested as a replacement:",
                 "Third-party repository packages suggested as a replacement:",
@@ -370,7 +370,7 @@ def pretty_format_sysupgrade(
 
     if repo_packages_updates:
         result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-            _color_line('::', 12),
+            _color_line('::', ColorsHighlight.blue),
             _bold_line(translate_many(
                 "Repository package will be installed:",
                 "Repository packages will be installed:",
@@ -383,7 +383,7 @@ def pretty_format_sysupgrade(
         ))
     if new_repo_deps:
         result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-            _color_line('::', 11),
+            _color_line('::', ColorsHighlight.yellow),
             _bold_line(translate_many(
                 "New dependency will be installed from repository:",
                 "New dependencies will be installed from repository:",
@@ -397,7 +397,7 @@ def pretty_format_sysupgrade(
         ))
     if thirdparty_repo_packages_updates:
         result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-            _color_line('::', 12),
+            _color_line('::', ColorsHighlight.blue),
             _bold_line(translate_many(
                 "Third-party repository package will be installed:",
                 "Third-party repository packages will be installed:",
@@ -410,7 +410,7 @@ def pretty_format_sysupgrade(
         ))
     if new_thirdparty_repo_deps:
         result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-            _color_line('::', 11),
+            _color_line('::', ColorsHighlight.yellow),
             _bold_line(translate_many(
                 "New dependency will be installed from third-party repository:",
                 "New dependencies will be installed from third-party repository:",
@@ -424,7 +424,7 @@ def pretty_format_sysupgrade(
         ))
     if aur_updates:
         result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-            _color_line('::', 14),
+            _color_line('::', ColorsHighlight.cyan),
             _bold_line(translate_many(
                 "AUR package will be installed:",
                 "AUR packages will be installed:",
@@ -437,7 +437,7 @@ def pretty_format_sysupgrade(
         ))
     if new_aur_deps:
         result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-            _color_line('::', 11),
+            _color_line('::', ColorsHighlight.yellow),
             _bold_line(translate_many(
                 "New dependency will be installed from AUR:",
                 "New dependencies will be installed from AUR:",
@@ -474,7 +474,7 @@ def print_ignored_package(
         package=None,
     )
     message = '{} {}'.format(  # pylint: disable=consider-using-f-string
-        color_line('::', 11),
+        color_line('::', ColorsHighlight.yellow),
         translate("Ignoring package update {}").format(
             pretty_format_upgradeable(
                 [install_info],
@@ -611,7 +611,7 @@ def print_package_search_results(  # pylint:disable=too-many-locals,too-many-sta
             print(f'{idx}{pkg_name}')
         else:
 
-            repo = color_line('aur/', 9)
+            repo = color_line('aur/', ColorsHighlight.red)
             if isinstance(package, pyalpm.Package):
                 repo = pretty_format_repo_name(package.db.name)
 
@@ -624,11 +624,17 @@ def print_package_search_results(  # pylint:disable=too-many-locals,too-many-sta
             installed = ''
             if pkg_name in local_pkgs_names:
                 if package.version != local_pkgs_versions[pkg_name]:
-                    installed = color_line(translate("[installed: {version}]").format(
-                        version=local_pkgs_versions[pkg_name],
-                    ) + ' ', 14)
+                    installed = color_line(
+                        translate("[installed: {version}]").format(
+                            version=local_pkgs_versions[pkg_name],
+                        ) + ' ',
+                        ColorsHighlight.cyan
+                    )
                 else:
-                    installed = color_line(translate("[installed]") + ' ', 14)
+                    installed = color_line(
+                        translate("[installed]") + ' ',
+                        ColorsHighlight.cyan
+                    )
 
             rating = ''
             if (
@@ -638,7 +644,10 @@ def print_package_search_results(  # pylint:disable=too-many-locals,too-many-sta
             ) and (
                 package.popularity is not None
             ):
-                rating = color_line(f'({package.numvotes}, {package.popularity:.2f})', 3)
+                rating = color_line(
+                    f'({package.numvotes}, {package.popularity:.2f})',
+                    Colors.yellow
+                )
 
             color_config = user_config.colors
             version_color = color_config.Version.get_int()
@@ -661,11 +670,14 @@ def print_package_search_results(  # pylint:disable=too-many-locals,too-many-sta
                 if isinstance(package, AURPackageInfo):
                     last_update_date = package.lastmodified
 
-                last_updated = color_line(' (last updated: {})'.format(  # pylint: disable=consider-using-f-string
-                    datetime.fromtimestamp(last_update_date).strftime('%Y/%m/%d')
-                    if last_update_date is not None
-                    else 'unknown'
-                ), 8)
+                last_updated = color_line(
+                    ' (last updated: {})'.format(  # pylint: disable=consider-using-f-string
+                        datetime.fromtimestamp(last_update_date).strftime('%Y/%m/%d')
+                        if last_update_date is not None
+                        else 'unknown'
+                    ),
+                    ColorsHighlight.black
+                )
 
             print("{}{}{} {} {}{}{}{}".format(  # pylint: disable=consider-using-f-string
                 idx,

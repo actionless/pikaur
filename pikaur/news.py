@@ -14,7 +14,7 @@ from .i18n import translate
 from .config import CACHE_ROOT, PikaurConfig
 from .pprint import (
     color_line, format_paragraph, print_stdout, print_error, bold_line,
-    create_debug_logger,
+    create_debug_logger, ColorsHighlight,
 )
 from .pacman import PackageDB
 from .urllib import get_unicode_from_url
@@ -55,7 +55,10 @@ class News:
                             if first_news:
                                 print_stdout(
                                     '\n' +
-                                    color_line(translate('There is news from archlinux.org!'), 9) +
+                                    color_line(
+                                        translate('There is news from archlinux.org!'),
+                                        ColorsHighlight.red
+                                    ) +
                                     '\n'
                                 )
                             self._print_one_entry(news_entry)
@@ -131,7 +134,8 @@ class News:
             if 'description' in child.tag:
                 description = str(child.text)
         print_stdout(
-            color_line(title, 14) + ' (' + bold_line(pub_date) + ')'
+            color_line(title, ColorsHighlight.cyan) +
+            ' (' + bold_line(pub_date) + ')'
         )
         print_stdout(
             format_paragraph(strip_tags(description))

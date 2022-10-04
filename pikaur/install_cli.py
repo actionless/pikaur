@@ -24,7 +24,7 @@ from .exceptions import (
 )
 from .build import PackageBuild, clone_aur_repos, PkgbuildChanged
 from .pprint import (
-    color_line, bold_line,
+    color_line, bold_line, ColorsHighlight,
     print_stderr, print_stdout, print_warning, print_error, create_debug_logger,
 )
 from .print_department import (
@@ -151,7 +151,7 @@ class InstallPackagesCLI():
 
         if self.args.sysupgrade and not self.args.repo:
             print_stderr('{} {}'.format(  # pylint: disable=consider-using-f-string
-                color_line('::', 12),
+                color_line('::', ColorsHighlight.blue),
                 bold_line(translate("Starting full AUR upgrade..."))
             ))
         if self.args.aur:
@@ -205,7 +205,7 @@ class InstallPackagesCLI():
 
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
         prompt = '{} {}\n{}\n{}\n{}\n> '.format(  # pylint: disable=consider-using-f-string
-            color_line('::', 11),
+            color_line('::', ColorsHighlight.yellow),
             translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
             translate("[e] edit PKGBUILD"),
             translate("[s] skip this package"),
@@ -269,7 +269,7 @@ class InstallPackagesCLI():
             print_not_found_packages(exc.packages)
             raise SysExit(131) from exc
         except DependencyVersionMismatch as exc:
-            print_stderr(color_line(translate("Version mismatch:"), 11))
+            print_stderr(color_line(translate("Version mismatch:"), ColorsHighlight.yellow))
             print_stderr(
                 translate("{what} depends on: '{dep}'\n found in '{location}': '{version}'").format(
                     what=bold_line(exc.who_depends),
@@ -330,7 +330,7 @@ class InstallPackagesCLI():
                 self.install_repo_packages()
             else:
                 print_stdout('{} {}'.format(  # pylint: disable=consider-using-f-string
-                    color_line('::', 10),
+                    color_line('::', ColorsHighlight.green),
                     translate("Nothing to do."),
                 ))
             raise SysExit(0)
@@ -396,9 +396,9 @@ class InstallPackagesCLI():
         def _confirm_sysupgrade(verbose=False) -> str:
             _print_sysupgrade(verbose=verbose)
             prompt = '{} {}\n{} {}\n>> '.format(  # pylint: disable=consider-using-f-string
-                color_line('::', 12),
+                color_line('::', ColorsHighlight.blue),
                 bold_line(translate('Proceed with installation? [Y/n] ')),
-                color_line('::', 12),
+                color_line('::', ColorsHighlight.blue),
                 bold_line(translate('[v]iew package details   [m]anually select packages')))
 
             answer = get_input(
@@ -535,7 +535,7 @@ class InstallPackagesCLI():
                         name=', '.join(package_build.package_names),
                         path=package_build.repo_path
                     ),
-                    9
+                    ColorsHighlight.red
                 ))
                 print_stderr(err.result.stdout_text)
                 print_stderr(err.result.stderr_text)
@@ -543,7 +543,7 @@ class InstallPackagesCLI():
                     answer = translate("a")
                 else:  # pragma: no cover
                     prompt = '{} {}\n> '.format(
-                        color_line('::', 11),
+                        color_line('::', ColorsHighlight.yellow),
                         '\n'.join((
                             translate("Try recovering?"),
                             translate("[c] git checkout -- '*'"),
@@ -634,12 +634,12 @@ class InstallPackagesCLI():
                     print_stderr(color_line(
                         translate("New packages '{new}' and '{other}' are in conflict.").format(
                             new=new_pkg_name, other=pkg_conflict),
-                        9))
+                        ColorsHighlight.red))
                     raise SysExit(131)
         for new_pkg_name, new_pkg_conflicts in self.found_conflicts.items():
             for pkg_conflict in new_pkg_conflicts:
                 answer = ask_to_continue('{} {}'.format(  # pylint: disable=consider-using-f-string
-                    color_line('::', 11),
+                    color_line('::', ColorsHighlight.yellow),
                     bold_line(translate(
                         "{new} and {installed} are in conflict. Remove {installed}?"
                     ).format(
@@ -658,7 +658,7 @@ class InstallPackagesCLI():
         )
         if noedit or self.args.noconfirm:
             print_stderr('{} {}'.format(  # pylint: disable=consider-using-f-string
-                color_line('::', 11),
+                color_line('::', ColorsHighlight.yellow),
                 translate("Skipping review of {file} for {name} package ({flag})").format(
                     file=filename,
                     name=', '.join(package_build.package_names),
@@ -895,7 +895,10 @@ class InstallPackagesCLI():
             except (BuildError, DependencyError) as exc:
                 print_stderr(exc)
                 print_stderr(
-                    color_line(translate("Can't build '{name}'.").format(name=pkg_name) + '\n', 9)
+                    color_line(
+                        translate("Can't build '{name}'.").format(name=pkg_name) + '\n',
+                        ColorsHighlight.red
+                    )
                 )
                 # if not ask_to_continue():
                 #     raise SysExit(125)
@@ -1078,7 +1081,11 @@ class InstallPackagesCLI():
 
         if self.failed_to_build_package_names:
             print_stderr('\n'.join(
-                [color_line(translate("Failed to build following packages:"), 9), ] +
-                self.failed_to_build_package_names
+                [
+                    color_line(
+                        translate("Failed to build following packages:"),
+                        ColorsHighlight.red
+                    ),
+                ] + self.failed_to_build_package_names
             ))
             raise SysExit(1)

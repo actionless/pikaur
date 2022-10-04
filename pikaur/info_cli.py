@@ -8,7 +8,7 @@ from .aur import find_aur_packages, get_all_aur_names
 from .args import parse_args, reconstruct_args
 from .core import spawn
 from .pacman import get_pacman_command, refresh_pkg_db_if_needed
-from .pprint import bold_line, color_line
+from .pprint import bold_line, color_line, ColorsHighlight
 
 
 def _info_packages_thread_repo() -> str:
@@ -48,13 +48,13 @@ INFO_FIELDS = dict(
 
 def _decorate_repo_info_output(output: str) -> str:
     return output.replace(
-        _p('None'), color_line(_p('None'), 8)
+        _p('None'), color_line(_p('None'), ColorsHighlight.black)
     )
 
 
 def _decorate_aur_info_output(output: str) -> str:
     return output.replace(
-        translate('None'), color_line(translate('None'), 8)
+        translate('None'), color_line(translate('None'), ColorsHighlight.black)
     )
 
 

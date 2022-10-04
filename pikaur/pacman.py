@@ -14,7 +14,9 @@ from .i18n import translate
 from .pacman_i18n import _p
 from .core import DataType, PackageSource
 from .version import VersionMatcher
-from .pprint import print_stderr, color_enabled, color_line
+from .pprint import (
+    print_stderr, color_enabled, create_debug_logger,
+)
 from .args import parse_args, reconstruct_args, PACMAN_STR_OPTS, PACMAN_APPEND_OPTS
 from .config import PikaurConfig
 from .exceptions import PackagesNotFoundInRepo, DependencyError
@@ -36,6 +38,9 @@ OFFICIAL_REPOS = (
     'community-testing',
     'multilib-testing',
 )
+
+
+_debug = create_debug_logger('pacman')
 
 
 def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
@@ -605,7 +610,7 @@ def install_built_deps(
 
     explicitly_installed_deps = []
     for pkg_name, _path in deps_names_and_paths.items():
-        print(color_line(pkg_name, 14))
+        _debug(pkg_name)
         if pkg_name in local_packages and local_packages[pkg_name].reason == 0:
             explicitly_installed_deps.append(pkg_name)
     deps_upgrade_success = True

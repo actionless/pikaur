@@ -17,7 +17,7 @@ from time import sleep
 from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
 
 from .pprint import (
-    PrintLock, print_debug, print_stderr,
+    PrintLock, print_stderr, create_debug_logger,
     get_term_width, bold_line, color_line,
 )
 from .pacman_i18n import _p
@@ -32,8 +32,7 @@ SMALL_TIMEOUT = 0.01
 TcAttrsType = List[Union[int, List[Union[bytes, int]]]]
 
 
-def _debug(message):
-    print_debug(f"pikspect: {message}", lock=False)
+_debug = create_debug_logger('pikspect', lock=False)
 
 
 class TTYRestore():  # pragma: no cover
@@ -58,7 +57,7 @@ class TTYRestore():  # pragma: no cover
             try:
                 termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
             except termios.error as exc:
-                print_debug(','.join(str(arg) for arg in exc.args))
+                _debug(','.join(str(arg) for arg in exc.args))
 
     @classmethod
     def restore(cls, *_whatever) -> None:

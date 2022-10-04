@@ -5,7 +5,7 @@ import os
 import hashlib
 from multiprocessing.pool import ThreadPool
 from tempfile import NamedTemporaryFile
-from typing import List, Dict, Optional, Set, Any
+from typing import List, Dict, Optional, Set
 
 import pyalpm
 
@@ -25,7 +25,7 @@ from .exceptions import (
 from .build import PackageBuild, clone_aur_repos, PkgbuildChanged
 from .pprint import (
     color_line, bold_line,
-    print_stderr, print_stdout, print_warning, print_error, print_debug,
+    print_stderr, print_stdout, print_warning, print_error, create_debug_logger,
 )
 from .print_department import (
     pretty_format_sysupgrade,
@@ -47,8 +47,7 @@ from .version import compare_versions
 from .updates import is_devel_pkg
 
 
-def debug(msg: Any) -> None:
-    print_debug(f"install_cli: {str(msg)}")
+_debug = create_debug_logger('install_cli')
 
 
 def hash_file(filename: str) -> str:  # pragma: no cover
@@ -433,15 +432,15 @@ class InstallPackagesCLI():
             break
 
     def discard_install_info(self, canceled_pkg_name: str, ignore=True) -> None:
-        debug(f"discarding install info for pkg... {canceled_pkg_name}")
+        _debug(f"discarding install info for pkg... {canceled_pkg_name}")
         if ignore:
-            debug(f"ignoring pkg... {canceled_pkg_name}")
+            _debug(f"ignoring pkg... {canceled_pkg_name}")
             self.manually_excluded_packages_names.append(canceled_pkg_name)
         if not getattr(self, 'install_info', None):  # @TODO: make it nicer?
-            debug("install info not initialized yet -- running on early stage?")
+            _debug("install info not initialized yet -- running on early stage?")
             return
         for pkg_name in self.install_info.discard_package(canceled_pkg_name):
-            debug(f"discarded install info for pkg: {pkg_name}")
+            _debug(f"discarded install info for pkg: {pkg_name}")
             if pkg_name in self.install_package_names:
                 self.install_package_names.remove(pkg_name)
             if pkg_name in self.not_found_repo_pkgs_names:
@@ -591,7 +590,7 @@ class InstallPackagesCLI():
                     pkg_base = info.package.packagebase
                     if pkg_base not in pkgbuilds_by_base:
                         package_names = self.pkgbuilds_packagelists.get(info.pkgbuild_path)
-                        debug(
+                        _debug(
                             f"Initializing build info for {pkg_base=}, "
                             f"{info.pkgbuild_path=}, {package_names=}"
                         )
@@ -828,7 +827,7 @@ class InstallPackagesCLI():
             self.reviewed_package_bases.append(pkg_build.package_base)
 
     def handle_pkgbuild_changed(self, pkg_build: PackageBuild) -> None:
-        debug(f'handle pkgbuild changed {pkg_build=}')
+        _debug(f'handle pkgbuild changed {pkg_build=}')
         for pkg_name in pkg_build.package_names:
             self.discard_install_info(pkg_name, ignore=False)
         src_info = SrcInfo(pkgbuild_path=pkg_build.pkgbuild_path)
@@ -840,7 +839,7 @@ class InstallPackagesCLI():
         self.reviewed_package_bases.append(pkg_build.package_base)
 
         if not getattr(self, 'install_info', None):  # @TODO: make it nicer?
-            debug("install info not initialized yet -- running on early stage?")
+            _debug("install info not initialized yet -- running on early stage?")
             if old_srcinfo_hash != new_srcinfo_hash:
                 print_warning(translate(
                     "Installation info changed (or new deps found) for {pkg} package"
@@ -875,7 +874,7 @@ class InstallPackagesCLI():
         packages_to_be_built = self.all_aur_packages_names[:]
         index = 0
         while packages_to_be_built:
-            debug(f"Gonna build {self.package_builds_by_name=}")
+            _debug(f"Gonna build {self.package_builds_by_name=}")
             if index >= len(packages_to_be_built):
                 index = 0
 
@@ -886,7 +885,7 @@ class InstallPackagesCLI():
                 continue
 
             try:
-                debug(f"Gonna build {pkg_build.package_names=}")
+                _debug(f"Gonna build {pkg_build.package_names=}")
                 pkg_build.build(
                     all_package_builds=self.package_builds_by_name,
                     resolved_conflicts=self.resolved_conflicts
@@ -921,7 +920,7 @@ class InstallPackagesCLI():
                         )
                         raise SysExit(131) from exc
             else:
-                debug(
+                _debug(
                     f"Build done for packages {pkg_build.package_names=}, removing from queue"
                 )
                 for _pkg_name in pkg_build.package_names:

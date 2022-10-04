@@ -25,7 +25,7 @@ from .pacman import (
 from .args import PikaurArgs, parse_args
 from .pprint import (
     color_line, bold_line, color_enabled,
-    print_stdout, print_stderr, print_error, print_debug,
+    print_stdout, print_stderr, print_error, create_debug_logger,
 )
 from .prompt import (
     retry_interactive_command_or_exit, ask_to_continue,
@@ -43,8 +43,7 @@ from .urllib import wrap_proxy_env
 from .filelock import FileLock
 
 
-def debug(msg: Any) -> None:
-    print_debug(f"{color_line('build', 5)}: {str(msg)}")
+_debug = create_debug_logger('build')
 
 
 class PkgbuildChanged(Exception):
@@ -563,15 +562,15 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not self._local_pkgs_wo_build_deps:
             return
 
-        debug("Gonna compute diff of installed pkgs")
+        _debug("Gonna compute diff of installed pkgs")
         deps_packages_installed = self._local_pkgs_with_build_deps.difference(
             self._local_pkgs_wo_build_deps
         )
         deps_packages_removed = self._local_pkgs_wo_build_deps.difference(
             self._local_pkgs_with_build_deps
         )
-        debug(f"{deps_packages_installed=}")
-        debug(f"{deps_packages_removed=}")
+        _debug(f"{deps_packages_installed=}")
+        _debug(f"{deps_packages_removed=}")
         if not deps_packages_installed:
             return
 

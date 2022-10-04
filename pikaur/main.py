@@ -29,7 +29,8 @@ from .core import (
 from .pprint import (
     color_line, bold_line,
     print_stderr, print_stdout,
-    print_error, print_warning, print_debug,
+    print_error, print_warning,
+    create_debug_logger,
 )
 from .print_department import print_version
 from .updates import print_upgradeable
@@ -58,6 +59,8 @@ def init_readline() -> None:
 
 
 init_readline()
+
+_debug = create_debug_logger('main')
 
 
 def init_output_encoding() -> None:
@@ -220,7 +223,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         require_sudo = True
 
     if pikaur_operation:
-        print_debug(f"Pikaur operation found for {sys.argv=}: {pikaur_operation.__name__}")
+        _debug(f"Pikaur operation found for {sys.argv=}: {pikaur_operation.__name__}")
         if require_sudo and args.dynamic_users and not running_as_root():
             # Restart pikaur with sudo to use systemd dynamic users
             restart_args = sys.argv[:]
@@ -242,8 +245,8 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
                 run_with_sudo_loop(pikaur_operation)
     else:
         # Just bypass all the args to pacman
-        print_debug(f"Pikaur operation not found for {sys.argv=}")
-        print_debug(args)
+        _debug(f"Pikaur operation not found for {sys.argv=}")
+        _debug(args)
         pacman_args = [
             PikaurConfig().misc.PacmanPath.get_str(),
         ] + args.raw_without_pikaur_specific

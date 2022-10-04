@@ -11,7 +11,7 @@ from .core import interactive_spawn, get_editor
 from .i18n import translate
 from .pprint import (
     color_line, get_term_width, range_printable,
-    PrintLock, print_stderr, print_warning, print_debug,
+    PrintLock, print_stderr, print_warning, create_debug_logger,
 )
 from .exceptions import SysExit
 from .pikspect import pikspect as pikspect_spawn
@@ -23,6 +23,9 @@ N = translate('n')
 
 Y_UP = Y.upper()
 N_UP = N.upper()
+
+_debug = create_debug_logger('prompt')
+_debug_nolock = create_debug_logger('prompt_nolock', lock=False)
 
 
 def read_answer_from_tty(question: str, answers: Sequence[str] = (Y_UP, N, )) -> str:
@@ -82,15 +85,6 @@ def split_last_line(text: str) -> str:
         range_printable(last_line, term_width)
     )
     return '\n'.join(prev_lines + [last_line])
-
-
-def _debug(message, *args, **kwargs):
-    nice_message = f'PROMPT: {message}'
-    print_debug(nice_message, *args, **kwargs)
-
-
-def _debug_nolock(*args):
-    _debug(*args, lock=False)
 
 
 def get_input(

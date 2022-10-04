@@ -4,6 +4,7 @@ import sys
 import shutil
 from threading import Lock
 from string import printable
+import typing as t
 from typing import List, Optional, TextIO, Any
 
 from .i18n import translate
@@ -154,3 +155,30 @@ def range_printable(text: str, start: int = 0, end: Optional[int] = None) -> str
         if counter >= end:
             break
     return result
+
+
+class ColorCounter:
+
+    # color number 6 is purposely skipped as it's used in print_debug itself
+    colors = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    _current_color_idx = 0
+
+    @classmethod
+    def next(cls) -> int:
+        color = cls.colors[cls._current_color_idx]
+        cls._current_color_idx += 1
+        if cls._current_color_idx >= len(cls.colors):
+            cls._current_color_idx = 0
+        return color
+
+
+def create_debug_logger(module_name: str, **kwargs) -> t.Callable[..., None]:
+    color = ColorCounter.next()
+
+    def debug(msg: Any, *args2, **kwargs2) -> None:
+        kwargs2.update(kwargs)
+        print_debug(
+            f"{color_line(module_name, color)}: {str(msg)}",
+            *args2, **kwargs2
+        )
+    return debug

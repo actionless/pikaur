@@ -1,7 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 from itertools import chain
 from multiprocessing.pool import ThreadPool
-from typing import List, Optional, Dict, Any, Sequence, Union
+from typing import List, Optional, Dict, Sequence, Union
 
 from .i18n import translate
 from .core import (
@@ -16,7 +16,7 @@ from .pacman import (
 )
 from .aur import find_aur_packages, AURPackageInfo, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
-from .pprint import print_stdout, print_debug, color_line
+from .pprint import print_stdout, create_debug_logger
 from .args import PikaurArgs, parse_args, reconstruct_args
 from .exceptions import DependencyVersionMismatch, DependencyError, SysExit
 from .print_department import print_ignored_package, print_not_found_packages
@@ -25,8 +25,7 @@ from .replacements import find_replacements
 from .srcinfo import SrcInfo
 
 
-def debug(msg: Any) -> None:
-    print_debug(f"{color_line('install_info_fetcher', 5)}: {str(msg)}")
+_debug = create_debug_logger('install_info_fetcher')
 
 
 class InstallInfoFetcher(ComparableType):
@@ -53,7 +52,7 @@ class InstallInfoFetcher(ComparableType):
             manually_excluded_packages_names: List[str],
             pkgbuilds_packagelists: Dict[str, List[str]],
     ) -> None:
-        debug(f"""Gonna fetch install info for:
+        _debug(f"""Gonna fetch install info for:
     {install_package_names=}
     {not_found_repo_pkgs_names=}
     {pkgbuilds_packagelists=}
@@ -136,7 +135,7 @@ class InstallInfoFetcher(ComparableType):
     def discard_package(
             self, canceled_pkg_name: str, already_discarded: List[str] = None
     ) -> List[str]:
-        debug(f"discarding {canceled_pkg_name=}")
+        _debug(f"discarding {canceled_pkg_name=}")
         for container in self.all_install_info:
             for info in container[:]:
                 if info.name == canceled_pkg_name:
@@ -145,7 +144,7 @@ class InstallInfoFetcher(ComparableType):
         already_discarded = (already_discarded or []) + [canceled_pkg_name]
         for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
             if canceled_pkg_name == aur_pkg_name:
-                debug(f"{aur_pkg_name=}: {aur_deps=}")
+                _debug(f"{aur_pkg_name=}: {aur_deps=}")
                 for pkg_name in aur_deps + [aur_pkg_name]:
                     if pkg_name not in already_discarded:
                         already_discarded += self.discard_package(pkg_name, already_discarded)
@@ -173,7 +172,7 @@ class InstallInfoFetcher(ComparableType):
         # retrieve InstallInfo objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed
         if not self.args.aur:
-            debug("Gonna get repo pkgs install info...")
+            _debug("Gonna get repo pkgs install info...")
             self.get_repo_pkgs_info()
 
         # retrieve InstallInfo objects for AUR packages to be installed
@@ -386,7 +385,7 @@ class InstallInfoFetcher(ComparableType):
             strip_aur_repo_name(version_matcher.pkg_name): version_matcher
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]
         }
-        debug(
+        _debug(
             f"gonna get AUR pkgs install info for:\n"
             f"    {aur_packages_versionmatchers=}\n"
             f"    {self.aur_updates_install_info=}\n"
@@ -396,7 +395,7 @@ class InstallInfoFetcher(ComparableType):
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(
             list(aur_packages_names_to_versions.keys())
         )
-        debug(
+        _debug(
             f"found AUR pkgs:\n"
             f"    {aur_pkg_list=}\n"
             f"    {not_found_aur_pkgs=}\n"
@@ -447,10 +446,10 @@ class InstallInfoFetcher(ComparableType):
                 if pkg_name in pkg_list:
                     del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
-        debug(f"got AUR pkgs install info: {self.aur_updates_install_info=}")
+        _debug(f"got AUR pkgs install info: {self.aur_updates_install_info=}")
 
     def get_info_from_pkgbuilds(self) -> None:
-        debug(f"gonna get install info from PKGBUILDs... {self.aur_updates_install_info=}")
+        _debug(f"gonna get install info from PKGBUILDs... {self.aur_updates_install_info=}")
         aur_updates_install_info_by_name: Dict[str, AURInstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path, pkg_names in self.pkgbuilds_packagelists.items():
@@ -476,7 +475,7 @@ class InstallInfoFetcher(ComparableType):
                     pkgbuild_path=path,
                 )
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
-        debug(f"got install info from PKGBUILDs... {self.aur_updates_install_info=}")
+        _debug(f"got install info from PKGBUILDs... {self.aur_updates_install_info=}")
 
     def get_aur_deps_info(self) -> None:
         all_aur_pkgs = []

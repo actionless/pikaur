@@ -13,7 +13,8 @@ except ModuleNotFoundError:
 from .i18n import translate
 from .config import CACHE_ROOT, PikaurConfig
 from .pprint import (
-    color_line, format_paragraph, print_stdout, print_error, bold_line, print_debug
+    color_line, format_paragraph, print_stdout, print_error, bold_line,
+    create_debug_logger,
 )
 from .pacman import PackageDB
 from .urllib import get_unicode_from_url
@@ -25,6 +26,8 @@ if TYPE_CHECKING:
 
 DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
 
+_debug = create_debug_logger('news')
+
 
 class News:
     URL = PikaurConfig().network.NewsUrl.get_str()
@@ -33,10 +36,10 @@ class News:
 
     def __init__(self) -> None:
         self._news_feed = None
-        print_debug('NEWS: init')
+        _debug('init')
 
     def print_news(self) -> None:
-        print_debug('NEWS: print')
+        _debug('print')
         if self._news_feed is None:
             print_error(translate('Could not fetch archlinux.org news'))
             return
@@ -70,7 +73,7 @@ class News:
                 self._update_last_seen_news(news_entry_to_update_last_seen_date)
 
     def fetch_latest(self) -> None:
-        print_debug('NEWS: fetch_latest')
+        _debug('fetch_latest')
         str_response = get_unicode_from_url(self.URL, optional=True)
         if not str_response:
             print_error(translate('Could not fetch archlinux.org news'))
@@ -80,13 +83,13 @@ class News:
     def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: TextIO
         try:
-            print_debug(f"NEWS: loading date from {self.CACHE_FILE}")
+            _debug(f"loading date from {self.CACHE_FILE}")
             with open_file(self.CACHE_FILE) as last_seen_fd:
                 file_data = last_seen_fd.readline().strip()
                 parsed_date = datetime.datetime.strptime(
                     file_data, DT_FORMAT
                 )
-                print_debug(f"NEWS: {file_data=}, {parsed_date=}")
+                _debug(f"{file_data=}, {parsed_date=}")
                 return parsed_date
         except (IOError, ValueError):
             # if file doesn't exist or corrupted,
@@ -114,7 +117,7 @@ class News:
             last_online_news, DT_FORMAT
         )
         last_seen_news_date = self._get_last_seen_news_date()
-        print_debug(f'NEWS: is_new, {last_online_news_date=}, {last_seen_news_date=}')
+        _debug(f'is_new, {last_online_news_date=}, {last_seen_news_date=}')
         return last_online_news_date > last_seen_news_date
 
     @staticmethod

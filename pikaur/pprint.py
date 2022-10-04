@@ -77,16 +77,38 @@ def bold_line(line: str) -> str:
     return f'\033[0;1m{line}\033[0m'
 
 
+class Colors:
+    black = 0
+    red = 1
+    green = 2
+    yellow = 3
+    blue = 4
+    purple = 5
+    cyan = 6
+    white = 7
+
+
+class ColorsHighlight:
+    black = 8
+    red = 9
+    green = 10
+    yellow = 11
+    blue = 12
+    purple = 13
+    cyan = 14
+    white = 15
+
+
 def print_warning(message: str = '') -> None:
     print_stderr(' '.join([
-        color_line(':: ' + translate("warning:"), 11),
+        color_line(':: ' + translate("warning:"), ColorsHighlight.yellow),
         message
     ]))
 
 
 def print_error(message: str) -> None:
     print_stderr(' '.join([
-        color_line(':: ' + translate("error:"), 9),
+        color_line(':: ' + translate("error:"), ColorsHighlight.red),
         message
     ]))
 
@@ -99,7 +121,7 @@ def print_debug(message: Any, lock=True) -> None:
         # to avoid mixing together with pacman's debug messages:
         prefix = translate("pikaur debug:")
     print_stderr(' '.join([
-        color_line(':: ' + prefix, 6),
+        color_line(':: ' + prefix, Colors.cyan),
         str(message)
     ]), lock=lock)
 
@@ -159,8 +181,22 @@ def range_printable(text: str, start: int = 0, end: Optional[int] = None) -> str
 
 class ColorCounter:
 
-    # color number 6 is purposely skipped as it's used in print_debug itself
-    colors = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    # cyan is purposely skipped as it's used in print_debug itself,
+    # highlight-red is purposely skipped as it's used in print_error,
+    # highlight-yellow is purposely skipped as it's used in print_warning:
+    colors = [
+        Colors.red,
+        Colors.green,
+        Colors.yellow,
+        Colors.blue,
+        Colors.purple,
+        Colors.white,
+        ColorsHighlight.green,
+        ColorsHighlight.blue,
+        ColorsHighlight.purple,
+        ColorsHighlight.cyan,
+        ColorsHighlight.white,
+    ]
     _current_color_idx = 0
 
     @classmethod

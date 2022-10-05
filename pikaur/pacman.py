@@ -398,7 +398,7 @@ class PackageDB(PackageDBCommon):
             return cached_pkg
         results: List[PacmanPrint] = []
         proc = spawn(
-            cmd_args + ['--print-format', '%r/%n']
+            cmd_args + ['--print-format', '%r/%n', '--nodeps']
         )
         if proc.returncode != 0:
             raise DependencyError(proc.stderr_text + proc.stdout_text)
@@ -462,7 +462,7 @@ class PackageDB(PackageDBCommon):
             return not_found_pkg_names
 
         results = spawn(
-            get_pacman_command() + ['--sync', '--print-format=%%'] + pkg_names_to_check
+            get_pacman_command() + ['--sync', '--print-format=%%', '--nodeps'] + pkg_names_to_check
         ).stderr_text.splitlines()
         new_not_found_pkg_names = []
         for result in results:

@@ -324,7 +324,7 @@ find ~/.local/share/pikaur/aur_repos -mindepth 1 -maxdepth 1 -type d | xargs -r 
 This will show a list of commits to choose one to downgarade to.
 
 ```sh
-pikaur -G <package> 
+pikaur -G <package>
 cd <package>
 git log # choose <commit> from the list
 git checkout <commit>
@@ -385,8 +385,8 @@ run (inside virtual machine or docker, etc):
 
 ### Translations
 
-To start working on a new language, say 'uk' (Ukrainian), add it to the
-`Makefile` `LANGS` variable and run `make`. Then translate `locale/uk.po` using
+To start working on a new language, say `hi_IN` (Indian Hindi), add it to the
+`Makefile` `LANGS` variable and run `make`. Then translate `locale/hi_IN.po` using
 your favorite PO editor. Run `make` every time the Python code strings change
 or the `.po` is modified.
 

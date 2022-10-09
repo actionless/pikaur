@@ -313,69 +313,76 @@ class SysupgradePrettyFormatter:
     def __init__(
         self,
         install_info: 'InstallInfoFetcher',
-        verbose=False,
-        manual_package_selection=False
+        verbose,
+        manual_package_selection
     ):
         self.color = True
         self.install_info = install_info
         self.verbose = verbose
-        self.manual_package_selection = manual_package_selection
 
-    def __call__(self) -> str:  # pylint: disable=too-many-locals,too-many-statements,too-many-branches
-        color = self.color
-        install_info = self.install_info
-        verbose = self.verbose
-        manual_package_selection = self.manual_package_selection
+        self.repo_packages_updates: List[RepoInstallInfo] = \
+            install_info.repo_packages_install_info[::]
+        self.thirdparty_repo_packages_updates: List[RepoInstallInfo] = \
+            install_info.thirdparty_repo_packages_install_info[::]
+        self.aur_updates: List[AURInstallInfo] = \
+            install_info.aur_updates_install_info[::]
+        self.repo_replacements: List[RepoInstallInfo] = \
+            install_info.repo_replacements_install_info[::]
+        self.thirdparty_repo_replacements: List[RepoInstallInfo] = \
+            install_info.thirdparty_repo_replacements_install_info[::]
 
-        repo_packages_updates: List[RepoInstallInfo] = \
-            install_info.repo_packages_install_info
-        thirdparty_repo_packages_updates: List[RepoInstallInfo] = \
-            install_info.thirdparty_repo_packages_install_info
-        aur_updates: List[AURInstallInfo] = install_info.aur_updates_install_info
-        repo_replacements: List[RepoInstallInfo] = \
-            install_info.repo_replacements_install_info
-        thirdparty_repo_replacements: List[RepoInstallInfo] = \
-            install_info.thirdparty_repo_replacements_install_info
-
-        new_repo_deps: List[RepoInstallInfo] = \
-            install_info.new_repo_deps_install_info
-        new_thirdparty_repo_deps: List[RepoInstallInfo] = \
-            install_info.new_thirdparty_repo_deps_install_info
-        new_aur_deps: List[AURInstallInfo] = \
-            install_info.aur_deps_install_info
+        self.new_repo_deps: List[RepoInstallInfo] = \
+            install_info.new_repo_deps_install_info[::]
+        self.new_thirdparty_repo_deps: List[RepoInstallInfo] = \
+            install_info.new_thirdparty_repo_deps_install_info[::]
+        self.new_aur_deps: List[AURInstallInfo] = \
+            install_info.aur_deps_install_info[::]
 
         if manual_package_selection:
-            color = False
-            new_repo_deps = []
-            new_thirdparty_repo_deps = []
-            new_aur_deps = []
+            self.color = False
+            self.new_repo_deps = []
+            self.new_thirdparty_repo_deps = []
+            self.new_aur_deps = []
 
-        install_info_lists: Sequence[
+        self.all_install_info_lists: Sequence[
             Union[
                 List[AURInstallInfo],
                 List[RepoInstallInfo]
             ]
         ] = [
-            repo_packages_updates,
-            thirdparty_repo_packages_updates,
-            aur_updates,
-            repo_replacements,
-            thirdparty_repo_replacements,
-            new_repo_deps,
-            new_thirdparty_repo_deps,
-            new_aur_deps,
+            self.repo_packages_updates,
+            self.thirdparty_repo_packages_updates,
+            self.aur_updates,
+            self.repo_replacements,
+            self.thirdparty_repo_replacements,
+            self.new_repo_deps,
+            self.new_thirdparty_repo_deps,
+            self.new_aur_deps,
         ]
 
-        def _color_line(line, *args, **kwargs):
-            return color_line(line, *args, **kwargs) if color else line
+        self.config = PikaurConfig()
+        self.result: List[str] = []
 
-        def _bold_line(line):
-            return bold_line(line) if color else line
+    def _color_line(self, line, *args, **kwargs) -> str:
+        return color_line(line, *args, **kwargs) if self.color else line
 
-        result = []
-        config = PikaurConfig()
+    def _bold_line(self, line) -> str:
+        return bold_line(line) if self.color else line
 
-        warn_about_packages_str = config.ui.WarnAboutPackageUpdates.get_str()
+    def pretty_format_upgradeable(
+            self,
+            install_infos: Sequence[InstallInfo],
+            print_repo=None
+    ) -> str:
+        if print_repo is None:
+            print_repo = self.config.sync.AlwaysShowPkgOrigin.get_bool()
+        return pretty_format_upgradeable(
+            install_infos,
+            verbose=self.verbose, color=self.color, print_repo=print_repo
+        )
+
+    def pformat_warned_packages(self):
+        warn_about_packages_str = self.config.ui.WarnAboutPackageUpdates.get_str()
         warn_about_packages_list: List[InstallInfo] = []
 
         @overload
@@ -396,145 +403,150 @@ class SysupgradePrettyFormatter:
         if warn_about_packages_str:
             globs_and_names = warn_about_packages_str.split(',')
             pkg_list: Union[List[RepoInstallInfo], List[AURInstallInfo]]
-            for pkg_list in install_info_lists:
+            for pkg_list in self.all_install_info_lists:
                 remove_globs_from_pkg_list(pkg_list)
 
         if warn_about_packages_list:
-            result.append('\n{} {} {} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.blue),
-                _color_line('!!', ColorsHighlight.red),
-                _color_line(
+            self.result.append('\n{} {} {} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.blue),
+                self._color_line('!!', ColorsHighlight.red),
+                self._color_line(
                     translate_many(
                         "WARNING about package installation:",
                         "WARNING about packages installation:",
                         len(warn_about_packages_list)
                     ), ColorsHighlight.red
                 ),
-                _color_line('!!', ColorsHighlight.red),
+                self._color_line('!!', ColorsHighlight.red),
             ))
-            result.append(pretty_format_upgradeable(
-                warn_about_packages_list,
-                verbose=verbose, color=color,
-                print_repo=config.sync.AlwaysShowPkgOrigin.get_bool()
-            ))
+            self.result.append(self.pretty_format_upgradeable(warn_about_packages_list))
 
-        if repo_replacements:
-            result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.blue),
-                _bold_line(translate_many(
+    def pformat_replacements(self):
+        if self.repo_replacements:
+            self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.blue),
+                self._bold_line(translate_many(
                     "Repository package suggested as a replacement:",
                     "Repository packages suggested as a replacement:",
-                    len(repo_replacements)))
+                    len(self.repo_replacements)))
             ))
-            result.append(pretty_format_upgradeable(
-                repo_replacements,
-                verbose=verbose, color=color,
-                print_repo=config.sync.AlwaysShowPkgOrigin.get_bool()
+            self.result.append(self.pretty_format_upgradeable(
+                self.repo_replacements,
             ))
-        if thirdparty_repo_replacements:
-            result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.blue),
-                _bold_line(translate_many(
+        if self.thirdparty_repo_replacements:
+            self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.blue),
+                self._bold_line(translate_many(
                     "Third-party repository package suggested as a replacement:",
                     "Third-party repository packages suggested as a replacement:",
-                    len(repo_packages_updates)))
+                    len(self.repo_packages_updates)))
             ))
-            result.append(pretty_format_upgradeable(
-                thirdparty_repo_replacements,
-                verbose=verbose, color=color,
-                print_repo=config.sync.AlwaysShowPkgOrigin.get_bool()
+            self.result.append(self.pretty_format_upgradeable(
+                self.thirdparty_repo_replacements,
             ))
 
-        if repo_packages_updates:
-            result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.blue),
-                _bold_line(translate_many(
+    def pformat_repo(self):
+        if self.repo_packages_updates:
+            self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.blue),
+                self._bold_line(translate_many(
                     "Repository package will be installed:",
                     "Repository packages will be installed:",
-                    len(repo_packages_updates)))
+                    len(self.repo_packages_updates)))
             ))
-            result.append(pretty_format_upgradeable(
-                repo_packages_updates,
-                verbose=verbose, color=color,
-                print_repo=config.sync.AlwaysShowPkgOrigin.get_bool()
+            self.result.append(self.pretty_format_upgradeable(
+                self.repo_packages_updates,
             ))
-        if new_repo_deps:
-            result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.yellow),
-                _bold_line(translate_many(
+        if self.new_repo_deps:
+            self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.yellow),
+                self._bold_line(translate_many(
                     "New dependency will be installed from repository:",
                     "New dependencies will be installed from repository:",
-                    len(new_repo_deps)
+                    len(self.new_repo_deps)
                 ))
             ))
-            result.append(pretty_format_upgradeable(
-                new_repo_deps,
-                verbose=verbose, color=color,
-                print_repo=config.sync.AlwaysShowPkgOrigin.get_bool()
+            self.result.append(self.pretty_format_upgradeable(
+                self.new_repo_deps,
             ))
-        if thirdparty_repo_packages_updates:
-            result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.blue),
-                _bold_line(translate_many(
+
+    def pformat_thirdaprty_repo(self):
+        if self.thirdparty_repo_packages_updates:
+            self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.blue),
+                self._bold_line(translate_many(
                     "Third-party repository package will be installed:",
                     "Third-party repository packages will be installed:",
-                    len(thirdparty_repo_packages_updates)
+                    len(self.thirdparty_repo_packages_updates)
                 ))
             ))
-            result.append(pretty_format_upgradeable(
-                thirdparty_repo_packages_updates,
-                verbose=verbose, color=color, print_repo=True
+            self.result.append(self.pretty_format_upgradeable(
+                self.thirdparty_repo_packages_updates,
+                print_repo=True
             ))
-        if new_thirdparty_repo_deps:
-            result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.yellow),
-                _bold_line(translate_many(
+        if self.new_thirdparty_repo_deps:
+            self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.yellow),
+                self._bold_line(translate_many(
                     "New dependency will be installed from third-party repository:",
                     "New dependencies will be installed from third-party repository:",
-                    len(new_thirdparty_repo_deps)
+                    len(self.new_thirdparty_repo_deps)
                 ))
             ))
-            result.append(pretty_format_upgradeable(
-                new_thirdparty_repo_deps,
-                verbose=verbose, color=color,
-                print_repo=config.sync.AlwaysShowPkgOrigin.get_bool()
+            self.result.append(self.pretty_format_upgradeable(
+                self.new_thirdparty_repo_deps,
             ))
-        if aur_updates:
-            result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.cyan),
-                _bold_line(translate_many(
+
+    def pformat_aur(self):
+        if self.aur_updates:
+            self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.cyan),
+                self._bold_line(translate_many(
                     "AUR package will be installed:",
                     "AUR packages will be installed:",
-                    len(aur_updates)
+                    len(self.aur_updates)
                 ))
             ))
-            result.append(pretty_format_upgradeable(
-                aur_updates,
-                verbose=verbose, color=color, print_repo=False
+            self.result.append(self.pretty_format_upgradeable(
+                self.aur_updates,
+                print_repo=False
             ))
-        if new_aur_deps:
-            result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
-                _color_line('::', ColorsHighlight.yellow),
-                _bold_line(translate_many(
+        if self.new_aur_deps:
+            self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
+                self._color_line('::', ColorsHighlight.yellow),
+                self._bold_line(translate_many(
                     "New dependency will be installed from AUR:",
                     "New dependencies will be installed from AUR:",
-                    len(new_aur_deps)
+                    len(self.new_aur_deps)
                 ))
             ))
-            result.append(pretty_format_upgradeable(
-                new_aur_deps,
-                verbose=verbose, color=color, print_repo=False
+            self.result.append(self.pretty_format_upgradeable(
+                self.new_aur_deps,
+                print_repo=False
             ))
-        if config.sync.ShowDownloadSize.get_bool():
-            result.append(
-                f'\n{_bold_line("Total Download Size:")}'
-                f'{str(round(install_info.get_total_download_size(), 2)).rjust(10)} MiB'
-                f'\n{_bold_line("Total Installed Size:")}'
-                f'{str(round(install_info.get_total_installed_size(), 2)).rjust(9)} MiB\n'
+
+    def pformat_total_size(self):
+        if self.config.sync.ShowDownloadSize.get_bool():
+            self.result.append(
+                '\n'
+                f'{self._bold_line("Total Download Size:")}'
+                f'{str(round(self.install_info.get_total_download_size(), 2)).rjust(10)} MiB'
+                '\n'
+                f'{self._bold_line("Total Installed Size:")}'
+                f'{str(round(self.install_info.get_total_installed_size(), 2)).rjust(9)} MiB'
+                '\n'
             )
         else:
-            result += ['']
-        return '\n'.join(result)
+            self.result += ['']
+
+    def __call__(self) -> str:
+        self.pformat_warned_packages()
+        self.pformat_replacements()
+        self.pformat_repo()
+        self.pformat_thirdaprty_repo()
+        self.pformat_aur()
+        self.pformat_total_size()
+        return '\n'.join(self.result)
 
 
 def pretty_format_sysupgrade(

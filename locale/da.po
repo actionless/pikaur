@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 22:32+0200\n"
+"POT-Creation-Date: 2022-10-10 01:43+0200\n"
 "PO-Revision-Date: 2018-04-20 01:17+0200\n"
 "Last-Translator: \n"
 "Language-Team: none\n"
@@ -30,7 +30,7 @@ msgstr[1] ""
 msgid "(ignored in Pacman config)"
 msgstr ""
 
-#: pikaur/print_department.py:229
+#: pikaur/print_department.py:231
 msgid "({} days old)"
 msgstr "({} dage gammelt)"
 
@@ -48,7 +48,7 @@ msgstr ""
 msgid "AUR Git URL"
 msgstr ""
 
-#: pikaur/print_department.py:429
+#: pikaur/print_department.py:505
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "AUR pakke som vil blive installeret:"
@@ -175,8 +175,8 @@ msgstr "Vil du fortsætte?"
 msgid "Do you want to remove all files?"
 msgstr "Vil du fjerne all filer?"
 
-#: pikaur/filelock.py:31 pikaur/urllib.py:34 pikaur/urllib.py:56
-#: pikaur/prompt.py:199
+#: pikaur/urllib.py:34 pikaur/urllib.py:56 pikaur/prompt.py:199
+#: pikaur/filelock.py:31
 msgid "Do you want to retry?"
 msgstr "Vil du prøve igen?"
 
@@ -190,7 +190,7 @@ msgstr "Vil du se bygfiler {diff} for pakken {name}"
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "Vil du {edit} {file} for pakken {name}?"
 
-#: pikaur/print_department.py:527
+#: pikaur/print_department.py:628
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr ""
@@ -215,14 +215,14 @@ msgstr ""
 msgid "First Submitted"
 msgstr ""
 
-#: pikaur/print_department.py:67
+#: pikaur/print_department.py:69
 #, fuzzy
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
 msgstr[0] "Følgende pakker kunne ikke findes i  AUR:"
 msgstr[1] "Følgende pakker kunne ikke findes i  AUR:"
 
-#: pikaur/print_department.py:61
+#: pikaur/print_department.py:63
 #, fuzzy
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
@@ -233,12 +233,12 @@ msgstr[1] "Følgende pakker kunne ikke findes i  AUR:"
 msgid "Groups"
 msgstr ""
 
-#: pikaur/print_department.py:478
+#: pikaur/print_department.py:579
 #, fuzzy
 msgid "Ignoring package update {}"
 msgstr "Ignorer pakken {}"
 
-#: pikaur/print_department.py:484
+#: pikaur/print_department.py:585
 msgid "Ignoring package {}"
 msgstr "Ignorer pakken {}"
 
@@ -275,7 +275,7 @@ msgstr ""
 msgid "Make Deps"
 msgstr ""
 
-#: pikaur/config.py:407
+#: pikaur/config.py:411
 msgid "Migrating [{}]{} config option to [{}]{} = \"{}\"..."
 msgstr ""
 
@@ -289,20 +289,20 @@ msgstr ""
 msgid "New build deps found for {pkg} package: {deps}"
 msgstr ""
 
-#: pikaur/print_department.py:442
+#: pikaur/print_department.py:518
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "Ny afhængighed vil blive installeret fra AUR:"
 msgstr[1] "Nye afhængigheder vil blive installeret fra AUR:"
 
-#: pikaur/print_department.py:388
+#: pikaur/print_department.py:464
 #, fuzzy
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "Ny afhængighed vil blive installeret fra AUR:"
 msgstr[1] "Nye afhængigheder vil blive installeret fra AUR:"
 
-#: pikaur/print_department.py:415
+#: pikaur/print_department.py:491
 #, fuzzy
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
@@ -409,14 +409,14 @@ msgstr "Fjerner installeret repository afhængigheder for {}"
 msgid "Replaces"
 msgstr ""
 
-#: pikaur/print_department.py:348
+#: pikaur/print_department.py:429
 #, fuzzy
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "Repository pakke vil blive installeret:"
 msgstr[1] "Repository pakker vil blive installeret:"
 
-#: pikaur/print_department.py:375
+#: pikaur/print_department.py:453
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "Repository pakke vil blive installeret:"
@@ -462,25 +462,33 @@ msgstr ""
 msgid "There is news from archlinux.org!"
 msgstr ""
 
-#: pikaur/print_department.py:361
+#: pikaur/print_department.py:440
 #, fuzzy
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "Tredjeparts repository pakke vil blive installeret:"
 msgstr[1] "Tredjeparts repository pakker vil blive installeret:"
 
-#: pikaur/print_department.py:402
+#: pikaur/print_department.py:478
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Tredjeparts repository pakke vil blive installeret:"
 msgstr[1] "Tredjeparts repository pakker vil blive installeret:"
+
+#: pikaur/print_department.py:532
+msgid "Total Download Size:"
+msgstr ""
+
+#: pikaur/print_department.py:535
+msgid "Total Installed Size:"
+msgstr ""
 
 #: pikaur/install_cli.py:209
 #, fuzzy, python-brace-format
 msgid "Try recovering {pkg_name}?"
 msgstr "Prøv at gendanne?"
 
-#: pikaur/build.py:715 pikaur/install_cli.py:548
+#: pikaur/install_cli.py:548 pikaur/build.py:715
 msgid "Try recovering?"
 msgstr "Prøv at gendanne?"
 
@@ -499,6 +507,12 @@ msgstr "Versions uoverensstemmelse:"
 #: pikaur/info_cli.py:41
 msgid "Votes"
 msgstr ""
+
+#: pikaur/print_department.py:415
+msgid "WARNING about package installation:"
+msgid_plural "WARNING about packages installation:"
+msgstr[0] ""
+msgstr[1] ""
 
 #: pikaur/install_cli.py:212 pikaur/install_cli.py:554
 #, fuzzy
@@ -531,7 +545,7 @@ msgstr "[c] git checkout -- '*'"
 msgid "[d] delete build dir and try again"
 msgstr "[f] fjern mappe og klon igen"
 
-#: pikaur/build.py:723 pikaur/install_cli.py:210
+#: pikaur/install_cli.py:210 pikaur/build.py:723
 msgid "[e] edit PKGBUILD"
 msgstr ""
 
@@ -543,12 +557,12 @@ msgstr ""
 msgid "[i] ignore architecture"
 msgstr ""
 
-#: pikaur/print_department.py:628
+#: pikaur/print_department.py:729
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[installeret: {version}]"
 
-#: pikaur/print_department.py:635
+#: pikaur/print_department.py:736
 msgid "[installed]"
 msgstr "[installeret]"
 
@@ -578,9 +592,9 @@ msgstr "[s] spring denne pakke over"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[s]e pakke detaljer  [m]anuelt vælg pakker"
 
-#: pikaur/build.py:711 pikaur/build.py:733 pikaur/build.py:767
 #: pikaur/install_cli.py:214 pikaur/install_cli.py:543
-#: pikaur/install_cli.py:559
+#: pikaur/install_cli.py:559 pikaur/build.py:711 pikaur/build.py:733
+#: pikaur/build.py:767
 msgid "a"
 msgstr "a"
 
@@ -601,8 +615,8 @@ msgstr ""
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sysupgrade '-git' og andre dev pakker ældre end 1 dag"
 
-#: pikaur/build.py:731 pikaur/build.py:742 pikaur/install_cli.py:559
-#: pikaur/install_cli.py:563
+#: pikaur/install_cli.py:559 pikaur/install_cli.py:563 pikaur/build.py:731
+#: pikaur/build.py:742
 msgid "c"
 msgstr "c"
 
@@ -640,8 +654,8 @@ msgstr "fjern ikke bygmappen efter byg"
 msgid "download also AUR dependencies"
 msgstr "Løser AUR afhængigheder..."
 
-#: pikaur/build.py:733 pikaur/build.py:754 pikaur/install_cli.py:214
-#: pikaur/install_cli.py:217
+#: pikaur/install_cli.py:214 pikaur/install_cli.py:217 pikaur/build.py:733
+#: pikaur/build.py:754
 msgid "e"
 msgstr ""
 
@@ -670,7 +684,7 @@ msgid "failed to retrieve latest dev sources:"
 msgstr ""
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:176 pikaur/print_department.py:183
+#: pikaur/print_department.py:178 pikaur/print_department.py:185
 #, python-brace-format
 msgid "for {pkg}"
 msgstr ""
@@ -712,7 +726,7 @@ msgstr "leder efter pakker der konflikter med hinanden..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/main.py:158 pikaur/prompt.py:22 pikaur/install_cli.py:406
+#: pikaur/install_cli.py:406 pikaur/prompt.py:22 pikaur/main.py:158
 msgid "n"
 msgstr "n"
 
@@ -732,7 +746,7 @@ msgid "one of the arguments %s is required"
 msgstr ""
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:246 pikaur/print_department.py:660
+#: pikaur/print_department.py:248 pikaur/print_department.py:761
 msgid "outofdate"
 msgstr "forældet"
 
@@ -740,7 +754,7 @@ msgstr "forældet"
 msgid "override path to makepkg executable"
 msgstr ""
 
-#: pikaur/build.py:731 pikaur/build.py:739 pikaur/install_cli.py:565
+#: pikaur/install_cli.py:565 pikaur/build.py:731 pikaur/build.py:739
 msgid "p"
 msgstr ""
 
@@ -797,14 +811,14 @@ msgstr "forespørg kun pakker fra AUR"
 msgid "query packages from repository only"
 msgstr "forespørg kun pakker fra repository"
 
-#: pikaur/build.py:731 pikaur/build.py:737 pikaur/install_cli.py:559
-#: pikaur/install_cli.py:568
+#: pikaur/install_cli.py:559 pikaur/install_cli.py:568 pikaur/build.py:731
+#: pikaur/build.py:737
 msgid "r"
 msgstr "f"
 
-#: pikaur/build.py:709 pikaur/build.py:733 pikaur/install_cli.py:214
-#: pikaur/install_cli.py:232 pikaur/install_cli.py:559
-#: pikaur/install_cli.py:570
+#: pikaur/install_cli.py:214 pikaur/install_cli.py:232
+#: pikaur/install_cli.py:559 pikaur/install_cli.py:570 pikaur/build.py:709
+#: pikaur/build.py:733
 msgid "s"
 msgstr "s"
 
@@ -837,35 +851,35 @@ msgstr ""
 msgid "v"
 msgstr "s"
 
-#: pikaur/pprint.py:104 pikaur/config.py:406
+#: pikaur/pprint.py:104 pikaur/config.py:410
 msgid "warning:"
 msgstr "advarsel:"
 
-#: pikaur/prompt.py:21 pikaur/install_cli.py:406 pikaur/install_cli.py:420
+#: pikaur/install_cli.py:406 pikaur/install_cli.py:420 pikaur/prompt.py:21
 msgid "y"
 msgstr "j"
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:198 pikaur/print_department.py:204
+#: pikaur/print_department.py:200 pikaur/print_department.py:206
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/print_department.py:537
+#: pikaur/print_department.py:638
 #, fuzzy, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr "{name} {version} {package_source} pakken er opdateret - springer over"
 
-#: pikaur/print_department.py:516
+#: pikaur/print_department.py:617
 #, fuzzy, python-brace-format
 msgid ""
 "{name} {version} local package is newer than in AUR ({aur_version}) - "
 "skipping"
 msgstr "{name} {version} {package_source} pakken er opdateret - springer over"
 
-#: pikaur/print_department.py:505
+#: pikaur/print_department.py:606
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "{name} {version} {package_source} pakken er opdateret - springer over"

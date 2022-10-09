@@ -528,11 +528,11 @@ class SysupgradePrettyFormatter:
     def pformat_total_size(self):
         if self.config.sync.ShowDownloadSize.get_bool():
             self.result.append(
-                '\n'
-                f'{self._bold_line(translate("Total Download Size:"))}'
+                '\n' +
+                self._bold_line(translate("Total Download Size:")) +
                 f'{str(round(self.install_info.get_total_download_size(), 2)).rjust(10)} MiB'
-                '\n'
-                f'{self._bold_line(translate("Total Installed Size:"))}'
+                '\n' +
+                self._bold_line(translate("Total Installed Size:")) +
                 f'{str(round(self.install_info.get_total_installed_size(), 2)).rjust(9)} MiB'
                 '\n'
             )

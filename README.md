@@ -196,6 +196,9 @@ Display the date a package is last updated on search results when using commands
 ##### ReverseSearchSorting (default: no)
 Reverse search results of the commands like `pikaur -Ss <query>` or `pikaur <query>`.
 
+##### WarnAboutPackageUpdates (default ``)
+Comma-separated list of packages names or globs, which upgrade should have additional warning message in the UI.
+
 
 #### [misc]
 

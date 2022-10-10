@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 01:43+0200\n"
+"POT-Creation-Date: 2022-10-10 15:31+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -356,7 +356,7 @@ msgstr[1] "包 {pkg} 已被构建. 使用 '--rebuild' 来强制构建."
 msgid "Packages directory"
 msgstr "Packages目录"
 
-#: pikaur/help_cli.py:102
+#: pikaur/help_cli.py:103
 msgid "Pikaur-specific options:"
 msgstr "Pikaur的独立选项:"
 
@@ -780,6 +780,10 @@ msgstr "pikaur {-P --pkgbuild}    [options] <file(s)>"
 msgid "pikaur-specific operations:"
 msgstr "pikaur 的独立选项:"
 
+#: pikaur/help_cli.py:97
+msgid "print spawned by pikaur subshell commands"
+msgstr ""
+
 #: pikaur/help_cli.py:74
 msgid "prompt to edit PKGBUILDs and other build files"
 msgstr "提示编辑 PKGBUILD 和其它相关文件"
@@ -811,7 +815,7 @@ msgstr "只搜索包名"
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 
-#: pikaur/help_cli.py:97
+#: pikaur/help_cli.py:98
 msgid "show only debug messages specific to pikaur"
 msgstr ""
 

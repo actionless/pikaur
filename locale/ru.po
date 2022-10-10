@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 01:43+0200\n"
+"POT-Creation-Date: 2022-10-10 15:31+0200\n"
 "PO-Revision-Date: 2019-09-21 19:36+0200\n"
 "Last-Translator: Drommer <drommer@github.com>\n"
 "Language-Team: Russian <email@example.com>\n"
@@ -366,7 +366,7 @@ msgstr[1] ""
 msgid "Packages directory"
 msgstr "Каталог пакета"
 
-#: pikaur/help_cli.py:102
+#: pikaur/help_cli.py:103
 msgid "Pikaur-specific options:"
 msgstr "Опции pikaur:"
 
@@ -798,6 +798,10 @@ msgstr "pikaur {-P --pkgbuild} [параметры] <файл(ы)>"
 msgid "pikaur-specific operations:"
 msgstr "собственные операции pikaur:"
 
+#: pikaur/help_cli.py:97
+msgid "print spawned by pikaur subshell commands"
+msgstr ""
+
 #: pikaur/help_cli.py:74
 msgid "prompt to edit PKGBUILDs and other build files"
 msgstr "запрашивать редактирование PKGBUILD и других файлов сборки"
@@ -829,7 +833,7 @@ msgstr "искать только в именах пакетов"
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 
-#: pikaur/help_cli.py:97
+#: pikaur/help_cli.py:98
 msgid "show only debug messages specific to pikaur"
 msgstr "показывать отладочные сообщения, относящиеся только к pikaur"
 

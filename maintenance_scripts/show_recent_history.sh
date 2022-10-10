@@ -2,9 +2,11 @@
 
 filter="cat"
 if [[ "${1:-}" = '-c' ]] ; then
+	echo "Notable changes:"
 	filter="grep -v -i -E \
 		-e (typing|typehint|coverage|github|docker|vulture) \
 		-e actionless\s[^[:print:]]\[m(doc|chore|test|style|Revert|Merge|refactor)\
+		-e [^[:print:]]\[31m[[:print:]]+[^[:print:]]\[m
 	"
 	shift
 fi
@@ -18,5 +20,7 @@ result=$(git log \
 )
 echo "$result" | $filter
 if [[ "${filter}" != "cat" ]] ; then
+	echo
+	echo "Previous release:"
 	echo "$result" | tail -n1
 fi

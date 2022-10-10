@@ -94,6 +94,7 @@ def cli_print_help() -> None:
 
     if pikaur_options_help:  # if it's not just `pikaur --help`
         pikaur_options_help += [
+            ('', '--print-commands', translate("print spawned by pikaur subshell commands")),
             ('', '--pikaur-debug', translate("show only debug messages specific to pikaur")),
         ]
 

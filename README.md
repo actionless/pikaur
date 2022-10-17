@@ -59,7 +59,7 @@ makepkg -fsri
 
 ## Screenshot
 
-![Screenshot](https://github.com/actionless/pikaur/blob/master/screenshots/package_update.png "Screenshot")
+![Screenshot](https://raw.githubusercontent.com/actionless/pikaur/master/screenshots/package_update.png "Screenshot")
 
 
 ## Run without installation
@@ -196,7 +196,7 @@ Display the date a package is last updated on search results when using commands
 ##### ReverseSearchSorting (default: no)
 Reverse search results of the commands like `pikaur -Ss <query>` or `pikaur <query>`.
 
-##### WarnAboutPackageUpdates (default ``)
+##### WarnAboutPackageUpdates (default: )
 Comma-separated list of packages names or globs, which upgrade should have additional warning message in the UI.
 
 

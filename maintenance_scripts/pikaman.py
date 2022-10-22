@@ -11,6 +11,7 @@ References:
     https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
 """
 
+import re
 import sys
 from datetime import datetime
 
@@ -124,6 +125,28 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
         else:
             self.lit('"\n.\n')
 
+    _html_tag_regex = re.compile('<.*>')
+
+    def html_inline(self, node, entering):  # pylint: disable=unused-argument
+        text = node.literal
+        text = self._html_tag_regex.sub('', text)
+        self.out(text)
+
+    def html_block(self, node, entering):
+        self.cr()
+        self.html_inline(node, entering)
+        self.cr()
+
+    def custom_inline(self, node, entering):
+        if entering and node.on_enter:
+            self.lit(node.on_enter)
+        elif (not entering) and node.on_exit:
+            self.lit(node.on_exit)
+
+    def custom_block(self, node, entering):
+        self.cr()
+        self.custom_inline(node, entering)
+        self.cr()
 
 with open(README_PATH, encoding=ENCODING) as input_fobj:
     with open(OUTPUT_PATH, 'w', encoding=ENCODING) as output_fobj:

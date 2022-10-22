@@ -40,12 +40,13 @@ def print_version(pacman_version: str, pyalpm_version: str, quiet=False) -> None
         print(f'Pikaur v{VERSION}')
         print(f'{pacman_version} - pyalpm v{pyalpm_version}')
     else:
+        year = str(datetime.now().year)
         sys.stdout.write(r"""
       /:}               _
      /--1             / :}
     /   |           / `-/
    |  ,  --------  /   /     Pikaur v""" + VERSION + r"""
-   |'                 Y      (C) 2018-2020 Pikaur development team
+   |'                 Y      (C) 2018-""" + year  + """ Pikaur development team
   /                   l      Licensed under GPLv3
   l  /       \        l
   j  ●   .   ●        l      """ + pacman_version + r"""

@@ -102,7 +102,7 @@ class DataTypeTest(PikaurTestCase):
     def test_set_unknown(self):
         a1 = self.DataClass1(foo=1, bar='a')
         with self.assertRaises(TypeError):
-            a1.baz = 'baz'
+            a1.baz = 'baz'  # pylint: disable=attribute-defined-outside-init
 
 
 class InstallInfoTest(PikaurTestCase):

@@ -4,7 +4,7 @@ filter="cat"
 if [[ "${1:-}" = '-c' ]] ; then
 	echo "Notable changes:"
 	filter="grep -v -i -E \
-		-e (typing|typehint|coverage|github|docker|vulture) \
+		-e (typing|typehint|coverage|github|docker|vulture|maintenance_scripts) \
 		-e actionless\s[^[:print:]]\[m(doc|chore|test|style|Revert|Merge|refactor)\
 		-e [^[:print:]]\[31m[[:print:]]+[^[:print:]]\[m
 	"

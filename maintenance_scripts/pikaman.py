@@ -30,6 +30,8 @@ ENCODING = 'utf-8'
 
 class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=too-many-public-methods
 
+    __output__ = 'nroff'
+
     def __init__(self, options=None):
         self.options = options or {}
         super().__init__()

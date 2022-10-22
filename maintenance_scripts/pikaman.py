@@ -11,25 +11,212 @@ References:
     https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
 """
 
+import inspect
 import re
 import sys
+from collections.abc import MutableMapping
 from datetime import datetime
+from typing import Sequence, Optional
 
-import commonmark
+import markdown_it
 
+Token = markdown_it.token.Token
+OptionsDict = markdown_it.utils.OptionsDict
 
 README_PATH = sys.argv[1]
 OUTPUT_PATH = sys.argv[2]
 ENCODING = 'utf-8'
 
 
-class NroffRenderer(commonmark.render.renderer.Renderer):
+class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=too-many-public-methods
 
     def __init__(self, options=None):
         self.options = options or {}
         super().__init__()
         self.name = self.options.get('name', 'test')
         self.section = self.options.get('section', 1)
+        self.rules = {
+            k: v
+            for k, v in inspect.getmembers(self, predicate=inspect.ismethod)
+            if not (k.startswith("render") or k.startswith("_"))
+        }
+
+    def render(
+        self, tokens: Sequence[Token], options: OptionsDict, env: MutableMapping
+    ) -> str:
+        result = self.document_open()
+        for i, token in enumerate(tokens):
+            if token.type == "inline":
+                assert token.children is not None
+                result += self.render_inline(token.children, options, env)
+            elif token.type in self.rules:
+                result += self.rules[token.type](tokens, i, options, env)
+            else:
+                raise NotImplementedError()
+        return result
+
+    def render_inline(
+        self, tokens: Sequence[Token], options: OptionsDict, env: MutableMapping
+    ) -> str:
+        result = ""
+        for i, token in enumerate(tokens):
+            if token.type in self.rules:
+                result += self.rules[token.type](tokens, i, options, env)
+            else:
+                raise NotImplementedError()
+        return result
+
+    def text(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return self.escape(tokens[idx].content)
+
+    def softbreak(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return self.escape(' ')
+
+    _html_tag_regex = re.compile('<.*>')
+
+    def html_inline(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        text = tokens[idx].content
+        text = self._html_tag_regex.sub('', text)
+        return self.escape(text)
+
+    def html_block(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return (
+            "\n" +
+            self.html_inline(tokens, idx, options, env) +
+            "\n"
+        )
+
+    def heading_open(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        token = tokens[idx]
+        level = int(token.tag[1])
+        if level <= 2:
+            return '\n.SH "'
+        return '\n.SS "'
+
+    def heading_close(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return '"\n.\n'
+
+    def paragraph_open(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return '.P\n'
+
+    def paragraph_close(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return '\n.\n'
+
+    _last_link: Optional[str]
+
+    def link_open(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        token = tokens[idx]
+        self._last_link = str(dict(token.attrItems()).get('href', ''))
+        return r'\fI'
+
+    def link_close(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        result = r'\fR'
+        if self._last_link and self.is_url(self._last_link):
+            result += (
+                ' (' +
+                self.escape(self._last_link) +
+                ')'
+            )
+        return result
+
+    def image(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return ''
+
+    def code_inline(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        token = tokens[idx]
+        return (
+            r'\fB' +
+            self.escape(token.content) +
+            r'\fR'
+        )
+
+    def bullet_list_open(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return ''
+
+    def bullet_list_close(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return ''
+
+    def list_item_open(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        list_deco = r"\(bu"  # bullet
+        # bullet_char = node.parent.list_data.get('bullet_char')
+        # if bullet_char not in (None, '*'):
+        #     list_deco = bullet_char
+        return rf'.IP "{list_deco}" 4'
+
+    def list_item_close(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        return '.\n'
+
+    # def ordered_list_item(self, token):
+    #     list_deco = r"\(bu"  # bullet
+    #     # list_deco = node.parent.list_data['start']
+    #     return (
+    #         rf'.IP "{list_deco}" 4' +
+    #         token.content +
+    #         '.' +
+    #         "\n"
+    #     )
+
+    def fence(
+            self, tokens: Sequence[Token], idx: int,
+            options: OptionsDict, env: MutableMapping
+    ):
+        token = tokens[idx]
+        return (
+            '.nf\n\n' +
+            self.escape(token.content) +
+            '\n.\n.fi\n'
+        )
+
+
+    ####################### Helpers: #######################
 
     @staticmethod
     def escape(text):
@@ -43,117 +230,35 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
     def is_url(text):
         return text.startswith('http://') or text.startswith('https://')
 
-    def out(self, s: str):
-        self.lit(self.escape(s))
-
-    ####################### Node methods: #######################
-
-    # Note: it's intentionally not implementing `image` node handler.
-    #       While `list` and `item` types are handled by `paragraph()`.
-
-    def document(self, _node, entering):
-        if entering:
-            self.lit(rf""".\" generated with Pikaman
+    def document_open(self):
+        return rf""".\" generated with Pikaman
 .
 .TH "{self.name.upper()}" "{self.section}" "{datetime.now().strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
 .
-""")
 
-    def text(self, node, _entering):
-        self.out(node.literal)
+"""
 
-    def softbreak(self, _node, _entering):
-        self.out(' ')
-
-    def paragraph(self, node, entering):
-        gradparent_type = node.parent.parent and node.parent.parent.t
-        self.cr()
-        if entering:
-            if gradparent_type == 'list':
-                list_deco = r"\(bu"  # bullet
-                if node.parent.list_data.get('type') == 'ordered':
-                    list_deco = node.parent.list_data['start']
-                else:
-                    bullet_char = node.parent.list_data.get('bullet_char')
-                    if bullet_char not in (None, '*'):
-                        list_deco = bullet_char
-                self.lit(rf'.IP "{list_deco}" 4')
-            else:
-                self.lit('.P')
-        else:
-            self.lit('.')
-        self.cr()
+    ############################ TBD: ################################
 
     def strong(self, _node, entering):
         if entering:
-            self.lit(r'\fB')
-        else:
-            self.lit(r'\fR')
-
-    def code(self, node, _entering):
-        self.lit(r'\fB')
-        self.out(node.literal)
-        self.lit(r'\fR')
-
-    def code_block(self, node, _entering):
-        self.lit('.nf\n\n')
-        self.out(node.literal)
-        self.lit('\n.\n.fi\n')
+            return r'\fB'
+        return r'\fR'
 
     def emph(self, _node, entering):
         if entering:
-            self.lit(r'\fI')
-        else:
-            self.lit(r'\fR')
+            return r'\fI'
+        return r'\fR'
 
-    def link(self, node, entering):
-        if entering:
-            self.lit(r'\fI')
-        else:
-            self.lit(r'\fR')
-            if self.is_url(node.destination):
-                self.lit(' (')
-                self.out(node.destination)
-                self.lit(')')
-
-    def heading(self, node, entering):
-        if entering:
-            if node.level <= 2:
-                self.lit('.SH "')
-            else:
-                self.lit('.SS "')
-        else:
-            self.lit('"\n.\n')
-
-    _html_tag_regex = re.compile('<.*>')
-
-    def html_inline(self, node, entering):  # pylint: disable=unused-argument
-        text = node.literal
-        text = self._html_tag_regex.sub('', text)
-        self.out(text)
-
-    def html_block(self, node, entering):
-        self.cr()
-        self.html_inline(node, entering)
-        self.cr()
-
-    def custom_inline(self, node, entering):
-        if entering and node.on_enter:
-            self.lit(node.on_enter)
-        elif (not entering) and node.on_exit:
-            self.lit(node.on_exit)
-
-    def custom_block(self, node, entering):
-        self.cr()
-        self.custom_inline(node, entering)
-        self.cr()
 
 with open(README_PATH, encoding=ENCODING) as input_fobj:
     with open(OUTPUT_PATH, 'w', encoding=ENCODING) as output_fobj:
         output_fobj.write(
             NroffRenderer(options=dict(name='pikaur', section=1)).render(
-                commonmark.Parser().parse(
+                markdown_it.MarkdownIt().parse(
                     input_fobj.read()
-                )
+                ),
+                options=OptionsDict(),
+                env={}
             )
         )

@@ -19,7 +19,7 @@ depends=(
 	'git'
 )
 makedepends=(
-	'python-commonmark'
+	'python-markdown-it-py'
 )
 optdepends=(
 	'asp: for ABS support in -G/--getpkgbuild operation'

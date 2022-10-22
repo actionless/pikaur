@@ -16,17 +16,9 @@ class CliTest(PikaurTestCase):
             pikaur('-Ssq oomox').stdout.splitlines()
         )
         for oomox_pkg_name in [
-                'themix-theme-oomox-git',
+                'omnu-ice', 'themix-full-git', 'themix-theme-oomox-git',
         ]:
             self.assertIn(
-                oomox_pkg_name, search_results
-            )
-
-        # @TODO: not sure if this is an AUR API bug?
-        for oomox_pkg_name in [
-                'themix-full-git',
-        ]:
-            self.assertNotIn(
                 oomox_pkg_name, search_results
             )
 

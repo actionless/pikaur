@@ -1,6 +1,6 @@
 """
 NRoff renderer for CommonMark
-(C) 2020 Y Kirylau
+(C) 2020-today, Y Kirylau
 
 References:
     troff/nroff quick reference
@@ -19,6 +19,7 @@ import commonmark
 
 README_PATH = sys.argv[1]
 OUTPUT_PATH = sys.argv[2]
+ENCODING = 'utf-8'
 
 
 class NroffRenderer(commonmark.render.renderer.Renderer):
@@ -120,8 +121,8 @@ class NroffRenderer(commonmark.render.renderer.Renderer):
             self.lit('"\n.\n')
 
 
-with open(README_PATH) as input_fobj:
-    with open(OUTPUT_PATH, 'w') as output_fobj:
+with open(README_PATH, encoding=ENCODING) as input_fobj:
+    with open(OUTPUT_PATH, 'w', encoding=ENCODING) as output_fobj:
         output_fobj.write(
             NroffRenderer(options=dict(name='pikaur', section=1)).render(
                 commonmark.Parser().parse(

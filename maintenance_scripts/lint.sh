@@ -7,6 +7,7 @@ APP_DIR="$(readlink -e "${script_dir}"/..)"
 TARGETS=(
 	'pikaur'
 	'pikaur_test'
+	./maintenance_scripts/*.py
 )
 
 export PYTHONWARNINGS='default,error:::pikaur[.*],error:::pikaur_test[.*]'

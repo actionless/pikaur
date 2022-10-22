@@ -15,7 +15,7 @@ DEFAULT_CONFIG_ENCODING = 'utf-8'
 RUNNING_AS_ROOT = os.geteuid() == 0
 
 
-VERSION = '1.12-dev'
+VERSION = '1.13-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",

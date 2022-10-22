@@ -217,15 +217,14 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
             '\n.\n.fi\n'
         )
 
-
-    ####################### Helpers: #######################
+    # ###################### Helpers: ###################### #
 
     @staticmethod
     def escape(text):
         for control_character in ('.', '"'):
             if text.startswith(control_character):
                 text = text.replace(control_character, r'\&' + control_character, 1)
-            text = text.replace(r'\n'+control_character, r'\n\&' + control_character)
+            text = text.replace(r'\n' + control_character, r'\n\&' + control_character)
         return text.replace('-', r'\-').replace("'", r"\'")
 
     @staticmethod
@@ -240,7 +239,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
 
 """
 
-    ############################ TBD: ################################
+    # ########################### TBD: ############################### #
 
     def strong(self, _node, entering):
         if entering:

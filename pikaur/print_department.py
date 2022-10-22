@@ -46,7 +46,7 @@ def print_version(pacman_version: str, pyalpm_version: str, quiet=False) -> None
      /--1             / :}
     /   |           / `-/
    |  ,  --------  /   /     Pikaur v""" + VERSION + r"""
-   |'                 Y      (C) 2018-""" + year  + """ Pikaur development team
+   |'                 Y      (C) 2018-""" + year  + r""" Pikaur development team
   /                   l      Licensed under GPLv3
   l  /       \        l
   j  ●   .   ●        l      """ + pacman_version + r"""

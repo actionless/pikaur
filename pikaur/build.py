@@ -663,6 +663,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         skip_pgp_check = False
         skip_file_checksums = False
         skip_check = False
+        no_prepare = False
         while True:
             cmd_args = MakePkgCommand.get() + makepkg_args
             if skip_pgp_check:
@@ -673,6 +674,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 cmd_args += ['--ignorearch']
             if skip_check:
                 cmd_args += ['--nocheck']
+            if no_prepare:
+                cmd_args += ['--noprepare']
 
             env = {}
             if self.build_gpgdir != '':
@@ -718,6 +721,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                         translate("[p] PGP check skip"),
                         translate("[c] checksums skip"),
                         translate("[f] skip 'check()' function of PKGBUILD"),
+                        translate("[n] skip 'prepare()' function of PKGBUILD"),
                         translate("[i] ignore architecture"),
                         translate("[d] delete build dir and try again"),
                         translate("[e] edit PKGBUILD"),
@@ -728,9 +732,16 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 )
                 answer = get_input(
                     prompt,
-                    translate('r').upper() + translate('p') + translate('c') +
-                    translate('f') + translate('i') + translate('d') +
-                    translate('e') + translate('s') + translate('a')
+                    translate('r').upper() +
+                    translate('p') +
+                    translate('c') +
+                    translate('f') +
+                    translate('n') +
+                    translate('i') +
+                    translate('d') +
+                    translate('e') +
+                    translate('s') +
+                    translate('a')
                 )
 
             answer = answer.lower()[0]
@@ -744,6 +755,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 continue
             if answer == translate("f"):  # pragma: no cover
                 skip_check = True
+                continue
+            if answer == translate("n"):  # pragma: no cover
+                no_prepare = True
                 continue
             if answer == translate("i"):  # pragma: no cover
                 self.skip_carch_check = True

@@ -391,15 +391,20 @@ class PackageDB(PackageDBCommon):
         return int(packages_by_date[0].installdate)
 
     @classmethod
-    def get_print_format_output(cls, cmd_args: List[str]) -> List[PacmanPrint]:
+    def get_print_format_output(
+            cls, cmd_args: List[str], check_deps=True, package_only=False
+    ) -> List[PacmanPrint]:
         cache_index = ' '.join(sorted(cmd_args))
         cached_pkg = cls._pacman_find_cache.get(cache_index)
         if cached_pkg is not None:
             return cached_pkg
         results: List[PacmanPrint] = []
-        proc = spawn(
-            cmd_args + ['--print-format', '%r/%n', '--nodeps']
-        )
+        final_args = cmd_args + ['--print-format', '%r/%n', ]
+        if not check_deps and not package_only:
+            final_args.append('--nodeps')
+        if package_only:
+            final_args += ['--nodeps', '--nodeps']
+        proc = spawn(final_args)
         if proc.returncode != 0:
             raise DependencyError(proc.stderr_text + proc.stdout_text)
         found_packages_output = proc.stdout_text
@@ -497,7 +502,8 @@ class PackageDB(PackageDBCommon):
         all_repo_pkgs = PackageDB.get_repo_dict()
         try:
             results = cls.get_print_format_output(
-                get_pacman_command() + ['--sync'] + pkg_name.split(',')
+                get_pacman_command() + ['--sync'] + pkg_name.split(','),
+                package_only=True
             )
         except DependencyError as exc:
             raise PackagesNotFoundInRepo(packages=[pkg_name]) from exc

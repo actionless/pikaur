@@ -16,13 +16,14 @@ from .pacman import (
 )
 from .aur import find_aur_packages, AURPackageInfo, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
-from .pprint import print_stdout, create_debug_logger
+from .pprint import print_stdout, print_stderr, create_debug_logger, print_error
 from .args import PikaurArgs, parse_args, reconstruct_args
 from .exceptions import DependencyVersionMismatch, DependencyError, SysExit
 from .print_department import print_ignored_package, print_not_found_packages
 from .updates import find_aur_updates, print_upgradeable
 from .replacements import find_replacements
 from .srcinfo import SrcInfo
+from .prompt import ask_to_continue
 
 
 _debug = create_debug_logger('install_info_fetcher')
@@ -220,7 +221,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
 
         self.mark_dependent()
 
-    def _get_repo_pkgs_info(
+    def _get_repo_pkgs_info(  # pylint: disable=too-many-statements,too-many-locals,too-many-branches
             self, pkg_lines: List[str], extra_args: Optional[List[str]] = None
     ) -> List[RepoInstallInfo]:
         if not pkg_lines:
@@ -272,6 +273,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             return install_infos
 
         try:
+            _debug(f"Checking if '{pkg_lines=}' is installable:")
             composed_result = PackageDB.get_print_format_output(
                 pacman_args + [
                     pkg
@@ -280,25 +282,54 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 ]
             )
         except DependencyError:
+            _debug("Check failed - gonna check it separately:")
             composed_result = []
         if composed_result:
+            _debug("Check passed - gonna get install infos:")
             return _get_pkg_install_infos(composed_result)
 
         all_results = {}
         with ThreadPool() as pool:
-            all_requests = {}
+            pkg_exists_requests = {}
             for pkg_name in pkg_lines[:]:
-                all_requests[pkg_name] = pool.apply_async(
+                _debug(f"Checking if '{pkg_name}' exists in the repo:")
+                pkg_exists_requests[pkg_name] = pool.apply_async(
+                    PackageDB.get_print_format_output,
+                    (pacman_args + pkg_name.split(','), False, True)
+                )
+            pool.close()
+            pool.join()
+            for pkg_name, request in pkg_exists_requests.items():
+                try:
+                    all_results[pkg_name] = request.get()
+                    _debug(f"  '{pkg_name}' is found in the repo.")
+                except DependencyError:
+                    all_results[pkg_name] = []
+                    _debug(f"  '{pkg_name}' is NOT found in the repo.")
+
+        with ThreadPool() as pool:
+            pkg_installable_requests = {}
+            for pkg_name, results in all_results.items():
+                if not results:
+                    continue
+                _debug(f"Checking if '{pkg_name}' is installable:")
+                pkg_installable_requests[pkg_name] = pool.apply_async(
                     PackageDB.get_print_format_output,
                     (pacman_args + pkg_name.split(','), )
                 )
             pool.close()
             pool.join()
-            for pkg_name, request in all_requests.items():
+            for pkg_name, request in pkg_installable_requests.items():
                 try:
-                    all_results[pkg_name] = request.get()
-                except DependencyError:
-                    all_results[pkg_name] = []
+                    request.get()
+                    _debug(f"  '{pkg_name}' is installable.")
+                except DependencyError as exc:
+                    print_error(f"'{pkg_name}' is NOT installable.")
+                    print_stderr(str(exc))
+                    if not ask_to_continue:
+                        raise SysExit(125) from exc
+
+        _debug("Check partially passed - gonna get install infos:")
         pkg_install_infos: List[RepoInstallInfo] = []
         for pkg_name, results in all_results.items():
             if not results:

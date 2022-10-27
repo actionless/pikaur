@@ -15,7 +15,7 @@ from .pacman_i18n import _p
 from .core import DataType, PackageSource
 from .version import VersionMatcher
 from .pprint import (
-    print_stderr, color_enabled, create_debug_logger,
+    print_stderr, color_enabled, create_debug_logger, print_error,
 )
 from .args import parse_args, reconstruct_args, PACMAN_STR_OPTS, PACMAN_APPEND_OPTS
 from .config import PikaurConfig
@@ -540,13 +540,17 @@ def find_upgradeable_packages() -> List[pyalpm.Package]:
         results = PackageDB.get_print_format_output(
             get_pacman_command() + ['--sync'] + pkg_names
         )
-    except DependencyError:
+    except DependencyError as exc:
+        print_error(translate("Dependencies can't be satisfied for the following packages:"))
+        print_stderr(' ' * 12 + ' '.join(pkg_names))
+        print_stderr(str(exc))
         for pkg_name in pkg_names:
             try:
                 results += PackageDB.get_print_format_output(
                     get_pacman_command() + ['--sync'] + [pkg_name, ]
                 )
             except DependencyError as exc2:
+                print_error(translate("Because of:"))
                 print_stderr(str(exc2))
     return [
         all_repo_pkgs[result.full_name] for result in results

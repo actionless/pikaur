@@ -65,9 +65,17 @@ class InstallInfoFetcher(ComparableType):
         self.pkgbuilds_packagelists = pkgbuilds_packagelists
         self.replacements = find_replacements() if self.args.sysupgrade else {}
 
-        if self.args.sysupgrade:
-            print_upgradeable(ignored_only=True)
         self.get_all_packages_info()
+        if self.args.sysupgrade:
+            # print ignored package updates:
+            print_upgradeable(
+                ignored_only=True,
+                install_infos=list(
+                    info
+                    for infos in self.all_install_info
+                    for info in infos
+                )
+            )
 
     def package_is_ignored(self, package_name: str) -> bool:
         ignored_pkg_names = get_ignored_pkgnames_from_patterns(

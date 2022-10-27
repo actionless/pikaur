@@ -156,14 +156,18 @@ def find_aur_updates() -> Tuple[List[AURInstallInfo], List[str]]:
     return aur_updates, not_found_aur_pkgs
 
 
-def print_upgradeable(ignored_only=False) -> None:
+def print_upgradeable(
+        ignored_only=False,
+        install_infos: Optional[List[InstallInfo]] = None
+) -> None:
     args = parse_args()
-    updates: List[InstallInfo] = []
-    if not args.repo:
-        aur_updates, _not_found_aur_pkgs = find_aur_updates()
-        updates += aur_updates
-    if not args.aur:
-        updates += find_repo_upgradeable()
+    updates: List[InstallInfo] = install_infos or []
+    if not install_infos:
+        if not args.repo:
+            aur_updates, _not_found_aur_pkgs = find_aur_updates()
+            updates += aur_updates
+        if not args.aur:
+            updates += find_repo_upgradeable()
     if not updates:
         return
     pkg_names = [pkg.name for pkg in updates]

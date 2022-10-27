@@ -28,7 +28,7 @@ from .srcinfo import SrcInfo
 _debug = create_debug_logger('install_info_fetcher')
 
 
-class InstallInfoFetcher(ComparableType):
+class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-methods
 
     repo_packages_install_info: List[RepoInstallInfo]
     new_repo_deps_install_info: List[RepoInstallInfo]
@@ -70,11 +70,7 @@ class InstallInfoFetcher(ComparableType):
             # print ignored package updates:
             print_upgradeable(
                 ignored_only=True,
-                install_infos=list(
-                    info
-                    for infos in self.all_install_info
-                    for info in infos
-                )
+                install_infos=self.all_install_info
             )
 
     def package_is_ignored(self, package_name: str) -> bool:
@@ -119,32 +115,57 @@ class InstallInfoFetcher(ComparableType):
         return list(set(_aur_deps_names))
 
     @property
-    def aur_install_info(self) -> Sequence[List[AURInstallInfo]]:
+    def aur_install_info_containers(self) -> Sequence[List[AURInstallInfo]]:
         return (
             self.aur_updates_install_info,
             self.aur_deps_install_info,
         )
 
     @property
-    def repo_install_info(self) -> Sequence[List[RepoInstallInfo]]:
+    def repo_install_info_containers(self) -> Sequence[List[RepoInstallInfo]]:
         return (
             self.repo_packages_install_info,
             self.new_repo_deps_install_info,
+            self.repo_replacements_install_info,
             self.thirdparty_repo_packages_install_info,
+            self.new_thirdparty_repo_deps_install_info,
+            self.thirdparty_repo_replacements_install_info,
         )
 
     @property
-    def all_install_info(self) -> Sequence[Union[List[RepoInstallInfo], List[AURInstallInfo]]]:
+    def all_install_info_containers(
+            self
+    ) -> Sequence[Union[List[RepoInstallInfo], List[AURInstallInfo]]]:
         return (
-            *self.repo_install_info,
-            *self.aur_install_info,
+            *self.repo_install_info_containers,
+            *self.aur_install_info_containers,
         )
+
+    @property
+    def repo_install_info(self) -> Sequence[RepoInstallInfo]:
+        return list(
+            info
+            for infos in self.repo_install_info_containers
+            for info in infos
+        )
+
+    @property
+    def aur_install_info(self) -> Sequence[AURInstallInfo]:
+        return list(
+            info
+            for infos in self.aur_install_info_containers
+            for info in infos
+        )
+
+    @property
+    def all_install_info(self) -> Sequence[Union[RepoInstallInfo, AURInstallInfo]]:
+        return list(self.repo_install_info) + list(self.aur_install_info)
 
     def discard_package(
             self, canceled_pkg_name: str, already_discarded: List[str] = None
     ) -> List[str]:
         _debug(f"discarding {canceled_pkg_name=}")
-        for container in self.all_install_info:
+        for container in self.all_install_info_containers:
             for info in container[:]:
                 if info.name == canceled_pkg_name:
                     container.remove(info)  # type: ignore[arg-type]
@@ -320,17 +341,7 @@ class InstallInfoFetcher(ComparableType):
                 self._get_repo_pkgs_info(pkg_lines=self.install_package_names) +
                 self.get_upgradeable_repo_pkgs_info()
         ):
-            if pkg_update.name in [
-                    install_info.name for install_info in
-                    (
-                        self.repo_packages_install_info +
-                        self.thirdparty_repo_packages_install_info +
-                        self.new_repo_deps_install_info +
-                        self.new_thirdparty_repo_deps_install_info +
-                        self.repo_replacements_install_info +
-                        self.thirdparty_repo_replacements_install_info
-                    )
-            ]:
+            if pkg_update.name in self.repo_install_info:
                 continue
 
             pkg_name = pkg_update.name
@@ -535,16 +546,6 @@ class InstallInfoFetcher(ComparableType):
 
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
         all_local_pkgnames = PackageDB.get_local_pkgnames()
-        all_install_infos: Sequence[InstallInfo] = (
-            self.repo_packages_install_info +
-            self.thirdparty_repo_packages_install_info +
-            self.new_repo_deps_install_info +
-            self.new_thirdparty_repo_deps_install_info +
-            self.aur_updates_install_info +
-            self.aur_deps_install_info +
-            self.repo_replacements_install_info +
-            self.thirdparty_repo_replacements_install_info  # type: ignore[operator]
-        )
         all_deps_install_infos: Sequence[InstallInfo] = (
             self.new_repo_deps_install_info +
             self.new_thirdparty_repo_deps_install_info +
@@ -556,12 +557,12 @@ class InstallInfoFetcher(ComparableType):
             ) if isinstance(ii.package, AURPackageInfo) else (
                 ii.package.depends
             )
-            for ii in all_install_infos
+            for ii in self.all_install_info
         ], [])
         explicit_aur_pkg_names = [ii.name for ii in self.aur_updates_install_info]
 
         # iterate each package metadata
-        for pkg_install_info in all_install_infos:
+        for pkg_install_info in self.all_install_info:
 
             # process providers
             provides = pkg_install_info.package.provides
@@ -628,12 +629,12 @@ class InstallInfoFetcher(ComparableType):
 
     def get_total_download_size(self) -> float:
         total_download_size = 0.0
-        for install_info in chain.from_iterable(self.repo_install_info):
+        for install_info in chain.from_iterable(self.repo_install_info_containers):
             total_download_size += install_info.package.size / 1024 ** 2
         return total_download_size
 
     def get_total_installed_size(self) -> float:
         total_installed_size = 0.0
-        for install_info in chain.from_iterable(self.repo_install_info):
+        for install_info in chain.from_iterable(self.repo_install_info_containers):
             total_installed_size += install_info.package.isize / 1024 ** 2
         return total_installed_size

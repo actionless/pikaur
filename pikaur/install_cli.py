@@ -290,12 +290,7 @@ class InstallPackagesCLI():
         if self.args.needed:
             # check if there are really any new packages need to be installed
             need_refetch_info = False
-            for install_info in (
-                    self.install_info.repo_packages_install_info +
-                    self.install_info.new_repo_deps_install_info +
-                    self.install_info.thirdparty_repo_packages_install_info +
-                    self.install_info.aur_updates_install_info
-            ):
+            for install_info in self.install_info.all_install_info:
                 if (
                         # devel packages will be checked later
                         # after retrieving their sources
@@ -319,13 +314,7 @@ class InstallPackagesCLI():
                 return
 
         # check if we really need to build/install anything
-        if not (
-                self.install_info.repo_packages_install_info or
-                self.install_info.new_repo_deps_install_info or
-                self.install_info.new_thirdparty_repo_deps_install_info or
-                self.install_info.thirdparty_repo_packages_install_info or
-                self.install_info.aur_updates_install_info
-        ):
+        if not self.install_info.all_install_info:
             if not self.args.aur and self.args.sysupgrade:
                 self.install_repo_packages()
             else:
@@ -459,8 +448,7 @@ class InstallPackagesCLI():
 
             aur_pkgs: List[AURPackageInfo] = [
                 info.package
-                for container in self.install_info.aur_install_info
-                for info in container
+                for info in self.install_info.aur_install_info
                 if info.name in pkgbuild.package_names
             ]
             aur_rpc_deps = set(
@@ -580,10 +568,7 @@ class InstallPackagesCLI():
             clone_names = []
             pkgbuilds_by_base: Dict[str, PackageBuild] = {}
             pkgbuilds_by_name = {}
-            for info in (
-                    self.install_info.aur_updates_install_info +
-                    self.install_info.aur_deps_install_info
-            ):
+            for info in self.install_info.aur_install_info:
                 if info.pkgbuild_path:
                     if not isinstance(info.package, AURPackageInfo):
                         raise TypeError()
@@ -620,8 +605,7 @@ class InstallPackagesCLI():
             print_stderr(translate('looking for conflicting AUR packages...'))
             self.found_conflicts.update(
                 find_aur_conflicts(
-                    self.install_info.aur_updates_install_info +
-                    self.install_info.aur_deps_install_info,
+                    self.install_info.aur_install_info,
                     self.install_package_names
                 )
             )

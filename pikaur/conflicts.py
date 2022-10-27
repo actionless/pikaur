@@ -1,6 +1,6 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
-from typing import List, Dict
+from typing import List, Dict, Sequence
 
 from .aur import AURPackageInfo
 from .aur_deps import find_repo_deps_of_aur_pkgs
@@ -117,7 +117,7 @@ def find_conflicting_with_local_pkgs(
 
 
 def find_aur_conflicts(
-        aur_pkgs_install_infos: List[AURInstallInfo],
+        aur_pkgs_install_infos: Sequence[AURInstallInfo],
         repo_packages_names: List[str]
 ) -> Dict[str, List[str]]:
     aur_pkgs: List[AURPackageInfo] = [ii.package for ii in aur_pkgs_install_infos]

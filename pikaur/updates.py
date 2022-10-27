@@ -1,7 +1,7 @@
 """ This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 from datetime import datetime
-from typing import List, Tuple, Optional, Union
+from typing import List, Tuple, Optional, Union, Sequence
 
 import pyalpm
 
@@ -158,10 +158,10 @@ def find_aur_updates() -> Tuple[List[AURInstallInfo], List[str]]:
 
 def print_upgradeable(
         ignored_only=False,
-        install_infos: Optional[List[InstallInfo]] = None
+        install_infos: Optional[Sequence[InstallInfo]] = None
 ) -> None:
     args = parse_args()
-    updates: List[InstallInfo] = install_infos or []
+    updates: List[InstallInfo] = list(install_infos) if install_infos else []
     if not install_infos:
         if not args.repo:
             aur_updates, _not_found_aur_pkgs = find_aur_updates()

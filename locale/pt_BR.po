@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 15:31+0200\n"
+"POT-Creation-Date: 2022-10-27 13:03+0200\n"
 "PO-Revision-Date: 2021-04-15 14:22-0300\n"
 "Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
 "Language-Team: \n"
@@ -33,7 +33,7 @@ msgstr[1] ""
 msgid "(ignored in Pacman config)"
 msgstr ""
 
-#: pikaur/print_department.py:231
+#: pikaur/print_department.py:232
 msgid "({} days old)"
 msgstr "({} dias de idade)"
 
@@ -51,7 +51,7 @@ msgstr ":: erro: as opções {} não podem ser usadas juntas."
 msgid "AUR Git URL"
 msgstr "URL do git AUR"
 
-#: pikaur/print_department.py:505
+#: pikaur/print_department.py:506
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "O pacote AUR será instalado:"
@@ -79,6 +79,10 @@ msgid ""
 msgstr ""
 "Todas as opções comuns do pacman como ao fazer `pacman -U <arquivo_pkg>`. "
 "Veja `pacman -Uh`."
+
+#: pikaur/pacman.py:553
+msgid "Because of:"
+msgstr ""
 
 #: pikaur/main.py:102
 msgid "Build directory"
@@ -151,6 +155,10 @@ msgstr "Não foi possível inicializar {}"
 msgid "Could not update {}"
 msgstr "Não foi possível atualizar {}"
 
+#: pikaur/pacman.py:544
+msgid "Dependencies can't be satisfied for the following packages:"
+msgstr ""
+
 #: pikaur/install_cli.py:262
 msgid "Dependencies missing for {}"
 msgstr "Dependências faltando para {}"
@@ -194,7 +202,7 @@ msgstr "Deseja ver os arquivos de compilação {diff} para o pacote {name}?"
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "Deseja {edit} {file} para o pacote {name}?"
 
-#: pikaur/print_department.py:628
+#: pikaur/print_department.py:629
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr "Desatualizando o pacote AUR {name} {version} para {downgrade_version}"
@@ -218,13 +226,13 @@ msgstr ""
 msgid "First Submitted"
 msgstr "Enviado pela primeira vez"
 
-#: pikaur/print_department.py:69
+#: pikaur/print_department.py:70
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
 msgstr[0] "O seguinte pacote não pode ser encontrado no AUR:"
 msgstr[1] "Os seguintes pacotes não podem ser encontrados no AUR:"
 
-#: pikaur/print_department.py:63
+#: pikaur/print_department.py:64
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
 msgstr[0] "O pacote a seguir não pode ser encontrado nos repositórios:"
@@ -234,11 +242,11 @@ msgstr[1] "Os pacotes a seguir não podem ser encontrados nos repositórios:"
 msgid "Groups"
 msgstr "Grupos"
 
-#: pikaur/print_department.py:579
+#: pikaur/print_department.py:580
 msgid "Ignoring package update {}"
 msgstr "Ignorando atualização do pacote {}"
 
-#: pikaur/print_department.py:585
+#: pikaur/print_department.py:586
 msgid "Ignoring package {}"
 msgstr "Ignorando o pacote {}"
 
@@ -291,19 +299,19 @@ msgstr "Nome"
 msgid "New build deps found for {pkg} package: {deps}"
 msgstr "Nova dependência de compilação encontrada para o pacote {pkg}: {deps}"
 
-#: pikaur/print_department.py:518
+#: pikaur/print_department.py:519
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "Nova dependência será instalada a partir do AUR:"
 msgstr[1] "Novas dependências serão instaladas a partir do AUR:"
 
-#: pikaur/print_department.py:464
+#: pikaur/print_department.py:465
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "Nova dependência será instalada a partir do repositório:"
 msgstr[1] "Novas dependências serão instaladas a partir do repositório:"
 
-#: pikaur/print_department.py:491
+#: pikaur/print_department.py:492
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] ""
@@ -414,13 +422,13 @@ msgstr "Removendo dependências já instaladas para {}"
 msgid "Replaces"
 msgstr "Substitui"
 
-#: pikaur/print_department.py:429
+#: pikaur/print_department.py:430
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "Pacote do repositório sugerido como um substituto:"
 msgstr[1] "Pacotes do repositório sugerido como um substituto:"
 
-#: pikaur/print_department.py:453
+#: pikaur/print_department.py:454
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "O pacote do repositório será instalado:"
@@ -467,23 +475,23 @@ msgstr "O feed de notícias não pôde ser recebido ou analisado."
 msgid "There is news from archlinux.org!"
 msgstr "Há notícias do archlinux.org!"
 
-#: pikaur/print_department.py:440
+#: pikaur/print_department.py:441
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "Pacote de repositório de terceiros sugerido como um substituto:"
 msgstr[1] "Pacotes de repositório de terceiros sugerido como um substituto:"
 
-#: pikaur/print_department.py:478
+#: pikaur/print_department.py:479
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "O pacote de repositório de terceiros será instalado:"
 msgstr[1] "Os pacotes de repositório de terceiros será instalado:"
 
-#: pikaur/print_department.py:532
+#: pikaur/print_department.py:533
 msgid "Total Download Size:"
 msgstr ""
 
-#: pikaur/print_department.py:535
+#: pikaur/print_department.py:536
 msgid "Total Installed Size:"
 msgstr ""
 
@@ -512,7 +520,7 @@ msgstr "Incompatibilidade de versão:"
 msgid "Votes"
 msgstr "Votos"
 
-#: pikaur/print_department.py:415
+#: pikaur/print_department.py:416
 msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
 msgstr[0] ""
@@ -558,12 +566,12 @@ msgstr ""
 msgid "[i] ignore architecture"
 msgstr "[i] ignorar arquitetura"
 
-#: pikaur/print_department.py:729
+#: pikaur/print_department.py:730
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[instalado: {version}]"
 
-#: pikaur/print_department.py:736
+#: pikaur/print_department.py:737
 msgid "[installed]"
 msgstr "[instalado]"
 
@@ -681,7 +689,7 @@ msgid "failed to retrieve latest dev sources:"
 msgstr "falha ao recuperar as fontes de dev mais recentes:"
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:178 pikaur/print_department.py:185
+#: pikaur/print_department.py:179 pikaur/print_department.py:186
 #, python-brace-format
 msgid "for {pkg}"
 msgstr "para {pkg}"
@@ -742,7 +750,7 @@ msgid "one of the arguments %s is required"
 msgstr "um dos argumentos %s é obrigatório"
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:248 pikaur/print_department.py:761
+#: pikaur/print_department.py:249 pikaur/print_department.py:762
 msgid "outofdate"
 msgstr "obsoleto"
 
@@ -858,19 +866,19 @@ msgid "y"
 msgstr "s"
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:200 pikaur/print_department.py:206
+#: pikaur/print_department.py:201 pikaur/print_department.py:207
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
 msgstr[0] "grupo {grp}"
 msgstr[1] "grupos {grp}"
 
-#: pikaur/print_department.py:638
+#: pikaur/print_department.py:639
 #, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr "pacote AUR {name} {version} marcado como 'obsoleto' - pulando"
 
-#: pikaur/print_department.py:617
+#: pikaur/print_department.py:618
 #, python-brace-format
 msgid ""
 "{name} {version} local package is newer than in AUR ({aur_version}) - "
@@ -879,7 +887,7 @@ msgstr ""
 "o pacote local {name} {version} é mais recente do que no AUR ({aur_version}) "
 "- pulando"
 
-#: pikaur/print_department.py:606
+#: pikaur/print_department.py:607
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "pacote {name} {version} {package_source} está atualizado - pulando"

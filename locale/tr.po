@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 15:31+0200\n"
+"POT-Creation-Date: 2022-10-27 13:03+0200\n"
 "PO-Revision-Date: 2022-02-03 09:49+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -31,7 +31,7 @@ msgstr[1] "'{packages}' paketleri depoda mevcut ama kurulamadı"
 msgid "(ignored in Pacman config)"
 msgstr ""
 
-#: pikaur/print_department.py:231
+#: pikaur/print_department.py:232
 msgid "({} days old)"
 msgstr "({} gün eski)"
 
@@ -49,7 +49,7 @@ msgstr ":: hata: {} seçenekleri birlikte kullanılamaz."
 msgid "AUR Git URL"
 msgstr "AUR Git URL"
 
-#: pikaur/print_department.py:505
+#: pikaur/print_department.py:506
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "AUR paketi kurulacak:"
@@ -77,6 +77,10 @@ msgid ""
 msgstr ""
 "`pacman -U <paket>` ile ilgili tüm ortak pacman seçenekleri. `pacman -Uh` "
 "bakın."
+
+#: pikaur/pacman.py:553
+msgid "Because of:"
+msgstr ""
 
 #: pikaur/main.py:102
 msgid "Build directory"
@@ -149,6 +153,10 @@ msgstr "{} başlatılamadı"
 msgid "Could not update {}"
 msgstr "{} güncellemedi"
 
+#: pikaur/pacman.py:544
+msgid "Dependencies can't be satisfied for the following packages:"
+msgstr ""
+
 #: pikaur/install_cli.py:262
 msgid "Dependencies missing for {}"
 msgstr "{} için bağımlılıklar eksik"
@@ -192,7 +200,7 @@ msgstr "{name} paketi için inşa dosyaları {diff}ını görmek ister misiniz?"
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "{name} paketi için {file} {edit}yi ister misiniz?"
 
-#: pikaur/print_department.py:628
+#: pikaur/print_department.py:629
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr ""
@@ -217,13 +225,13 @@ msgstr "Kurulan bağımlılıklar silinemedi, paketler tutarsız: {}"
 msgid "First Submitted"
 msgstr "İlk Gönderim"
 
-#: pikaur/print_department.py:69
+#: pikaur/print_department.py:70
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
 msgstr[0] "Takip eden paket AUR'da bulunamadı:"
 msgstr[1] "Takip eden paketler AUR'da bulunamadı:"
 
-#: pikaur/print_department.py:63
+#: pikaur/print_department.py:64
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
 msgstr[0] "Takip eden paket depolarda bulunamadı:"
@@ -233,11 +241,11 @@ msgstr[1] "Takip eden paketler depolarda bulunamadı:"
 msgid "Groups"
 msgstr "Gruplar"
 
-#: pikaur/print_department.py:579
+#: pikaur/print_department.py:580
 msgid "Ignoring package update {}"
 msgstr "Paket güncellemesi gözardı ediliyor {}"
 
-#: pikaur/print_department.py:585
+#: pikaur/print_department.py:586
 msgid "Ignoring package {}"
 msgstr "Paket gözardı ediliyor {}"
 
@@ -289,19 +297,19 @@ msgstr "İsim"
 msgid "New build deps found for {pkg} package: {deps}"
 msgstr "{pkg} için yeni inşa bağımlılıkları bulundu: {deps}"
 
-#: pikaur/print_department.py:518
+#: pikaur/print_department.py:519
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "Yeni bağlılık AUR'dan kurulacak:"
 msgstr[1] "Yeni bağlılıklar AUR'dan kurulacak:"
 
-#: pikaur/print_department.py:464
+#: pikaur/print_department.py:465
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "Yeni bağlılık depodan kurulacak:"
 msgstr[1] "Yeni bağlılıklar depodan kurulacak:"
 
-#: pikaur/print_department.py:491
+#: pikaur/print_department.py:492
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "Yeni bağlılık üçüncü parti depodan kurulacak:"
@@ -410,13 +418,13 @@ msgstr "{} için şimdi kurulan depo bağımlılıkları siliniyor"
 msgid "Replaces"
 msgstr "Yer değiştirecek"
 
-#: pikaur/print_department.py:429
+#: pikaur/print_department.py:430
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "Depo paketi yer değiştirilmesi önerisi:"
 msgstr[1] "Depo paketleri yer değiştirilmesi önerisi:"
 
-#: pikaur/print_department.py:453
+#: pikaur/print_department.py:454
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "Depo paketi kurulacak:"
@@ -463,23 +471,23 @@ msgstr "Haber beslemeleri alınamadı veya ayrıştırılamadı."
 msgid "There is news from archlinux.org!"
 msgstr "Archlinux.org'dan haber var!"
 
-#: pikaur/print_department.py:440
+#: pikaur/print_department.py:441
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "Üçüncü-parti depo paketi yer değiştirilmesi önerisi:"
 msgstr[1] "Üçüncü-parti depo paketleri yer değiştirilmesi önerisi:"
 
-#: pikaur/print_department.py:478
+#: pikaur/print_department.py:479
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Üçüncü-parti depo paketi kurulacak:"
 msgstr[1] "Üçüncü-parti depo paketleri kurulacak:"
 
-#: pikaur/print_department.py:532
+#: pikaur/print_department.py:533
 msgid "Total Download Size:"
 msgstr ""
 
-#: pikaur/print_department.py:535
+#: pikaur/print_department.py:536
 msgid "Total Installed Size:"
 msgstr ""
 
@@ -508,7 +516,7 @@ msgstr "Sürüm uyumsuzluğu:"
 msgid "Votes"
 msgstr "Oylar"
 
-#: pikaur/print_department.py:415
+#: pikaur/print_department.py:416
 msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
 msgstr[0] ""
@@ -554,12 +562,12 @@ msgstr "[f] PKGBUILD'deki 'check()' fonksiyonunu atla"
 msgid "[i] ignore architecture"
 msgstr "[m] mimariyi dışla"
 
-#: pikaur/print_department.py:729
+#: pikaur/print_department.py:730
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[kurulu: {version}]"
 
-#: pikaur/print_department.py:736
+#: pikaur/print_department.py:737
 msgid "[installed]"
 msgstr "[kurulu]"
 
@@ -677,7 +685,7 @@ msgid "failed to retrieve latest dev sources:"
 msgstr "son geliştirme kaynakları alınamadı:"
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:178 pikaur/print_department.py:185
+#: pikaur/print_department.py:179 pikaur/print_department.py:186
 #, python-brace-format
 msgid "for {pkg}"
 msgstr "{pkg} için"
@@ -738,7 +746,7 @@ msgid "one of the arguments %s is required"
 msgstr "argümanlardan biri %s gerekli"
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:248 pikaur/print_department.py:761
+#: pikaur/print_department.py:249 pikaur/print_department.py:762
 msgid "outofdate"
 msgstr "eski"
 
@@ -854,19 +862,19 @@ msgid "y"
 msgstr "e"
 
 #. pylint: disable=consider-using-f-string
-#: pikaur/print_department.py:200 pikaur/print_department.py:206
+#: pikaur/print_department.py:201 pikaur/print_department.py:207
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
 msgstr[0] "{grp} grup"
 msgstr[1] "{grp} gruplar"
 
-#: pikaur/print_department.py:638
+#: pikaur/print_department.py:639
 #, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr "{name} {version} AUR paketi eski olarak işaretlenmiş - atlanıyor"
 
-#: pikaur/print_department.py:617
+#: pikaur/print_department.py:618
 #, python-brace-format
 msgid ""
 "{name} {version} local package is newer than in AUR ({aur_version}) - "
@@ -874,7 +882,7 @@ msgid ""
 msgstr ""
 "{name} {version} paketi AUR ({aur_version}) paketinden güncel - atlanıyor"
 
-#: pikaur/print_department.py:606
+#: pikaur/print_department.py:607
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "{name} {version} {package_source} paketi güncel - atlanıyor"

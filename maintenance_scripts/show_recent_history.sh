@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 
-filter="cat"
+style="default"
 if [[ "${1:-}" = '-c' ]] ; then
-	echo "Notable changes:"
-	filter="grep -v -i -E \
-		-e (typing|typehint|coverage|github|docker|vulture|maintenance_scripts) \
-		-e actionless\s[^[:print:]]\[m(doc|chore|test|style|Revert|Merge|refactor)\
-		-e [^[:print:]]\[31m[[:print:]]+[^[:print:]]\[m
-	"
+	style="compact"
 	shift
 fi
 
@@ -18,9 +13,16 @@ result=$(git log \
 	"$(git tag | grep -v gtk | sort -V | tail -n1)"~1.. \
 	"$@" \
 )
-echo "$result" | $filter
-if [[ "${filter}" != "cat" ]] ; then
+if [[ "${style}" = "compact" ]] ; then
+	echo "Notable changes:"
+	echo "$result" | grep -v -i -E \
+		-e "(typing|typehint|coverage|github|docker|vulture|maintenance_scripts)" \
+		-e "actionless\s[^[:print:]]\[m(doc|chore|test|style|Revert|Merge|refactor)" \
+	| sed \
+		-E "s/[^[:print:]]\[31m[[:print:]]+[^[:print:]]\[m//g"
 	echo
 	echo "Previous release:"
 	echo "$result" | tail -n1
+else
+	echo "$result"
 fi

@@ -124,7 +124,7 @@ class InstallTest(PikaurDbTestCase):
             for command in commands:
                 spawn(command, env=env)
 
-            pikaur(f'--build-gpgdir {tmpdirname} -S {pkg_name}')
+            fake_pikaur(f'--build-gpgdir {tmpdirname} -S {pkg_name}')
             self.assertInstalled(pkg_name)
 
         # Cleanup to ensure no impact on other tests

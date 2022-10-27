@@ -234,7 +234,7 @@ class InstallPackagesCLI():
         else:
             raise SysExit(125)
 
-    def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches
+    def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches,too-many-statements
         """
         Retrieve info (`InstallInfo` objects) of packages
         which are going to be installed/upgraded and their dependencies
@@ -290,38 +290,59 @@ class InstallPackagesCLI():
         if self.args.needed:
             # check if there are really any new packages need to be installed
             need_refetch_info = False
+            _debug("checking for --needed")
+            _debug("before:")
+            _debug(f"{self.install_info.all_install_info_containers=}")
             for install_info in self.install_info.all_install_info:
+                pkg_name = install_info.name
                 if (
-                        # devel packages will be checked later
-                        # after retrieving their sources
-                        is_devel_pkg(install_info.name) and
+                        is_devel_pkg(pkg_name) and
                         (install_info in self.install_info.aur_updates_install_info)
-                ) or (
+                ):
+                    _debug(
+                        f"'{pkg_name}' is devel - check it later after retrieving the sources"
+                    )
+                    continue
+                if (
                     not install_info.current_version
-                ) or compare_versions(
+                ):
+                    _debug(
+                        f"'{pkg_name}' is not installed"
+                    )
+                    continue
+                if compare_versions(
                     install_info.current_version,
                     install_info.new_version
-                ) or (
-                    # package installed via Provides, not by its real name
-                    install_info.name not in self.install_package_names
                 ):
+                    _debug(
+                        f"'{pkg_name}' is need upgrade"
+                    )
                     continue
-                print_package_uptodate(install_info.name, install_info.package_source)
-                self.discard_install_info(install_info.name)
+                if (
+                    pkg_name not in self.install_package_names
+                ):
+                    _debug(
+                        f"'{pkg_name}' package installed via Provides, not by its real name"
+                    )
+                    continue
+                print_package_uptodate(pkg_name, install_info.package_source)
+                self.discard_install_info(pkg_name)
                 need_refetch_info = True
             if need_refetch_info:
                 self.get_all_packages_info()
                 return
+            _debug("after:")
 
+        _debug(f"{self.install_info.all_install_info_containers=}")
         # check if we really need to build/install anything
         if not self.install_info.all_install_info:
             if not self.args.aur and self.args.sysupgrade:
                 self.install_repo_packages()
             else:
-                print_stdout('{} {}'.format(  # pylint: disable=consider-using-f-string
+                print_stdout(' '.join((
                     color_line('::', ColorsHighlight.green),
                     translate("Nothing to do."),
-                ))
+                )))
             raise SysExit(0)
 
     def _ignore_package(self, pkg_name: str) -> None:

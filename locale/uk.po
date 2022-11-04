@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-27 13:15+0200\n"
+"POT-Creation-Date: 2022-11-04 16:46+0100\n"
 "PO-Revision-Date: 2019-09-21 19:36+0200\n"
 "Last-Translator: Drommer <drommer@github.com>\n"
 "Language-Team: Ukrainian <email@example.com>\n"
@@ -29,7 +29,7 @@ msgstr[0] ""
 msgstr[1] ""
 "'Пакети {packages} доступні в репозиторіях, але не можуть бути встановлені"
 
-#: pikaur/updates.py:184
+#: pikaur/updates.py:188
 msgid "(ignored in Pacman config)"
 msgstr ""
 
@@ -80,7 +80,7 @@ msgstr ""
 "Всі стандартні параметри pacman відповідають виконанню `pacman -U "
 "<pkg_file>`.Дивіться `pacman -Uh`."
 
-#: pikaur/pacman.py:553
+#: pikaur/pacman.py:559
 msgid "Because of:"
 msgstr ""
 
@@ -88,12 +88,12 @@ msgstr ""
 msgid "Build directory"
 msgstr "Каталог для збирання"
 
-#: pikaur/install_cli.py:899
+#: pikaur/install_cli.py:904
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "Неможливо зібрати '{name}'."
 
-#: pikaur/install_cli.py:531
+#: pikaur/install_cli.py:540
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
 msgstr "Неможливо клонувати пакет '{name}' з AUR за адресою '{path}':"
@@ -117,7 +117,7 @@ msgstr "Неможливо отримати назву пакета з PKGBUILD"
 msgid "Can't lock {lock_file}: {reason}"
 msgstr "Неможливо заблокувати {lock_file}: {reason}"
 
-#: pikaur/install_cli.py:533
+#: pikaur/install_cli.py:542
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "Неможливо отримати '{name}' за адресою '{path}' з AUR:"
@@ -155,7 +155,7 @@ msgstr "Не вдалося ініціалізувати {}"
 msgid "Could not update {}"
 msgstr "Не вдалося оновити {}"
 
-#: pikaur/pacman.py:544
+#: pikaur/pacman.py:550
 msgid "Dependencies can't be satisfied for the following packages:"
 msgstr ""
 
@@ -163,7 +163,7 @@ msgstr ""
 msgid "Dependencies missing for {}"
 msgstr "Відсутня залежність для {}"
 
-#: pikaur/install_cli.py:921
+#: pikaur/install_cli.py:926
 msgid "Dependency cycle detected between {}"
 msgstr "Виявлено циклічну залежність між {}"
 
@@ -187,17 +187,17 @@ msgstr "Продовжити?"
 msgid "Do you want to remove all files?"
 msgstr "Ви дійсно хочете видалити всі файли?"
 
-#: pikaur/urllib.py:34 pikaur/urllib.py:56 pikaur/prompt.py:199
-#: pikaur/filelock.py:31
+#: pikaur/filelock.py:31 pikaur/urllib.py:34 pikaur/urllib.py:56
+#: pikaur/prompt.py:199
 msgid "Do you want to retry?"
 msgstr "Спробувати знову?"
 
-#: pikaur/install_cli.py:767
+#: pikaur/install_cli.py:772
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "Хочете переглянути {diff} файлів збирання для пакета {name}?"
 
-#: pikaur/install_cli.py:670
+#: pikaur/install_cli.py:675
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "Хочете {edit} {file} для пакета {name}?"
@@ -214,7 +214,7 @@ msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Завантаження вихідного коду для пакета {}"
 msgstr[1] "Завантаження вихідного коду для пакетів {}"
 
-#: pikaur/install_cli.py:1086
+#: pikaur/install_cli.py:1091
 msgid "Failed to build following packages:"
 msgstr "Не вдалося зібрати дані пакети:"
 
@@ -250,7 +250,7 @@ msgstr "Пропуск оновлення пакета {}"
 msgid "Ignoring package {}"
 msgstr "Пропуск пакета {}"
 
-#: pikaur/install_cli.py:845 pikaur/install_cli.py:861
+#: pikaur/install_cli.py:850 pikaur/install_cli.py:866
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
 msgstr ""
@@ -293,7 +293,7 @@ msgstr "Перенесення конфігурації [{}]{} до [{}]{} = \"{
 msgid "Name"
 msgstr "Назва"
 
-#: pikaur/install_cli.py:496
+#: pikaur/install_cli.py:505
 #, fuzzy, python-brace-format
 msgid "New build deps found for {pkg} package: {deps}"
 msgstr "Нові залежності для збирання пакета {pkg}: {deps}"
@@ -316,7 +316,7 @@ msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "Буде встановлено нову залежність зі стороннього репозиторію:"
 msgstr[1] "Будуть встановлені нові залежності зі сторонніх репозиторіїв:"
 
-#: pikaur/install_cli.py:635
+#: pikaur/install_cli.py:640
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "Нові пакети '{new}' та '{other}' конфліктують."
@@ -325,12 +325,12 @@ msgstr "Нові пакети '{new}' та '{other}' конфліктують."
 msgid "None"
 msgstr "Не задано"
 
-#: pikaur/install_cli.py:745
+#: pikaur/install_cli.py:750
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
 msgstr "Розходження для пакета {pkg} не відображені ({reason})"
 
-#: pikaur/install_cli.py:334
+#: pikaur/install_cli.py:344
 msgid "Nothing to do."
 msgstr "Нема чого робити."
 
@@ -388,7 +388,7 @@ msgstr ""
 msgid "Popularity"
 msgstr "Популярність"
 
-#: pikaur/install_cli.py:400
+#: pikaur/install_cli.py:410
 msgid "Proceed with installation? [Y/n] "
 msgstr "Почати встановлення? [Y/n]"
 
@@ -430,11 +430,11 @@ msgid_plural "Repository packages will be installed:"
 msgstr[0] "Буде встановлено пакет з офіційного репозиторію:"
 msgstr[1] "Будуть встановлені пакети з офіційних репозиторіїв:"
 
-#: pikaur/install_info_fetcher.py:488
+#: pikaur/install_info_fetcher.py:538
 msgid "Resolving AUR dependencies..."
 msgstr "Вирішення залежностей AUR..."
 
-#: pikaur/install_cli.py:968
+#: pikaur/install_cli.py:973
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "Вивертання транзакції {target}..."
@@ -444,12 +444,12 @@ msgstr "Вивертання транзакції {target}..."
 msgid "Searching... [{bar}]"
 msgstr "Пошук... [{bar}]"
 
-#: pikaur/install_cli.py:662
+#: pikaur/install_cli.py:667
 #, python-brace-format
 msgid "Skipping review of {file} for {name} package ({flag})"
 msgstr "Пропускати перегляд {file} для пакета {name} ({flag})"
 
-#: pikaur/install_cli.py:503
+#: pikaur/install_cli.py:512
 #, fuzzy, python-brace-format
 msgid "Some build deps removed for {pkg} package: {deps}"
 msgstr "Деякі залежності для збирання пакета {pkg} були видалені: {deps}"
@@ -495,7 +495,7 @@ msgstr ""
 msgid "Try recovering {pkg_name}?"
 msgstr "Спробувати відновити {pkg_name}?"
 
-#: pikaur/install_cli.py:548 pikaur/build.py:718
+#: pikaur/build.py:718 pikaur/install_cli.py:557
 msgid "Try recovering?"
 msgstr "Спробувати відновити?"
 
@@ -521,7 +521,7 @@ msgid_plural "WARNING about packages installation:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/install_cli.py:212 pikaur/install_cli.py:554
+#: pikaur/install_cli.py:212 pikaur/install_cli.py:563
 #, fuzzy
 msgid "[A] abort"
 msgstr "[A] скасувати"
@@ -542,7 +542,7 @@ msgstr "[a] скасувати збирання всіх пакетів"
 msgid "[c] checksums skip"
 msgstr "[c] пропустити перевірку цілісності (контрольних сум)"
 
-#: pikaur/install_cli.py:549
+#: pikaur/install_cli.py:558
 msgid "[c] git checkout -- '*'"
 msgstr "[c] скасувати зміни (git checkout -- '*')"
 
@@ -550,7 +550,7 @@ msgstr "[c] скасувати зміни (git checkout -- '*')"
 msgid "[d] delete build dir and try again"
 msgstr "[d] видалити каталог збирання та спробувати знову"
 
-#: pikaur/install_cli.py:210 pikaur/build.py:727
+#: pikaur/build.py:727 pikaur/install_cli.py:210
 msgid "[e] edit PKGBUILD"
 msgstr "[e] редагувати PKGBUILD"
 
@@ -580,14 +580,14 @@ msgstr "[f] пропустити функцію 'check()' у PKGBUILD"
 msgid "[p] PGP check skip"
 msgstr "[p] пропустити перевірку PGP-підпису"
 
-#: pikaur/install_cli.py:552
+#: pikaur/install_cli.py:561
 msgid "[p] git stash && ... && git stash pop"
 msgstr ""
 "[p] відкласти та застосувати відстрочені зміни (git stash && ... && git "
 "stash pop)"
 
 #. translate("[c] git checkout -- '*' ; git clean -f -d -x"),
-#: pikaur/install_cli.py:551
+#: pikaur/install_cli.py:560
 msgid "[r] remove dir and clone again"
 msgstr "[r] видалити каталог та клонувати заново"
 
@@ -595,21 +595,21 @@ msgstr "[r] видалити каталог та клонувати заново
 msgid "[s] skip building this package"
 msgstr "[s] пропустити збирання цього пакета"
 
-#: pikaur/install_cli.py:211 pikaur/install_cli.py:553
+#: pikaur/install_cli.py:211 pikaur/install_cli.py:562
 msgid "[s] skip this package"
 msgstr "[s] пропустити цей пакет"
 
-#: pikaur/install_cli.py:402
+#: pikaur/install_cli.py:412
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v] переглянути опис пакетів   [m] вибрати пакети вручну"
 
-#: pikaur/install_cli.py:214 pikaur/install_cli.py:543
-#: pikaur/install_cli.py:559 pikaur/build.py:714 pikaur/build.py:744
-#: pikaur/build.py:781
+#: pikaur/build.py:714 pikaur/build.py:744 pikaur/build.py:781
+#: pikaur/install_cli.py:214 pikaur/install_cli.py:552
+#: pikaur/install_cli.py:568
 msgid "a"
 msgstr ""
 
-#: pikaur/install_cli.py:752 pikaur/install_cli.py:808
+#: pikaur/install_cli.py:757 pikaur/install_cli.py:813
 msgid "already reviewed"
 msgstr "вже перевірено"
 
@@ -625,8 +625,8 @@ msgstr "завжди перезбирати пакети з AUR"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "завжди оновлювати пакети з '-git', '-svn' та інші нестабільні пакети"
 
-#: pikaur/install_cli.py:559 pikaur/install_cli.py:563 pikaur/build.py:737
-#: pikaur/build.py:753
+#: pikaur/build.py:737 pikaur/build.py:753 pikaur/install_cli.py:568
+#: pikaur/install_cli.py:572
 msgid "c"
 msgstr ""
 
@@ -642,7 +642,7 @@ msgstr ""
 msgid "debug:"
 msgstr "відлагодження:"
 
-#: pikaur/install_cli.py:769
+#: pikaur/install_cli.py:774
 msgid "diff"
 msgstr "відмінності"
 
@@ -662,12 +662,12 @@ msgstr "не видаляти каталог збирання після зав�
 msgid "download also AUR dependencies"
 msgstr "завантажити також залежності з AUR"
 
-#: pikaur/install_cli.py:214 pikaur/install_cli.py:217 pikaur/build.py:742
-#: pikaur/build.py:768
+#: pikaur/build.py:742 pikaur/build.py:768 pikaur/install_cli.py:214
+#: pikaur/install_cli.py:217
 msgid "e"
 msgstr ""
 
-#: pikaur/install_cli.py:671
+#: pikaur/install_cli.py:676
 msgid "edit"
 msgstr "відредагувати"
 
@@ -714,7 +714,7 @@ msgstr "явно вказаний аргумент %r ігнорується"
 msgid "install built package"
 msgstr "встановити зібраний пакет"
 
-#: pikaur/install_cli.py:803
+#: pikaur/install_cli.py:808
 msgid "installing for the first time"
 msgstr "встановлюється вперше"
 
@@ -726,16 +726,16 @@ msgstr "невірний номер: {}"
 msgid "invalid value: {} is not between {} and {}"
 msgstr "невірне значення: {} має бути між {} і {}"
 
-#: pikaur/install_cli.py:620
+#: pikaur/install_cli.py:626
 msgid "looking for conflicting AUR packages..."
 msgstr "пошук конфліктуючих пакетів з AUR..."
 
-#: pikaur/install_cli.py:406 pikaur/install_cli.py:425
+#: pikaur/install_cli.py:416 pikaur/install_cli.py:435
 msgid "m"
 msgstr ""
 
-#: pikaur/install_cli.py:406 pikaur/build.py:739 pikaur/build.py:759
-#: pikaur/prompt.py:22 pikaur/main.py:158
+#: pikaur/build.py:739 pikaur/build.py:759 pikaur/main.py:158
+#: pikaur/prompt.py:22 pikaur/install_cli.py:416
 msgid "n"
 msgstr ""
 
@@ -764,7 +764,7 @@ msgstr "застарілий"
 msgid "override path to makepkg executable"
 msgstr "перевизначити шлях до виконуваного файлу makepkg"
 
-#: pikaur/install_cli.py:565 pikaur/build.py:736 pikaur/build.py:750
+#: pikaur/build.py:736 pikaur/build.py:750 pikaur/install_cli.py:574
 msgid "p"
 msgstr ""
 
@@ -824,14 +824,14 @@ msgstr "шукати пакети лише в AUR"
 msgid "query packages from repository only"
 msgstr "шукати пакети лише в репозиторіях"
 
-#: pikaur/install_cli.py:559 pikaur/install_cli.py:568 pikaur/build.py:735
-#: pikaur/build.py:748
+#: pikaur/build.py:735 pikaur/build.py:748 pikaur/install_cli.py:568
+#: pikaur/install_cli.py:577
 msgid "r"
 msgstr ""
 
-#: pikaur/install_cli.py:214 pikaur/install_cli.py:232
-#: pikaur/install_cli.py:559 pikaur/install_cli.py:570 pikaur/build.py:712
-#: pikaur/build.py:743
+#: pikaur/build.py:712 pikaur/build.py:743 pikaur/install_cli.py:214
+#: pikaur/install_cli.py:232 pikaur/install_cli.py:568
+#: pikaur/install_cli.py:579
 msgid "s"
 msgstr ""
 
@@ -860,7 +860,7 @@ msgstr "використання: pikaur {-G --getpkgbuild} [параметри]
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "використання: pikaur {-P --pkgbuild} [параметри] <файл(и)>"
 
-#: pikaur/install_cli.py:406 pikaur/install_cli.py:422
+#: pikaur/install_cli.py:416 pikaur/install_cli.py:432
 msgid "v"
 msgstr ""
 
@@ -868,7 +868,7 @@ msgstr ""
 msgid "warning:"
 msgstr "попередження:"
 
-#: pikaur/install_cli.py:406 pikaur/install_cli.py:420 pikaur/prompt.py:21
+#: pikaur/prompt.py:21 pikaur/install_cli.py:416 pikaur/install_cli.py:430
 msgid "y"
 msgstr ""
 
@@ -899,12 +899,12 @@ msgstr ""
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "Пакет {name} {version} {package_source} не застарів - пропускається"
 
-#: pikaur/install_cli.py:644
+#: pikaur/install_cli.py:649
 #, python-brace-format
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} та {installed} конфліктують. Видалити {installed}?"
 
-#: pikaur/install_info_fetcher.py:466
+#: pikaur/install_info_fetcher.py:516
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} вже додано до списку"

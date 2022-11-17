@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This file is licensed under GPLv3, see https://www.gnu.org/licenses/
+# Licensed under GPLv3, see https://www.gnu.org/licenses/
 
 if [[ ! "$(grep pikaur_fake_makepkg_package PKGBUILD)" ]]  && [[ ! "$(grep pikaur_fake_makepkg_prepare PKGBUILD)" ]] ; then
 	for line in $(grep "^prepare_.\+()" PKGBUILD -o) ; do

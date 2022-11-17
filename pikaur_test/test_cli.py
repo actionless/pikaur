@@ -1,4 +1,4 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
 
 from pikaur_test.helpers import PikaurTestCase, pikaur, pacman
 

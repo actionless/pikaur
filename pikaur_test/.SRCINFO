@@ -1,0 +1,15 @@
+pkgbase = pikaur-test-version-mismatch-aur
+	pkgdesc = Full featured CLI system information tool
+	pkgver = 3.0.20
+	pkgrel = 1
+	url = https://example.com/test_app
+	arch = any
+	license = GPL
+	depends = coreutils
+	depends = pciutils
+	depends = perl
+	depends = procps-ng
+	depends = pikaur=9998765
+	optdepends = bind-tools: -i wlan IP
+
+pkgname = pikaur-test-version-mismatch-aur

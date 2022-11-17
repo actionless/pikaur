@@ -6,7 +6,7 @@ persistent=yes
 unsafe-load-any-extension=no
 [MESSAGES CONTROL]
 confidence=
-disable=too-few-public-methods,missing-docstring
+disable=too-few-public-methods,missing-docstring,duplicate-code
 enable=useless-suppression
 [REPORTS]
 evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)

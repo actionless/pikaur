@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016
 
-# This file is licensed under GPLv3, see https://www.gnu.org/licenses/
+# Licensed under GPLv3, see https://www.gnu.org/licenses/
 
 set -euo pipefail
 IFS=$'\n\t'

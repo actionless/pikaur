@@ -1,24 +1,29 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import datetime
 import os
 from html.parser import HTMLParser
-from typing import TextIO, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, TextIO
 
 try:
     from defusedxml.ElementTree import fromstring  # type: ignore[import]
 except ModuleNotFoundError:
     from xml.etree.ElementTree import fromstring  # nosec B405
 
-from .i18n import translate
 from .config import CACHE_ROOT, PikaurConfig
-from .pprint import (
-    color_line, format_paragraph, print_stdout, print_error, bold_line,
-    create_debug_logger, ColorsHighlight,
-)
-from .pacman import PackageDB
-from .urllib import get_unicode_from_url
 from .core import open_file
+from .i18n import translate
+from .pacman import PackageDB
+from .pprint import (
+    ColorsHighlight,
+    bold_line,
+    color_line,
+    create_debug_logger,
+    format_paragraph,
+    print_error,
+    print_stdout,
+)
+from .urllib import get_unicode_from_url
 
 if TYPE_CHECKING:
     from xml.etree.ElementTree import Element  # noqa  # nosec B405
@@ -32,7 +37,7 @@ _debug = create_debug_logger('news')
 class News:
     URL = PikaurConfig().network.NewsUrl.get_str()
     CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
-    _news_feed: Union['Element', None]
+    _news_feed: 'Element' | None
 
     def __init__(self) -> None:
         self._news_feed = None
@@ -156,9 +161,8 @@ class News:
 
 
 class MLStripper(HTMLParser):
-    """
-    HTMLParser that only removes HTML statements
-    """
+    """HTMLParser that only removes HTML statements."""
+
     def error(self, message: object) -> None:
         pass
 
@@ -177,9 +181,7 @@ class MLStripper(HTMLParser):
 
 
 def strip_tags(html: str) -> str:
-    """
-    removes HTML tags from a string, returns the plain string
-    """
+    """Removes HTML tags from a string, returns the plain string."""
     mlstripper = MLStripper()
     mlstripper.feed(html)
     return mlstripper.get_data()

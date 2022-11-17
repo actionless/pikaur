@@ -1,16 +1,16 @@
 import gzip
 import json
 import socket
+from typing import Any
 from urllib import request
 from urllib.error import URLError
-from typing import Any, Dict, List
 
-from .i18n import translate
-from .pprint import print_error, print_stderr, color_line, ColorsHighlight
-from .prompt import ask_to_continue
-from .exceptions import SysExit
 from .args import parse_args
 from .config import PikaurConfig
+from .exceptions import SysExit
+from .i18n import translate
+from .pprint import ColorsHighlight, color_line, print_error, print_stderr
+from .prompt import ask_to_continue
 
 
 DEFAULT_WEB_ENCODING = 'utf-8'
@@ -41,7 +41,7 @@ def get_unicode_from_url(url: str, optional=False) -> str:
     return result_bytes.decode(DEFAULT_WEB_ENCODING)
 
 
-def get_json_from_url(url: str) -> Dict[str, Any]:
+def get_json_from_url(url: str) -> dict[str, Any]:
     result_json = json.loads(get_unicode_from_url(url))
     return result_json
 
@@ -97,10 +97,8 @@ def init_proxy() -> None:
         request.install_opener(opener)
 
 
-def wrap_proxy_env(cmd: List[str]) -> List[str]:
-    """
-    add env with proxy to command line args
-    """
+def wrap_proxy_env(cmd: list[str]) -> list[str]:
+    """Add env with proxy to command line args."""
     net_config = PikaurConfig().network
     http_proxy_addr = net_config.AurHttpProxy.get_str()
     https_proxy_addr = net_config.AurHttpsProxy.get_str()

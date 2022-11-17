@@ -40,7 +40,7 @@ class VersionMatcher():
             for version_matcher in self.version_matchers
         )
 
-    def __init__(self, depend_line: str, is_pkg_deps: bool = False) -> None:
+    def __init__(self, depend_line: str, is_pkg_deps=False) -> None:
         self.line = depend_line
         self._set_version_matcher_func(is_pkg_deps=is_pkg_deps)
 
@@ -60,7 +60,9 @@ class VersionMatcher():
         else:
             self.version = version_matcher.version
 
-    def _set_version_matcher_func(self, is_pkg_deps: bool = False) -> None:  # pylint: disable=too-many-locals
+    def _set_version_matcher_func(  # pylint: disable=too-many-locals
+            self, is_pkg_deps=False
+    ) -> None:
         # pylint: disable=invalid-name
 
         version: str | None = None
@@ -96,8 +98,7 @@ class VersionMatcher():
         def cmp_ge(v: str) -> int:
             return cmp_eq(v) or cmp_gt(v)
 
-        def cmp_default(v: str) -> int:
-            _v = v  # hello, mypy  # noqa
+        def cmp_default(v: str) -> int:  # pylint: disable=unused-argument
             return 1
 
         cond: str | None = None
@@ -148,7 +149,7 @@ def split_version(version: str) -> list[str]:
     return splitted_version
 
 
-def split_always(line: str, separator: str, pad_right: bool = False) -> tuple[str, str]:
+def split_always(line: str, separator: str, pad_right=False) -> tuple[str, str]:
     """
     Same as builtin string `.split()`,
     but return empty string on the left or right if no separator found.

@@ -2,13 +2,13 @@ from datetime import datetime
 from multiprocessing.pool import ThreadPool
 from unicodedata import east_asian_width
 
-from .i18n import translate
-from .pacman_i18n import _p
-from .aur import find_aur_packages, get_all_aur_names
 from .args import parse_args, reconstruct_args
+from .aur import find_aur_packages, get_all_aur_names
 from .core import spawn
+from .i18n import translate
 from .pacman import get_pacman_command, refresh_pkg_db_if_needed
-from .pprint import bold_line, color_line, ColorsHighlight
+from .pacman_i18n import _p
+from .pprint import ColorsHighlight, bold_line, color_line
 
 
 def _info_packages_thread_repo() -> str:
@@ -18,32 +18,32 @@ def _info_packages_thread_repo() -> str:
     ).stdout_text
 
 
-INFO_FIELDS = dict(
-    git_url=translate("AUR Git URL"),
-    # id=translate("id"),
-    name=translate("Name"),
+INFO_FIELDS = {
+    "git_url": translate("AUR Git URL"),
+    # "aur_id": translate("id"),
+    "name": translate("Name"),
     # packagebaseid=translate(""),
-    packagebase=translate("Package Base"),
-    version=translate("Version"),
-    desc=translate("Description"),
-    url=translate("URL"),
-    keywords=translate("Keywords"),
-    license=translate("Licenses"),
-    groups=translate("Groups"),
-    provides=translate("Provides"),
-    depends=translate("Depends On"),
-    optdepends=translate("Optional Deps"),
-    makedepends=translate("Make Deps"),
-    checkdepends=translate("Check Deps"),
-    conflicts=translate("Conflicts With"),
-    replaces=translate("Replaces"),
-    maintainer=translate("Maintainer"),
-    numvotes=translate("Votes"),
-    popularity=translate("Popularity"),
-    firstsubmitted=translate("First Submitted"),
-    lastmodified=translate("Last Updated"),
-    outofdate=translate("Out-of-date"),
-)
+    "packagebase": translate("Package Base"),
+    "version": translate("Version"),
+    "desc": translate("Description"),
+    "url": translate("URL"),
+    "keywords": translate("Keywords"),
+    "pkg_license": translate("Licenses"),
+    "groups": translate("Groups"),
+    "provides": translate("Provides"),
+    "depends": translate("Depends On"),
+    "optdepends": translate("Optional Deps"),
+    "makedepends": translate("Make Deps"),
+    "checkdepends": translate("Check Deps"),
+    "conflicts": translate("Conflicts With"),
+    "replaces": translate("Replaces"),
+    "maintainer": translate("Maintainer"),
+    "numvotes": translate("Votes"),
+    "popularity": translate("Popularity"),
+    "firstsubmitted": translate("First Submitted"),
+    "lastmodified": translate("Last Updated"),
+    "outofdate": translate("Out-of-date"),
+}
 
 
 def _decorate_repo_info_output(output: str) -> str:

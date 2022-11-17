@@ -1,14 +1,13 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from multiprocessing.pool import ThreadPool
 from urllib import parse
 from urllib.parse import quote
-from typing import List, Dict, Tuple, Union, Optional
 
+from .config import PikaurConfig
 from .core import DataType, get_chunks
 from .exceptions import AURError
 from .progressbar import ThreadSafeProgressBar
-from .config import PikaurConfig
 from .urllib import get_gzip_from_url, get_json_from_url
 
 
@@ -19,36 +18,41 @@ class AURPackageInfo(DataType):
     packagebase: str
     name: str
     version: str
-    desc: Optional[str] = None
-    numvotes: Optional[int] = None
-    popularity: Optional[float] = None
-    depends: List[str] = []
-    makedepends: List[str] = []
-    optdepends: List[str] = []
-    checkdepends: List[str] = []
-    conflicts: List[str] = []
-    replaces: List[str] = []
-    provides: List[str] = []
+    desc: str | None = None
+    numvotes: int | None = None
+    popularity: float | None = None
+    depends: list[str] = []
+    makedepends: list[str] = []
+    optdepends: list[str] = []
+    checkdepends: list[str] = []
+    conflicts: list[str] = []
+    replaces: list[str] = []
+    provides: list[str] = []
 
-    id: Optional[str] = None  # pylint: disable=invalid-name
-    packagebaseid: Optional[str] = None
-    url: Optional[str] = None
-    outofdate: Optional[int] = None
-    maintainer: Optional[str] = None
-    firstsubmitted: Optional[int] = None
-    lastmodified: Optional[int] = None
-    urlpath: Optional[str] = None
-    license: Optional[str] = None
-    keywords: List[str] = []
-    groups: List[str] = []
+    aur_id: str | None = None
+    packagebaseid: str | None = None
+    url: str | None = None
+    outofdate: int | None = None
+    maintainer: str | None = None
+    firstsubmitted: int | None = None
+    lastmodified: int | None = None
+    urlpath: str | None = None
+    pkg_license: str | None = None
+    keywords: list[str] = []
+    groups: list[str] = []
 
     @property
     def git_url(self) -> str:
         return f'{AUR_BASE_URL}/{self.packagebase}.git'
 
     def __init__(self, **kwargs) -> None:
-        if 'description' in kwargs:
-            kwargs['desc'] = kwargs.pop('description')
+        for aur_api_name, pikaur_class_name in (
+            ('description', 'desc', ),
+            ('id', 'aur_id', ),
+            ('license', 'pkg_license', ),
+        ):
+            if aur_api_name in kwargs:
+                kwargs[pikaur_class_name] = kwargs.pop(aur_api_name)
         super().__init__(**kwargs)
 
     @classmethod
@@ -84,7 +88,7 @@ def construct_aur_rpc_url_from_uri(uri: str) -> str:
     return url
 
 
-def construct_aur_rpc_url_from_params(params: Dict[str, Union[str, int]]) -> str:
+def construct_aur_rpc_url_from_params(params: dict[str, str | int]) -> str:
     uri = parse.urlencode(params)
     return construct_aur_rpc_url_from_uri(uri)
 
@@ -95,7 +99,7 @@ def strip_aur_repo_name(pkg_name: str) -> str:
     return pkg_name
 
 
-def aur_rpc_search_name_desc(search_query: str) -> List[AURPackageInfo]:
+def aur_rpc_search_name_desc(search_query: str) -> list[AURPackageInfo]:
     url = construct_aur_rpc_url_from_params({
         'v': 5,
         'type': 'search',
@@ -111,7 +115,7 @@ def aur_rpc_search_name_desc(search_query: str) -> List[AURPackageInfo]:
     ]
 
 
-def aur_rpc_info(search_queries: List[str]) -> List[AURPackageInfo]:
+def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
     uri = parse.urlencode({
         'v': 5,
         'type': 'info',
@@ -129,8 +133,8 @@ def aur_rpc_info(search_queries: List[str]) -> List[AURPackageInfo]:
 
 
 def aur_rpc_info_with_progress(
-        args: Tuple[List[str], int, bool]
-) -> List[AURPackageInfo]:
+        args: tuple[list[str], int, bool]
+) -> list[AURPackageInfo]:
     search_queries, progressbar_length, with_progressbar = args
     result = aur_rpc_info(search_queries)
     if with_progressbar:
@@ -142,16 +146,16 @@ def aur_rpc_info_with_progress(
     return result
 
 
-def aur_web_packages_list() -> List[str]:
+def aur_web_packages_list() -> list[str]:
     return get_gzip_from_url(AUR_BASE_URL + '/packages.gz').splitlines()[1:]
 
 
-_AUR_PKGS_FIND_CACHE: Dict[str, AURPackageInfo] = {}
+_AUR_PKGS_FIND_CACHE: dict[str, AURPackageInfo] = {}
 
 
 def find_aur_packages(
-        package_names: List[str], with_progressbar=False
-) -> Tuple[List[AURPackageInfo], List[str]]:
+        package_names: list[str], with_progressbar=False
+) -> tuple[list[AURPackageInfo], list[str]]:
 
     # @TODO: return only packages for the current architecture
     package_names = [strip_aur_repo_name(name) for name in package_names]
@@ -184,7 +188,7 @@ def find_aur_packages(
     found_aur_packages = [
         result.name for result in json_results
     ]
-    not_found_packages: List[str] = (
+    not_found_packages: list[str] = (
         [] if num_packages == len(found_aur_packages)
         else [
             package for package in package_names
@@ -198,15 +202,15 @@ def get_repo_url(package_base_name: str) -> str:
     return f'{AUR_BASE_URL}/{package_base_name}.git'
 
 
-_AUR_PKGS_LIST_CACHE: List[str] = []
+_AUR_PKGS_LIST_CACHE: list[str] = []
 
 
-def get_all_aur_names() -> List[str]:
+def get_all_aur_names() -> list[str]:
     global _AUR_PKGS_LIST_CACHE  # pylint: disable=global-statement
     if not _AUR_PKGS_LIST_CACHE:
         _AUR_PKGS_LIST_CACHE = aur_web_packages_list()
     return _AUR_PKGS_LIST_CACHE
 
 
-def get_all_aur_packages() -> List[AURPackageInfo]:
+def get_all_aur_packages() -> list[AURPackageInfo]:
     return find_aur_packages(get_all_aur_names(), with_progressbar=True)[0]

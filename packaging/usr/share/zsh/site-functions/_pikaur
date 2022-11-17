@@ -3,7 +3,7 @@
 #
 # /usr/share/zsh/site-functions/_pikaur
 #
-# This file is licensed under GPLv3, see https://www.gnu.org/licenses/
+# Licensed under GPLv3, see https://www.gnu.org/licenses/
 #
 
 _dispatch pacman pacman

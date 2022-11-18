@@ -393,7 +393,7 @@ def run_with_sudo_loop(function: Callable) -> Any | None:
         pool.apply_async(sudo_loop)
         pool.close()
         catched_exc = None
-        result: Any | None = None
+        result: Any = None
         try:
             result = main_thread.get()
         except Exception as exc:
@@ -402,9 +402,7 @@ def run_with_sudo_loop(function: Callable) -> Any | None:
             pool.terminate()
         if catched_exc:
             raise catched_exc
-        if result:
-            return result
-        return None
+        return result
 
 
 def check_systemd_dynamic_users() -> bool:  # pragma: no cover

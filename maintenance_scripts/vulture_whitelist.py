@@ -22,6 +22,11 @@ whitelist.aur.AURPackageInfo.git_url
 
 whitelist.build.PackageBuild._get_deps.deps_destination
 
+whitelist.config.DeprecatedConfigValue.option
+whitelist.config.ConfigValueType.data_type
+whitelist.config.ConfigValueType.deprecated
+whitelist.config.ConfigValueType.migrated
+
 whitelist.main.socket.socket
 
 whitelist.news.MLStripper.convert_charrefs

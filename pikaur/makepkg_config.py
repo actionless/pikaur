@@ -1,30 +1,28 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import os
-from typing import (
-    Dict, Any, List, Tuple, Union, Optional,
-)
+from typing import Any
 
-from .core import open_file, running_as_root
-from .config import CONFIG_ROOT
 from .args import parse_args
+from .config import CONFIG_ROOT
+from .core import open_file, running_as_root
 
 
-ConfigValueType = Union[None, str, List[str]]
-ConfigFormat = Dict[str, ConfigValueType]
+ConfigValueType = str | list[str] | None
+ConfigFormat = dict[str, ConfigValueType]
 
 
 class ConfigReader():
 
     comment_prefixes = ('#', ';')
 
-    _cached_config: Optional[Dict[str, ConfigFormat]] = None
+    _cached_config: dict[str, ConfigFormat] | None = None
     default_config_path: str
-    list_fields: List[str] = []
-    ignored_fields: List[str] = []
+    list_fields: list[str] = []
+    ignored_fields: list[str] = []
 
     @classmethod
-    def _parse_line(cls, line: str) -> Tuple[Optional[str], ConfigValueType]:
+    def _parse_line(cls, line: str) -> tuple[str | None, ConfigValueType]:
         blank = (None, None, )
         if line.startswith(' '):
             return blank
@@ -53,7 +51,7 @@ class ConfigReader():
         return key, value
 
     @classmethod
-    def get_config(cls, config_path: str = None) -> ConfigFormat:
+    def get_config(cls, config_path: str | None = None) -> ConfigFormat:
         config_path = config_path or cls.default_config_path
         if cls._cached_config is None:
             cls._cached_config = {}
@@ -69,22 +67,22 @@ class ConfigReader():
         return cls._cached_config[config_path]  # pylint: disable=unsubscriptable-object
 
     @classmethod
-    def get(cls, key: str, fallback: Any = None, config_path: str = None) -> Any:
+    def get(cls, key: str, fallback: Any = None, config_path: str | None = None) -> Any:
         return cls.get_config(config_path=config_path).get(key) or fallback
 
 
 class MakepkgConfig():
 
-    _user_makepkg_path: Optional[str] = "unset"
+    _user_makepkg_path: str | None = "unset"
 
     @classmethod
-    def get_user_makepkg_path(cls) -> Optional[str]:
+    def get_user_makepkg_path(cls) -> str | None:
         if cls._user_makepkg_path == 'unset':
             possible_paths = [
                 os.path.expanduser('~/.makepkg.conf'),
                 os.path.join(CONFIG_ROOT, "pacman/makepkg.conf"),
             ]
-            config_path: Optional[str] = None
+            config_path: str | None = None
             for path in possible_paths:
                 if os.path.exists(path):
                     config_path = path
@@ -92,7 +90,7 @@ class MakepkgConfig():
         return cls._user_makepkg_path
 
     @classmethod
-    def get(cls, key: str, fallback: Any = None, config_path: str = None) -> Any:
+    def get(cls, key: str, fallback: Any = None, config_path: str | None = None) -> Any:
         arg_path = parse_args().makepkg_config
         value = ConfigReader.get(key, fallback, config_path="/etc/makepkg.conf")
         if cls.get_user_makepkg_path():
@@ -104,7 +102,7 @@ class MakepkgConfig():
         return value
 
 
-PKGDEST: Optional[str] = os.environ.get(
+PKGDEST: str | None = os.environ.get(
     'PKGDEST',
     MakepkgConfig.get('PKGDEST')
 )
@@ -115,7 +113,7 @@ if PKGDEST:
 
 class MakePkgCommand:
 
-    _cmd: Optional[List[str]] = None
+    _cmd: list[str] | None = None
     pkgdest_skipped = False
 
     @classmethod
@@ -130,7 +128,7 @@ class MakePkgCommand:
             cls.pkgdest_skipped = True
 
     @classmethod
-    def get(cls) -> List[str]:
+    def get(cls) -> list[str]:
         if cls._cmd is None:
             args = parse_args()
             makepkg_flags = (

@@ -2,26 +2,23 @@
 # Original author: Steven J. Bethard <steven.bethard@gmail.com>.
 # pylint: disable=too-many-statements,too-many-locals,too-many-branches,protected-access
 
-from argparse import (
-    SUPPRESS,
-    ArgumentParser, ArgumentError,
-    Action, _get_action_name,
-)
-import typing as t
+from argparse import SUPPRESS, Action, ArgumentError, ArgumentParser, Namespace, _get_action_name
 
 from .i18n import translate as _
 
 
 class ArgumentParserWithUnknowns(ArgumentParser):
 
-    def _parse_known_args(self, arg_strings, namespace):
+    def _parse_known_args(
+            self, arg_strings: list[str], namespace: Namespace
+    ) -> tuple[Namespace, list[str]]:
         # replace arg strings that are file references
         if self.fromfile_prefix_chars is not None:
             arg_strings = self._read_args_from_files(arg_strings)
 
         # map all mutually exclusive arguments to the other arguments
         # they can't occur with
-        action_conflicts: t.Dict[Action, t.List[Action]] = {}
+        action_conflicts: dict[Action, list[Action]] = {}
         for mutex_group in self._mutually_exclusive_groups:
             group_actions = mutex_group._group_actions
             for i, mutex_action in enumerate(mutex_group._group_actions):
@@ -61,7 +58,9 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         seen_actions = set()
         seen_non_default_actions = set()
 
-        def take_action(action, argument_strings, option_string=None):
+        def take_action(
+                action: Action, argument_strings: list[str], option_string: str | None = None
+        ) -> None:
             seen_actions.add(action)
             argument_values = self._get_values(action, argument_strings)
 
@@ -82,9 +81,9 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 action(self, namespace, argument_values, option_string)
 
         # function to convert arg_strings into an optional action
-        def consume_optional(start_index):
+        def consume_optional(start_index: int) -> tuple[int, list[str]]:
 
-            unknown_args: t.List[str] = []
+            unknown_args: list[str] = []
 
             # get the optional identified at this index
             option_tuple = option_string_indices[start_index]
@@ -93,7 +92,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             # identify additional optionals in the same arg string
             # (e.g. -xyz is the same as -x -y -z if no args are required)
             match_argument = self._match_argument
-            action_tuples: t.List[t.Tuple[Action, t.List[str], str]] = []
+            action_tuples: list[tuple[Action, list[str], str]] = []
             while True:
 
                 # if we found no optional action, skip it
@@ -169,7 +168,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         positionals = self._get_positional_actions()
 
         # function to convert arg_strings into positional actions
-        def consume_positionals(start_index):
+        def consume_positionals(start_index: int) -> int:
             # match as many Positionals as possible
             match_partial = self._match_arguments_partial
             selected_pattern = arg_strings_pattern[start_index:]
@@ -231,7 +230,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
         # make sure all required actions were present and also convert
         # action defaults which were not given as arguments
-        required_actions: t.List[str] = []
+        required_actions: list[str] = []
         for action in self._actions:
             if action not in seen_actions:
                 action_name = _get_action_name(action)
@@ -264,7 +263,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
                 # if no actions were used, report the error
                 else:
-                    names: t.List[str] = []
+                    names: list[str] = []
                     for action in group._group_actions:
                         if (
                                 action.help is not SUPPRESS

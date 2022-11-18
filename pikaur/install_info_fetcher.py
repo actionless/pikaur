@@ -1,29 +1,31 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 from itertools import chain
 from multiprocessing.pool import ThreadPool
-from typing import List, Optional, Dict, Sequence, Union
+from typing import Sequence
 
+from .args import PikaurArgs, parse_args, reconstruct_args
+from .aur import AURPackageInfo, find_aur_packages, strip_aur_repo_name
+from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
+from .core import AURInstallInfo, ComparableType, InstallInfo, PackageSource, RepoInstallInfo
+from .exceptions import DependencyError, DependencyVersionMismatch, SysExit
 from .i18n import translate
-from .core import (
-    PackageSource, InstallInfo, AURInstallInfo, RepoInstallInfo, ComparableType,
-)
-from .version import VersionMatcher
 from .pacman import (
     OFFICIAL_REPOS,
-    PackageDB, PacmanConfig, PacmanPrint,
-    find_sysupgrade_packages, get_pacman_command, strip_repo_name,
+    PackageDB,
+    PacmanConfig,
+    PacmanPrint,
+    find_sysupgrade_packages,
     get_ignored_pkgnames_from_patterns,
+    get_pacman_command,
+    strip_repo_name,
 )
-from .aur import find_aur_packages, AURPackageInfo, strip_aur_repo_name
-from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
-from .pprint import print_stdout, print_stderr, create_debug_logger, print_error
-from .args import PikaurArgs, parse_args, reconstruct_args
-from .exceptions import DependencyVersionMismatch, DependencyError, SysExit
+from .pprint import create_debug_logger, print_error, print_stderr, print_stdout
 from .print_department import print_ignored_package, print_not_found_packages
-from .updates import find_aur_updates, print_upgradeable
+from .prompt import ask_to_continue
 from .replacements import find_replacements
 from .srcinfo import SrcInfo
-from .prompt import ask_to_continue
+from .updates import find_aur_updates, print_upgradeable
+from .version import VersionMatcher
 
 
 _debug = create_debug_logger('install_info_fetcher')
@@ -31,27 +33,27 @@ _debug = create_debug_logger('install_info_fetcher')
 
 class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-methods
 
-    repo_packages_install_info: List[RepoInstallInfo]
-    new_repo_deps_install_info: List[RepoInstallInfo]
-    thirdparty_repo_packages_install_info: List[RepoInstallInfo]
-    new_thirdparty_repo_deps_install_info: List[RepoInstallInfo]
-    repo_replacements_install_info: List[RepoInstallInfo]
-    thirdparty_repo_replacements_install_info: List[RepoInstallInfo]
-    aur_updates_install_info: List[AURInstallInfo]
-    aur_deps_install_info: List[AURInstallInfo]
+    repo_packages_install_info: list[RepoInstallInfo]
+    new_repo_deps_install_info: list[RepoInstallInfo]
+    thirdparty_repo_packages_install_info: list[RepoInstallInfo]
+    new_thirdparty_repo_deps_install_info: list[RepoInstallInfo]
+    repo_replacements_install_info: list[RepoInstallInfo]
+    thirdparty_repo_replacements_install_info: list[RepoInstallInfo]
+    aur_updates_install_info: list[AURInstallInfo]
+    aur_deps_install_info: list[AURInstallInfo]
 
     args: PikaurArgs
-    aur_deps_relations: Dict[str, List[str]]
-    replacements: Dict[str, List[str]]
+    aur_deps_relations: dict[str, list[str]]
+    replacements: dict[str, list[str]]
 
     __ignore_in_eq__ = ('args', )
 
     def __init__(
             self,
-            install_package_names: List[str],
-            not_found_repo_pkgs_names: List[str],
-            manually_excluded_packages_names: List[str],
-            pkgbuilds_packagelists: Dict[str, List[str]],
+            install_package_names: list[str],
+            not_found_repo_pkgs_names: list[str],
+            manually_excluded_packages_names: list[str],
+            pkgbuilds_packagelists: dict[str, list[str]],
     ) -> None:
         _debug(f"""Gonna fetch install info for:
     {install_package_names=}
@@ -90,8 +92,8 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
 
     def exclude_ignored_packages(
             self,
-            package_names: List[str],
-            print_packages=True
+            package_names: list[str],
+            print_packages: bool = True
     ) -> None:
         ignored_packages = []
         for pkg_name in package_names[:]:
@@ -103,27 +105,27 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 print_ignored_package(package_name=package_name)
 
     @property
-    def aur_packages_names(self) -> List[str]:
+    def aur_packages_names(self) -> list[str]:
         return [
             pkg_info.name for pkg_info in self.aur_updates_install_info
         ]
 
     @property
-    def aur_deps_names(self) -> List[str]:
-        _aur_deps_names: List[str] = []
+    def aur_deps_names(self) -> list[str]:
+        _aur_deps_names: list[str] = []
         for deps in self.aur_deps_relations.values():
             _aur_deps_names += deps
         return list(set(_aur_deps_names))
 
     @property
-    def aur_install_info_containers(self) -> Sequence[List[AURInstallInfo]]:
+    def aur_install_info_containers(self) -> Sequence[list[AURInstallInfo]]:
         return (
             self.aur_updates_install_info,
             self.aur_deps_install_info,
         )
 
     @property
-    def repo_install_info_containers(self) -> Sequence[List[RepoInstallInfo]]:
+    def repo_install_info_containers(self) -> Sequence[list[RepoInstallInfo]]:
         return (
             self.repo_packages_install_info,
             self.new_repo_deps_install_info,
@@ -136,7 +138,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
     @property
     def all_install_info_containers(
             self
-    ) -> Sequence[Union[List[RepoInstallInfo], List[AURInstallInfo]]]:
+    ) -> Sequence[list[RepoInstallInfo] | list[AURInstallInfo]]:
         return (
             *self.repo_install_info_containers,
             *self.aur_install_info_containers,
@@ -144,27 +146,27 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
 
     @property
     def repo_install_info(self) -> Sequence[RepoInstallInfo]:
-        return list(
+        return [
             info
             for infos in self.repo_install_info_containers
             for info in infos
-        )
+        ]
 
     @property
     def aur_install_info(self) -> Sequence[AURInstallInfo]:
-        return list(
+        return [
             info
             for infos in self.aur_install_info_containers
             for info in infos
-        )
+        ]
 
     @property
-    def all_install_info(self) -> Sequence[Union[RepoInstallInfo, AURInstallInfo]]:
+    def all_install_info(self) -> Sequence[RepoInstallInfo | AURInstallInfo]:
         return list(self.repo_install_info) + list(self.aur_install_info)
 
     def discard_package(
-            self, canceled_pkg_name: str, already_discarded: List[str] = None
-    ) -> List[str]:
+            self, canceled_pkg_name: str, already_discarded: list[str] | None = None
+    ) -> list[str]:
         _debug(f"discarding {canceled_pkg_name=}")
         for container in self.all_install_info_containers:
             for info in container[:]:
@@ -187,7 +189,6 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         Retrieve info (`InstallInfo` objects) of packages
         which are going to be installed/upgraded and their dependencies
         """
-
         self.exclude_ignored_packages(self.install_package_names)
 
         self.repo_packages_install_info = []
@@ -222,8 +223,8 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         self.mark_dependent()
 
     def _get_repo_pkgs_info(  # pylint: disable=too-many-statements,too-many-locals,too-many-branches
-            self, pkg_lines: List[str], extra_args: Optional[List[str]] = None
-    ) -> List[RepoInstallInfo]:
+            self, pkg_lines: list[str], extra_args: list[str] | None = None
+    ) -> list[RepoInstallInfo]:
         if not pkg_lines:
             return []
 
@@ -247,7 +248,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             'search',
         ]) + extra_args
 
-        def _get_pkg_install_infos(results: List[PacmanPrint]) -> List[RepoInstallInfo]:
+        def _get_pkg_install_infos(results: list[PacmanPrint]) -> list[RepoInstallInfo]:
             install_infos = []
             for pkg_print in results:
                 pkg = all_repo_pkgs[pkg_print.full_name]
@@ -330,7 +331,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                         raise SysExit(125) from exc
 
         _debug("Check partially passed - gonna get install infos:")
-        pkg_install_infos: List[RepoInstallInfo] = []
+        pkg_install_infos: list[RepoInstallInfo] = []
         for pkg_name, results in all_results.items():
             if not results:
                 self.not_found_repo_pkgs_names.append(pkg_name)
@@ -340,7 +341,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 pkg_install_infos += _get_pkg_install_infos(results)
         return pkg_install_infos
 
-    def get_upgradeable_repo_pkgs_info(self) -> List[RepoInstallInfo]:
+    def get_upgradeable_repo_pkgs_info(self) -> list[RepoInstallInfo]:
         if not self.args.sysupgrade:
             return []
         all_local_pkgs = PackageDB.get_local_dict()
@@ -408,7 +409,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 self.thirdparty_repo_packages_install_info.append(pkg_update)
 
     def get_repo_deps_info(self) -> None:
-        all_aur_pkgs: List[AURPackageInfo] = [
+        all_aur_pkgs: list[AURPackageInfo] = [
             pkg_info.package
             for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
         ]
@@ -430,7 +431,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             else:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
-    def get_aur_pkgs_info(self, aur_packages_versionmatchers: List[str]) -> None:  # pylint: disable=too-many-branches
+    def get_aur_pkgs_info(self, aur_packages_versionmatchers: list[str]) -> None:  # pylint: disable=too-many-branches
         aur_packages_names_to_versions = {
             strip_aur_repo_name(version_matcher.pkg_name): version_matcher
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]
@@ -459,7 +460,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         if not_found_aur_pkgs:
             print_not_found_packages(sorted(not_found_aur_pkgs))
             raise SysExit(6)
-        aur_updates_install_info_by_name: Dict[str, AURInstallInfo] = {}
+        aur_updates_install_info_by_name: dict[str, AURInstallInfo] = {}
         if self.args.sysupgrade:
             aur_updates_list, not_found_aur_pkgs = find_aur_updates()
             self.exclude_ignored_packages(not_found_aur_pkgs, print_packages=False)
@@ -500,7 +501,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
 
     def get_info_from_pkgbuilds(self) -> None:
         _debug(f"gonna get install info from PKGBUILDs... {self.aur_updates_install_info=}")
-        aur_updates_install_info_by_name: Dict[str, AURInstallInfo] = {}
+        aur_updates_install_info_by_name: dict[str, AURInstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path, pkg_names in self.pkgbuilds_packagelists.items():
             if not pkg_names:
@@ -571,10 +572,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             ))
 
     def mark_dependent(self) -> None:
-        """
-        update packages' install info to show deps in prompt:
-        """
-
+        """Update packages' install info to show deps in prompt."""
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
         all_local_pkgnames = PackageDB.get_local_pkgnames()
         all_deps_install_infos: Sequence[InstallInfo] = (
@@ -597,7 +595,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
 
             # process providers
             provides = pkg_install_info.package.provides
-            providing_for: List[str] = []
+            providing_for: list[str] = []
             if provides and (
                     pkg_install_info.name not in self.install_package_names
             ) and (

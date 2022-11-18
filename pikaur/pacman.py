@@ -1,32 +1,27 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import re
 import fnmatch
+import re
 from threading import Lock
-from typing import (
-    List, Dict, Optional, Union, Pattern, TYPE_CHECKING
-)
+from typing import TYPE_CHECKING, Any, Pattern
 
-from pycman.config import PacmanConfig as PycmanConfig
 import pyalpm
+from pycman.config import PacmanConfig as PycmanConfig
 
+from .args import PACMAN_APPEND_OPTS, PACMAN_STR_OPTS, parse_args, reconstruct_args
+from .config import PikaurConfig
+from .core import DataType, PackageSource, spawn, sudo
+from .exceptions import DependencyError, PackagesNotFoundInRepo
 from .i18n import translate
 from .pacman_i18n import _p
-from .core import DataType, PackageSource
+from .pprint import color_enabled, create_debug_logger, print_error, print_stderr
+from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .version import VersionMatcher
-from .pprint import (
-    print_stderr, color_enabled, create_debug_logger, print_error,
-)
-from .args import parse_args, reconstruct_args, PACMAN_STR_OPTS, PACMAN_APPEND_OPTS
-from .config import PikaurConfig
-from .exceptions import PackagesNotFoundInRepo, DependencyError
-from .core import sudo, spawn
-from .prompt import retry_interactive_command_or_exit, retry_interactive_command
 
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
-    from .aur import AURPackageInfo  # noqa
+    from .aur import AURPackageInfo
 
 
 OFFICIAL_REPOS = (
@@ -63,7 +58,7 @@ PATTERN_NOTFOUND = create_pacman_pattern("target not found: %s\n")
 PATTERN_DB_NOTFOUND = create_pacman_pattern("database not found: %s\n")
 
 
-def get_pacman_command(ignore_args: Optional[List[str]] = None) -> List[str]:
+def get_pacman_command(ignore_args: list[str] | None = None) -> list[str]:
     ignore_args = ignore_args or []
     args = parse_args()
     pacman_path = PikaurConfig().misc.PacmanPath.get_str()
@@ -118,7 +113,7 @@ class ProvidedDependency(DataType):
         )
 
 
-def get_pkg_id(pkg: Union['AURPackageInfo', pyalpm.Package]) -> str:
+def get_pkg_id(pkg: 'AURPackageInfo | pyalpm.Package') -> str:
     if isinstance(pkg, pyalpm.Package):
         return f"{pkg.db.name}/{pkg.name}"
     return f"aur/{pkg.name}"
@@ -133,11 +128,11 @@ class DbLockRepo():
     def __enter__(self) -> None:
         DB_LOCK_REPO.acquire()
 
-    def __exit__(self, *_exc_details) -> None:
+    def __exit__(self, *_exc_details: Any) -> None:
         if DB_LOCK_REPO.locked():
             DB_LOCK_REPO.release()
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.__exit__()
 
 
@@ -146,24 +141,24 @@ class DbLockLocal():
     def __enter__(self) -> None:
         DB_LOCK_LOCAL.acquire()
 
-    def __exit__(self, *_exc_details) -> None:
+    def __exit__(self, *_exc_details: Any) -> None:
         if DB_LOCK_LOCAL.locked():
             DB_LOCK_LOCAL.release()
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.__exit__()
 
 
-def get_db_lock(package_source: PackageSource):
+def get_db_lock(package_source: PackageSource) -> type[DbLockRepo] | type[DbLockLocal]:
     return DbLockRepo if package_source is PackageSource.REPO else DbLockLocal
 
 
 class PackageDBCommon():
 
-    _packages_list_cache: Dict[PackageSource, List[pyalpm.Package]] = {}
-    _packages_dict_cache: Dict[PackageSource, Dict[str, pyalpm.Package]] = {}
-    _provided_list_cache: Dict[PackageSource, List[str]] = {}
-    _provided_dict_cache: Dict[PackageSource, Dict[str, List[ProvidedDependency]]] = {}
+    _packages_list_cache: dict[PackageSource, list[pyalpm.Package]] = {}
+    _packages_dict_cache: dict[PackageSource, dict[str, pyalpm.Package]] = {}
+    _provided_list_cache: dict[PackageSource, list[str]] = {}
+    _provided_dict_cache: dict[PackageSource, dict[str, list[ProvidedDependency]]] = {}
 
     @classmethod
     def _discard_cache(
@@ -188,7 +183,7 @@ class PackageDBCommon():
         cls._discard_cache(PackageSource.REPO)
 
     @classmethod
-    def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
+    def get_repo_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
         pass
         # if not cls._packages_list_cache.get(PackageSource.REPO):
             # cls._packages_list_cache[PackageSource.REPO] = list(
@@ -197,7 +192,7 @@ class PackageDBCommon():
         # return cls._packages_list_cache[PackageSource.REPO]
 
     @classmethod
-    def get_local_list(cls, quiet=False) -> List[pyalpm.Package]:
+    def get_local_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
         pass
         # if not cls._packages_list_cache.get(PackageSource.LOCAL):
             # cls._packages_list_cache[PackageSource.LOCAL] = list(
@@ -206,7 +201,7 @@ class PackageDBCommon():
         # return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
-    def get_repo_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:
+    def get_repo_dict(cls, quiet: bool = False) -> dict[str, pyalpm.Package]:
         if not cls._packages_dict_cache.get(PackageSource.REPO):
             cls._packages_dict_cache[PackageSource.REPO] = {
                 get_pkg_id(pkg): pkg
@@ -215,7 +210,7 @@ class PackageDBCommon():
         return cls._packages_dict_cache[PackageSource.REPO]
 
     @classmethod
-    def get_local_dict(cls, quiet=False) -> Dict[str, pyalpm.Package]:
+    def get_local_dict(cls, quiet: bool = False) -> dict[str, pyalpm.Package]:
         if not cls._packages_dict_cache.get(PackageSource.LOCAL):
             cls._packages_dict_cache[PackageSource.LOCAL] = {
                 pkg.name: pkg
@@ -226,10 +221,10 @@ class PackageDBCommon():
     @classmethod
     def _get_provided_dict(
             cls, package_source: PackageSource
-    ) -> Dict[str, List[ProvidedDependency]]:
+    ) -> dict[str, list[ProvidedDependency]]:
 
         if not cls._provided_dict_cache.get(package_source):
-            provided_pkg_names: Dict[str, List[ProvidedDependency]] = {}
+            provided_pkg_names: dict[str, list[ProvidedDependency]] = {}
             for pkg in (
                     cls.get_local_list() if package_source == PackageSource.LOCAL
                     else cls.get_repo_list()
@@ -259,33 +254,33 @@ class PackageDBCommon():
         return cls._provided_dict_cache[package_source]
 
     @classmethod
-    def get_repo_provided_dict(cls) -> Dict[str, List[ProvidedDependency]]:
+    def get_repo_provided_dict(cls) -> dict[str, list[ProvidedDependency]]:
         return cls._get_provided_dict(PackageSource.REPO)
 
     @classmethod
-    def get_local_provided_dict(cls) -> Dict[str, List[ProvidedDependency]]:
+    def get_local_provided_dict(cls) -> dict[str, list[ProvidedDependency]]:
         return cls._get_provided_dict(PackageSource.LOCAL)
 
     @classmethod
-    def get_repo_pkgnames(cls) -> List[str]:
+    def get_repo_pkgnames(cls) -> list[str]:
         return [pkg.name for pkg in cls.get_repo_list()]
 
     @classmethod
-    def get_local_pkgnames(cls) -> List[str]:
+    def get_local_pkgnames(cls) -> list[str]:
         return [pkg.name for pkg in cls.get_local_list()]
 
 
-class RepositoryNotFound(Exception):
+class RepositoryNotFoundError(Exception):
     pass
 
 
 class PackageDB(PackageDBCommon):
 
-    _alpm_handle: Optional[pyalpm.Handle] = None
+    _alpm_handle: pyalpm.Handle | None = None
 
-    _pacman_find_cache: Dict[str, List[PacmanPrint]] = {}
-    _pacman_test_cache: Dict[str, List[VersionMatcher]] = {}
-    _pacman_repo_pkg_present_cache: Dict[str, bool] = {}
+    _pacman_find_cache: dict[str, list[PacmanPrint]] = {}
+    _pacman_test_cache: dict[str, list[VersionMatcher]] = {}
+    _pacman_repo_pkg_present_cache: dict[str, bool] = {}
 
     @classmethod
     def get_alpm_handle(cls) -> pyalpm.Handle:
@@ -309,11 +304,11 @@ class PackageDB(PackageDBCommon):
         cls._pacman_repo_pkg_present_cache = {}
 
     @classmethod
-    def search_local(cls, search_query: str) -> List[pyalpm.Package]:
+    def search_local(cls, search_query: str) -> list[pyalpm.Package]:
         return cls.get_alpm_handle().get_localdb().search(search_query)
 
     @classmethod
-    def get_local_list(cls, quiet=False) -> List[pyalpm.Package]:
+    def get_local_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.LOCAL):
             with DbLockLocal():
                 if not quiet:
@@ -323,34 +318,35 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def get_repo_priority(cls, repo_name: str) -> int:
-        """
-        0 is the highest priority
-        """
+        """0 is the highest priority."""
         repos = [r.name for r in cls.get_alpm_handle().get_syncdbs()]
         if repo_name not in repos:
-            raise RepositoryNotFound(f"'{repo_name}' in {repos}")
+            raise RepositoryNotFoundError(f"'{repo_name}' in {repos}")
         return repos.index(repo_name)
 
     @classmethod
     def _get_provided_dict(
             cls, package_source: PackageSource
-    ) -> Dict[str, List[ProvidedDependency]]:
+    ) -> dict[str, list[ProvidedDependency]]:
 
         if not cls._provided_dict_cache.get(package_source):
             provided_pkg_names = super()._get_provided_dict(package_source)
             if package_source == PackageSource.REPO:
                 for _what_provides, provided_pkgs in provided_pkg_names.items():
-                    provided_pkgs.sort(key=lambda p: "{}{}".format(  # pylint: disable=consider-using-f-string
-                        cls.get_repo_priority(p.package.db.name),
-                        p.package.name
-                    ))
+                    provided_pkgs.sort(
+                        key=lambda p: f"{cls.get_repo_priority(p.package.db.name)}{p.package.name}"
+                    )
             cls._provided_dict_cache[package_source] = provided_pkg_names
         return cls._provided_dict_cache[package_source]
 
     @classmethod
     def search_repo(
-            cls, search_query, db_name: str = None, names_only=False, exact_match=False
-    ) -> List[pyalpm.Package]:
+            cls,
+            search_query: str,
+            db_name: str | None = None,
+            names_only: bool = False,
+            exact_match: bool = False,
+    ) -> list[pyalpm.Package]:
         if '/' in search_query:
             db_name, search_query = search_query.split('/')
         result = []
@@ -368,7 +364,7 @@ class PackageDB(PackageDBCommon):
         return list(reversed(result))
 
     @classmethod
-    def get_repo_list(cls, quiet=False) -> List[pyalpm.Package]:
+    def get_repo_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.REPO):
             with DbLockRepo():
                 if not quiet:
@@ -392,13 +388,13 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def get_print_format_output(
-            cls, cmd_args: List[str], check_deps=True, package_only=False
-    ) -> List[PacmanPrint]:
+            cls, cmd_args: list[str], check_deps: bool = True, package_only: bool = False
+    ) -> list[PacmanPrint]:
         cache_index = ' '.join(sorted(cmd_args))
         cached_pkg = cls._pacman_find_cache.get(cache_index)
         if cached_pkg is not None:
             return cached_pkg
-        results: List[PacmanPrint] = []
+        results: list[PacmanPrint] = []
         final_args = cmd_args + ['--print-format', '%r/%n', ]
         if not check_deps and not package_only:
             final_args.append('--nodeps')
@@ -425,14 +421,14 @@ class PackageDB(PackageDBCommon):
         return results
 
     @classmethod
-    def get_pacman_test_output(cls, cmd_args: List[str]) -> List[VersionMatcher]:
+    def get_pacman_test_output(cls, cmd_args: list[str]) -> list[VersionMatcher]:
         if not cmd_args:
             return []
         cache_index = ' '.join(sorted(cmd_args))
         cached_pkg = cls._pacman_test_cache.get(cache_index)
         if cached_pkg is not None:
             return cached_pkg
-        results: List[VersionMatcher] = []
+        results: list[VersionMatcher] = []
         not_found_packages_output = spawn(
             # pacman --deptest flag conflicts with some --sync options:
             get_pacman_command(ignore_args=[
@@ -453,9 +449,9 @@ class PackageDB(PackageDBCommon):
         return results
 
     @classmethod
-    def get_not_found_repo_packages(cls, pkg_lines: List[str]) -> List[str]:
+    def get_not_found_repo_packages(cls, pkg_lines: list[str]) -> list[str]:
         not_found_pkg_names = []
-        pkg_names_to_check: List[str] = []
+        pkg_names_to_check: list[str] = []
         for pkg_name in pkg_lines:
             if pkg_name in cls._pacman_repo_pkg_present_cache:
                 if not cls._pacman_repo_pkg_present_cache[pkg_name]:
@@ -483,15 +479,15 @@ class PackageDB(PackageDBCommon):
         return not_found_pkg_names + new_not_found_pkg_names
 
     @classmethod
-    def get_not_found_local_packages(cls, pkg_lines: List[str]) -> List[str]:
+    def get_not_found_local_packages(cls, pkg_lines: list[str]) -> list[str]:
         not_found_version_matchers = cls.get_pacman_test_output([
             splitted_pkg_name for splitted_pkg_names in
             [pkg_name.split(',') for pkg_name in pkg_lines]
             for splitted_pkg_name in splitted_pkg_names
         ])
-        not_found_packages = list(set(
+        not_found_packages = list({
             vm.pkg_name for vm in not_found_version_matchers
-        ))
+        })
         return not_found_packages
 
     @classmethod
@@ -524,7 +520,7 @@ class PackageDB(PackageDBCommon):
         raise PackagesNotFoundInRepo(packages=[pkg_name])
 
 
-def get_upgradeable_package_names() -> List[str]:
+def get_upgradeable_package_names() -> list[str]:
     upgradeable_packages_output = spawn(
         get_pacman_command() + ['--query', '--upgrades', '--quiet']
     ).stdout_text
@@ -533,7 +529,7 @@ def get_upgradeable_package_names() -> List[str]:
     return upgradeable_packages_output.splitlines()
 
 
-def find_upgradeable_packages() -> List[pyalpm.Package]:
+def find_upgradeable_packages() -> list[pyalpm.Package]:
     all_repo_pkgs = PackageDB.get_repo_dict()
 
     pkg_names = get_upgradeable_package_names()
@@ -541,7 +537,7 @@ def find_upgradeable_packages() -> List[pyalpm.Package]:
         return []
 
     all_local_pkgs = PackageDB.get_local_dict()
-    results: List[PacmanPrint] = []
+    results: list[PacmanPrint] = []
     try:
         results = PackageDB.get_print_format_output(
             get_pacman_command() + ['--sync'] + pkg_names
@@ -564,10 +560,10 @@ def find_upgradeable_packages() -> List[pyalpm.Package]:
     ]
 
 
-def find_sysupgrade_packages(ignore_pkgs: Optional[List[str]] = None) -> List[pyalpm.Package]:
+def find_sysupgrade_packages(ignore_pkgs: list[str] | None = None) -> list[pyalpm.Package]:
     all_repo_pkgs = PackageDB.get_repo_dict()
 
-    extra_args: List[str] = []
+    extra_args: list[str] = []
     for excluded_pkg_name in ignore_pkgs or []:
         extra_args.append('--ignore')
         # pacman's --ignore doesn't work with repo name:
@@ -583,7 +579,7 @@ def find_sysupgrade_packages(ignore_pkgs: Optional[List[str]] = None) -> List[py
     ]
 
 
-def find_packages_not_from_repo() -> List[str]:
+def find_packages_not_from_repo() -> list[str]:
     local_pkg_names = PackageDB.get_local_pkgnames()
     repo_pkg_names = PackageDB.get_repo_pkgnames()
     not_found_packages = []
@@ -603,8 +599,8 @@ def refresh_pkg_db_if_needed() -> None:
 
 
 def install_built_deps(
-        deps_names_and_paths: Dict[str, str],
-        resolved_conflicts: Optional[List[List[str]]] = None
+        deps_names_and_paths: dict[str, str],
+        resolved_conflicts: list[list[str]] | None = None
 ) -> None:
     if not deps_names_and_paths:
         return
@@ -612,7 +608,7 @@ def install_built_deps(
     local_packages = PackageDB.get_local_dict()
     args = parse_args()
 
-    def _get_pacman_command() -> List[str]:
+    def _get_pacman_command() -> list[str]:
         return get_pacman_command() + reconstruct_args(args, ignore_args=[
             'upgrade',
             'asdeps',
@@ -670,10 +666,10 @@ def strip_repo_name(pkg_name: str) -> str:
 
 
 def get_ignored_pkgnames_from_patterns(
-        orig_pkg_names: List[str],
-        ignore_patterns: List[str]
-) -> List[str]:
-    ignored_pkg_names: List[str] = []
+        orig_pkg_names: list[str],
+        ignore_patterns: list[str]
+) -> list[str]:
+    ignored_pkg_names: list[str] = []
     for pkg_name in orig_pkg_names:
         for ignore_pattern in ignore_patterns:
             if fnmatch.fnmatch(pkg_name, ignore_pattern):

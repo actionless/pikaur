@@ -1,10 +1,12 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
+import configparser
 import os
 import sys
-import configparser
 from pathlib import Path
-from typing import Dict, Optional, Any, Callable
+from typing import Any, Callable
+
+from typing_extensions import NotRequired, TypedDict
 
 from .i18n import translate
 
@@ -67,179 +69,192 @@ def get_config_path() -> str:
 CONFIG_PATH = get_config_path()
 
 
-CONFIG_SCHEMA: Dict[str, Any] = {
+class DeprecatedConfigValue(TypedDict):
+    section: str
+    option: str
+    transform: NotRequired[Callable[[str, dict], str]]
+
+
+class ConfigValueType(TypedDict):
+    data_type: str
+    default: NotRequired[str]
+    deprecated: NotRequired[DeprecatedConfigValue]
+    migrated: NotRequired[bool]
+
+
+CONFIG_SCHEMA: dict[str, dict[str, ConfigValueType]] = {
     'sync': {
         'AlwaysShowPkgOrigin': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'DevelPkgsExpiration': {
-            'type': 'int',
+            'data_type': 'int',
             'default': '-1',
         },
         'UpgradeSorting': {
-            'type': 'str',
+            'data_type': 'str',
             'default': 'versiondiff'
         },
         'ShowDownloadSize': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'IgnoreOutofdateAURUpgrades': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
     },
     'build': {
         'KeepBuildDir': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'KeepDevBuildDir': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'yes',
         },
         'KeepBuildDeps': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'GpgDir': {
-            'type': 'str',
+            'data_type': 'str',
             'default': ('/etc/pacman.d/gnupg/' if RUNNING_AS_ROOT else '')
         },
         'SkipFailedBuild': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'AlwaysUseDynamicUsers': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'NoEdit': {
-            'type': 'bool',
+            'data_type': 'bool',
             'deprecated': {
                 'section': 'review',
                 'option': 'NoEdit',
             },
         },
         'DontEditByDefault': {
-            'type': 'bool',
+            'data_type': 'bool',
             'deprecated': {
                 'section': 'review',
                 'option': 'DontEditByDefault',
             },
         },
         'NoDiff': {
-            'type': 'bool',
+            'data_type': 'bool',
             'deprecated': {
                 'section': 'review',
                 'option': 'NoDiff',
             },
         },
         'GitDiffArgs': {
-            'type': 'str',
+            'data_type': 'str',
             'deprecated': {
                 'section': 'review',
                 'option': 'GitDiffArgs',
             },
         },
         'IgnoreArch': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no'
         },
     },
     'review': {
         'NoEdit': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'DontEditByDefault': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'NoDiff': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no',
         },
         'GitDiffArgs': {
-            'type': 'str',
+            'data_type': 'str',
             'default': '--ignore-space-change,--ignore-all-space',
         },
         'DiffPager': {
-            'type': 'str',
+            'data_type': 'str',
             'default': 'auto'
         },
         'HideDiffFiles': {
-            'type': 'str',
+            'data_type': 'str',
             'default': '.SRCINFO'
         },
     },
     'colors': {
         'Version': {
-            'type': 'int',
+            'data_type': 'int',
             'default': '10',
         },
         'VersionDiffOld': {
-            'type': 'int',
+            'data_type': 'int',
             'default': '11',
         },
         'VersionDiffNew': {
-            'type': 'int',
+            'data_type': 'int',
             'default': '9',
         },
     },
     'ui': {
         'RequireEnterConfirm': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'yes'
         },
         'DiffPager': {
-            'type': 'str',
+            'data_type': 'str',
             'deprecated': {
                 'section': 'review',
                 'option': 'DiffPager',
             },
         },
         'PrintCommands': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no'
         },
         'AurSearchSorting': {
-            'type': 'str',
+            'data_type': 'str',
             'default': 'hottest'
         },
         'DisplayLastUpdated': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no'
         },
         'GroupByRepository': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'yes'
         },
         'ReverseSearchSorting': {
-            'type': 'bool',
+            'data_type': 'bool',
             'default': 'no'
         },
         'WarnAboutPackageUpdates': {
-            'type': 'str',
+            'data_type': 'str',
             'default': ''
         },
     },
     'misc': {
         'SudoLoopInterval': {
-            'type': 'int',
+            'data_type': 'int',
             'default': '59',
         },
         'PacmanPath': {
-            'type': 'str',
+            'data_type': 'str',
             'default': 'pacman'
         },
         'PrivilegeEscalationTool': {
-            'type': 'str',
+            'data_type': 'str',
             'default': 'sudo',
         },
         'AurHost': {
-            'type': 'str',
+            'data_type': 'str',
             'deprecated': {
                 'section': 'network',
                 'option': 'AurUrl',
@@ -247,7 +262,7 @@ CONFIG_SCHEMA: Dict[str, Any] = {
             },
         },
         'NewsUrl': {
-            'type': 'str',
+            'data_type': 'str',
             'deprecated': {
                 'section': 'network',
                 'option': 'NewsUrl',
@@ -256,34 +271,37 @@ CONFIG_SCHEMA: Dict[str, Any] = {
     },
     'network': {
         'AurUrl': {
-            'type': 'str',
+            'data_type': 'str',
             'default': 'https://aur.archlinux.org',
         },
         'NewsUrl': {
-            'type': 'str',
+            'data_type': 'str',
             'default': 'https://www.archlinux.org/feeds/news/',
         },
         'Socks5Proxy': {
-            'type': 'str',
+            'data_type': 'str',
             'default': '',
         },
         'AurHttpProxy': {
-            'type': 'str',
+            'data_type': 'str',
             'default': '',
         },
         'AurHttpsProxy': {
-            'type': 'str',
+            'data_type': 'str',
             'default': '',
         },
     },
 }
 
 
-def get_key_type(section_name: str, key_name: str) -> Optional[str]:
-    return CONFIG_SCHEMA.get(section_name, {}).get(key_name, {}).get('type')
+def get_key_type(section_name: str, key_name: str) -> str | None:
+    config_value: ConfigValueType | None = CONFIG_SCHEMA.get(section_name, {}).get(key_name, None)
+    if not config_value:
+        return None
+    return config_value.get('data_type')
 
 
-def write_config(config: configparser.ConfigParser = None) -> None:
+def write_config(config: configparser.ConfigParser | None = None) -> None:
     if not config:
         config = configparser.ConfigParser()
     need_write = False
@@ -308,7 +326,9 @@ def write_config(config: configparser.ConfigParser = None) -> None:
 
 def str_to_bool(value: str) -> bool:
     # pylint:disable=protected-access
-    return configparser.RawConfigParser()._convert_to_boolean(value)  # type: ignore[attr-defined]
+    result: bool = \
+        configparser.RawConfigParser()._convert_to_boolean(value)  # type: ignore[attr-defined]
+    return result
 
 
 class PikaurConfigItem:
@@ -338,7 +358,8 @@ class PikaurConfigItem:
         return self.get_str()
 
     def __eq__(self, item: Any) -> bool:
-        return self.get_str() == item
+        result: bool = self.get_str() == item
+        return result
 
 
 class PikaurConfigSection():
@@ -348,7 +369,7 @@ class PikaurConfigSection():
     def __init__(self, section: configparser.SectionProxy) -> None:
         self.section = section
 
-    def __getattr__(self, attr) -> PikaurConfigItem:
+    def __getattr__(self, attr: str) -> PikaurConfigItem:
         return PikaurConfigItem(self.section, attr)
 
     def __repr__(self) -> str:
@@ -380,7 +401,7 @@ class PikaurConfig():
 
                 new_section_name: str = option_schema['deprecated']['section']
                 new_option_name: str = option_schema['deprecated']['option']
-                transform: Optional[Callable] = option_schema['deprecated'].get('transform')
+                transform: Callable | None = option_schema['deprecated'].get('transform')
 
                 old_value_was_migrated = False
                 if (

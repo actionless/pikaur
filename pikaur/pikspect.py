@@ -1,35 +1,40 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import sys
-import subprocess
-import tty
-import pty
-import termios
-import select
-import shutil
-import struct
 import fcntl
 import os
+import pty
 import re
+import select
+import shutil
 import signal
+import struct
+import subprocess
+import sys
+import termios
+import tty
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import List, Dict, TextIO, BinaryIO, Callable, Optional, Union
+from typing import Any, BinaryIO, Callable, TextIO
 
-from .pprint import (
-    PrintLock, print_stderr, create_debug_logger,
-    get_term_width, bold_line, color_line, ColorsHighlight,
-)
-from .pacman_i18n import _p
 from .args import parse_args
-from .core import get_sudo_refresh_command, DEFAULT_INPUT_ENCODING
+from .core import DEFAULT_INPUT_ENCODING, get_sudo_refresh_command
+from .pacman_i18n import _p
+from .pprint import (
+    ColorsHighlight,
+    PrintLock,
+    bold_line,
+    color_line,
+    create_debug_logger,
+    get_term_width,
+    print_stderr,
+)
 
 
 # SMALL_TIMEOUT = 0.1
 SMALL_TIMEOUT = 0.01
 
 
-TcAttrsType = List[Union[int, List[Union[bytes, int]]]]
+TcAttrsType = list[int | list[bytes | int]]
 
 
 _debug = create_debug_logger('pikspect', lock=False)
@@ -46,7 +51,7 @@ class TTYRestore():  # pragma: no cover
             cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
 
     @classmethod
-    def _restore(cls, what: Optional[TcAttrsType] = None) -> None:
+    def _restore(cls, what: TcAttrsType | None = None) -> None:
         # if sys.stdout.isatty():
         #     termios.tcdrain(sys.stdout.fileno())
         # if sys.stderr.isatty():
@@ -60,7 +65,7 @@ class TTYRestore():  # pragma: no cover
                 _debug(','.join(str(arg) for arg in exc.args))
 
     @classmethod
-    def restore(cls, *_whatever) -> None:
+    def restore(cls, *_whatever: Any) -> None:
         cls._restore(cls.old_tcattrs)
 
     def __init__(self) -> None:
@@ -69,7 +74,7 @@ class TTYRestore():  # pragma: no cover
         except termios.error:
             pass
 
-    def restore_new(self, *_whatever) -> None:
+    def restore_new(self, *_whatever: Any) -> None:
         self._restore(self.sub_tty_old_tcattrs)
 
 
@@ -87,10 +92,10 @@ class TTYInputWrapper():  # pragma: no cover
 
     tty_opened = False
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.is_pipe = not sys.stdin.isatty()
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         if self.is_pipe:
             self.old_stdin = sys.stdin
             try:
@@ -100,7 +105,7 @@ class TTYInputWrapper():  # pragma: no cover
             except Exception as exc:
                 _debug(exc)
 
-    def __exit__(self, *_exc_details) -> None:
+    def __exit__(self, *_exc_details: Any) -> None:
         if self.is_pipe and self.tty_opened:
             _debug('Restoring stdin...')
             sys.stdin.close()
@@ -109,7 +114,7 @@ class TTYInputWrapper():  # pragma: no cover
 
 class NestedTerminal():
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.tty_wrapper = TTYInputWrapper()
 
     def __enter__(self) -> os.terminal_size:
@@ -125,7 +130,7 @@ class NestedTerminal():
                 tty.setcbreak(stream.fileno())
         return real_term_geometry
 
-    def __exit__(self, *exc_details) -> None:
+    def __exit__(self, *exc_details: Any) -> None:
         self.tty_wrapper.__exit__(*exc_details)
         TTYRestore.restore()
 
@@ -140,10 +145,10 @@ def _match(pattern: str, line: str) -> bool:
 
 class PikspectSignalHandler():
 
-    signal_handler: Optional[Callable] = None
+    signal_handler: Callable | None = None
 
     @classmethod
-    def set(cls, signal_handler: Callable) -> None:
+    def set_handler(cls, signal_handler: Callable) -> None:
         cls.signal_handler = signal_handler
 
     @classmethod
@@ -151,7 +156,7 @@ class PikspectSignalHandler():
         cls.signal_handler = None
 
     @classmethod
-    def get(cls) -> Optional[Callable]:
+    def get(cls) -> Callable | None:
         return cls.signal_handler
 
 
@@ -160,10 +165,10 @@ class PikspectPopen(subprocess.Popen):
     print_output: bool
     capture_input: bool
     capture_output: bool
-    historic_output: List[bytes]
+    historic_output: list[bytes]
     pty_in: TextIO
     pty_out: BinaryIO
-    default_questions: Dict[str, List[str]]
+    default_questions: dict[str, list[str]]
     # max_question_length = 0  # preserve enough information to analyze questions
     max_question_length = get_term_width() * 2  # preserve also at least last line
     # write buffer:
@@ -174,12 +179,11 @@ class PikspectPopen(subprocess.Popen):
 
     def __init__(  # pylint: disable=too-many-arguments
             self,
-            args: List[str],
+            args: list[str],
             print_output: bool = True,
             capture_input: bool = True,
             capture_output: bool = False,
-            default_questions: Dict[str, List[str]] = None,
-            **kwargs
+            default_questions: dict[str, list[str]] | None = None
     ) -> None:
         self.args = args
         self.print_output = print_output
@@ -198,10 +202,9 @@ class PikspectPopen(subprocess.Popen):
             stdin=self.pty_user_slave,
             stdout=self.pty_cmd_slave,
             stderr=self.pty_cmd_slave,
-            **kwargs
         )
 
-    def add_answers(self, extra_questions: Dict[str, List[str]]) -> None:
+    def add_answers(self, extra_questions: dict[str, list[str]]) -> None:
         for answer, questions in extra_questions.items():
             self.default_questions[answer] = self.default_questions.get(answer, []) + questions
             for question in questions:
@@ -210,12 +213,15 @@ class PikspectPopen(subprocess.Popen):
         self.check_questions()
 
     def communicator_thread(self) -> int:
-        return self._wait(None)
+        result: int = self._wait(None)
+        return result
 
     def run(self) -> None:
         if not isinstance(self.args, list):
             raise TypeError('`args` should be list')
-        PikspectSignalHandler.set(lambda *_whatever: self.send_signal(signal.SIGINT))
+        PikspectSignalHandler.set_handler(
+            lambda *_whatever: self.send_signal(signal.SIGINT)
+        )
         try:
             with NestedTerminal() as real_term_geometry:
 
@@ -346,13 +352,13 @@ class PikspectPopen(subprocess.Popen):
             self.write_something(char.encode(DEFAULT_INPUT_ENCODING))
 
 
-def pikspect(
-        cmd: List[str],
-        print_output=True,
-        auto_proceed=True,
-        conflicts: List[List[str]] = None,
-        extra_questions: Dict[str, List[str]] = None,
-        **kwargs
+def pikspect(  # pylint: disable=too-many-arguments
+        cmd: list[str],
+        print_output: bool = True,
+        auto_proceed: bool = True,
+        conflicts: list[list[str]] | None = None,
+        extra_questions: dict[str, list[str]] | None = None,
+        capture_output: bool | None = None,
 ) -> PikspectPopen:
 
     class YesNo:
@@ -361,7 +367,7 @@ def pikspect(
         QUESTION_YN_YES = _p("[Y/n]")
         QUESTION_YN_NO = _p("[y/N]")
 
-    def format_pacman_question(message: str, question=YesNo.QUESTION_YN_YES) -> str:
+    def format_pacman_question(message: str, question: str = YesNo.QUESTION_YN_YES) -> str:
         return bold_line(f" {_p(message)} {question} ")
 
     class Questions:
@@ -377,7 +383,7 @@ def pikspect(
             '%s and %s are in conflict (%s). Remove %s?', YesNo.QUESTION_YN_NO
         )
 
-    def format_conflicts(conflicts: List[List[str]]) -> List[str]:
+    def format_conflicts(conflicts: list[list[str]]) -> list[str]:
         return [
             Questions.CONFLICT % (new_pkg, old_pkg, old_pkg)
             for new_pkg, old_pkg in conflicts
@@ -390,7 +396,7 @@ def pikspect(
             for new_pkg, old_pkg in conflicts
         ]
 
-    default_questions: Dict[str, List[str]] = {}
+    default_questions: dict[str, list[str]] = {}
     if auto_proceed:
         default_questions = {
             YesNo.ANSWER_Y: Questions.PROCEED + [
@@ -403,7 +409,7 @@ def pikspect(
         cmd,
         print_output=print_output,
         default_questions=default_questions,
-        **kwargs
+        capture_output=bool(capture_output),
     )
 
     extra_questions = extra_questions or {}

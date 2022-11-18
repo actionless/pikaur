@@ -1,51 +1,64 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import os
-import sys
-import readline
-import signal
-import codecs
-import shutil
 import atexit
+import codecs
 import io
+import os
+import readline
+import shutil
+import signal
+import sys
 from argparse import ArgumentError
-from typing import Optional, Callable
+from typing import Any, Callable
 
 import pyalpm
 
-from .i18n import translate  # keep that first
-from .args import (
-    parse_args, reconstruct_args,
+from .args import parse_args, reconstruct_args
+from .config import (
+    _OLD_AUR_REPOS_CACHE_PATH,
+    AUR_REPOS_CACHE_PATH,
+    BUILD_CACHE_PATH,
+    CACHE_ROOT,
+    CONFIG_PATH,
+    DATA_ROOT,
+    PACKAGE_CACHE_PATH,
+    PikaurConfig,
 )
-from .help_cli import cli_print_help
 from .core import (
     DEFAULT_INPUT_ENCODING,
-    spawn, interactive_spawn, remove_dir, check_runtime_deps,
-    running_as_root, sudo, isolate_root_cmd, run_with_sudo_loop,
-)
-from .pprint import (
-    color_line, bold_line,
-    print_stderr, print_stdout,
-    print_error, print_warning,
-    create_debug_logger, ColorsHighlight,
-)
-from .print_department import print_version
-from .updates import print_upgradeable
-from .prompt import ask_to_continue, get_multiple_numbers_input, NotANumberInput
-from .config import (
-    BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, CACHE_ROOT, CONFIG_PATH,
-    AUR_REPOS_CACHE_PATH, PikaurConfig, _OLD_AUR_REPOS_CACHE_PATH, DATA_ROOT,
+    check_runtime_deps,
+    interactive_spawn,
+    isolate_root_cmd,
+    remove_dir,
+    run_with_sudo_loop,
+    running_as_root,
+    spawn,
+    sudo,
 )
 from .exceptions import SysExit
-from .pikspect import TTYRestore, PikspectSignalHandler
-from .install_cli import InstallPackagesCLI
-from .search_cli import cli_search_packages
-from .info_cli import cli_info_packages
-from .urllib import init_proxy, ProxyInitSocks5Error
 from .getpkgbuild_cli import cli_getpkgbuild
+from .help_cli import cli_print_help
+from .i18n import translate  # keep that first
+from .info_cli import cli_info_packages
+from .install_cli import InstallPackagesCLI
+from .pikspect import PikspectSignalHandler, TTYRestore
+from .pprint import (
+    ColorsHighlight,
+    bold_line,
+    color_line,
+    create_debug_logger,
+    print_error,
+    print_stderr,
+    print_stdout,
+    print_warning,
+)
+from .print_department import print_version
+from .prompt import NotANumberInputError, ask_to_continue, get_multiple_numbers_input
+from .search_cli import cli_search_packages
+from .updates import print_upgradeable
+from .urllib import ProxyInitSocks5Error, init_proxy
 
 
 def init_readline() -> None:
@@ -154,7 +167,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
             if restart_prompt:
                 continue
             break
-        except NotANumberInput as exc:
+        except NotANumberInputError as exc:
             if exc.character.lower() == translate('n'):
                 raise SysExit(128) from exc
             print_error(translate('invalid number: {}').format(exc.character))
@@ -177,7 +190,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # specified both operations, like `pikaur -QS smth`
 
     args = parse_args()
-    pikaur_operation: Optional[Callable] = None
+    pikaur_operation: Callable | None = None
     require_sudo = False
 
     if args.help:
@@ -299,9 +312,10 @@ def restore_tty() -> None:
     TTYRestore.restore()
 
 
-def handle_sig_int(*_whatever) -> None:  # pragma: no cover
+def handle_sig_int(*_whatever: Any) -> None:  # pragma: no cover
     if signal_handler := PikspectSignalHandler.get():
-        return signal_handler(*_whatever)  # pylint: disable=not-callable
+        signal_handler(*_whatever)  # pylint: disable=not-callable
+        return
     if parse_args().pikaur_debug:
         raise KeyboardInterrupt()
     print_stderr("\n\nCanceled by user (SIGINT)", lock=False)

@@ -1,21 +1,26 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import sys
 import tty
-from typing import List, Optional, Iterable, Sequence
+from typing import Iterable, Sequence
 
 from .args import parse_args
 from .config import PikaurConfig
-
-from .core import interactive_spawn, get_editor
-from .i18n import translate
-from .pprint import (
-    color_line, get_term_width, range_printable, ColorsHighlight,
-    PrintLock, print_stderr, print_warning, create_debug_logger,
-)
+from .core import get_editor, interactive_spawn
 from .exceptions import SysExit
+from .i18n import translate
+from .pikspect import TTYInputWrapper, TTYRestore
 from .pikspect import pikspect as pikspect_spawn
-from .pikspect import TTYRestore, TTYInputWrapper
+from .pprint import (
+    ColorsHighlight,
+    PrintLock,
+    color_line,
+    create_debug_logger,
+    get_term_width,
+    print_stderr,
+    print_warning,
+    range_printable,
+)
 
 
 Y = translate('y')
@@ -29,13 +34,12 @@ _debug_nolock = create_debug_logger('prompt_nolock', lock=False)
 
 
 def read_answer_from_tty(question: str, answers: Sequence[str] = (Y_UP, N, )) -> str:
-    '''
+    """
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
     Valid answers are passed as 'answers' variable (the default is in capital).
     Invalid answer will return an empty string.
-    '''
-
+    """
     default = ' '
 
     for letter in answers:
@@ -88,7 +92,7 @@ def split_last_line(text: str) -> str:
 
 
 def get_input(
-        prompt: str, answers: Sequence[str] = (), require_confirm=False
+        prompt: str, answers: Sequence[str] = (), require_confirm: bool = False
 ) -> str:
     _debug('Gonna get input from user...')
     answer = ''
@@ -123,7 +127,7 @@ def get_input(
     return answer
 
 
-class NotANumberInput(Exception):
+class NotANumberInputError(Exception):
     character: str
 
     def __init__(self, character: str):
@@ -131,12 +135,12 @@ class NotANumberInput(Exception):
         super().__init__(f'"{character} is not a number')
 
 
-def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> List[int]:
+def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> list[int]:
     str_result = get_input(prompt, [str(answer) for answer in answers], require_confirm=True)
     if str_result == '':
         return []
     str_results = str_result.replace(',', ' ').split(' ')
-    int_results: List[int] = []
+    int_results: list[int] = []
     for block in str_results[:]:
         if '..' in block:
             block = block.replace('..', '-')
@@ -144,19 +148,19 @@ def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> List
             try:
                 range_start, range_end = [int(char) for char in block.split('-')]
             except ValueError as exc:
-                raise NotANumberInput(block) from exc
+                raise NotANumberInputError(block) from exc
             if range_start > range_end:
-                raise NotANumberInput(block)
+                raise NotANumberInputError(block)
             int_results += list(range(range_start, range_end + 1))
         else:
             try:
                 int_results.append(int(block))
             except ValueError as exc:
-                raise NotANumberInput(exc.args[0].split("'")[-2]) from exc
+                raise NotANumberInputError(exc.args[0].split("'")[-2]) from exc
     return int_results
 
 
-def ask_to_continue(text: str = None, default_yes: bool = True) -> bool:
+def ask_to_continue(text: str | None = None, default_yes: bool = True) -> bool:
     args = parse_args()
     if text is None:
         text = translate('Do you want to proceed?')
@@ -174,19 +178,22 @@ def ask_to_continue(text: str = None, default_yes: bool = True) -> bool:
 
 
 def retry_interactive_command(
-        cmd_args: List[str],
-        pikspect=False,
-        **kwargs
+        cmd_args: list[str],
+        pikspect: bool = False,
+        conflicts: list[list[str]] | None = None,
 ) -> bool:
     args = parse_args()
     while True:
         good = None
         if pikspect and ('--noconfirm' not in cmd_args):
-            good = pikspect_spawn(cmd_args, **kwargs).returncode == 0
+            good = pikspect_spawn(
+                cmd_args,
+                conflicts=conflicts,
+            ).returncode == 0
         else:
-            if 'conflicts' in kwargs:
-                del kwargs['conflicts']
-            good = interactive_spawn(cmd_args, **kwargs).returncode == 0
+            good = interactive_spawn(
+                cmd_args
+            ).returncode == 0
         if good:
             return good
         print_stderr(color_line(
@@ -202,13 +209,21 @@ def retry_interactive_command(
             return False
 
 
-def retry_interactive_command_or_exit(cmd_args: List[str], **kwargs) -> None:
-    if not retry_interactive_command(cmd_args, **kwargs):
+def retry_interactive_command_or_exit(
+        cmd_args: list[str],
+        pikspect: bool = False,
+        conflicts: list[list[str]] | None = None,
+) -> None:
+    if not retry_interactive_command(
+            cmd_args,
+            pikspect=pikspect,
+            conflicts=conflicts,
+    ):
         if not ask_to_continue(default_yes=False):
             raise SysExit(125)
 
 
-def get_editor_or_exit() -> Optional[List[str]]:
+def get_editor_or_exit() -> list[str] | None:
     editor = get_editor()
     if not editor:
         print_warning(translate("no editor found. Try setting $VISUAL or $EDITOR."))

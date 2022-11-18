@@ -1,6 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from multiprocessing.pool import ThreadPool
+from typing import TYPE_CHECKING
 from urllib import parse
 from urllib.parse import quote
 
@@ -9,6 +10,8 @@ from .core import DataType, get_chunks
 from .exceptions import AURError
 from .progressbar import ThreadSafeProgressBar
 from .urllib import get_gzip_from_url, get_json_from_url
+if TYPE_CHECKING:
+    from .srcinfo import SrcInfo
 
 
 AUR_BASE_URL = PikaurConfig().network.AurUrl.get_str()
@@ -45,7 +48,8 @@ class AURPackageInfo(DataType):
     def git_url(self) -> str:
         return f'{AUR_BASE_URL}/{self.packagebase}.git'
 
-    def __init__(self, **kwargs) -> None:
+    # @TODO: type it later:
+    def __init__(self, **kwargs) -> None:  # type: ignore
         for aur_api_name, pikaur_class_name in (
             ('description', 'desc', ),
             ('id', 'aur_id', ),
@@ -56,10 +60,10 @@ class AURPackageInfo(DataType):
         super().__init__(**kwargs)
 
     @classmethod
-    def from_srcinfo(cls, srcinfo) -> 'AURPackageInfo':
+    def from_srcinfo(cls, srcinfo: 'SrcInfo') -> 'AURPackageInfo':
         return cls(
             name=srcinfo.package_name,
-            version=srcinfo.get_value('pkgver') + '-' + srcinfo.get_value('pkgrel'),
+            version=(srcinfo.get_value('pkgver') or '') + '-' + (srcinfo.get_value('pkgrel') or ''),
             desc=srcinfo.get_value('pkgdesc'),
             packagebase=srcinfo.get_value('pkgbase'),
             depends=[dep.line for dep in srcinfo.get_depends().values()],
@@ -154,7 +158,7 @@ _AUR_PKGS_FIND_CACHE: dict[str, AURPackageInfo] = {}
 
 
 def find_aur_packages(
-        package_names: list[str], with_progressbar=False
+        package_names: list[str], with_progressbar: bool = False
 ) -> tuple[list[AURPackageInfo], list[str]]:
 
     # @TODO: return only packages for the current architecture

@@ -1,10 +1,11 @@
 import fcntl
+from typing import Any
 
-from .i18n import translate
+from .core import DEFAULT_INPUT_ENCODING
 from .exceptions import SysExit
+from .i18n import translate
 from .pprint import print_error
 from .prompt import ask_to_continue
-from .core import DEFAULT_INPUT_ENCODING
 
 
 class FileLock():
@@ -31,12 +32,12 @@ class FileLock():
                 if not ask_to_continue(translate('Do you want to retry?')):
                     raise SysExit(128) from err
 
-    def __exit__(self, *_exc_details) -> None:
+    def __exit__(self, *_exc_details: Any) -> None:
         if self.locked:
             fcntl.flock(self.lock_file, fcntl.LOCK_UN)
             self.locked = False
         if not self.lock_file.closed:
             self.lock_file.close()
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.__exit__()

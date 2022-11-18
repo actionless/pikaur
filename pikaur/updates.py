@@ -1,27 +1,30 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from datetime import datetime
-from typing import List, Tuple, Optional, Union, Sequence
+from typing import Sequence
 
 import pyalpm
 
+from .args import parse_args
+from .aur import AURPackageInfo, find_aur_packages
+from .config import PikaurConfig
+from .core import AURInstallInfo, InstallInfo, RepoInstallInfo
+from .exceptions import PackagesNotFoundInRepo
 from .i18n import translate, translate_many
-from .version import compare_versions
 from .pacman import (
-    PackageDB, PacmanConfig,
-    find_packages_not_from_repo, find_upgradeable_packages,
+    PackageDB,
+    PacmanConfig,
+    find_packages_not_from_repo,
+    find_upgradeable_packages,
     get_ignored_pkgnames_from_patterns,
 )
-from .aur import AURPackageInfo, find_aur_packages
 from .pprint import print_stderr, print_stdout
-from .args import parse_args
-from .config import PikaurConfig
-from .core import AURInstallInfo, RepoInstallInfo, InstallInfo
-from .exceptions import PackagesNotFoundInRepo
 from .print_department import (
-    print_ignoring_outofdate_upgrade, print_ignored_package,
     pretty_format_upgradeable,
+    print_ignored_package,
+    print_ignoring_outofdate_upgrade,
 )
+from .version import compare_versions
 
 
 DEVEL_PKGS_POSTFIXES = (
@@ -45,7 +48,7 @@ def is_devel_pkg(pkg_name: str) -> bool:
 
 def get_remote_package(
         new_pkg_name: str
-) -> Optional[Union[pyalpm.Package, AURPackageInfo]]:
+) -> pyalpm.Package | AURPackageInfo | None:
     try:
         repo_pkg = PackageDB.find_repo_package(new_pkg_name)
     except PackagesNotFoundInRepo:
@@ -57,14 +60,14 @@ def get_remote_package(
         return repo_pkg
 
 
-def get_remote_package_version(new_pkg_name: str) -> Optional[str]:
+def get_remote_package_version(new_pkg_name: str) -> str | None:
     pkg = get_remote_package(new_pkg_name)
     if pkg:
         return pkg.version
     return None
 
 
-def find_repo_upgradeable() -> List[RepoInstallInfo]:
+def find_repo_upgradeable() -> list[RepoInstallInfo]:
     all_local_pkgs = PackageDB.get_local_dict()
     repo_packages_updates = []
     for repo_pkg in find_upgradeable_packages():
@@ -83,9 +86,9 @@ def find_repo_upgradeable() -> List[RepoInstallInfo]:
 
 
 def find_aur_devel_updates(
-        aur_pkgs_info: List[AURPackageInfo],
+        aur_pkgs_info: list[AURPackageInfo],
         package_ttl_days: int
-) -> List[AURInstallInfo]:
+) -> list[AURInstallInfo]:
     local_packages = PackageDB.get_local_dict()
     now = datetime.now()
     aur_updates = []
@@ -111,7 +114,7 @@ def find_aur_devel_updates(
     return aur_updates
 
 
-def find_aur_updates() -> Tuple[List[AURInstallInfo], List[str]]:
+def find_aur_updates() -> tuple[list[AURInstallInfo], list[str]]:
     args = parse_args()
     package_names = find_packages_not_from_repo()
     print_stderr(translate_many(
@@ -157,11 +160,11 @@ def find_aur_updates() -> Tuple[List[AURInstallInfo], List[str]]:
 
 
 def print_upgradeable(
-        ignored_only=False,
-        install_infos: Optional[Sequence[InstallInfo]] = None
+        ignored_only: bool = False,
+        install_infos: Sequence[InstallInfo] | None = None
 ) -> None:
     args = parse_args()
-    updates: List[InstallInfo] = list(install_infos) if install_infos else []
+    updates: list[InstallInfo] = list(install_infos) if install_infos else []
     if not install_infos:
         if not args.repo:
             aur_updates, _not_found_aur_pkgs = find_aur_updates()

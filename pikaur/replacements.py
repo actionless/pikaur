@@ -1,18 +1,17 @@
-from typing import List, Dict
 
+from .exceptions import PackagesNotFoundInRepo
 from .i18n import translate_many
 from .pacman import PackageDB
-from .exceptions import PackagesNotFoundInRepo
 from .pprint import print_warning
 
 
-def find_replacements() -> Dict[str, List[str]]:
+def find_replacements() -> dict[str, list[str]]:
     all_repo_pkgs_info = PackageDB.get_repo_list()
     all_repo_pkg_names = PackageDB.get_repo_pkgnames()
     all_local_pkgs_info = PackageDB.get_local_dict()
     all_local_pkgs_names = all_local_pkgs_info.keys()
 
-    replaces_lists: Dict[str, List[str]] = {}
+    replaces_lists: dict[str, list[str]] = {}
     for repo_pkg_info in all_repo_pkgs_info:
         if repo_pkg_info.replaces:
             for dep_name in repo_pkg_info.replaces:
@@ -20,7 +19,7 @@ def find_replacements() -> Dict[str, List[str]]:
                 if dep_name != repo_pkg_name:
                     replaces_lists.setdefault(repo_pkg_name, []).append(dep_name)
 
-    new_pkgs_replaces: Dict[str, List[str]] = {}
+    new_pkgs_replaces: dict[str, list[str]] = {}
     for pkg_name, replace_list in replaces_lists.items():
         for replace_pkg_name in replace_list:
             try:

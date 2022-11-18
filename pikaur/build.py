@@ -1,47 +1,60 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import os
 import shutil
 import subprocess
-from multiprocessing.pool import ThreadPool
 from glob import glob
-from typing import List, Dict, Set, Optional, Any
+from multiprocessing.pool import ThreadPool
+from typing import Any
 
+from .args import PikaurArgs, parse_args
+from .aur import find_aur_packages, get_repo_url
+from .config import (
+    AUR_REPOS_CACHE_PATH,
+    BUILD_CACHE_PATH,
+    BUILD_DEPS_LOCK,
+    PACKAGE_CACHE_PATH,
+    PikaurConfig,
+)
 from .core import (
     DataType,
-    remove_dir, replace_file, open_file, dirname,
-    joined_spawn, spawn, interactive_spawn, InteractiveSpawn,
-    sudo, running_as_root, isolate_root_cmd,
+    InteractiveSpawn,
+    dirname,
+    interactive_spawn,
+    isolate_root_cmd,
+    joined_spawn,
+    open_file,
+    remove_dir,
+    replace_file,
+    running_as_root,
+    spawn,
+    sudo,
 )
+from .exceptions import BuildError, CloneError, DependencyError, DependencyNotBuiltYet, SysExit
+from .filelock import FileLock
 from .i18n import translate, translate_many
-from .config import (
-    BUILD_DEPS_LOCK, PikaurConfig,
-    AUR_REPOS_CACHE_PATH, BUILD_CACHE_PATH, PACKAGE_CACHE_PATH,
-)
-from .aur import get_repo_url, find_aur_packages
-from .pacman import (
-    PackageDB, ProvidedDependency, get_pacman_command, install_built_deps,
-)
-from .args import PikaurArgs, parse_args
+from .makepkg_config import PKGDEST, MakePkgCommand, MakepkgConfig
+from .pacman import PackageDB, ProvidedDependency, get_pacman_command, install_built_deps
 from .pprint import (
-    color_line, bold_line, color_enabled,
-    print_stdout, print_stderr, print_error, create_debug_logger,
     ColorsHighlight,
+    bold_line,
+    color_enabled,
+    color_line,
+    create_debug_logger,
+    print_error,
+    print_stderr,
+    print_stdout,
 )
 from .prompt import (
-    retry_interactive_command_or_exit, ask_to_continue,
-    get_input, get_editor_or_exit,
-)
-from .exceptions import (
-    CloneError, DependencyError, BuildError, DependencyNotBuiltYet,
-    SysExit,
+    ask_to_continue,
+    get_editor_or_exit,
+    get_input,
+    retry_interactive_command_or_exit,
 )
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
-from .version import compare_versions, VersionMatcher
-from .makepkg_config import MakepkgConfig, MakePkgCommand, PKGDEST
 from .urllib import wrap_proxy_env
-from .filelock import FileLock
+from .version import VersionMatcher, compare_versions
 
 
 _debug = create_debug_logger('build')
@@ -51,11 +64,11 @@ class PkgbuildChanged(Exception):
     pass
 
 
-def _shell(cmds: List[str]) -> InteractiveSpawn:
+def _shell(cmds: list[str]) -> InteractiveSpawn:
     return interactive_spawn(isolate_root_cmd(wrap_proxy_env(cmds)))
 
 
-def _mkdir(to_path) -> None:
+def _mkdir(to_path: str) -> None:
     mkdir_result = spawn(isolate_root_cmd(['mkdir', '-p', to_path]))
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
@@ -63,7 +76,7 @@ def _mkdir(to_path) -> None:
         raise Exception(translate(f"Can't create destination directory '{to_path}'."))
 
 
-def copy_aur_repo(from_path, to_path) -> None:
+def copy_aur_repo(from_path: str, to_path: str) -> None:
     from_path = os.path.realpath(from_path)
     to_path = os.path.realpath(to_path)
     if not os.path.exists(to_path):
@@ -93,13 +106,13 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     pull = False
 
     package_base: str
-    package_names: List[str]
+    package_names: list[str]
 
     repo_path: str
     pkgbuild_path: str
     build_dir: str
     build_gpgdir: str
-    built_packages_paths: Dict[str, str]
+    built_packages_paths: dict[str, str]
 
     reviewed = False
     keep_build_dir = False
@@ -107,23 +120,23 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     _source_repo_updated = False
     _build_files_copied = False
 
-    failed: Optional[bool] = None
+    failed: bool | None = None
 
-    new_deps_to_install: List[str]
-    new_make_deps_to_install: List[str]
-    built_deps_to_install: Dict[str, str]
+    new_deps_to_install: list[str]
+    new_make_deps_to_install: list[str]
+    built_deps_to_install: dict[str, str]
 
     args: PikaurArgs
-    resolved_conflicts: Optional[List[List[str]]] = None
+    resolved_conflicts: list[list[str]] | None = None
 
-    _local_pkgs_wo_build_deps: Set[str]
-    _local_pkgs_with_build_deps: Set[str]
-    _local_provided_pkgs_with_build_deps: Dict[str, List[ProvidedDependency]]
+    _local_pkgs_wo_build_deps: set[str]
+    _local_pkgs_with_build_deps: set[str]
+    _local_provided_pkgs_with_build_deps: dict[str, list[ProvidedDependency]]
 
     def __init__(  # pylint: disable=super-init-not-called
             self,
-            package_names: Optional[List[str]] = None,
-            pkgbuild_path: Optional[str] = None
+            package_names: list[str] | None = None,
+            pkgbuild_path: str | None = None
     ) -> None:
         self.args = parse_args()
 
@@ -193,7 +206,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         ])
 
     def update_aur_repo(self) -> InteractiveSpawn:
-        cmd_args: List[str]
+        cmd_args: list[str]
         if self.pull:
             cmd_args = [
                 'git',
@@ -223,10 +236,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         )
 
     @property
-    def last_installed_hash(self) -> Optional[str]:
-        """
-        Commit hash of AUR repo of last version of the pkg installed by Pikaur
-        """
+    def last_installed_hash(self) -> str | None:
+        """Commit hash of AUR repo of last version of the pkg installed by Pikaur."""
         if os.path.exists(self.last_installed_file_path):
             with open_file(self.last_installed_file_path) as last_installed_file:
                 lines = last_installed_file.readlines()
@@ -246,10 +257,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             )
 
     @property
-    def current_hash(self) -> Optional[str]:
-        """
-        Commit hash of AUR repo of the pkg
-        """
+    def current_hash(self) -> str | None:
+        """Commit hash of AUR repo of the pkg."""
         git_hash_path = os.path.join(
             self.repo_path,
             '.git/refs/heads/master'
@@ -259,7 +268,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         with open_file(git_hash_path) as current_hash_file:
             return current_hash_file.readlines()[0].strip()
 
-    def get_latest_dev_sources(self, check_dev_pkgs=True) -> None:
+    def get_latest_dev_sources(self, check_dev_pkgs: bool = True) -> None:
         if not self.reviewed:
             return
         self.prepare_build_destination()
@@ -324,12 +333,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         return self._compare_versions(-1)
 
     @property
-    def all_deps_to_install(self) -> List[str]:
+    def all_deps_to_install(self) -> list[str]:
         return self.new_make_deps_to_install + self.new_deps_to_install
 
     def _filter_built_deps(
             self,
-            all_package_builds: Dict[str, 'PackageBuild']
+            all_package_builds: dict[str, 'PackageBuild']
     ) -> None:
 
         def _mark_dep_resolved(dep: str) -> None:
@@ -338,7 +347,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             if dep in self.new_deps_to_install:
                 self.new_deps_to_install.remove(dep)
 
-        all_provided_pkgnames: Dict[str, str] = {}
+        all_provided_pkgnames: dict[str, str] = {}
         for pkg_build in all_package_builds.values():
             for pkg_name in pkg_build.package_names:
                 srcinfo = SrcInfo(
@@ -370,14 +379,14 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     package_build.built_packages_paths[pkg_name]
                 _mark_dep_resolved(dep)
 
-    def _get_pacman_command(self, ignore_args: Optional[List[str]] = None) -> List[str]:
+    def _get_pacman_command(self, ignore_args: list[str] | None = None) -> list[str]:
         return get_pacman_command(ignore_args=ignore_args) + (
             ['--noconfirm'] if self.args.noconfirm else []
         )
 
     def install_built_deps(
             self,
-            all_package_builds: Dict[str, 'PackageBuild']
+            all_package_builds: dict[str, 'PackageBuild']
     ) -> None:
 
         self.get_deps(all_package_builds)
@@ -466,7 +475,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return True
         return False
 
-    def prepare_build_destination(self, flush=False) -> None:
+    def prepare_build_destination(self, flush: bool = False) -> None:
         if flush:
             remove_dir(self.build_dir)
             self._build_files_copied = False
@@ -487,14 +496,14 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def get_deps(
             self,
-            all_package_builds: Dict[str, 'PackageBuild'],
-            filter_built=True,
-            exclude_pkg_names: Optional[List[str]] = None,
+            all_package_builds: dict[str, 'PackageBuild'],
+            filter_built: bool = True,
+            exclude_pkg_names: list[str] | None = None,
     ) -> None:
         exclude_pkg_names = exclude_pkg_names or []
         self.new_deps_to_install = []
-        new_make_deps_to_install: List[str] = []
-        new_check_deps_to_install: List[str] = []
+        new_make_deps_to_install: list[str] = []
+        new_check_deps_to_install: list[str] = []
         for package_name in self.package_names:
             if package_name in exclude_pkg_names:
                 continue
@@ -550,7 +559,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self._local_pkgs_with_build_deps = set(PackageDB.get_local_dict().keys())
         self._local_provided_pkgs_with_build_deps = PackageDB.get_local_provided_dict()
 
-    def install_all_deps(self, all_package_builds: Dict[str, 'PackageBuild']) -> None:
+    def install_all_deps(self, all_package_builds: dict[str, 'PackageBuild']) -> None:
         with FileLock(BUILD_DEPS_LOCK):
             self.get_deps(all_package_builds)
             if self.all_deps_to_install or self.built_deps_to_install:
@@ -682,12 +691,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 env['GNUPGHOME'] = self.build_gpgdir
 
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
-            spawn_kwargs: Dict[str, Any] = {}
+            spawn_kwargs: dict[str, Any] = {}
             if self.args.hide_build_log:
-                spawn_kwargs = dict(
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
-                )
+                spawn_kwargs = {
+                    "stdout": subprocess.PIPE,
+                    "stderr": subprocess.PIPE
+                }
 
             result = interactive_spawn(
                 cmd_args,
@@ -787,8 +796,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def build(
             self,
-            all_package_builds: Dict[str, 'PackageBuild'],
-            resolved_conflicts: List[List[str]]
+            all_package_builds: dict[str, 'PackageBuild'],
+            resolved_conflicts: list[list[str]]
     ) -> None:
         self.resolved_conflicts = resolved_conflicts
 
@@ -813,9 +822,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self._set_built_package_path()
 
 
-def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
+def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
     aur_pkgs, _ = find_aur_packages(package_names)
-    packages_bases: Dict[str, List[str]] = {}
+    packages_bases: dict[str, list[str]] = {}
     for aur_pkg in aur_pkgs:
         packages_bases.setdefault(aur_pkg.packagebase, []).append(aur_pkg.name)
     package_builds_by_base = {
@@ -827,7 +836,7 @@ def clone_aur_repos(package_names: List[str]) -> Dict[str, PackageBuild]:
         for pkgbase, pkg_names in packages_bases.items()
         for pkg_name in pkg_names
     }
-    pool_size: Optional[int] = None
+    pool_size: int | None = None
     if running_as_root():
         pool_size = 1
     with ThreadPool(processes=pool_size) as pool:

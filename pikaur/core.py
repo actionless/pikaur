@@ -1,31 +1,26 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import codecs
 import enum
 import os
 import shutil
 import subprocess
-import tempfile
 import sys
+import tempfile
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import (
-    TYPE_CHECKING,
-    Any, Callable, Iterable, List, Optional, Union, Tuple, Dict,
-)
+from typing import IO, TYPE_CHECKING, Any, Callable, Iterable
 
 import pyalpm
 
 from .args import parse_args
 from .config import PikaurConfig
 from .i18n import translate
-from .pprint import (
-    print_stderr, color_line, print_error, bold_line, ColorsHighlight,
-)
+from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
-    from .aur import AURPackageInfo  # noqa
+    from .aur import AURPackageInfo
 
 
 DEFAULT_INPUT_ENCODING = 'utf-8'
@@ -33,19 +28,19 @@ DEFAULT_INPUT_ENCODING = 'utf-8'
 
 class ComparableType:
 
-    __ignore_in_eq__: Tuple[str, ...] = tuple()
+    __ignore_in_eq__: tuple[str, ...] = ()
 
     __hash__ = object.__hash__
-    __compare_stack__: Optional[List[Any]] = None
+    __compare_stack__: list[Any] | None = None
 
     @property
-    def public_vars(self):
+    def public_vars(self) -> dict[str, Any]:
         return {
             var: val for var, val in vars(self).items()
             if not var.startswith('__')
         }
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'ComparableType') -> bool:  # type: ignore[override]
         if not isinstance(other, self.__class__):
             return False
         if not self.__compare_stack__:
@@ -70,8 +65,8 @@ class DataType(ComparableType):
 
     @classmethod  # type: ignore[misc]
     @property
-    def __all_annotations__(cls) -> Dict[str, Any]:
-        annotations: Dict[str, Any] = {}
+    def __all_annotations__(cls) -> dict[str, Any]:
+        annotations: dict[str, Any] = {}
         for parent_class in reversed(cls.mro()):
             annotations.update(**getattr(parent_class, '__annotations__', {}))
         return annotations
@@ -112,16 +107,16 @@ class InstallInfo(DataType):
     name: str
     current_version: str
     new_version: str
-    description: Optional[str] = None
-    maintainer: Optional[str] = None
-    repository: Optional[str] = None
-    devel_pkg_age_days: Optional[int] = None
-    package: Union['pyalpm.Package', 'AURPackageInfo']
-    provided_by: Optional[List[Union['pyalpm.Package', 'AURPackageInfo']]] = None
-    required_by: Optional[List['InstallInfo']] = None
-    members_of: Optional[List[str]] = None
-    replaces: Optional[List[str]] = None
-    pkgbuild_path: Optional[str] = None
+    description: str | None = None
+    maintainer: str | None = None
+    repository: str | None = None
+    devel_pkg_age_days: int | None = None
+    package: 'pyalpm.Package | AURPackageInfo'
+    provided_by: list['pyalpm.Package | AURPackageInfo'] | None = None
+    required_by: list['InstallInfo'] | None = None
+    members_of: list[str] | None = None
+    replaces: list[str] | None = None
+    pkgbuild_path: str | None = None
 
     __ignore_in_eq__ = ('package', 'provided_by', 'pkgbuild_path')
 
@@ -146,13 +141,13 @@ class AURInstallInfo(InstallInfo):
     package: 'AURPackageInfo'
 
 
-def sudo(cmd: List[str]) -> List[str]:
+def sudo(cmd: list[str]) -> list[str]:
     if running_as_root():
         return cmd
     return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), ] + cmd
 
 
-def get_sudo_refresh_command() -> List[str]:
+def get_sudo_refresh_command() -> list[str]:
     pacman_path = PikaurConfig().misc.PacmanPath.get_str()
     return sudo([pacman_path, '-T'])
 
@@ -162,7 +157,9 @@ class InteractiveSpawn(subprocess.Popen):
     stdout_text: str
     stderr_text: str
 
-    def communicate(self, _input=None, _timeout=None) -> Tuple[bytes, bytes]:
+    def communicate(  # pylint: disable=arguments-renamed
+            self, com_input: str | None = None, timeout: float | None = None
+    ) -> tuple[bytes, bytes]:
         if parse_args().print_commands:
             if self.args != get_sudo_refresh_command():
                 print_stderr(
@@ -174,7 +171,7 @@ class InteractiveSpawn(subprocess.Popen):
                     )
                 )
 
-        stdout, stderr = super().communicate(_input, _timeout)
+        stdout, stderr = super().communicate(com_input, timeout)
         self.stdout_text = stdout.decode(DEFAULT_INPUT_ENCODING) if stdout else None
         self.stderr_text = stderr.decode(DEFAULT_INPUT_ENCODING) if stderr else None
         return stdout, stderr
@@ -187,16 +184,33 @@ class InteractiveSpawn(subprocess.Popen):
         )
 
 
-def interactive_spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
-    process = InteractiveSpawn(cmd, **kwargs)
+def interactive_spawn(
+        cmd: list[str],
+        stdout: IO[Any] | int | None = None,
+        stderr: IO[Any] | int | None = None,
+        cwd: str | None = None,
+        env: dict[str, str] | None = None,
+) -> InteractiveSpawn:
+    process = InteractiveSpawn(
+        cmd,
+        stdout=stdout, stderr=stderr,
+        cwd=cwd, env=env,
+    )
     process.communicate()
     return process
 
 
-def spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
+def spawn(
+        cmd: list[str],
+        cwd: str | None = None,
+        env: dict[str, str] | None = None,
+) -> InteractiveSpawn:
     with tempfile.TemporaryFile() as out_file:
         with tempfile.TemporaryFile() as err_file:
-            proc = interactive_spawn(cmd, stdout=out_file, stderr=err_file, **kwargs)
+            proc = interactive_spawn(
+                cmd, stdout=out_file, stderr=err_file,
+                cwd=cwd, env=env,
+            )
             out_file.seek(0)
             err_file.seek(0)
             proc.stdout_text = out_file.read().decode(DEFAULT_INPUT_ENCODING)
@@ -204,9 +218,16 @@ def spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
     return proc
 
 
-def joined_spawn(cmd: List[str], **kwargs) -> InteractiveSpawn:
+def joined_spawn(
+        cmd: list[str],
+        cwd: str | None = None,
+        env: dict[str, str] | None = None,
+) -> InteractiveSpawn:
     with tempfile.TemporaryFile() as out_file:
-        proc = interactive_spawn(cmd, stdout=out_file, stderr=out_file, **kwargs)
+        proc = interactive_spawn(
+            cmd, stdout=out_file, stderr=out_file,
+            cwd=cwd, env=env,
+        )
         out_file.seek(0)
         proc.stdout_text = out_file.read().decode(DEFAULT_INPUT_ENCODING)
     return proc
@@ -216,7 +237,11 @@ def running_as_root() -> bool:
     return os.geteuid() == 0
 
 
-def isolate_root_cmd(cmd: List[str], cwd=None, env=None) -> List[str]:
+def isolate_root_cmd(
+        cmd: list[str],
+        cwd: str | None = None,
+        env: dict[str, str] | None = None,
+) -> list[str]:
     if not running_as_root():
         return cmd
     base_root_isolator = [
@@ -245,7 +270,6 @@ def detect_bom_type(file_path: str) -> str:
     returns file encoding string for open() function
     https://stackoverflow.com/a/44295590/1850190
     """
-
     with open(file_path, 'rb') as test_file:
         first_bytes = test_file.read(4)
 
@@ -275,14 +299,16 @@ def detect_bom_type(file_path: str) -> str:
 
 
 def open_file(
-        file_path: str, mode='r', encoding: str = None, **kwargs
+        file_path: str, mode: str = 'r', encoding: str | None = None
 ) -> codecs.StreamReaderWriter:
     if encoding is None and (mode and 'r' in mode):
         encoding = detect_bom_type(file_path)
     if encoding:
-        kwargs['encoding'] = encoding
+        return codecs.open(
+            file_path, mode, errors='ignore', encoding=encoding
+        )
     return codecs.open(
-        file_path, mode, errors='ignore', **kwargs
+        file_path, mode, errors='ignore'
     )
 
 
@@ -300,7 +326,7 @@ def remove_dir(dir_path: str) -> None:
         interactive_spawn(sudo(['rm', '-rf', dir_path]))
 
 
-def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[List[Any]]:
+def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[list[Any]]:
     result = []
     index = 0
     for item in iterable:
@@ -314,7 +340,7 @@ def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[List[Any]]:
         yield result
 
 
-def get_editor() -> Optional[List[str]]:
+def get_editor() -> list[str] | None:
     editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
     if editor_line:
         return editor_line.split(' ')
@@ -333,10 +359,8 @@ def dirname(path: str) -> str:
     return os.path.dirname(path) or '.'
 
 
-def sudo_loop(once=False) -> None:
-    """
-    get sudo for further questions
-    """
+def sudo_loop(once: bool = False) -> None:
+    """Get sudo for further questions."""
     sudo_loop_interval = PikaurConfig().misc.SudoLoopInterval.get_int()
     if sudo_loop_interval == -1:
         return
@@ -347,14 +371,14 @@ def sudo_loop(once=False) -> None:
         sleep(sudo_loop_interval)
 
 
-def run_with_sudo_loop(function: Callable) -> Optional[Any]:
+def run_with_sudo_loop(function: Callable) -> Any | None:
     sudo_loop(once=True)
     with ThreadPool(processes=2) as pool:
         main_thread = pool.apply_async(function, ())
         pool.apply_async(sudo_loop)
         pool.close()
         catched_exc = None
-        result: Optional[Any] = None
+        result: Any | None = None
         try:
             result = main_thread.get()
         except Exception as exc:
@@ -379,8 +403,8 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
     return version >= 235
 
 
-def check_runtime_deps(dep_names: Optional[List[str]] = None) -> None:
-    if sys.version_info.major < 3 or sys.version_info.minor < 7:
+def check_runtime_deps(dep_names: list[str] | None = None) -> None:
+    if sys.version_info < (3, 7):
         print_error(
             translate("pikaur requires Python >= 3.7 to run."),
         )

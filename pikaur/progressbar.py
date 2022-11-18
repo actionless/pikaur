@@ -1,10 +1,10 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import sys
 from threading import Lock
-from typing import Callable, Dict
+from typing import Any, Callable
 
-from .pprint import get_term_width, color_enabled
+from .pprint import color_enabled, get_term_width
 
 
 class ProgressBar():
@@ -18,7 +18,7 @@ class ProgressBar():
     EMPTY = '-'
     FULL = '#'
 
-    def __init__(self, length: int, message='') -> None:
+    def __init__(self, length: int, message: str = '') -> None:
         width = (
             get_term_width() - len(message) - len(self.LEFT_DECORATION) - len(self.RIGHT_DECORATION)
         )
@@ -38,13 +38,13 @@ class ProgressBar():
     def __enter__(self) -> Callable:
         return self.update
 
-    def __exit__(self, *_exc_details) -> None:
+    def __exit__(self, *_exc_details: Any) -> None:
         sys.stderr.write('\n')
 
 
 class ThreadSafeProgressBar():
 
-    _progressbar_storage: Dict[str, ProgressBar] = {}
+    _progressbar_storage: dict[str, ProgressBar] = {}
     _progressbar_lock = Lock()
 
     @classmethod

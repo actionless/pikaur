@@ -1,16 +1,16 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import sys
 from argparse import Namespace
 from pprint import pprint
-from typing import Any, List, NoReturn, Optional, Tuple, Union
+from typing import Any, NoReturn
 
 from .argparse import ArgumentParserWithUnknowns
 from .config import PikaurConfig
 from .i18n import translate, translate_many
 
 
-ArgSchema = List[Tuple[Optional[str], str, Union[None, bool, str, int]]]
+ArgSchema = list[tuple[str | None, str, None | bool | str | int]]
 
 
 PACMAN_BOOL_OPTS: ArgSchema = [
@@ -113,14 +113,14 @@ PACMAN_APPEND_OPTS: ArgSchema = [
 ]
 
 
-def get_pikaur_long_opts() -> List[str]:
+def get_pikaur_long_opts() -> list[str]:
     return [
         long_opt.replace('-', '_')
         for _short_opt, long_opt, _default in get_pikaur_bool_opts() + get_pikaur_str_opts()
     ]
 
 
-def get_pacman_long_opts() -> List[str]:  # pragma: no cover
+def get_pacman_long_opts() -> list[str]:  # pragma: no cover
     return [
         long_opt.replace('-', '_')
         for _short_opt, long_opt, _default
@@ -128,26 +128,26 @@ def get_pacman_long_opts() -> List[str]:  # pragma: no cover
     ]
 
 
-class IncompatibleArguments(Exception):
+class IncompatibleArgumentsError(Exception):
     pass
 
 
-class MissingArgument(Exception):
+class MissingArgumentError(Exception):
     pass
 
 
 class PikaurArgs(Namespace):
-    unknown_args: List[str]
-    raw: List[str]
+    unknown_args: list[str]
+    raw: list[str]
     # typehints:
-    info: Optional[bool]
-    nodeps: Optional[bool]
-    owns: Optional[bool]
-    check: Optional[bool]
-    ignore: List[str]
+    info: bool | None
+    nodeps: bool | None
+    owns: bool | None
+    check: bool | None
+    ignore: list[str]
     # positional: List[str]
     # @TODO: pylint bug:
-    positional: List[str] = []
+    positional: list[str] = []
 
     def __getattr__(self, name: str) -> Any:
         return getattr(super(), name, getattr(self, name.replace('-', '_')))
@@ -172,7 +172,7 @@ class PikaurArgs(Namespace):
         # pylint: disable=attribute-defined-outside-init
         self.handle_the_same_letter()
 
-        new_ignore: List[str] = []
+        new_ignore: list[str] = []
         for ignored in self.ignore or []:
             new_ignore += ignored.split(',')
         self.ignore = new_ignore
@@ -188,14 +188,14 @@ class PikaurArgs(Namespace):
             if not self.sysupgrade:
                 for arg_name in ('aur', 'repo'):
                     if getattr(self, arg_name):
-                        raise MissingArgument('sysupgrade', arg_name)
+                        raise MissingArgumentError('sysupgrade', arg_name)
 
     @classmethod
     def from_namespace(
             cls,
             namespace: Namespace,
-            unknown_args: List[str],
-            raw_args: List[str]
+            unknown_args: list[str],
+            raw_args: list[str]
     ) -> 'PikaurArgs':
         result = cls()
         for key, value in namespace.__dict__.items():
@@ -206,7 +206,7 @@ class PikaurArgs(Namespace):
         return result
 
     @property
-    def raw_without_pikaur_specific(self) -> List[str]:
+    def raw_without_pikaur_specific(self) -> list[str]:
         result = self.raw[:]
         for arg in ('--pikaur-debug', ):
             if arg in result:
@@ -222,7 +222,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             raise exc
         super().error(message)
 
-    def parse_pikaur_args(self, raw_args: List[str]) -> PikaurArgs:
+    def parse_pikaur_args(self, raw_args: list[str]) -> PikaurArgs:
         parsed_args, unknown_args = self.parse_known_args(raw_args)
         for arg in unknown_args[:]:
             if arg.startswith('-'):
@@ -237,9 +237,10 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
 
     def add_letter_andor_opt(
             self,
-            action: str = None,
-            letter: str = None, opt: str = None,
-            default: Any = None
+            action: str | None = None,
+            letter: str | None = None,
+            opt: str | None = None,
+            default: Any | None = None
     ) -> None:
         if action:
             if letter and opt:
@@ -271,10 +272,10 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
 
 class CachedArgs():
 
-    args: Optional[PikaurArgs] = None
+    args: PikaurArgs | None = None
 
 
-def debug_args(args: List[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
+def debug_args(args: list[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
     print("Input:")
     print(args)
     print()
@@ -308,7 +309,7 @@ def debug_args(args: List[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma:
     sys.exit(0)
 
 
-def parse_args(args: List[str] = None) -> PikaurArgs:
+def parse_args(args: list[str] | None = None) -> PikaurArgs:
     if CachedArgs.args:
         return CachedArgs.args
     args = args or sys.argv[1:]
@@ -354,12 +355,12 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
 
     try:
         parsed_args.validate()
-    except IncompatibleArguments as exc:
+    except IncompatibleArgumentsError as exc:
         print(translate(":: error: options {} can't be used together.").format(
             ", ".join([f"'--{opt}'" for opt in exc.args])
         ))
         sys.exit(1)
-    except MissingArgument as exc:
+    except MissingArgumentError as exc:
         print(
             translate_many(
                 ":: error: option {} can't be used without {}.",
@@ -375,7 +376,7 @@ def parse_args(args: List[str] = None) -> PikaurArgs:
     return parsed_args
 
 
-def reconstruct_args(parsed_args: PikaurArgs, ignore_args: List[str] = None) -> List[str]:
+def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = None) -> list[str]:
     if not ignore_args:
         ignore_args = []
     for letter, opt, _default in (

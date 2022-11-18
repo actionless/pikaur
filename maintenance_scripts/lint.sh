@@ -9,6 +9,9 @@ TARGETS=(
 	'pikaur_test'
 	./maintenance_scripts/*.py
 )
+if [[ -n "${1:-}" ]] ; then
+	TARGETS=("$1")
+fi
 
 export PYTHONWARNINGS='default,error:::pikaur[.*],error:::pikaur_test[.*]'
 

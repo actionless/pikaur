@@ -1,27 +1,26 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import os
 import shutil
-from typing import List, Dict, Optional
 
 from .config import BUILD_CACHE_PATH, CACHE_ROOT
-from .core import open_file, spawn, isolate_root_cmd, dirname, running_as_root
-from .version import VersionMatcher
-from .makepkg_config import MakepkgConfig, MakePkgCommand
-from .pprint import print_stderr, print_error
-from .i18n import translate
+from .core import dirname, isolate_root_cmd, open_file, running_as_root, spawn
 from .exceptions import SysExit
+from .i18n import translate
+from .makepkg_config import MakePkgCommand, MakepkgConfig
+from .pprint import print_error, print_stderr
+from .version import VersionMatcher
 
 
 class SrcInfo():
 
-    _common_lines: List[str]
-    _package_lines: List[str]
+    _common_lines: list[str]
+    _package_lines: list[str]
     path: str
     repo_path: str
     pkgbuild_path: str
-    package_name: Optional[str]
-    pkgnames: List[str]
+    package_name: str | None
+    pkgnames: list[str]
 
     def load_config(self) -> None:
         self.pkgnames = []
@@ -44,9 +43,9 @@ class SrcInfo():
 
     def __init__(
             self,
-            repo_path: str = None,
-            package_name: str = None,
-            pkgbuild_path: str = None
+            repo_path: str | None = None,
+            package_name: str | None = None,
+            pkgbuild_path: str | None = None
     ) -> None:
         if repo_path:
             self.repo_path = repo_path
@@ -63,7 +62,7 @@ class SrcInfo():
         self.package_name = package_name
         self.load_config()
 
-    def get_values(self, field: str, lines: List[str] = None) -> List[str]:
+    def get_values(self, field: str, lines: list[str] | None = None) -> list[str]:
         prefix = field + ' = '
         values = []
         if lines is None:
@@ -73,24 +72,24 @@ class SrcInfo():
                 values.append(line.strip().split(prefix)[1])
         return values
 
-    def get_value(self, field: str, fallback: str = None) -> Optional[str]:
+    def get_value(self, field: str, fallback: str | None = None) -> str | None:
         values = self.get_values(field)
         value = values[0] if values else None
         if value is None:
             value = fallback
         return value
 
-    def get_install_script(self) -> Optional[str]:
+    def get_install_script(self) -> str | None:
         values = self.get_values('install')
         if values:
             return values[0]
         return None
 
-    def _get_depends(self, field: str, lines: List[str] = None) -> Dict[str, VersionMatcher]:
+    def _get_depends(self, field: str, lines: list[str] | None = None) -> dict[str, VersionMatcher]:
         if lines is None:
             lines = self._common_lines + self._package_lines
         carch = MakepkgConfig.get('CARCH')
-        dependencies: Dict[str, VersionMatcher] = {}
+        dependencies: dict[str, VersionMatcher] = {}
         for dep_line in (
                 self.get_values(field, lines=lines) +
                 self.get_values(f'{field}_{carch}', lines=lines)
@@ -103,19 +102,19 @@ class SrcInfo():
                 dependencies[pkg_name].add_version_matcher(version_matcher)
         return dependencies
 
-    def _get_build_depends(self, field: str) -> Dict[str, VersionMatcher]:
+    def _get_build_depends(self, field: str) -> dict[str, VersionMatcher]:
         return self._get_depends(field=field, lines=self._common_lines)
 
-    def get_depends(self) -> Dict[str, VersionMatcher]:
+    def get_depends(self) -> dict[str, VersionMatcher]:
         return self._get_depends('depends')
 
-    def get_build_depends(self) -> Dict[str, VersionMatcher]:
+    def get_build_depends(self) -> dict[str, VersionMatcher]:
         return self._get_build_depends('depends')
 
-    def get_build_makedepends(self) -> Dict[str, VersionMatcher]:
+    def get_build_makedepends(self) -> dict[str, VersionMatcher]:
         return self._get_build_depends('makedepends')
 
-    def get_build_checkdepends(self) -> Dict[str, VersionMatcher]:
+    def get_build_checkdepends(self) -> dict[str, VersionMatcher]:
         return self._get_build_depends('checkdepends')
 
     def get_version(self) -> str:

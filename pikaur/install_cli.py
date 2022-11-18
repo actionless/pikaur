@@ -1,50 +1,73 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 # pylint: disable=too-many-lines
-import os
 import hashlib
+import os
 from multiprocessing.pool import ThreadPool
 from tempfile import NamedTemporaryFile
-from typing import List, Dict, Optional, Set
 
 import pyalpm
 
-from .i18n import translate
-from .config import PikaurConfig
-from .args import reconstruct_args, PikaurArgs, parse_args
+from .args import PikaurArgs, parse_args, reconstruct_args
 from .aur import AURPackageInfo
+from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
+from .config import PikaurConfig
+from .conflicts import find_aur_conflicts
+from .core import (
+    PackageSource,
+    interactive_spawn,
+    isolate_root_cmd,
+    open_file,
+    remove_dir,
+    running_as_root,
+    sudo,
+)
+from .exceptions import (
+    BuildError,
+    CloneError,
+    DependencyError,
+    DependencyNotBuiltYet,
+    DependencyVersionMismatch,
+    PackagesNotFoundInAUR,
+    SysExit,
+)
+from .i18n import translate
+from .install_info_fetcher import InstallInfoFetcher
+from .news import News
 from .pacman import (
     PackageDB,
-    get_pacman_command, refresh_pkg_db_if_needed, install_built_deps, strip_repo_name,
+    get_pacman_command,
+    install_built_deps,
+    refresh_pkg_db_if_needed,
+    strip_repo_name,
 )
-from .install_info_fetcher import InstallInfoFetcher
-from .exceptions import (
-    SysExit, PackagesNotFoundInAUR, DependencyVersionMismatch,
-    BuildError, CloneError, DependencyError, DependencyNotBuiltYet,
-)
-from .build import PackageBuild, clone_aur_repos, PkgbuildChanged
 from .pprint import (
-    color_line, bold_line, ColorsHighlight,
-    print_stderr, print_stdout, print_warning, print_error, create_debug_logger,
+    ColorsHighlight,
+    bold_line,
+    color_line,
+    create_debug_logger,
+    print_error,
+    print_stderr,
+    print_stdout,
+    print_warning,
 )
 from .print_department import (
     pretty_format_sysupgrade,
-    print_not_found_packages, print_package_uptodate,
-    print_package_downgrading, print_local_package_newer,
+    print_local_package_newer,
+    print_not_found_packages,
+    print_package_downgrading,
+    print_package_uptodate,
 )
-from .core import (
-    PackageSource,
-    interactive_spawn, remove_dir, open_file, sudo, running_as_root, isolate_root_cmd
-)
-from .conflicts import find_aur_conflicts
 from .prompt import (
-    ask_to_continue, retry_interactive_command,
-    retry_interactive_command_or_exit, get_input, get_editor_or_exit
+    ask_to_continue,
+    get_editor_or_exit,
+    get_input,
+    retry_interactive_command,
+    retry_interactive_command_or_exit,
 )
 from .srcinfo import SrcInfo
-from .news import News
-from .version import compare_versions
 from .updates import is_devel_pkg
+from .version import compare_versions
 
 
 _debug = create_debug_logger('install_cli')
@@ -79,33 +102,33 @@ class InstallPackagesCLI():
 
     # User input
     args: PikaurArgs
-    install_package_names: List[str]
+    install_package_names: list[str]
     # @TODO: define @property for manually_excluded_packages_names+args.ignore:
-    manually_excluded_packages_names: List[str]
-    resolved_conflicts: List[List[str]]
-    reviewed_package_bases: List[str]
+    manually_excluded_packages_names: list[str]
+    resolved_conflicts: list[list[str]]
+    reviewed_package_bases: list[str]
     # pkgbuild_path: [pkg_name, ...]  -- needed for split pkgs to install only some of them
-    pkgbuilds_packagelists: Dict[str, List[str]]
+    pkgbuilds_packagelists: dict[str, list[str]]
 
     # computed package lists:
-    not_found_repo_pkgs_names: List[str]
-    found_conflicts: Dict[str, List[str]]
-    repo_packages_by_name: Dict[str, pyalpm.Package]
+    not_found_repo_pkgs_names: list[str]
+    found_conflicts: dict[str, list[str]]
+    repo_packages_by_name: dict[str, pyalpm.Package]
     # pkgbuilds from cloned aur repos:
-    package_builds_by_name: Dict[str, PackageBuild]
+    package_builds_by_name: dict[str, PackageBuild]
 
     # Packages' install info
     install_info: InstallInfoFetcher
 
     # Installation results
     # transactions by PackageSource(AUR/repo), direction(removed/installed):
-    transactions: Dict[str, Dict[str, List[str]]]
+    transactions: dict[str, dict[str, list[str]]]
     # AUR packages which failed to build:
     # @TODO: refactor to store in transactions
-    failed_to_build_package_names: List[str]
+    failed_to_build_package_names: list[str]
 
     # arch news
-    news: Optional[News] = None
+    news: News | None = None
 
     def __init__(self) -> None:
         self.args = parse_args()
@@ -163,9 +186,9 @@ class InstallPackagesCLI():
         self.main_sequence()
 
     class ExitMainSequence(Exception):
-        pass
+        """Raise when need to finish Install CLI"""
 
-    def main_sequence(self):
+    def main_sequence(self) -> None:
         try:
             self.get_all_packages_info()
             if self.news:
@@ -184,15 +207,15 @@ class InstallPackagesCLI():
             pass
 
     @property
-    def aur_packages_names(self) -> List[str]:
+    def aur_packages_names(self) -> list[str]:
         return self.install_info.aur_packages_names
 
     @property
-    def aur_deps_names(self) -> List[str]:
+    def aur_deps_names(self) -> list[str]:
         return self.install_info.aur_deps_names
 
     @property
-    def all_aur_packages_names(self) -> List[str]:
+    def all_aur_packages_names(self) -> list[str]:
         return list(set(self.aur_packages_names + self.aur_deps_names))
 
     def get_info_from_pkgbuilds(self) -> None:
@@ -239,7 +262,6 @@ class InstallPackagesCLI():
         Retrieve info (`InstallInfo` objects) of packages
         which are going to be installed/upgraded and their dependencies
         """
-
         # deal with package names which user explicitly wants to install
         self.repo_packages_by_name = {}
 
@@ -358,7 +380,7 @@ class InstallPackagesCLI():
         if not editor_cmd:
             return
 
-        def parse_pkg_names(text: str) -> Set[str]:
+        def parse_pkg_names(text: str) -> set[str]:
             selected_packages = []
             for line in text.splitlines():
                 line = line.lstrip()
@@ -397,13 +419,13 @@ class InstallPackagesCLI():
 
     def install_prompt(self) -> None:  # pragma: no cover
 
-        def _print_sysupgrade(verbose=False) -> None:
+        def _print_sysupgrade(verbose: bool = False) -> None:
             print_stdout(pretty_format_sysupgrade(
                 install_info=self.install_info,
                 verbose=verbose
             ))
 
-        def _confirm_sysupgrade(verbose=False) -> str:
+        def _confirm_sysupgrade(verbose: bool = False) -> str:
             _print_sysupgrade(verbose=verbose)
             prompt = '{} {}\n{} {}\n>> '.format(  # pylint: disable=consider-using-f-string
                 color_line('::', ColorsHighlight.blue),
@@ -441,7 +463,7 @@ class InstallPackagesCLI():
                 raise SysExit(125)
             break
 
-    def discard_install_info(self, canceled_pkg_name: str, ignore=True) -> None:
+    def discard_install_info(self, canceled_pkg_name: str, ignore: bool = True) -> None:
         _debug(f"discarding install info for pkg... {canceled_pkg_name}")
         if ignore:
             _debug(f"ignoring pkg... {canceled_pkg_name}")
@@ -458,7 +480,7 @@ class InstallPackagesCLI():
             if pkg_name in self.package_builds_by_name:
                 del self.package_builds_by_name[pkg_name]
 
-    def _find_extra_aur_build_deps(self, all_package_builds: Dict[str, PackageBuild]):
+    def _find_extra_aur_build_deps(self, all_package_builds: dict[str, PackageBuild]) -> None:
         need_to_show_install_prompt = False
         for pkgbuild in all_package_builds.values():
             pkgbuild.get_deps(
@@ -467,12 +489,12 @@ class InstallPackagesCLI():
                 exclude_pkg_names=self.manually_excluded_packages_names
             )
 
-            aur_pkgs: List[AURPackageInfo] = [
+            aur_pkgs: list[AURPackageInfo] = [
                 info.package
                 for info in self.install_info.aur_install_info
                 if info.name in pkgbuild.package_names
             ]
-            aur_rpc_deps = set(
+            aur_rpc_deps = {
                 dep_line
                 for pkg in aur_pkgs
                 for matcher in (
@@ -481,21 +503,21 @@ class InstallPackagesCLI():
                     pkg.checkdepends
                 )
                 for dep_line in matcher.split(',')
-            )
+            }
 
-            srcinfo_deps: Set[str] = set()
+            srcinfo_deps: set[str] = set()
             for package_name in pkgbuild.package_names:
                 if package_name in self.manually_excluded_packages_names:
                     continue
                 src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
-                srcinfo_deps.update(set(
+                srcinfo_deps.update({
                     dep_line
                     for matcher in
                     list(src_info.get_depends().values()) +
                     list(src_info.get_build_makedepends().values()) +
                     list(src_info.get_build_checkdepends().values())
                     for dep_line in matcher.line.split(',')
-                ))
+                })
 
             if aur_rpc_deps != srcinfo_deps:
                 deps_added = srcinfo_deps.difference(aur_rpc_deps)
@@ -523,9 +545,9 @@ class InstallPackagesCLI():
             raise self.ExitMainSequence()
 
     def _clone_aur_repos(  # pylint: disable=too-many-branches
-            self, package_names: List[str]
-    ) -> Optional[Dict[str, PackageBuild]]:
-        stash_pop_list: List[str] = []
+            self, package_names: list[str]
+    ) -> dict[str, PackageBuild] | None:
+        stash_pop_list: list[str] = []
         while True:
             try:
                 pkgbuild_by_name = clone_aur_repos(package_names=package_names)
@@ -587,7 +609,7 @@ class InstallPackagesCLI():
     def get_package_builds(self) -> None:
         while self.all_aur_packages_names:
             clone_names = []
-            pkgbuilds_by_base: Dict[str, PackageBuild] = {}
+            pkgbuilds_by_base: dict[str, PackageBuild] = {}
             pkgbuilds_by_name = {}
             for info in self.install_info.aur_install_info:
                 if info.pkgbuild_path:
@@ -692,7 +714,7 @@ class InstallPackagesCLI():
 
         # if running as root get sources for dev packages synchronously
         # (to prevent race condition in systemd dynamic users)
-        num_threads: Optional[int] = None
+        num_threads: int | None = None
         if running_as_root():  # pragma: no cover
             num_threads = 1
 
@@ -775,7 +797,7 @@ class InstallPackagesCLI():
                             name=_pkg_label
                         )
                 ):
-                    git_args: List[str] = []
+                    git_args: list[str] = []
                     diff_pager = PikaurConfig().review.DiffPager
                     if diff_pager == 'always':
                         git_args = ['env', 'GIT_PAGER=less -+F']
@@ -875,7 +897,7 @@ class InstallPackagesCLI():
             self._get_installed_status()
 
         failed_to_build_package_names = []
-        deps_fails_counter: Dict[str, int] = {}
+        deps_fails_counter: dict[str, int] = {}
         packages_to_be_built = self.all_aur_packages_names[:]
         index = 0
         while packages_to_be_built:
@@ -937,7 +959,7 @@ class InstallPackagesCLI():
 
         self.failed_to_build_package_names = failed_to_build_package_names
 
-    def _remove_packages(self, packages_to_be_removed: List[str]) -> None:
+    def _remove_packages(self, packages_to_be_removed: list[str]) -> None:
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
                 sudo(
@@ -952,8 +974,8 @@ class InstallPackagesCLI():
     def _save_transaction(
             self,
             target: PackageSource,
-            removed: List[str] = None,
-            installed: List[str] = None
+            removed: list[str] | None = None,
+            installed: list[str] | None = None
     ) -> None:
         target_transaction = self.transactions.setdefault(str(target), {})
         if removed:

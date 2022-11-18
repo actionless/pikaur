@@ -1,5 +1,5 @@
 """ Licensed under GPLv3, see https://www.gnu.org/licenses/ """
-
+# mypy: disable-error-code=no-untyped-def
 # pylint: disable=invalid-name
 
 import os

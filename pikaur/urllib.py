@@ -16,7 +16,7 @@ from .prompt import ask_to_continue
 DEFAULT_WEB_ENCODING = 'utf-8'
 
 
-def read_bytes_from_url(url: str, optional=False) -> bytes:
+def read_bytes_from_url(url: str, optional: bool = False) -> bytes:
     if parse_args().print_commands:
         print_stderr(
             color_line('=> ', ColorsHighlight.cyan) + f'GET {url}'
@@ -24,7 +24,7 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
     req = request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     try:
         with request.urlopen(req) as response:  # nosec B310
-            result_bytes = response.read()
+            result_bytes: bytes = response.read()
             return result_bytes
     except URLError as exc:
         print_error(f'GET {url}')
@@ -36,12 +36,12 @@ def read_bytes_from_url(url: str, optional=False) -> bytes:
         raise SysExit(102) from exc
 
 
-def get_unicode_from_url(url: str, optional=False) -> str:
+def get_unicode_from_url(url: str, optional: bool = False) -> str:
     result_bytes = read_bytes_from_url(url, optional=optional)
     return result_bytes.decode(DEFAULT_WEB_ENCODING)
 
 
-def get_json_from_url(url: str) -> dict[str, Any]:
+def get_json_from_url(url: str) -> Any:
     result_json = json.loads(get_unicode_from_url(url))
     return result_json
 

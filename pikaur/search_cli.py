@@ -1,27 +1,24 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import sys
 from multiprocessing.pool import ThreadPool
-from typing import Any, Dict, List, Iterable, Set, TypeVar
+from typing import Any, Iterable, TypeVar
 
 import pyalpm
 
-from .i18n import translate
-from .pprint import print_stderr, print_error
-from .print_department import print_package_search_results, AnyPackage
-from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
-from .aur import (
-    AURPackageInfo,
-    aur_rpc_search_name_desc, get_all_aur_packages, get_all_aur_names,
-)
 from .args import parse_args
+from .aur import AURPackageInfo, aur_rpc_search_name_desc, get_all_aur_names, get_all_aur_packages
 from .exceptions import AURError, SysExit
+from .i18n import translate
+from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
+from .pprint import print_error, print_stderr
+from .print_department import AnyPackage, print_package_search_results
 
 
 SamePackageTypeT = TypeVar('SamePackageTypeT', AURPackageInfo, pyalpm.Package)
 
 
-def package_search_thread_repo(query: str) -> List[pyalpm.Package]:
+def package_search_thread_repo(query: str) -> list[pyalpm.Package]:
     args = parse_args()
     if query:
         result = PackageDB.search_repo(
@@ -35,10 +32,10 @@ def package_search_thread_repo(query: str) -> List[pyalpm.Package]:
 
 
 def filter_aur_results(
-        results: Dict[str, List[AURPackageInfo]],
+        results: dict[str, list[AURPackageInfo]],
         query: str
-) -> Dict[str, List[AURPackageInfo]]:
-    filtered_results: Dict[str, List[AURPackageInfo]] = {}
+) -> dict[str, list[AURPackageInfo]]:
+    filtered_results: dict[str, list[AURPackageInfo]] = {}
     for _q, pkgs in results.items():
         for pkg in pkgs:
             if query in pkg.name or query in (pkg.desc or ''):
@@ -46,11 +43,11 @@ def filter_aur_results(
     return filtered_results
 
 
-def package_search_thread_aur(queries: List[str]) -> List[Any]:  # pylint: disable=too-many-branches
+def package_search_thread_aur(queries: list[str]) -> list[Any]:  # pylint: disable=too-many-branches
     args = parse_args()
     result = {}
     if queries:
-        use_as_filters: List[str] = []
+        use_as_filters: list[str] = []
         with ThreadPool() as pool:
             requests = {}
             for query in queries:
@@ -101,7 +98,7 @@ def package_search_thread_aur(queries: List[str]) -> List[Any]:  # pylint: disab
     return list(join_search_results(list(result.values())))
 
 
-def package_search_thread_local() -> Dict[str, str]:
+def package_search_thread_local() -> dict[str, str]:
     result = {
         pkg_name: pkg.version
         for pkg_name, pkg in PackageDB.get_local_dict(quiet=True).items()
@@ -112,13 +109,13 @@ def package_search_thread_local() -> Dict[str, str]:
 
 
 def join_search_results(
-        all_search_results: List[List[SamePackageTypeT]]
+        all_search_results: list[list[SamePackageTypeT]]
 ) -> Iterable[SamePackageTypeT]:
     if not all_search_results:
         return []
-    pkgnames_set: Set[str] = set()
+    pkgnames_set: set[str] = set()
     for search_results in all_search_results:
-        new_pkgnames_set = set(get_pkg_id(result) for result in search_results)
+        new_pkgnames_set = {get_pkg_id(result) for result in search_results}
         if pkgnames_set:
             pkgnames_set = pkgnames_set.intersection(new_pkgnames_set)
         else:
@@ -130,16 +127,16 @@ def join_search_results(
     }.values()
 
 
-def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disable=too-many-locals
+def cli_search_packages(enumerated: bool = False) -> list[AnyPackage]:  # pylint: disable=too-many-locals
     refresh_pkg_db_if_needed()
 
     args = parse_args()
     search_query = args.positional or []
-    REPO_ONLY = args.repo  # pylint: disable=invalid-name
-    AUR_ONLY = args.aur  # pylint: disable=invalid-name
+    repo_only = args.repo
+    aur_only = args.aur
 
     if not args.quiet:
-        progressbar_length = max(len(search_query), 1) + (not REPO_ONLY) + (not AUR_ONLY)
+        progressbar_length = max(len(search_query), 1) + (not repo_only) + (not aur_only)
         print_stderr(translate("Searching... [{bar}]").format(bar='-' * progressbar_length), end='')
         print_stderr('\x1b[1D' * (progressbar_length + 1), end='')
 
@@ -148,14 +145,14 @@ def cli_search_packages(enumerated=False) -> List[AnyPackage]:  # pylint: disabl
         requests_repo = [
             pool.apply_async(package_search_thread_repo, (search_word, ))
             for search_word in (search_query or [''])
-        ] if not AUR_ONLY else []
+        ] if not aur_only else []
         request_aur = pool.apply_async(
             package_search_thread_aur, (search_query,)
-        ) if not REPO_ONLY else None
+        ) if not repo_only else None
         pool.close()
 
         result_local = request_local.get()
-        result_repo: List[List[pyalpm.Package]] = []
+        result_repo: list[list[pyalpm.Package]] = []
         for request_repo in requests_repo:
             pkgs_found = request_repo.get()
             if pkgs_found:

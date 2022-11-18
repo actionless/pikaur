@@ -1,6 +1,6 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-from typing import List, Dict, Sequence
+from typing import Sequence
 
 from .aur import AURPackageInfo
 from .aur_deps import find_repo_deps_of_aur_pkgs
@@ -10,11 +10,11 @@ from .updates import get_remote_package_version
 from .version import VersionMatcher
 
 
-def get_new_repo_pkgs_conflicts(repo_packages: List[str]) -> Dict[str, List[str]]:
+def get_new_repo_pkgs_conflicts(repo_packages: list[str]) -> dict[str, list[str]]:
     new_pkgs_conflicts_lists = {}
     for repo_package_name in repo_packages:
         repo_pkg = PackageDB.find_repo_package(repo_package_name)
-        conflicts: List[str] = []
+        conflicts: list[str] = []
         if repo_pkg.conflicts:
             conflicts += repo_pkg.conflicts
         if repo_pkg.replaces:
@@ -24,21 +24,21 @@ def get_new_repo_pkgs_conflicts(repo_packages: List[str]) -> Dict[str, List[str]
     return new_pkgs_conflicts_lists
 
 
-def get_new_aur_pkgs_conflicts(aur_packages: List[AURPackageInfo]) -> Dict[str, List[str]]:
+def get_new_aur_pkgs_conflicts(aur_packages: list[AURPackageInfo]) -> dict[str, list[str]]:
     new_pkgs_conflicts_lists = {}
     for aur_json in aur_packages:
-        conflicts: List[str] = []
+        conflicts: list[str] = []
         conflicts += aur_json.conflicts or []
         conflicts += aur_json.replaces or []
         new_pkgs_conflicts_lists[aur_json.name] = list(set(conflicts))
     return new_pkgs_conflicts_lists
 
 
-def get_all_local_pkgs_conflicts() -> Dict[str, List[str]]:
+def get_all_local_pkgs_conflicts() -> dict[str, list[str]]:
     all_local_pkgs_info = PackageDB.get_local_dict()
     all_local_pgks_conflicts_lists = {}
     for local_pkg_info in all_local_pkgs_info.values():
-        conflicts: List[str] = []
+        conflicts: list[str] = []
         if local_pkg_info.conflicts:
             conflicts += local_pkg_info.conflicts
         if local_pkg_info.replaces:
@@ -50,15 +50,15 @@ def get_all_local_pkgs_conflicts() -> Dict[str, List[str]]:
 
 def find_conflicting_with_new_pkgs(
         new_pkg_name: str,
-        all_pkgs_names: List[str],
-        new_pkg_conflicts_list: List[str]
-) -> Dict[str, List[str]]:
+        all_pkgs_names: list[str],
+        new_pkg_conflicts_list: list[str]
+) -> dict[str, list[str]]:
     """
     find if any of new packages have Conflicts with
     already installed ones or with each other
     """
     local_provided = PackageDB.get_local_provided_dict()
-    new_pkgs_conflicts: Dict[str, List[str]] = {}
+    new_pkgs_conflicts: dict[str, list[str]] = {}
     for conflict_line in new_pkg_conflicts_list:  # pylint: disable=too-many-nested-blocks
         conflict_version_matcher = VersionMatcher(conflict_line, is_pkg_deps=True)
         conflict_pkg_name = conflict_version_matcher.pkg_name
@@ -94,12 +94,10 @@ def find_conflicting_with_new_pkgs(
 
 def find_conflicting_with_local_pkgs(
         new_pkg_name: str,
-        all_local_pgks_conflicts_lists: Dict[str, List[str]]
-) -> Dict[str, List[str]]:
-    """
-    find if any of already installed packages have Conflicts with the new ones
-    """
-    new_pkgs_conflicts: Dict[str, List[str]] = {}
+        all_local_pgks_conflicts_lists: dict[str, list[str]]
+) -> dict[str, list[str]]:
+    """Find if any of already installed packages have Conflicts with the new ones."""
+    new_pkgs_conflicts: dict[str, list[str]] = {}
     for local_pkg_name, local_pkg_conflicts_list in all_local_pgks_conflicts_lists.items():
         if new_pkg_name == local_pkg_name:
             continue
@@ -118,9 +116,9 @@ def find_conflicting_with_local_pkgs(
 
 def find_aur_conflicts(
         aur_pkgs_install_infos: Sequence[AURInstallInfo],
-        repo_packages_names: List[str]
-) -> Dict[str, List[str]]:
-    aur_pkgs: List[AURPackageInfo] = [ii.package for ii in aur_pkgs_install_infos]
+        repo_packages_names: list[str]
+) -> dict[str, list[str]]:
+    aur_pkgs: list[AURPackageInfo] = [ii.package for ii in aur_pkgs_install_infos]
     aur_packages_names = [ii.name for ii in aur_pkgs_install_infos]
     repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(aur_pkgs)
     repo_deps_names = [vm.pkg_name for vm in repo_deps_version_matchers]

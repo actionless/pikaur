@@ -4,9 +4,17 @@ ignore=CVS,ignoreme.py
 ignore-patterns=
 persistent=yes
 unsafe-load-any-extension=no
+load-plugins=pylint.extensions.docparams,
+
+[PARAMETER_DOCUMENTATION]
+accept-no-param-doc=no
+accept-no-raise-doc=no
+accept-no-return-doc=no
+accept-no-yields-doc=no
+
 [MESSAGES CONTROL]
 confidence=
-disable=too-few-public-methods,missing-docstring,duplicate-code
+disable=too-few-public-methods,missing-docstring,duplicate-code,missing-return-doc,missing-param-doc,missing-yield-doc,missing-raises-doc
 enable=useless-suppression
 [REPORTS]
 evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)

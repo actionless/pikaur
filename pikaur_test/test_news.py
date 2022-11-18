@@ -1,4 +1,6 @@
 """ Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+# mypy: disable-error-code=no-untyped-def
+
 import os
 from unittest import TestCase
 

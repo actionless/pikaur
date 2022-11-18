@@ -4,8 +4,9 @@ import sys
 import os
 import tempfile
 from time import time
-from unittest import TestCase
-from typing import Optional, List, NoReturn, Union
+from unittest import TestCase, TestResult
+from unittest.runner import TextTestResult
+from typing import Any, NoReturn
 
 from pycman.config import PacmanConfig
 
@@ -32,10 +33,10 @@ if WRITE_DB:
     PikaurConfig._config = None  # type: ignore[assignment]
 
 
-def spawn(cmd: Union[str, List[str]], **kwargs) -> InteractiveSpawn:
+def spawn(cmd: str | list[str], env: dict[str, str] | None = None) -> InteractiveSpawn:
     if isinstance(cmd, str):
         cmd = cmd.split(' ')
-    return core_spawn(cmd, **kwargs)
+    return core_spawn(cmd, env=env)
 
 
 def log_stderr(line: str) -> None:
@@ -50,9 +51,9 @@ class CmdResult:
 
     def __init__(
             self,
-            returncode: Optional[int] = None,
-            stdout: Optional[str] = None,
-            stderr: Optional[str] = None
+            returncode: int | None = None,
+            stdout: str | None = None,
+            stderr: str | None = None
     ) -> None:
         self.returncode = returncode
         self.stdout = stdout or ''
@@ -65,7 +66,7 @@ class CmdResult:
             f'{self.stdout}\n'
         )
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: 'CmdResult') -> bool:  # type: ignore[override]
         return ((
             self.stdout == other.stdout
         ) and (
@@ -91,14 +92,14 @@ class InterceptSysOutput():
         self.returncode = code
         raise FakeExit()
 
-    def __init__(self, capture_stdout=True, capture_stderr=False) -> None:
+    def __init__(self, capture_stdout: bool = True, capture_stderr: bool = False) -> None:
         self.capture_stdout = capture_stdout
         self.capture_stderr = capture_stderr
 
     def __enter__(self) -> 'InterceptSysOutput':
 
         class PrintInteractiveSpawn(InteractiveSpawn):
-            def __init__(self, *args, **kwargs):
+            def __init__(self, *args, **kwargs):  # type: ignore[no-untyped-def]
                 kwargs.setdefault('stdout', sys.stdout)
                 kwargs.setdefault('stderr', sys.stderr)
                 super().__init__(*args, **kwargs)
@@ -123,7 +124,7 @@ class InterceptSysOutput():
 
         return self
 
-    def __exit__(self, *_exc_details) -> None:
+    def __exit__(self, *_exc_details: Any) -> None:
         if self._exited:
             return
         sys.stdout = self._real_stdout
@@ -142,13 +143,14 @@ class InterceptSysOutput():
 
         self._exited = True
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.__exit__()
 
 
 def pikaur(
-        cmd: str, capture_stdout=True, capture_stderr=False,
-        fake_makepkg=False, skippgpcheck=False
+        cmd: str,
+        capture_stdout: bool = True, capture_stderr: bool = False,
+        fake_makepkg: bool = False, skippgpcheck: bool = False
 ) -> CmdResult:
 
     PackageDB.discard_local_cache()
@@ -237,13 +239,14 @@ class PikaurTestCase(TestCase):
 
     separator = color_line(f"\n{'-' * get_term_width()}", 12, force=True)
 
-    def run(self, result=None):
+    def run(self, result: TestResult | None = None) -> TestResult | None:
         time_started = time()
         log_stderr(self.separator)
-        super().run(result)
+        result = super().run(result)
         print(':: Took {:.2f} seconds'.format(time() - time_started))  # pylint: disable=consider-using-f-string
+        return result
 
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         log_stderr(self.separator)
 
@@ -271,12 +274,12 @@ class PikaurDbTestCase(PikaurTestCase):
     tests which are modifying local package DB
     """
 
-    def run(self, result=None):
+    def run(self, result: TestResult | None = None) -> TestResult | None:
         if WRITE_DB:
             return super().run(result)
         if result:
             message = 'Not writing to local package DB.'
-            if getattr(result, 'getDescription', None):
+            if isinstance(result, TextTestResult):
                 message = result.getDescription(self) + f'. {message}'
             result.addSkip(self, message)
         return result
@@ -293,8 +296,8 @@ class PikaurDbTestCase(PikaurTestCase):
 
     def downgrade_repo_pkg(
             self, repo_pkg_name: str,
-            fake_makepkg=False, skippgpcheck=False,
-            count=10
+            fake_makepkg: bool = False, skippgpcheck: bool = False,
+            count: int = 10
     ) -> str:
         self.remove_if_installed(repo_pkg_name)
         spawn(f'rm -fr ./{repo_pkg_name}')
@@ -314,8 +317,8 @@ class PikaurDbTestCase(PikaurTestCase):
 
     def downgrade_aur_pkg(
             self, aur_pkg_name: str,
-            fake_makepkg=False, skippgpcheck=False,
-            count=1
+            fake_makepkg: bool = False, skippgpcheck: bool = False,
+            count: int = 1
     ) -> str:
         # and test -P and -G during downgrading :-)
         old_version = (

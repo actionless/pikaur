@@ -1,15 +1,10 @@
-from typing import List, Tuple
 
-from .i18n import translate
-from .args import (
-    PikaurConfig,
-    parse_args, reconstruct_args,
-    get_pikaur_long_opts,
-)
+from .args import PikaurConfig, get_pikaur_long_opts, parse_args, reconstruct_args
 from .core import spawn
+from .i18n import translate
 
 
-def _format_options_help(options: List[Tuple[str, str, str]]) -> str:
+def _format_options_help(options: list[tuple[str, str, str]]) -> str:
     return '\n'.join([
         '{:>5} {:<16} {}'.format(
             short_opt and (short_opt + ',') or '',
@@ -50,7 +45,7 @@ def cli_print_help() -> None:
             translate("usage:  pikaur {-G --getpkgbuild} [options] <package(s)>")
         )
 
-    pikaur_options_help: List[Tuple[str, str, str]] = []
+    pikaur_options_help: list[tuple[str, str, str]] = []
     if args.getpkgbuild:
         pikaur_options_help += [
             ('-d', '--deps', translate("download also AUR dependencies")),

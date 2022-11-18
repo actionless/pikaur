@@ -1,8 +1,8 @@
 import os
 
 from .args import parse_args
-from .aur_deps import get_aur_deps_list
 from .aur import find_aur_packages, get_repo_url
+from .aur_deps import get_aur_deps_list
 from .core import check_runtime_deps, interactive_spawn
 from .i18n import translate
 from .pacman import PackageDB, PackagesNotFoundInRepo

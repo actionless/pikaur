@@ -1,14 +1,14 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import sys
 import shutil
-from threading import Lock
-from string import printable
+import sys
 import typing as t
-from typing import List, Optional, TextIO, Any
+from string import printable
+from threading import Lock
+from typing import Any, TextIO
 
-from .i18n import translate
 from .args import parse_args
+from .i18n import translate
 
 
 PADDING = 4
@@ -30,16 +30,24 @@ class PrintLock():
     def __enter__(self) -> None:
         PRINT_LOCK.acquire()
 
-    def __exit__(self, *_exc_details) -> None:
+    def __exit__(self, *_exc_details: Any) -> None:
         if PRINT_LOCK.locked():
             PRINT_LOCK.release()
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.__exit__()
 
 
-def _print(destination: TextIO, message='', end='\n', flush=False, lock=True) -> None:
+def _print(
+        destination: TextIO,
+        message: Any = '',
+        end: str = '\n',
+        flush: bool = False,
+        lock: bool = True
+) -> None:
     # pylint: disable=unnecessary-dunder-call
+    if not isinstance(message, str):
+        message = str(message)
     if lock:
         PrintLock().__enter__()
     destination.write(f'{message}{end}')
@@ -49,11 +57,21 @@ def _print(destination: TextIO, message='', end='\n', flush=False, lock=True) ->
         PrintLock().__exit__()
 
 
-def print_stdout(message='', end='\n', flush=False, lock=True) -> None:
+def print_stdout(
+        message: Any = '',
+        end: str = '\n',
+        flush: bool = False,
+        lock: bool = True
+) -> None:
     _print(sys.stdout, message=message, end=end, flush=flush, lock=lock)
 
 
-def print_stderr(message='', end='\n', flush=False, lock=True) -> None:
+def print_stderr(
+        message: Any = '',
+        end: str = '\n',
+        flush: bool = False,
+        lock: bool = True
+) -> None:
     _print(sys.stderr, message=message, end=end, flush=flush, lock=lock)
 
 
@@ -79,7 +97,9 @@ class ColorsHighlight:
     white = 15
 
 
-def color_line(line: str, color_number: int, reset=True, force=False) -> str:
+def color_line(
+        line: str, color_number: int, reset: bool = True, force: bool = False
+) -> str:
     if not color_enabled() and not force:
         return line
     result = ''
@@ -113,7 +133,7 @@ def print_error(message: str) -> None:
     ]))
 
 
-def print_debug(message: Any, lock=True) -> None:
+def print_debug(message: Any, lock: bool = True) -> None:
     if not ARGS.pikaur_debug:
         return
     prefix = translate("debug:")
@@ -137,7 +157,7 @@ def format_paragraph(line: str) -> str:
     max_line_width = term_width - PADDING * 2
 
     result = []
-    current_line: List[str] = []
+    current_line: list[str] = []
     line_length = 0
     for word in line.split():
         if len(word) + line_length > max_line_width:
@@ -158,7 +178,7 @@ def format_paragraph(line: str) -> str:
     ])
 
 
-def range_printable(text: str, start: int = 0, end: Optional[int] = None) -> str:
+def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
     if not end:
         end = len(text)
 
@@ -200,7 +220,7 @@ class DebugColorCounter:
     _current_color_idx = 0
 
     @classmethod
-    def next(cls) -> int:
+    def get_next(cls) -> int:
         color = cls.colors[cls._current_color_idx]
         cls._current_color_idx += 1
         if cls._current_color_idx >= len(cls.colors):
@@ -208,13 +228,12 @@ class DebugColorCounter:
         return color
 
 
-def create_debug_logger(module_name: str, **kwargs) -> t.Callable[..., None]:
-    color = DebugColorCounter.next()
+def create_debug_logger(module_name: str, lock: bool | None = None) -> t.Callable[..., None]:
+    color = DebugColorCounter.get_next()
 
-    def debug(msg: Any, *args2, **kwargs2) -> None:
-        kwargs2.update(kwargs)
-        print_debug(
-            f"{color_line(module_name, color)}: {str(msg)}",
-            *args2, **kwargs2
-        )
+    def debug(msg: Any) -> None:
+        msg = f"{color_line(module_name, color)}: {str(msg)}"
+        if lock is not None:
+            print_debug(msg, lock=lock)
+        print_debug(msg)
     return debug

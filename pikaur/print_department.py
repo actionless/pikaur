@@ -1,30 +1,33 @@
-""" This file is licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import sys
 from datetime import datetime
 from fnmatch import fnmatch
-from typing import (
-    TYPE_CHECKING, List, Tuple, Iterable, Union, Dict, Optional, Sequence,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Iterable, Sequence, overload
 
 import pyalpm
 
-from .i18n import translate, translate_many
-from .pprint import (
-    print_stderr, color_line, bold_line, format_paragraph, get_term_width,
-    print_warning, Colors, ColorsHighlight,
-)
 from .args import parse_args
-from .core import PackageSource, InstallInfo, RepoInstallInfo, AURInstallInfo
-from .config import VERSION, PikaurConfig
-from .version import get_common_version, get_version_diff
-from .pacman import PackageDB, OFFICIAL_REPOS
 from .aur import AURPackageInfo
+from .config import VERSION, PikaurConfig
+from .core import AURInstallInfo, InstallInfo, PackageSource, RepoInstallInfo
+from .i18n import translate, translate_many
+from .pacman import OFFICIAL_REPOS, PackageDB
+from .pprint import (
+    Colors,
+    ColorsHighlight,
+    bold_line,
+    color_line,
+    format_paragraph,
+    get_term_width,
+    print_stderr,
+    print_warning,
+)
+from .version import get_common_version, get_version_diff
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
-    from .install_info_fetcher import InstallInfoFetcher  # noqa
+    from .install_info_fetcher import InstallInfoFetcher
 
 
 GROUP_COLOR = Colors.blue
@@ -32,10 +35,10 @@ REPLACEMENTS_COLOR = ColorsHighlight.cyan
 ORPHANED_COLOR = ColorsHighlight.red
 
 
-AnyPackage = Union[AURPackageInfo, pyalpm.Package]
+AnyPackage = AURPackageInfo | pyalpm.Package
 
 
-def print_version(pacman_version: str, pyalpm_version: str, quiet=False) -> None:
+def print_version(pacman_version: str, pyalpm_version: str, quiet: bool = False) -> None:
     if quiet:
         print(f'Pikaur v{VERSION}')
         print(f'{pacman_version} - pyalpm v{pyalpm_version}')
@@ -51,12 +54,12 @@ def print_version(pacman_version: str, pyalpm_version: str, quiet=False) -> None
   l  /       \        l
   j  ●   .   ●        l      """ + pacman_version + r"""
  { )  ._,.__,   , -.  {      pyalpm v""" + pyalpm_version + r"""
-  У    \  _/     ._/   \
+  Y    \  _/     ._/   \
 
 """)
 
 
-def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
+def print_not_found_packages(not_found_packages: list[str], repo: bool = False) -> None:
     num_packages = len(not_found_packages)
     print_warning(
         bold_line(
@@ -79,8 +82,8 @@ def print_not_found_packages(not_found_packages: List[str], repo=False) -> None:
 
 class RepoColorGenerator:
 
-    _type_storage: Dict[str, int] = {}
-    _cache: Dict[str, Dict[str, int]] = {}
+    _type_storage: dict[str, int] = {}
+    _cache: dict[str, dict[str, int]] = {}
     _init_done = False
 
     @classmethod
@@ -113,7 +116,7 @@ class RepoColorGenerator:
         return cls._cache[color_type][_id]
 
 
-def pretty_format_repo_name(repo_name: str, color=True) -> str:
+def pretty_format_repo_name(repo_name: str, color: bool = True) -> str:
     result = f'{repo_name}/'
     if not color:
         return result
@@ -122,18 +125,19 @@ def pretty_format_repo_name(repo_name: str, color=True) -> str:
 
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         packages_updates: Sequence[InstallInfo],
-        verbose=False, print_repo=False, color=True, template: str = None
+        verbose: bool = False, print_repo: bool = False, color: bool = True,
+        template: str | None = None
 ) -> str:
 
-    def _color_line(line, *args, **kwargs):
-        return color_line(line, *args, **kwargs) if color else line
+    def _color_line(line: str, color: int, reset: bool | None = None) -> str:
+        return color_line(line, color_number=color, reset=bool(reset)) if color else line
 
-    def _bold_line(line):
+    def _bold_line(line: str) -> str:
         return bold_line(line) if color else line
 
-    SortKey = Union[Tuple, str]
+    type_sort_key = tuple | str
 
-    def pretty_format(pkg_update: 'InstallInfo') -> Tuple[str, SortKey]:  # pylint:disable=too-many-locals,R0912
+    def pretty_format(pkg_update: 'InstallInfo') -> tuple[str, type_sort_key]:  # pylint:disable=too-many-locals,R0912
         common_version, diff_weight = get_common_version(
             pkg_update.current_version or '', pkg_update.new_version or ''
         )
@@ -144,7 +148,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         new_color = color_config.VersionDiffNew.get_int()
         column_width = min(int(get_term_width() / 2.5), 37)
 
-        sort_by: SortKey = (
+        sort_by: type_sort_key = (
             -diff_weight,
             pkg_update.name
         )
@@ -314,29 +318,29 @@ class SysupgradePrettyFormatter:
     def __init__(
         self,
         install_info: 'InstallInfoFetcher',
-        verbose,
-        manual_package_selection
+        verbose: bool,
+        manual_package_selection: bool
     ):
         self.color = True
         self.install_info = install_info
         self.verbose = verbose
 
-        self.repo_packages_updates: List[RepoInstallInfo] = \
+        self.repo_packages_updates: list[RepoInstallInfo] = \
             install_info.repo_packages_install_info[::]
-        self.thirdparty_repo_packages_updates: List[RepoInstallInfo] = \
+        self.thirdparty_repo_packages_updates: list[RepoInstallInfo] = \
             install_info.thirdparty_repo_packages_install_info[::]
-        self.aur_updates: List[AURInstallInfo] = \
+        self.aur_updates: list[AURInstallInfo] = \
             install_info.aur_updates_install_info[::]
-        self.repo_replacements: List[RepoInstallInfo] = \
+        self.repo_replacements: list[RepoInstallInfo] = \
             install_info.repo_replacements_install_info[::]
-        self.thirdparty_repo_replacements: List[RepoInstallInfo] = \
+        self.thirdparty_repo_replacements: list[RepoInstallInfo] = \
             install_info.thirdparty_repo_replacements_install_info[::]
 
-        self.new_repo_deps: List[RepoInstallInfo] = \
+        self.new_repo_deps: list[RepoInstallInfo] = \
             install_info.new_repo_deps_install_info[::]
-        self.new_thirdparty_repo_deps: List[RepoInstallInfo] = \
+        self.new_thirdparty_repo_deps: list[RepoInstallInfo] = \
             install_info.new_thirdparty_repo_deps_install_info[::]
-        self.new_aur_deps: List[AURInstallInfo] = \
+        self.new_aur_deps: list[AURInstallInfo] = \
             install_info.aur_deps_install_info[::]
 
         if manual_package_selection:
@@ -346,10 +350,7 @@ class SysupgradePrettyFormatter:
             self.new_aur_deps = []
 
         self.all_install_info_lists: Sequence[
-            Union[
-                List[AURInstallInfo],
-                List[RepoInstallInfo]
-            ]
+            list[AURInstallInfo] | list[RepoInstallInfo]
         ] = [
             self.repo_packages_updates,
             self.thirdparty_repo_packages_updates,
@@ -362,18 +363,18 @@ class SysupgradePrettyFormatter:
         ]
 
         self.config = PikaurConfig()
-        self.result: List[str] = []
+        self.result: list[str] = []
 
-    def _color_line(self, line, *args, **kwargs) -> str:
-        return color_line(line, *args, **kwargs) if self.color else line
+    def _color_line(self, line: str, color: int) -> str:
+        return color_line(line, color_number=color) if self.color else line
 
-    def _bold_line(self, line) -> str:
+    def _bold_line(self, line: str) -> str:
         return bold_line(line) if self.color else line
 
     def pretty_format_upgradeable(
             self,
             install_infos: Sequence[InstallInfo],
-            print_repo=None
+            print_repo: bool | None = None
     ) -> str:
         if print_repo is None:
             print_repo = self.config.sync.AlwaysShowPkgOrigin.get_bool()
@@ -382,19 +383,19 @@ class SysupgradePrettyFormatter:
             verbose=self.verbose, color=self.color, print_repo=print_repo
         )
 
-    def pformat_warned_packages(self):
+    def pformat_warned_packages(self) -> None:
         warn_about_packages_str = self.config.ui.WarnAboutPackageUpdates.get_str()
-        warn_about_packages_list: List[InstallInfo] = []
+        warn_about_packages_list: list[InstallInfo] = []
 
         @overload
-        def remove_globs_from_pkg_list(pkg_list: List[AURInstallInfo]) -> None:
+        def remove_globs_from_pkg_list(pkg_list: list[AURInstallInfo]) -> None:
             ...
 
         @overload
-        def remove_globs_from_pkg_list(pkg_list: List[RepoInstallInfo]) -> None:
+        def remove_globs_from_pkg_list(pkg_list: list[RepoInstallInfo]) -> None:
             ...
 
-        def remove_globs_from_pkg_list(pkg_list):
+        def remove_globs_from_pkg_list(pkg_list: list[Any]) -> None:
             for pkg_install_info in pkg_list[::]:
                 for glob in globs_and_names:
                     if fnmatch(pkg_install_info.name, glob):
@@ -403,7 +404,7 @@ class SysupgradePrettyFormatter:
 
         if warn_about_packages_str:
             globs_and_names = warn_about_packages_str.split(',')
-            pkg_list: Union[List[RepoInstallInfo], List[AURInstallInfo]]
+            pkg_list: list[RepoInstallInfo] | list[AURInstallInfo]
             for pkg_list in self.all_install_info_lists:
                 remove_globs_from_pkg_list(pkg_list)
 
@@ -422,7 +423,7 @@ class SysupgradePrettyFormatter:
             ))
             self.result.append(self.pretty_format_upgradeable(warn_about_packages_list))
 
-    def pformat_replacements(self):
+    def pformat_replacements(self) -> None:
         if self.repo_replacements:
             self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
                 self._color_line('::', ColorsHighlight.blue),
@@ -446,7 +447,7 @@ class SysupgradePrettyFormatter:
                 self.thirdparty_repo_replacements,
             ))
 
-    def pformat_repo(self):
+    def pformat_repo(self) -> None:
         if self.repo_packages_updates:
             self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
                 self._color_line('::', ColorsHighlight.blue),
@@ -471,7 +472,7 @@ class SysupgradePrettyFormatter:
                 self.new_repo_deps,
             ))
 
-    def pformat_thirdaprty_repo(self):
+    def pformat_thirdaprty_repo(self) -> None:
         if self.thirdparty_repo_packages_updates:
             self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
                 self._color_line('::', ColorsHighlight.blue),
@@ -498,7 +499,7 @@ class SysupgradePrettyFormatter:
                 self.new_thirdparty_repo_deps,
             ))
 
-    def pformat_aur(self):
+    def pformat_aur(self) -> None:
         if self.aur_updates:
             self.result.append('\n{} {}'.format(  # pylint: disable=consider-using-f-string
                 self._color_line('::', ColorsHighlight.cyan),
@@ -526,7 +527,7 @@ class SysupgradePrettyFormatter:
                 print_repo=False
             ))
 
-    def pformat_total_size(self):
+    def pformat_total_size(self) -> None:
         if self.config.sync.ShowDownloadSize.get_bool():
             self.result.append(
                 '\n' +
@@ -552,8 +553,8 @@ class SysupgradePrettyFormatter:
 
 def pretty_format_sysupgrade(
         install_info: 'InstallInfoFetcher',
-        verbose=False,
-        manual_package_selection=False
+        verbose: bool = False,
+        manual_package_selection: bool = False
 ) -> str:
     return SysupgradePrettyFormatter(
         install_info=install_info,
@@ -563,9 +564,9 @@ def pretty_format_sysupgrade(
 
 
 def print_ignored_package(
-        package_name: Optional[str] = None,
-        install_info: Optional[InstallInfo] = None,
-        ignored_from: Optional[str] = None
+        package_name: str | None = None,
+        install_info: InstallInfo | None = None,
+        ignored_from: str | None = None
 ) -> None:
     if not (package_name or install_info):
         raise TypeError("Either 'package_name' or 'install_info' should be specified")
@@ -647,15 +648,15 @@ def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
 def print_package_search_results(  # pylint:disable=too-many-locals,too-many-statements,too-many-branches
         repo_packages: Iterable[pyalpm.Package],
         aur_packages: Iterable[AURPackageInfo],
-        local_pkgs_versions: Dict[str, str],
-        enumerated=False,
-) -> List[AnyPackage]:
+        local_pkgs_versions: dict[str, str],
+        enumerated: bool = False,
+) -> list[AnyPackage]:
 
     repos = [db.name for db in PackageDB.get_alpm_handle().get_syncdbs()]
     user_config = PikaurConfig()
     group_by_repo = user_config.ui.GroupByRepository.get_bool()
 
-    def get_repo_sort_key(pkg: pyalpm.Package) -> Tuple[int, str]:
+    def get_repo_sort_key(pkg: pyalpm.Package) -> tuple[int, str]:
         return (
             repos.index(pkg.db.name)
             if group_by_repo and pkg.db.name in repos
@@ -663,9 +664,10 @@ def print_package_search_results(  # pylint:disable=too-many-locals,too-many-sta
             pkg.name
         )
 
-    AurSortKey = Union[Tuple[float, float], float]
+    # https://github.com/python/mypy/issues/11098
+    type_aur_sort_key = tuple[float, float] | float  # type: ignore[misc]
 
-    def get_aur_sort_key(pkg: AURPackageInfo) -> Tuple[AurSortKey, str]:
+    def get_aur_sort_key(pkg: AURPackageInfo) -> tuple[type_aur_sort_key, str]:
         user_aur_sort = user_config.ui.AurSearchSorting
         pkg_numvotes = pkg.numvotes if isinstance(pkg.numvotes, int) else 0
         pkg_popularity = pkg.popularity if isinstance(pkg.popularity, float) else 0.0
@@ -687,15 +689,15 @@ def print_package_search_results(  # pylint:disable=too-many-locals,too-many-sta
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
 
-    sorted_repo_pkgs: List[pyalpm.Package] = list(sorted(
+    sorted_repo_pkgs: list[pyalpm.Package] = sorted(
         repo_packages,
         key=get_repo_sort_key
-    ))
-    sorted_aur_pkgs: List[AURPackageInfo] = list(sorted(
+    )
+    sorted_aur_pkgs: list[AURPackageInfo] = sorted(
         aur_packages,
         key=get_aur_sort_key
-    ))
-    sorted_packages: List[AnyPackage] = [*sorted_repo_pkgs, *sorted_aur_pkgs]
+    )
+    sorted_packages: list[AnyPackage] = [*sorted_repo_pkgs, *sorted_aur_pkgs]
     # mypy is always funny ^^ https://github.com/python/mypy/issues/5492#issuecomment-545992992
 
     enumerated_packages = list(enumerate(sorted_packages))

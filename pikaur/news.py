@@ -37,7 +37,7 @@ _debug = create_debug_logger('news')
 class News:
     URL = PikaurConfig().network.NewsUrl.get_str()
     CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
-    _news_feed: 'Element' | None
+    _news_feed: 'Element | None'
 
     def __init__(self) -> None:
         self._news_feed = None

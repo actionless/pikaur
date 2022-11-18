@@ -1,4 +1,5 @@
 """ Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+# mypy: disable-error-code=no-untyped-def
 
 from pikaur_test.helpers import (
     PikaurDbTestCase,
@@ -41,23 +42,23 @@ class SysupgradeTest(PikaurDbTestCase):
         # except for test subject packages
         pikaur('-Syu --noconfirm', skippgpcheck=True)
 
-    def downgrade_repo1_pkg(self):
+    def downgrade_repo1_pkg(self) -> None:
         self.repo_old_version = self.downgrade_repo_pkg(self.repo_pkg_name, fake_makepkg=True)
 
-    def downgrade_repo2_pkg(self):
+    def downgrade_repo2_pkg(self) -> None:
         self.repo2_old_version = self.downgrade_repo_pkg(self.repo2_pkg_name, fake_makepkg=True)
 
-    def downgrade_aur1_pkg(self):
+    def downgrade_aur1_pkg(self) -> None:
         self.aur_old_version = self.downgrade_aur_pkg(
             self.aur_pkg_name, count=2, fake_makepkg=True, skippgpcheck=True
         )
 
-    def downgrade_aur2_pkg(self):
+    def downgrade_aur2_pkg(self) -> None:
         self.aur2_old_version = self.downgrade_aur_pkg(
             self.aur2_pkg_name, count=2, fake_makepkg=True
         )
 
-    def downgrade_dev_pkg(self):
+    def downgrade_dev_pkg(self) -> None:
         # test -P <custom_name> and -G -d during downgrading
         self.remove_if_installed(self.dev_pkg_name)
         spawn(f'rm -fr ./{self.dev_pkg_name}')
@@ -97,7 +98,7 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
     @property
-    def upgradeable_pkgs_list(self):
+    def upgradeable_pkgs_list(self) -> list[str]:
         query_result = pikaur('-Quq').stdout
         upgradeable_pkgs = query_result.splitlines()
         if self.self_name in upgradeable_pkgs:
@@ -105,13 +106,13 @@ class SysupgradeTest(PikaurDbTestCase):
         return upgradeable_pkgs
 
     @property
-    def upgradeable_repo_pkgs_list(self):
+    def upgradeable_repo_pkgs_list(self) -> list[str]:
         query_result = pikaur('-Quq --repo').stdout
         upgradeable_repo_pkgs = query_result.splitlines()
         return upgradeable_repo_pkgs
 
     @property
-    def upgradeable_aur_pkgs_list(self):
+    def upgradeable_aur_pkgs_list(self) -> list[str]:
         query_result = pikaur('-Quq --aur').stdout
         upgradeable_aur_pkgs = query_result.splitlines()
         if self.self_name in upgradeable_aur_pkgs:

@@ -1,5 +1,5 @@
 """
-NRoff renderer for CommonMark
+NRoff renderer for markdown_it
 (C) 2020-today, Y Kirylau
 
 References:
@@ -16,7 +16,7 @@ import re
 import sys
 from collections.abc import MutableMapping
 from datetime import datetime
-from typing import Sequence, Optional
+from typing import Sequence, Any
 
 import markdown_it
 
@@ -31,12 +31,13 @@ ENCODING = 'utf-8'
 class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=too-many-public-methods
 
     __output__ = 'nroff'
+    name: str
+    section: int
 
-    def __init__(self, options=None):
-        self.options = options or {}
+    def __init__(self, name: str = 'test', section: int = 1):
         super().__init__()
-        self.name = self.options.get('name', 'test')
-        self.section = self.options.get('section', 1)
+        self.name = name
+        self.section = section
         self.rules = {
             k: v
             for k, v in inspect.getmembers(self, predicate=inspect.ismethod)
@@ -71,13 +72,13 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def text(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return self.escape(tokens[idx].content)
 
     def softbreak(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return self.escape(' ')
 
     _html_tag_regex = re.compile('<.*>')
@@ -85,7 +86,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def html_inline(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         text = tokens[idx].content
         text = self._html_tag_regex.sub('', text)
         return self.escape(text)
@@ -93,7 +94,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def html_block(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return (
             "\n" +
             self.html_inline(tokens, idx, options, env) +
@@ -103,7 +104,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def heading_open(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         token = tokens[idx]
         level = int(token.tag[1])
         if level <= 2:
@@ -113,27 +114,27 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def heading_close(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return '"\n.\n'
 
     def paragraph_open(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return '.P\n'
 
     def paragraph_close(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return '\n.\n'
 
-    _last_link: Optional[str]
+    _last_link: str | None
 
     def link_open(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         token = tokens[idx]
         self._last_link = str(dict(token.attrItems()).get('href', ''))
         return r'\fI'
@@ -141,7 +142,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def link_close(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         result = r'\fR'
         if self._last_link and self.is_url(self._last_link):
             result += (
@@ -154,13 +155,13 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def image(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return ''
 
     def code_inline(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         token = tokens[idx]
         return (
             r'\fB' +
@@ -171,19 +172,19 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def bullet_list_open(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return ''
 
     def bullet_list_close(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return ''
 
     def list_item_open(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         list_deco = r"\(bu"  # bullet
         # bullet_char = node.parent.list_data.get('bullet_char')
         # if bullet_char not in (None, '*'):
@@ -193,7 +194,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def list_item_close(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         return '.\n'
 
     # def ordered_list_item(self, token):
@@ -209,7 +210,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     def fence(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping
-    ):
+    ) -> str:
         token = tokens[idx]
         return (
             '.nf\n\n' +
@@ -220,7 +221,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
     # ###################### Helpers: ###################### #
 
     @staticmethod
-    def escape(text):
+    def escape(text: str) -> str:
         for control_character in ('.', '"'):
             if text.startswith(control_character):
                 text = text.replace(control_character, r'\&' + control_character, 1)
@@ -228,10 +229,10 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
         return text.replace('-', r'\-').replace("'", r"\'")
 
     @staticmethod
-    def is_url(text):
+    def is_url(text: str) -> bool:
         return text.startswith('http://') or text.startswith('https://')
 
-    def document_open(self):
+    def document_open(self) -> str:
         return rf""".\" generated with Pikaman
 .
 .TH "{self.name.upper()}" "{self.section}" "{datetime.now().strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
@@ -241,12 +242,12 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
 
     # ########################### TBD: ############################### #
 
-    def strong(self, _node, entering):
+    def strong(self, _node: Any, entering: bool) -> str:
         if entering:
             return r'\fB'
         return r'\fR'
 
-    def emph(self, _node, entering):
+    def emph(self, _node: Any, entering: bool) -> str:
         if entering:
             return r'\fI'
         return r'\fR'
@@ -255,7 +256,7 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
 with open(README_PATH, encoding=ENCODING) as input_fobj:
     with open(OUTPUT_PATH, 'w', encoding=ENCODING) as output_fobj:
         output_fobj.write(
-            NroffRenderer(options=dict(name='pikaur', section=1)).render(
+            NroffRenderer(name='pikaur', section=1).render(
                 markdown_it.MarkdownIt().parse(
                     input_fobj.read()
                 ),

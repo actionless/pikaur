@@ -278,7 +278,7 @@ class PikaurDbTestCase(PikaurTestCase):
         if WRITE_DB:
             return super().run(result)
         if result:
-            message = 'Not writing to local package DB.'
+            message = 'Not writing to local package DB (env `WRITE_DB`).'
             if isinstance(result, TextTestResult):
                 message = result.getDescription(self) + f'. {message}'
             result.addSkip(self, message)

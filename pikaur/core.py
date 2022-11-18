@@ -342,6 +342,8 @@ def remove_dir(dir_path: str) -> None:
 
 
 def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[list[Any]]:
+    if chunk_size < 1:
+        raise ValueError("`chunk_size` can't be smaller than 1.")
     result = []
     index = 0
     for item in iterable:

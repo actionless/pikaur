@@ -12,6 +12,7 @@ from time import sleep
 from typing import IO, TYPE_CHECKING, Any, Callable, Iterable
 
 import pyalpm
+from typing_extensions import NotRequired, TypedDict
 
 from .args import parse_args
 from .config import PikaurConfig
@@ -184,6 +185,13 @@ class InteractiveSpawn(subprocess.Popen):
         )
 
 
+class SpawnArgs(TypedDict):
+    stdout: NotRequired[IO[Any] | int | None]
+    stderr: NotRequired[IO[Any] | int | None]
+    cwd: NotRequired[str]
+    env: NotRequired[dict[str, str]]
+
+
 def interactive_spawn(
         cmd: list[str],
         stdout: IO[Any] | int | None = None,
@@ -191,10 +199,17 @@ def interactive_spawn(
         cwd: str | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
+    kwargs: SpawnArgs = {}
+    if stdout:
+        kwargs['stdout'] = stdout
+    if stderr:
+        kwargs['stderr'] = stderr
+    if cwd:
+        kwargs['cwd'] = cwd
+    if env:
+        kwargs['env'] = env
     process = InteractiveSpawn(
-        cmd,
-        stdout=stdout, stderr=stderr,
-        cwd=cwd, env=env,
+        cmd, **kwargs
     )
     process.communicate()
     return process

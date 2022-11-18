@@ -130,7 +130,11 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
 ) -> str:
 
     def _color_line(line: str, color: int, reset: bool | None = None) -> str:
-        return color_line(line, color_number=color, reset=bool(reset)) if color else line
+        if not color:
+            return line
+        if reset is not None:
+            return color_line(line, color_number=color, reset=reset)
+        return color_line(line, color_number=color)
 
     def _bold_line(line: str) -> str:
         return bold_line(line) if color else line

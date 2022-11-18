@@ -1,22 +1,23 @@
-""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import sys
 import os
+import sys
 import tempfile
 from time import time
+from typing import Any, NoReturn
 from unittest import TestCase, TestResult
 from unittest.runner import TextTestResult
-from typing import Any, NoReturn
 
 from pycman.config import PacmanConfig
 
 import pikaur as pikaur_module
-from pikaur.main import main
 from pikaur.args import CachedArgs, parse_args
-from pikaur.pacman import PackageDB
-from pikaur.pprint import get_term_width, color_line
+from pikaur.core import InteractiveSpawn
+from pikaur.core import spawn as core_spawn
+from pikaur.main import main
 from pikaur.makepkg_config import MakePkgCommand
-from pikaur.core import spawn as core_spawn, InteractiveSpawn
+from pikaur.pacman import PackageDB
+from pikaur.pprint import color_line, get_term_width
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))

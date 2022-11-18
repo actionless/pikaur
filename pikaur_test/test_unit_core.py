@@ -1,19 +1,19 @@
-""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
 # pylint: disable=invalid-name,disallowed-name
 
-from typing import Any, Type
+from typing import Any
 
-from pikaur_test.helpers import PikaurTestCase
+from pikaur.aur import find_aur_packages
 from pikaur.core import ComparableType, DataType, InstallInfo, PackageSource, get_chunks
 from pikaur.pacman import PackageDB
-from pikaur.aur import find_aur_packages
+from pikaur_test.helpers import PikaurTestCase
 
 
 class ComparableTypeTest(PikaurTestCase):
 
-    ClassA: Type
-    ClassB: Type
+    ClassA: type
+    ClassB: type
 
     @classmethod
     def setUpClass(cls):
@@ -80,7 +80,7 @@ class ComparableTypeTest(PikaurTestCase):
 
 class DataTypeTest(PikaurTestCase):
 
-    DataClass1: Type
+    DataClass1: type
 
     @classmethod
     def setUpClass(cls):

@@ -1,13 +1,12 @@
-""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
 
 import os
 from unittest import TestCase
 
-from pikaur_test.helpers import InterceptSysOutput
-
-from pikaur.news import News
 from pikaur.core import open_file
+from pikaur.news import News
+from pikaur_test.helpers import InterceptSysOutput
 
 
 class NewsTest(TestCase):

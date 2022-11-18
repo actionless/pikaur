@@ -1,11 +1,11 @@
-""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
 # pylint: disable=invalid-name
 
 import os
 import tempfile
 
-from pikaur_test.helpers import PikaurDbTestCase, pikaur, fake_pikaur, spawn
+from pikaur_test.helpers import PikaurDbTestCase, fake_pikaur, pikaur, spawn
 
 
 class InstallTest(PikaurDbTestCase):

@@ -1,12 +1,8 @@
-""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
 
-from pikaur_test.helpers import (
-    PikaurDbTestCase,
-    pikaur, spawn,
-)
-
 from pikaur.pacman import PackageDB
+from pikaur_test.helpers import PikaurDbTestCase, pikaur, spawn
 
 
 class SysupgradeTest(PikaurDbTestCase):
@@ -82,7 +78,6 @@ class SysupgradeTest(PikaurDbTestCase):
         """
         test upgrade of AUR dev package
         """
-
         self.downgrade_dev_pkg()
 
         # self.assertEqual(
@@ -123,7 +118,6 @@ class SysupgradeTest(PikaurDbTestCase):
         """
         test upgrade of repo and AUR packages
         """
-
         self.downgrade_repo1_pkg()
         self.downgrade_aur1_pkg()
 
@@ -134,8 +128,8 @@ class SysupgradeTest(PikaurDbTestCase):
             self.upgradeable_repo_pkgs_list, [self.repo_pkg_name]
         )
         self.assertEqual(
-            list(sorted(self.upgradeable_pkgs_list)),
-            list(sorted([self.repo_pkg_name, self.aur_pkg_name]))
+            sorted(self.upgradeable_pkgs_list),
+            sorted([self.repo_pkg_name, self.aur_pkg_name])
         )
 
         # and finally test the sysupgrade itself
@@ -153,7 +147,6 @@ class SysupgradeTest(PikaurDbTestCase):
         """
         test --ignore flag with sysupgrade
         """
-
         self.downgrade_repo1_pkg()
         self.downgrade_repo2_pkg()
         self.downgrade_aur1_pkg()
@@ -237,7 +230,6 @@ class SysupgradeTest(PikaurDbTestCase):
         """
         test --aur and --repo flags with sysupgrade
         """
-
         self.downgrade_repo1_pkg()
         self.downgrade_aur1_pkg()
 

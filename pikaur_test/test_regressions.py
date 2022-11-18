@@ -1,4 +1,4 @@
-""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
 
 from pikaur_test.helpers import PikaurDbTestCase, fake_pikaur, pikaur

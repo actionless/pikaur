@@ -1,8 +1,10 @@
-""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 # pylint: disable=protected-access,pointless-statement
 
-from vulture.whitelist_utils import Whitelist  # type: ignore[import]  # pylint: disable=import-error,no-name-in-module
+from vulture.whitelist_utils import (  # type: ignore[import]  # pylint: disable=import-error,no-name-in-module
+    Whitelist,
+)
 
 
 whitelist = Whitelist()

@@ -1,6 +1,5 @@
 import os
 import pickle
-from typing import Dict, List
 
 from pikaur.aur import get_all_aur_packages
 
@@ -20,7 +19,7 @@ else:
         pickle.dump(aur_pkgs, fobj)
 
 print("Filtering...\n")
-pkgbases: Dict[str, List[str]] = {}
+pkgbases: dict[str, list[str]] = {}
 for pkg in aur_pkgs:
     pkgbases.setdefault(pkg.packagebase, []).append(pkg.name)
 

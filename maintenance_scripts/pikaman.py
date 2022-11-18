@@ -2,13 +2,15 @@
 NRoff renderer for markdown_it
 (C) 2020-today, Y Kirylau
 
-References:
+References
+----------
     troff/nroff quick reference
     http://www.quut.com/berlin/ms/troff.html
 
     Basic Formatting with troff/nroff
     by James C. Armstrong and David B. Horvath, CCP
-    https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
+https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
+
 """
 
 import inspect
@@ -16,7 +18,7 @@ import re
 import sys
 from collections.abc import MutableMapping
 from datetime import datetime
-from typing import Sequence, Any
+from typing import Any, Sequence
 
 import markdown_it
 

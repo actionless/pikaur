@@ -11,19 +11,17 @@ import shutil
 import signal
 import sys
 from argparse import ArgumentError
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, Callable
 
 import pyalpm
 
-from .args import parse_args, reconstruct_args
+from .args import parse_args
 from .config import (
     _OLD_AUR_REPOS_CACHE_PATH,
     AUR_REPOS_CACHE_PATH,
-    BUILD_CACHE_PATH,
     CACHE_ROOT,
     CONFIG_PATH,
     DATA_ROOT,
-    PACKAGE_CACHE_PATH,
     PikaurConfig,
 )
 from .core import (
@@ -31,7 +29,6 @@ from .core import (
     check_runtime_deps,
     interactive_spawn,
     isolate_root_cmd,
-    remove_dir,
     run_with_sudo_loop,
     running_as_root,
     spawn,
@@ -40,32 +37,25 @@ from .core import (
 from .exceptions import SysExit
 from .getpkgbuild_cli import cli_getpkgbuild
 from .help_cli import cli_print_help
-from .i18n import translate  # keep that first
+from .i18n import translate
 from .info_cli import cli_info_packages
 from .install_cli import InstallPackagesCLI
 from .pikspect import (
     PikspectSignalHandler,
     TTYRestore,
-    pikspect,
 )
+from .pkg_cache_cli import cli_clean_packages_cache
 from .pprint import (
-    ColorsHighlight,
-    bold_line,
-    color_line,
     create_debug_logger,
     print_error,
     print_stderr,
-    print_stdout,
     print_warning,
 )
 from .print_department import print_version
-from .prompt import NotANumberInputError, ask_to_continue, get_multiple_numbers_input
+from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .search_cli import cli_search_packages
 from .updates import print_upgradeable
 from .urllib import ProxyInitSocks5Error, init_proxy
-
-if TYPE_CHECKING:
-    from subprocess import Popen  # nosec B404
 
 
 def init_readline() -> None:
@@ -131,32 +121,6 @@ def cli_install_packages() -> None:
 
 def cli_pkgbuild() -> None:
     cli_install_packages()
-
-
-def cli_clean_packages_cache() -> None:
-    args = parse_args()
-    if not args.repo:
-        for directory, message, minimal_clean_level in (
-                (BUILD_CACHE_PATH, translate("Build directory"), 1, ),
-                (PACKAGE_CACHE_PATH, translate("Packages directory"), 2, ),
-        ):
-            if minimal_clean_level <= args.clean and os.path.exists(directory):
-                print_stdout(f"\n{message}: {directory}")
-                if ask_to_continue(text='{} {}'.format(  # pylint: disable=consider-using-f-string
-                        color_line('::', ColorsHighlight.blue),
-                        bold_line(translate("Do you want to remove all files?"))
-                )):
-                    remove_dir(directory)
-    if not args.aur:
-        spawn_func: Callable[[list[str]], 'Popen'] = interactive_spawn
-        if args.noconfirm:
-            spawn_func = pikspect
-        raise SysExit(
-            spawn_func(sudo(
-                [PikaurConfig().misc.PacmanPath.get_str(), ] +
-                reconstruct_args(args, ignore_args=['noconfirm', ])
-            )).returncode
-        )
 
 
 def cli_print_version() -> None:

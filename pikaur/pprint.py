@@ -235,5 +235,6 @@ def create_debug_logger(module_name: str, lock: bool | None = None) -> t.Callabl
         msg = f"{color_line(module_name, color)}: {str(msg)}"
         if lock is not None:
             print_debug(msg, lock=lock)
-        print_debug(msg)
+        else:
+            print_debug(msg)
     return debug

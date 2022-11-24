@@ -185,6 +185,10 @@ class InteractiveSpawn(subprocess.Popen):
             f'STDERR:\n{self.stderr_text}'
         )
 
+    def __del__(self) -> None:
+        self.terminate()
+        self.communicate()
+
 
 class SpawnArgs(TypedDict):
     stdout: NotRequired[IO[Any] | int | None]

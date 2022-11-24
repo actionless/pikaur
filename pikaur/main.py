@@ -76,24 +76,42 @@ init_readline()
 _debug = create_debug_logger('main')
 
 
-def init_output_encoding() -> None:
-    for attr in ('stdout', 'stderr'):
-        real_stream = getattr(sys, attr)
-        try:
+class OutputEncodingWrapper():
+
+    original_stderr: int
+    original_stdout: int
+
+    def __enter__(self) -> None:
+        for attr in ('stdout', 'stderr'):
+            _debug(f'Setting {attr} to unicode...')
+            real_stream = getattr(sys, attr)
+            try:
+                setattr(
+                    self, f'original_{attr}',
+                    real_stream
+                )
+                setattr(
+                    sys, attr,
+                    codecs.open(
+                        real_stream.fileno(),
+                        mode='w', buffering=0, encoding=DEFAULT_INPUT_ENCODING
+                    )
+                )
+            except io.UnsupportedOperation:
+                pass
+            else:
+                getattr(sys, attr).buffer = real_stream.buffer
+
+    def __exit__(self, *_exc_details: Any) -> None:
+        for attr in ('stdout', 'stderr'):
+            _debug(f'Restoring {attr}...', lock=False)
+            stream = getattr(sys, attr)
+            orig_stream = getattr(self, f'original_{attr}')
+            stream.close()
             setattr(
                 sys, attr,
-                codecs.open(  # pylint: disable=consider-using-with
-                    real_stream.fileno(),
-                    mode='w', buffering=0, encoding=DEFAULT_INPUT_ENCODING
-                )
+                orig_stream
             )
-        except io.UnsupportedOperation:
-            pass
-        else:
-            getattr(sys, attr).buffer = real_stream.buffer
-
-
-init_output_encoding()
 
 
 def cli_print_upgradeable() -> None:
@@ -323,29 +341,30 @@ def handle_sig_int(*_whatever: Any) -> None:  # pragma: no cover
 
 
 def main() -> None:
-    try:
-        parse_args()
-    except ArgumentError as exc:
-        print_stderr(exc)
-        sys.exit(22)
-    check_runtime_deps()
+    with OutputEncodingWrapper():
+        try:
+            parse_args()
+        except ArgumentError as exc:
+            print_stderr(exc)
+            sys.exit(22)
+        check_runtime_deps()
 
-    create_dirs()
-    # initialize config to avoid race condition in threads:
-    PikaurConfig.get_config()
+        create_dirs()
+        # initialize config to avoid race condition in threads:
+        PikaurConfig.get_config()
 
-    atexit.register(restore_tty)
-    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-    signal.signal(signal.SIGINT, handle_sig_int)
+        atexit.register(restore_tty)
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+        signal.signal(signal.SIGINT, handle_sig_int)
 
-    try:
-        cli_entry_point()
-    except BrokenPipeError:
-        # @TODO: should it be 32?
+        try:
+            cli_entry_point()
+        except BrokenPipeError:
+            # @TODO: should it be 32?
+            sys.exit(0)
+        except SysExit as exc:
+            sys.exit(exc.code)
         sys.exit(0)
-    except SysExit as exc:
-        sys.exit(exc.code)
-    sys.exit(0)
 
 
 if __name__ == '__main__':

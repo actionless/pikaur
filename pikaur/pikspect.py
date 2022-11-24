@@ -107,7 +107,7 @@ class TTYInputWrapper():  # pragma: no cover
 
     def __exit__(self, *_exc_details: Any) -> None:
         if self.is_pipe and self.tty_opened:
-            _debug('Restoring stdin...')
+            _debug('Restoring stdin...', lock=False)
             sys.stdin.close()
             sys.stdin = self.old_stdin
 
@@ -203,6 +203,10 @@ class PikspectPopen(subprocess.Popen):
             stdout=self.pty_cmd_slave,
             stderr=self.pty_cmd_slave,
         )
+
+    def __del__(self) -> None:
+        self.terminate()
+        self.communicate()
 
     def add_answers(self, extra_questions: dict[str, list[str]]) -> None:
         for answer, questions in extra_questions.items():
@@ -405,28 +409,28 @@ def pikspect(  # pylint: disable=too-many-arguments
             YesNo.ANSWER_N: [],
         }
 
-    proc = PikspectPopen(
+    with PikspectPopen(
         cmd,
         print_output=print_output,
         default_questions=default_questions,
         capture_output=bool(capture_output),
-    )
+    ) as proc:
 
-    extra_questions = extra_questions or {}
-    if conflicts:
-        extra_questions[YesNo.ANSWER_Y] = (
-            extra_questions.get(YesNo.ANSWER_Y, []) + format_conflicts(conflicts)
-        )
-    if extra_questions:
-        proc.add_answers(extra_questions)
+        extra_questions = extra_questions or {}
+        if conflicts:
+            extra_questions[YesNo.ANSWER_Y] = (
+                extra_questions.get(YesNo.ANSWER_Y, []) + format_conflicts(conflicts)
+            )
+        if extra_questions:
+            proc.add_answers(extra_questions)
 
-    if parse_args().print_commands:
-        print_stderr(
-            color_line('pikspect => ', ColorsHighlight.cyan) +
-            ' '.join(cmd)
-        )
-    proc.run()
-    return proc
+        if parse_args().print_commands:
+            print_stderr(
+                color_line('pikspect => ', ColorsHighlight.cyan) +
+                ' '.join(cmd)
+            )
+        proc.run()
+        return proc
 
 
 if __name__ == "__main__":

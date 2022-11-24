@@ -30,6 +30,8 @@ whitelist.config.ConfigValueType.deprecated
 whitelist.config.ConfigValueType.migrated
 
 whitelist.main.socket.socket
+whitelist.main.OutputEncodingWrapper.original_stdout
+whitelist.main.OutputEncodingWrapper.original_stderr
 
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data

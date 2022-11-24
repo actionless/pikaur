@@ -2,6 +2,7 @@
 
 import fnmatch
 import re
+from abc import ABCMeta, abstractmethod
 from threading import Lock
 from typing import TYPE_CHECKING, Any, Pattern
 
@@ -153,7 +154,7 @@ def get_db_lock(package_source: PackageSource) -> type[DbLockRepo] | type[DbLock
     return DbLockRepo if package_source is PackageSource.REPO else DbLockLocal
 
 
-class PackageDBCommon():
+class PackageDBCommon(metaclass=ABCMeta):
 
     _packages_list_cache: dict[PackageSource, list[pyalpm.Package]] = {}
     _packages_dict_cache: dict[PackageSource, dict[str, pyalpm.Package]] = {}
@@ -183,6 +184,7 @@ class PackageDBCommon():
         cls._discard_cache(PackageSource.REPO)
 
     @classmethod
+    @abstractmethod
     def get_repo_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
         pass
         # if not cls._packages_list_cache.get(PackageSource.REPO):
@@ -192,6 +194,7 @@ class PackageDBCommon():
         # return cls._packages_list_cache[PackageSource.REPO]
 
     @classmethod
+    @abstractmethod
     def get_local_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
         pass
         # if not cls._packages_list_cache.get(PackageSource.LOCAL):

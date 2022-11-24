@@ -2,7 +2,6 @@
 
 import os
 import shutil
-import subprocess
 from glob import glob
 from multiprocessing.pool import ThreadPool
 from typing import Any
@@ -17,6 +16,7 @@ from .config import (
     PikaurConfig,
 )
 from .core import (
+    PIPE,
     DataType,
     InteractiveSpawn,
     dirname,
@@ -694,8 +694,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             spawn_kwargs: dict[str, Any] = {}
             if self.args.hide_build_log:
                 spawn_kwargs = {
-                    "stdout": subprocess.PIPE,
-                    "stderr": subprocess.PIPE
+                    "stdout": PIPE,
+                    "stderr": PIPE
                 }
 
             result = interactive_spawn(

@@ -52,7 +52,8 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
         result = self.document_open()
         for i, token in enumerate(tokens):
             if token.type == "inline":
-                assert token.children is not None
+                if token.children is None:
+                    raise RuntimeError(f"{token}.children is `None`.")
                 result += self.render_inline(token.children, options, env)
             elif token.type in self.rules:
                 result += self.rules[token.type](tokens, i, options, env)

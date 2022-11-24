@@ -4,7 +4,7 @@ import codecs
 import enum
 import os
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import tempfile
 from multiprocessing.pool import ThreadPool
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 
 DEFAULT_INPUT_ENCODING = 'utf-8'
+PIPE = subprocess.PIPE
 
 
 class ComparableType:

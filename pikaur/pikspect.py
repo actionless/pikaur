@@ -8,7 +8,7 @@ import select
 import shutil
 import signal
 import struct
-import subprocess
+import subprocess  # nosec B404
 import sys
 import termios
 import tty

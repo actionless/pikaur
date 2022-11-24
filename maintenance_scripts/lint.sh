@@ -53,7 +53,7 @@ vulture "${TARGETS[@]}" \
 	--sort-by-size
 
 echo Bandit...
-bandit . --recursive --silent
+bandit "${TARGETS[@]}" --recursive --silent
 
 echo Shellcheck...
 (

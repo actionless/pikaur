@@ -1,5 +1,5 @@
 import os
-import pickle
+import pickle  # nosec B403
 
 from pikaur.aur import get_all_aur_packages
 
@@ -10,7 +10,7 @@ PICKLE_FILE = 'aur_db.dump'
 if os.path.exists(PICKLE_FILE):
     print(f"Opening db dump '{PICKLE_FILE}'...")
     with open(PICKLE_FILE, 'rb') as fobj:
-        aur_pkgs = pickle.load(fobj)
+        aur_pkgs = pickle.load(fobj)  # nosec B301
 else:
     print("Fetching...")
     aur_pkgs = get_all_aur_packages()

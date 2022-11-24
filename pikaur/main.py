@@ -40,17 +40,9 @@ from .help_cli import cli_print_help
 from .i18n import translate
 from .info_cli import cli_info_packages
 from .install_cli import InstallPackagesCLI
-from .pikspect import (
-    PikspectSignalHandler,
-    TTYRestore,
-)
+from .pikspect import PikspectSignalHandler, TTYRestore
 from .pkg_cache_cli import cli_clean_packages_cache
-from .pprint import (
-    create_debug_logger,
-    print_error,
-    print_stderr,
-    print_warning,
-)
+from .pprint import create_debug_logger, print_error, print_stderr, print_warning
 from .print_department import print_version
 from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .search_cli import cli_search_packages

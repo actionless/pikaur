@@ -35,41 +35,50 @@ if TYPE_CHECKING:
 _debug = create_debug_logger('pkg_cache_cli')
 
 
+def clean_aur_cache() -> None:
+    args = parse_args()
+    for directory, message, minimal_clean_level in (
+            (BUILD_CACHE_PATH, translate("Build directory"), 1, ),
+            (PACKAGE_CACHE_PATH, translate("Packages directory"), 2, ),
+    ):
+        print_stdout(f"\n{message}: {directory}")
+        if minimal_clean_level <= args.clean and os.path.exists(directory):
+            if ask_to_continue(text='{} {}'.format(  # pylint: disable=consider-using-f-string
+                    color_line('::', ColorsHighlight.blue),
+                    bold_line(translate("Do you want to remove all files?"))
+            )):
+                remove_dir(directory)
+        else:
+            print_stdout(translate("Directory is empty:"))
+
+
+def clean_repo_cache() -> None:
+    args = parse_args()
+    spawn_func: Callable[[list[str]], 'Popen'] = interactive_spawn
+    if args.noconfirm:
+
+        def noconfirm_cache_remove(pacman_args: list[str]) -> 'Popen':
+            return pikspect(pacman_args, extra_questions={YesNo.ANSWER_Y: [
+                format_pacman_question(
+                    'Do you want to remove ALL files from cache?',
+                    question=YesNo.QUESTION_YN_NO,
+                ),
+                format_pacman_question(
+                    'Do you want to remove unused repositories?',
+                ),
+            ]})
+        spawn_func = noconfirm_cache_remove
+    raise SysExit(
+        spawn_func(sudo(
+            [PikaurConfig().misc.PacmanPath.get_str(), ] +
+            reconstruct_args(args, ignore_args=['noconfirm', ])
+        )).returncode
+    )
+
+
 def cli_clean_packages_cache() -> None:
     args = parse_args()
     if not args.repo:
-        for directory, message, minimal_clean_level in (
-                (BUILD_CACHE_PATH, translate("Build directory"), 1, ),
-                (PACKAGE_CACHE_PATH, translate("Packages directory"), 2, ),
-        ):
-            print_stdout(f"\n{message}: {directory}")
-            if minimal_clean_level <= args.clean and os.path.exists(directory):
-                if ask_to_continue(text='{} {}'.format(  # pylint: disable=consider-using-f-string
-                        color_line('::', ColorsHighlight.blue),
-                        bold_line(translate("Do you want to remove all files?"))
-                )):
-                    remove_dir(directory)
-            else:
-                print_stdout(translate("Directory is empty:"))
-
+        clean_aur_cache()
     if not args.aur:
-        spawn_func: Callable[[list[str]], 'Popen'] = interactive_spawn
-        if args.noconfirm:
-
-            def noconfirm_cache_remove(pacman_args: list[str]) -> 'Popen':
-                return pikspect(pacman_args, extra_questions={YesNo.ANSWER_Y: [
-                    format_pacman_question(
-                        'Do you want to remove ALL files from cache?',
-                        question=YesNo.QUESTION_YN_NO,
-                    ),
-                    format_pacman_question(
-                        'Do you want to remove unused repositories?',
-                    ),
-                ]})
-            spawn_func = noconfirm_cache_remove
-        raise SysExit(
-            spawn_func(sudo(
-                [PikaurConfig().misc.PacmanPath.get_str(), ] +
-                reconstruct_args(args, ignore_args=['noconfirm', ])
-            )).returncode
-        )
+        clean_repo_cache()

@@ -1,6 +1,7 @@
 import gzip
 import json
 import socket
+from time import sleep
 from typing import Any
 from urllib import request
 from urllib.error import URLError
@@ -14,10 +15,12 @@ from .prompt import ask_to_continue
 
 
 DEFAULT_WEB_ENCODING = 'utf-8'
+NOCONFIRM_RETRY_INTERVAL = 3
 
 
 def read_bytes_from_url(url: str, optional: bool = False) -> bytes:
-    if parse_args().print_commands:
+    args = parse_args()
+    if args.print_commands:
         print_stderr(
             color_line('=> ', ColorsHighlight.cyan) + f'GET {url}'
         )
@@ -32,6 +35,13 @@ def read_bytes_from_url(url: str, optional: bool = False) -> bytes:
         if optional:
             return b''
         if ask_to_continue(translate('Do you want to retry?')):
+            if args.noconfirm:
+                print_stderr(
+                    translate('Sleeping for {} seconds...').format(
+                        NOCONFIRM_RETRY_INTERVAL
+                    )
+                )
+                sleep(NOCONFIRM_RETRY_INTERVAL)
             return read_bytes_from_url(url, optional=optional)
         raise SysExit(102) from exc
 
@@ -53,7 +63,7 @@ def get_gzip_from_url(url: str) -> str:
     except EOFError as exc:
         print_error(f'GET {url}')
         print_error('urllib: ' + str(exc))
-        if ask_to_continue(translate('Do you want to retry?')):
+        if ask_to_continue(translate('Do you want to retry?'), default_yes=False):
             return get_gzip_from_url(url)
         raise SysExit(102) from exc
     text_response = decompressed_bytes_response.decode(DEFAULT_WEB_ENCODING)

@@ -7,7 +7,7 @@ from .args import PikaurArgs, parse_args, reconstruct_args
 from .aur import AURPackageInfo, find_aur_packages, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .core import AURInstallInfo, ComparableType, InstallInfo, PackageSource, RepoInstallInfo
-from .exceptions import DependencyError, DependencyVersionMismatch, SysExit
+from .exceptions import DependencyError, DependencyVersionMismatchError, SysExit
 from .i18n import translate
 from .pacman import (
     OFFICIAL_REPOS,
@@ -542,7 +542,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             print_stdout(translate("Resolving AUR dependencies..."))
         try:
             self.aur_deps_relations = find_aur_deps(all_aur_pkgs)
-        except DependencyVersionMismatch as exc:
+        except DependencyVersionMismatchError as exc:
             if exc.location is not PackageSource.LOCAL:
                 raise exc
             # if local package is too old

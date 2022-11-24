@@ -9,7 +9,7 @@ from .args import parse_args
 from .aur import AURPackageInfo, find_aur_packages
 from .config import PikaurConfig
 from .core import AURInstallInfo, InstallInfo, RepoInstallInfo
-from .exceptions import PackagesNotFoundInRepo
+from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate, translate_many
 from .pacman import (
     PackageDB,
@@ -51,7 +51,7 @@ def get_remote_package(
 ) -> pyalpm.Package | AURPackageInfo | None:
     try:
         repo_pkg = PackageDB.find_repo_package(new_pkg_name)
-    except PackagesNotFoundInRepo:
+    except PackagesNotFoundInRepoError:
         aur_packages, _not_found = find_aur_packages([new_pkg_name])
         if aur_packages:
             return aur_packages[0]

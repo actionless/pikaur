@@ -12,7 +12,7 @@ from pycman.config import PacmanConfig as PycmanConfig
 from .args import PACMAN_APPEND_OPTS, PACMAN_STR_OPTS, parse_args, reconstruct_args
 from .config import PikaurConfig
 from .core import DataType, PackageSource, spawn, sudo
-from .exceptions import DependencyError, PackagesNotFoundInRepo
+from .exceptions import DependencyError, PackagesNotFoundInRepoError
 from .i18n import translate
 from .pacman_i18n import _p
 from .pprint import color_enabled, create_debug_logger, print_error, print_stderr
@@ -497,7 +497,7 @@ class PackageDB(PackageDBCommon):
     def find_repo_package(cls, pkg_name: str) -> pyalpm.Package:
         # @TODO: interactively ask for multiple providers and save the answer?
         if cls._pacman_repo_pkg_present_cache.get(pkg_name) is False:
-            raise PackagesNotFoundInRepo(packages=[pkg_name])
+            raise PackagesNotFoundInRepoError(packages=[pkg_name])
         all_repo_pkgs = PackageDB.get_repo_dict()
         try:
             results = cls.get_print_format_output(
@@ -505,7 +505,7 @@ class PackageDB(PackageDBCommon):
                 package_only=True
             )
         except DependencyError as exc:
-            raise PackagesNotFoundInRepo(packages=[pkg_name]) from exc
+            raise PackagesNotFoundInRepoError(packages=[pkg_name]) from exc
         found_pkgs = [all_repo_pkgs[result.full_name] for result in results]
         if len(results) == 1:
             return found_pkgs[0]
@@ -520,7 +520,7 @@ class PackageDB(PackageDBCommon):
                     provided_name = VersionMatcher(provided_pkg_line).pkg_name
                     if provided_name == pkg_name:
                         return pkg
-        raise PackagesNotFoundInRepo(packages=[pkg_name])
+        raise PackagesNotFoundInRepoError(packages=[pkg_name])
 
 
 def get_upgradeable_package_names() -> list[str]:

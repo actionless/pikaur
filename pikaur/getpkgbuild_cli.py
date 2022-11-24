@@ -5,7 +5,7 @@ from .aur import find_aur_packages, get_repo_url
 from .aur_deps import get_aur_deps_list
 from .core import check_runtime_deps, interactive_spawn
 from .i18n import translate
-from .pacman import PackageDB, PackagesNotFoundInRepo
+from .pacman import PackageDB, PackagesNotFoundInRepoError
 from .pprint import print_stdout
 from .print_department import print_not_found_packages
 from .urllib import wrap_proxy_env
@@ -22,7 +22,7 @@ def cli_getpkgbuild() -> None:
     for pkg_name in not_found_aur_pkgs:
         try:
             repo_pkg = PackageDB.find_repo_package(pkg_name)
-        except PackagesNotFoundInRepo:
+        except PackagesNotFoundInRepoError:
             not_found_repo_pkgs.append(pkg_name)
         else:
             repo_pkgs.append(repo_pkg)

@@ -4,7 +4,11 @@ from multiprocessing.pool import ThreadPool
 
 from .aur import AURPackageInfo, find_aur_packages
 from .core import PackageSource
-from .exceptions import DependencyVersionMismatch, PackagesNotFoundInAUR, PackagesNotFoundInRepo
+from .exceptions import (
+    DependencyVersionMismatchError,
+    PackagesNotFoundInAURError,
+    PackagesNotFoundInRepoError,
+)
 from .i18n import translate
 from .pacman import PackageDB
 from .pprint import print_error
@@ -98,7 +102,7 @@ def handle_not_found_aur_pkgs(  # pylint: disable=too-many-locals
 
                 try:
                     failed_pkg = PackageDB.find_repo_package(not_found_pkg)
-                except PackagesNotFoundInRepo:
+                except PackagesNotFoundInRepoError:
                     pass
                 else:
                     version_found = failed_pkg.version
@@ -107,7 +111,7 @@ def handle_not_found_aur_pkgs(  # pylint: disable=too-many-locals
                             provided.name: provided.package.version
                             for provided in all_repo_provided_packages[not_found_pkg]
                         })
-                    raise DependencyVersionMismatch(
+                    raise DependencyVersionMismatchError(
                         version_found=version_found,
                         dependency_line=version_matcher.line,
                         who_depends=aur_pkg_name,
@@ -117,7 +121,7 @@ def handle_not_found_aur_pkgs(  # pylint: disable=too-many-locals
 
                 not_found_local_pkgs = PackageDB.get_not_found_local_packages([not_found_pkg])
                 if not not_found_local_pkgs:
-                    raise DependencyVersionMismatch(
+                    raise DependencyVersionMismatchError(
                         version_found={
                             provided.name: provided.package.version
                             for provided in all_local_provided_packages[not_found_pkg]
@@ -137,7 +141,7 @@ def handle_not_found_aur_pkgs(  # pylint: disable=too-many-locals
                     problem_packages_names.append(dependant_pkg.name)
                 break
 
-    raise PackagesNotFoundInAUR(
+    raise PackagesNotFoundInAURError(
         packages=not_found_aur_deps,
         wanted_by=problem_packages_names
     )
@@ -169,7 +173,7 @@ def check_requested_pkgs(
                         version_matcher(VersionMatcher(prov_line).version)
                         for prov_line in aur_pkg.provides
                 ):
-                    raise DependencyVersionMismatch(
+                    raise DependencyVersionMismatchError(
                         version_found=aur_pkg.version,
                         dependency_line=version_matcher.line,
                         who_depends=aur_pkg_name,
@@ -232,7 +236,7 @@ def find_missing_deps_for_aur_pkg(
         aur_dep_name = aur_dep_info.name
         version_matcher = version_matchers[aur_dep_name]
         if not version_matcher(aur_dep_info.version):
-            raise DependencyVersionMismatch(
+            raise DependencyVersionMismatchError(
                 version_found=aur_dep_info.version,
                 dependency_line=version_matcher.line,
                 who_depends=aur_pkg_name,
@@ -263,7 +267,7 @@ def find_aur_deps(aur_pkgs_infos: list[AURPackageInfo]) -> dict[str, list[str]]:
         else:
             aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(iter_package_names)
         if not_found_aur_pkgs:
-            raise PackagesNotFoundInAUR(packages=not_found_aur_pkgs)
+            raise PackagesNotFoundInAURError(packages=not_found_aur_pkgs)
         for aur_pkg in aur_pkgs_info:
             aur_pkg_deps = get_aur_pkg_deps_and_version_matchers(aur_pkg)
             if aur_pkg_deps:
@@ -339,7 +343,7 @@ def _find_repo_deps_of_aur_pkg(
             continue
         try:
             PackageDB.find_repo_package(version_matcher.line)
-        except PackagesNotFoundInRepo:
+        except PackagesNotFoundInRepoError:
             continue
         else:
             new_deps_vms.append(version_matcher)

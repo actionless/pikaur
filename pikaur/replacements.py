@@ -1,5 +1,5 @@
 
-from .exceptions import PackagesNotFoundInRepo
+from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate_many
 from .pacman import PackageDB
 from .pprint import print_warning
@@ -35,7 +35,7 @@ def find_replacements() -> dict[str, list[str]]:
                         )
                 ):
                     new_pkgs_replaces.setdefault(pkg_name, []).append(replace_pkg_name)
-            except PackagesNotFoundInRepo as exc:
+            except PackagesNotFoundInRepoError as exc:
                 print_warning(
                     translate_many(
                         "'{packages}' package is available in the repo but can't be installed",

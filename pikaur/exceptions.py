@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .version import VersionMatcher
 
 
-class PackagesNotFound(DataType, Exception):
+class PackagesNotFoundError(DataType, Exception):
     packages: list[str]
     wanted_by: list[str] | None = None
 
@@ -23,13 +23,13 @@ class PackagesNotFound(DataType, Exception):
         Exception.__init__(self, message)
 
 
-class PackagesNotFoundInRepo(PackagesNotFound):
+class PackagesNotFoundInRepoError(PackagesNotFoundError):
     # pass
     # @TODO: pylint bug:
     packages: list[str]
 
 
-class PackagesNotFoundInAUR(PackagesNotFound):
+class PackagesNotFoundInAURError(PackagesNotFoundError):
     # pass
     # @TODO: pylint bug:
     packages: list[str]
@@ -48,7 +48,7 @@ class DependencyError(Exception):
     pass
 
 
-class DependencyVersionMismatch(DataType, Exception):
+class DependencyVersionMismatchError(DataType, Exception):
     version_found: dict[str, str] | str
     dependency_line: str
     who_depends: str
@@ -77,7 +77,7 @@ class DependencyVersionMismatch(DataType, Exception):
             self.dependency_line = self.version_matcher.line
 
 
-class DependencyNotBuiltYet(Exception):
+class DependencyNotBuiltYetError(Exception):
     pass
 
 

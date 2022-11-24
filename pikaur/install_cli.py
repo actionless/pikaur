@@ -26,9 +26,9 @@ from .exceptions import (
     BuildError,
     CloneError,
     DependencyError,
-    DependencyNotBuiltYet,
-    DependencyVersionMismatch,
-    PackagesNotFoundInAUR,
+    DependencyNotBuiltYetError,
+    DependencyVersionMismatchError,
+    PackagesNotFoundInAURError,
     SysExit,
 )
 from .i18n import translate
@@ -278,7 +278,7 @@ class InstallPackagesCLI():
                     self.manually_excluded_packages_names + self.args.ignore
                 ),
             )
-        except PackagesNotFoundInAUR as exc:
+        except PackagesNotFoundInAURError as exc:
             if exc.wanted_by:
                 print_error(bold_line(
                     translate("Dependencies missing for {}").format(', '.join(exc.wanted_by))
@@ -290,7 +290,7 @@ class InstallPackagesCLI():
                 return
             print_not_found_packages(exc.packages)
             raise SysExit(131) from exc
-        except DependencyVersionMismatch as exc:
+        except DependencyVersionMismatchError as exc:
             print_stderr(color_line(translate("Version mismatch:"), ColorsHighlight.yellow))
             print_stderr(
                 translate("{what} depends on: '{dep}'\n found in '{location}': '{version}'").format(
@@ -937,7 +937,7 @@ class InstallPackagesCLI():
                     for remaining_aur_pkg_name in packages_to_be_built[:]:
                         if remaining_aur_pkg_name not in self.all_aur_packages_names:
                             packages_to_be_built.remove(remaining_aur_pkg_name)
-            except DependencyNotBuiltYet as exc:
+            except DependencyNotBuiltYetError as exc:
                 index += 1
                 for _pkg_name in pkg_build.package_names:
                     deps_fails_counter.setdefault(_pkg_name, 0)

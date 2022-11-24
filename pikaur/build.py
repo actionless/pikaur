@@ -30,7 +30,7 @@ from .core import (
     spawn,
     sudo,
 )
-from .exceptions import BuildError, CloneError, DependencyError, DependencyNotBuiltYet, SysExit
+from .exceptions import BuildError, CloneError, DependencyError, DependencyNotBuiltYetError, SysExit
 from .filelock import FileLock
 from .i18n import translate, translate_many
 from .makepkg_config import PKGDEST, MakePkgCommand, MakepkgConfig
@@ -374,7 +374,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     self.failed = True
                     raise DependencyError()
                 if not package_build.built_packages_paths.get(pkg_name):
-                    raise DependencyNotBuiltYet()
+                    raise DependencyNotBuiltYetError()
                 self.built_deps_to_install[pkg_name] = \
                     package_build.built_packages_paths[pkg_name]
                 _mark_dep_resolved(dep)

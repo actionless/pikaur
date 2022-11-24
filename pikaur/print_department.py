@@ -141,7 +141,9 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
 
     type_sort_key = tuple | str
 
-    def pretty_format(pkg_update: 'InstallInfo') -> tuple[str, type_sort_key]:  # pylint:disable=too-many-locals,R0912
+    def pretty_format(  # pylint:disable=too-many-locals,R0912
+            pkg_update: 'InstallInfo'
+    ) -> tuple[str, type_sort_key]:
         common_version, diff_weight = get_common_version(
             pkg_update.current_version or '', pkg_update.new_version or ''
         )
@@ -648,8 +650,8 @@ def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
     )
 
 
-# @TODO: weird pylint behavior if remove `return` from the end:
-def print_package_search_results(  # pylint:disable=too-many-locals,too-many-statements,too-many-branches
+# pylint:disable=too-many-locals,too-many-statements,too-many-branches
+def print_package_search_results(
         repo_packages: Iterable[pyalpm.Package],
         aur_packages: Iterable[AURPackageInfo],
         local_pkgs_versions: dict[str, str],

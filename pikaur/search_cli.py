@@ -127,7 +127,9 @@ def join_search_results(
     }.values()
 
 
-def cli_search_packages(enumerated: bool = False) -> list[AnyPackage]:  # pylint: disable=too-many-locals
+def cli_search_packages(  # pylint: disable=too-many-locals
+        enumerated: bool = False
+) -> list[AnyPackage]:
     refresh_pkg_db_if_needed()
 
     args = parse_args()

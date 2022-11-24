@@ -1,7 +1,7 @@
 [pycodestyle]
-max-line-length = 120
+max-line-length = 100
 
 [flake8]
-max-line-length = 120
+max-line-length = 100
 ignore = E116,W503,W504,N802,N806
 ;exclude=argparse.py

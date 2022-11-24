@@ -222,7 +222,8 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
 
         self.mark_dependent()
 
-    def _get_repo_pkgs_info(  # pylint: disable=too-many-statements,too-many-locals,too-many-branches
+    # pylint: disable=too-many-statements,too-many-locals,too-many-branches
+    def _get_repo_pkgs_info(
             self, pkg_lines: list[str], extra_args: list[str] | None = None
     ) -> list[RepoInstallInfo]:
         if not pkg_lines:
@@ -431,7 +432,9 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             else:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
 
-    def get_aur_pkgs_info(self, aur_packages_versionmatchers: list[str]) -> None:  # pylint: disable=too-many-branches
+    def get_aur_pkgs_info(  # pylint: disable=too-many-branches
+            self, aur_packages_versionmatchers: list[str]
+    ) -> None:
         aur_packages_names_to_versions = {
             strip_aur_repo_name(version_matcher.pkg_name): version_matcher
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]

@@ -57,14 +57,16 @@ class ConfigReader():
             cls._cached_config = {}
         if not cls._cached_config.get(config_path):
             with open_file(config_path) as config_file:
-                cls._cached_config[config_path] = {  # pylint: disable=unsupported-assignment-operation
+                # pylint: disable=unsupported-assignment-operation
+                cls._cached_config[config_path] = {
                     key: value
                     for key, value in [
                         cls._parse_line(line)
                         for line in config_file.readlines()
                     ] if key
                 }
-        return cls._cached_config[config_path]  # pylint: disable=unsubscriptable-object
+        # pylint: disable=unsubscriptable-object
+        return cls._cached_config[config_path]
 
     @classmethod
     def get(cls, key: str, fallback: Any = None, config_path: str | None = None) -> Any:

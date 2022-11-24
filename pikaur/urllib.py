@@ -18,7 +18,11 @@ DEFAULT_WEB_ENCODING = 'utf-8'
 NOCONFIRM_RETRY_INTERVAL = 3
 
 
-def read_bytes_from_url(url: str, optional: bool = False) -> bytes:
+def read_bytes_from_url(
+        url: str,
+        optional: bool = False,
+        autoretry: bool = True,
+) -> bytes:
     args = parse_args()
     if args.print_commands:
         print_stderr(
@@ -32,9 +36,7 @@ def read_bytes_from_url(url: str, optional: bool = False) -> bytes:
     except URLError as exc:
         print_error(f'GET {url}')
         print_error('urllib: ' + str(exc.reason))
-        if optional:
-            return b''
-        if ask_to_continue(translate('Do you want to retry?')):
+        if autoretry and ask_to_continue(translate('Do you want to retry?')):  # pragma: no cover
             if args.noconfirm:
                 print_stderr(
                     translate('Sleeping for {} seconds...').format(
@@ -43,6 +45,8 @@ def read_bytes_from_url(url: str, optional: bool = False) -> bytes:
                 )
                 sleep(NOCONFIRM_RETRY_INTERVAL)
             return read_bytes_from_url(url, optional=optional)
+        if optional:
+            return b''
         raise SysExit(102) from exc
 
 

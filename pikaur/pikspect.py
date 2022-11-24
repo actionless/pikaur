@@ -378,6 +378,13 @@ def pikspect(  # pylint: disable=too-many-arguments
         PROCEED = [
             format_pacman_question('Proceed with installation?'),
             format_pacman_question('Proceed with download?'),
+            format_pacman_question(
+                'Do you want to remove ALL files from cache?',
+                question=YesNo.QUESTION_YN_NO,
+            ),
+            format_pacman_question(
+                'Do you want to remove unused repositories?',
+            ),
         ]
         REMOVE = format_pacman_question('Do you want to remove these packages?')
         CONFLICT = format_pacman_question(

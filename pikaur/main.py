@@ -11,7 +11,7 @@ import shutil
 import signal
 import sys
 from argparse import ArgumentError
-from typing import Any, Callable
+from typing import Any, Callable, TYPE_CHECKING
 
 import pyalpm
 
@@ -43,7 +43,11 @@ from .help_cli import cli_print_help
 from .i18n import translate  # keep that first
 from .info_cli import cli_info_packages
 from .install_cli import InstallPackagesCLI
-from .pikspect import PikspectSignalHandler, TTYRestore
+from .pikspect import (
+    PikspectSignalHandler,
+    TTYRestore,
+    pikspect,
+)
 from .pprint import (
     ColorsHighlight,
     bold_line,
@@ -59,6 +63,9 @@ from .prompt import NotANumberInputError, ask_to_continue, get_multiple_numbers_
 from .search_cli import cli_search_packages
 from .updates import print_upgradeable
 from .urllib import ProxyInitSocks5Error, init_proxy
+
+if TYPE_CHECKING:
+    from subprocess import Popen  # nosec B404
 
 
 def init_readline() -> None:
@@ -141,9 +148,13 @@ def cli_clean_packages_cache() -> None:
                 )):
                     remove_dir(directory)
     if not args.aur:
+        spawn_func: Callable[[list[str]], 'Popen'] = interactive_spawn
+        if args.noconfirm:
+            spawn_func = pikspect
         raise SysExit(
-            interactive_spawn(sudo(
-                [PikaurConfig().misc.PacmanPath.get_str(), ] + reconstruct_args(args)
+            spawn_func(sudo(
+                [PikaurConfig().misc.PacmanPath.get_str(), ] +
+                reconstruct_args(args, ignore_args=['noconfirm', ])
             )).returncode
         )
 

@@ -30,7 +30,9 @@ OUTPUT_PATH = sys.argv[2]
 ENCODING = 'utf-8'
 
 
-class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=too-many-public-methods
+class NroffRenderer(  # pylint: disable=too-many-public-methods
+        markdown_it.renderer.RendererProtocol
+):
 
     __output__ = 'nroff'
     name: str
@@ -236,9 +238,10 @@ class NroffRenderer(markdown_it.renderer.RendererProtocol):  # pylint: disable=t
         return text.startswith('http://') or text.startswith('https://')
 
     def document_open(self) -> str:
+        date = datetime.now().strftime("%B %Y")
         return rf""".\" generated with Pikaman
 .
-.TH "{self.name.upper()}" "{self.section}" "{datetime.now().strftime("%B %Y")}" "" "{self.name.capitalize()} manual"
+.TH "{self.name.upper()}" "{self.section}" "{date}" "" "{self.name.capitalize()} manual"
 .
 
 """

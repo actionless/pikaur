@@ -2,7 +2,8 @@
 
 # pylint: disable=protected-access,pointless-statement
 
-from vulture.whitelist_utils import (  # type: ignore[import]  # pylint: disable=import-error,no-name-in-module
+# pylint: disable=import-error,no-name-in-module
+from vulture.whitelist_utils import (  # type: ignore[import]
     Whitelist,
 )
 
@@ -33,6 +34,7 @@ whitelist.main.socket.socket
 whitelist.main.OutputEncodingWrapper.original_stdout
 whitelist.main.OutputEncodingWrapper.original_stderr
 
+whitelist.news.Element
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.strict

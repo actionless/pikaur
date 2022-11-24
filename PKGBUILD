@@ -3,7 +3,7 @@
 
 pkgname=pikaur-git
 pkgver=1.13.2
-pkgrel=1
+pkgrel=2
 pkgdesc="AUR helper which asks all questions before installing/building. Inspired by pacaur, yaourt and yay."
 arch=('any')
 url="https://github.com/actionless/pikaur"
@@ -19,6 +19,8 @@ depends=(
 	'git'
 )
 makedepends=(
+	'python-build'
+	'python-installer'
 	'python-markdown-it-py'
 )
 optdepends=(
@@ -39,11 +41,12 @@ build() {
 	cd "${srcdir}/${pkgname}" || exit 2
 	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
 	make
+	/usr/bin/python3 -m build --wheel --no-isolation
 }
 
 package() {
 	cd "${srcdir}/${pkgname}" || exit 2
-	/usr/bin/python3 setup.py install --prefix=/usr --root="$pkgdir/" --optimize=1
+	/usr/bin/python3 -m installer --destdir="$pkgdir" dist/*.whl
 	for langmo in $(cd ./locale && ls ./*.mo); do
 		lang=$(sed -e 's/.mo$//' <<< "${langmo}")
 		install -Dm644 "locale/${langmo}" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"

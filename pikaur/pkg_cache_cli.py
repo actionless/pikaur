@@ -40,13 +40,15 @@ def cli_clean_packages_cache() -> None:
                 (BUILD_CACHE_PATH, translate("Build directory"), 1, ),
                 (PACKAGE_CACHE_PATH, translate("Packages directory"), 2, ),
         ):
+            print_stdout(f"\n{message}: {directory}")
             if minimal_clean_level <= args.clean and os.path.exists(directory):
-                print_stdout(f"\n{message}: {directory}")
                 if ask_to_continue(text='{} {}'.format(  # pylint: disable=consider-using-f-string
                         color_line('::', ColorsHighlight.blue),
                         bold_line(translate("Do you want to remove all files?"))
                 )):
                     remove_dir(directory)
+            else:
+                print_stdout(translate("Directory is empty:"))
     if not args.aur:
         spawn_func: Callable[[list[str]], 'Popen'] = interactive_spawn
         if args.noconfirm:

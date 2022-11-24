@@ -100,7 +100,7 @@ def init_proxy() -> None:
 
     http_proxy_addr = net_config.AurHttpProxy.get_str()
     https_proxy_addr = net_config.AurHttpsProxy.get_str()
-    if http_proxy_addr or https_proxy_addr:
+    if http_proxy_addr or https_proxy_addr:  # pragma: no cover
         proxies = {}
         if http_proxy_addr:
             proxies['http'] = http_proxy_addr
@@ -111,7 +111,7 @@ def init_proxy() -> None:
         request.install_opener(opener)
 
 
-def wrap_proxy_env(cmd: list[str]) -> list[str]:
+def wrap_proxy_env(cmd: list[str]) -> list[str]:  # pragma: no cover:
     """Add env with proxy to command line args."""
     net_config = PikaurConfig().network
     http_proxy_addr = net_config.AurHttpProxy.get_str()

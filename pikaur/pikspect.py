@@ -230,7 +230,10 @@ class PikspectPopen(subprocess.Popen):
             with NestedTerminal() as real_term_geometry:
 
                 if 'sudo' in self.args:  # pragma: no cover
-                    subprocess.run(get_sudo_refresh_command(), check=True)  # nosec B603
+                    subprocess.run(  # nosec B603
+                        get_sudo_refresh_command(),
+                        check=True
+                    )
                 with open(
                         self.pty_user_master, 'w', encoding=DEFAULT_INPUT_ENCODING
                 ) as self.pty_in:

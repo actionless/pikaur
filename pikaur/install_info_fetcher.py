@@ -327,7 +327,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 except DependencyError as exc:
                     print_error(f"'{pkg_name}' is NOT installable.")
                     print_stderr(str(exc))
-                    if not ask_to_continue:
+                    if not ask_to_continue():
                         raise SysExit(125) from exc
 
         _debug("Check partially passed - gonna get install infos:")

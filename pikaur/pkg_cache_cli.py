@@ -15,6 +15,8 @@ from .core import (
 from .exceptions import SysExit
 from .i18n import translate
 from .pikspect import (
+    YesNo,
+    format_pacman_question,
     pikspect,
 )
 from .pprint import (
@@ -49,10 +51,22 @@ def cli_clean_packages_cache() -> None:
                     remove_dir(directory)
             else:
                 print_stdout(translate("Directory is empty:"))
+
     if not args.aur:
         spawn_func: Callable[[list[str]], 'Popen'] = interactive_spawn
         if args.noconfirm:
-            spawn_func = pikspect
+
+            def noconfirm_cache_remove(pacman_args: list[str]) -> 'Popen':
+                return pikspect(pacman_args, extra_questions={YesNo.ANSWER_Y: [
+                    format_pacman_question(
+                        'Do you want to remove ALL files from cache?',
+                        question=YesNo.QUESTION_YN_NO,
+                    ),
+                    format_pacman_question(
+                        'Do you want to remove unused repositories?',
+                    ),
+                ]})
+            spawn_func = noconfirm_cache_remove
         raise SysExit(
             spawn_func(sudo(
                 [PikaurConfig().misc.PacmanPath.get_str(), ] +

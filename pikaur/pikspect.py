@@ -356,6 +356,17 @@ class PikspectPopen(subprocess.Popen):
             self.write_something(char.encode(DEFAULT_INPUT_ENCODING))
 
 
+class YesNo:
+    ANSWER_Y = _p("Y")
+    ANSWER_N = _p("N")
+    QUESTION_YN_YES = _p("[Y/n]")
+    QUESTION_YN_NO = _p("[y/N]")
+
+
+def format_pacman_question(message: str, question: str = YesNo.QUESTION_YN_YES) -> str:
+    return bold_line(f" {_p(message)} {question} ")
+
+
 def pikspect(  # pylint: disable=too-many-arguments
         cmd: list[str],
         print_output: bool = True,
@@ -365,28 +376,14 @@ def pikspect(  # pylint: disable=too-many-arguments
         capture_output: bool | None = None,
 ) -> PikspectPopen:
 
-    class YesNo:
-        ANSWER_Y = _p("Y")
-        ANSWER_N = _p("N")
-        QUESTION_YN_YES = _p("[Y/n]")
-        QUESTION_YN_NO = _p("[y/N]")
-
-    def format_pacman_question(message: str, question: str = YesNo.QUESTION_YN_YES) -> str:
-        return bold_line(f" {_p(message)} {question} ")
-
     class Questions:
         PROCEED = [
             format_pacman_question('Proceed with installation?'),
             format_pacman_question('Proceed with download?'),
-            format_pacman_question(
-                'Do you want to remove ALL files from cache?',
-                question=YesNo.QUESTION_YN_NO,
-            ),
-            format_pacman_question(
-                'Do you want to remove unused repositories?',
-            ),
         ]
-        REMOVE = format_pacman_question('Do you want to remove these packages?')
+        REMOVE = [
+            format_pacman_question('Do you want to remove these packages?'),
+        ]
         CONFLICT = format_pacman_question(
             '%s and %s are in conflict. Remove %s?', YesNo.QUESTION_YN_NO
         )
@@ -410,9 +407,7 @@ def pikspect(  # pylint: disable=too-many-arguments
     default_questions: dict[str, list[str]] = {}
     if auto_proceed:
         default_questions = {
-            YesNo.ANSWER_Y: Questions.PROCEED + [
-                Questions.REMOVE,
-            ],
+            YesNo.ANSWER_Y: Questions.PROCEED + Questions.REMOVE,
             YesNo.ANSWER_N: [],
         }
 

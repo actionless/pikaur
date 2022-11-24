@@ -24,3 +24,9 @@ class UrllibTestcase(PikaurTestCase):
             'http://example.com12345678901412380', optional=True, autoretry=False
         )
         self.assertEqual(b'', result)
+
+    def test_read_gzip_error(self):
+        with self.assertRaises(SysExit):
+            get_gzip_from_url(
+                'http://example.com', autoretry=False
+            )

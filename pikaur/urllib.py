@@ -60,14 +60,25 @@ def get_json_from_url(url: str) -> Any:
     return result_json
 
 
-def get_gzip_from_url(url: str) -> str:
+def get_gzip_from_url(
+        url: str,
+        autoretry: bool = True,
+) -> str:
     result_bytes = read_bytes_from_url(url)
     try:
         decompressed_bytes_response = gzip.decompress(result_bytes)
-    except EOFError as exc:
+    except Exception as exc:
         print_error(f'GET {url}')
         print_error('urllib: ' + str(exc))
-        if ask_to_continue(translate('Do you want to retry?'), default_yes=False):
+        if autoretry and ask_to_continue(translate('Do you want to retry?')):  # pragma: no cover
+            args = parse_args()
+            if args.noconfirm:
+                print_stderr(
+                    translate('Sleeping for {} seconds...').format(
+                        NOCONFIRM_RETRY_INTERVAL
+                    )
+                )
+                sleep(NOCONFIRM_RETRY_INTERVAL)
             return get_gzip_from_url(url)
         raise SysExit(102) from exc
     text_response = decompressed_bytes_response.decode(DEFAULT_WEB_ENCODING)

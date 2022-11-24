@@ -60,7 +60,7 @@ from .version import VersionMatcher, compare_versions
 _debug = create_debug_logger('build')
 
 
-class PkgbuildChanged(Exception):
+class PkgbuildChanged(Exception):  # noqa: N818
     pass
 
 

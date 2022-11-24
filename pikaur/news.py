@@ -26,7 +26,7 @@ from .pprint import (
 from .urllib import get_unicode_from_url
 
 if TYPE_CHECKING:
-    from xml.etree.ElementTree import Element  # noqa  # nosec B405
+    from xml.etree.ElementTree import Element  # nosec B405
 
 
 DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'

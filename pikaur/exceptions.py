@@ -6,9 +6,9 @@ from .core import DataType, PackageSource
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
-    from .build import PackageBuild  # noqa
-    from .version import VersionMatcher
+    from .build import PackageBuild
     from .core import InteractiveSpawn
+    from .version import VersionMatcher
 
 
 class PackagesNotFound(DataType, Exception):
@@ -91,7 +91,7 @@ class AURError(Exception):
         super().__init__(f"URL: {self.url}\nError: {self.error}")
 
 
-class SysExit(Exception):
+class SysExit(Exception):  # noqa: N818
     code: int
 
     def __init__(self, code: int) -> None:

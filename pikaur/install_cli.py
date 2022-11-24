@@ -185,7 +185,7 @@ class InstallPackagesCLI():
 
         self.main_sequence()
 
-    class ExitMainSequence(Exception):
+    class ExitMainSequence(Exception):  # noqa: N818
         """Raise when need to finish Install CLI"""
 
     def main_sequence(self) -> None:

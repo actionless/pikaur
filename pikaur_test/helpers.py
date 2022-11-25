@@ -18,6 +18,7 @@ from pikaur.main import main
 from pikaur.makepkg_config import MakePkgCommand
 from pikaur.pacman import PackageDB
 from pikaur.pprint import color_line, get_term_width
+from pikaur.srcinfo import SrcInfo
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -300,21 +301,45 @@ class PikaurDbTestCase(PikaurTestCase):
             if pkg_is_installed(pkg_name):
                 self.remove_packages(pkg_name)
 
-    def downgrade_repo_pkg(
+    def downgrade_repo_pkg(  # pylint: disable=too-many-arguments
             self, repo_pkg_name: str,
             fake_makepkg: bool = False, skippgpcheck: bool = False,
-            count: int = 10
+            count: int = 10,
+            build_root: str = '.',
+            remove_before_upgrade: bool = True,
+            to_version: str | None = None,
     ) -> str:
-        self.remove_if_installed(repo_pkg_name)
-        spawn(f'rm -fr ./{repo_pkg_name}')
+        if remove_before_upgrade:
+            self.remove_if_installed(repo_pkg_name)
+        spawn(f'rm -fr {build_root}/{repo_pkg_name}')
         pikaur(f'-G {repo_pkg_name}')
-        some_older_commit = spawn(
-            f'git -C ./{repo_pkg_name} log --format=%h'
-        ).stdout_text.splitlines()[count]
-        spawn(f'git -C ./{repo_pkg_name} checkout {some_older_commit}')
+        build_dir = f'{build_root}/{repo_pkg_name}/trunk/'
+        srcinfo = SrcInfo(build_dir, repo_pkg_name)
+        srcinfo.regenerate()
+        from_version = srcinfo.get_version()
+        if not to_version:
+            some_older_commit = spawn(
+                f'git -C {build_root}/{repo_pkg_name} log --format=%h'
+            ).stdout_text.splitlines()[count]
+            spawn(f'git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}')
+            srcinfo.regenerate()
+            to_version = srcinfo.get_version()
+        else:
+            current_version = srcinfo.get_version()
+            count = 1
+            while current_version != to_version:
+                some_older_commit = spawn(
+                    f'git -C {build_root}/{repo_pkg_name} log --format=%h'
+                ).stdout_text.splitlines()[count]
+                spawn(f'git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}')
+                srcinfo.regenerate()
+                current_version = srcinfo.get_version()
+                print(current_version)
+                count += 1
+        print(f"Downgrading from {from_version} to {to_version}...")
         pikaur(
             '-P -i --noconfirm '
-            f'./{repo_pkg_name}/trunk/PKGBUILD',
+            f'{build_dir}/PKGBUILD',
             fake_makepkg=fake_makepkg,
             skippgpcheck=skippgpcheck
         )

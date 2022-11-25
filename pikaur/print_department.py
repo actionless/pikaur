@@ -3,7 +3,7 @@
 import sys
 from datetime import datetime
 from fnmatch import fnmatch
-from typing import TYPE_CHECKING, Any, Iterable, Sequence, overload
+from typing import TYPE_CHECKING, Iterable, Sequence, TypeVar
 
 import pyalpm
 
@@ -36,6 +36,7 @@ ORPHANED_COLOR = ColorsHighlight.red
 
 
 AnyPackage = AURPackageInfo | pyalpm.Package
+InstallInfoT = TypeVar('InstallInfoT', bound=InstallInfo)
 
 
 def print_version(pacman_version: str, pyalpm_version: str, quiet: bool = False) -> None:
@@ -396,15 +397,8 @@ class SysupgradePrettyFormatter:
         warn_about_packages_str = self.config.ui.WarnAboutPackageUpdates.get_str()
         warn_about_packages_list: list[InstallInfo] = []
 
-        @overload
-        def remove_globs_from_pkg_list(pkg_list: list[AURInstallInfo]) -> None:
-            ...
-
-        @overload
-        def remove_globs_from_pkg_list(pkg_list: list[RepoInstallInfo]) -> None:
-            ...
-
-        def remove_globs_from_pkg_list(pkg_list: list[Any]) -> None:
+        def remove_globs_from_pkg_list(pkg_list: list[InstallInfoT]) -> None:
+            pkg_install_info: InstallInfoT
             for pkg_install_info in pkg_list[::]:
                 for glob in globs_and_names:
                     if fnmatch(pkg_install_info.name, glob):
@@ -415,7 +409,7 @@ class SysupgradePrettyFormatter:
             globs_and_names = warn_about_packages_str.split(',')
             pkg_list: list[RepoInstallInfo] | list[AURInstallInfo]
             for pkg_list in self.all_install_info_lists:
-                remove_globs_from_pkg_list(pkg_list)
+                remove_globs_from_pkg_list(pkg_list)  # type: ignore[misc]
 
         if warn_about_packages_list:
             self.result.append('\n{} {} {} {}'.format(  # pylint: disable=consider-using-f-string

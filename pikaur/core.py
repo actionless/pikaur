@@ -189,17 +189,20 @@ class InteractiveSpawn(subprocess.Popen):
         self.communicate()
 
 
+IOStream = IO[Any] | int | None
+
+
 class SpawnArgs(TypedDict):
-    stdout: NotRequired[IO[Any] | int | None]
-    stderr: NotRequired[IO[Any] | int | None]
+    stdout: NotRequired[IOStream]
+    stderr: NotRequired[IOStream]
     cwd: NotRequired[str]
     env: NotRequired[dict[str, str]]
 
 
 def interactive_spawn(
         cmd: list[str],
-        stdout: IO[Any] | int | None = None,
-        stderr: IO[Any] | int | None = None,
+        stdout: IOStream = None,
+        stderr: IOStream = None,
         cwd: str | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:

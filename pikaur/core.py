@@ -66,7 +66,7 @@ class ComparableType:
 class DataType(ComparableType):
 
     @property
-    def __all_annotations__(self) -> dict[str, Any]:
+    def __all_annotations__(self) -> dict[str, type]:
         annotations: dict[str, Any] = {}
         for parent_class in reversed(self.__class__.mro()):
             annotations.update(**getattr(parent_class, '__annotations__', {}))

@@ -26,7 +26,7 @@ makedepends=(
 optdepends=(
 	'asp: for ABS support in -G/--getpkgbuild operation'
 	'python-pysocks: for socks5 proxy support'
-	'python-defusedxml: wrap Arch news replies'
+	'python-defusedxml: securely wrap Arch news replies'
 )
 conflicts=('pikaur')
 provides=('pikaur')

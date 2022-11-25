@@ -593,7 +593,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                             removed_pkg_name in self._local_provided_pkgs_with_build_deps
                     ) and (
                         installed_pkg_name
-                        in self._local_provided_pkgs_with_build_deps[removed_pkg_name]
+                        in [
+                            dep.name for dep
+                            in self._local_provided_pkgs_with_build_deps[removed_pkg_name]
+                        ]
                     ):
                         deps_packages_installed.remove(installed_pkg_name)
                         deps_packages_removed.remove(removed_pkg_name)

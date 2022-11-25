@@ -9,7 +9,7 @@ import sys
 import tempfile
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import IO, TYPE_CHECKING, Any, Callable, Iterable
+from typing import IO, TYPE_CHECKING, Any, Callable, Iterable, TypeVar
 
 import pyalpm
 from typing_extensions import NotRequired, TypedDict
@@ -345,7 +345,10 @@ def remove_dir(dir_path: str) -> None:
         interactive_spawn(sudo(['rm', '-rf', dir_path]))
 
 
-def get_chunks(iterable: Iterable[Any], chunk_size: int) -> Iterable[list[Any]]:
+ChunkT = TypeVar('ChunkT')
+
+
+def get_chunks(iterable: Iterable[ChunkT], chunk_size: int) -> Iterable[list[ChunkT]]:
     if chunk_size < 1:
         raise ValueError("`chunk_size` can't be smaller than 1.")
     result = []
@@ -392,14 +395,17 @@ def sudo_loop(once: bool = False) -> None:
         sleep(sudo_loop_interval)
 
 
-def run_with_sudo_loop(function: Callable) -> Any | None:
+SudoLoopResultT = TypeVar('SudoLoopResultT')
+
+
+def run_with_sudo_loop(function: Callable[..., SudoLoopResultT]) -> SudoLoopResultT | None:
     sudo_loop(once=True)
     with ThreadPool(processes=2) as pool:
         main_thread = pool.apply_async(function, ())
         pool.apply_async(sudo_loop)
         pool.close()
         catched_exc = None
-        result: Any = None
+        result: SudoLoopResultT | None = None
         try:
             result = main_thread.get()
         except Exception as exc:

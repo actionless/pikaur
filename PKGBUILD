@@ -19,6 +19,7 @@ depends=(
 	'git'
 )
 makedepends=(
+	'python-wheel'
 	'python-build'
 	'python-installer'
 	'python-markdown-it-py'

@@ -33,7 +33,7 @@ class ComparableType:
     __ignore_in_eq__: tuple[str, ...] = ()
 
     __hash__ = object.__hash__
-    __compare_stack__: list[Any] | None = None
+    __compare_stack__: list['ComparableType'] | None = None
 
     @property
     def public_vars(self) -> dict[str, Any]:
@@ -67,7 +67,7 @@ class DataType(ComparableType):
 
     @property
     def __all_annotations__(self) -> dict[str, type]:
-        annotations: dict[str, Any] = {}
+        annotations: dict[str, type] = {}
         for parent_class in reversed(self.__class__.mro()):
             annotations.update(**getattr(parent_class, '__annotations__', {}))
         return annotations

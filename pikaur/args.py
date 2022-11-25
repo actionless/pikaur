@@ -3,7 +3,7 @@
 import sys
 from argparse import Namespace
 from pprint import pprint
-from typing import Any, NoReturn
+from typing import NoReturn
 
 from .argparse import ArgumentParserWithUnknowns
 from .config import PikaurConfig
@@ -11,6 +11,7 @@ from .i18n import translate, translate_many
 
 
 ArgSchema = list[tuple[str | None, str, None | bool | str | int]]
+PossibleArgValuesTypes = list[str] | str | bool | int | None
 
 
 PACMAN_BOOL_OPTS: ArgSchema = [
@@ -149,8 +150,13 @@ class PikaurArgs(Namespace):
     # @TODO: pylint bug:
     positional: list[str] = []
 
-    def __getattr__(self, name: str) -> Any:
-        return getattr(super(), name, getattr(self, name.replace('-', '_')))
+    def __getattr__(self, name: str) -> PossibleArgValuesTypes:
+        result: PossibleArgValuesTypes = getattr(
+            super(),
+            name,
+            getattr(self, name.replace('-', '_'))
+        )
+        return result
 
     def handle_the_same_letter(self) -> None:
         # pylint: disable=attribute-defined-outside-init
@@ -240,7 +246,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             action: str | None = None,
             letter: str | None = None,
             opt: str | None = None,
-            default: Any | None = None
+            default: PossibleArgValuesTypes = None
     ) -> None:
         if action:
             if letter and opt:

@@ -189,7 +189,7 @@ class InteractiveSpawn(subprocess.Popen):
         self.communicate()
 
 
-IOStream = IO[Any] | int | None
+IOStream = IO[bytes] | int | None
 
 
 class SpawnArgs(TypedDict):

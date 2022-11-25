@@ -2,7 +2,7 @@
 
 import sys
 from multiprocessing.pool import ThreadPool
-from typing import Any, Iterable, TypeVar
+from typing import Iterable, TypeVar
 
 import pyalpm
 
@@ -43,7 +43,9 @@ def filter_aur_results(
     return filtered_results
 
 
-def package_search_thread_aur(queries: list[str]) -> list[Any]:  # pylint: disable=too-many-branches
+def package_search_thread_aur(  # pylint: disable=too-many-branches
+        queries: list[str]
+) -> list[AURPackageInfo]:
     args = parse_args()
     result = {}
     if queries:

@@ -145,7 +145,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         )
 
     @property
-    def repo_install_info(self) -> Sequence[RepoInstallInfo]:
+    def repo_install_info(self) -> list[RepoInstallInfo]:
         return [
             info
             for infos in self.repo_install_info_containers
@@ -153,7 +153,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         ]
 
     @property
-    def aur_install_info(self) -> Sequence[AURInstallInfo]:
+    def aur_install_info(self) -> list[AURInstallInfo]:
         return [
             info
             for infos in self.aur_install_info_containers
@@ -374,7 +374,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 self._get_repo_pkgs_info(pkg_lines=self.install_package_names) +
                 self.get_upgradeable_repo_pkgs_info()
         ):
-            if pkg_update.name in self.repo_install_info:
+            if pkg_update in self.repo_install_info:
                 continue
 
             pkg_name = pkg_update.name

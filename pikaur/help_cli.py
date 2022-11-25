@@ -1,5 +1,6 @@
-
-from .args import PikaurConfig, get_pikaur_long_opts, parse_args, reconstruct_args
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
+from .args import get_pikaur_long_opts, parse_args, reconstruct_args
+from .config import PikaurConfig
 from .core import spawn
 from .i18n import translate
 

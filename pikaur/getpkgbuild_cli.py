@@ -4,8 +4,9 @@ from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
 from .aur_deps import get_aur_deps_list
 from .core import check_runtime_deps, interactive_spawn
+from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate
-from .pacman import PackageDB, PackagesNotFoundInRepoError
+from .pacman import PackageDB
 from .pprint import print_stdout
 from .print_department import print_not_found_packages
 from .urllib import wrap_proxy_env

@@ -125,19 +125,22 @@ def pretty_format_repo_name(repo_name: str, color: bool = True) -> str:
 
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         packages_updates: Sequence[InstallInfo],
-        verbose: bool = False, print_repo: bool = False, color: bool = True,
+        verbose: bool = False,
+        print_repo: bool = False,
+        color: bool = True,
         template: str | None = None
 ) -> str:
+    parent_color = color
 
     def _color_line(line: str, color: int, reset: bool | None = None) -> str:
-        if not color:
+        if not parent_color:
             return line
         if reset is not None:
             return color_line(line, color_number=color, reset=reset)
         return color_line(line, color_number=color)
 
     def _bold_line(line: str) -> str:
-        return bold_line(line) if color else line
+        return bold_line(line) if parent_color else line
 
     type_sort_key = tuple | str
 

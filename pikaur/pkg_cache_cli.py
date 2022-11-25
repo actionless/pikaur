@@ -29,6 +29,7 @@ def clean_aur_cache() -> None:
                     color_line('::', ColorsHighlight.blue),
                     bold_line(translate("Do you want to remove all files?"))
             )):
+                print_stdout(translate("removing all files from cache..."))
                 remove_dir(directory)
         else:
             print_stdout(translate("Directory is empty:"))

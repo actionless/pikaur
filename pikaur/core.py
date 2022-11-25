@@ -36,7 +36,7 @@ class ComparableType:
     __compare_stack__: list['ComparableType'] | None = None
 
     @property
-    def public_vars(self) -> dict[str, Any]:
+    def public_values(self) -> dict[str, Any]:
         return {
             var: val for var, val in vars(self).items()
             if not var.startswith('__')
@@ -50,15 +50,15 @@ class ComparableType:
         elif other in self.__compare_stack__:
             return super().__eq__(other)
         self.__compare_stack__.append(other)
-        self_vars = {}
-        self_vars.update(self.public_vars)
-        other_vars = {}
-        other_vars.update(other.public_vars)
-        for var_dict in (self_vars, other_vars):
+        self_values = {}
+        self_values.update(self.public_values)
+        others_values = {}
+        others_values.update(other.public_values)
+        for values in (self_values, others_values):
             for skip_prop in self.__ignore_in_eq__:
-                if skip_prop in var_dict:
-                    del var_dict[skip_prop]
-        result = self_vars == other_vars
+                if skip_prop in values:
+                    del values[skip_prop]
+        result = self_values == others_values
         self.__compare_stack__ = None
         return result
 

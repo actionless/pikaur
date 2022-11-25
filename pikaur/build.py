@@ -4,7 +4,6 @@ import os
 import shutil
 from glob import glob
 from multiprocessing.pool import ThreadPool
-from typing import Any
 
 from .args import PikaurArgs, parse_args
 from .aur import find_aur_packages, get_repo_url
@@ -19,6 +18,7 @@ from .core import (
     PIPE,
     DataType,
     InteractiveSpawn,
+    SpawnArgs,
     dirname,
     interactive_spawn,
     isolate_root_cmd,
@@ -694,7 +694,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 env['GNUPGHOME'] = self.build_gpgdir
 
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
-            spawn_kwargs: dict[str, Any] = {}
+            spawn_kwargs: SpawnArgs = dict(
+                cwd=self.build_dir,
+                env={**os.environ, **env},
+            )
             if self.args.hide_build_log:
                 spawn_kwargs = {
                     "stdout": PIPE,
@@ -703,8 +706,6 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
             result = interactive_spawn(
                 cmd_args,
-                cwd=self.build_dir,
-                env={**os.environ, **env},
                 **spawn_kwargs
             )
             print_stdout()

@@ -47,6 +47,9 @@ def clean_repo_cache() -> None:
                     question=YesNo.QUESTION_YN_NO,
                 ),
                 format_pacman_question(
+                    'Do you want to remove all other packages from cache?'
+                ),
+                format_pacman_question(
                     'Do you want to remove unused repositories?',
                 ),
             ]})

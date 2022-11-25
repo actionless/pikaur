@@ -19,7 +19,7 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     ('S', 'sync', None),
     ('g', 'groups', None),
     ('w', 'downloadonly', None),
-    ('q', 'quiet', None),
+    ('q', 'quiet', False),
     ('s', 'search', None),
     ('d', 'nodeps', None),
     # query options
@@ -38,7 +38,7 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     ('v', 'verbose', None),
     (None, 'debug', None),
     (None, 'noconfirm', None),
-    (None, 'needed', None),
+    (None, 'needed', False),
 ]
 
 
@@ -46,7 +46,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
     return [
         (None, 'noedit', PikaurConfig().review.NoEdit.get_bool()),
         (None, 'edit', None),
-        (None, 'namesonly', None),
+        (None, 'namesonly', False),
         (None, 'repo', None),
         ('a', 'aur', None),
         (None, 'keepbuild', PikaurConfig().build.KeepBuildDir.get_bool()),
@@ -146,6 +146,18 @@ class PikaurArgs(Namespace):
     owns: bool | None
     check: bool | None
     ignore: list[str]
+    makepkg_config: str | None
+    mflags: str | None
+    makepkg_path: str | None
+    quiet: bool
+    sysupgrade: int
+    devel: int
+    namesonly: bool
+    build_gpgdir: str
+    needed: bool
+    config: str | None
+    refresh: int
+    clean: int
     # positional: List[str]
     # @TODO: pylint bug:
     positional: list[str] = []

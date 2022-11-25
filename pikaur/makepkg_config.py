@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import os
-from typing import Any
+from typing import TypeVar
 
 from .args import parse_args
 from .config import CONFIG_ROOT
@@ -10,6 +10,9 @@ from .core import open_file, running_as_root
 
 ConfigValueType = str | list[str] | None
 ConfigFormat = dict[str, ConfigValueType]
+
+
+FallbackValueT = TypeVar('FallbackValueT')
 
 
 class ConfigReader():
@@ -69,7 +72,12 @@ class ConfigReader():
         return cls._cached_config[config_path]
 
     @classmethod
-    def get(cls, key: str, fallback: Any = None, config_path: str | None = None) -> Any:
+    def get(
+            cls,
+            key: str,
+            fallback: FallbackValueT | None = None,
+            config_path: str | None = None
+    ) -> ConfigValueType | FallbackValueT:
         return cls.get_config(config_path=config_path).get(key) or fallback
 
 
@@ -92,9 +100,16 @@ class MakepkgConfig():
         return cls._user_makepkg_path
 
     @classmethod
-    def get(cls, key: str, fallback: Any = None, config_path: str | None = None) -> Any:
-        arg_path = parse_args().makepkg_config
-        value = ConfigReader.get(key, fallback, config_path="/etc/makepkg.conf")
+    def get(
+            cls,
+            key: str,
+            fallback: FallbackValueT | None = None,
+            config_path: str | None = None
+    ) -> ConfigValueType | FallbackValueT:
+        arg_path: str | None = parse_args().makepkg_config
+        value: ConfigValueType | FallbackValueT = ConfigReader.get(
+            key, fallback, config_path="/etc/makepkg.conf"
+        )
         if cls.get_user_makepkg_path():
             value = ConfigReader.get(key, value, config_path=cls.get_user_makepkg_path())
         if arg_path:
@@ -104,10 +119,10 @@ class MakepkgConfig():
         return value
 
 
-PKGDEST: str | None = os.environ.get(
-    'PKGDEST',
-    MakepkgConfig.get('PKGDEST')
-)
+CONFIG_PKGDEST = MakepkgConfig.get('PKGDEST')
+if not isinstance(CONFIG_PKGDEST, str):
+    CONFIG_PKGDEST = None
+PKGDEST: str | None = os.environ.get('PKGDEST', CONFIG_PKGDEST)
 if PKGDEST:
     PKGDEST = PKGDEST.replace('$HOME', '~')
     PKGDEST = os.path.expanduser(PKGDEST)

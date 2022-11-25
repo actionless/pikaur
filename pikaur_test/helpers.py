@@ -183,26 +183,30 @@ def pikaur(
     print(color_line('\n => ', 10, force=True) + ' '.join(new_args))
 
     intercepted: InterceptSysOutput
-    with InterceptSysOutput(
-            capture_stderr=capture_stderr,
-            capture_stdout=capture_stdout
-    ) as _intercepted:
-        try:
+    try:
+        with InterceptSysOutput(
+                capture_stderr=capture_stderr,
+                capture_stdout=capture_stdout
+        ) as _intercepted:
+            try:
 
-            # re-parse args:
-            sys.argv = new_args
-            CachedArgs.args = None
-            MakePkgCommand._cmd = None  # pylint: disable=protected-access
-            parse_args()
-            # monkey-patch to force always uncolored output:
-            CachedArgs.args.color = 'never'  # type: ignore[attr-defined]
+                # re-parse args:
+                sys.argv = new_args
+                CachedArgs.args = None
+                MakePkgCommand._cmd = None  # pylint: disable=protected-access
+                parse_args()
+                # monkey-patch to force always uncolored output:
+                CachedArgs.args.color = 'never'  # type: ignore[attr-defined]
 
-            # finally run pikaur's main loop
-            main()
+                # finally run pikaur's main loop
+                main(embed=True)
 
-        except FakeExit:
-            pass
-        intercepted = _intercepted
+            except FakeExit:
+                pass
+            finally:
+                intercepted = _intercepted
+    except Exception as exc:
+        print(exc)
 
     PackageDB.discard_local_cache()
     PackageDB.discard_repo_cache()

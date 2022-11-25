@@ -11,6 +11,7 @@ import shutil
 import signal
 import sys
 from argparse import ArgumentError
+from contextlib import AbstractContextManager
 from typing import Any, Callable
 
 import pyalpm
@@ -307,8 +308,20 @@ def handle_sig_int(*_whatever: Any) -> None:  # pragma: no cover
     raise SysExit(125)
 
 
-def main() -> None:
-    with OutputEncodingWrapper():
+class EmptyWrapper:
+
+    def __enter__(self) -> None:
+        pass
+
+    def __exit__(self, *_exc_details: Any) -> None:
+        pass
+
+
+def main(embed: bool = False) -> None:
+    wrapper: type[AbstractContextManager] = OutputEncodingWrapper
+    if embed:
+        wrapper = EmptyWrapper
+    with wrapper():
         try:
             parse_args()
         except ArgumentError as exc:

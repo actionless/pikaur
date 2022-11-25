@@ -298,14 +298,15 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             cwd=self.build_dir,
         )
         if pkgver_result.returncode != 0:
-            print_error(translate("failed to retrieve latest dev sources:"))
+            error_text = translate("failed to retrieve latest dev sources:")
+            print_error(error_text)
             print_stderr(pkgver_result.stdout_text)
             if (
                     not PikaurConfig().build.SkipFailedBuild.get_bool()
             ) and (
                 not ask_to_continue(default_yes=False)
             ):
-                raise SysExit(125)
+                raise BuildError(error_text)
         SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True
 
@@ -599,15 +600,14 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                         continue
 
         if deps_packages_removed:
-            print_error(
-                translate(
-                    "Failed to remove installed dependencies, packages inconsistency: {}"
-                ).format(
-                    bold_line(', '.join(deps_packages_removed))
-                )
+            error_text = translate(
+                "Failed to remove installed dependencies, packages inconsistency: {}"
+            ).format(
+                bold_line(', '.join(deps_packages_removed))
             )
+            print_error(error_text)
             if not ask_to_continue():
-                raise SysExit(125)
+                raise DependencyError(error_text)
         if not deps_packages_installed or self.args.keepbuilddeps:
             return
 
@@ -641,20 +641,23 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         ) and (
             arch not in supported_archs
         ):
-            print_error(
-                translate(
-                    (
-                        "{name} can't be built on the current arch ({arch}). "
-                        "Supported: {suparch}"
-                    )
-                ).format(
-                    name=bold_line(', '.join(self.package_names)),
-                    arch=arch,
-                    suparch=', '.join(supported_archs)
+            error_text = translate(
+                (
+                    "{name} can't be built on the current arch ({arch}). "
+                    "Supported: {suparch}"
                 )
+            ).format(
+                name=bold_line(', '.join(self.package_names)),
+                arch=arch,
+                suparch=', '.join(supported_archs)
             )
-            if not ask_to_continue():
-                raise SysExit(95)
+            print_error(error_text)
+            if (
+                    not PikaurConfig().build.SkipFailedBuild.get_bool()
+            ) and (
+                not ask_to_continue(default_yes=False)
+            ):
+                raise BuildError(error_text)
             self.skip_carch_check = True
 
     def build_with_makepkg(self) -> bool:  # pylint: disable=too-many-branches,too-many-statements
@@ -804,17 +807,13 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self.prepare_build_destination()
 
         self.install_all_deps(all_package_builds)
-
-        if self.check_if_already_built():
-            build_succeeded = True
-        else:
-            try:
+        try:
+            if self.check_if_already_built():
+                build_succeeded = True
+            else:
                 build_succeeded = self.build_with_makepkg()
-            except SysExit as exc:
-                self._remove_installed_deps()
-                raise exc
-
-        self._remove_installed_deps()
+        finally:
+            self._remove_installed_deps()
 
         if not build_succeeded:
             self.failed = True

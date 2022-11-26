@@ -5,7 +5,7 @@ import sys
 import tempfile
 from subprocess import Popen  # nosec B404
 from time import time
-from typing import Any, NoReturn, IO, Callable, Sequence, TYPE_CHECKING
+from typing import Any, NoReturn, Callable, Sequence, TYPE_CHECKING
 from unittest import TestCase, TestResult, mock
 from unittest.runner import TextTestResult
 
@@ -33,6 +33,7 @@ if WRITE_DB:
 
 if TYPE_CHECKING:
     from mypy_extensions import DefaultArg
+    from typing import IO
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -93,10 +94,11 @@ class InterceptSysOutput():
 
     _exited = False
 
-    _patcher_stdout: "mock._patch[IO[str]]"
-    _patcher_stderr: "mock._patch[IO[str]]"
+    _patcher_stdout: "mock._patch[IO[str]] | None" = None
+    _patcher_stderr: "mock._patch[IO[str]] | None" = None
     _patcher_exit: "mock._patch[Callable[[DefaultArg(int, 'code')], NoReturn]]"  # noqa: F821
     _patcher_spawn: "mock._patch[Callable[[list[str]], Popen[bytes]]]"
+    patchers: Sequence["mock._patch[Any] | None"] = []
 
     def _fake_exit(self, code: int = 0) -> NoReturn:
         self.returncode = code
@@ -105,8 +107,6 @@ class InterceptSysOutput():
     def __init__(self, capture_stdout: bool = True, capture_stderr: bool = False) -> None:
         self.capture_stdout = capture_stdout
         self.capture_stderr = capture_stderr
-
-    def __enter__(self) -> 'InterceptSysOutput':
 
         class PrintInteractiveSpawn(InteractiveSpawn):
             def __init__(self, *args, **kwargs):  # type: ignore[no-untyped-def]
@@ -126,16 +126,21 @@ class InterceptSysOutput():
         self._patcher_exit = mock.patch('sys.exit', new=self._fake_exit)
         self._patcher_spawn = mock.patch('pikaur.core.InteractiveSpawn', new=PrintInteractiveSpawn)
 
-        return self
-
-    def __exit__(self, *_exc_details: Any) -> None:
-        patchers: Sequence["mock._patch[Any]" | None] = [
+        self.patchers = [
             self._patcher_stdout,
             self._patcher_stderr,
             self._patcher_exit,
             self._patcher_spawn,
         ]
-        for patcher in patchers:
+
+    def __enter__(self) -> 'InterceptSysOutput':
+        for patcher in self.patchers:
+            if patcher:
+                patcher.start()
+        return self
+
+    def __exit__(self, *_exc_details: Any) -> None:
+        for patcher in self.patchers:
             if patcher:
                 patcher.stop()
         if self._exited:

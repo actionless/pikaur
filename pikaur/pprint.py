@@ -233,7 +233,7 @@ def create_debug_logger(module_name: str, lock: bool | None = None) -> t.Callabl
     parent_lock = lock
 
     def debug(msg: Any, lock: bool | None = None) -> None:
-        lock = lock or parent_lock
+        lock = lock if (lock is not None) else parent_lock
         msg = f"{color_line(module_name, color)}: {str(msg)}"
         if lock is not None:
             print_debug(msg, lock=lock)

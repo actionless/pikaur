@@ -123,9 +123,9 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                     sys, attr,
                     orig_stream
                 )
-                _debug('restored', lock=False)
+                _debug(f'{attr} restored', lock=False)
                 stream.close()
-                _debug('closed old stream', lock=False)
+                _debug(f'closed old {attr} stream', lock=False)
 
 
 def cli_print_upgradeable() -> None:

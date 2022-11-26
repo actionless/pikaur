@@ -4,6 +4,7 @@ import os
 import shutil
 from glob import glob
 from multiprocessing.pool import ThreadPool
+from typing import TYPE_CHECKING
 
 from .args import PikaurArgs, parse_args
 from .aur import find_aur_packages, get_repo_url
@@ -18,7 +19,6 @@ from .core import (
     PIPE,
     DataType,
     InteractiveSpawn,
-    SpawnArgs,
     dirname,
     interactive_spawn,
     isolate_root_cmd,
@@ -55,6 +55,9 @@ from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .urllib import wrap_proxy_env
 from .version import VersionMatcher, compare_versions
+
+if TYPE_CHECKING:
+    from .core import SpawnArgs
 
 
 _debug = create_debug_logger('build')
@@ -699,7 +702,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 env['GNUPGHOME'] = self.build_gpgdir
 
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
-            spawn_kwargs: SpawnArgs = dict(
+            spawn_kwargs: 'SpawnArgs' = dict(
                 cwd=self.build_dir,
                 env={**os.environ, **env},
             )

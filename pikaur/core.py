@@ -12,7 +12,6 @@ from time import sleep
 from typing import IO, TYPE_CHECKING, Any, Callable, Iterable, TypeVar
 
 import pyalpm
-from typing_extensions import NotRequired, TypedDict
 
 from .args import parse_args
 from .config import PikaurConfig
@@ -21,11 +20,19 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_s
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
+    from typing_extensions import NotRequired, TypedDict
     from .aur import AURPackageInfo
+
+    class SpawnArgs(TypedDict):
+        stdout: NotRequired['IOStream']
+        stderr: NotRequired['IOStream']
+        cwd: NotRequired[str]
+        env: NotRequired[dict[str, str]]
 
 
 DEFAULT_INPUT_ENCODING = 'utf-8'
 PIPE = subprocess.PIPE
+IOStream = IO[bytes] | int | None
 
 
 class ComparableType:
@@ -189,16 +196,6 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
         self.communicate()
 
 
-IOStream = IO[bytes] | int | None
-
-
-class SpawnArgs(TypedDict):
-    stdout: NotRequired[IOStream]
-    stderr: NotRequired[IOStream]
-    cwd: NotRequired[str]
-    env: NotRequired[dict[str, str]]
-
-
 def interactive_spawn(
         cmd: list[str],
         stdout: IOStream = None,
@@ -206,7 +203,7 @@ def interactive_spawn(
         cwd: str | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
-    kwargs: SpawnArgs = {}
+    kwargs: 'SpawnArgs' = {}
     if stdout:
         kwargs['stdout'] = stdout
     if stderr:

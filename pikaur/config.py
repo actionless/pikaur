@@ -4,11 +4,23 @@ import configparser
 import os
 import sys
 from pathlib import Path
-from typing import Any, Callable
-
-from typing_extensions import NotRequired, TypedDict
+from typing import Any, Callable, TYPE_CHECKING
 
 from .i18n import translate
+
+if TYPE_CHECKING:
+    from typing_extensions import NotRequired, TypedDict
+
+    class DeprecatedConfigValue(TypedDict):
+        section: str
+        option: str
+        transform: NotRequired[Callable[[str, configparser.ConfigParser], str]]
+
+    class ConfigValueType(TypedDict):
+        data_type: str
+        default: NotRequired[str]
+        deprecated: NotRequired[DeprecatedConfigValue]
+        migrated: NotRequired[bool]
 
 
 DEFAULT_CONFIG_ENCODING = 'utf-8'
@@ -69,20 +81,7 @@ def get_config_path() -> str:
 CONFIG_PATH = get_config_path()
 
 
-class DeprecatedConfigValue(TypedDict):
-    section: str
-    option: str
-    transform: NotRequired[Callable[[str, configparser.ConfigParser], str]]
-
-
-class ConfigValueType(TypedDict):
-    data_type: str
-    default: NotRequired[str]
-    deprecated: NotRequired[DeprecatedConfigValue]
-    migrated: NotRequired[bool]
-
-
-CONFIG_SCHEMA: dict[str, dict[str, ConfigValueType]] = {
+CONFIG_SCHEMA: dict[str, dict[str, 'ConfigValueType']] = {
     'sync': {
         'AlwaysShowPkgOrigin': {
             'data_type': 'bool',
@@ -295,7 +294,7 @@ CONFIG_SCHEMA: dict[str, dict[str, ConfigValueType]] = {
 
 
 def get_key_type(section_name: str, key_name: str) -> str | None:
-    config_value: ConfigValueType | None = CONFIG_SCHEMA.get(section_name, {}).get(key_name, None)
+    config_value: 'ConfigValueType' | None = CONFIG_SCHEMA.get(section_name, {}).get(key_name, None)
     if not config_value:
         return None
     return config_value.get('data_type')

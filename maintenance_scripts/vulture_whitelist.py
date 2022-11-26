@@ -30,6 +30,8 @@ whitelist.config.ConfigValueType.data_type
 whitelist.config.ConfigValueType.deprecated
 whitelist.config.ConfigValueType.migrated
 
+whitelist.core.SpawnArgs
+
 whitelist.main.socket.socket
 whitelist.main.OutputEncodingWrapper.original_stdout
 whitelist.main.OutputEncodingWrapper.original_stderr

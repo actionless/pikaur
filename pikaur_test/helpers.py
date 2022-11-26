@@ -3,14 +3,15 @@
 import os
 import sys
 import tempfile
+from subprocess import Popen  # nosec B404
 from time import time
-from typing import Any, NoReturn
-from unittest import TestCase, TestResult
+from typing import Any, NoReturn, IO, Callable, Sequence
+from unittest import TestCase, TestResult, mock
 from unittest.runner import TextTestResult
 
+from mypy_extensions import DefaultArg
 from pycman.config import PacmanConfig
 
-import pikaur as pikaur_module
 from pikaur.args import CachedArgs, parse_args
 from pikaur.core import InteractiveSpawn
 from pikaur.core import spawn as core_spawn
@@ -90,6 +91,15 @@ class InterceptSysOutput():
 
     _exited = False
 
+    _patcher_stdout: mock._patch[IO[str]]  # pylint: disable=unsubscriptable-object
+    _patcher_stderr: mock._patch[IO[str]]  # pylint: disable=unsubscriptable-object
+    _patcher_exit: mock._patch[  # pylint: disable=unsubscriptable-object
+        Callable[[DefaultArg(int, 'code')], NoReturn]  # noqa: F821
+    ]
+    _patcher_spawn: mock._patch[  # pylint: disable=unsubscriptable-object
+        Callable[[list[str]], Popen[bytes]]
+    ]
+
     def _fake_exit(self, code: int = 0) -> NoReturn:
         self.returncode = code
         raise FakeExit()
@@ -111,28 +121,28 @@ class InterceptSysOutput():
         self.out_file.isatty = lambda: False  # type: ignore[assignment]
         self.err_file.isatty = lambda: False  # type: ignore[assignment]
 
-        self._real_stdout = sys.stdout
-        self._real_stderr = sys.stderr
         if self.capture_stdout:
-            sys.stdout = self.out_file  # type: ignore[assignment]
+            self._patcher_stdout = mock.patch('sys.stdout', new=self.out_file)
         if self.capture_stderr:
-            sys.stderr = self.err_file  # type: ignore[assignment]
-
-        self._real_interactive_spawn = InteractiveSpawn
-        pikaur_module.core.InteractiveSpawn = PrintInteractiveSpawn  # type: ignore[misc]
-
-        self._real_exit = sys.exit
-        sys.exit = self._fake_exit  # type: ignore[assignment]
+            self._patcher_stderr = mock.patch('sys.stderr', new=self.err_file)
+        self._patcher_exit = mock.patch('sys.exit', new=self._fake_exit)
+        self._patcher_spawn = mock.patch('pikaur.core.InteractiveSpawn', new=PrintInteractiveSpawn)
 
         return self
 
     def __exit__(self, *_exc_details: Any) -> None:
+        patchers: Sequence[mock._patch[Any] | None] = [  # pylint: disable=unsubscriptable-object
+            self._patcher_stdout,
+            self._patcher_stderr,
+            self._patcher_exit,
+            self._patcher_spawn,
+        ]
+        patcher: mock._patch[Any] | None  # pylint: disable=unsubscriptable-object
+        for patcher in patchers:
+            if patcher:
+                patcher.stop()
         if self._exited:
             return
-        sys.stdout = self._real_stdout
-        sys.stderr = self._real_stderr
-        sys.exit = self._real_exit
-        pikaur_module.core.InteractiveSpawn = self._real_interactive_spawn  # type: ignore[misc]
 
         self.out_file.flush()
         self.err_file.flush()
@@ -192,10 +202,10 @@ def pikaur(
             try:
 
                 # re-parse args:
-                sys.argv = new_args
                 CachedArgs.args = None
                 MakePkgCommand._cmd = None  # pylint: disable=protected-access
-                parse_args()
+                with mock.patch('sys.argv', new=new_args):
+                    parse_args()
                 # monkey-patch to force always uncolored output:
                 CachedArgs.args.color = 'never'  # type: ignore[attr-defined]
 

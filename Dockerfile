@@ -42,7 +42,7 @@ RUN echo ">>>> Installing opt deps:" && \
 	sleep 0.1 && \
 	echo ">>>> Installing test deps using Pikaur itself:" && \
 	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv \
-		python-pylint flake8 mypy python-mypy_extensions vulture shellcheck bandit # @TODO: python-coveralls is temporary broken
+		python-pylint flake8 mypy vulture shellcheck bandit # @TODO: python-coveralls is temporary broken
 RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-pycodestyle '2.9.1-2' # @TODO: remove it when it fixed
 
 RUN echo ">>>> Starting CI testsuite:" && \

@@ -702,10 +702,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 env['GNUPGHOME'] = self.build_gpgdir
 
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
-            spawn_kwargs: 'SpawnArgs' = dict(
-                cwd=self.build_dir,
-                env={**os.environ, **env},
-            )
+            spawn_kwargs: 'SpawnArgs' = {
+                "cwd": self.build_dir,
+                "env": {**os.environ, **env},
+            }
             if self.args.hide_build_log:
                 spawn_kwargs = {
                     "stdout": PIPE,

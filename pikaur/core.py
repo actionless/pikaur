@@ -21,6 +21,7 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_s
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
     from typing_extensions import NotRequired, TypedDict
+
     from .aur import AURPackageInfo
 
     class SpawnArgs(TypedDict):

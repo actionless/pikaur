@@ -5,11 +5,10 @@ import sys
 import tempfile
 from subprocess import Popen  # nosec B404
 from time import time
-from typing import Any, NoReturn, IO, Callable, Sequence
+from typing import Any, NoReturn, IO, Callable, Sequence, TYPE_CHECKING
 from unittest import TestCase, TestResult, mock
 from unittest.runner import TextTestResult
 
-from mypy_extensions import DefaultArg
 from pycman.config import PacmanConfig
 
 from pikaur.args import CachedArgs, parse_args
@@ -22,9 +21,6 @@ from pikaur.pprint import color_line, get_term_width
 from pikaur.srcinfo import SrcInfo
 
 
-TEST_DIR = os.path.dirname(os.path.realpath(__file__))
-
-
 WRITE_DB = bool(os.environ.get('WRITE_DB'))
 
 
@@ -34,6 +30,12 @@ if WRITE_DB:
     if os.path.exists(CONFIG_PATH):
         os.unlink(CONFIG_PATH)
     PikaurConfig._config = None  # type: ignore[assignment]
+
+if TYPE_CHECKING:
+    from mypy_extensions import DefaultArg
+
+
+TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def spawn(cmd: str | list[str], env: dict[str, str] | None = None) -> InteractiveSpawn:
@@ -91,14 +93,10 @@ class InterceptSysOutput():
 
     _exited = False
 
-    _patcher_stdout: mock._patch[IO[str]]  # pylint: disable=unsubscriptable-object
-    _patcher_stderr: mock._patch[IO[str]]  # pylint: disable=unsubscriptable-object
-    _patcher_exit: mock._patch[  # pylint: disable=unsubscriptable-object
-        Callable[[DefaultArg(int, 'code')], NoReturn]  # noqa: F821
-    ]
-    _patcher_spawn: mock._patch[  # pylint: disable=unsubscriptable-object
-        Callable[[list[str]], Popen[bytes]]
-    ]
+    _patcher_stdout: "mock._patch[IO[str]]"
+    _patcher_stderr: "mock._patch[IO[str]]"
+    _patcher_exit: "mock._patch[Callable[[DefaultArg(int, 'code')], NoReturn]]"  # noqa: F821
+    _patcher_spawn: "mock._patch[Callable[[list[str]], Popen[bytes]]]"
 
     def _fake_exit(self, code: int = 0) -> NoReturn:
         self.returncode = code
@@ -131,13 +129,12 @@ class InterceptSysOutput():
         return self
 
     def __exit__(self, *_exc_details: Any) -> None:
-        patchers: Sequence[mock._patch[Any] | None] = [  # pylint: disable=unsubscriptable-object
+        patchers: Sequence["mock._patch[Any]" | None] = [
             self._patcher_stdout,
             self._patcher_stderr,
             self._patcher_exit,
             self._patcher_spawn,
         ]
-        patcher: mock._patch[Any] | None  # pylint: disable=unsubscriptable-object
         for patcher in patchers:
             if patcher:
                 patcher.stop()

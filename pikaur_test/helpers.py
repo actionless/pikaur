@@ -207,7 +207,7 @@ def pikaur(
             finally:
                 intercepted = _intercepted
     except Exception as exc:
-        log_stderr(exc)
+        log_stderr(str(exc))
 
     PackageDB.discard_local_cache()
     PackageDB.discard_repo_cache()

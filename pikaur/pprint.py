@@ -20,8 +20,13 @@ def color_enabled() -> bool:
     args = ARGS
     if args.color == 'never':
         return False
-    if args.color == 'always' or (sys.stderr.isatty() and sys.stdout.isatty()):
+    if args.color == 'always':
         return True
+    try:
+        if (sys.stderr.isatty() and sys.stdout.isatty()):
+            return True
+    except Exception:
+        return False
     return False
 
 

@@ -3,7 +3,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import atexit
-import codecs
 import io
 import os
 import readline
@@ -75,8 +74,12 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
 
     def __enter__(self) -> None:
         for attr in ('stdout', 'stderr'):
-            _debug(f'Setting {attr} to unicode...')
+            _debug(f'Setting {attr} to {DEFAULT_INPUT_ENCODING}...', lock=False)
             real_stream = getattr(sys, attr)
+            if real_stream.encoding == DEFAULT_INPUT_ENCODING:
+                _debug('already set - nothing to do', lock=False)
+                continue
+            real_stream.flush()
             try:
                 setattr(
                     self, f'original_{attr}',
@@ -84,15 +87,15 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 )
                 setattr(
                     sys, attr,
-                    codecs.open(
+                    io.open(
                         real_stream.fileno(),
-                        mode='w', buffering=0, encoding=DEFAULT_INPUT_ENCODING
+                        mode='w',
+                        encoding=DEFAULT_INPUT_ENCODING,
+                        closefd=False,
                     )
                 )
-            except io.UnsupportedOperation:
-                pass
-            else:
-                getattr(sys, attr).buffer = real_stream.buffer
+            except io.UnsupportedOperation as exc:
+                _debug(f"Can't set {attr} to {DEFAULT_INPUT_ENCODING}:\n{exc}", lock=False)
 
     def __exit__(
             self,
@@ -101,7 +104,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
         try:
             # @TODO: replace all SysExit-s to SystemExit-s eventually :3
             if exc_instance and exc_class and (exc_class not in (SysExit, SystemExit, )):
-                # handling exception in context manager's  __exit__ is not recommended
+                # handling exception in context manager's __exit__ is not recommended
                 # but otherwise stderr would be closed before exception is printed...
                 if exc_tb:
                     print_stderr(''.join(traceback.format_tb(exc_tb)), lock=False)
@@ -111,12 +114,18 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
             for attr in ('stdout', 'stderr'):
                 _debug(f'Restoring {attr}...', lock=False)
                 stream = getattr(sys, attr)
-                orig_stream = getattr(self, f'original_{attr}')
-                stream.close()
+                orig_stream = getattr(self, f'original_{attr}', None)
+                if orig_stream in (None, stream, ):
+                    _debug('nothing to do', lock=False)
+                    continue
+                stream.flush()
                 setattr(
                     sys, attr,
                     orig_stream
                 )
+                _debug('restored', lock=False)
+                stream.close()
+                _debug('closed old stream', lock=False)
 
 
 def cli_print_upgradeable() -> None:

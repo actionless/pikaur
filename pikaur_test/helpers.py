@@ -181,7 +181,7 @@ def pikaur(
     if mflags:
         new_args += [f"--mflags={','.join(mflags)}", ]
 
-    print(color_line('\n => ', 10, force=True) + ' '.join(new_args))
+    log_stderr(color_line('\n => ', 10, force=True) + ' '.join(new_args))
 
     intercepted: InterceptSysOutput
     try:
@@ -207,7 +207,7 @@ def pikaur(
             finally:
                 intercepted = _intercepted
     except Exception as exc:
-        print(exc)
+        log_stderr(exc)
 
     PackageDB.discard_local_cache()
     PackageDB.discard_repo_cache()
@@ -250,7 +250,7 @@ class PikaurTestCase(TestCase):
         log_stderr(self.separator)
         result = super().run(result)
         # pylint: disable=consider-using-f-string
-        print(':: Took {:.2f} seconds'.format(time() - time_started))
+        log_stderr(':: Took {:.2f} seconds'.format(time() - time_started))
         return result
 
     def setUp(self) -> None:
@@ -340,9 +340,9 @@ class PikaurDbTestCase(PikaurTestCase):
                 spawn(f'git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}')
                 srcinfo.regenerate()
                 current_version = srcinfo.get_version()
-                print(current_version)
+                log_stderr(current_version)
                 count += 1
-        print(f"Downgrading from {from_version} to {to_version}...")
+        log_stderr(f"Downgrading from {from_version} to {to_version}...")
         pikaur(
             '-P -i --noconfirm '
             f'{build_dir}/PKGBUILD',

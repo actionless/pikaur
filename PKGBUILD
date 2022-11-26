@@ -41,6 +41,9 @@ pkgver() {
 build() {
 	cd "${srcdir}/${pkgname}" || exit 2
 	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
+	if test -d ./dist ; then
+		rm -r ./dist
+	fi
 	make
 	/usr/bin/python3 -m build --wheel --no-isolation
 }

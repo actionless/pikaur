@@ -19,10 +19,13 @@ def _format_options_help(options: list[tuple[str, str, str]]) -> str:
 def cli_print_help() -> None:
     args = parse_args()
 
-    pacman_help = spawn(
+    proc = spawn(
         [PikaurConfig().misc.PacmanPath.get_str(), ] +
         reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
-    ).stdout_text.replace(
+    )
+    if not proc.stdout_text:
+        raise RuntimeError("No response from Pacman")
+    pacman_help = proc.stdout_text.replace(
         'pacman', 'pikaur'
     ).replace(
         'options:', '\n' + translate("Common pacman options:")

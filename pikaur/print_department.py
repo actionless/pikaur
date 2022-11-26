@@ -143,7 +143,12 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
     def _bold_line(line: str) -> str:
         return bold_line(line) if parent_color else line
 
-    type_sort_key = tuple | str
+    # @TODO: python 3.11
+    # type_sort_key = tuple[str, *tuple[int, ...]] | str
+    type_sort_key = (
+        tuple[str, str] | tuple[str, int] |  # type: ignore[misc]
+        tuple[int, str] | str  # type: ignore[misc]
+    )
 
     def pretty_format(  # pylint:disable=too-many-locals,R0912
             pkg_update: 'InstallInfo'

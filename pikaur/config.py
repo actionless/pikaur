@@ -72,7 +72,7 @@ CONFIG_PATH = get_config_path()
 class DeprecatedConfigValue(TypedDict):
     section: str
     option: str
-    transform: NotRequired[Callable[[str, dict], str]]
+    transform: NotRequired[Callable[[str, configparser.ConfigParser], str]]
 
 
 class ConfigValueType(TypedDict):
@@ -401,7 +401,9 @@ class PikaurConfig():
 
                 new_section_name: str = option_schema['deprecated']['section']
                 new_option_name: str = option_schema['deprecated']['option']
-                transform: Callable | None = option_schema['deprecated'].get('transform')
+                transform: Callable[
+                    [str, configparser.ConfigParser], str
+                ] | None = option_schema['deprecated'].get('transform')
 
                 old_value_was_migrated = False
                 if (

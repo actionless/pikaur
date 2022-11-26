@@ -35,7 +35,7 @@ class ProgressBar():
             if color_enabled():
                 sys.stderr.write(self.FULL)
 
-    def __enter__(self) -> Callable:
+    def __enter__(self) -> Callable[[], None]:
         return self.update
 
     def __exit__(self, *_exc_details: Any) -> None:

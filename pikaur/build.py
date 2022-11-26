@@ -426,6 +426,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         )
         if pkg_paths_spawn.returncode != 0:
             return
+        if not pkg_paths_spawn.stdout_text:
+            return
         pkg_paths = pkg_paths_spawn.stdout_text.splitlines()
         if not pkg_paths:
             return

@@ -405,7 +405,7 @@ class PackageDB(PackageDBCommon):
             final_args += ['--nodeps', '--nodeps']
         proc = spawn(final_args)
         if proc.returncode != 0:
-            raise DependencyError(proc.stderr_text + proc.stdout_text)
+            raise DependencyError((proc.stderr_text or '') + (proc.stdout_text or ''))
         found_packages_output = proc.stdout_text
         if found_packages_output:
             for line in found_packages_output.splitlines():
@@ -465,9 +465,12 @@ class PackageDB(PackageDBCommon):
         if not pkg_names_to_check:
             return not_found_pkg_names
 
-        results = spawn(
-            get_pacman_command() + ['--sync', '--print-format=%%', '--nodeps'] + pkg_names_to_check
-        ).stderr_text.splitlines()
+        results = (
+            spawn(
+                get_pacman_command() + ['--sync', '--print-format=%%', '--nodeps'] +
+                pkg_names_to_check
+            ).stderr_text or ''
+        ).splitlines()
         new_not_found_pkg_names = []
         for result in results:
             for pattern in (PATTERN_NOTFOUND, PATTERN_DB_NOTFOUND, ):

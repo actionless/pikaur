@@ -141,7 +141,7 @@ class SrcInfo():
                 cwd=working_directory
             ), cwd=working_directory
         )
-        if result.returncode != 0:
+        if result.returncode != 0 or not result.stdout_text:
             print_error(
                 translate("failed to generate .SRCINFO from {}:").format(self.pkgbuild_path)
             )

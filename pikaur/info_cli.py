@@ -13,9 +13,12 @@ from .pprint import ColorsHighlight, bold_line, color_line
 
 def _info_packages_thread_repo() -> str:
     args = parse_args()
-    return spawn(
+    proc = spawn(
         get_pacman_command() + reconstruct_args(args, ignore_args=['refresh']) + args.positional
-    ).stdout_text
+    )
+    if not proc.stdout_text:
+        raise RuntimeError('No response from Pacman')
+    return proc.stdout_text
 
 
 INFO_FIELDS = {

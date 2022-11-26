@@ -48,7 +48,7 @@ from .pkg_cache_cli import cli_clean_packages_cache
 from .pprint import create_debug_logger, print_error, print_stderr, print_warning
 from .print_department import print_version
 from .prompt import NotANumberInputError, get_multiple_numbers_input
-from .search_cli import cli_search_packages
+from .search_cli import cli_search_packages, search_packages
 from .updates import print_upgradeable
 from .urllib import ProxyInitSocks5Error, init_proxy
 
@@ -118,7 +118,6 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 )
 
 
-
 def cli_print_upgradeable() -> None:
     print_upgradeable()
 
@@ -133,9 +132,13 @@ def cli_pkgbuild() -> None:
 
 def cli_print_version() -> None:
     args = parse_args()
-    pacman_version = spawn(
+    proc = spawn(
         [PikaurConfig().misc.PacmanPath.get_str(), '--version', ],
-    ).stdout_text.splitlines()[1].strip(' .-')
+    )
+    if proc.stdout_text:
+        pacman_version = proc.stdout_text.splitlines()[1].strip(' .-')
+    else:
+        pacman_version = "N/A"
     print_version(
         pacman_version=pacman_version, pyalpm_version=pyalpm.version(),
         quiet=args.quiet
@@ -143,7 +146,7 @@ def cli_print_version() -> None:
 
 
 def cli_dynamic_select() -> None:  # pragma: no cover
-    packages = cli_search_packages(enumerated=True)
+    packages = search_packages(enumerated=True)
     if not packages:
         raise SysExit(1)
 
@@ -191,7 +194,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # specified both operations, like `pikaur -QS smth`
 
     args = parse_args()
-    pikaur_operation: Callable | None = None
+    pikaur_operation: Callable[[], None] | None = None
     require_sudo = False
 
     if args.help:

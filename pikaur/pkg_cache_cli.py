@@ -37,10 +37,10 @@ def clean_aur_cache() -> None:
 
 def clean_repo_cache() -> None:
     args = parse_args()
-    spawn_func: Callable[[list[str]], 'Popen'] = interactive_spawn
+    spawn_func: Callable[[list[str]], 'Popen[bytes]'] = interactive_spawn
     if args.noconfirm:
 
-        def noconfirm_cache_remove(pacman_args: list[str]) -> 'Popen':
+        def noconfirm_cache_remove(pacman_args: list[str]) -> 'Popen[bytes]':
             return pikspect(pacman_args, extra_questions={YesNo.ANSWER_Y: [
                 format_pacman_question(
                     'Do you want to remove ALL files from cache?',

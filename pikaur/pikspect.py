@@ -145,10 +145,10 @@ def _match(pattern: str, line: str) -> bool:
 
 class PikspectSignalHandler():
 
-    signal_handler: Callable | None = None
+    signal_handler: Callable[..., Any] | None = None
 
     @classmethod
-    def set_handler(cls, signal_handler: Callable) -> None:
+    def set_handler(cls, signal_handler: Callable[..., Any]) -> None:
         cls.signal_handler = signal_handler
 
     @classmethod
@@ -156,11 +156,11 @@ class PikspectSignalHandler():
         cls.signal_handler = None
 
     @classmethod
-    def get(cls) -> Callable | None:
+    def get(cls) -> Callable[..., Any] | None:
         return cls.signal_handler
 
 
-class PikspectPopen(subprocess.Popen):
+class PikspectPopen(subprocess.Popen[bytes]):
 
     print_output: bool
     capture_input: bool
@@ -174,7 +174,6 @@ class PikspectPopen(subprocess.Popen):
     # write buffer:
     _write_buffer: bytes = b''
     # some help for mypy:
-    _wait: Callable
     output: bytes = b''
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -217,7 +216,7 @@ class PikspectPopen(subprocess.Popen):
         self.check_questions()
 
     def communicator_thread(self) -> int:
-        result: int = self._wait(None)
+        result: int = self._wait(None)  # type: ignore[attr-defined]
         return result
 
     def run(self) -> None:

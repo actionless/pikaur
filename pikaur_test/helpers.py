@@ -318,9 +318,12 @@ class PikaurDbTestCase(PikaurTestCase):
         srcinfo.regenerate()
         from_version = srcinfo.get_version()
         if not to_version:
-            some_older_commit = spawn(
+            proc = spawn(
                 f'git -C {build_root}/{repo_pkg_name} log --format=%h'
-            ).stdout_text.splitlines()[count]
+            )
+            if not proc.stdout_text:
+                raise RuntimeError()
+            some_older_commit = proc.stdout_text.splitlines()[count]
             spawn(f'git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}')
             srcinfo.regenerate()
             to_version = srcinfo.get_version()
@@ -328,9 +331,12 @@ class PikaurDbTestCase(PikaurTestCase):
             current_version = srcinfo.get_version()
             count = 1
             while current_version != to_version:
-                some_older_commit = spawn(
+                proc = spawn(
                     f'git -C {build_root}/{repo_pkg_name} log --format=%h'
-                ).stdout_text.splitlines()[count]
+                )
+                if not proc.stdout_text:
+                    raise RuntimeError()
+                some_older_commit = proc.stdout_text.splitlines()[count]
                 spawn(f'git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}')
                 srcinfo.regenerate()
                 current_version = srcinfo.get_version()
@@ -360,9 +366,12 @@ class PikaurDbTestCase(PikaurTestCase):
         self.remove_if_installed(aur_pkg_name)
         spawn(f'rm -fr ./{aur_pkg_name}')
         pikaur(f'-G {aur_pkg_name}')
-        prev_commit = spawn(
+        proc = spawn(
             f'git -C ./{aur_pkg_name} log --format=%h'
-        ).stdout_text.splitlines()[count]
+        )
+        if not proc.stdout_text:
+            raise RuntimeError()
+        prev_commit = proc.stdout_text.splitlines()[count]
         spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
         pikaur(
             '-P -i --noconfirm '

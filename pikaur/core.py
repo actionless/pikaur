@@ -153,13 +153,13 @@ def get_sudo_refresh_command() -> list[str]:
     return sudo([pacman_path, '-T'])
 
 
-class InteractiveSpawn(subprocess.Popen):
+class InteractiveSpawn(subprocess.Popen[bytes]):
 
-    stdout_text: str
-    stderr_text: str
+    stdout_text: str | None
+    stderr_text: str | None
 
-    def communicate(  # pylint: disable=arguments-renamed
-            self, com_input: str | None = None, timeout: float | None = None
+    def communicate(
+            self, com_input: bytes | None = None, timeout: float | None = None
     ) -> tuple[bytes, bytes]:
         if parse_args().print_commands:
             if self.args != get_sudo_refresh_command():

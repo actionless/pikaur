@@ -23,6 +23,7 @@ makedepends=(
 	'python-build'
 	'python-installer'
 	'python-markdown-it-py'
+        'python-setuptools'
 )
 optdepends=(
 	'asp: for ABS support in -G/--getpkgbuild operation'

@@ -99,12 +99,13 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
             exc_class: type | None, exc_instance: BaseException | None, exc_tb: TracebackType | None
     ) -> None:
         try:
-            if exc_instance and exc_class:
+            # @TODO: replace all SysExit-s to SystemExit-s eventually :3
+            if exc_instance and exc_class and (exc_class not in (SysExit, SystemExit, )):
                 # handling exception in context manager's  __exit__ is not recommended
                 # but otherwise stderr would be closed before exception is printed...
                 if exc_tb:
-                    print_stderr(''.join(traceback.format_tb(exc_tb)))
-                print_stderr(f"{exc_class.__name__}: {exc_instance}")
+                    print_stderr(''.join(traceback.format_tb(exc_tb)), lock=False)
+                print_stderr(f"{exc_class.__name__}: {exc_instance}", lock=False)
                 sys.exit(121)
         finally:
             for attr in ('stdout', 'stderr'):

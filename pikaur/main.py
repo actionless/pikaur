@@ -10,8 +10,10 @@ import readline
 import shutil
 import signal
 import sys
+import traceback
 from argparse import ArgumentError
 from contextlib import AbstractContextManager
+from types import TracebackType
 from typing import Any, Callable
 
 import pyalpm
@@ -66,7 +68,7 @@ init_readline()
 _debug = create_debug_logger('main')
 
 
-class OutputEncodingWrapper():
+class OutputEncodingWrapper(AbstractContextManager[None]):
 
     original_stderr: int
     original_stdout: int
@@ -92,16 +94,29 @@ class OutputEncodingWrapper():
             else:
                 getattr(sys, attr).buffer = real_stream.buffer
 
-    def __exit__(self, *_exc_details: Any) -> None:
-        for attr in ('stdout', 'stderr'):
-            _debug(f'Restoring {attr}...', lock=False)
-            stream = getattr(sys, attr)
-            orig_stream = getattr(self, f'original_{attr}')
-            stream.close()
-            setattr(
-                sys, attr,
-                orig_stream
-            )
+    def __exit__(
+            self,
+            exc_class: type | None, exc_instance: BaseException | None, exc_tb: TracebackType | None
+    ) -> None:
+        try:
+            if exc_instance and exc_class:
+                # handling exception in context manager's  __exit__ is not recommended
+                # but otherwise stderr would be closed before exception is printed...
+                if exc_tb:
+                    print_stderr(''.join(traceback.format_tb(exc_tb)))
+                print_stderr(f"{exc_class.__name__}: {exc_instance}")
+                sys.exit(121)
+        finally:
+            for attr in ('stdout', 'stderr'):
+                _debug(f'Restoring {attr}...', lock=False)
+                stream = getattr(sys, attr)
+                orig_stream = getattr(self, f'original_{attr}')
+                stream.close()
+                setattr(
+                    sys, attr,
+                    orig_stream
+                )
+
 
 
 def cli_print_upgradeable() -> None:
@@ -318,7 +333,7 @@ class EmptyWrapper:
 
 
 def main(embed: bool = False) -> None:
-    wrapper: type[AbstractContextManager] = OutputEncodingWrapper
+    wrapper: type[AbstractContextManager[None]] = OutputEncodingWrapper
     if embed:
         wrapper = EmptyWrapper
     with wrapper():

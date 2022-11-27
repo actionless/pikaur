@@ -103,7 +103,7 @@ class DataType(ComparableType):
             ) or self._key_exists(key)
         ):
             if self.ignore_extra_properties:
-                print_error(f"Unexpected key {key} in {self.__class__.__name__}")
+                print_error(f"Unexpected key `{key}` in {self.__class__.__name__}")
             else:
                 raise TypeError(
                     f"'{self.__class__.__name__}' does "

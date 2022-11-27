@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from urllib import parse
 from urllib.parse import quote
 
@@ -50,8 +50,7 @@ class AURPackageInfo(DataType):
     def git_url(self) -> str:
         return f'{AUR_BASE_URL}/{self.packagebase}.git'
 
-    # @TODO: type it later:
-    def __init__(self, **kwargs) -> None:  # type: ignore
+    def __init__(self, **kwargs: Any) -> None:
         for aur_api_name, pikaur_class_name in (
             ('description', 'desc', ),
             ('id', 'aur_id', ),

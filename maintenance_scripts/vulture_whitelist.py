@@ -22,6 +22,8 @@ whitelist.aur.AURPackageInfo.urlpath
 whitelist.aur.AURPackageInfo.pkg_license
 whitelist.aur.AURPackageInfo.keywords
 whitelist.aur.AURPackageInfo.git_url
+whitelist.aur.AURPackageInfo.submitter
+whitelist.aur.AURPackageInfo.comaintainers
 
 whitelist.build.PackageBuild._get_deps.deps_destination
 

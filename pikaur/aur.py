@@ -43,6 +43,8 @@ class AURPackageInfo(DataType):
     pkg_license: str | None = None
     keywords: list[str] = []
     groups: list[str] = []
+    submitter: str | None = None
+    comaintainers: list[str] = []
 
     @property
     def git_url(self) -> str:

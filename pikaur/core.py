@@ -73,6 +73,8 @@ class ComparableType:
 
 class DataType(ComparableType):
 
+    ignore_extra_properties: bool
+
     @property
     def __all_annotations__(self) -> dict[str, type]:
         annotations: dict[str, type] = {}
@@ -83,7 +85,8 @@ class DataType(ComparableType):
     def _key_exists(self, key: str) -> bool:
         return key in dir(self)
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, ignore_extra_properties: bool = False, **kwargs: Any) -> None:
+        self.ignore_extra_properties = ignore_extra_properties
         for key, value in kwargs.items():
             setattr(self, key, value)
         for key in self.__all_annotations__:
@@ -99,10 +102,13 @@ class DataType(ComparableType):
                 key in self.__all_annotations__
             ) or self._key_exists(key)
         ):
-            raise TypeError(
-                f"'{self.__class__.__name__}' does "
-                f"not have attribute '{key}'"
-            )
+            if self.ignore_extra_properties:
+                print_error(f"Unexpected key {key} in {self.__class__.__name__}")
+            else:
+                raise TypeError(
+                    f"'{self.__class__.__name__}' does "
+                    f"not have attribute '{key}'"
+                )
         super().__setattr__(key, value)
 
 

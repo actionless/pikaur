@@ -1,0 +1,38 @@
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "Q", "I", "D", "U", "N", "S", "C", "B", "A", "T", "ANN", "YTT", "RUF", "M", "W"]
+ignore = [
+	# enable back later:
+	"M001",
+	"Q000",
+	"D100",
+	"D101",
+	"D102",
+	"D103",
+	#"ANN001",
+	"ANN401", # ?
+	"C901",  # "too complex"
+
+	"D105",
+	"D107",
+	"D203", # conflicts with D211
+	"D205",
+	"D212", # conflicts with D213
+	"D400",
+	"D415",
+
+	"ANN002",
+	"ANN003",
+	"ANN101",
+	"ANN102",
+	"ANN204",
+
+	"T201",
+	"T203",
+]
+[tool.ruff.per-file-ignores]
+#"__init__.py" = ["E402"]
+"pikaur_test/test_*.py" = [
+	"ANN201",
+	"ANN206",
+]

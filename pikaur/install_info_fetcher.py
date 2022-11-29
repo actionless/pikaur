@@ -200,6 +200,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         self.thirdparty_repo_replacements_install_info = []
         self.aur_updates_install_info = []
         self.aur_deps_install_info = []
+        self._all_aur_updates_raw = []
 
         # retrieve InstallInfo objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed

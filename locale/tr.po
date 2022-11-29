@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-25 14:00+0100\n"
-"PO-Revision-Date: 2022-02-03 09:49+0300\n"
+"PO-Revision-Date: 2022-11-29 09:34+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 3.2.1\n"
 
 #: pikaur/replacements.py:41
 #, python-brace-format
@@ -29,7 +29,7 @@ msgstr[1] "'{packages}' paketleri depoda mevcut ama kurulamadı"
 
 #: pikaur/updates.py:191
 msgid "(ignored in Pacman config)"
-msgstr ""
+msgstr "(Pacman yapılandırmasında dışlandı)"
 
 #: pikaur/print_department.py:242
 msgid "({} days old)"
@@ -80,7 +80,7 @@ msgstr ""
 
 #: pikaur/pacman.py:558
 msgid "Because of:"
-msgstr ""
+msgstr "Çünkü:"
 
 #: pikaur/pkg_cache_cli.py:23
 msgid "Build directory"
@@ -155,7 +155,7 @@ msgstr "{} güncellemedi"
 
 #: pikaur/pacman.py:549
 msgid "Dependencies can't be satisfied for the following packages:"
-msgstr ""
+msgstr "Takip eden paketler için bağımlılıklar sağlanamadı:"
 
 #: pikaur/install_cli.py:284
 msgid "Dependencies missing for {}"
@@ -175,7 +175,7 @@ msgstr "Özet"
 
 #: pikaur/pkg_cache_cli.py:35
 msgid "Directory is empty:"
-msgstr ""
+msgstr "Dizin boş:"
 
 #: pikaur/prompt.py:231
 msgid "Do you want to proceed without editing?"
@@ -352,7 +352,7 @@ msgstr "Düzenlemeden sonra PKGBUILD değişmemiş"
 #: pikaur/getpkgbuild_cli.py:57
 #, python-brace-format
 msgid "Package '{name}' going to be cloned into '{repo_path}'..."
-msgstr "'{name}' paketi '{repo_path}' içine klonlanacak"
+msgstr "'{name}' paketi '{repo_path}' içine klonlanacak..."
 
 #. packagebaseid=translate(""),
 #: pikaur/info_cli.py:26
@@ -456,7 +456,7 @@ msgstr ""
 
 #: pikaur/urllib.py:42 pikaur/urllib.py:77
 msgid "Sleeping for {} seconds..."
-msgstr ""
+msgstr "{} saniye boyunca bekleme..."
 
 #: pikaur/install_cli.py:534
 #, python-brace-format
@@ -493,11 +493,11 @@ msgstr[1] "Üçüncü-parti depo paketleri kurulacak:"
 
 #: pikaur/print_department.py:540
 msgid "Total Download Size:"
-msgstr ""
+msgstr "Toplam İndirme Boyutu:"
 
 #: pikaur/print_department.py:543
 msgid "Total Installed Size:"
-msgstr ""
+msgstr "Toplam Kurulum Boyutu:"
 
 #: pikaur/install_cli.py:232
 #, python-brace-format
@@ -527,8 +527,8 @@ msgstr "Oylar"
 #: pikaur/print_department.py:423
 msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Paket kurulumu hakkında UYARI:"
+msgstr[1] "Paketlerin kurulumu hakkında UYARI:"
 
 #: pikaur/install_cli.py:235 pikaur/install_cli.py:585
 msgid "[A] abort"
@@ -580,9 +580,8 @@ msgid "[installed]"
 msgstr "[kurulu]"
 
 #: pikaur/build.py:733
-#, fuzzy
 msgid "[n] skip 'prepare()' function of PKGBUILD"
-msgstr "[f] PKGBUILD'deki 'check()' fonksiyonunu atla"
+msgstr "[h] PKGBUILD'deki 'prepare()' fonksiyonunu atla"
 
 #: pikaur/build.py:730
 msgid "[p] PGP check skip"
@@ -813,7 +812,7 @@ msgstr "pikaur-özel işlemler:"
 
 #: pikaur/help_cli.py:92
 msgid "print spawned by pikaur subshell commands"
-msgstr ""
+msgstr "pikaur altkabuk komutlarının çıktılarını yaz"
 
 #: pikaur/help_cli.py:69
 msgid "prompt to edit PKGBUILDs and other build files"
@@ -834,7 +833,7 @@ msgstr "r"
 
 #: pikaur/pkg_cache_cli.py:32
 msgid "removing all files from cache..."
-msgstr ""
+msgstr "önbellekteki tüm dosyalar siliniyor..."
 
 #: pikaur/install_cli.py:237 pikaur/install_cli.py:255
 #: pikaur/install_cli.py:590 pikaur/install_cli.py:601 pikaur/build.py:721
@@ -848,7 +847,7 @@ msgstr "sadece paket adlarında ara"
 
 #: pikaur/help_cli.py:78
 msgid "set GnuPG home directory used when validating package sources"
-msgstr ""
+msgstr "paket kaynakları doğrulanırken kullanılacak GnuPG ev dizinini ayarla"
 
 #: pikaur/help_cli.py:93
 msgid "show only debug messages specific to pikaur"

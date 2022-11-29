@@ -52,6 +52,7 @@ build() {
 package() {
 	cd "${srcdir}/${pkgname}" || exit 2
 	/usr/bin/python3 -m installer --destdir="$pkgdir" dist/*.whl
+	rm "$pkgdir"/*.whl
 	for langmo in $(cd ./locale && ls ./*.mo); do
 		lang=$(sed -e 's/.mo$//' <<< "${langmo}")
 		install -Dm644 "locale/${langmo}" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"

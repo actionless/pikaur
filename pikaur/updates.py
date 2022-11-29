@@ -68,6 +68,11 @@ def get_remote_package_version(new_pkg_name: str) -> str | None:
 
 
 def find_repo_upgradeable() -> list[RepoInstallInfo]:
+    """
+    Unlike `pikaur.install_info_fetcher.InstallInfoFetcher.get_upgradeable_repo_pkgs_info`
+    it find all upgradeable repo packages, even ignored ones or conflicting
+    (like `pacman -Qu`).
+    """
     all_local_pkgs = PackageDB.get_local_dict()
     repo_packages_updates = []
     for repo_pkg in find_upgradeable_packages():

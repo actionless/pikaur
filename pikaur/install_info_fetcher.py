@@ -344,6 +344,11 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         return pkg_install_infos
 
     def get_upgradeable_repo_pkgs_info(self) -> list[RepoInstallInfo]:
+        """
+        Unlike `pikaur.updates.find_repo_upgradeable`
+        it find which repo packages are actually going to be upgraded
+        (like `pacman -Su` dry-run).
+        """
         if not self.args.sysupgrade:
             return []
         all_local_pkgs = PackageDB.get_local_dict()

@@ -161,16 +161,17 @@ def find_aur_updates() -> tuple[list[AURInstallInfo], list[str]]:
 
 def print_upgradeable(
         ignored_only: bool = False,
-        install_infos: Sequence[InstallInfo] | None = None
+        aur_install_infos: Sequence[InstallInfo] | None = None
 ) -> None:
     args = parse_args()
-    updates: list[InstallInfo] = list(install_infos) if install_infos else []
-    if not install_infos:
-        if not args.repo:
-            aur_updates, _not_found_aur_pkgs = find_aur_updates()
-            updates += aur_updates
-        if not args.aur:
-            updates += find_repo_upgradeable()
+    updates: list[InstallInfo] = []
+    if aur_install_infos is not None:
+        updates += aur_install_infos
+    elif not args.repo:
+        aur_updates, _not_found_aur_pkgs = find_aur_updates()
+        updates += aur_updates
+    if not args.aur:
+        updates += find_repo_upgradeable()
     if not updates:
         return
     pkg_names = [pkg.name for pkg in updates]

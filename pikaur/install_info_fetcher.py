@@ -41,6 +41,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
     thirdparty_repo_replacements_install_info: list[RepoInstallInfo]
     aur_updates_install_info: list[AURInstallInfo]
     aur_deps_install_info: list[AURInstallInfo]
+    _all_aur_updates_raw: list[AURInstallInfo]
 
     args: PikaurArgs
     aur_deps_relations: dict[str, list[str]]
@@ -73,7 +74,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             # print ignored package updates:
             print_upgradeable(
                 ignored_only=True,
-                install_infos=self.all_install_info
+                aur_install_infos=self._all_aur_updates_raw
             )
 
     def package_is_ignored(self, package_name: str) -> bool:
@@ -465,12 +466,12 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             raise SysExit(6)
         aur_updates_install_info_by_name: dict[str, AURInstallInfo] = {}
         if self.args.sysupgrade:
-            aur_updates_list, not_found_aur_pkgs = find_aur_updates()
+            self._all_aur_updates_raw, not_found_aur_pkgs = find_aur_updates()
             self.exclude_ignored_packages(not_found_aur_pkgs, print_packages=False)
             if not_found_aur_pkgs:
                 print_not_found_packages(sorted(not_found_aur_pkgs))
             aur_updates_install_info_by_name = {
-                upd.name: upd for upd in aur_updates_list
+                upd.name: upd for upd in self._all_aur_updates_raw
             }
         for pkg_name, aur_pkg in aur_pkgs.items():
             if pkg_name in aur_updates_install_info_by_name:

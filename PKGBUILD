@@ -52,7 +52,6 @@ build() {
 package() {
 	cd "${srcdir}/${pkgname}" || exit 2
 	/usr/bin/python3 -m installer --destdir="$pkgdir" dist/*.whl
-	rm "$pkgdir"/*.whl
 	for langmo in $(cd ./locale && ls ./*.mo); do
 		lang=$(sed -e 's/.mo$//' <<< "${langmo}")
 		install -Dm644 "locale/${langmo}" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/pikaur.mo"
@@ -60,5 +59,4 @@ package() {
 	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 	install -Dm644 pikaur.1 "$pkgdir/usr/share/man/man1/pikaur.1"
 	cp -r ./packaging/* "${pkgdir}"
-	cp -r ./dist/* "${pkgdir}"
 }

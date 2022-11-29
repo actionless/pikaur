@@ -22,6 +22,16 @@ echo Python import...
 #python3 -c "import pikaur"
 python3 -c "import pikaur.main"
 
+echo Ruff...
+if [[ ! -f "${APP_DIR}/env/bin/activate" ]] ; then
+	python -m venv env --system-site-packages
+	# shellcheck disable=SC1091
+	. "${APP_DIR}/env/bin/activate"
+	pip install ruff --upgrade
+	deactivate
+fi
+./env/bin/ruff "${TARGETS[@]}"
+
 echo Flake8...
 flake8 "${TARGETS[@]}" 2>&1 \
 | (

@@ -2,8 +2,7 @@
 # mypy: disable-error-code=no-untyped-def
 
 from pikaur.exceptions import SysExit
-from pikaur.urllib import read_bytes_from_url, get_gzip_from_url
-
+from pikaur.urllib import get_gzip_from_url, read_bytes_from_url
 from pikaur_test.helpers import PikaurTestCase
 
 

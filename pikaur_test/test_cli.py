@@ -7,9 +7,7 @@ from pikaur_test.helpers import PikaurTestCase, pacman, pikaur
 class CliTest(PikaurTestCase):
 
     def test_unknown_argument(self):
-        """
-        unknown argument passed to pacman
-        """
+        """Unknown argument passed to pacman."""
         self.assertEqual(pikaur('-Zyx').returncode, 1)
 
     def test_search(self):

@@ -5,7 +5,7 @@ import sys
 import tempfile
 from subprocess import Popen  # nosec B404
 from time import time
-from typing import Any, NoReturn, Callable, Sequence, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, NoReturn, Sequence
 from unittest import TestCase, TestResult, mock
 from unittest.runner import TextTestResult
 
@@ -32,8 +32,9 @@ if WRITE_DB:
     PikaurConfig._config = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
-    from mypy_extensions import DefaultArg
     from typing import IO
+
+    from mypy_extensions import DefaultArg
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -82,7 +83,7 @@ class CmdResult:
         ))
 
 
-class FakeExit(Exception):
+class FakeExit(Exception):  # noqa: N818
     pass
 
 
@@ -269,15 +270,15 @@ class PikaurTestCase(TestCase):
         super().setUp()
         log_stderr(self.separator)
 
-    def assertInstalled(self, pkg_name: str) -> None:
+    def assertInstalled(self, pkg_name: str) -> None:  # noqa: N802
         if not pkg_is_installed(pkg_name):
             self.fail(f'Package "{pkg_name}" is not installed.')
 
-    def assertNotInstalled(self, pkg_name: str) -> None:
+    def assertNotInstalled(self, pkg_name: str) -> None:  # noqa: N802
         if pkg_is_installed(pkg_name):
             self.fail(f'Package "{pkg_name}" is still installed.')
 
-    def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:
+    def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:  # noqa: N802
         cmd_result: str = pacman(f'-Qiq {dep_name}').stdout
         self.assertTrue(
             cmd_result
@@ -289,9 +290,7 @@ class PikaurTestCase(TestCase):
 
 
 class PikaurDbTestCase(PikaurTestCase):
-    """
-    tests which are modifying local package DB
-    """
+    """Tests which are modifying local package DB."""
 
     def run(self, result: TestResult | None = None) -> TestResult | None:
         if WRITE_DB:

@@ -9,9 +9,7 @@ from pikaur_test.helpers import PikaurDbTestCase, fake_pikaur, pikaur, spawn
 
 
 class InstallTest(PikaurDbTestCase):
-    """
-    basic installation cases
-    """
+    """Basic installation cases."""
 
     def test_aur_package_with_repo_deps(self):
         # aur package with repo deps
@@ -114,8 +112,8 @@ class InstallTest(PikaurDbTestCase):
             env = {**os.environ, "GNUPGHOME": tmpdirname}
             commands = [
                 "gpg --batch --passphrase  --quick-generate-key 'pikaur@localhost' rsa sign 0",
-                *map(lambda key: f'gpg --keyserver {keyserver} --receive-keys {key}', pkg_keys),
-                *map(lambda key: f'gpg --quick-lsign-key {key}', pkg_keys),
+                *[f'gpg --keyserver {keyserver} --receive-keys {key}' for key in pkg_keys],
+                *[f'gpg --quick-lsign-key {key}' for key in pkg_keys],
                 f"chmod 755 {tmpdirname}",
                 f"chmod 644 {tmpdirname}/pubring.gpg",
                 f"chmod 644 {tmpdirname}/trust.gpg"
@@ -206,17 +204,13 @@ class InstallTest(PikaurDbTestCase):
         )
 
     def test_print_commands_and_needed(self):
-        """
-        test what --print--commands option not fails
-        """
+        """Test that `--print--commands` option not fails."""
         self.assertEqual(
             fake_pikaur('-S inxi nano --print-commands').returncode, 0
         )
 
     def test_needed(self):
-        """
-        test what --needed option not fails
-        """
+        """Test that `--needed` option not fails."""
         self.assertEqual(
             pikaur('-S inxi nano --needed').returncode, 0
         )

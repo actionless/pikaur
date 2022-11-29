@@ -6,9 +6,7 @@ from pikaur_test.helpers import PikaurDbTestCase, pikaur, spawn
 
 
 class SysupgradeTest(PikaurDbTestCase):
-    """
-    sysupgrade-related test cases
-    """
+    """Sysupgrade-related testcases."""
 
     self_name = 'pikaur-git'
 
@@ -75,9 +73,7 @@ class SysupgradeTest(PikaurDbTestCase):
         self.dev_old_version = PackageDB.get_local_dict()[self.dev_pkg_name].version
 
     def test_devel_upgrade(self):
-        """
-        test upgrade of AUR dev package
-        """
+        """Test upgrade of AUR dev package."""
         self.downgrade_dev_pkg()
 
         # self.assertEqual(
@@ -115,9 +111,7 @@ class SysupgradeTest(PikaurDbTestCase):
         return upgradeable_aur_pkgs
 
     def test_syu(self):
-        """
-        test upgrade of repo and AUR packages
-        """
+        """Test upgrade of repo and AUR packages."""
         self.downgrade_repo1_pkg()
         self.downgrade_aur1_pkg()
 
@@ -144,9 +138,7 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
     def test_syu_ignore(self):
-        """
-        test --ignore flag with sysupgrade
-        """
+        """Test `--ignore` flag with `--sysupgrade`."""
         self.downgrade_repo1_pkg()
         self.downgrade_repo2_pkg()
         self.downgrade_aur1_pkg()
@@ -227,9 +219,7 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
     def test_syu_aur_repo_flags(self):
-        """
-        test --aur and --repo flags with sysupgrade
-        """
+        """Test `--aur` and `--repo` flags with `--sysupgrade`."""
         self.downgrade_repo1_pkg()
         self.downgrade_aur1_pkg()
 

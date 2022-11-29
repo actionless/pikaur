@@ -10,14 +10,10 @@ MSG_VERSION_MISMATCH = "Version mismatch"
 
 
 class FailureTest(PikaurDbTestCase):
-    """
-    test cases for failure situations
-    """
+    """Test cases for failure situations."""
 
     def test_install_not_found(self):
-        """
-        package can't be found in AUR
-        """
+        """Package can't be found in AUR."""
         not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
         result = pikaur(
             f'-S {not_existing_pkg_name}',
@@ -31,9 +27,7 @@ class FailureTest(PikaurDbTestCase):
         )
 
     def test_install_not_found_repo(self):
-        """
-        package can't be found in AUR
-        """
+        """Package can't be found in repo."""
         not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
         result = pikaur(
             f'-S {not_existing_pkg_name} --repo',
@@ -47,9 +41,7 @@ class FailureTest(PikaurDbTestCase):
         )
 
     def test_dep_not_found(self):
-        """
-        dependency package can't be found in AUR
-        """
+        """Dependency package can't be found in AUR."""
         pkg_name = "pikaur-test-not-found-dep"
         not_existing_dep_name = "not-existing-package-y8r73ruue99y5u77t5u4r"
         result = pikaur(
@@ -67,9 +59,7 @@ class FailureTest(PikaurDbTestCase):
         self.assertNotInstalled(pkg_name)
 
     def test_version_mismatch_aur(self):
-        """
-        dependency AUR package version not satisfied
-        """
+        """Dependency AUR package version not satisfied."""
         pkg_name = "pikaur-test-version-mismatch-aur"
         result = pikaur(
             '-Pi ./pikaur_test/PKGBUILD_version_mismatch_aur',
@@ -81,9 +71,7 @@ class FailureTest(PikaurDbTestCase):
         self.assertNotInstalled(pkg_name)
 
     def test_version_mismatch_repo(self):
-        """
-        dependency repo package version not satisfied
-        """
+        """Dependency repo package version not satisfied."""
         pkg_name = "pikaur-test-version-mismatch-repo"
         result = pikaur(
             '-Pi ./pikaur_test/PKGBUILD_version_mismatch_repo',

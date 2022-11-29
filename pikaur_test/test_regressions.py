@@ -5,9 +5,7 @@ from pikaur_test.helpers import PikaurDbTestCase, fake_pikaur, pikaur
 
 
 class RegressionTest(PikaurDbTestCase):
-    """
-    Based on GH-issues
-    """
+    """Based on GH-issues."""
 
     def test_split_pkgs_aur_deps(self):
         # split aur package with deps from aur (too long to build so use fake makepkg)
@@ -139,9 +137,7 @@ class RegressionTest(PikaurDbTestCase):
         self.assertNotInstalled(wrong_arch_dep_name)
 
     def test_aur_rpc_didnt_fully_parsed_srcinfo_2(self):
-        """
-        Similar situation as with mongodb-bin above but the opposite
-        """
+        """Similar situation as with `mongodb-bin` above but the opposite."""
         pkg_name = 'guitar-pro'
         correct_arch_dep_name = 'lib32-portaudio'
         self.remove_if_installed(pkg_name, correct_arch_dep_name)
@@ -151,6 +147,7 @@ class RegressionTest(PikaurDbTestCase):
 
     def test_version_matcher_on_pkg_install(self):
         """
+        See:
         https://github.com/actionless/pikaur/issues/474
         """
         aur_pkg_name = 'inxi'

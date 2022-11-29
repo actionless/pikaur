@@ -3,8 +3,8 @@ A POC for downgrade interface in future Pikaur versions.
 Or so.
 """
 
-import sys
 import os
+import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 PARENT_DIR = os.path.realpath(

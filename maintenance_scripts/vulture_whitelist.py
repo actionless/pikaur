@@ -3,9 +3,7 @@
 # pylint: disable=protected-access,pointless-statement
 
 # pylint: disable=import-error,no-name-in-module
-from vulture.whitelist_utils import (  # type: ignore[import]
-    Whitelist,
-)
+from vulture.whitelist_utils import Whitelist  # type: ignore[import]
 
 
 whitelist = Whitelist()

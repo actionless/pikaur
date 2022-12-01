@@ -391,7 +391,10 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 self.package_is_ignored(pkg_name)
             ):
                 # @TODO: probably this branch is never called anymore
-                print_ignored_package(install_info=pkg_update)
+                print_error(
+                    "ERROR code 4891234: "
+                    "if you encounter this please report an issue at Pikaur bug tracker."
+                )
                 continue
 
             if pkg_update.current_version == '' and (
@@ -499,9 +502,6 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             ) or (
                 self.package_is_ignored(pkg_name)
             ):
-                print_ignored_package(
-                    install_info=aur_updates_install_info_by_name[pkg_name]
-                )
                 del aur_updates_install_info_by_name[pkg_name]
             for pkg_list in self.pkgbuilds_packagelists.values():
                 if pkg_name in pkg_list:

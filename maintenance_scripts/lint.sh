@@ -16,7 +16,10 @@ fi
 export PYTHONWARNINGS='default,error:::pikaur[.*],error:::pikaur_test[.*]'
 
 echo Python compile...
-python3 -O -m compileall "${TARGETS[@]}" | (grep -v -e '^Listing' -e '^Compiling' || true)
+python3 -O -m compileall "${TARGETS[@]}" \
+| (\
+	grep -v -e '^Listing' -e '^Compiling' || true \
+)
 
 echo Python import...
 #python3 -c "import pikaur"

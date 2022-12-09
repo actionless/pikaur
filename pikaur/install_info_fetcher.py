@@ -299,7 +299,8 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 _debug(f"Checking if '{pkg_name}' exists in the repo:")
                 pkg_exists_requests[pkg_name] = pool.apply_async(
                     PackageDB.get_print_format_output,
-                    (pacman_args + pkg_name.split(','), False, True)
+                    (pacman_args + pkg_name.split(','), ),
+                    {"check_deps": False, "package_only": True}
                 )
             pool.close()
             pool.join()

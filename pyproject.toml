@@ -1,9 +1,39 @@
 [tool.ruff]
 line-length = 100
-select = ["E", "F", "Q", "I", "D", "U", "N", "S", "C", "B", "A", "T", "ANN", "YTT", "RUF", "M", "W"]
+select = [
+	"F",
+	"E", "W",
+	"C90",
+	"I",
+	"D",
+	"UP",
+	"N",
+	"YTT",
+	"ANN",
+	"S",
+	"BLE",
+	"FBT",
+	"B",
+	"A",
+	"C4",
+	"T10",
+	"ICN",
+	"T20",
+	"Q",
+	"RET",
+	"TID",
+	"ARG",
+	"ERA",
+	"PGH",
+	"PLC", "PLE", "PLR", "PLW",
+	"RUF",
+	#"C",
+	#"T",
+	#"RUF100",
+]
 ignore = [
 	# enable back later:
-	"M001",
+	#"M001",
 	"Q000",
 	"D100",
 	"D101",

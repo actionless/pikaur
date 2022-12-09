@@ -2,7 +2,6 @@
 
 import gettext
 
-
 TRANSLATION = gettext.translation('pikaur', fallback=True)
 
 

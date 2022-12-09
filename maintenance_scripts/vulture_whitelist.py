@@ -5,7 +5,6 @@
 # pylint: disable=import-error,no-name-in-module
 from vulture.whitelist_utils import Whitelist  # type: ignore[import]
 
-
 whitelist = Whitelist()
 
 whitelist.argparse.ArgumentParserWithUnknowns._parse_known_args

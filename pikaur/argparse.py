@@ -139,21 +139,19 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
                     # error if a double-dash option did not use the
                     # explicit argument
-                    else:
-                        msg = _('ignored explicit argument %r')
-                        raise ArgumentError(action, msg % explicit_arg)
+                    msg = _('ignored explicit argument %r')
+                    raise ArgumentError(action, msg % explicit_arg)
 
                 # if there is no explicit argument, try to match the
                 # optional's string arguments with the following strings
                 # if successful, exit the loop
-                else:
-                    start = start_index + 1
-                    selected_patterns = arg_strings_pattern[start:]
-                    arg_count = match_argument(action, selected_patterns)
-                    stop = start + arg_count
-                    args = arg_strings[start:stop]
-                    action_tuples.append((action, args, option_string))
-                    break
+                start = start_index + 1
+                selected_patterns = arg_strings_pattern[start:]
+                arg_count = match_argument(action, selected_patterns)
+                stop = start + arg_count
+                args = arg_strings[start:stop]
+                action_tuples.append((action, args, option_string))
+                break
 
             # add the Optional to the list and return the index at which
             # the Optional's string args stopped
@@ -176,7 +174,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
             # slice off the appropriate arg strings for each Positional
             # and add the Positional and its args to the list
-            for action, arg_count in zip(positionals, arg_counts):
+            for action, arg_count in zip(positionals, arg_counts, strict=True):
                 args = arg_strings[start_index: start_index + arg_count]
                 start_index += arg_count
                 take_action(action, args)

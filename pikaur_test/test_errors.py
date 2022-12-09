@@ -3,7 +3,6 @@
 
 from pikaur_test.helpers import PikaurDbTestCase, pikaur
 
-
 MSG_CANNOT_BE_FOUND = "cannot be found"
 MSG_DEPS_MISSING = "Dependencies missing"
 MSG_VERSION_MISMATCH = "Version mismatch"

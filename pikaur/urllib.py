@@ -13,13 +13,13 @@ from .i18n import translate
 from .pprint import ColorsHighlight, color_line, print_error, print_stderr
 from .prompt import ask_to_continue
 
-
 DEFAULT_WEB_ENCODING = 'utf-8'
 NOCONFIRM_RETRY_INTERVAL = 3
 
 
 def read_bytes_from_url(
         url: str,
+        *,
         optional: bool = False,
         autoretry: bool = True,
 ) -> bytes:
@@ -50,7 +50,7 @@ def read_bytes_from_url(
         raise SysExit(102) from exc
 
 
-def get_unicode_from_url(url: str, optional: bool = False) -> str:
+def get_unicode_from_url(url: str, *, optional: bool = False) -> str:
     result_bytes = read_bytes_from_url(url, optional=optional)
     return result_bytes.decode(DEFAULT_WEB_ENCODING)
 
@@ -60,10 +60,7 @@ def get_json_from_url(url: str) -> Any:
     return result_json
 
 
-def get_gzip_from_url(
-        url: str,
-        autoretry: bool = True,
-) -> str:
+def get_gzip_from_url(url: str, *, autoretry: bool = True) -> str:
     result_bytes = read_bytes_from_url(url)
     try:
         decompressed_bytes_response = gzip.decompress(result_bytes)

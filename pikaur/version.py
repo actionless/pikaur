@@ -5,7 +5,6 @@ from typing import Callable
 
 import pyalpm
 
-
 VERSION_SEPARATORS = ('.', '+', '-', ':')
 
 
@@ -40,7 +39,7 @@ class VersionMatcher():
             for version_matcher in self.version_matchers
         )
 
-    def __init__(self, depend_line: str, is_pkg_deps: bool = False) -> None:
+    def __init__(self, depend_line: str, *, is_pkg_deps: bool = False) -> None:
         self.line = depend_line
         self._set_version_matcher_func(is_pkg_deps=is_pkg_deps)
 
@@ -61,7 +60,7 @@ class VersionMatcher():
             self.version = version_matcher.version
 
     def _set_version_matcher_func(  # pylint: disable=too-many-locals
-            self, is_pkg_deps: bool = False
+            self, *, is_pkg_deps: bool = False
     ) -> None:
         # pylint: disable=invalid-name
 
@@ -98,7 +97,7 @@ class VersionMatcher():
         def cmp_ge(v: str) -> int:
             return cmp_eq(v) or cmp_gt(v)
 
-        def cmp_default(v: str) -> int:  # pylint: disable=unused-argument
+        def cmp_default(v: str) -> int:  # noqa: ARG001  # pylint: disable=unused-argument
             return 1
 
         cond: str | None = None
@@ -149,7 +148,7 @@ def split_version(version: str) -> list[str]:
     return splitted_version
 
 
-def split_always(line: str, separator: str, pad_right: bool = False) -> tuple[str, str]:
+def split_always(line: str, separator: str, *, pad_right: bool = False) -> tuple[str, str]:
     """
     Same as builtin string `.split()`,
     but return empty string on the left or right if no separator found.

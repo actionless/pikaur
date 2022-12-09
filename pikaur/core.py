@@ -85,7 +85,7 @@ class DataType(ComparableType):
     def _key_exists(self, key: str) -> bool:
         return key in dir(self)
 
-    def __init__(self, ignore_extra_properties: bool = False, **kwargs: Any) -> None:
+    def __init__(self, *, ignore_extra_properties: bool = False, **kwargs: Any) -> None:
         self.ignore_extra_properties = ignore_extra_properties
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -390,7 +390,7 @@ def dirname(path: str) -> str:
     return os.path.dirname(path) or '.'
 
 
-def sudo_loop(once: bool = False) -> None:
+def sudo_loop(*, once: bool = False) -> None:
     """Get sudo for further questions."""
     sudo_loop_interval = PikaurConfig().misc.SudoLoopInterval.get_int()
     if sudo_loop_interval == -1:

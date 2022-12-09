@@ -32,6 +32,10 @@ select = [
 	#"RUF100",
 ]
 ignore = [
+	#ENABLE BACK IN FEW HOURS:
+	"RET504",
+
+
 	# enable back later:
 	#"M001",
 	"Q000",
@@ -42,6 +46,15 @@ ignore = [
 	#"ANN001",
 	"ANN401", # ?
 	"C901",  # "too complex"
+	"ERA001", # commented out code
+
+	"ANN002",
+	"ANN003",
+	"ANN101",
+	"ANN102",
+	"ANN204",
+
+	"BLE001",
 
 	"D105",
 	"D107",
@@ -51,12 +64,6 @@ ignore = [
 	"D400",
 	"D415",
 
-	"ANN002",
-	"ANN003",
-	"ANN101",
-	"ANN102",
-	"ANN204",
-
 	"T201",
 	"T203",
 ]
@@ -65,4 +72,10 @@ ignore = [
 "pikaur_test/test_*.py" = [
 	"ANN201",
 	"ANN206",
+]
+"maintenance_scripts/pikaman.py" = [
+	"ARG002",
+]
+"pikaur_test/helpers.py" = [
+	"RUF100",  # @TODO
 ]

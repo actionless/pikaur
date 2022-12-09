@@ -33,6 +33,7 @@ ENCODING = 'utf-8'
 class NroffRenderer(  # pylint: disable=too-many-public-methods
         markdown_it.renderer.RendererProtocol
 ):
+    # pylint: disable=unused-argument
 
     __output__ = 'nroff'
     name: str
@@ -248,12 +249,12 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     # ########################### TBD: ############################### #
 
-    def strong(self, _node: Any, entering: bool) -> str:
+    def strong(self, _node: Any, entering: bool) -> str:  # noqa: FBT001
         if entering:
             return r'\fB'
         return r'\fR'
 
-    def emph(self, _node: Any, entering: bool) -> str:
+    def emph(self, _node: Any, entering: bool) -> str:  # noqa: FBT001
         if entering:
             return r'\fI'
         return r'\fR'

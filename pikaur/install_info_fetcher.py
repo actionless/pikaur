@@ -27,7 +27,6 @@ from .srcinfo import SrcInfo
 from .updates import find_aur_updates, print_upgradeable
 from .version import VersionMatcher
 
-
 _debug = create_debug_logger('install_info_fetcher')
 
 
@@ -94,6 +93,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
     def exclude_ignored_packages(
             self,
             package_names: list[str],
+            *,
             print_packages: bool = True
     ) -> None:
         ignored_packages = []
@@ -615,8 +615,10 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             ):
                 providing_for = [
                     pkg_name for pkg_name in sum([
-                        # pylint: disable=unnecessary-direct-lambda-call
-                        (lambda vm: [vm.line, vm.pkg_name])(VersionMatcher(prov))
+                        [
+                            [vm.line, vm.pkg_name]
+                            for vm in (VersionMatcher(prov), )
+                        ][0]
                         for prov in provides
                     ], [])
                     if pkg_name in all_requested_pkg_names

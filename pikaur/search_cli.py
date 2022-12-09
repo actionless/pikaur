@@ -14,7 +14,6 @@ from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
 from .pprint import print_error, print_stderr
 from .print_department import AnyPackage, print_package_search_results
 
-
 SamePackageTypeT = TypeVar('SamePackageTypeT', AURPackageInfo, pyalpm.Package)
 
 
@@ -130,7 +129,7 @@ def join_search_results(
 
 
 def search_packages(  # pylint: disable=too-many-locals
-        enumerated: bool = False
+        *, enumerated: bool = False
 ) -> list[AnyPackage]:
     refresh_pkg_db_if_needed()
 

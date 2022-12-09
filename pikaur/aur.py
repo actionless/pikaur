@@ -10,6 +10,7 @@ from .core import DataType, get_chunks
 from .exceptions import AURError
 from .progressbar import ThreadSafeProgressBar
 from .urllib import get_gzip_from_url, get_json_from_url
+
 if TYPE_CHECKING:
     from .srcinfo import SrcInfo
 
@@ -89,18 +90,16 @@ class AURPackageInfo(DataType):
 
 
 def construct_aur_rpc_url_from_uri(uri: str) -> str:
-    url = AUR_BASE_URL + '/rpc/?' + uri
-    return url
+    return AUR_BASE_URL + '/rpc/?' + uri
 
 
 def construct_aur_rpc_url_from_params(params: dict[str, str | int]) -> str:
-    uri = parse.urlencode(params)
-    return construct_aur_rpc_url_from_uri(uri)
+    return construct_aur_rpc_url_from_uri(parse.urlencode(params))
 
 
 def strip_aur_repo_name(pkg_name: str) -> str:
     if pkg_name.startswith('aur/'):
-        pkg_name = ''.join(pkg_name.split('aur/'))
+        return ''.join(pkg_name.split('aur/'))
     return pkg_name
 
 
@@ -165,7 +164,7 @@ _AUR_PKGS_FIND_CACHE: dict[str, AURPackageInfo] = {}
 
 
 def find_aur_packages(
-        package_names: list[str], with_progressbar: bool = False
+        package_names: list[str], *, with_progressbar: bool = False
 ) -> tuple[list[AURPackageInfo], list[str]]:
 
     # @TODO: return only packages for the current architecture
@@ -217,6 +216,7 @@ _AUR_PKGS_LIST_CACHE: list[str] = []
 
 
 def get_all_aur_names() -> list[str]:
+    # @TODO: refactor to singleton class
     global _AUR_PKGS_LIST_CACHE  # pylint: disable=global-statement
     if not _AUR_PKGS_LIST_CACHE:
         _AUR_PKGS_LIST_CACHE = aur_web_packages_list()

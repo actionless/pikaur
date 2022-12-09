@@ -257,7 +257,7 @@ CONFIG_SCHEMA: dict[str, dict[str, 'ConfigValueType']] = {
             'deprecated': {
                 'section': 'network',
                 'option': 'AurUrl',
-                'transform': lambda old_value, config: f'https://{old_value}'
+                'transform': lambda old_value, _config: f'https://{old_value}'
             },
         },
         'NewsUrl': {

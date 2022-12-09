@@ -1,6 +1,5 @@
 import gettext
 
-
 PACMAN_TRANSLATION = gettext.translation('pacman', fallback=True)
 
 

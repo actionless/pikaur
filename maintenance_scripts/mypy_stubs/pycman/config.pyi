@@ -4,7 +4,6 @@ from collections import OrderedDict
 from pyalpm import Handle
 from typing_extensions import TypedDict
 
-
 class PacmanOptions(TypedDict):
     IgnorePkg: list[str]
 

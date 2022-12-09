@@ -69,7 +69,6 @@ from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .version import compare_versions
 
-
 _debug = create_debug_logger('install_cli')
 
 
@@ -419,13 +418,13 @@ class InstallPackagesCLI():
 
     def install_prompt(self) -> None:  # pragma: no cover
 
-        def _print_sysupgrade(verbose: bool = False) -> None:
+        def _print_sysupgrade(*, verbose: bool = False) -> None:
             print_stdout(pretty_format_sysupgrade(
                 install_info=self.install_info,
                 verbose=verbose
             ))
 
-        def _confirm_sysupgrade(verbose: bool = False) -> str:
+        def _confirm_sysupgrade(*, verbose: bool = False) -> str:
             _print_sysupgrade(verbose=verbose)
             prompt = '{} {}\n{} {}\n>> '.format(  # pylint: disable=consider-using-f-string
                 color_line('::', ColorsHighlight.blue),
@@ -463,7 +462,7 @@ class InstallPackagesCLI():
                 raise SysExit(125)
             break
 
-    def discard_install_info(self, canceled_pkg_name: str, ignore: bool = True) -> None:
+    def discard_install_info(self, canceled_pkg_name: str, *, ignore: bool = True) -> None:
         _debug(f"discarding install info for pkg... {canceled_pkg_name}")
         if ignore:
             _debug(f"ignoring pkg... {canceled_pkg_name}")

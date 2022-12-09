@@ -19,7 +19,6 @@ from .pprint import color_enabled, create_debug_logger, print_error, print_stder
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .version import VersionMatcher
 
-
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
     from .aur import AURPackageInfo
@@ -185,7 +184,7 @@ class PackageDBCommon(metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def get_repo_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
+    def get_repo_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:
         pass
         # if not cls._packages_list_cache.get(PackageSource.REPO):
             # cls._packages_list_cache[PackageSource.REPO] = list(
@@ -195,7 +194,7 @@ class PackageDBCommon(metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def get_local_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
+    def get_local_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:
         pass
         # if not cls._packages_list_cache.get(PackageSource.LOCAL):
             # cls._packages_list_cache[PackageSource.LOCAL] = list(
@@ -204,7 +203,7 @@ class PackageDBCommon(metaclass=ABCMeta):
         # return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
-    def get_repo_dict(cls, quiet: bool = False) -> dict[str, pyalpm.Package]:
+    def get_repo_dict(cls, *, quiet: bool = False) -> dict[str, pyalpm.Package]:
         if not cls._packages_dict_cache.get(PackageSource.REPO):
             cls._packages_dict_cache[PackageSource.REPO] = {
                 get_pkg_id(pkg): pkg
@@ -213,7 +212,7 @@ class PackageDBCommon(metaclass=ABCMeta):
         return cls._packages_dict_cache[PackageSource.REPO]
 
     @classmethod
-    def get_local_dict(cls, quiet: bool = False) -> dict[str, pyalpm.Package]:
+    def get_local_dict(cls, *, quiet: bool = False) -> dict[str, pyalpm.Package]:
         if not cls._packages_dict_cache.get(PackageSource.LOCAL):
             cls._packages_dict_cache[PackageSource.LOCAL] = {
                 pkg.name: pkg
@@ -311,7 +310,7 @@ class PackageDB(PackageDBCommon):
         return cls.get_alpm_handle().get_localdb().search(search_query)
 
     @classmethod
-    def get_local_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
+    def get_local_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.LOCAL):
             with DbLockLocal():
                 if not quiet:
@@ -347,6 +346,7 @@ class PackageDB(PackageDBCommon):
             cls,
             search_query: str,
             db_name: str | None = None,
+            *,
             names_only: bool = False,
             exact_match: bool = False,
     ) -> list[pyalpm.Package]:
@@ -367,7 +367,7 @@ class PackageDB(PackageDBCommon):
         return list(reversed(result))
 
     @classmethod
-    def get_repo_list(cls, quiet: bool = False) -> list[pyalpm.Package]:
+    def get_repo_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:
         if not cls._packages_list_cache.get(PackageSource.REPO):
             with DbLockRepo():
                 if not quiet:
@@ -391,7 +391,7 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def get_print_format_output(
-            cls, cmd_args: list[str], check_deps: bool = True, package_only: bool = False
+            cls, cmd_args: list[str], *, check_deps: bool = True, package_only: bool = False
     ) -> list[PacmanPrint]:
         cache_index = ' '.join(sorted(cmd_args))
         cached_pkg = cls._pacman_find_cache.get(cache_index)

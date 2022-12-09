@@ -345,7 +345,7 @@ class EmptyWrapper:
         pass
 
 
-def main(embed: bool = False) -> None:
+def main(*, embed: bool = False) -> None:
     wrapper: type[AbstractContextManager[None]] = OutputEncodingWrapper
     if embed:
         wrapper = EmptyWrapper

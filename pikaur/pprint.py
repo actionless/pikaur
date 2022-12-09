@@ -10,7 +10,6 @@ from typing import Any, TextIO
 from .args import parse_args
 from .i18n import translate
 
-
 PADDING = 4
 PRINT_LOCK = Lock()
 ARGS = parse_args()
@@ -47,6 +46,7 @@ def _print(
         destination: TextIO,
         message: Any = '',
         end: str = '\n',
+        *,
         flush: bool = False,
         lock: bool = True
 ) -> None:
@@ -65,6 +65,7 @@ def _print(
 def print_stdout(
         message: Any = '',
         end: str = '\n',
+        *,
         flush: bool = False,
         lock: bool = True
 ) -> None:
@@ -74,6 +75,7 @@ def print_stdout(
 def print_stderr(
         message: Any = '',
         end: str = '\n',
+        *,
         flush: bool = False,
         lock: bool = True
 ) -> None:
@@ -103,7 +105,7 @@ class ColorsHighlight:
 
 
 def color_line(
-        line: str, color_number: int, reset: bool = True, force: bool = False
+        line: str, color_number: int, *, reset: bool = True, force: bool = False
 ) -> str:
     if not color_enabled() and not force:
         return line
@@ -138,7 +140,7 @@ def print_error(message: str) -> None:
     ]))
 
 
-def print_debug(message: Any, lock: bool = True) -> None:
+def print_debug(message: Any, *, lock: bool = True) -> None:
     if not ARGS.pikaur_debug:
         return
     prefix = translate("debug:")

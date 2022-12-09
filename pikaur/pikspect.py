@@ -29,7 +29,6 @@ from .pprint import (
     print_stderr,
 )
 
-
 # SMALL_TIMEOUT = 0.1
 SMALL_TIMEOUT = 0.01
 
@@ -176,9 +175,10 @@ class PikspectPopen(subprocess.Popen[bytes]):
     # some help for mypy:
     output: bytes = b''
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
             self,
             args: list[str],
+            *,
             print_output: bool = True,
             capture_input: bool = True,
             capture_output: bool = False,
@@ -369,8 +369,9 @@ def format_pacman_question(message: str, question: str = YesNo.QUESTION_YN_YES) 
     return bold_line(f" {_p(message)} {question} ")
 
 
-def pikspect(  # pylint: disable=too-many-arguments
+def pikspect(
         cmd: list[str],
+        *,
         print_output: bool = True,
         auto_proceed: bool = True,
         conflicts: list[list[str]] | None = None,

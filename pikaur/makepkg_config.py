@@ -7,7 +7,6 @@ from .args import parse_args
 from .config import CONFIG_ROOT
 from .core import open_file, running_as_root
 
-
 ConfigValueType = str | list[str] | None
 ConfigFormat = dict[str, ConfigValueType]
 

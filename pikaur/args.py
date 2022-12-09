@@ -9,7 +9,6 @@ from .argparse import ArgumentParserWithUnknowns
 from .config import PikaurConfig
 from .i18n import translate, translate_many
 
-
 ArgSchema = list[tuple[str | None, str, None | bool | str | int]]
 PossibleArgValuesTypes = list[str] | str | bool | int | None
 

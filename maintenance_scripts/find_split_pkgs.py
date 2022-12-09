@@ -3,7 +3,6 @@ import pickle  # nosec B403
 
 from pikaur.aur import get_all_aur_packages
 
-
 PICKLE_FILE = 'aur_db.dump'
 
 

@@ -26,7 +26,6 @@ from .print_department import (
 )
 from .version import compare_versions
 
-
 DEVEL_PKGS_POSTFIXES = (
     '-git',
     '-svn',
@@ -165,8 +164,9 @@ def find_aur_updates() -> tuple[list[AURInstallInfo], list[str]]:
 
 
 def print_upgradeable(
+        aur_install_infos: Sequence[InstallInfo] | None = None,
+        *,
         ignored_only: bool = False,
-        aur_install_infos: Sequence[InstallInfo] | None = None
 ) -> None:
     args = parse_args()
     updates: list[InstallInfo] = []

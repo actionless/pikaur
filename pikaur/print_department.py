@@ -39,7 +39,7 @@ AnyPackage = AURPackageInfo | pyalpm.Package
 InstallInfoT = TypeVar('InstallInfoT', bound=InstallInfo)
 
 
-def print_version(pacman_version: str, pyalpm_version: str, quiet: bool = False) -> None:
+def print_version(pacman_version: str, pyalpm_version: str, *, quiet: bool = False) -> None:
     if quiet:
         print(f'Pikaur v{VERSION}')
         print(f'{pacman_version} - pyalpm v{pyalpm_version}')
@@ -60,7 +60,7 @@ def print_version(pacman_version: str, pyalpm_version: str, quiet: bool = False)
 """)
 
 
-def print_not_found_packages(not_found_packages: list[str], repo: bool = False) -> None:
+def print_not_found_packages(not_found_packages: list[str], *, repo: bool = False) -> None:
     num_packages = len(not_found_packages)
     print_warning(
         bold_line(
@@ -117,7 +117,7 @@ class RepoColorGenerator:
         return cls._cache[color_type][_id]
 
 
-def pretty_format_repo_name(repo_name: str, color: bool = True) -> str:
+def pretty_format_repo_name(repo_name: str, *, color: bool = True) -> str:
     result = f'{repo_name}/'
     if not color:
         return result
@@ -126,6 +126,7 @@ def pretty_format_repo_name(repo_name: str, color: bool = True) -> str:
 
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements
         packages_updates: Sequence[InstallInfo],
+        *,
         verbose: bool = False,
         print_repo: bool = False,
         color: bool = True,
@@ -333,6 +334,7 @@ class SysupgradePrettyFormatter:
     def __init__(
         self,
         install_info: 'InstallInfoFetcher',
+        *,
         verbose: bool,
         manual_package_selection: bool
     ):
@@ -561,6 +563,7 @@ class SysupgradePrettyFormatter:
 
 def pretty_format_sysupgrade(
         install_info: 'InstallInfoFetcher',
+        *,
         verbose: bool = False,
         manual_package_selection: bool = False
 ) -> str:
@@ -657,6 +660,7 @@ def print_package_search_results(
         repo_packages: Iterable[pyalpm.Package],
         aur_packages: Iterable[AURPackageInfo],
         local_pkgs_versions: dict[str, str],
+        *,
         enumerated: bool = False,
 ) -> list[AnyPackage]:
 

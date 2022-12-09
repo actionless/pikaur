@@ -20,13 +20,13 @@ from pikaur.pacman import PackageDB
 from pikaur.pprint import color_line, get_term_width
 from pikaur.srcinfo import SrcInfo
 
-
 WRITE_DB = bool(os.environ.get('WRITE_DB'))
 
 
 if WRITE_DB:
     # pylint:disable=protected-access
     from pikaur.config import CONFIG_PATH, PikaurConfig
+
     if os.path.exists(CONFIG_PATH):
         os.unlink(CONFIG_PATH)
     PikaurConfig._config = None  # type: ignore[assignment]
@@ -105,7 +105,7 @@ class InterceptSysOutput():
         self.returncode = code
         raise FakeExit()
 
-    def __init__(self, capture_stdout: bool = True, capture_stderr: bool = False) -> None:
+    def __init__(self, *, capture_stdout: bool = True, capture_stderr: bool = False) -> None:
         self.capture_stdout = capture_stdout
         self.capture_stderr = capture_stderr
 
@@ -164,6 +164,7 @@ class InterceptSysOutput():
 
 def pikaur(
         cmd: str,
+        *,
         capture_stdout: bool = True, capture_stderr: bool = False,
         fake_makepkg: bool = False, skippgpcheck: bool = False
 ) -> CmdResult:
@@ -312,9 +313,12 @@ class PikaurDbTestCase(PikaurTestCase):
             if pkg_is_installed(pkg_name):
                 self.remove_packages(pkg_name)
 
-    def downgrade_repo_pkg(  # pylint: disable=too-many-arguments
-            self, repo_pkg_name: str,
-            fake_makepkg: bool = False, skippgpcheck: bool = False,
+    def downgrade_repo_pkg(
+            self,
+            repo_pkg_name: str,
+            *,
+            fake_makepkg: bool = False,
+            skippgpcheck: bool = False,
             count: int = 10,
             build_root: str = '.',
             remove_before_upgrade: bool = True,
@@ -365,7 +369,9 @@ class PikaurDbTestCase(PikaurTestCase):
 
     def downgrade_aur_pkg(
             self, aur_pkg_name: str,
-            fake_makepkg: bool = False, skippgpcheck: bool = False,
+            *,
+            fake_makepkg: bool = False,
+            skippgpcheck: bool = False,
             count: int = 1
     ) -> str:
         # and test -P and -G during downgrading :-)

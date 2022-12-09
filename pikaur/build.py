@@ -271,7 +271,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         with open_file(git_hash_path) as current_hash_file:
             return current_hash_file.readlines()[0].strip()
 
-    def get_latest_dev_sources(self, check_dev_pkgs: bool = True) -> None:
+    def get_latest_dev_sources(self, *, check_dev_pkgs: bool = True) -> None:
         if not self.reviewed:
             return
         self.prepare_build_destination()
@@ -481,7 +481,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return True
         return False
 
-    def prepare_build_destination(self, flush: bool = False) -> None:
+    def prepare_build_destination(self, *, flush: bool = False) -> None:
         if flush:
             remove_dir(self.build_dir)
             self._build_files_copied = False
@@ -503,6 +503,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def get_deps(
             self,
             all_package_builds: dict[str, 'PackageBuild'],
+            *,
             filter_built: bool = True,
             exclude_pkg_names: list[str] | None = None,
     ) -> None:

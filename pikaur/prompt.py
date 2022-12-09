@@ -22,7 +22,6 @@ from .pprint import (
     range_printable,
 )
 
-
 Y = translate('y')
 N = translate('n')
 
@@ -92,7 +91,7 @@ def split_last_line(text: str) -> str:
 
 
 def get_input(
-        prompt: str, answers: Sequence[str] = (), require_confirm: bool = False
+        prompt: str, answers: Sequence[str] = (), *, require_confirm: bool = False
 ) -> str:
     _debug('Gonna get input from user...')
     answer = ''
@@ -160,7 +159,7 @@ def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> list
     return int_results
 
 
-def ask_to_continue(text: str | None = None, default_yes: bool = True) -> bool:
+def ask_to_continue(text: str | None = None, *, default_yes: bool = True) -> bool:
     args = parse_args()
     if text is None:
         text = translate('Do you want to proceed?')
@@ -179,6 +178,7 @@ def ask_to_continue(text: str | None = None, default_yes: bool = True) -> bool:
 
 def retry_interactive_command(
         cmd_args: list[str],
+        *,
         pikspect: bool = False,
         conflicts: list[list[str]] | None = None,
 ) -> bool:
@@ -211,6 +211,7 @@ def retry_interactive_command(
 
 def retry_interactive_command_or_exit(
         cmd_args: list[str],
+        *,
         pikspect: bool = False,
         conflicts: list[list[str]] | None = None,
 ) -> None:

@@ -20,11 +20,9 @@ class NewsTest(TestCase):
         with open_file(News.CACHE_FILE, 'w') as news_fd:
             news_fd.write("Fri, 03 May 2018 20:27:33 +0000")
 
-        intercepted: InterceptSysOutput
-        with InterceptSysOutput() as _intercepted:
+        with InterceptSysOutput() as intercepted:
             news = News()
             news.fetch_latest()
             news.print_news()
-            intercepted = _intercepted
 
         self.assertGreater(len(intercepted.stdout_text.splitlines()), 4)

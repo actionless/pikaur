@@ -197,12 +197,11 @@ def pikaur(
 
     log_stderr(color_line('\n => ', 10, force=True) + ' '.join(new_args))
 
-    intercepted: InterceptSysOutput
     try:
         with InterceptSysOutput(
                 capture_stderr=capture_stderr,
                 capture_stdout=capture_stdout
-        ) as _intercepted:
+        ) as intercepted:
             try:
 
                 # re-parse args:
@@ -218,8 +217,6 @@ def pikaur(
 
             except FakeExit:
                 pass
-            finally:
-                intercepted = _intercepted
     except Exception as exc:
         log_stderr(str(exc))
 

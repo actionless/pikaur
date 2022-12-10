@@ -6,7 +6,7 @@ from urllib import parse
 from urllib.parse import quote
 
 from .config import PikaurConfig
-from .core import DataType, get_chunks
+from .core import DataType
 from .exceptions import AURError
 from .progressbar import ThreadSafeProgressBar
 from .urllib import get_gzip_from_url, get_json_from_url
@@ -122,14 +122,18 @@ def aur_rpc_search_name_desc(search_query: str) -> list[AURPackageInfo]:
     ]
 
 
-def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
+def _get_aur_rpc_info_url(search_queries: list[str]) -> str:
     uri = parse.urlencode({
         'v': 5,
         'type': 'info',
     })
     for package in search_queries:
         uri += '&arg[]=' + quote(strip_aur_repo_name(package))
-    url = construct_aur_rpc_url_from_uri(uri)
+    return construct_aur_rpc_url_from_uri(uri)
+
+
+def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
+    url = _get_aur_rpc_info_url(search_queries=search_queries)
     result_json = get_json_from_url(url)
     if 'error' in result_json:
         raise AURError(url=url, error=result_json['error'])
@@ -143,9 +147,8 @@ def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
 
 
 def aur_rpc_info_with_progress(
-        args: tuple[list[str], int, bool]
+        search_queries: list[str], *, progressbar_length: int, with_progressbar: bool
 ) -> list[AURPackageInfo]:
-    search_queries, progressbar_length, with_progressbar = args
     result = aur_rpc_info(search_queries)
     if with_progressbar:
         progressbar = ThreadSafeProgressBar.get(
@@ -161,6 +164,22 @@ def aur_web_packages_list() -> list[str]:
 
 
 _AUR_PKGS_FIND_CACHE: dict[str, AURPackageInfo] = {}
+
+
+MAX_URL_LENTH = 8177  # default value in many web servers
+
+
+def get_max_pkgs_chunks(package_names: list[str]) -> list[list[str]]:
+    chunks = []
+    chunk: list[str] = []
+    pkgs_to_do = package_names[::]
+    while pkgs_to_do:
+        if len(_get_aur_rpc_info_url(chunk + [pkgs_to_do[0]])) < MAX_URL_LENTH:
+            chunk.append(pkgs_to_do.pop(0))
+        else:
+            chunks.append(chunk)
+            chunk = []
+    return chunks
 
 
 def find_aur_packages(
@@ -179,11 +198,13 @@ def find_aur_packages(
 
     if package_names:
         with ThreadPool() as pool:
-            search_chunks = list(get_chunks(package_names, chunk_size=200))
+            search_chunks = get_max_pkgs_chunks(package_names)
             requests = [
-                pool.apply_async(aur_rpc_info_with_progress, [
-                    (chunk, len(search_chunks), with_progressbar, )
-                ])
+                pool.apply_async(aur_rpc_info_with_progress, [], {
+                    "search_queries": chunk,
+                    "progressbar_length": len(search_chunks),
+                    "with_progressbar": with_progressbar
+                })
                 for chunk in search_chunks
             ]
             pool.close()

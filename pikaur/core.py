@@ -9,7 +9,7 @@ import sys
 import tempfile
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import IO, TYPE_CHECKING, Any, Callable, Iterable, TypeVar
+from typing import IO, TYPE_CHECKING, Any, Callable, TypeVar
 
 import pyalpm
 
@@ -350,25 +350,6 @@ def remove_dir(dir_path: str) -> None:
         shutil.rmtree(dir_path)
     except PermissionError:
         interactive_spawn(sudo(['rm', '-rf', dir_path]))
-
-
-ChunkT = TypeVar('ChunkT')
-
-
-def get_chunks(iterable: Iterable[ChunkT], chunk_size: int) -> Iterable[list[ChunkT]]:
-    if chunk_size < 1:
-        raise ValueError("`chunk_size` can't be smaller than 1.")
-    result = []
-    index = 0
-    for item in iterable:
-        result.append(item)
-        index += 1
-        if index == chunk_size:
-            yield result
-            result = []
-            index = 0
-    if result:
-        yield result
 
 
 def get_editor() -> list[str] | None:

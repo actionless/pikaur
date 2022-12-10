@@ -5,7 +5,7 @@
 from typing import Any
 
 from pikaur.aur import find_aur_packages
-from pikaur.core import ComparableType, DataType, InstallInfo, PackageSource, get_chunks
+from pikaur.core import ComparableType, DataType, InstallInfo, PackageSource
 from pikaur.pacman import PackageDB
 from pikaur_test.helpers import PikaurTestCase
 
@@ -134,22 +134,3 @@ class InstallInfoTest(PikaurTestCase):
     def test_package_source(self):
         self.assertEqual(self.repo_install_info.package_source, PackageSource.REPO)
         self.assertEqual(self.aur_install_info.package_source, PackageSource.AUR)
-
-
-class MiscCoreFuncsTest(PikaurTestCase):
-
-    def test_get_chunks(self):
-        chungus = [1, 2, 3, 4, 5]
-        for chunk_size, result in (
-            (1, [[1], [2], [3], [4], [5]]),
-            (2, [[1, 2], [3, 4], [5]]),
-            (3, [[1, 2, 3], [4, 5]]),
-            (5, [[1, 2, 3, 4, 5]]),
-        ):
-            self.assertEqual(
-                list(get_chunks(chungus, chunk_size=chunk_size)),
-                result
-            )
-        for chunk_size in (0, -1, ):
-            with self.assertRaises(ValueError):
-                list(get_chunks(chungus, chunk_size))

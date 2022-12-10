@@ -179,6 +179,8 @@ def get_max_pkgs_chunks(package_names: list[str]) -> list[list[str]]:
         else:
             chunks.append(chunk)
             chunk = []
+    if chunk:
+        chunks.append(chunk)
     return chunks
 
 

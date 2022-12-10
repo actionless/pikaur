@@ -7,7 +7,7 @@ from typing import Any
 from pikaur.aur import find_aur_packages
 from pikaur.core import ComparableType, DataType, InstallInfo, PackageSource
 from pikaur.pacman import PackageDB
-from pikaur_test.helpers import PikaurTestCase
+from pikaur_test.helpers import InterceptSysOutput, PikaurTestCase
 
 
 class ComparableTypeTest(PikaurTestCase):
@@ -104,6 +104,18 @@ class DataTypeTest(PikaurTestCase):
         a1 = self.DataClass1(foo=1, bar='a')
         with self.assertRaises(TypeError):
             a1.baz = 'baz'  # pylint: disable=attribute-defined-outside-init
+
+    def test_extra_properties(self):
+        with InterceptSysOutput(capture_stderr=True) as intercepted:
+            a1 = self.DataClass1(
+                foo=1, bar='a',
+                spam='bzzzzzz',
+                ignore_extra_properties=True
+            )
+        self.assertIn('unexpected key', intercepted.stderr_text.lower())
+        self.assertEqual(a1.foo, 1)
+        self.assertEqual(a1.bar, 'a')
+        self.assertEqual(a1.spam, 'bzzzzzz')  # pylint: disable=no-member
 
 
 class InstallInfoTest(PikaurTestCase):

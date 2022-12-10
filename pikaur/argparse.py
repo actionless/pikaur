@@ -146,13 +146,14 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 # if there is no explicit argument, try to match the
                 # optional's string arguments with the following strings
                 # if successful, exit the loop
-                start = start_index + 1
-                selected_patterns = arg_strings_pattern[start:]
-                arg_count = match_argument(action, selected_patterns)
-                stop = start + arg_count
-                args = arg_strings[start:stop]
-                action_tuples.append((action, args, option_string))
-                break
+                else:
+                    start = start_index + 1
+                    selected_patterns = arg_strings_pattern[start:]
+                    arg_count = match_argument(action, selected_patterns)
+                    stop = start + arg_count
+                    args = arg_strings[start:stop]
+                    action_tuples.append((action, args, option_string))
+                    break
 
             # add the Optional to the list and return the index at which
             # the Optional's string args stopped

@@ -32,7 +32,7 @@ def clean_aur_cache() -> None:
                 print_stdout(translate("removing all files from cache..."))
                 remove_dir(directory)
         else:
-            print_stdout(translate("Directory is empty:"))
+            print_stdout(translate("Directory is empty."))
 
 
 def clean_repo_cache() -> None:

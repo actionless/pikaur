@@ -14,7 +14,6 @@ class PikaurTranslation():
         return cls.translation
 
 
-
 def translate(msg: str) -> str:
     return PikaurTranslation.get().gettext(msg)
 

@@ -25,9 +25,13 @@ WRITE_DB = bool(os.environ.get('WRITE_DB'))
 
 if WRITE_DB:
     # pylint:disable=protected-access
-    from pikaur.config import CONFIG_PATH, PikaurConfig
+    import shutil
 
+    from pikaur.config import PikaurConfig, get_config_path
+
+    CONFIG_PATH = get_config_path()
     if os.path.exists(CONFIG_PATH):
+        shutil.copy(CONFIG_PATH, f'{CONFIG_PATH}.pikaur_test_bak')
         os.unlink(CONFIG_PATH)
     PikaurConfig._config = None  # type: ignore[assignment]
 

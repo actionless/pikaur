@@ -19,34 +19,35 @@ def _info_packages_thread_repo() -> str | None:
     return proc.stdout_text
 
 
-INFO_FIELDS = {
-    "git_url": translate("AUR Git URL"),
-    # "aur_id": translate("id"),
-    "name": translate("Name"),
-    # packagebaseid=translate(""),
-    "packagebase": translate("Package Base"),
-    "version": translate("Version"),
-    "desc": translate("Description"),
-    "url": translate("URL"),
-    "keywords": translate("Keywords"),
-    "pkg_license": translate("Licenses"),
-    "groups": translate("Groups"),
-    "provides": translate("Provides"),
-    "depends": translate("Depends On"),
-    "optdepends": translate("Optional Deps"),
-    "makedepends": translate("Make Deps"),
-    "checkdepends": translate("Check Deps"),
-    "conflicts": translate("Conflicts With"),
-    "replaces": translate("Replaces"),
-    "submitter": translate("Submitter"),
-    "maintainer": translate("Maintainer"),
-    "comaintainers": translate("Co-maintainers"),
-    "numvotes": translate("Votes"),
-    "popularity": translate("Popularity"),
-    "firstsubmitted": translate("First Submitted"),
-    "lastmodified": translate("Last Updated"),
-    "outofdate": translate("Out-of-date"),
-}
+def get_info_fields() -> dict[str, str]:
+    return {
+        "git_url": translate("AUR Git URL"),
+        # "aur_id": translate("id"),
+        "name": translate("Name"),
+        # packagebaseid=translate(""),
+        "packagebase": translate("Package Base"),
+        "version": translate("Version"),
+        "desc": translate("Description"),
+        "url": translate("URL"),
+        "keywords": translate("Keywords"),
+        "pkg_license": translate("Licenses"),
+        "groups": translate("Groups"),
+        "provides": translate("Provides"),
+        "depends": translate("Depends On"),
+        "optdepends": translate("Optional Deps"),
+        "makedepends": translate("Make Deps"),
+        "checkdepends": translate("Check Deps"),
+        "conflicts": translate("Conflicts With"),
+        "replaces": translate("Replaces"),
+        "submitter": translate("Submitter"),
+        "maintainer": translate("Maintainer"),
+        "comaintainers": translate("Co-maintainers"),
+        "numvotes": translate("Votes"),
+        "popularity": translate("Popularity"),
+        "firstsubmitted": translate("First Submitted"),
+        "lastmodified": translate("Last Updated"),
+        "outofdate": translate("Out-of-date"),
+    }
 
 
 def _decorate_repo_info_output(output: str) -> str:
@@ -79,10 +80,11 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
 
     aur_pkgs = aur_result[0]
     num_found = len(aur_pkgs)
-    longest_field_length = max(len(field) for field in INFO_FIELDS.values())
+    info_fields = get_info_fields()
+    longest_field_length = max(len(field) for field in info_fields.values())
     for i, aur_pkg in enumerate(aur_pkgs):
         pkg_info_lines = []
-        for key, display_name in INFO_FIELDS.items():
+        for key, display_name in info_fields.items():
             value = getattr(aur_pkg, key, None)
             if key in ['firstsubmitted', 'lastmodified', 'outofdate'] and value:
                 value = datetime.fromtimestamp(value).strftime('%c')

@@ -30,7 +30,17 @@ def color_enabled() -> bool:
 
 class PrintLock():
 
-    print_lock = Lock()
+    _print_lock: Lock | None = None
+
+    @classmethod
+    def get_lock(cls) -> Lock:
+        if not cls._print_lock:
+            cls._print_lock = Lock()
+        return cls._print_lock
+
+    @property
+    def print_lock(self) -> Lock:
+        return self.get_lock()
 
     def __enter__(self) -> None:
         self.print_lock.acquire()

@@ -22,17 +22,33 @@ from .pprint import (
     range_printable,
 )
 
-Y = translate('y')
-N = translate('n')
-
-Y_UP = Y.upper()
-N_UP = N.upper()
 
 _debug = create_debug_logger('prompt')
 _debug_nolock = create_debug_logger('prompt_nolock', lock=False)
 
 
-def read_answer_from_tty(question: str, answers: Sequence[str] = (Y_UP, N, )) -> str:
+class Answers():
+
+    _init_done: bool = False
+    Y: str  # pylint: disable=invalid-name
+    N: str  # pylint: disable=invalid-name
+    Y_UP: str
+    N_UP: str
+
+    @classmethod
+    def _do_init(cls) -> None:
+        if not cls._init_done:
+            cls.Y = translate('y')
+            cls.N = translate('n')
+            cls.Y_UP = cls.Y.upper()
+            cls.N_UP = cls.N.upper()
+            cls._init_done = True
+
+    def __init__(self)-> None:
+        self._do_init()
+
+
+def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) -> str:
     """
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
@@ -40,6 +56,8 @@ def read_answer_from_tty(question: str, answers: Sequence[str] = (Y_UP, N, )) ->
     Invalid answer will return an empty string.
     """
     default = ' '
+    all_answers = Answers()
+    answers = answers or (all_answers.Y_UP, all_answers.N, )
 
     for letter in answers:
         if letter.isupper():
@@ -169,11 +187,18 @@ def ask_to_continue(text: str | None = None, *, default_yes: bool = True) -> boo
         print_stderr(f'{text} {default_option}')
         return default_yes
 
-    prompt = text + (f' [{Y_UP}/{N}] ' if default_yes else f' [{Y}/{N_UP}] ')
-    answers = Y_UP + N if default_yes else Y + N_UP
+    all_answers = Answers()
+    prompt = text + (
+        f' [{all_answers.Y_UP}/{all_answers.N}] ' if default_yes else
+        f' [{all_answers.Y}/{all_answers.N_UP}] '
+    )
+    answers = (
+        (all_answers.Y_UP + all_answers.N) if default_yes else
+        (all_answers.Y + all_answers.N_UP)
+    )
 
     answer = get_input(prompt, answers)
-    return (answer == Y) or (default_yes and answer == '')
+    return (answer == all_answers.Y) or (default_yes and answer == '')
 
 
 def retry_interactive_command(

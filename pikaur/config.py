@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 DEFAULT_CONFIG_ENCODING = 'utf-8'
 
 
-RUNNING_AS_ROOT = os.geteuid() == 0
+RUNNING_AS_ROOT = os.geteuid() == 0  # @TODO: could global var be avoided here?
 
 
 VERSION = '1.14.5-dev'

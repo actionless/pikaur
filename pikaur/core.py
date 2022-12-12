@@ -14,7 +14,7 @@ from typing import IO, TYPE_CHECKING, Any, Callable, TypeVar
 import pyalpm
 
 from .args import parse_args
-from .config import PikaurConfig
+from .config import PikaurConfig, RUNNING_AS_ROOT
 from .i18n import translate
 from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 
@@ -260,7 +260,7 @@ def joined_spawn(
 
 
 def running_as_root() -> bool:
-    return os.geteuid() == 0
+    return RUNNING_AS_ROOT
 
 
 def isolate_root_cmd(

@@ -15,8 +15,17 @@ if TYPE_CHECKING:
     from .srcinfo import SrcInfo
 
 
-AUR_BASE_URL = PikaurConfig().network.AurUrl.get_str()
 MAX_URL_LENGTH = 8177  # default value in many web servers
+
+
+class AurBaseUrl:
+    aur_base_url: str | None = None
+
+    @classmethod
+    def get(cls) -> str:
+        if not cls.aur_base_url:
+            cls.aur_base_url = PikaurConfig().network.AurUrl.get_str()
+        return cls.aur_base_url
 
 
 class AURPackageInfo(DataType):
@@ -50,7 +59,7 @@ class AURPackageInfo(DataType):
 
     @property
     def git_url(self) -> str:
-        return f'{AUR_BASE_URL}/{self.packagebase}.git'
+        return f'{AurBaseUrl.get()}/{self.packagebase}.git'
 
     def __init__(self, **kwargs: Any) -> None:
         for aur_api_name, pikaur_class_name in (
@@ -91,7 +100,7 @@ class AURPackageInfo(DataType):
 
 
 def construct_aur_rpc_url_from_uri(uri: str) -> str:
-    return AUR_BASE_URL + '/rpc/?' + uri
+    return AurBaseUrl.get() + '/rpc/?' + uri
 
 
 def construct_aur_rpc_url_from_params(params: dict[str, str | int]) -> str:
@@ -167,7 +176,7 @@ class AurPackageListCache:
     @classmethod
     def get(cls) -> list[str]:
         if not cls.cache:
-            cls.cache = get_gzip_from_url(AUR_BASE_URL + '/packages.gz').splitlines()[1:]
+            cls.cache = get_gzip_from_url(AurBaseUrl.get() + '/packages.gz').splitlines()[1:]
         return cls.cache
 
 
@@ -251,7 +260,7 @@ def find_aur_packages(
 
 
 def get_repo_url(package_base_name: str) -> str:
-    return f'{AUR_BASE_URL}/{package_base_name}.git'
+    return f'{AurBaseUrl.get()}/{package_base_name}.git'
 
 
 def get_all_aur_packages() -> list[AURPackageInfo]:

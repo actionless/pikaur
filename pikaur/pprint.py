@@ -10,8 +10,8 @@ from typing import Any, TextIO
 from .args import parse_args
 from .i18n import translate
 
+
 PADDING = 4
-PRINT_LOCK = Lock()
 
 
 def color_enabled() -> bool:
@@ -30,12 +30,14 @@ def color_enabled() -> bool:
 
 class PrintLock():
 
+    print_lock = Lock()
+
     def __enter__(self) -> None:
-        PRINT_LOCK.acquire()
+        self.print_lock.acquire()
 
     def __exit__(self, *_exc_details: Any) -> None:
-        if PRINT_LOCK.locked():
-            PRINT_LOCK.release()
+        if self.print_lock.locked():
+            self.print_lock.release()
 
     def __del__(self) -> None:
         self.__exit__()

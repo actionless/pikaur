@@ -124,7 +124,9 @@ PACMAN_APPEND_OPTS: ArgSchema = [
 def get_pikaur_long_opts() -> list[str]:
     return [
         long_opt.replace('-', '_')
-        for _short_opt, long_opt, _default in get_pikaur_bool_opts() + get_pikaur_str_opts()
+        for _short_opt, long_opt, _default in (
+            get_pikaur_bool_opts() + get_pikaur_str_opts() + get_pikaur_count_opts()
+        )
     ]
 
 

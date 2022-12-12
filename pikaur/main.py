@@ -22,9 +22,9 @@ from .config import (
     _OLD_AUR_REPOS_CACHE_PATH,
     AUR_REPOS_CACHE_PATH,
     CACHE_ROOT,
-    CONFIG_PATH,
     DATA_ROOT,
     PikaurConfig,
+    get_config_path
 )
 from .core import (
     DEFAULT_INPUT_ENCODING,
@@ -259,7 +259,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
                 for arg in restart_args
             )
             if not config_overridden:
-                restart_args += ['--pikaur-config', CONFIG_PATH]
+                restart_args += ['--pikaur-config', get_config_path()]
             sys.exit(interactive_spawn(
                 sudo(restart_args)
             ).returncode)

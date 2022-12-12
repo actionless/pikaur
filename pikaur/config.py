@@ -78,9 +78,6 @@ def get_config_path() -> str:
     )
 
 
-CONFIG_PATH = get_config_path()
-
-
 CONFIG_SCHEMA: dict[str, dict[str, 'ConfigValueType']] = {
     'sync': {
         'AlwaysShowPkgOrigin': {
@@ -319,7 +316,7 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
     if need_write:
         if not os.path.exists(CONFIG_ROOT):
             os.makedirs(CONFIG_ROOT)
-        with open(CONFIG_PATH, 'w', encoding=DEFAULT_CONFIG_ENCODING) as configfile:
+        with open(get_config_path(), 'w', encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
 
 
@@ -382,10 +379,11 @@ class PikaurConfig():
     @classmethod
     def get_config(cls) -> configparser.ConfigParser:
         if not getattr(cls, '_config', None):
+            config_path = get_config_path()
             cls._config = configparser.ConfigParser()
-            if not os.path.exists(CONFIG_PATH):
+            if not os.path.exists(config_path):
                 write_config()
-            cls._config.read(CONFIG_PATH, encoding=DEFAULT_CONFIG_ENCODING)
+            cls._config.read(config_path, encoding=DEFAULT_CONFIG_ENCODING)
             cls.migrate_config()
             write_config(config=cls._config)
             cls.validate_config()

@@ -16,7 +16,6 @@ sys.path.insert(1, PARENT_DIR)
 from pikaur.pacman import PackageDB  # noqa: E402
 from pikaur_test.helpers import PikaurDbTestCase  # noqa: E402
 
-
 # BUILD_ROOT = '/tmp/'
 
 

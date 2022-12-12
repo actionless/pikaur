@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 
 AUR_BASE_URL = PikaurConfig().network.AurUrl.get_str()
+MAX_URL_LENGTH = 8177  # default value in many web servers
 
 
 class AURPackageInfo(DataType):
@@ -159,14 +160,32 @@ def aur_rpc_info_with_progress(
     return result
 
 
-def aur_web_packages_list() -> list[str]:
-    return get_gzip_from_url(AUR_BASE_URL + '/packages.gz').splitlines()[1:]
+class AurPackageListCache:
+
+    cache: list[str] = []
+
+    @classmethod
+    def get(cls) -> list[str]:
+        if not cls.cache:
+            cls.cache = get_gzip_from_url(AUR_BASE_URL + '/packages.gz').splitlines()[1:]
+        return cls.cache
 
 
-_AUR_PKGS_FIND_CACHE: dict[str, AURPackageInfo] = {}
+class AurPackageSearchCache:
+
+    cache: dict[str, AURPackageInfo] = {}
+
+    @classmethod
+    def put(cls, pkg: AURPackageInfo) -> None:
+        cls.cache[pkg.name] = pkg
+
+    @classmethod
+    def get(cls, pkg_name: str) -> AURPackageInfo | None:
+        return cls.cache.get(pkg_name)
 
 
-MAX_URL_LENGTH = 8177  # default value in many web servers
+def get_all_aur_names() -> list[str]:
+    return AurPackageListCache.get()
 
 
 def get_max_pkgs_chunks(package_names: list[str]) -> list[list[str]]:
@@ -193,7 +212,7 @@ def find_aur_packages(
     num_packages = len(package_names)
     json_results = []
     for package_name in package_names[:]:
-        aur_pkg = _AUR_PKGS_FIND_CACHE.get(package_name)
+        aur_pkg = AurPackageSearchCache.get(package_name)
         if aur_pkg:
             json_results.append(aur_pkg)
             package_names.remove(package_name)
@@ -214,7 +233,7 @@ def find_aur_packages(
             pool.join()
             for result in results:
                 for aur_pkg in result:
-                    _AUR_PKGS_FIND_CACHE[aur_pkg.name] = aur_pkg
+                    AurPackageSearchCache.put(aur_pkg)
                     if aur_pkg.name in package_names:
                         json_results.append(aur_pkg)
 
@@ -233,17 +252,6 @@ def find_aur_packages(
 
 def get_repo_url(package_base_name: str) -> str:
     return f'{AUR_BASE_URL}/{package_base_name}.git'
-
-
-_AUR_PKGS_LIST_CACHE: list[str] = []
-
-
-def get_all_aur_names() -> list[str]:
-    # @TODO: refactor to singleton class
-    global _AUR_PKGS_LIST_CACHE  # pylint: disable=global-statement
-    if not _AUR_PKGS_LIST_CACHE:
-        _AUR_PKGS_LIST_CACHE = aur_web_packages_list()
-    return _AUR_PKGS_LIST_CACHE
 
 
 def get_all_aur_packages() -> list[AURPackageInfo]:

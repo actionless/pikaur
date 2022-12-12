@@ -14,6 +14,7 @@ from .config import PikaurConfig
 from .core import DataType, PackageSource, spawn, sudo
 from .exceptions import DependencyError, PackagesNotFoundInRepoError
 from .i18n import translate
+from .lock import FancyLock
 from .pacman_i18n import _p
 from .pprint import color_enabled, create_debug_logger, print_error, print_stderr
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
@@ -115,34 +116,12 @@ def get_pkg_id(pkg: 'AURPackageInfo | pyalpm.Package') -> str:
     return f"aur/{pkg.name}"
 
 
-DB_LOCK_REPO = Lock()
-DB_LOCK_LOCAL = Lock()
+class DbLockRepo(FancyLock):
+    pass
 
 
-class DbLockRepo():
-
-    def __enter__(self) -> None:
-        DB_LOCK_REPO.acquire()
-
-    def __exit__(self, *_exc_details: Any) -> None:
-        if DB_LOCK_REPO.locked():
-            DB_LOCK_REPO.release()
-
-    def __del__(self) -> None:
-        self.__exit__()
-
-
-class DbLockLocal():
-
-    def __enter__(self) -> None:
-        DB_LOCK_LOCAL.acquire()
-
-    def __exit__(self, *_exc_details: Any) -> None:
-        if DB_LOCK_LOCAL.locked():
-            DB_LOCK_LOCAL.release()
-
-    def __del__(self) -> None:
-        self.__exit__()
+class DbLockLocal(FancyLock):
+    pass
 
 
 def get_db_lock(package_source: PackageSource) -> type[DbLockRepo] | type[DbLockLocal]:

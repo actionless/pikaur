@@ -4,11 +4,11 @@ import shutil
 import sys
 import typing as t
 from string import printable
-from threading import Lock
 from typing import Any, TextIO
 
 from .args import parse_args
 from .i18n import translate
+from .lock import FancyLock
 
 
 PADDING = 4
@@ -28,29 +28,8 @@ def color_enabled() -> bool:
     return False
 
 
-class PrintLock():
-
-    _print_lock: Lock | None = None
-
-    @classmethod
-    def get_lock(cls) -> Lock:
-        if not cls._print_lock:
-            cls._print_lock = Lock()
-        return cls._print_lock
-
-    @property
-    def print_lock(self) -> Lock:
-        return self.get_lock()
-
-    def __enter__(self) -> None:
-        self.print_lock.acquire()
-
-    def __exit__(self, *_exc_details: Any) -> None:
-        if self.print_lock.locked():
-            self.print_lock.release()
-
-    def __del__(self) -> None:
-        self.__exit__()
+class PrintLock(FancyLock):
+    pass
 
 
 def _print(

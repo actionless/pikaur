@@ -354,7 +354,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
                     self.pty_in.write(char)
                     self.pty_in.flush()
             except ValueError as exc:
-                print(exc)
+                print(exc)  # noqa: T201
             self.write_something(char.encode(DEFAULT_INPUT_ENCODING))
 
 

@@ -110,7 +110,7 @@ class InterceptSysOutput():
         self.capture_stderr = capture_stderr
 
         class PrintInteractiveSpawn(InteractiveSpawn):
-            def __init__(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+            def __init__(self, *args: Any, **kwargs: Any) -> None:
                 kwargs.setdefault('stdout', sys.stdout)
                 kwargs.setdefault('stderr', sys.stderr)
                 super().__init__(*args, **kwargs)

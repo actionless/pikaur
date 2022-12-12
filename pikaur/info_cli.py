@@ -8,7 +8,7 @@ from .core import spawn
 from .i18n import translate
 from .pacman import get_pacman_command, refresh_pkg_db_if_needed
 from .pacman_i18n import _p
-from .pprint import ColorsHighlight, bold_line, color_line
+from .pprint import ColorsHighlight, bold_line, color_line, print_stdout
 
 
 def _info_packages_thread_repo() -> str | None:
@@ -75,7 +75,7 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
         aur_result = aur_thread.get()
 
     if repo_result:
-        print(_decorate_repo_info_output(repo_result), end='')
+        print_stdout(_decorate_repo_info_output(repo_result), end='')
 
     aur_pkgs = aur_result[0]
     num_found = len(aur_pkgs)
@@ -90,7 +90,7 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
                 value = ', '.join(value) or translate("None")
             key_display = bold_line(_rightpad(display_name, longest_field_length + 1))
             pkg_info_lines.append(f'{key_display}: {value}')
-        print(
+        print_stdout(
             _decorate_aur_info_output('\n'.join(pkg_info_lines)) +
             ('\n' if i + 1 < num_found else '')
         )

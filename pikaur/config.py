@@ -427,7 +427,7 @@ class PikaurConfig():
                     old_value_was_removed = True
 
                 if old_value_was_migrated or old_value_was_removed:
-                    print(' '.join([
+                    print(' '.join([  # noqa: T201
                         '::',
                         translate("warning:"),
                         translate('Migrating [{}]{} config option to [{}]{} = "{}"...').format(
@@ -442,7 +442,7 @@ class PikaurConfig():
     def validate_config(cls) -> None:
         pacman_path = cls._config['misc']['PacmanPath']
         if pacman_path == 'pikaur' or pacman_path.endswith('/pikaur'):
-            print("BAM! I am a shell bomb.")
+            print("BAM! I am a shell bomb.")  # noqa: T201
             sys.exit(1)
 
     def __getattr__(self, attr: str) -> PikaurConfigSection:

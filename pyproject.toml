@@ -35,27 +35,24 @@ ignore = [
 	#ENABLE BACK IN FEW HOURS:
 	"RET504",
 
-
 	# enable back later:
-	#"M001",
-	"Q000",
+	"Q000",  # force double-quotes
+
+	"C901",  # "too complex"
+	"ERA001", # commented out code
+
+	"ANN101",  # annotate self
+	"ANN102",  # annotate cls
+	"ANN401",  # disable Any
+
+	"BLE001",  # disallow catching Exception
+
+	# docstrings
 	"D100",
 	"D101",
 	"D102",
 	"D103",
-	#"ANN001",
-	"ANN401", # ?
-	"C901",  # "too complex"
-	"ERA001", # commented out code
-
-	"ANN002",
-	"ANN003",
-	"ANN101",
-	"ANN102",
-	"ANN204",
-
-	"BLE001",
-
+	#
 	"D105",
 	"D107",
 	"D203", # conflicts with D211
@@ -64,14 +61,16 @@ ignore = [
 	"D400",
 	"D415",
 
-	"T201",
-	"T203",
 ]
+
 [tool.ruff.per-file-ignores]
-#"__init__.py" = ["E402"]
 "pikaur_test/test_*.py" = [
 	"ANN201",
 	"ANN206",
+	"T201",
+]
+"maintenance_scripts/*.py" = [
+	"T201",
 ]
 "maintenance_scripts/pikaman.py" = [
 	"ARG002",

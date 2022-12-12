@@ -39,7 +39,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
     name: str
     section: int
 
-    def __init__(self, name: str = 'test', section: int = 1):
+    def __init__(self, name: str = 'test', section: int = 1) -> None:
         super().__init__()
         self.name = name
         self.section = section

@@ -2,8 +2,8 @@
 
 import sys
 from argparse import Namespace
-from pprint import pprint
-from typing import NoReturn
+from pprint import pformat
+from typing import Any, NoReturn
 
 from .argparse import ArgumentParserWithUnknowns
 from .config import PikaurConfig
@@ -11,6 +11,14 @@ from .i18n import translate, translate_many
 
 ArgSchema = list[tuple[str | None, str, None | bool | str | int]]
 PossibleArgValuesTypes = list[str] | str | bool | int | None
+
+
+def debug(msg: str | None = None) -> None:
+    sys.stderr.write(f'{msg or ""}\n')
+
+
+def debug_format(msg: Any) -> None:
+    debug(pformat(msg))
 
 
 PACMAN_BOOL_OPTS: ArgSchema = [
@@ -293,9 +301,9 @@ class CachedArgs():
 
 
 def debug_args(args: list[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
-    print("Input:")
-    print(args)
-    print()
+    debug("Input:")
+    debug_format(args)
+    debug()
     parsed_dict = vars(parsed_args)
     pikaur_long_opts = get_pikaur_long_opts()
     pacman_long_opts = get_pacman_long_opts()
@@ -309,20 +317,20 @@ def debug_args(args: list[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma:
             pacman_dict[arg] = value
         else:
             misc_args[arg] = value
-    print("PIKAUR parsed args:")
-    pprint(pikaur_dict)
-    print()
-    print("PACMAN parsed args:")
-    pprint(pacman_dict)
-    print()
-    print("MISC parsed args:")
-    pprint(misc_args)
-    print()
-    print("Reconstructed pacman args:")
-    print(reconstruct_args(parsed_args))
-    print()
-    print("Reconstructed pacman args without -S:")
-    print(reconstruct_args(parsed_args, ignore_args=['sync']))
+    debug("PIKAUR parsed args:")
+    debug_format(pikaur_dict)
+    debug()
+    debug("PACMAN parsed args:")
+    debug_format(pacman_dict)
+    debug()
+    debug("MISC parsed args:")
+    debug_format(misc_args)
+    debug()
+    debug("Reconstructed pacman args:")
+    debug_format(reconstruct_args(parsed_args))
+    debug()
+    debug("Reconstructed pacman args without -S:")
+    debug_format(reconstruct_args(parsed_args, ignore_args=['sync']))
     sys.exit(0)
 
 
@@ -373,12 +381,12 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
     try:
         parsed_args.validate()
     except IncompatibleArgumentsError as exc:
-        print(translate(":: error: options {} can't be used together.").format(
+        debug(translate(":: error: options {} can't be used together.").format(
             ", ".join([f"'--{opt}'" for opt in exc.args])
         ))
         sys.exit(1)
     except MissingArgumentError as exc:
-        print(
+        debug(
             translate_many(
                 ":: error: option {} can't be used without {}.",
                 ":: error: options {} can't be used without {}.",

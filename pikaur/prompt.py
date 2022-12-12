@@ -129,7 +129,7 @@ def get_input(
 class NotANumberInputError(Exception):
     character: str
 
-    def __init__(self, character: str):
+    def __init__(self, character: str) -> None:
         self.character = character
         super().__init__(f'"{character} is not a number')
 

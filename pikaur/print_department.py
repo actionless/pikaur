@@ -21,6 +21,7 @@ from .pprint import (
     format_paragraph,
     get_term_width,
     print_stderr,
+    print_stdout,
     print_warning,
 )
 from .version import get_common_version, get_version_diff
@@ -41,8 +42,8 @@ InstallInfoT = TypeVar('InstallInfoT', bound=InstallInfo)
 
 def print_version(pacman_version: str, pyalpm_version: str, *, quiet: bool = False) -> None:
     if quiet:
-        print(f'Pikaur v{VERSION}')
-        print(f'{pacman_version} - pyalpm v{pyalpm_version}')
+        print_stdout(f'Pikaur v{VERSION}')
+        print_stdout(f'{pacman_version} - pyalpm v{pyalpm_version}')
     else:
         year = str(datetime.now().year)
         sys.stdout.write(r"""
@@ -337,7 +338,7 @@ class SysupgradePrettyFormatter:
         *,
         verbose: bool,
         manual_package_selection: bool
-    ):
+    ) -> None:
         self.color = True
         self.install_info = install_info
         self.verbose = verbose
@@ -724,7 +725,7 @@ def print_package_search_results(
 
         pkg_name = package.name
         if args.quiet:
-            print(f'{idx}{pkg_name}')
+            print_stdout(f'{idx}{pkg_name}')
         else:
 
             repo = color_line('aur/', ColorsHighlight.red)
@@ -795,7 +796,7 @@ def print_package_search_results(
                     ColorsHighlight.black
                 )
 
-            print("{}{}{} {} {}{}{}{}".format(  # pylint: disable=consider-using-f-string
+            print_stdout("{}{}{} {} {}{}{}{}".format(  # pylint: disable=consider-using-f-string
                 idx,
                 repo,
                 bold_line(pkg_name),
@@ -805,5 +806,5 @@ def print_package_search_results(
                 rating,
                 last_updated
             ))
-            print(format_paragraph(f'{package.desc}'))
+            print_stdout(format_paragraph(f'{package.desc}'))
     return sorted_packages

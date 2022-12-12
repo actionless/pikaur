@@ -3,6 +3,7 @@ from .args import get_pikaur_long_opts, parse_args, reconstruct_args
 from .config import PikaurConfig
 from .core import spawn
 from .i18n import translate
+from .pprint import print_stdout
 
 
 def _format_options_help(options: list[tuple[str, str, str]]) -> str:
@@ -97,7 +98,7 @@ def cli_print_help() -> None:
             ('', '--pikaur-debug', translate("show only debug messages specific to pikaur")),
         ]
 
-    print(''.join([
+    print_stdout(''.join([
         pacman_help,
         '\n\n' + translate('Pikaur-specific options:') + '\n' if pikaur_options_help else '',
         _format_options_help(pikaur_options_help),

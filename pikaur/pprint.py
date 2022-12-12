@@ -12,11 +12,10 @@ from .i18n import translate
 
 PADDING = 4
 PRINT_LOCK = Lock()
-ARGS = parse_args()
 
 
 def color_enabled() -> bool:
-    args = ARGS
+    args = parse_args()
     if args.color == 'never':
         return False
     if args.color == 'always':
@@ -141,10 +140,11 @@ def print_error(message: str) -> None:
 
 
 def print_debug(message: Any, *, lock: bool = True) -> None:
-    if not ARGS.pikaur_debug:
+    args = parse_args()
+    if not args.pikaur_debug:
         return
     prefix = translate("debug:")
-    if ARGS.debug:
+    if args.debug:
         # to avoid mixing together with pacman's debug messages:
         prefix = translate("pikaur debug:")
     print_stderr(' '.join([

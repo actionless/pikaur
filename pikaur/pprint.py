@@ -10,7 +10,6 @@ from .args import parse_args
 from .i18n import translate
 from .lock import FancyLock
 
-
 PADDING = 4
 
 

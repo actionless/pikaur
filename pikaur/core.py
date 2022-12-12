@@ -14,7 +14,7 @@ from typing import IO, TYPE_CHECKING, Any, Callable, TypeVar
 import pyalpm
 
 from .args import parse_args
-from .config import PikaurConfig, RUNNING_AS_ROOT
+from .config import RUNNING_AS_ROOT, PikaurConfig
 from .i18n import translate
 from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 

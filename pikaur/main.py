@@ -24,7 +24,7 @@ from .config import (
     CACHE_ROOT,
     DATA_ROOT,
     PikaurConfig,
-    get_config_path
+    get_config_path,
 )
 from .core import (
     DEFAULT_INPUT_ENCODING,

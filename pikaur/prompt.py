@@ -22,7 +22,6 @@ from .pprint import (
     range_printable,
 )
 
-
 _debug = create_debug_logger('prompt')
 _debug_nolock = create_debug_logger('prompt_nolock', lock=False)
 
@@ -44,7 +43,7 @@ class Answers():
             cls.N_UP = cls.N.upper()
             cls._init_done = True
 
-    def __init__(self)-> None:
+    def __init__(self) -> None:
         self._do_init()
 
 

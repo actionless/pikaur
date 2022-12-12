@@ -3,8 +3,7 @@
 import fnmatch
 import re
 from abc import ABCMeta, abstractmethod
-from threading import Lock
-from typing import TYPE_CHECKING, Any, Pattern
+from typing import TYPE_CHECKING, Pattern
 
 import pyalpm
 from pycman.config import PacmanConfig as PycmanConfig

@@ -9,8 +9,9 @@ POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
 MOFILES = $(POFILES:.po=.mo)
 DISTDIR := dist
 
-# A $(which python) is necessary here to avoid a bug in make that would
-# try to execute a directory named "python". See https://savannah.gnu.org/bugs/?57962
+# A $(which python) is necessary here to avoid a bug in make
+# that would try to execute a directory named "python".
+# See https://savannah.gnu.org/bugs/?57962
 PYTHON := $(shell which python)
 ifeq (,$(PYTHON))
 $(error Can't find Python)
@@ -55,7 +56,11 @@ $(DISTDIR)/usr/bin:
 
 $(DISTDIR)/usr/bin/pikaur: $(DISTDIR)/usr/bin
 	sed \
-		-e "s/%PYTHON_BUILD_VERSION%/$$($(PYTHON) -c 'import sys ; print(f"{sys.version_info.major}.{sys.version_info.minor}")')/g" \
+		-e "s/%PYTHON_BUILD_VERSION%/$$(\
+			$(PYTHON) -c \
+				'import sys ; \
+				print(f"{sys.version_info.major}.{sys.version_info.minor}") \
+		')/g" \
 		packaging/usr/bin/pikaur > $@
 	chmod +x $@
 

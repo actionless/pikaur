@@ -11,9 +11,15 @@ DISTDIR := dist
 
 # A $(which python) is necessary here to avoid a bug in make that would
 # try to execute a directory named "python". See https://savannah.gnu.org/bugs/?57962
-PIKAMAN := $(shell which python) ./maintenance_scripts/pikaman.py
+PYTHON := $(shell which python)
+ifeq (,$(PYTHON))
+$(error Can't find Python)
+endif
+
+PIKAMAN := $(PYTHON) ./maintenance_scripts/pikaman.py
 README_FILE := README.md
 MAN_FILE := pikaur.1
+
 
 all: locale man bin
 
@@ -49,7 +55,7 @@ $(DISTDIR)/usr/bin:
 
 $(DISTDIR)/usr/bin/pikaur: $(DISTDIR)/usr/bin
 	sed \
-		-e "s/%PYTHON_BUILD_VERSION%/$$(python -c 'import sys ; print(f"{sys.version_info.major}.{sys.version_info.minor}")')/g" \
+		-e "s/%PYTHON_BUILD_VERSION%/$$($(PYTHON) -c 'import sys ; print(f"{sys.version_info.major}.{sys.version_info.minor}")')/g" \
 		packaging/usr/bin/pikaur > $@
 	chmod +x $@
 

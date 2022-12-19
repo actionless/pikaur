@@ -1,5 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
+# pylint: disable=invalid-name
 
 from pikaur_test.helpers import PikaurTestCase, pacman, pikaur
 
@@ -75,6 +76,15 @@ class CliTest(PikaurTestCase):
         result_all = pikaur("-Ssq --aur mailman w").stdout.splitlines()
         self.assertIn("mailman-rss", result_all)
         self.assertNotIn("mailman", result_all)
+
+    def test_search_multiword_too_filter_namesonly(self):
+        result_all = pikaur("-Ssq --aur mailman w").stdout.splitlines()
+        self.assertIn("mailman-rss", result_all)
+        result_namesonly_w = pikaur("-Ssq --aur mailman w --namesonly").stdout.splitlines()
+        self.assertEqual(len(result_namesonly_w), 0)
+        result_namesonly_x = pikaur("-Ssq --aur mailman x --namesonly").stdout.splitlines()
+        self.assertNotIn("mailman-rss", result_namesonly_x)
+        self.assertIn("mailman3-public-inbox", result_namesonly_x)
 
     def test_list(self):
         result_all = pikaur("-Ssq").stdout.splitlines()

@@ -32,12 +32,19 @@ def package_search_thread_repo(query: str) -> list[pyalpm.Package]:
 
 def filter_aur_results(
         results: dict[str, list[AURPackageInfo]],
-        query: str
+        query: str,
+        *,
+        names_only: bool = False,
 ) -> dict[str, list[AURPackageInfo]]:
     filtered_results: dict[str, list[AURPackageInfo]] = {}
     for _q, pkgs in results.items():
         for pkg in pkgs:
-            if query in pkg.name or query in (pkg.desc or ""):
+            if (
+                    query in pkg.name
+            ) or (
+                not names_only and
+                (query in (pkg.desc or ""))
+            ):
                 filtered_results.setdefault(_q, []).append(pkg)
     return filtered_results
 
@@ -76,7 +83,7 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                         raise
             pool.join()
         for query in use_as_filters:
-            result = filter_aur_results(result, query)
+            result = filter_aur_results(result, query, names_only=args.namesonly)
         if args.namesonly:
             for subindex, subresult in result.items():
                 result[subindex] = [

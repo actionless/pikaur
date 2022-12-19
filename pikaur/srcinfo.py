@@ -76,7 +76,7 @@ class SrcInfo():
         values = self.get_values(field)
         value = values[0] if values else None
         if value is None:
-            value = fallback
+            return fallback
         return value
 
     def get_install_script(self) -> str | None:

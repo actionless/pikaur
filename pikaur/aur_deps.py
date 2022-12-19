@@ -20,16 +20,13 @@ def check_deps_versions(
         version_matchers: dict[str, VersionMatcher],
         source: PackageSource
 ) -> list[str]:
-    not_found_deps: list[str] = []
     deps_lines = [
         version_matchers[dep_name].line
         for dep_name in deps_pkg_names
     ]
     if source == PackageSource.REPO:
-        not_found_deps = PackageDB.get_not_found_repo_packages(deps_lines)
-    else:
-        not_found_deps = PackageDB.get_not_found_local_packages(deps_lines)
-    return not_found_deps
+        return PackageDB.get_not_found_repo_packages(deps_lines)
+    return PackageDB.get_not_found_local_packages(deps_lines)
 
 
 def get_aur_pkg_deps_and_version_matchers(aur_pkg: AURPackageInfo) -> dict[str, VersionMatcher]:

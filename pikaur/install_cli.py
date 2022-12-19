@@ -430,14 +430,12 @@ class InstallPackagesCLI():
                 color_line('::', ColorsHighlight.blue),
                 bold_line(translate('Proceed with installation? [Y/n] ')),
                 color_line('::', ColorsHighlight.blue),
-                bold_line(translate('[v]iew package details   [m]anually select packages')))
-
-            answer = get_input(
+                bold_line(translate('[v]iew package details   [m]anually select packages'))
+            )
+            return get_input(
                 prompt,
                 translate('y').upper() + translate('n') + translate('v') + translate('m')
             )
-
-            return answer
 
         if self.args.noconfirm:
             _print_sysupgrade()

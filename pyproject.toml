@@ -32,7 +32,7 @@ select = [
 	#"RUF100",
 ]
 ignore = [
-	#ENABLE BACK IN FEW HOURS:
+	# https://github.com/charliermarsh/ruff/issues/1290 :
 	"RET504",
 
 	# enable back later:

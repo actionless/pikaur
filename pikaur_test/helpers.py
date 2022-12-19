@@ -264,8 +264,7 @@ class PikaurTestCase(TestCase):
         time_started = time()
         log_stderr(self.separator)
         result = super().run(result)
-        # pylint: disable=consider-using-f-string
-        log_stderr(':: Took {:.2f} seconds'.format(time() - time_started))
+        log_stderr(f':: Took {(time() - time_started):.2f} seconds')
         return result
 
     def setUp(self) -> None:

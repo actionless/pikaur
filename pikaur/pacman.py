@@ -469,10 +469,9 @@ class PackageDB(PackageDBCommon):
             [pkg_name.split(',') for pkg_name in pkg_lines]
             for splitted_pkg_name in splitted_pkg_names
         ])
-        not_found_packages = list({
+        return list({
             vm.pkg_name for vm in not_found_version_matchers
         })
-        return not_found_packages
 
     @classmethod
     def find_repo_package(cls, pkg_name: str) -> pyalpm.Package:

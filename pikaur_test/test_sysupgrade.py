@@ -98,9 +98,7 @@ class SysupgradeTest(PikaurDbTestCase):
 
     @property
     def upgradeable_repo_pkgs_list(self) -> list[str]:
-        query_result = pikaur('-Quq --repo').stdout
-        upgradeable_repo_pkgs = query_result.splitlines()
-        return upgradeable_repo_pkgs
+        return pikaur('-Quq --repo').stdout.splitlines()
 
     @property
     def upgradeable_aur_pkgs_list(self) -> list[str]:

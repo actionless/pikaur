@@ -56,8 +56,7 @@ def get_unicode_from_url(url: str, *, optional: bool = False) -> str:
 
 
 def get_json_from_url(url: str) -> Any:
-    result_json = json.loads(get_unicode_from_url(url))
-    return result_json
+    return json.loads(get_unicode_from_url(url))
 
 
 def get_gzip_from_url(url: str, *, autoretry: bool = True) -> str:
@@ -78,8 +77,7 @@ def get_gzip_from_url(url: str, *, autoretry: bool = True) -> str:
                 sleep(NOCONFIRM_RETRY_INTERVAL)
             return get_gzip_from_url(url)
         raise SysExit(102) from exc
-    text_response = decompressed_bytes_response.decode(DEFAULT_WEB_ENCODING)
-    return text_response
+    return decompressed_bytes_response.decode(DEFAULT_WEB_ENCODING)
 
 
 class ProxyInitSocks5Error(Exception):

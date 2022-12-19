@@ -7,7 +7,6 @@ ARG GITHUB_TOKEN
 ARG GITHUB_RUN_ID
 ARG GITHUB_REF
 ARG MODE=--local
-ARG TESTSUITE=pikaur_test
 
 RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://archlinux.mirror.pcextreme.nl/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
@@ -50,13 +49,15 @@ RUN echo ">>>> Installing opt deps:" && \
 		python-pylint flake8 mypy vulture shellcheck bandit # @TODO: python-coveralls is temporary broken
 #RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-pycodestyle '2.9.1-2' # @TODO: remove it when it fixed
 
+ARG TESTSUITE=all
+ARG TESTS_ONLY=0
 COPY ./pikaur_test /opt/app-build/pikaur_test
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
 COPY .flake8 .pylintrc mypy.ini pyproject.toml /opt/app-build/
 RUN echo ">>>> Starting CI linting:" && \
 	chown -R user /opt/app-build/pikaur_test && \
-	sudo -u user env \
-	./maintenance_scripts/lint.sh
+	if [[ "$TESTS_ONLY" -eq 0 ]] ; then sudo -u user env \
+	./maintenance_scripts/lint.sh ; fi
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
 	GITHUB_ACTIONS=1 \

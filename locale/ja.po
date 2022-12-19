@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-18 20:23+0100\n"
+"POT-Creation-Date: 2022-12-20 00:37+0100\n"
 "PO-Revision-Date: 2020-05-31 11:23+0900\n"
 "Last-Translator: Kasmide <kasmide@zohomail.com>\n"
 "Language: ja\n"
@@ -33,12 +33,12 @@ msgstr ""
 msgid "({} days old)"
 msgstr "({} 日前にビルド)"
 
-#: pikaur/args.py:393
+#: pikaur/args.py:399
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
 msgstr[0] ":: エラー: オプション {} は {} なしでは利用できません。"
 
-#: pikaur/args.py:386
+#: pikaur/args.py:392
 msgid ":: error: options {} can't be used together."
 msgstr ":: エラー: オプション {} は同時に利用できません。"
 
@@ -56,12 +56,12 @@ msgstr[0] "AUR から次のパッケージがインストールされます:"
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "AUR リポジトリのディレクトリは '{old}' から '{new}' に移動しました。"
 
-#: pikaur/search_cli.py:70
+#: pikaur/search_cli.py:77
 #, python-brace-format
 msgid "AUR: Query arg too small '{query}'"
 msgstr "AUR: '{query}' のクエリ文字列が短すぎます"
 
-#: pikaur/search_cli.py:63
+#: pikaur/search_cli.py:70
 #, python-brace-format
 msgid "AUR: Too many package results for '{query}'"
 msgstr "AUR: '{query}' の検索結果が多すぎます"
@@ -74,7 +74,7 @@ msgstr ""
 "`pacman -U <pkg_file>` 実行時と同様のすべての pacman オプション。`pacman -"
 "Uh` で表示できます。"
 
-#: pikaur/pacman.py:539
+#: pikaur/pacman.py:538
 msgid "Because of:"
 msgstr ""
 
@@ -82,12 +82,12 @@ msgstr ""
 msgid "Build directory"
 msgstr "ビルドディレクトリ"
 
-#: pikaur/install_cli.py:925
+#: pikaur/install_cli.py:923
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "'{name}' をビルドできません。"
 
-#: pikaur/install_cli.py:561
+#: pikaur/install_cli.py:559
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
 msgstr "AUR から '{name}' を '{path}' にクローンできません:"
@@ -102,7 +102,7 @@ msgstr "'{from_path}' から '{to_path}' にコピーできません。"
 msgid "Can't create destination directory '{to_path}'."
 msgstr "保存先ディレクトリ '{to_path}' を作成できません。"
 
-#: pikaur/build.py:155
+#: pikaur/build.py:163
 msgid "Can't get package name from PKGBUILD"
 msgstr "PKGBUILD からパッケージ名を取得できません"
 
@@ -111,12 +111,12 @@ msgstr "PKGBUILD からパッケージ名を取得できません"
 msgid "Can't lock {lock_file}: {reason}"
 msgstr ""
 
-#: pikaur/install_cli.py:563
+#: pikaur/install_cli.py:561
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "AUR から '{name}' を '{path}' にプルできません:"
 
-#: pikaur/aur_deps.py:295
+#: pikaur/aur_deps.py:292
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
 msgstr "AUR パッケージ '{pkg}' の依存関係を解決できません:"
@@ -130,7 +130,7 @@ msgstr "チェック依存"
 msgid "Co-maintainers"
 msgstr "メンテナ"
 
-#: pikaur/build.py:727 pikaur/prompt.py:224
+#: pikaur/build.py:736 pikaur/prompt.py:224
 msgid "Command '{}' failed to execute."
 msgstr "コマンド '{}' の実行に失敗。"
 
@@ -154,7 +154,7 @@ msgstr "{} を初期化できませんでした"
 msgid "Could not update {}"
 msgstr "{} を更新できませんでした"
 
-#: pikaur/pacman.py:530
+#: pikaur/pacman.py:529
 msgid "Dependencies can't be satisfied for the following packages:"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr ""
 msgid "Dependencies missing for {}"
 msgstr "{} の依存関係が不足しています"
 
-#: pikaur/install_cli.py:947
+#: pikaur/install_cli.py:945
 msgid "Dependency cycle detected between {}"
 msgstr "依存関係のループが {} の間で検出されました"
 
@@ -190,17 +190,17 @@ msgstr "続行しますか？"
 msgid "Do you want to remove all files?"
 msgstr "すべてのファイルを削除しますか？"
 
-#: pikaur/urllib.py:39 pikaur/urllib.py:70 pikaur/prompt.py:230
+#: pikaur/urllib.py:39 pikaur/urllib.py:69 pikaur/prompt.py:230
 #: pikaur/filelock.py:34
 msgid "Do you want to retry?"
 msgstr "再試行しますか？"
 
-#: pikaur/install_cli.py:793
+#: pikaur/install_cli.py:791
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "パッケージ {name} のビルドファイルの{diff}を表示しますか？"
 
-#: pikaur/install_cli.py:696
+#: pikaur/install_cli.py:694
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "パッケージ {name} の {file} を{edit}しますか？"
@@ -212,16 +212,16 @@ msgstr ""
 "AUR パッケージ {name} {version} を {downgrade_version} にダウングレードしてい"
 "ます"
 
-#: pikaur/build.py:287
+#: pikaur/build.py:295
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "開発版パッケージ {} の最新のソースをダウンロードしています"
 
-#: pikaur/install_cli.py:1112
+#: pikaur/install_cli.py:1110
 msgid "Failed to build following packages:"
 msgstr "次のパッケージのビルドに失敗:"
 
-#: pikaur/build.py:613
+#: pikaur/build.py:622
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr ""
 "インストール済の依存関係のアンインストールに失敗しました、パッケージが一致し"
@@ -253,18 +253,18 @@ msgstr "パッケージ {} の更新を無視"
 msgid "Ignoring package {}"
 msgstr "パッケージ {} を無視"
 
-#: pikaur/install_cli.py:871 pikaur/install_cli.py:887
+#: pikaur/install_cli.py:869 pikaur/install_cli.py:885
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
 msgstr ""
 "パッケージ {pkg} のインストール情報の変更 (もしくは新しい依存関係の検出) があ"
 "りました"
 
-#: pikaur/build.py:402
+#: pikaur/build.py:410
 msgid "Installing already built dependencies for {}"
 msgstr "{} のビルドされた依存関係をインストールしています"
 
-#: pikaur/build.py:551
+#: pikaur/build.py:560
 msgid "Installing repository dependencies for {}"
 msgstr "{} のリポジトリの依存関係をインストールしています"
 
@@ -297,7 +297,7 @@ msgstr "設定オプション [{}]{} を [{}]{} = \"{}\" に移行していま�
 msgid "Name"
 msgstr "名前"
 
-#: pikaur/install_cli.py:526
+#: pikaur/install_cli.py:524
 #, python-brace-format
 msgid "New build deps found for {pkg} package: {deps}"
 msgstr "パッケージ {pkg} のビルド依存が検出されました: {deps}"
@@ -318,7 +318,7 @@ msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] ""
 "サードパーティのリポジトリから次の新しい依存関係がインストールされます:"
 
-#: pikaur/install_cli.py:661
+#: pikaur/install_cli.py:659
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "新しいパッケージ '{new}' と '{other}' が競合しています。"
@@ -327,7 +327,7 @@ msgstr "新しいパッケージ '{new}' と '{other}' が競合しています�
 msgid "None"
 msgstr "なし"
 
-#: pikaur/install_cli.py:771
+#: pikaur/install_cli.py:769
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
 msgstr "パッケージ {pkg} の差分を表示しません ({reason})"
@@ -358,7 +358,7 @@ msgstr ""
 msgid "Package Base"
 msgstr "ベースパッケージ"
 
-#: pikaur/build.py:474
+#: pikaur/build.py:483
 #, python-brace-format
 msgid ""
 "Package {pkg} is already built. Pass '--rebuild' flag to force the build."
@@ -372,7 +372,7 @@ msgstr[0] ""
 msgid "Packages directory"
 msgstr "パッケージディレクトリ"
 
-#: pikaur/help_cli.py:103
+#: pikaur/help_cli.py:105
 msgid "Pikaur-specific options:"
 msgstr "pikaur 特有のオプション:"
 
@@ -409,7 +409,7 @@ msgstr "ローカルのパッケージデータベースを読み込み中..."
 msgid "Reading repository package databases..."
 msgstr "リポジトリのパッケージデータベースを読み込み中..."
 
-#: pikaur/build.py:625
+#: pikaur/build.py:634
 msgid "Removing already installed dependencies for {}"
 msgstr "{} に既にインストールされた依存関係を削除しています"
 
@@ -431,26 +431,26 @@ msgstr[0] "リポジトリから次のパッケージがインストールされ
 msgid "Resolving AUR dependencies..."
 msgstr "AUR の依存関係を解決中..."
 
-#: pikaur/install_cli.py:994
+#: pikaur/install_cli.py:992
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "{target} のトランザクションを取り消しています..."
 
-#: pikaur/search_cli.py:143
+#: pikaur/search_cli.py:150
 #, python-brace-format
 msgid "Searching... [{bar}]"
 msgstr "検索中... [{bar}]"
 
-#: pikaur/install_cli.py:688
+#: pikaur/install_cli.py:686
 #, python-brace-format
 msgid "Skipping review of {file} for {name} package ({flag})"
 msgstr "パッケージ {name} の {file} のレビューをスキップ ({flag})"
 
-#: pikaur/urllib.py:42 pikaur/urllib.py:74
+#: pikaur/urllib.py:42 pikaur/urllib.py:73
 msgid "Sleeping for {} seconds..."
 msgstr ""
 
-#: pikaur/install_cli.py:533
+#: pikaur/install_cli.py:531
 #, python-brace-format
 msgid "Some build deps removed for {pkg} package: {deps}"
 msgstr "パッケージ {pkg} のいくつかのビルド依存が削除されました: {deps}"
@@ -459,7 +459,7 @@ msgstr "パッケージ {pkg} のいくつかのビルド依存が削除され�
 msgid "Starting full AUR upgrade..."
 msgstr "AUR 全体の更新を開始..."
 
-#: pikaur/build.py:681
+#: pikaur/build.py:690
 msgid "Starting the build"
 msgstr "ビルドを開始"
 
@@ -499,7 +499,7 @@ msgstr ""
 msgid "Try recovering {pkg_name}?"
 msgstr "リカバリしますか？"
 
-#: pikaur/install_cli.py:578 pikaur/build.py:740
+#: pikaur/install_cli.py:576 pikaur/build.py:749
 msgid "Try recovering?"
 msgstr "リカバリしますか？"
 
@@ -524,7 +524,7 @@ msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
 msgstr[0] ""
 
-#: pikaur/install_cli.py:234 pikaur/install_cli.py:584
+#: pikaur/install_cli.py:234 pikaur/install_cli.py:582
 msgid "[A] abort"
 msgstr "[A] 中止"
 
@@ -532,35 +532,35 @@ msgstr "[A] 中止"
 msgid "[N]o (--noconfirm)"
 msgstr "[N]いいえ (--noconfirm)"
 
-#: pikaur/build.py:742
+#: pikaur/build.py:751
 msgid "[R] retry build"
 msgstr "[R] ビルドを再試行"
 
-#: pikaur/build.py:752
+#: pikaur/build.py:761
 msgid "[a] abort building all the packages"
 msgstr "[a] すべてのパッケージのビルドを中止"
 
-#: pikaur/build.py:744
+#: pikaur/build.py:753
 msgid "[c] checksums skip"
 msgstr "[c] チェックサムをスキップ"
 
-#: pikaur/install_cli.py:579
+#: pikaur/install_cli.py:577
 msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
-#: pikaur/build.py:748
+#: pikaur/build.py:757
 msgid "[d] delete build dir and try again"
 msgstr "[d] ビルドディレクトリを削除して再試行"
 
-#: pikaur/install_cli.py:232 pikaur/build.py:749
+#: pikaur/install_cli.py:232 pikaur/build.py:758
 msgid "[e] edit PKGBUILD"
 msgstr "[e] PKGBUILD を編集"
 
-#: pikaur/build.py:745
+#: pikaur/build.py:754
 msgid "[f] skip 'check()' function of PKGBUILD"
 msgstr ""
 
-#: pikaur/build.py:747
+#: pikaur/build.py:756
 msgid "[i] ignore architecture"
 msgstr "[i] アーキテクチャを無視"
 
@@ -573,28 +573,28 @@ msgstr "[インストール済: {version}]"
 msgid "[installed]"
 msgstr "[インストール済]"
 
-#: pikaur/build.py:746
+#: pikaur/build.py:755
 msgid "[n] skip 'prepare()' function of PKGBUILD"
 msgstr ""
 
-#: pikaur/build.py:743
+#: pikaur/build.py:752
 msgid "[p] PGP check skip"
 msgstr "[p] PGP の確認をスキップ"
 
-#: pikaur/install_cli.py:582
+#: pikaur/install_cli.py:580
 msgid "[p] git stash && ... && git stash pop"
 msgstr ""
 
 #. translate("[c] git checkout -- '*' ; git clean -f -d -x"),
-#: pikaur/install_cli.py:581
+#: pikaur/install_cli.py:579
 msgid "[r] remove dir and clone again"
 msgstr "[r] ディレクトリを削除してクローンしなおす"
 
-#: pikaur/build.py:751
+#: pikaur/build.py:760
 msgid "[s] skip building this package"
 msgstr "[s] このパッケージのビルドをスキップ"
 
-#: pikaur/install_cli.py:233 pikaur/install_cli.py:583
+#: pikaur/install_cli.py:233 pikaur/install_cli.py:581
 msgid "[s] skip this package"
 msgstr "[s] このパッケージをスキップ"
 
@@ -602,13 +602,13 @@ msgstr "[s] このパッケージをスキップ"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v]パッケージ情報を表示   [m]手動でパッケージを選択"
 
-#: pikaur/install_cli.py:236 pikaur/install_cli.py:573
-#: pikaur/install_cli.py:589 pikaur/build.py:736 pikaur/build.py:766
-#: pikaur/build.py:803
+#: pikaur/install_cli.py:236 pikaur/install_cli.py:571
+#: pikaur/install_cli.py:587 pikaur/build.py:745 pikaur/build.py:775
+#: pikaur/build.py:812
 msgid "a"
 msgstr "a"
 
-#: pikaur/install_cli.py:778 pikaur/install_cli.py:834
+#: pikaur/install_cli.py:776 pikaur/install_cli.py:832
 msgid "already reviewed"
 msgstr "確認済"
 
@@ -620,12 +620,12 @@ msgstr "常に systemd Dynamic Users で隔離する"
 msgid "always rebuild AUR packages"
 msgstr "常に AUR パッケージをビルドしなおす"
 
-#: pikaur/help_cli.py:88
+#: pikaur/help_cli.py:90
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "常に '-git' や '-svn' などの開発版パッケージを更新"
 
-#: pikaur/install_cli.py:589 pikaur/install_cli.py:593 pikaur/build.py:759
-#: pikaur/build.py:775
+#: pikaur/install_cli.py:587 pikaur/install_cli.py:591 pikaur/build.py:768
+#: pikaur/build.py:784
 msgid "c"
 msgstr "c"
 
@@ -633,7 +633,7 @@ msgstr "c"
 msgid "cli args to pass to makepkg"
 msgstr "makepkg に渡すコマンドライン引数"
 
-#: pikaur/build.py:763 pikaur/build.py:787
+#: pikaur/build.py:772 pikaur/build.py:796
 msgid "d"
 msgstr "d"
 
@@ -641,7 +641,7 @@ msgstr "d"
 msgid "debug:"
 msgstr "デバッグ:"
 
-#: pikaur/install_cli.py:795
+#: pikaur/install_cli.py:793
 msgid "diff"
 msgstr "差分"
 
@@ -649,7 +649,7 @@ msgstr "差分"
 msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "PKGBUILD やその他のビルドファイルを編集するか尋ねない"
 
-#: pikaur/help_cli.py:89
+#: pikaur/help_cli.py:91
 msgid "don't prompt to show the build files diff"
 msgstr "ビルドファイルの差分を表示するかどうかを尋ねない"
 
@@ -661,12 +661,12 @@ msgstr "ビルド後にビルドディレクトリを削除しない"
 msgid "download also AUR dependencies"
 msgstr "AUR の依存関係もダウンロード"
 
-#: pikaur/install_cli.py:236 pikaur/install_cli.py:239 pikaur/build.py:764
-#: pikaur/build.py:790
+#: pikaur/install_cli.py:236 pikaur/install_cli.py:239 pikaur/build.py:773
+#: pikaur/build.py:799
 msgid "e"
 msgstr "e"
 
-#: pikaur/install_cli.py:697
+#: pikaur/install_cli.py:695
 msgid "edit"
 msgstr "編集"
 
@@ -678,7 +678,7 @@ msgstr "エラー:"
 msgid "executable not found"
 msgstr ""
 
-#: pikaur/build.py:760 pikaur/build.py:778
+#: pikaur/build.py:769 pikaur/build.py:787
 msgid "f"
 msgstr ""
 
@@ -686,7 +686,7 @@ msgstr ""
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "{} からの .SRCINFO の生成に失敗:"
 
-#: pikaur/build.py:304
+#: pikaur/build.py:312
 msgid "failed to retrieve latest dev sources:"
 msgstr "最新の開発版ソースの取得に失敗:"
 
@@ -696,11 +696,15 @@ msgstr "最新の開発版ソースの取得に失敗:"
 msgid "for {pkg}"
 msgstr "{pkg} の依存関係"
 
-#: pikaur/build.py:762 pikaur/build.py:784
+#: pikaur/help_cli.py:85
+msgid "hide build log"
+msgstr ""
+
+#: pikaur/build.py:771 pikaur/build.py:793
 msgid "i"
 msgstr "i"
 
-#: pikaur/help_cli.py:91
+#: pikaur/help_cli.py:93
 msgid "ignore AUR packages' updates which marked 'outofdate'"
 msgstr "'outofdate' とマークされた AUR パッケージを更新しない"
 
@@ -713,7 +717,7 @@ msgstr "明示的に指定した引数 %r を無視"
 msgid "install built package"
 msgstr "ビルドされたパッケージをインストール"
 
-#: pikaur/install_cli.py:829
+#: pikaur/install_cli.py:827
 msgid "installing for the first time"
 msgstr "初回インストール"
 
@@ -725,15 +729,15 @@ msgstr "不正な数字: {}"
 msgid "invalid value: {} is not between {} and {}"
 msgstr "不正な値: {} は {} ~ {} の範囲外です"
 
-#: pikaur/install_cli.py:647
+#: pikaur/install_cli.py:645
 msgid "looking for conflicting AUR packages..."
 msgstr "競合する AUR パッケージを検索中..."
 
-#: pikaur/install_cli.py:437 pikaur/install_cli.py:456
+#: pikaur/install_cli.py:437 pikaur/install_cli.py:454
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:437 pikaur/build.py:761 pikaur/build.py:781
+#: pikaur/install_cli.py:437 pikaur/build.py:770 pikaur/build.py:790
 #: pikaur/prompt.py:41 pikaur/main.py:185
 msgid "n"
 msgstr "n"
@@ -762,7 +766,7 @@ msgstr "outofdate"
 msgid "override path to makepkg executable"
 msgstr "makepkg 実行ファイルへのパスを上書き"
 
-#: pikaur/install_cli.py:595 pikaur/build.py:758 pikaur/build.py:772
+#: pikaur/install_cli.py:593 pikaur/build.py:767 pikaur/build.py:781
 msgid "p"
 msgstr "p"
 
@@ -783,7 +787,7 @@ msgstr "pikaur デバッグ:"
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur の実行には Python >= 3.7 が必要です。"
 
-#: pikaur/urllib.py:104
+#: pikaur/urllib.py:102
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur で socks5 プロキシを使用するには python-pysocks が必要です。"
 
@@ -804,7 +808,7 @@ msgstr "pikaur {-P --pkgbuild}    [オプション] <ファイル>"
 msgid "pikaur-specific operations:"
 msgstr "pikaur 特有の操作:"
 
-#: pikaur/help_cli.py:97
+#: pikaur/help_cli.py:99
 msgid "print spawned by pikaur subshell commands"
 msgstr ""
 
@@ -820,8 +824,8 @@ msgstr "AUR のみからパッケージをクエリ"
 msgid "query packages from repository only"
 msgstr "リポジトリのみからパッケージをクエリ"
 
-#: pikaur/install_cli.py:589 pikaur/install_cli.py:598 pikaur/build.py:757
-#: pikaur/build.py:770
+#: pikaur/install_cli.py:587 pikaur/install_cli.py:596 pikaur/build.py:766
+#: pikaur/build.py:779
 msgid "r"
 msgstr "r"
 
@@ -830,12 +834,12 @@ msgid "removing all files from cache..."
 msgstr ""
 
 #: pikaur/install_cli.py:236 pikaur/install_cli.py:254
-#: pikaur/install_cli.py:589 pikaur/install_cli.py:600 pikaur/build.py:734
-#: pikaur/build.py:765
+#: pikaur/install_cli.py:587 pikaur/install_cli.py:598 pikaur/build.py:743
+#: pikaur/build.py:774
 msgid "s"
 msgstr "s"
 
-#: pikaur/help_cli.py:87
+#: pikaur/help_cli.py:89
 msgid "search only in package names"
 msgstr "パッケージ名のみを検索"
 
@@ -843,9 +847,13 @@ msgstr "パッケージ名のみを検索"
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 
-#: pikaur/help_cli.py:98
+#: pikaur/help_cli.py:100
 msgid "show only debug messages specific to pikaur"
 msgstr "pikaur 特有のデバッグメッセージのみを表示"
+
+#: pikaur/help_cli.py:84
+msgid "skip failed builds"
+msgstr ""
 
 #: pikaur/argparse.py:254
 #, python-format
@@ -860,7 +868,7 @@ msgstr "使用方法:  pikaur {-G --getpkgbuild} [オプション] <パッケー
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "使用方法:  pikaur {-P --pkgbuild} [オプション] <ファイル>"
 
-#: pikaur/install_cli.py:437 pikaur/install_cli.py:453
+#: pikaur/install_cli.py:437 pikaur/install_cli.py:451
 msgid "v"
 msgstr "v"
 
@@ -868,7 +876,7 @@ msgstr "v"
 msgid "warning:"
 msgstr "警告:"
 
-#: pikaur/install_cli.py:437 pikaur/install_cli.py:451 pikaur/prompt.py:40
+#: pikaur/install_cli.py:437 pikaur/install_cli.py:449 pikaur/prompt.py:40
 msgid "y"
 msgstr "y"
 
@@ -900,7 +908,7 @@ msgstr ""
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "{package_source} のパッケージ {name} {version} は最新です- スキップ"
 
-#: pikaur/install_cli.py:670
+#: pikaur/install_cli.py:668
 #, python-brace-format
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr ""

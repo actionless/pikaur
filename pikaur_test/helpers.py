@@ -321,6 +321,10 @@ class PikaurDbTestCase(PikaurTestCase):
             count: int,
             to_version: str | None,
     ) -> None:
+        if count < 1:
+            raise RuntimeError(
+                "Count of commits to downgrade should be a positive number."
+            )
         srcinfo = SrcInfo(build_dir, pkg_name)
         srcinfo.regenerate()
         from_version = srcinfo.get_version()

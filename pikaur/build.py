@@ -136,6 +136,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     _local_pkgs_with_build_deps: set[str]
     _local_provided_pkgs_with_build_deps: dict[str, list[ProvidedDependency]]
 
+    def __repr__(self) -> str:
+        return (
+            f'<{self.__class__.__name__} "{self.package_base}" '
+            f"{self.package_names}>"
+        )
+
     def __init__(  # pylint: disable=super-init-not-called
             self,
             package_names: list[str] | None = None,

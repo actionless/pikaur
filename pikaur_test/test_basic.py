@@ -13,8 +13,8 @@ class InstallTest(PikaurDbTestCase):
 
     def test_aur_package_with_repo_deps(self):
         # aur package with repo deps
-        pikaur("-S inxi")
-        self.assertInstalled("inxi")
+        pikaur("-S python-pygobject-stubs")
+        self.assertInstalled("python-pygobject-stubs")
 
     def test_repo_package_wo_deps(self):
         # repo package w/o deps
@@ -167,7 +167,7 @@ class InstallTest(PikaurDbTestCase):
         # pylint:disable=import-outside-toplevel
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 
-        pikaur("-S inxi --rebuild --keepbuild")
+        pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
             len(os.listdir(BUILD_CACHE_PATH)), 1
         )
@@ -187,7 +187,7 @@ class InstallTest(PikaurDbTestCase):
         # pylint:disable=import-outside-toplevel
         from pikaur.config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH
 
-        pikaur("-S inxi --rebuild --keepbuild")
+        pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
             len(os.listdir(BUILD_CACHE_PATH)), 1
         )
@@ -206,11 +206,11 @@ class InstallTest(PikaurDbTestCase):
     def test_print_commands_and_needed(self):
         """Test that `--print--commands` option not fails."""
         self.assertEqual(
-            fake_pikaur("-S inxi nano --print-commands").returncode, 0
+            fake_pikaur("-S python-pygobject-stubs nano --print-commands").returncode, 0
         )
 
     def test_needed(self):
         """Test that `--needed` option not fails."""
         self.assertEqual(
-            pikaur("-S inxi nano --needed").returncode, 0
+            pikaur("-S python-pygobject-stubs nano --needed").returncode, 0
         )

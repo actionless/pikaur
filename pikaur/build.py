@@ -305,7 +305,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             print_error(error_text)
             print_stderr(pkgver_result.stdout_text)
             if (
-                    not PikaurConfig().build.SkipFailedBuild.get_bool()
+                    not self.args.skip_failed_build
             ) and (
                 not ask_to_continue(default_yes=False)
             ):
@@ -662,7 +662,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             )
             print_error(error_text)
             if (
-                    not PikaurConfig().build.SkipFailedBuild.get_bool()
+                    not self.args.skip_failed_build
             ) and (
                 not ask_to_continue(default_yes=False)
             ):
@@ -730,7 +730,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     ColorsHighlight.red
                 )
             )
-            if PikaurConfig().build.SkipFailedBuild.get_bool():
+            if self.args.skip_failed_build:
                 answer = translate("s")
             elif self.args.noconfirm:
                 answer = translate("a")

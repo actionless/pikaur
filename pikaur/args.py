@@ -68,9 +68,10 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, "deps", None),
         (None, "ignore-outofdate", PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool()),
         (None, "pikaur-debug", None),
-        # undocumented options:
-        (None, "print-commands", PikaurConfig().ui.PrintCommands.get_bool()),
         (None, "hide-build-log", None),
+        (None, "print-commands", PikaurConfig().ui.PrintCommands.get_bool()),
+        (None, "skip-failed-build", PikaurConfig().build.SkipFailedBuild.get_bool()),
+        # undocumented options:
         (None, "print-args-and-exit", None),
     ]
 

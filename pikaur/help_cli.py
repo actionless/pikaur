@@ -81,6 +81,7 @@ def cli_print_help() -> None:
             ("", "--dynamic-users", translate("always isolate with systemd dynamic users")),
             ("", "--build-gpgdir=<path>",
                 translate("set GnuPG home directory used when validating package sources")),
+            ("", "--skip-failed-build", translate("skip failed builds")),
             ("", "--hide-build-log", translate("hide build log")),
         ]
     if args.sync:

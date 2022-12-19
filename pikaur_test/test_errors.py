@@ -88,7 +88,9 @@ class FailureTest(PikaurDbTestCase):
         pkg_name_succeeded = "pikaur-test-placeholder"
         self.remove_if_installed(pkg_name_failed, pkg_name_succeeded)
         result = pikaur(
-            "-Pi ./pikaur_test/PKGBUILD_build_error",
+            "-Pi "
+            " ./pikaur_test/PKGBUILD_build_error"
+            " pikaur_test/PKGBUILD_placeholder",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 125)
@@ -103,7 +105,10 @@ class FailureTest(PikaurDbTestCase):
         pkg_name_succeeded = "pikaur-test-placeholder"
         self.remove_if_installed(pkg_name_failed, pkg_name_succeeded)
         result = pikaur(
-            "-Pi ./pikaur_test/PKGBUILD_build_error --skip-failed-build",
+            "-Pi"
+            " ./pikaur_test/PKGBUILD_build_error"
+            " pikaur_test/PKGBUILD_placeholder"
+            " --skip-failed-build",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 1)

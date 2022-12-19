@@ -6,7 +6,7 @@ from pikaur_test.helpers import PikaurDbTestCase, pikaur
 MSG_CANNOT_BE_FOUND = "cannot be found"
 MSG_DEPS_MISSING = "Dependencies missing"
 MSG_VERSION_MISMATCH = "Version mismatch"
-MSG_MAKEPKG_FAILED_TO_EXECUTE = "Command 'makepkg --force' failed to execute."
+MSG_MAKEPKG_FAILED_TO_EXECUTE = "Command 'makepkg --force --nocolor' failed to execute."
 MSG_FAILED_TO_BUILD_PKGS = "Failed to build following packages:"
 
 
@@ -89,9 +89,10 @@ class FailureTest(PikaurDbTestCase):
         self.remove_if_installed(pkg_name_failed, pkg_name_succeeded)
         result = pikaur(
             "-Pi"
+            " --noconfirm"
             " ./pikaur_test/PKGBUILD_build_error"
             " ./pikaur_test/PKGBUILD_placeholder",
-            capture_stderr=True
+            capture_stderr=True,
         )
         self.assertEqual(result.returncode, 125)
         self.assertIn(MSG_MAKEPKG_FAILED_TO_EXECUTE, result.stderr)
@@ -106,10 +107,11 @@ class FailureTest(PikaurDbTestCase):
         self.remove_if_installed(pkg_name_failed, pkg_name_succeeded)
         result = pikaur(
             "-Pi"
+            " --noconfirm"
             " ./pikaur_test/PKGBUILD_build_error"
             " ./pikaur_test/PKGBUILD_placeholder"
             " --skip-failed-build",
-            capture_stderr=True
+            capture_stderr=True,
         )
         self.assertEqual(result.returncode, 1)
         self.assertIn(MSG_MAKEPKG_FAILED_TO_EXECUTE, result.stderr)

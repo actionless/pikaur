@@ -95,7 +95,7 @@ class InterceptSysOutput():
 
     stdout_text: str
     stderr_text: str
-    returncode: int
+    returncode: int | None = None
 
     _exited = False
 
@@ -145,11 +145,11 @@ class InterceptSysOutput():
         return self
 
     def __exit__(self, *_exc_details: Any) -> None:
+        if self._exited:
+            return
         for patcher in self.patchers:
             if patcher:
                 patcher.stop()
-        if self._exited:
-            return
 
         self.out_file.flush()
         self.err_file.flush()

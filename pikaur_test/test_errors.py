@@ -90,7 +90,7 @@ class FailureTest(PikaurDbTestCase):
         result = pikaur(
             "-Pi "
             " ./pikaur_test/PKGBUILD_build_error"
-            " pikaur_test/PKGBUILD_placeholder",
+            " ./pikaur_test/PKGBUILD_placeholder",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 125)
@@ -107,7 +107,7 @@ class FailureTest(PikaurDbTestCase):
         result = pikaur(
             "-Pi"
             " ./pikaur_test/PKGBUILD_build_error"
-            " pikaur_test/PKGBUILD_placeholder"
+            " ./pikaur_test/PKGBUILD_placeholder"
             " --skip-failed-build",
             capture_stderr=True
         )

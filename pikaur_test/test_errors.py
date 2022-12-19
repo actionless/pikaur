@@ -88,7 +88,7 @@ class FailureTest(PikaurDbTestCase):
         pkg_name_succeeded = "pikaur-test-placeholder"
         self.remove_if_installed(pkg_name_failed, pkg_name_succeeded)
         result = pikaur(
-            "-Pi "
+            "-Pi"
             " ./pikaur_test/PKGBUILD_build_error"
             " ./pikaur_test/PKGBUILD_placeholder",
             capture_stderr=True

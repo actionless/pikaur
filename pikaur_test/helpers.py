@@ -3,6 +3,7 @@
 import os
 import sys
 import tempfile
+import traceback
 from subprocess import Popen  # nosec B404
 from time import time
 from typing import TYPE_CHECKING, Any, Callable, NoReturn, Sequence
@@ -223,6 +224,7 @@ def pikaur(
                 pass
     except Exception as exc:
         log_stderr(str(exc))
+        log_stderr(traceback.format_exc())
 
     PackageDB.discard_local_cache()
     PackageDB.discard_repo_cache()

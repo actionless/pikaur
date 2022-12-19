@@ -7,6 +7,7 @@ ARG GITHUB_TOKEN
 ARG GITHUB_RUN_ID
 ARG GITHUB_REF
 ARG MODE=--local
+ARG TESTSUITE=pikaur_test
 
 RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://archlinux.mirror.pcextreme.nl/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
@@ -26,7 +27,11 @@ ENV LANG=en_US.utf8 \
 	LANGUAGE=en_US.UTF-8 \
 	LC_ALL=en_US.UTF-8
 
-COPY . /opt/app-build/
+COPY ./pikaur/. /opt/app-build/pikaur
+COPY ./locale/. /opt/app-build/locale
+COPY ./maintenance_scripts/pikaman.py /opt/app-build/maintenance_scripts/pikaman.py
+COPY ./packaging/. /opt/app-build/packaging
+COPY ./PKGBUILD ./Makefile ./README.md ./setup.py ./LICENSE /opt/app-build/
 RUN echo ">>>> Installing opt deps:" && \
 	pacman -Sy asp python-pysocks --noconfirm --needed && \
 	echo ">>>> Preparing build directory:" && \
@@ -45,10 +50,17 @@ RUN echo ">>>> Installing opt deps:" && \
 		python-pylint flake8 mypy vulture shellcheck bandit # @TODO: python-coveralls is temporary broken
 #RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-pycodestyle '2.9.1-2' # @TODO: remove it when it fixed
 
+COPY ./pikaur_test /opt/app-build/pikaur_test
+COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
+COPY .flake8 .pylintrc mypy.ini pyproject.toml /opt/app-build/
+RUN echo ">>>> Starting CI linting:" && \
+	chown -R user /opt/app-build/pikaur_test && \
+	sudo -u user env \
+	./maintenance_scripts/lint.sh
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
 	GITHUB_ACTIONS=1 \
 	GITHUB_TOKEN=$GITHUB_TOKEN \
 	GITHUB_RUN_ID=$GITHUB_RUN_ID \
 	GITHUB_REF=$GITHUB_REF \
-	./maintenance_scripts/ci.sh $MODE --write-db
+	./maintenance_scripts/coverage.sh $MODE --write-db $TESTSUITE

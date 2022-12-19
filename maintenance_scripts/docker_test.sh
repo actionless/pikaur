@@ -22,6 +22,7 @@ sudo docker build ./ \
 	--build-arg GITHUB_RUN_ID="${GITHUB_RUN_ID:-}" \
 	--build-arg GITHUB_REF="${GITHUB_REF:-}" \
 	--build-arg MODE="${1:---local}" \
+	--build-arg TESTSUITE="${2:-pikaur_test}" \
 	-t pikaur -f ./Dockerfile \
 	|| return_code=$?
 

@@ -33,6 +33,7 @@ PACMAN_BOOL_OPTS: ArgSchema = [
     ("Q", "query", None),
     ("o", "owns", None),
     ("l", "list", None),  # @TODO
+    (None, "upgrades", None),
     # operations
     ("D", "database", None),
     ("F", "files", None),
@@ -194,6 +195,10 @@ class PikaurArgs(Namespace):
             if self.check:  # handle "-k"
                 self.keepbuild = True
                 self.check = None
+        if self.sysupgrade:  # handle "-u"
+            if self.query:
+                self.sysupgrade = 0
+                self.upgrades = True
 
     def post_process_args(self) -> None:
         # pylint: disable=attribute-defined-outside-init
@@ -212,10 +217,10 @@ class PikaurArgs(Namespace):
 
     def validate(self) -> None:
         if self.query:
-            if not self.sysupgrade:
+            if not self.upgrades:
                 for arg_name in ("aur", "repo"):
                     if getattr(self, arg_name):
-                        raise MissingArgumentError("sysupgrade", arg_name)
+                        raise MissingArgumentError("upgrades", arg_name)
 
     @classmethod
     def from_namespace(

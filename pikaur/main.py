@@ -214,7 +214,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         pikaur_operation = cli_print_version
 
     elif args.query:
-        if args.sysupgrade:
+        if args.upgrades:
             pikaur_operation = cli_print_upgradeable
 
     elif args.files:

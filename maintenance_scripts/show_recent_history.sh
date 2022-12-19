@@ -17,7 +17,7 @@ if [[ "${style}" = "compact" ]] ; then
 	echo "Notable changes:"
 	echo "$result" | grep -v -i -E \
 		-e "(typing|typehint|coverage|github|docker|vulture|maintenance_scripts)" \
-		-e "actionless\s[^[:print:]]\[m(doc|chore|test|style|Revert|Merge|refactor)" \
+		-e "actionless\s[^[:print:]]\[m(doc|chore|test|style|Revert|Merge|refactor|feat\(test|fix\(test)" \
 	| sed \
 		-E "s/[^[:print:]]\[31m[[:print:]]+[^[:print:]]\[m//g"
 	echo

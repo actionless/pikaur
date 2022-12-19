@@ -32,7 +32,7 @@ class CliTest(PikaurTestCase):
             set(result_first).intersection(result_second)
         )
 
-    def test_search_multiword_too_many(self):
+    def test_search_multiword_too_many_error(self):
         """
         https://github.com/actionless/pikaur/issues/298
          - broken in a different way in AUR RPC now?
@@ -45,17 +45,36 @@ class CliTest(PikaurTestCase):
         result_aur_too_many = proc_aur_too_many.stdout.splitlines()
         self.assertEqual(len(result_aur_too_many), 0)
 
-        result_aur_second = pikaur("-Ssq --aur opencv").stdout.splitlines()
+    def test_search_multiword_too_many_filter(self):
+        result_for_one_query = pikaur("-Ssq --aur opencv").stdout.splitlines()
         # @TODO: not sure if this is an AUR API bug?
-        # self.assertIn("python-imutils", result_aur_second)
-        self.assertIn("python-opencv-git", result_aur_second)
-        self.assertIn("opencv-git", result_aur_second)
+        # self.assertIn("python-imutils", result_for_one_query)
+        self.assertIn("python-opencv-git", result_for_one_query)
+        self.assertIn("opencv-git", result_for_one_query)
 
         result_all = pikaur("-Ssq --aur python opencv").stdout.splitlines()
         # @TODO: not sure if this is an AUR API bug?
         # self.assertIn("python-imutils", result_all)
         self.assertIn("python-opencv-git", result_all)
         self.assertNotIn("opencv-git", result_all)
+
+    def test_search_multiword_too_small_error(self):
+        proc_aur_too_small = pikaur("-Ssq --aur w", capture_stderr=True)
+        self.assertIn(
+            "Query arg too small 'w'",
+            proc_aur_too_small.stderr
+        )
+        result_aur_too_many = proc_aur_too_small.stdout.splitlines()
+        self.assertEqual(len(result_aur_too_many), 0)
+
+    def test_search_multiword_too_filter(self):
+        result_for_one_query = pikaur("-Ssq --aur mailman").stdout.splitlines()
+        self.assertIn("mailman-rss", result_for_one_query)
+        self.assertIn("mailman", result_for_one_query)
+
+        result_all = pikaur("-Ssq --aur mailman w").stdout.splitlines()
+        self.assertIn("mailman-rss", result_all)
+        self.assertNotIn("mailman", result_all)
 
     def test_list(self):
         result_all = pikaur("-Ssq").stdout.splitlines()

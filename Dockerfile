@@ -50,13 +50,13 @@ RUN echo ">>>> Installing opt deps:" && \
 #RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-pycodestyle '2.9.1-2' # @TODO: remove it when it fixed
 
 ARG TESTSUITE=all
-ARG TESTS_ONLY=0
+ARG SKIP_LINTING=0
 COPY ./pikaur_test /opt/app-build/pikaur_test
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
 COPY .flake8 .pylintrc mypy.ini pyproject.toml /opt/app-build/
 RUN echo ">>>> Starting CI linting:" && \
 	chown -R user /opt/app-build/pikaur_test && \
-	if [[ "$TESTS_ONLY" -eq 0 ]] ; then sudo -u user env \
+	if [[ "$SKIP_LINTING" -eq 0 ]] ; then sudo -u user env \
 	./maintenance_scripts/lint.sh ; fi
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \

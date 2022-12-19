@@ -368,19 +368,10 @@ You can start from [this list of issues](https://github.com/actionless/pikaur/is
 ##### Tests
 
 ```sh
-./maintenance_scripts/coverage.sh
+./maintenance_scripts/docker_test.sh
 ```
 
-<details>
-  <summary>
-For running DESTRUCTIVE tests, which modify installed packages,
-run (inside virtual machine or docker, etc):
-</summary>
-
-```sh
-./maintenance_scripts/coverage.sh --local --write-db
-```
-</details>
+See also `./maintenance_scripts/docker_test.sh --help` for more options.
 
 
 ### Translations

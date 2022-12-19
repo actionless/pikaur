@@ -147,6 +147,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             self.repo_path = dirname(pkgbuild_path)
             self.pkgbuild_path = pkgbuild_path
             srcinfo = SrcInfo(pkgbuild_path=pkgbuild_path)
+            srcinfo.regenerate()
             pkgbase = srcinfo.get_value("pkgbase")
             if pkgbase and srcinfo.pkgnames:
                 self.package_names = package_names or srcinfo.pkgnames

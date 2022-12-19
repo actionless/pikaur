@@ -29,7 +29,7 @@ DEFAULT_CONFIG_ENCODING = "utf-8"
 RUNNING_AS_ROOT = os.geteuid() == 0  # @TODO: could global var be avoided here?
 
 
-VERSION = "1.14.5-dev"
+VERSION = '1.14.6-dev'
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",

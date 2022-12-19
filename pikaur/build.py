@@ -716,10 +716,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 "env": {**os.environ, **env},
             }
             if self.args.hide_build_log:
-                spawn_kwargs = {
+                spawn_kwargs.update({
                     "stdout": PIPE,
                     "stderr": PIPE
-                }
+                })
 
             result = interactive_spawn(
                 cmd_args,

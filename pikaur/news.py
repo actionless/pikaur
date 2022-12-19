@@ -29,42 +29,42 @@ if TYPE_CHECKING:
     from xml.etree.ElementTree import Element  # nosec B405
 
 
-DT_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
+DT_FORMAT = "%a, %d %b %Y %H:%M:%S %z"
 
-_debug = create_debug_logger('news')
+_debug = create_debug_logger("news")
 
 
 class News:
     URL = PikaurConfig().network.NewsUrl.get_str()
-    CACHE_FILE = os.path.join(CACHE_ROOT, 'last_seen_news.dat')
-    _news_feed: 'Element | None'
+    CACHE_FILE = os.path.join(CACHE_ROOT, "last_seen_news.dat")
+    _news_feed: "Element | None"
 
     def __init__(self) -> None:
         self._news_feed = None
-        _debug('init')
+        _debug("init")
 
     def print_news(self) -> None:
-        _debug('print')
+        _debug("print")
         if self._news_feed is None:
-            print_error(translate('Could not fetch archlinux.org news'))
+            print_error(translate("Could not fetch archlinux.org news"))
             return
-        news_entry: 'Element'
+        news_entry: "Element"
         first_news = True
         news_entry_to_update_last_seen_date = None
         try:  # pylint: disable=too-many-nested-blocks
-            for news_entry in self._news_feed.iter('item'):
-                child: 'Element'
+            for news_entry in self._news_feed.iter("item"):
+                child: "Element"
                 for child in news_entry:
-                    if 'pubDate' in child.tag:
+                    if "pubDate" in child.tag:
                         if self._is_new(str(child.text)):
                             if first_news:
                                 print_stdout(
-                                    '\n' +
+                                    "\n" +
                                     color_line(
-                                        translate('There is news from archlinux.org!'),
+                                        translate("There is news from archlinux.org!"),
                                         ColorsHighlight.red
                                     ) +
-                                    '\n'
+                                    "\n"
                                 )
                             self._print_one_entry(news_entry)
                             # news are in inverse chronological order (newest first).
@@ -81,10 +81,10 @@ class News:
                 self._update_last_seen_news(news_entry_to_update_last_seen_date)
 
     def fetch_latest(self) -> None:
-        _debug('fetch_latest')
+        _debug("fetch_latest")
         str_response = get_unicode_from_url(self.URL, optional=True)
         if not str_response:
-            print_error(translate('Could not fetch archlinux.org news'))
+            print_error(translate("Could not fetch archlinux.org news"))
             return
         self._news_feed = fromstring(str_response)  # nosec B314
 
@@ -111,53 +111,53 @@ class News:
             )
             time_formatted: str = last_pkg_date.strftime(DT_FORMAT)
             try:
-                with open_file(self.CACHE_FILE, 'w') as last_seen_fd:
+                with open_file(self.CACHE_FILE, "w") as last_seen_fd:
                     last_seen_fd.write(time_formatted)
             except IOError:
-                print_error(translate('Could not initialize {}').format(self.CACHE_FILE))
+                print_error(translate("Could not initialize {}").format(self.CACHE_FILE))
             return last_pkg_date
 
     def _is_new(self, last_online_news: str) -> bool:
         if not last_online_news:
-            print_error(translate('The news feed could not be received or parsed.'))
+            print_error(translate("The news feed could not be received or parsed."))
             return False
         last_online_news_date: datetime.datetime = datetime.datetime.strptime(
             last_online_news, DT_FORMAT
         )
         last_seen_news_date = self._get_last_seen_news_date()
-        _debug(f'is_new, {last_online_news_date=}, {last_seen_news_date=}')
+        _debug(f"is_new, {last_online_news_date=}, {last_seen_news_date=}")
         return last_online_news_date > last_seen_news_date
 
     @staticmethod
-    def _print_one_entry(news_entry: 'Element') -> None:
-        child: 'Element'
+    def _print_one_entry(news_entry: "Element") -> None:
+        child: "Element"
         for child in news_entry:
-            if 'title' in child.tag:
+            if "title" in child.tag:
                 title = str(child.text)
-            if 'pubDate' in child.tag:
+            if "pubDate" in child.tag:
                 pub_date = str(child.text)
-            if 'description' in child.tag:
+            if "description" in child.tag:
                 description = str(child.text)
         print_stdout(
             color_line(title, ColorsHighlight.cyan) +
-            ' (' + bold_line(pub_date) + ')'
+            " (" + bold_line(pub_date) + ")"
         )
         print_stdout(
             format_paragraph(strip_tags(description))
         )
         print_stdout()
 
-    def _update_last_seen_news(self, news_entry: 'Element') -> None:
-        child: 'Element'
+    def _update_last_seen_news(self, news_entry: "Element") -> None:
+        child: "Element"
         for child in news_entry:
-            if 'pubDate' in child.tag:
+            if "pubDate" in child.tag:
                 pub_date = str(child.text)
                 break
         try:
-            with open_file(self.CACHE_FILE, 'w') as last_seen_fd:
+            with open_file(self.CACHE_FILE, "w") as last_seen_fd:
                 last_seen_fd.write(pub_date)
         except IOError:
-            print_error(translate('Could not update {}').format(self.CACHE_FILE))
+            print_error(translate("Could not update {}").format(self.CACHE_FILE))
 
 
 class MLStripper(HTMLParser):
@@ -177,7 +177,7 @@ class MLStripper(HTMLParser):
         self.fed.append(data)
 
     def get_data(self) -> str:
-        return ''.join(self.fed)
+        return "".join(self.fed)
 
 
 def strip_tags(html: str) -> str:

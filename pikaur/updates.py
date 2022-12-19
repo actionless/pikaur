@@ -27,12 +27,12 @@ from .print_department import (
 from .version import compare_versions
 
 DEVEL_PKGS_POSTFIXES = (
-    '-git',
-    '-svn',
-    '-bzr',
-    '-hg',
-    '-cvs',
-    '-nightly',
+    "-git",
+    "-svn",
+    "-bzr",
+    "-hg",
+    "-cvs",
+    "-nightly",
 )
 
 
@@ -109,7 +109,7 @@ def find_aur_devel_updates(
             aur_updates.append(AURInstallInfo(
                 name=pkg_name,
                 current_version=local_pkg.version,
-                new_version='devel',
+                new_version="devel",
                 description=aur_pkg.desc,
                 devel_pkg_age_days=pkg_age_days,
                 maintainer=aur_pkg.maintainer,
@@ -186,7 +186,7 @@ def print_upgradeable(
     )
     config_ignored_pkg_names = get_ignored_pkgnames_from_patterns(
         pkg_names,
-        PacmanConfig().options.get('IgnorePkg', [])
+        PacmanConfig().options.get("IgnorePkg", [])
     )
     ignored_pkg_names = manually_ignored_pkg_names + config_ignored_pkg_names
     for pkg in updates[:]:
@@ -199,7 +199,7 @@ def print_upgradeable(
     if ignored_only:
         return
     if args.quiet:
-        print_stdout('\n'.join([
+        print_stdout("\n".join([
             pkg_update.name for pkg_update in updates
         ]))
     else:

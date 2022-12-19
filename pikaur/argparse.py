@@ -35,24 +35,24 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         for i, arg_string in enumerate(arg_strings_iter):
 
             # all args after -- are non-options
-            if arg_string == '--':
-                arg_string_pattern_parts.append('-')
+            if arg_string == "--":
+                arg_string_pattern_parts.append("-")
                 for _arg_string in arg_strings_iter:
-                    arg_string_pattern_parts.append('A')
+                    arg_string_pattern_parts.append("A")
 
             # otherwise, add the arg to the arg strings
             # and note the index if it was an option
             else:
                 option_tuple = self._parse_optional(arg_string)
                 if option_tuple is None:
-                    pattern = 'A'
+                    pattern = "A"
                 else:
                     option_string_indices[i] = option_tuple
-                    pattern = 'O'
+                    pattern = "O"
                 arg_string_pattern_parts.append(pattern)
 
         # join the pieces together to form the pattern
-        arg_strings_pattern = ''.join(arg_string_pattern_parts)
+        arg_strings_pattern = "".join(arg_string_pattern_parts)
 
         # converts arg strings to the appropriate and then takes the action
         seen_actions = set()
@@ -71,7 +71,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 seen_non_default_actions.add(action)
                 for conflict_action in action_conflicts.get(action, []):
                     if conflict_action in seen_non_default_actions:
-                        msg = _('not allowed with argument %s')
+                        msg = _("not allowed with argument %s")
                         action_name = _get_action_name(conflict_action)
                         raise ArgumentError(action, msg % action_name)
 
@@ -103,7 +103,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 # if there is an explicit argument, try to match the
                 # optional's string arguments to only this
                 if explicit_arg is not None:
-                    arg_count = match_argument(action, 'A')
+                    arg_count = match_argument(action, "A")
 
                     # if the action is a single-dash option and takes no
                     # arguments, try to parse more single-dash options out
@@ -124,8 +124,8 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                             # unknown args
                             unknown_args.append(option_string)
                             start_index += 1
-                            explicit_arg = ''.join(explicit_arg[1:])
-                            if explicit_arg == '':
+                            explicit_arg = "".join(explicit_arg[1:])
+                            if explicit_arg == "":
                                 stop = start_index
                                 break
 
@@ -140,7 +140,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                     # error if a double-dash option did not use the
                     # explicit argument
                     else:
-                        msg = _('ignored explicit argument %r')
+                        msg = _("ignored explicit argument %r")
                         raise ArgumentError(action, msg % explicit_arg)
 
                 # if there is no explicit argument, try to match the
@@ -251,8 +251,8 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                                 self._get_value(action, action.default))
 
         if required_actions:
-            self.error(_('the following arguments are required: %s') %
-                       ', '.join(required_actions))
+            self.error(_("the following arguments are required: %s") %
+                       ", ".join(required_actions))
 
         # make sure all required groups had one option present
         for group in self._mutually_exclusive_groups:
@@ -271,8 +271,8 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                             name := _get_action_name(action)
                         ):
                             names.append(name)
-                    msg = _('one of the arguments %s is required')
-                    self.error(msg % ' '.join(names))
+                    msg = _("one of the arguments %s is required")
+                    self.error(msg % " ".join(names))
 
         # return the updated namespace and the extra arguments
         return namespace, extras

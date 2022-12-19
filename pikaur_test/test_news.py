@@ -17,7 +17,7 @@ class NewsTest(TestCase):
         news = News()
         news.fetch_latest()
 
-        with open_file(News.CACHE_FILE, 'w') as news_fd:
+        with open_file(News.CACHE_FILE, "w") as news_fd:
             news_fd.write("Fri, 03 May 2018 20:27:33 +0000")
 
         with InterceptSysOutput() as intercepted:

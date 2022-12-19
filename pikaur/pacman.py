@@ -25,17 +25,17 @@ if TYPE_CHECKING:
 
 
 OFFICIAL_REPOS = (
-    'core',
-    'extra',
-    'community',
-    'multilib',
-    'testing',
-    'community-testing',
-    'multilib-testing',
+    "core",
+    "extra",
+    "community",
+    "multilib",
+    "testing",
+    "community-testing",
+    "multilib-testing",
 )
 
 
-_debug = create_debug_logger('pacman')
+_debug = create_debug_logger("pacman")
 
 
 def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
@@ -60,26 +60,26 @@ def get_pacman_command(ignore_args: list[str] | None = None) -> list[str]:
     pacman_path = PikaurConfig().misc.PacmanPath.get_str()
     pacman_cmd = [pacman_path, ]
     if color_enabled():
-        pacman_cmd += ['--color=always']
+        pacman_cmd += ["--color=always"]
     else:
-        pacman_cmd += ['--color=never']
+        pacman_cmd += ["--color=never"]
 
     for _short, arg, _default in PACMAN_STR_OPTS:
-        if arg in ['color', ]:  # we force it anyway
+        if arg in ["color", ]:  # we force it anyway
             continue
         if arg in ignore_args:
             continue
         value = getattr(args, arg)
         if value:
-            pacman_cmd += ['--' + arg, value]
+            pacman_cmd += ["--" + arg, value]
 
     for _short, arg, _default in PACMAN_APPEND_OPTS:
-        if arg in ['ignore', ]:  # we reprocess it anyway
+        if arg in ["ignore", ]:  # we reprocess it anyway
             continue
         if arg in ignore_args:
             continue
         for value in getattr(args, arg) or []:
-            pacman_cmd += ['--' + arg, value]
+            pacman_cmd += ["--" + arg, value]
 
     return pacman_cmd
 
@@ -94,7 +94,7 @@ class PacmanPrint(DataType):
 class PacmanConfig(PycmanConfig):
 
     def __init__(self) -> None:
-        super().__init__(conf=parse_args().config or '/etc/pacman.conf')
+        super().__init__(conf=parse_args().config or "/etc/pacman.conf")
 
 
 class ProvidedDependency(DataType):
@@ -105,11 +105,11 @@ class ProvidedDependency(DataType):
     def __repr__(self) -> str:
         return (
             f'<{self.__class__.__name__} "{self.name}" '
-            f'{self.version_matcher.line}>'
+            f"{self.version_matcher.line}>"
         )
 
 
-def get_pkg_id(pkg: 'AURPackageInfo | pyalpm.Package') -> str:
+def get_pkg_id(pkg: "AURPackageInfo | pyalpm.Package") -> str:
     if isinstance(pkg, pyalpm.Package):
         return f"{pkg.db.name}/{pkg.name}"
     return f"aur/{pkg.name}"
@@ -289,7 +289,7 @@ class PackageDB(PackageDBCommon):
             with DbLockLocal():
                 if not quiet:
                     print_stderr(translate("Reading local package database..."))
-                cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local('')
+                cls._packages_list_cache[PackageSource.LOCAL] = cls.search_local("")
         return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod
@@ -324,8 +324,8 @@ class PackageDB(PackageDBCommon):
             names_only: bool = False,
             exact_match: bool = False,
     ) -> list[pyalpm.Package]:
-        if '/' in search_query:
-            db_name, search_query = search_query.split('/')
+        if "/" in search_query:
+            db_name, search_query = search_query.split("/")
         result = []
         for sync_db in reversed(cls.get_alpm_handle().get_syncdbs()):
             if not db_name or db_name == sync_db.name:
@@ -347,7 +347,7 @@ class PackageDB(PackageDBCommon):
                 if not quiet:
                     print_stderr(translate("Reading repository package databases..."))
                 cls._packages_list_cache[PackageSource.REPO] = cls.search_repo(
-                    search_query=''
+                    search_query=""
                 )
         return cls._packages_list_cache[PackageSource.REPO]
 
@@ -367,24 +367,24 @@ class PackageDB(PackageDBCommon):
     def get_print_format_output(
             cls, cmd_args: list[str], *, check_deps: bool = True, package_only: bool = False
     ) -> list[PacmanPrint]:
-        cache_index = ' '.join(sorted(cmd_args))
+        cache_index = " ".join(sorted(cmd_args))
         cached_pkg = cls._pacman_find_cache.get(cache_index)
         if cached_pkg is not None:
             return cached_pkg
         results: list[PacmanPrint] = []
-        final_args = cmd_args + ['--print-format', '%r/%n', ]
+        final_args = cmd_args + ["--print-format", "%r/%n", ]
         if not check_deps and not package_only:
-            final_args.append('--nodeps')
+            final_args.append("--nodeps")
         if package_only:
-            final_args += ['--nodeps', '--nodeps']
+            final_args += ["--nodeps", "--nodeps"]
         proc = spawn(final_args)
         if proc.returncode != 0:
-            raise DependencyError((proc.stderr_text or '') + (proc.stdout_text or ''))
+            raise DependencyError((proc.stderr_text or "") + (proc.stdout_text or ""))
         found_packages_output = proc.stdout_text
         if found_packages_output:
             for line in found_packages_output.splitlines():
                 try:
-                    repo_name, pkg_name = line.split('/')
+                    repo_name, pkg_name = line.split("/")
                 except ValueError:
                     print_stderr(line)
                     continue
@@ -401,7 +401,7 @@ class PackageDB(PackageDBCommon):
     def get_pacman_test_output(cls, cmd_args: list[str]) -> list[VersionMatcher]:
         if not cmd_args:
             return []
-        cache_index = ' '.join(sorted(cmd_args))
+        cache_index = " ".join(sorted(cmd_args))
         cached_pkg = cls._pacman_test_cache.get(cache_index)
         if cached_pkg is not None:
             return cached_pkg
@@ -409,8 +409,8 @@ class PackageDB(PackageDBCommon):
         not_found_packages_output = spawn(
             # pacman --deptest flag conflicts with some --sync options:
             get_pacman_command(ignore_args=[
-                'overwrite'
-            ]) + ['--deptest', ] + cmd_args
+                "overwrite"
+            ]) + ["--deptest", ] + cmd_args
         ).stdout_text
         if not not_found_packages_output:
             cls._pacman_test_cache[cache_index] = results
@@ -438,16 +438,16 @@ class PackageDB(PackageDBCommon):
                 if not cls._pacman_repo_pkg_present_cache[pkg_name]:
                     not_found_pkg_names.append(pkg_name)
             else:
-                pkg_names_to_check += pkg_name.split(',')
+                pkg_names_to_check += pkg_name.split(",")
 
         if not pkg_names_to_check:
             return not_found_pkg_names
 
         results = (
             spawn(
-                get_pacman_command() + ['--sync', '--print-format=%%', '--nodeps'] +
+                get_pacman_command() + ["--sync", "--print-format=%%", "--nodeps"] +
                 pkg_names_to_check
-            ).stderr_text or ''
+            ).stderr_text or ""
         ).splitlines()
         new_not_found_pkg_names = []
         for result in results:
@@ -466,7 +466,7 @@ class PackageDB(PackageDBCommon):
     def get_not_found_local_packages(cls, pkg_lines: list[str]) -> list[str]:
         not_found_version_matchers = cls.get_pacman_test_output([
             splitted_pkg_name for splitted_pkg_names in
-            [pkg_name.split(',') for pkg_name in pkg_lines]
+            [pkg_name.split(",") for pkg_name in pkg_lines]
             for splitted_pkg_name in splitted_pkg_names
         ])
         return list({
@@ -481,7 +481,7 @@ class PackageDB(PackageDBCommon):
         all_repo_pkgs = PackageDB.get_repo_dict()
         try:
             results = cls.get_print_format_output(
-                get_pacman_command() + ['--sync'] + pkg_name.split(','),
+                get_pacman_command() + ["--sync"] + pkg_name.split(","),
                 package_only=True
             )
         except DependencyError as exc:
@@ -505,7 +505,7 @@ class PackageDB(PackageDBCommon):
 
 def get_upgradeable_package_names() -> list[str]:
     upgradeable_packages_output = spawn(
-        get_pacman_command() + ['--query', '--upgrades', '--quiet']
+        get_pacman_command() + ["--query", "--upgrades", "--quiet"]
     ).stdout_text
     if not upgradeable_packages_output:
         return []
@@ -523,16 +523,16 @@ def find_upgradeable_packages() -> list[pyalpm.Package]:
     results: list[PacmanPrint] = []
     try:
         results = PackageDB.get_print_format_output(
-            get_pacman_command() + ['--sync'] + pkg_names
+            get_pacman_command() + ["--sync"] + pkg_names
         )
     except DependencyError as exc:
         print_error(translate("Dependencies can't be satisfied for the following packages:"))
-        print_stderr(' ' * 12 + ' '.join(pkg_names))
+        print_stderr(" " * 12 + " ".join(pkg_names))
         print_stderr(str(exc))
         for pkg_name in pkg_names:
             try:
                 results += PackageDB.get_print_format_output(
-                    get_pacman_command() + ['--sync'] + [pkg_name, ]
+                    get_pacman_command() + ["--sync"] + [pkg_name, ]
                 )
             except DependencyError as exc2:
                 print_error(translate("Because of:"))
@@ -548,13 +548,13 @@ def find_sysupgrade_packages(ignore_pkgs: list[str] | None = None) -> list[pyalp
 
     extra_args: list[str] = []
     for excluded_pkg_name in ignore_pkgs or []:
-        extra_args.append('--ignore')
+        extra_args.append("--ignore")
         # pacman's --ignore doesn't work with repo name:
         extra_args.append(strip_repo_name(excluded_pkg_name))
 
     results = PackageDB.get_print_format_output(
-        get_pacman_command() + ['--sync'] +
-        ['--sysupgrade'] * parse_args().sysupgrade +
+        get_pacman_command() + ["--sync"] +
+        ["--sysupgrade"] * parse_args().sysupgrade +
         extra_args
     )
     return [
@@ -576,7 +576,7 @@ def refresh_pkg_db_if_needed() -> None:
     args = parse_args()
     if args.refresh:
         pacman_args = (sudo(
-            get_pacman_command() + ['--sync'] + ['--refresh'] * args.refresh
+            get_pacman_command() + ["--sync"] + ["--refresh"] * args.refresh
         ))
         retry_interactive_command_or_exit(pacman_args)
 
@@ -593,13 +593,13 @@ def install_built_deps(
 
     def _get_pacman_command() -> list[str]:
         return get_pacman_command() + reconstruct_args(args, ignore_args=[
-            'upgrade',
-            'asdeps',
-            'sync',
-            'sysupgrade',
-            'refresh',
-            'ignore',
-            'downloadonly',
+            "upgrade",
+            "asdeps",
+            "sync",
+            "sysupgrade",
+            "refresh",
+            "ignore",
+            "downloadonly",
         ])
 
     explicitly_installed_deps = []
@@ -612,8 +612,8 @@ def install_built_deps(
         deps_upgrade_success = retry_interactive_command(
             sudo(
                 _get_pacman_command() + [
-                    '--upgrade',
-                    '--asdeps',
+                    "--upgrade",
+                    "--asdeps",
                 ] + [
                     path for name, path in deps_names_and_paths.items()
                     if name not in explicitly_installed_deps
@@ -628,7 +628,7 @@ def install_built_deps(
         explicit_upgrade_success = retry_interactive_command(
             sudo(
                 _get_pacman_command() + [
-                    '--upgrade',
+                    "--upgrade",
                 ] + [
                     path for name, path in deps_names_and_paths.items()
                     if name in explicitly_installed_deps
@@ -645,7 +645,7 @@ def install_built_deps(
 
 
 def strip_repo_name(pkg_name: str) -> str:
-    return pkg_name.split('/', 1)[-1]
+    return pkg_name.split("/", 1)[-1]
 
 
 def get_ignored_pkgnames_from_patterns(

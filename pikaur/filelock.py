@@ -19,7 +19,7 @@ class FileLock():
 
     def __enter__(self) -> None:
         self.lock_file = open(
-            self.lock_file_path, 'a', encoding=DEFAULT_INPUT_ENCODING
+            self.lock_file_path, "a", encoding=DEFAULT_INPUT_ENCODING
         )
         while True:
             try:
@@ -31,7 +31,7 @@ class FileLock():
                     lock_file=self.lock_file_path,
                     reason=err.strerror
                 ))
-                if not ask_to_continue(translate('Do you want to retry?')):
+                if not ask_to_continue(translate("Do you want to retry?")):
                     raise SysExit(128) from err
 
     def __exit__(self, *_exc_details: Any) -> None:

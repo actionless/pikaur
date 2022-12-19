@@ -31,8 +31,8 @@ class SrcInfo():
         destination = self._common_lines
         with open_file(self.path) as srcinfo_file:
             for line in srcinfo_file.readlines():
-                if line.startswith('pkgname ='):
-                    pkgname = line.split('=')[1].strip()
+                if line.startswith("pkgname ="):
+                    pkgname = line.split("=")[1].strip()
                     self.pkgnames.append(pkgname)
                     if pkgname == self.package_name:
                         destination = self._package_lines
@@ -49,21 +49,21 @@ class SrcInfo():
     ) -> None:
         if repo_path:
             self.repo_path = repo_path
-            self.pkgbuild_path = os.path.join(repo_path, 'PKGBUILD')
+            self.pkgbuild_path = os.path.join(repo_path, "PKGBUILD")
         elif pkgbuild_path:
             self.pkgbuild_path = pkgbuild_path
             self.repo_path = dirname(pkgbuild_path)
         else:
-            raise NotImplementedError('Either `repo_path` or `pkgbuild_path` should be set')
+            raise NotImplementedError("Either `repo_path` or `pkgbuild_path` should be set")
         self.path = os.path.join(
             self.repo_path,
-            '.SRCINFO'
+            ".SRCINFO"
         )
         self.package_name = package_name
         self.load_config()
 
     def get_values(self, field: str, lines: list[str] | None = None) -> list[str]:
-        prefix = field + ' = '
+        prefix = field + " = "
         values = []
         if lines is None:
             lines = self._common_lines + self._package_lines
@@ -80,7 +80,7 @@ class SrcInfo():
         return value
 
     def get_install_script(self) -> str | None:
-        values = self.get_values('install')
+        values = self.get_values("install")
         if values:
             return values[0]
         return None
@@ -88,11 +88,11 @@ class SrcInfo():
     def _get_depends(self, field: str, lines: list[str] | None = None) -> dict[str, VersionMatcher]:
         if lines is None:
             lines = self._common_lines + self._package_lines
-        carch = MakepkgConfig.get('CARCH')
+        carch = MakepkgConfig.get("CARCH")
         dependencies: dict[str, VersionMatcher] = {}
         for dep_line in (
                 self.get_values(field, lines=lines) +
-                self.get_values(f'{field}_{carch}', lines=lines)
+                self.get_values(f"{field}_{carch}", lines=lines)
         ):
             version_matcher = VersionMatcher(dep_line, is_pkg_deps=True)
             pkg_name = version_matcher.pkg_name
@@ -106,38 +106,38 @@ class SrcInfo():
         return self._get_depends(field=field, lines=self._common_lines)
 
     def get_depends(self) -> dict[str, VersionMatcher]:
-        return self._get_depends('depends')
+        return self._get_depends("depends")
 
     def get_build_depends(self) -> dict[str, VersionMatcher]:
-        return self._get_build_depends('depends')
+        return self._get_build_depends("depends")
 
     def get_build_makedepends(self) -> dict[str, VersionMatcher]:
-        return self._get_build_depends('makedepends')
+        return self._get_build_depends("makedepends")
 
     def get_build_checkdepends(self) -> dict[str, VersionMatcher]:
-        return self._get_build_depends('checkdepends')
+        return self._get_build_depends("checkdepends")
 
     def get_version(self) -> str:
-        epoch = self.get_value('epoch')
-        epoch_display = (epoch + ':') if epoch else ''
-        version = self.get_value('pkgver')
-        release = self.get_value('pkgrel')
-        return f'{epoch_display}{version}-{release}'
+        epoch = self.get_value("epoch")
+        epoch_display = (epoch + ":") if epoch else ""
+        version = self.get_value("pkgver")
+        release = self.get_value("pkgrel")
+        return f"{epoch_display}{version}-{release}"
 
     def regenerate(self) -> None:
         working_directory = self.repo_path
         if running_as_root() and not self.repo_path.startswith(CACHE_ROOT):
             working_directory = os.path.join(
                 BUILD_CACHE_PATH,
-                '_info_' + (self.get_value('pkgbase') or 'unknown')
+                "_info_" + (self.get_value("pkgbase") or "unknown")
             )
             if not os.path.exists(working_directory):
                 os.mkdir(working_directory)
             shutil.copy(self.pkgbuild_path, working_directory)
         result = spawn(
             isolate_root_cmd(
-                MakePkgCommand.get() + ['--printsrcinfo'] +
-                ['-p', os.path.basename(self.pkgbuild_path)],
+                MakePkgCommand.get() + ["--printsrcinfo"] +
+                ["-p", os.path.basename(self.pkgbuild_path)],
                 cwd=working_directory
             ), cwd=working_directory
         )
@@ -147,6 +147,6 @@ class SrcInfo():
             )
             print_stderr(result.stderr_text)
             raise SysExit(5)
-        with open_file(self.path, 'w') as srcinfo_file:
+        with open_file(self.path, "w") as srcinfo_file:
             srcinfo_file.write(result.stdout_text)
         self.load_config()

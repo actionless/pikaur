@@ -8,7 +8,7 @@ import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 PARENT_DIR = os.path.realpath(
-    os.path.join(SCRIPT_DIR, '../')
+    os.path.join(SCRIPT_DIR, "../")
 )
 sys.path.insert(1, PARENT_DIR)
 
@@ -16,7 +16,7 @@ sys.path.insert(1, PARENT_DIR)
 from pikaur.pacman import PackageDB  # noqa: E402
 from pikaur_test.helpers import PikaurDbTestCase  # noqa: E402
 
-# BUILD_ROOT = '/tmp/'
+# BUILD_ROOT = "/tmp/"
 
 
 def print_usage() -> None:

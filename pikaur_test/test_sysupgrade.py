@@ -8,33 +8,33 @@ from pikaur_test.helpers import PikaurDbTestCase, pikaur, spawn
 class SysupgradeTest(PikaurDbTestCase):
     """Sysupgrade-related testcases."""
 
-    self_name = 'pikaur-git'
+    self_name = "pikaur-git"
 
     """
     pikaur -Qi (pikaur -Qnq) | grep -e '^Name' -e '^Installed Size' -e '^Depends On' | less -r
     """
 
-    # repo_pkg_name = 'ncdu'
-    repo_pkg_name = 'xmlto'
+    # repo_pkg_name = "ncdu"
+    repo_pkg_name = "xmlto"
     repo_old_version: str
 
-    repo2_pkg_name = 'xsel'
+    repo2_pkg_name = "xsel"
     repo2_old_version: str
 
-    aur_pkg_name = 'fbcat'
+    aur_pkg_name = "fbcat"
     aur_old_version: str
 
-    aur2_pkg_name = 'inxi'
+    aur2_pkg_name = "inxi"
     aur2_old_version: str
 
-    dev_pkg_name = 'xst-git'
-    dev_pkg_url = 'https://github.com/gnotclub/xst.git'
+    dev_pkg_name = "xst-git"
+    dev_pkg_url = "https://github.com/gnotclub/xst.git"
     dev_old_version: str
 
     def setUp(self):
         # just update to make sure everything is on the latest version,
         # except for test subject packages
-        pikaur('-Syu --noconfirm', skippgpcheck=True)
+        pikaur("-Syu --noconfirm", skippgpcheck=True)
 
     def downgrade_repo1_pkg(self) -> None:
         self.repo_old_version = self.downgrade_repo_pkg(self.repo_pkg_name, fake_makepkg=True)
@@ -55,9 +55,9 @@ class SysupgradeTest(PikaurDbTestCase):
     def downgrade_dev_pkg(self) -> None:
         # test -P <custom_name> and -G -d during downgrading
         self.remove_if_installed(self.dev_pkg_name)
-        spawn(f'rm -fr ./{self.dev_pkg_name}')
-        pikaur(f'-G -d {self.dev_pkg_name}')
-        dev_pkg_url = self.dev_pkg_url.replace('/', r'\/')
+        spawn(f"rm -fr ./{self.dev_pkg_name}")
+        pikaur(f"-G -d {self.dev_pkg_name}")
+        dev_pkg_url = self.dev_pkg_url.replace("/", r"\/")
         spawn([
             "bash",
             "-c",
@@ -68,7 +68,7 @@ class SysupgradeTest(PikaurDbTestCase):
             f'source=("git+{dev_pkg_url}#branch=master~1")'
             "/' PKGBUILD > PKGBUILD_prev"
         ])
-        pikaur(f'-P -i --noconfirm ./{self.dev_pkg_name}/PKGBUILD_prev')
+        pikaur(f"-P -i --noconfirm ./{self.dev_pkg_name}/PKGBUILD_prev")
         self.assertInstalled(self.dev_pkg_name)
         self.dev_old_version = PackageDB.get_local_dict()[self.dev_pkg_name].version
 
@@ -81,8 +81,8 @@ class SysupgradeTest(PikaurDbTestCase):
         # )  # @TODO: not sure we need to check this at all
 
         # and finally test the sysupgrade itself
-        pikaur('-Su --noconfirm --devel --ignore pikaur-git')
-        # pikaur(f'-S {self.dev_pkg_name} --noconfirm --devel')
+        pikaur("-Su --noconfirm --devel --ignore pikaur-git")
+        # pikaur(f"-S {self.dev_pkg_name} --noconfirm --devel")
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.dev_pkg_name].version,
             self.dev_old_version
@@ -90,7 +90,7 @@ class SysupgradeTest(PikaurDbTestCase):
 
     @property
     def upgradeable_pkgs_list(self) -> list[str]:
-        query_result = pikaur('-Quq').stdout
+        query_result = pikaur("-Quq").stdout
         upgradeable_pkgs = query_result.splitlines()
         if self.self_name in upgradeable_pkgs:
             upgradeable_pkgs.remove(self.self_name)
@@ -98,11 +98,11 @@ class SysupgradeTest(PikaurDbTestCase):
 
     @property
     def upgradeable_repo_pkgs_list(self) -> list[str]:
-        return pikaur('-Quq --repo').stdout.splitlines()
+        return pikaur("-Quq --repo").stdout.splitlines()
 
     @property
     def upgradeable_aur_pkgs_list(self) -> list[str]:
-        query_result = pikaur('-Quq --aur').stdout
+        query_result = pikaur("-Quq --aur").stdout
         upgradeable_aur_pkgs = query_result.splitlines()
         if self.self_name in upgradeable_aur_pkgs:
             upgradeable_aur_pkgs.remove(self.self_name)
@@ -125,7 +125,7 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
         # and finally test the sysupgrade itself
-        pikaur('-Su --noconfirm', skippgpcheck=True)
+        pikaur("-Su --noconfirm", skippgpcheck=True)
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version
@@ -144,11 +144,11 @@ class SysupgradeTest(PikaurDbTestCase):
 
         # ignore all upgradeable packages
         pikaur(
-            '-Su --noconfirm '
-            f'--ignore {self.repo_pkg_name} '
-            f'--ignore {self.aur_pkg_name} '
-            f'--ignore {self.repo2_pkg_name} '
-            f'--ignore {self.aur2_pkg_name}'
+            "-Su --noconfirm "
+            f"--ignore {self.repo_pkg_name} "
+            f"--ignore {self.aur_pkg_name} "
+            f"--ignore {self.repo2_pkg_name} "
+            f"--ignore {self.aur2_pkg_name}"
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
@@ -169,9 +169,9 @@ class SysupgradeTest(PikaurDbTestCase):
 
         # ignore one of repo pkgs and one of AUR pkgs
         pikaur(
-            '-Su --noconfirm '
-            f'--ignore {self.repo_pkg_name} '
-            f'--ignore {self.aur_pkg_name}'
+            "-Su --noconfirm "
+            f"--ignore {self.repo_pkg_name} "
+            f"--ignore {self.aur_pkg_name}"
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
@@ -191,8 +191,8 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
         # ignore the only remaining AUR package
-        pikaur('-Su --noconfirm '
-               f'--ignore {self.aur_pkg_name}')
+        pikaur("-Su --noconfirm "
+               f"--ignore {self.aur_pkg_name}")
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version
@@ -205,8 +205,8 @@ class SysupgradeTest(PikaurDbTestCase):
         self.downgrade_repo1_pkg()
 
         # ignore the only one remaining repo package
-        pikaur('-Su --noconfirm '
-               f'--ignore {self.repo_pkg_name}')
+        pikaur("-Su --noconfirm "
+               f"--ignore {self.repo_pkg_name}")
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version
@@ -221,7 +221,7 @@ class SysupgradeTest(PikaurDbTestCase):
         self.downgrade_repo1_pkg()
         self.downgrade_aur1_pkg()
 
-        pikaur('-Su --noconfirm --repo')
+        pikaur("-Su --noconfirm --repo")
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version
@@ -233,7 +233,7 @@ class SysupgradeTest(PikaurDbTestCase):
 
         self.downgrade_repo1_pkg()
 
-        pikaur('-Su --noconfirm --aur')
+        pikaur("-Su --noconfirm --aur")
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version

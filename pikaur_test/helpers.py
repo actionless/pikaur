@@ -20,7 +20,7 @@ from pikaur.pacman import PackageDB
 from pikaur.pprint import color_line, get_term_width
 from pikaur.srcinfo import SrcInfo
 
-WRITE_DB = bool(os.environ.get('WRITE_DB'))
+WRITE_DB = bool(os.environ.get("WRITE_DB"))
 
 
 if WRITE_DB:
@@ -31,7 +31,7 @@ if WRITE_DB:
 
     CONFIG_PATH = get_config_path()
     if os.path.exists(CONFIG_PATH):
-        shutil.copy(CONFIG_PATH, f'{CONFIG_PATH}.pikaur_test_bak')
+        shutil.copy(CONFIG_PATH, f"{CONFIG_PATH}.pikaur_test_bak")
         os.unlink(CONFIG_PATH)
     PikaurConfig._config = None  # type: ignore[assignment]
 
@@ -46,12 +46,12 @@ TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def spawn(cmd: str | list[str], env: dict[str, str] | None = None) -> InteractiveSpawn:
     if isinstance(cmd, str):
-        cmd = cmd.split(' ')
+        cmd = cmd.split(" ")
     return core_spawn(cmd, env=env)
 
 
 def log_stderr(line: str) -> None:
-    sys.stderr.buffer.write((line + '\n').encode('utf-8'))
+    sys.stderr.buffer.write((line + "\n").encode("utf-8"))
     sys.stderr.buffer.flush()
 
 
@@ -67,17 +67,17 @@ class CmdResult:
             stderr: str | None = None
     ) -> None:
         self.returncode = returncode
-        self.stdout = stdout or ''
-        self.stderr = stderr or ''
+        self.stdout = stdout or ""
+        self.stderr = stderr or ""
 
     def __repr__(self) -> str:
         return (
-            f'<{self.returncode}>:\n'
-            f'{self.stderr}\n'
-            f'{self.stdout}\n'
+            f"<{self.returncode}>:\n"
+            f"{self.stderr}\n"
+            f"{self.stdout}\n"
         )
 
-    def __eq__(self, other: 'CmdResult') -> bool:  # type: ignore[override]
+    def __eq__(self, other: "CmdResult") -> bool:  # type: ignore[override]
         return ((
             self.stdout == other.stdout
         ) and (
@@ -115,21 +115,21 @@ class InterceptSysOutput():
 
         class PrintInteractiveSpawn(InteractiveSpawn):
             def __init__(self, *args: Any, **kwargs: Any) -> None:
-                kwargs.setdefault('stdout', sys.stdout)
-                kwargs.setdefault('stderr', sys.stderr)
+                kwargs.setdefault("stdout", sys.stdout)
+                kwargs.setdefault("stderr", sys.stderr)
                 super().__init__(*args, **kwargs)
 
-        self.out_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
-        self.err_file = tempfile.TemporaryFile('w+', encoding='UTF-8')
+        self.out_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
+        self.err_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
         self.out_file.isatty = lambda: False  # type: ignore[assignment]
         self.err_file.isatty = lambda: False  # type: ignore[assignment]
 
         if self.capture_stdout:
-            self._patcher_stdout = mock.patch('sys.stdout', new=self.out_file)
+            self._patcher_stdout = mock.patch("sys.stdout", new=self.out_file)
         if self.capture_stderr:
-            self._patcher_stderr = mock.patch('sys.stderr', new=self.err_file)
-        self._patcher_exit = mock.patch('sys.exit', new=self._fake_exit)
-        self._patcher_spawn = mock.patch('pikaur.core.InteractiveSpawn', new=PrintInteractiveSpawn)
+            self._patcher_stderr = mock.patch("sys.stderr", new=self.err_file)
+        self._patcher_exit = mock.patch("sys.exit", new=self._fake_exit)
+        self._patcher_spawn = mock.patch("pikaur.core.InteractiveSpawn", new=PrintInteractiveSpawn)
 
         self.patchers = [
             self._patcher_stdout,
@@ -138,7 +138,7 @@ class InterceptSysOutput():
             self._patcher_spawn,
         ]
 
-    def __enter__(self) -> 'InterceptSysOutput':
+    def __enter__(self) -> "InterceptSysOutput":
         for patcher in self.patchers:
             if patcher:
                 patcher.start()
@@ -175,31 +175,31 @@ def pikaur(
 
     PackageDB.discard_local_cache()
 
-    new_args = ['pikaur'] + cmd.split(' ')
+    new_args = ["pikaur"] + cmd.split(" ")
     mflags = []
 
-    if '-S ' in cmd:
+    if "-S " in cmd:
         new_args += [
-            '--noconfirm',
+            "--noconfirm",
         ]
     if fake_makepkg:
         new_args += [
-            '--makepkg-path=' + os.path.join(TEST_DIR, 'fake_makepkg')
+            "--makepkg-path=" + os.path.join(TEST_DIR, "fake_makepkg")
         ]
-        mflags.append('--noextract')
+        mflags.append("--noextract")
     if skippgpcheck:
-        mflags.append('--skippgpcheck')
-    if '--mflags' in cmd:
+        mflags.append("--skippgpcheck")
+    if "--mflags" in cmd:
         for arg in new_args[::]:
-            if arg.startswith('--mflags'):
-                for mflag in arg.split('=', maxsplit=1)[1].split(','):
+            if arg.startswith("--mflags"):
+                for mflag in arg.split("=", maxsplit=1)[1].split(","):
                     mflags.append(mflag)
                 new_args.remove(arg)
                 break
     if mflags:
         new_args += [f"--mflags={','.join(mflags)}", ]
 
-    log_stderr(color_line('\n => ', 10, force=True) + ' '.join(new_args))
+    log_stderr(color_line("\n => ", 10, force=True) + " ".join(new_args))
 
     try:
         with InterceptSysOutput(
@@ -211,10 +211,10 @@ def pikaur(
                 # re-parse args:
                 CachedArgs.args = None
                 MakePkgCommand._cmd = None  # pylint: disable=protected-access
-                with mock.patch('sys.argv', new=new_args):
+                with mock.patch("sys.argv", new=new_args):
                     parse_args()
                 # monkey-patch to force always uncolored output:
-                CachedArgs.args.color = 'never'  # type: ignore[attr-defined]
+                CachedArgs.args.color = "never"  # type: ignore[attr-defined]
 
                 # finally run pikaur's main loop
                 main(embed=True)
@@ -239,7 +239,7 @@ def fake_pikaur(cmd_args: str) -> CmdResult:
 
 
 def pacman(cmd: str) -> CmdResult:
-    args = ['pacman'] + cmd.split(' ')
+    args = ["pacman"] + cmd.split(" ")
     proc = spawn(args)
     return CmdResult(
         returncode=proc.returncode,
@@ -251,7 +251,7 @@ def pacman(cmd: str) -> CmdResult:
 def pkg_is_installed(pkg_name: str) -> bool:
     return pkg_name in [
         pkg.name for pkg in
-        PacmanConfig(conf='/etc/pacman.conf').initialize_alpm().get_localdb().search(pkg_name)
+        PacmanConfig(conf="/etc/pacman.conf").initialize_alpm().get_localdb().search(pkg_name)
     ]
 
 
@@ -264,7 +264,7 @@ class PikaurTestCase(TestCase):
         time_started = time()
         log_stderr(self.separator)
         result = super().run(result)
-        log_stderr(f':: Took {(time() - time_started):.2f} seconds')
+        log_stderr(f":: Took {(time() - time_started):.2f} seconds")
         return result
 
     def setUp(self) -> None:
@@ -280,12 +280,12 @@ class PikaurTestCase(TestCase):
             self.fail(f'Package "{pkg_name}" is still installed.')
 
     def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:  # noqa: N802
-        cmd_result: str = pacman(f'-Qiq {dep_name}').stdout
+        cmd_result: str = pacman(f"-Qiq {dep_name}").stdout
         self.assertTrue(
             cmd_result
         )
         self.assertEqual(
-            cmd_result.splitlines()[0].split(':')[1].strip(),
+            cmd_result.splitlines()[0].split(":")[1].strip(),
             provider_name
         )
 
@@ -297,14 +297,14 @@ class PikaurDbTestCase(PikaurTestCase):
         if WRITE_DB:
             return super().run(result)
         if result:
-            message = 'Not writing to local package DB (env `WRITE_DB`).'
+            message = "Not writing to local package DB (env `WRITE_DB`)."
             if isinstance(result, TextTestResult):
-                message = result.getDescription(self) + f'. {message}'
+                message = result.getDescription(self) + f". {message}"
             result.addSkip(self, message)
         return result
 
     def remove_packages(self, *pkg_names: str) -> None:
-        pikaur('-Rs --noconfirm ' + ' '.join(pkg_names))
+        pikaur("-Rs --noconfirm " + " ".join(pkg_names))
         for name in pkg_names:
             self.assertNotInstalled(name)
 
@@ -320,26 +320,26 @@ class PikaurDbTestCase(PikaurTestCase):
             fake_makepkg: bool = False,
             skippgpcheck: bool = False,
             count: int = 10,
-            build_root: str = '.',
+            build_root: str = ".",
             remove_before_upgrade: bool = True,
             to_version: str | None = None,
     ) -> str:
         if remove_before_upgrade:
             self.remove_if_installed(repo_pkg_name)
-        spawn(f'rm -fr {build_root}/{repo_pkg_name}')
-        pikaur(f'-G {repo_pkg_name}')
-        build_dir = f'{build_root}/{repo_pkg_name}/trunk/'
+        spawn(f"rm -fr {build_root}/{repo_pkg_name}")
+        pikaur(f"-G {repo_pkg_name}")
+        build_dir = f"{build_root}/{repo_pkg_name}/trunk/"
         srcinfo = SrcInfo(build_dir, repo_pkg_name)
         srcinfo.regenerate()
         from_version = srcinfo.get_version()
         if not to_version:
             proc = spawn(
-                f'git -C {build_root}/{repo_pkg_name} log --format=%h'
+                f"git -C {build_root}/{repo_pkg_name} log --format=%h"
             )
             if not proc.stdout_text:
                 raise RuntimeError()
             some_older_commit = proc.stdout_text.splitlines()[count]
-            spawn(f'git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}')
+            spawn(f"git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}")
             srcinfo.regenerate()
             to_version = srcinfo.get_version()
         else:
@@ -347,20 +347,20 @@ class PikaurDbTestCase(PikaurTestCase):
             count = 1
             while current_version != to_version:
                 proc = spawn(
-                    f'git -C {build_root}/{repo_pkg_name} log --format=%h'
+                    f"git -C {build_root}/{repo_pkg_name} log --format=%h"
                 )
                 if not proc.stdout_text:
                     raise RuntimeError()
                 some_older_commit = proc.stdout_text.splitlines()[count]
-                spawn(f'git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}')
+                spawn(f"git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}")
                 srcinfo.regenerate()
                 current_version = srcinfo.get_version()
                 log_stderr(current_version)
                 count += 1
         log_stderr(f"Downgrading from {from_version} to {to_version}...")
         pikaur(
-            '-P -i --noconfirm '
-            f'{build_dir}/PKGBUILD',
+            "-P -i --noconfirm "
+            f"{build_dir}/PKGBUILD",
             fake_makepkg=fake_makepkg,
             skippgpcheck=skippgpcheck
         )
@@ -381,18 +381,18 @@ class PikaurDbTestCase(PikaurTestCase):
             else None
         )
         self.remove_if_installed(aur_pkg_name)
-        spawn(f'rm -fr ./{aur_pkg_name}')
-        pikaur(f'-G {aur_pkg_name}')
+        spawn(f"rm -fr ./{aur_pkg_name}")
+        pikaur(f"-G {aur_pkg_name}")
         proc = spawn(
-            f'git -C ./{aur_pkg_name} log --format=%h'
+            f"git -C ./{aur_pkg_name} log --format=%h"
         )
         if not proc.stdout_text:
             raise RuntimeError()
         prev_commit = proc.stdout_text.splitlines()[count]
-        spawn(f'git -C ./{aur_pkg_name} checkout {prev_commit}')
+        spawn(f"git -C ./{aur_pkg_name} checkout {prev_commit}")
         pikaur(
-            '-P -i --noconfirm '
-            f'./{aur_pkg_name}/PKGBUILD',
+            "-P -i --noconfirm "
+            f"./{aur_pkg_name}/PKGBUILD",
             fake_makepkg=fake_makepkg,
             skippgpcheck=skippgpcheck
         )

@@ -27,7 +27,7 @@ OptionsDict = markdown_it.utils.OptionsDict
 
 README_PATH = sys.argv[1]
 OUTPUT_PATH = sys.argv[2]
-ENCODING = 'utf-8'
+ENCODING = "utf-8"
 
 
 class NroffRenderer(  # pylint: disable=too-many-public-methods
@@ -35,11 +35,11 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 ):
     # pylint: disable=unused-argument
 
-    __output__ = 'nroff'
+    __output__ = "nroff"
     name: str
     section: int
 
-    def __init__(self, name: str = 'test', section: int = 1) -> None:
+    def __init__(self, name: str = "test", section: int = 1) -> None:
         super().__init__()
         self.name = name
         self.section = section
@@ -85,16 +85,16 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
-        return self.escape(' ')
+        return self.escape(" ")
 
-    _html_tag_regex = re.compile('<.*>')
+    _html_tag_regex = re.compile("<.*>")
 
     def html_inline(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
         text = tokens[idx].content
-        text = self._html_tag_regex.sub('', text)
+        text = self._html_tag_regex.sub("", text)
         return self.escape(text)
 
     def html_block(
@@ -127,13 +127,13 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
-        return '.P\n'
+        return ".P\n"
 
     def paragraph_close(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
-        return '\n.\n'
+        return "\n.\n"
 
     _last_link: str | None
 
@@ -142,19 +142,19 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
         token = tokens[idx]
-        self._last_link = str(dict(token.attrItems()).get('href', ''))
-        return r'\fI'
+        self._last_link = str(dict(token.attrItems()).get("href", ""))
+        return r"\fI"
 
     def link_close(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
-        result = r'\fR'
+        result = r"\fR"
         if self._last_link and self.is_url(self._last_link):
             result += (
-                ' (' +
+                " (" +
                 self.escape(self._last_link) +
-                ')'
+                ")"
             )
         return result
 
@@ -162,7 +162,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
-        return ''
+        return ""
 
     def code_inline(
             self, tokens: Sequence[Token], idx: int,
@@ -170,30 +170,30 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
     ) -> str:
         token = tokens[idx]
         return (
-            r'\fB' +
+            r"\fB" +
             self.escape(token.content) +
-            r'\fR'
+            r"\fR"
         )
 
     def bullet_list_open(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
-        return ''
+        return ""
 
     def bullet_list_close(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
-        return ''
+        return ""
 
     def list_item_open(
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
         list_deco = r"\(bu"  # bullet
-        # bullet_char = node.parent.list_data.get('bullet_char')
-        # if bullet_char not in (None, '*'):
+        # bullet_char = node.parent.list_data.get("bullet_char")
+        # if bullet_char not in (None, "*"):
         #     list_deco = bullet_char
         return rf'.IP "{list_deco}" 4'
 
@@ -201,15 +201,15 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
             self, tokens: Sequence[Token], idx: int,
             options: OptionsDict, env: MutableMapping[str, str]
     ) -> str:
-        return '.\n'
+        return ".\n"
 
     # def ordered_list_item(self, token):
     #     list_deco = r"\(bu"  # bullet
-    #     # list_deco = node.parent.list_data['start']
+    #     # list_deco = node.parent.list_data["start"]
     #     return (
     #         rf'.IP "{list_deco}" 4' +
     #         token.content +
-    #         '.' +
+    #         "." +
     #         "\n"
     #     )
 
@@ -219,24 +219,24 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
     ) -> str:
         token = tokens[idx]
         return (
-            '.nf\n\n' +
+            ".nf\n\n" +
             self.escape(token.content) +
-            '\n.\n.fi\n'
+            "\n.\n.fi\n"
         )
 
     # ###################### Helpers: ###################### #
 
     @staticmethod
     def escape(text: str) -> str:
-        for control_character in ('.', '"'):
+        for control_character in (".", '"'):
             if text.startswith(control_character):
-                text = text.replace(control_character, r'\&' + control_character, 1)
-            text = text.replace(r'\n' + control_character, r'\n\&' + control_character)
-        return text.replace('-', r'\-').replace("'", r"\'")
+                text = text.replace(control_character, r"\&" + control_character, 1)
+            text = text.replace(r"\n" + control_character, r"\n\&" + control_character)
+        return text.replace("-", r"\-").replace("'", r"\'")
 
     @staticmethod
     def is_url(text: str) -> bool:
-        return text.startswith('http://') or text.startswith('https://')
+        return text.startswith("http://") or text.startswith("https://")
 
     def document_open(self) -> str:
         date = datetime.now().strftime("%B %Y")
@@ -251,19 +251,19 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def strong(self, _node: Any, entering: bool) -> str:  # noqa: FBT001
         if entering:
-            return r'\fB'
-        return r'\fR'
+            return r"\fB"
+        return r"\fR"
 
     def emph(self, _node: Any, entering: bool) -> str:  # noqa: FBT001
         if entering:
-            return r'\fI'
-        return r'\fR'
+            return r"\fI"
+        return r"\fR"
 
 
 with open(README_PATH, encoding=ENCODING) as input_fobj:
-    with open(OUTPUT_PATH, 'w', encoding=ENCODING) as output_fobj:
+    with open(OUTPUT_PATH, "w", encoding=ENCODING) as output_fobj:
         output_fobj.write(
-            NroffRenderer(name='pikaur', section=1).render(
+            NroffRenderer(name="pikaur", section=1).render(
                 markdown_it.MarkdownIt().parse(
                     input_fobj.read()
                 ),

@@ -5,7 +5,7 @@ from typing import Callable
 
 import pyalpm
 
-VERSION_SEPARATORS = ('.', '+', '-', ':')
+VERSION_SEPARATORS = (".", "+", "-", ":")
 
 
 def compare_versions(version1: str, version2: str) -> int:
@@ -43,19 +43,19 @@ class VersionMatcher():
         self.line = depend_line
         self._set_version_matcher_func(is_pkg_deps=is_pkg_deps)
 
-    def add_version_matcher(self, version_matcher: 'VersionMatcher') -> None:
+    def add_version_matcher(self, version_matcher: "VersionMatcher") -> None:
         """
         Embed another `VersionMatcher` into this.
         So they both could check against some version
         when this `VersionMatcher` is called.
         """
-        if version_matcher.line in self.line.split(','):
+        if version_matcher.line in self.line.split(","):
             return
         self.version_matchers.append(version_matcher.version_matchers[0])
-        self.line += ',' + version_matcher.line
+        self.line += "," + version_matcher.line
         if self.version:
             if version_matcher.version:
-                self.version += ',' + version_matcher.version
+                self.version += "," + version_matcher.version
         else:
             self.version = version_matcher.version
 
@@ -103,11 +103,11 @@ class VersionMatcher():
         cond: str | None = None
         version_matcher = cmp_default
         for test_cond, matcher in (
-                ('>=', cmp_ge),
-                ('<=', cmp_le),
-                ('=', cmp_eq),
-                ('>', cmp_gt),
-                ('<', cmp_lt),
+                (">=", cmp_ge),
+                ("<=", cmp_le),
+                ("=", cmp_eq),
+                (">", cmp_gt),
+                ("<", cmp_lt),
         ):
             if test_cond in self.line:
                 cond = test_cond
@@ -127,23 +127,23 @@ class VersionMatcher():
 
     def __repr__(self) -> str:
         return (
-            f'<{self.__class__.__name__} '
-            f'{self.pkg_name}{[m.__name__ for m in self.version_matchers]}{self.version}>'
+            f"<{self.__class__.__name__} "
+            f"{self.pkg_name}{[m.__name__ for m in self.version_matchers]}{self.version}>"
         )
 
 
 def split_version(version: str) -> list[str]:
     """Split version, e.g. `"1.2+3"` to `["1", "2", "3"]`."""
     splitted_version = []
-    block = ''
+    block = ""
     for char in version:
         if char in VERSION_SEPARATORS:
             splitted_version.append(block)
             splitted_version.append(char)
-            block = ''
+            block = ""
         else:
             block += char
-    if block != '':
+    if block != "":
         splitted_version.append(block)
     return splitted_version
 
@@ -157,8 +157,8 @@ def split_always(line: str, separator: str, *, pad_right: bool = False) -> tuple
     if len(splitted_line) > 1:
         return splitted_line[0], separator + splitted_line[1]
     if pad_right:
-        return splitted_line[0], ''
-    return '', splitted_line[0]
+        return splitted_line[0], ""
+    return "", splitted_line[0]
 
 
 def rsplit_always(line: str, separator: str) -> tuple[str, str]:
@@ -169,7 +169,7 @@ def rsplit_always(line: str, separator: str) -> tuple[str, str]:
     splitted_line = line.rsplit(separator, 1)
     if len(splitted_line) > 1:
         return splitted_line[0] + separator, splitted_line[1]
-    return splitted_line[0], ''
+    return splitted_line[0], ""
 
 
 def get_common_version(version1: str, version2: str) -> tuple[str, int]:
@@ -177,23 +177,23 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
     Get common part of two versions and compute their difference "weight".
     For example if epoch changes it affects weight by 1000,
     major version by 500 and etc.
-    E.g. for `1.2.3` and `1.2.5` this would be `('1.2.', 96)`,
-    for `1.2.3` and `2.0.0` - `('', 500)`.
+    E.g. for `1.2.3` and `1.2.5` this would be `("1.2.", 96)`,
+    for `1.2.3` and `2.0.0` - `("", 500)`.
     """
 
     def _split_epoch(version: str) -> tuple[str, str]:
-        return split_always(version, ':')
+        return split_always(version, ":")
 
     def _split_major(version: str) -> tuple[str, str]:
-        return split_always(version, '.', pad_right=True)
+        return split_always(version, ".", pad_right=True)
 
     def _split_release(version: str) -> tuple[str, str]:
-        return rsplit_always(version, '-')
+        return rsplit_always(version, "-")
 
-    common_string = ''
+    common_string = ""
     diff_weight = 0
     diff_found = False
-    if '' in (version1, version2):
+    if "" in (version1, version2):
         return common_string, diff_weight
     for weight, version_chunk1, version_chunk2 in (
             (
@@ -214,7 +214,7 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
         for block1, block2 in zip_longest(
                 split_version(version_chunk1),
                 split_version(version_chunk2),
-                fillvalue=' '
+                fillvalue=" "
         ):
             if block1 == block2:
                 if not diff_found:
@@ -224,7 +224,7 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
                 if diff_weight == 0 and block1 not in VERSION_SEPARATORS:
                     diff_weight += weight
             weight -= 1
-    if version2 == 'devel':
+    if version2 == "devel":
         diff_weight = 9999
     return common_string, diff_weight
 
@@ -234,7 +234,7 @@ def get_version_diff(version: str, common_version: str) -> str:
     Get the different part of the version and version prefix returned by `get_common_version()`.
     E.g. if version is '1.2.3' and common part - '1.2.' - the different part would be '3'.
     """
-    if common_version == '':
+    if common_version == "":
         return version
     return common_version.join(
         version.split(common_version)[1:]

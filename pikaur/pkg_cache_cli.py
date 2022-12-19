@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from subprocess import Popen  # nosec B404
 
 
-_debug = create_debug_logger('pkg_cache_cli')
+_debug = create_debug_logger("pkg_cache_cli")
 
 
 def clean_aur_cache() -> None:
@@ -25,8 +25,8 @@ def clean_aur_cache() -> None:
     ):
         print_stdout(f"\n{message}: {directory}")
         if minimal_clean_level <= args.clean and os.path.exists(directory):
-            if ask_to_continue(text='{} {}'.format(  # pylint: disable=consider-using-f-string
-                    color_line('::', ColorsHighlight.blue),
+            if ask_to_continue(text="{} {}".format(  # pylint: disable=consider-using-f-string
+                    color_line("::", ColorsHighlight.blue),
                     bold_line(translate("Do you want to remove all files?"))
             )):
                 print_stdout(translate("removing all files from cache..."))
@@ -37,27 +37,27 @@ def clean_aur_cache() -> None:
 
 def clean_repo_cache() -> None:
     args = parse_args()
-    spawn_func: Callable[[list[str]], 'Popen[bytes]'] = interactive_spawn
+    spawn_func: Callable[[list[str]], "Popen[bytes]"] = interactive_spawn
     if args.noconfirm:
 
-        def noconfirm_cache_remove(pacman_args: list[str]) -> 'Popen[bytes]':
+        def noconfirm_cache_remove(pacman_args: list[str]) -> "Popen[bytes]":
             return pikspect(pacman_args, extra_questions={YesNo.ANSWER_Y: [
                 format_pacman_question(
-                    'Do you want to remove ALL files from cache?',
+                    "Do you want to remove ALL files from cache?",
                     question=YesNo.QUESTION_YN_NO,
                 ),
                 format_pacman_question(
-                    'Do you want to remove all other packages from cache?'
+                    "Do you want to remove all other packages from cache?"
                 ),
                 format_pacman_question(
-                    'Do you want to remove unused repositories?',
+                    "Do you want to remove unused repositories?",
                 ),
             ]})
         spawn_func = noconfirm_cache_remove
     raise SysExit(
         spawn_func(sudo(
             [PikaurConfig().misc.PacmanPath.get_str(), ] +
-            reconstruct_args(args, ignore_args=['noconfirm', ])
+            reconstruct_args(args, ignore_args=["noconfirm", ])
         )).returncode
     )
 

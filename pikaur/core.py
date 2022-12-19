@@ -25,13 +25,13 @@ if TYPE_CHECKING:
     from .aur import AURPackageInfo
 
     class SpawnArgs(TypedDict):
-        stdout: NotRequired['IOStream']
-        stderr: NotRequired['IOStream']
+        stdout: NotRequired["IOStream"]
+        stderr: NotRequired["IOStream"]
         cwd: NotRequired[str]
         env: NotRequired[dict[str, str]]
 
 
-DEFAULT_INPUT_ENCODING = 'utf-8'
+DEFAULT_INPUT_ENCODING = "utf-8"
 PIPE = subprocess.PIPE
 IOStream = IO[bytes] | int | None
 
@@ -41,16 +41,16 @@ class ComparableType:
     __ignore_in_eq__: tuple[str, ...] = ()
 
     __hash__ = object.__hash__
-    __compare_stack__: list['ComparableType'] | None = None
+    __compare_stack__: list["ComparableType"] | None = None
 
     @property
     def public_values(self) -> dict[str, Any]:
         return {
             var: val for var, val in vars(self).items()
-            if not var.startswith('__')
+            if not var.startswith("__")
         }
 
-    def __eq__(self, other: 'ComparableType') -> bool:  # type: ignore[override]
+    def __eq__(self, other: "ComparableType") -> bool:  # type: ignore[override]
         if not isinstance(other, self.__class__):
             return False
         if not self.__compare_stack__:
@@ -79,7 +79,7 @@ class DataType(ComparableType):
     def __all_annotations__(self) -> dict[str, type]:
         annotations: dict[str, type] = {}
         for parent_class in reversed(self.__class__.mro()):
-            annotations.update(**getattr(parent_class, '__annotations__', {}))
+            annotations.update(**getattr(parent_class, "__annotations__", {}))
         return annotations
 
     def _key_exists(self, key: str) -> bool:
@@ -126,14 +126,14 @@ class InstallInfo(DataType):
     maintainer: str | None = None
     repository: str | None = None
     devel_pkg_age_days: int | None = None
-    package: 'pyalpm.Package | AURPackageInfo'
-    provided_by: list['pyalpm.Package | AURPackageInfo'] | None = None
-    required_by: list['InstallInfo'] | None = None
+    package: "pyalpm.Package | AURPackageInfo"
+    provided_by: list["pyalpm.Package | AURPackageInfo"] | None = None
+    required_by: list["InstallInfo"] | None = None
     members_of: list[str] | None = None
     replaces: list[str] | None = None
     pkgbuild_path: str | None = None
 
-    __ignore_in_eq__ = ('package', 'provided_by', 'pkgbuild_path')
+    __ignore_in_eq__ = ("package", "provided_by", "pkgbuild_path")
 
     @property
     def package_source(self) -> PackageSource:
@@ -144,16 +144,16 @@ class InstallInfo(DataType):
     def __repr__(self) -> str:
         return (
             f'<{self.__class__.__name__} "{self.name}" '
-            f'{self.current_version} -> {self.new_version}>'
+            f"{self.current_version} -> {self.new_version}>"
         )
 
 
 class RepoInstallInfo(InstallInfo):
-    package: 'pyalpm.Package'
+    package: "pyalpm.Package"
 
 
 class AURInstallInfo(InstallInfo):
-    package: 'AURPackageInfo'
+    package: "AURPackageInfo"
 
 
 def sudo(cmd: list[str]) -> list[str]:
@@ -164,7 +164,7 @@ def sudo(cmd: list[str]) -> list[str]:
 
 def get_sudo_refresh_command() -> list[str]:
     pacman_path = PikaurConfig().misc.PacmanPath.get_str()
-    return sudo([pacman_path, '-T'])
+    return sudo([pacman_path, "-T"])
 
 
 class InteractiveSpawn(subprocess.Popen[bytes]):
@@ -178,9 +178,9 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
         if parse_args().print_commands:
             if self.args != get_sudo_refresh_command():
                 print_stderr(
-                    color_line('=> ', ColorsHighlight.cyan) +
+                    color_line("=> ", ColorsHighlight.cyan) +
                     (
-                        ' '.join(str(arg) for arg in self.args)
+                        " ".join(str(arg) for arg in self.args)
                         if isinstance(self.args, list) else
                         str(self.args)
                     )
@@ -193,9 +193,9 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
 
     def __repr__(self) -> str:
         return (
-            f'{self.__class__.__name__} returned {self.returncode}:\n'
-            f'STDOUT:\n{self.stdout_text}\n\n'
-            f'STDERR:\n{self.stderr_text}'
+            f"{self.__class__.__name__} returned {self.returncode}:\n"
+            f"STDOUT:\n{self.stdout_text}\n\n"
+            f"STDERR:\n{self.stderr_text}"
         )
 
     def __del__(self) -> None:
@@ -210,15 +210,15 @@ def interactive_spawn(
         cwd: str | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
-    kwargs: 'SpawnArgs' = {}
+    kwargs: "SpawnArgs" = {}
     if stdout:
-        kwargs['stdout'] = stdout
+        kwargs["stdout"] = stdout
     if stderr:
-        kwargs['stderr'] = stderr
+        kwargs["stderr"] = stderr
     if cwd:
-        kwargs['cwd'] = cwd
+        kwargs["cwd"] = cwd
     if env:
-        kwargs['env'] = env
+        kwargs["env"] = env
     process = InteractiveSpawn(
         cmd, **kwargs
     )
@@ -271,23 +271,23 @@ def isolate_root_cmd(
     if not running_as_root():
         return cmd
     base_root_isolator = [
-        '/usr/sbin/systemd-run',
-        '--service-type=oneshot',
-        '--pipe', '--wait', '--pty',
-        '-p', 'DynamicUser=yes',
-        '-p', 'CacheDirectory=pikaur',
-        '-E', 'HOME=/tmp',
+        "/usr/sbin/systemd-run",
+        "--service-type=oneshot",
+        "--pipe", "--wait", "--pty",
+        "-p", "DynamicUser=yes",
+        "-p", "CacheDirectory=pikaur",
+        "-E", "HOME=/tmp",
     ]
     if env is not None:
         for env_var_name, env_var_value in env.items():
-            base_root_isolator += ['-E', f'{env_var_name}={env_var_value}']
+            base_root_isolator += ["-E", f"{env_var_name}={env_var_value}"]
     if cwd is not None:
-        base_root_isolator += ['-p', 'WorkingDirectory=' + os.path.abspath(cwd)]
+        base_root_isolator += ["-p", "WorkingDirectory=" + os.path.abspath(cwd)]
     for env_var_name in (
-            'http_proxy', 'https_proxy', 'ftp_proxy',
+            "http_proxy", "https_proxy", "ftp_proxy",
     ):
         if os.environ.get(env_var_name) is not None:
-            base_root_isolator += ['-E', f'{env_var_name}={os.environ[env_var_name]}']
+            base_root_isolator += ["-E", f"{env_var_name}={os.environ[env_var_name]}"]
     return base_root_isolator + cmd
 
 
@@ -296,25 +296,25 @@ def detect_bom_type(file_path: str) -> str:
     returns file encoding string for open() function
     https://stackoverflow.com/a/44295590/1850190
     """
-    with open(file_path, 'rb') as test_file:
+    with open(file_path, "rb") as test_file:
         first_bytes = test_file.read(4)
 
-    if first_bytes[0:3] == b'\xef\xbb\xbf':
+    if first_bytes[0:3] == b"\xef\xbb\xbf":
         return "utf-8"
 
     # Python automatically detects endianness if utf-16 bom is present
     # write endianness generally determined by endianness of CPU
     if (
-            first_bytes[0:2] == b'\xfe\xff'
+            first_bytes[0:2] == b"\xfe\xff"
     ) or (
-        first_bytes[0:2] == b'\xff\xfe'
+        first_bytes[0:2] == b"\xff\xfe"
     ):
         return "utf16"
 
     if (
-            first_bytes[0:5] == b'\xfe\xff\x00\x00'
+            first_bytes[0:5] == b"\xfe\xff\x00\x00"
     ) or (
-        first_bytes[0:5] == b'\x00\x00\xff\xfe'
+        first_bytes[0:5] == b"\x00\x00\xff\xfe"
     ):
         return "utf32"
 
@@ -325,16 +325,16 @@ def detect_bom_type(file_path: str) -> str:
 
 
 def open_file(
-        file_path: str, mode: str = 'r', encoding: str | None = None
+        file_path: str, mode: str = "r", encoding: str | None = None
 ) -> codecs.StreamReaderWriter:
-    if encoding is None and (mode and 'r' in mode):
+    if encoding is None and (mode and "r" in mode):
         encoding = detect_bom_type(file_path)
     if encoding:
         return codecs.open(
-            file_path, mode, errors='ignore', encoding=encoding
+            file_path, mode, errors="ignore", encoding=encoding
         )
     return codecs.open(
-        file_path, mode, errors='ignore'
+        file_path, mode, errors="ignore"
     )
 
 
@@ -349,17 +349,17 @@ def remove_dir(dir_path: str) -> None:
     try:
         shutil.rmtree(dir_path)
     except PermissionError:
-        interactive_spawn(sudo(['rm', '-rf', dir_path]))
+        interactive_spawn(sudo(["rm", "-rf", dir_path]))
 
 
 def get_editor() -> list[str] | None:
-    editor_line = os.environ.get('VISUAL') or os.environ.get('EDITOR')
+    editor_line = os.environ.get("VISUAL") or os.environ.get("EDITOR")
     if editor_line:
-        return editor_line.split(' ')
+        return editor_line.split(" ")
     for editor in (
-            'vim', 'nano', 'mcedit', 'edit', 'emacs', 'nvim', 'kak',
-            'e3', 'atom', 'adie', 'dedit', 'gedit', 'jedit', 'kate', 'kwrite', 'leafpad',
-            'mousepad', 'notepadqq', 'pluma', 'code', 'xed', 'nvim-qt', 'geany',
+            "vim", "nano", "mcedit", "edit", "emacs", "nvim", "kak",
+            "e3", "atom", "adie", "dedit", "gedit", "jedit", "kate", "kwrite", "leafpad",
+            "mousepad", "notepadqq", "pluma", "code", "xed", "nvim-qt", "geany",
     ):
         path = shutil.which(editor)
         if path:
@@ -368,7 +368,7 @@ def get_editor() -> list[str] | None:
 
 
 def dirname(path: str) -> str:
-    return os.path.dirname(path) or '.'
+    return os.path.dirname(path) or "."
 
 
 def sudo_loop(*, once: bool = False) -> None:
@@ -383,7 +383,7 @@ def sudo_loop(*, once: bool = False) -> None:
         sleep(sudo_loop_interval)
 
 
-SudoLoopResultT = TypeVar('SudoLoopResultT')
+SudoLoopResultT = TypeVar("SudoLoopResultT")
 
 
 def run_with_sudo_loop(function: Callable[..., SudoLoopResultT]) -> SudoLoopResultT | None:
@@ -407,11 +407,11 @@ def run_with_sudo_loop(function: Callable[..., SudoLoopResultT]) -> SudoLoopResu
 
 def check_systemd_dynamic_users() -> bool:  # pragma: no cover
     try:
-        out = subprocess.check_output(['/usr/sbin/systemd-run', '--version'],  # nosec B603
+        out = subprocess.check_output(["/usr/sbin/systemd-run", "--version"],  # nosec B603
                                       universal_newlines=True)
     except FileNotFoundError:
         return False
-    first_line = out.split('\n', maxsplit=1)[0]
+    first_line = out.split("\n", maxsplit=1)[0]
     version = int(first_line.split(maxsplit=2)[1])
     return version >= 235
 

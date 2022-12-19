@@ -27,7 +27,7 @@ from .srcinfo import SrcInfo
 from .updates import find_aur_updates, print_upgradeable
 from .version import VersionMatcher
 
-_debug = create_debug_logger('install_info_fetcher')
+_debug = create_debug_logger("install_info_fetcher")
 
 
 class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-methods
@@ -46,7 +46,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
     aur_deps_relations: dict[str, list[str]]
     replacements: dict[str, list[str]]
 
-    __ignore_in_eq__ = ('args', )
+    __ignore_in_eq__ = ("args", )
 
     def __init__(
             self,
@@ -79,7 +79,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
     def package_is_ignored(self, package_name: str) -> bool:
         ignored_pkg_names = get_ignored_pkgnames_from_patterns(
             [package_name],
-            self.args.ignore + PacmanConfig().options.get('IgnorePkg', [])
+            self.args.ignore + PacmanConfig().options.get("IgnorePkg", [])
         )
         if (
                 package_name in ignored_pkg_names
@@ -237,18 +237,18 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
 
         # pacman print-info flag conflicts with some normal --sync options:
         pacman_args = get_pacman_command(ignore_args=[
-            'overwrite'
+            "overwrite"
         ]) + [
-            '--sync',
+            "--sync",
         ] + reconstruct_args(self.args, ignore_args=[
-            'sync',
-            'ignore',
-            'sysupgrade',
-            'refresh',
-            'needed',
-            'verbose',
-            'overwrite',
-            'search',
+            "sync",
+            "ignore",
+            "sysupgrade",
+            "refresh",
+            "needed",
+            "verbose",
+            "overwrite",
+            "search",
         ]) + extra_args
 
         def _get_pkg_install_infos(results: list[PacmanPrint]) -> list[RepoInstallInfo]:
@@ -258,7 +258,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 local_pkg = all_local_pkgs.get(pkg.name)
                 install_info = RepoInstallInfo(
                     name=pkg.name,
-                    current_version=local_pkg.version if local_pkg else '',
+                    current_version=local_pkg.version if local_pkg else "",
                     new_version=pkg.version,
                     description=pkg.desc,
                     repository=pkg.db.name,
@@ -282,7 +282,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 pacman_args + [
                     pkg
                     for pkg_line in pkg_lines
-                    for pkg in pkg_line.split(',')
+                    for pkg in pkg_line.split(",")
                 ]
             )
         except DependencyError:
@@ -299,7 +299,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 _debug(f"Checking if '{pkg_name}' exists in the repo:")
                 pkg_exists_requests[pkg_name] = pool.apply_async(
                     PackageDB.get_print_format_output,
-                    (pacman_args + pkg_name.split(','), ),
+                    (pacman_args + pkg_name.split(","), ),
                     {"check_deps": False, "package_only": True}
                 )
             pool.close()
@@ -320,7 +320,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 _debug(f"Checking if '{pkg_name}' is installable:")
                 pkg_installable_requests[pkg_name] = pool.apply_async(
                     PackageDB.get_print_format_output,
-                    (pacman_args + pkg_name.split(','), )
+                    (pacman_args + pkg_name.split(","), )
                 )
             pool.close()
             pool.join()
@@ -359,7 +359,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             local_pkg = all_local_pkgs.get(pkg.name)
             install_info = RepoInstallInfo(
                 name=pkg.name,
-                current_version=local_pkg.version if local_pkg else '',
+                current_version=local_pkg.version if local_pkg else "",
                 new_version=pkg.version,
                 description=pkg.desc,
                 repository=pkg.db.name,
@@ -398,7 +398,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 )
                 continue
 
-            if pkg_update.current_version == '' and (
+            if pkg_update.current_version == "" and (
                     (
                         pkg_name not in self.install_package_names
                     ) and (not pkg_update.provided_by) and (not pkg_update.members_of)
@@ -431,7 +431,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         ]
 
         for dep_install_info in self._get_repo_pkgs_info(
-                pkg_lines=new_dep_lines, extra_args=['--needed']
+                pkg_lines=new_dep_lines, extra_args=["--needed"]
         ):
             if dep_install_info.name in [
                     install_info.name for install_info in
@@ -489,7 +489,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             local_pkg = local_pkgs.get(pkg_name)
             aur_updates_install_info_by_name[pkg_name] = AURInstallInfo(
                 name=pkg_name,
-                current_version=local_pkg.version if local_pkg else ' ',
+                current_version=local_pkg.version if local_pkg else " ",
                 new_version=aur_pkg.version,
                 description=aur_pkg.desc,
                 maintainer=aur_pkg.maintainer,
@@ -529,10 +529,10 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 local_pkg = local_pkgs.get(pkg_name)
                 aur_updates_install_info_by_name[pkg_name] = AURInstallInfo(
                     name=pkg_name,
-                    current_version=local_pkg.version if local_pkg else ' ',
+                    current_version=local_pkg.version if local_pkg else " ",
                     new_version=aur_pkg.version,
                     description=aur_pkg.desc,
-                    maintainer='local user',
+                    maintainer="local user",
                     package=aur_pkg,
                     pkgbuild_path=path,
                 )
@@ -575,7 +575,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             local_pkg = local_pkgs.get(pkg_name)
             self.aur_deps_install_info.append(AURInstallInfo(
                 name=pkg_name,
-                current_version=local_pkg.version if local_pkg else ' ',
+                current_version=local_pkg.version if local_pkg else " ",
                 new_version=aur_pkg.version,
                 description=aur_pkg.desc,
                 maintainer=aur_pkg.maintainer,
@@ -631,7 +631,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                         provided_dep.package for provided_dep in
                         all_provided_pkgs[provided_name]
                     ]
-                    pkg_install_info.new_version = ''
+                    pkg_install_info.new_version = ""
 
             # process deps
             pkg_dep_lines = (

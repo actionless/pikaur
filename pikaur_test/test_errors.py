@@ -15,7 +15,7 @@ class FailureTest(PikaurDbTestCase):
         """Package can't be found in AUR."""
         not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
         result = pikaur(
-            f'-S {not_existing_pkg_name}',
+            f"-S {not_existing_pkg_name}",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 6)
@@ -29,7 +29,7 @@ class FailureTest(PikaurDbTestCase):
         """Package can't be found in repo."""
         not_existing_pkg_name = "not-existing-aur-package-7h68712683h1628h1"
         result = pikaur(
-            f'-S {not_existing_pkg_name} --repo',
+            f"-S {not_existing_pkg_name} --repo",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 6)
@@ -44,7 +44,7 @@ class FailureTest(PikaurDbTestCase):
         pkg_name = "pikaur-test-not-found-dep"
         not_existing_dep_name = "not-existing-package-y8r73ruue99y5u77t5u4r"
         result = pikaur(
-            '-Pi ./pikaur_test/PKGBUILD_not_found_dep',
+            "-Pi ./pikaur_test/PKGBUILD_not_found_dep",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 125)
@@ -61,7 +61,7 @@ class FailureTest(PikaurDbTestCase):
         """Dependency AUR package version not satisfied."""
         pkg_name = "pikaur-test-version-mismatch-aur"
         result = pikaur(
-            '-Pi ./pikaur_test/PKGBUILD_version_mismatch_aur',
+            "-Pi ./pikaur_test/PKGBUILD_version_mismatch_aur",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 131)
@@ -73,7 +73,7 @@ class FailureTest(PikaurDbTestCase):
         """Dependency repo package version not satisfied."""
         pkg_name = "pikaur-test-version-mismatch-repo"
         result = pikaur(
-            '-Pi ./pikaur_test/PKGBUILD_version_mismatch_repo',
+            "-Pi ./pikaur_test/PKGBUILD_version_mismatch_repo",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 131)

@@ -59,35 +59,35 @@ class AURPackageInfo(DataType):
 
     @property
     def git_url(self) -> str:
-        return f'{AurBaseUrl.get()}/{self.packagebase}.git'
+        return f"{AurBaseUrl.get()}/{self.packagebase}.git"
 
     def __init__(self, **kwargs: Any) -> None:
         for aur_api_name, pikaur_class_name in (
-            ('description', 'desc', ),
-            ('id', 'aur_id', ),
-            ('license', 'pkg_license', ),
+            ("description", "desc", ),
+            ("id", "aur_id", ),
+            ("license", "pkg_license", ),
         ):
             if aur_api_name in kwargs:
                 kwargs[pikaur_class_name] = kwargs.pop(aur_api_name)
         super().__init__(**kwargs)
 
     @classmethod
-    def from_srcinfo(cls, srcinfo: 'SrcInfo') -> 'AURPackageInfo':
+    def from_srcinfo(cls, srcinfo: "SrcInfo") -> "AURPackageInfo":
         return cls(
             name=srcinfo.package_name,
-            version=(srcinfo.get_value('pkgver') or '') + '-' + (srcinfo.get_value('pkgrel') or ''),
-            desc=srcinfo.get_value('pkgdesc'),
-            packagebase=srcinfo.get_value('pkgbase'),
+            version=(srcinfo.get_value("pkgver") or "") + "-" + (srcinfo.get_value("pkgrel") or ""),
+            desc=srcinfo.get_value("pkgdesc"),
+            packagebase=srcinfo.get_value("pkgbase"),
             depends=[dep.line for dep in srcinfo.get_depends().values()],
             makedepends=[dep.line for dep in srcinfo.get_build_makedepends().values()],
             checkdepends=[dep.line for dep in srcinfo.get_build_checkdepends().values()],
             **{
                 key: srcinfo.get_values(key)
                 for key in [
-                    'optdepends',
-                    'conflicts',
-                    'replaces',
-                    'provides',
+                    "optdepends",
+                    "conflicts",
+                    "replaces",
+                    "provides",
                 ]
             }
         )
@@ -95,12 +95,12 @@ class AURPackageInfo(DataType):
     def __repr__(self) -> str:
         return (
             f'<{self.__class__.__name__} "{self.name}" '
-            f'{self.version}>'
+            f"{self.version}>"
         )
 
 
 def construct_aur_rpc_url_from_uri(uri: str) -> str:
-    return AurBaseUrl.get() + '/rpc/?' + uri
+    return AurBaseUrl.get() + "/rpc/?" + uri
 
 
 def construct_aur_rpc_url_from_params(params: dict[str, str | int]) -> str:
@@ -108,51 +108,51 @@ def construct_aur_rpc_url_from_params(params: dict[str, str | int]) -> str:
 
 
 def strip_aur_repo_name(pkg_name: str) -> str:
-    if pkg_name.startswith('aur/'):
-        return ''.join(pkg_name.split('aur/'))
+    if pkg_name.startswith("aur/"):
+        return "".join(pkg_name.split("aur/"))
     return pkg_name
 
 
 def aur_rpc_search_name_desc(search_query: str) -> list[AURPackageInfo]:
     url = construct_aur_rpc_url_from_params({
-        'v': 5,
-        'type': 'search',
-        'arg': strip_aur_repo_name(search_query),
-        'by': 'name-desc'
+        "v": 5,
+        "type": "search",
+        "arg": strip_aur_repo_name(search_query),
+        "by": "name-desc"
     })
     result_json = get_json_from_url(url)
-    if 'error' in result_json:
-        raise AURError(url=url, error=result_json['error'])
+    if "error" in result_json:
+        raise AURError(url=url, error=result_json["error"])
     return [
         AURPackageInfo(
             **{key.lower(): value for key, value in aur_json.items()},
             ignore_extra_properties=True
         )
-        for aur_json in result_json.get('results', [])
+        for aur_json in result_json.get("results", [])
     ]
 
 
 def _get_aur_rpc_info_url(search_queries: list[str]) -> str:
     uri = parse.urlencode({
-        'v': 5,
-        'type': 'info',
+        "v": 5,
+        "type": "info",
     })
     for package in search_queries:
-        uri += '&arg[]=' + quote(strip_aur_repo_name(package))
+        uri += "&arg[]=" + quote(strip_aur_repo_name(package))
     return construct_aur_rpc_url_from_uri(uri)
 
 
 def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
     url = _get_aur_rpc_info_url(search_queries=search_queries)
     result_json = get_json_from_url(url)
-    if 'error' in result_json:
-        raise AURError(url=url, error=result_json['error'])
+    if "error" in result_json:
+        raise AURError(url=url, error=result_json["error"])
     return [
         AURPackageInfo(
             **{key.lower(): value for key, value in aur_json.items()},
             ignore_extra_properties=True
         )
-        for aur_json in result_json.get('results', [])
+        for aur_json in result_json.get("results", [])
     ]
 
 
@@ -163,7 +163,7 @@ def aur_rpc_info_with_progress(
     if with_progressbar:
         progressbar = ThreadSafeProgressBar.get(
             progressbar_length=progressbar_length,
-            progressbar_id='aur_search',
+            progressbar_id="aur_search",
         )
         progressbar.update()
     return result
@@ -176,7 +176,7 @@ class AurPackageListCache:
     @classmethod
     def get(cls) -> list[str]:
         if not cls.cache:
-            cls.cache = get_gzip_from_url(AurBaseUrl.get() + '/packages.gz').splitlines()[1:]
+            cls.cache = get_gzip_from_url(AurBaseUrl.get() + "/packages.gz").splitlines()[1:]
         return cls.cache
 
 
@@ -260,7 +260,7 @@ def find_aur_packages(
 
 
 def get_repo_url(package_base_name: str) -> str:
-    return f'{AurBaseUrl.get()}/{package_base_name}.git'
+    return f"{AurBaseUrl.get()}/{package_base_name}.git"
 
 
 def get_all_aur_packages() -> list[AURPackageInfo]:

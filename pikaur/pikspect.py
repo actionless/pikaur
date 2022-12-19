@@ -36,7 +36,7 @@ SMALL_TIMEOUT = 0.01
 TcAttrsType = list[int | list[bytes | int]]
 
 
-_debug = create_debug_logger('pikspect', lock=False)
+_debug = create_debug_logger("pikspect", lock=False)
 
 
 class TTYRestore():  # pragma: no cover
@@ -61,7 +61,7 @@ class TTYRestore():  # pragma: no cover
             try:
                 termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
             except termios.error as exc:
-                _debug(','.join(str(arg) for arg in exc.args))
+                _debug(",".join(str(arg) for arg in exc.args))
 
     @classmethod
     def restore(cls, *_whatever: Any) -> None:
@@ -98,15 +98,15 @@ class TTYInputWrapper():  # pragma: no cover
         if self.is_pipe:
             self.old_stdin = sys.stdin
             try:
-                _debug('Attaching to TTY manually...')
-                sys.stdin = open('/dev/tty', encoding=DEFAULT_INPUT_ENCODING)
+                _debug("Attaching to TTY manually...")
+                sys.stdin = open("/dev/tty", encoding=DEFAULT_INPUT_ENCODING)
                 self.tty_opened = True
             except Exception as exc:
                 _debug(exc)
 
     def __exit__(self, *_exc_details: Any) -> None:
         if self.is_pipe and self.tty_opened:
-            _debug('Restoring stdin...', lock=False)
+            _debug("Restoring stdin...", lock=False)
             sys.stdin.close()
             sys.stdin = self.old_stdin
 
@@ -137,7 +137,7 @@ class NestedTerminal():
 def _match(pattern: str, line: str) -> bool:
     return len(line) >= len(pattern) and bool(
         re.compile(pattern).search(line)
-        if '.*' in pattern else
+        if ".*" in pattern else
         (pattern in line)
     )
 
@@ -171,9 +171,9 @@ class PikspectPopen(subprocess.Popen[bytes]):
     # max_question_length = 0  # preserve enough information to analyze questions
     max_question_length = get_term_width() * 2  # preserve also at least last line
     # write buffer:
-    _write_buffer: bytes = b''
+    _write_buffer: bytes = b""
     # some help for mypy:
-    output: bytes = b''
+    output: bytes = b""
 
     def __init__(
             self,
@@ -221,22 +221,22 @@ class PikspectPopen(subprocess.Popen[bytes]):
 
     def run(self) -> None:
         if not isinstance(self.args, list):
-            raise TypeError('`args` should be list')
+            raise TypeError("`args` should be list")
         PikspectSignalHandler.set_handler(
             lambda *_whatever: self.send_signal(signal.SIGINT)
         )
         try:
             with NestedTerminal() as real_term_geometry:
 
-                if 'sudo' in self.args:  # pragma: no cover
+                if "sudo" in self.args:  # pragma: no cover
                     subprocess.run(  # nosec B603
                         get_sudo_refresh_command(),
                         check=True
                     )
                 with open(
-                        self.pty_user_master, 'w', encoding=DEFAULT_INPUT_ENCODING
+                        self.pty_user_master, "w", encoding=DEFAULT_INPUT_ENCODING
                 ) as self.pty_in:
-                    with open(self.pty_cmd_master, 'rb', buffering=0) as self.pty_out:
+                    with open(self.pty_cmd_master, "rb", buffering=0) as self.pty_out:
                         set_terminal_geometry(
                             self.pty_out.fileno(),
                             columns=real_term_geometry.columns,
@@ -261,7 +261,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
 
     def check_questions(self) -> None:
         try:
-            historic_output = b''.join(self.historic_output).decode(DEFAULT_INPUT_ENCODING)
+            historic_output = b"".join(self.historic_output).decode(DEFAULT_INPUT_ENCODING)
         except UnicodeDecodeError:  # pragma: no cover
             return
 
@@ -271,23 +271,23 @@ class PikspectPopen(subprocess.Popen[bytes]):
             for question in questions:
                 if not _match(question, historic_output):
                     continue
-                self.write_something((answer + '\n').encode(DEFAULT_INPUT_ENCODING))
+                self.write_something((answer + "\n").encode(DEFAULT_INPUT_ENCODING))
                 with PrintLock():
                     self.pty_in.write(answer)
                     sleep(SMALL_TIMEOUT)
-                    self.pty_in.write('\n')
+                    self.pty_in.write("\n")
                     self.pty_in.flush()
                 clear_buffer = True
                 break
 
         if clear_buffer:
-            self.historic_output = [b'']
+            self.historic_output = [b""]
 
     def write_buffer_contents(self) -> None:
         if self._write_buffer:
             sys.stdout.buffer.write(self._write_buffer)
             sys.stdout.buffer.flush()
-            self._write_buffer = b''
+            self._write_buffer = b""
 
     def write_something(self, output: bytes) -> None:
         if not (self.print_output or self.capture_output):
@@ -333,7 +333,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
 
             if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                 char = sys.stdin.read(1)
-                if char in [None, '']:
+                if char in [None, ""]:
                     sleep(SMALL_TIMEOUT)
                     continue
             else:
@@ -343,11 +343,11 @@ class PikspectPopen(subprocess.Popen[bytes]):
             try:
                 with PrintLock():
                     if ord(char) == 127:  # BackSpace
-                        sys.stdout.write('\b \b')
+                        sys.stdout.write("\b \b")
                     if ord(char) == 23:  # Ctrl+W
                         sys.stdout.write(
-                            '\r' + ' ' * get_term_width() + '\r' +
-                            b''.join(
+                            "\r" + " " * get_term_width() + "\r" +
+                            b"".join(
                                 self.historic_output
                             ).decode(DEFAULT_INPUT_ENCODING).splitlines()[-1]
                         )
@@ -381,17 +381,17 @@ def pikspect(
 
     class Questions:
         PROCEED = [
-            format_pacman_question('Proceed with installation?'),
-            format_pacman_question('Proceed with download?'),
+            format_pacman_question("Proceed with installation?"),
+            format_pacman_question("Proceed with download?"),
         ]
         REMOVE = [
-            format_pacman_question('Do you want to remove these packages?'),
+            format_pacman_question("Do you want to remove these packages?"),
         ]
         CONFLICT = format_pacman_question(
-            '%s and %s are in conflict. Remove %s?', YesNo.QUESTION_YN_NO
+            "%s and %s are in conflict. Remove %s?", YesNo.QUESTION_YN_NO
         )
         CONFLICT_VIA_PROVIDED = format_pacman_question(
-            '%s and %s are in conflict (%s). Remove %s?', YesNo.QUESTION_YN_NO
+            "%s and %s are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO
         )
 
     def format_conflicts(conflicts: list[list[str]]) -> list[str]:
@@ -401,7 +401,7 @@ def pikspect(
         ] + [
             (
                 re.escape(Questions.CONFLICT_VIA_PROVIDED % (
-                    new_pkg, old_pkg, '.*', old_pkg
+                    new_pkg, old_pkg, ".*", old_pkg
                 ))
             ).replace(r"\.\*", ".*")
             for new_pkg, old_pkg in conflicts
@@ -431,8 +431,8 @@ def pikspect(
 
         if parse_args().print_commands:
             print_stderr(
-                color_line('pikspect => ', ColorsHighlight.cyan) +
-                ' '.join(cmd)
+                color_line("pikspect => ", ColorsHighlight.cyan) +
+                " ".join(cmd)
             )
         proc.run()
         return proc

@@ -19,7 +19,7 @@ class ComparableTypeTest(PikaurTestCase):
     def setUpClass(cls):
 
         class ClassA(ComparableType):
-            __ignore_in_eq__ = ('bar', )
+            __ignore_in_eq__ = ("bar", )
             foo: Any
             bar: Any
 
@@ -92,30 +92,30 @@ class DataTypeTest(PikaurTestCase):
         cls.DataClass1 = DataClass1
 
     def test_attr(self):
-        a1 = self.DataClass1(foo=1, bar='a')
+        a1 = self.DataClass1(foo=1, bar="a")
         self.assertEqual(a1.foo, 1)
-        self.assertEqual(a1.bar, 'a')
+        self.assertEqual(a1.bar, "a")
 
     def test_init_err(self):
         with self.assertRaises(TypeError):
             self.DataClass1(foo=1)
 
     def test_set_unknown(self):
-        a1 = self.DataClass1(foo=1, bar='a')
+        a1 = self.DataClass1(foo=1, bar="a")
         with self.assertRaises(TypeError):
-            a1.baz = 'baz'  # pylint: disable=attribute-defined-outside-init
+            a1.baz = "baz"  # pylint: disable=attribute-defined-outside-init
 
     def test_extra_properties(self):
         with InterceptSysOutput(capture_stderr=True) as intercepted:
             a1 = self.DataClass1(
-                foo=1, bar='a',
-                spam='bzzzzzz',
+                foo=1, bar="a",
+                spam="bzzzzzz",
                 ignore_extra_properties=True
             )
-        self.assertIn('unexpected key', intercepted.stderr_text.lower())
+        self.assertIn("unexpected key", intercepted.stderr_text.lower())
         self.assertEqual(a1.foo, 1)
-        self.assertEqual(a1.bar, 'a')
-        self.assertEqual(a1.spam, 'bzzzzzz')  # pylint: disable=no-member
+        self.assertEqual(a1.bar, "a")
+        self.assertEqual(a1.spam, "bzzzzzz")  # pylint: disable=no-member
 
 
 class InstallInfoTest(PikaurTestCase):
@@ -132,7 +132,7 @@ class InstallInfoTest(PikaurTestCase):
             new_version=420,
             package=repo_pkg
         )
-        aur_pkg = find_aur_packages(['pikaur', ])[0][0]
+        aur_pkg = find_aur_packages(["pikaur", ])[0][0]
         cls.aur_install_info = InstallInfo(
             name=aur_pkg.name,
             current_version=aur_pkg.version,

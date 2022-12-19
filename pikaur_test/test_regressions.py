@@ -9,32 +9,32 @@ class RegressionTest(PikaurDbTestCase):
 
     def test_split_pkgs_aur_deps(self):
         # split aur package with deps from aur (too long to build so use fake makepkg)
-        fake_pikaur('-S zfs-dkms')
-        self.assertInstalled('zfs-dkms')
-        self.assertInstalled('zfs-utils')
+        fake_pikaur("-S zfs-dkms")
+        self.assertInstalled("zfs-dkms")
+        self.assertInstalled("zfs-utils")
 
     def test_double_requirements_repo(self):
         # double requirements line
         # pikaur -Si --aur | grep -e \^name -e \^depends | grep -E "(>.*<|<.*>)" -B 1
         # with doubled repo dep
-        pkg_name = 'xfe'
-        fake_pikaur(f'-S {pkg_name}')
+        pkg_name = "xfe"
+        fake_pikaur(f"-S {pkg_name}")
         self.assertInstalled(pkg_name)
 
     def test_double_requirements_aur(self):
         # with doubled aur dep
         # python-xdis>=5.0.4, python-xdis<5.1.0
-        pkg_name = 'python-uncompyle6'
+        pkg_name = "python-uncompyle6"
 
-        fake_pikaur(f'-S {pkg_name}')
-        # pikaur(f'-S {pkg_name}')
+        fake_pikaur(f"-S {pkg_name}")
+        # pikaur(f"-S {pkg_name}")
         self.assertInstalled(pkg_name)
 
     def test_aur_pkg_with_versioned_virtual_deps(self):
         # depend on versioned requirement provided by few pkgs
         # 'minecraft-launcher',  # too many deps to download
-        pkg_name = 'jetbrains-toolbox'
-        fake_pikaur(f'-S {pkg_name}')
+        pkg_name = "jetbrains-toolbox"
+        fake_pikaur(f"-S {pkg_name}")
         self.assertInstalled(pkg_name)
 
     def test_explicit_pkgs_not_becoming_deps(self):
@@ -44,8 +44,8 @@ class RegressionTest(PikaurDbTestCase):
         """
         from pikaur.pacman import PackageDB  # pylint:disable=import-outside-toplevel
 
-        aur_pkg_name = 'nqp'
-        explicitly_installed_dep_name = 'moarvm'
+        aur_pkg_name = "nqp"
+        explicitly_installed_dep_name = "moarvm"
 
         self.remove_if_installed(aur_pkg_name, explicitly_installed_dep_name)
         explicitly_installed_dep_old_version = self.downgrade_aur_pkg(
@@ -57,7 +57,7 @@ class RegressionTest(PikaurDbTestCase):
             0
         )
 
-        fake_pikaur(f'-S {aur_pkg_name}')
+        fake_pikaur(f"-S {aur_pkg_name}")
         self.assertInstalled(aur_pkg_name)
         self.assertInstalled(explicitly_installed_dep_name)
         self.assertNotEqual(
@@ -70,12 +70,12 @@ class RegressionTest(PikaurDbTestCase):
         )
 
     def test_getpkgbuild_group_package(self):
-        result = pikaur('-G gnome', capture_stderr=True)
+        result = pikaur("-G gnome", capture_stderr=True)
         self.assertEqual(
             result.returncode, 0
         )
         self.assertIn(
-            'cannot be found',
+            "cannot be found",
             result.stderr
         )
 
@@ -86,12 +86,12 @@ class RegressionTest(PikaurDbTestCase):
 
         see #320
         """
-        self.remove_if_installed('python2-twisted', 'python-twisted')
-        # pikaur('-S python-txtorcon')
-        pikaur('-S python-txtorcon --mflags=--skippgpcheck')  # todo
-        self.assertInstalled('python-txtorcon')
-        self.assertInstalled('python-twisted')
-        self.assertNotInstalled('python2-twisted')
+        self.remove_if_installed("python2-twisted", "python-twisted")
+        # pikaur("-S python-txtorcon")
+        pikaur("-S python-txtorcon --mflags=--skippgpcheck")  # todo
+        self.assertInstalled("python-txtorcon")
+        self.assertInstalled("python-twisted")
+        self.assertNotInstalled("python2-twisted")
 
     def test_sy_only(self):
         """
@@ -106,7 +106,7 @@ class RegressionTest(PikaurDbTestCase):
         output = ""
         attempts = 0
         while ("nothing to do" not in output) and (attempts < 5):
-            result_syu = pikaur('-Syu --noconfirm --ignore pikaur-git', capture_stdout=True)
+            result_syu = pikaur("-Syu --noconfirm --ignore pikaur-git", capture_stdout=True)
             output = result_syu.stdout.lower()
             attempts += 1
         self.assertIn(
@@ -114,7 +114,7 @@ class RegressionTest(PikaurDbTestCase):
             output
         )
 
-        result_sy = pikaur('-Sy', capture_stdout=True)
+        result_sy = pikaur("-Sy", capture_stdout=True)
         self.assertNotIn(
             "nothing to do",
             result_sy.stdout.lower()
@@ -129,19 +129,19 @@ class RegressionTest(PikaurDbTestCase):
 
         see #427
         """
-        pkg_name = 'mongodb-bin'
-        wrong_arch_dep_name = 'libcurl-openssl-1.0'
+        pkg_name = "mongodb-bin"
+        wrong_arch_dep_name = "libcurl-openssl-1.0"
         self.remove_if_installed(pkg_name, wrong_arch_dep_name)
-        fake_pikaur(f'-S {pkg_name}')
+        fake_pikaur(f"-S {pkg_name}")
         self.assertInstalled(pkg_name)
         self.assertNotInstalled(wrong_arch_dep_name)
 
     def test_aur_rpc_didnt_fully_parsed_srcinfo_2(self):
         """Similar situation as with `mongodb-bin` above but the opposite."""
-        pkg_name = 'guitar-pro'
-        correct_arch_dep_name = 'lib32-portaudio'
+        pkg_name = "guitar-pro"
+        correct_arch_dep_name = "lib32-portaudio"
         self.remove_if_installed(pkg_name, correct_arch_dep_name)
-        fake_pikaur(f'-S {pkg_name}')
+        fake_pikaur(f"-S {pkg_name}")
         self.assertInstalled(pkg_name)
         self.assertInstalled(correct_arch_dep_name)
 
@@ -150,9 +150,9 @@ class RegressionTest(PikaurDbTestCase):
         See:
         https://github.com/actionless/pikaur/issues/474
         """
-        aur_pkg_name = 'inxi'
+        aur_pkg_name = "inxi"
         self.remove_if_installed(aur_pkg_name)
-        fake_pikaur(f'-S {aur_pkg_name}>=99.9.9.9')
+        fake_pikaur(f"-S {aur_pkg_name}>=99.9.9.9")
         self.assertNotInstalled(aur_pkg_name)
-        fake_pikaur(f'-S {aur_pkg_name}>=1.0')
+        fake_pikaur(f"-S {aur_pkg_name}>=1.0")
         self.assertInstalled(aur_pkg_name)

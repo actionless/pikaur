@@ -19,7 +19,7 @@ class MainHelperFuncsTest(PikaurTestCase):
             # fails if testrunner (like nosetests) capturing output:
             # self.assertNotEqual(real_stdout, sys.stdout)
 
-            print('test')
+            print("test")
         self.assertEqual(real_stdout, sys.stdout)
         self.assertEqual(real_stderr, sys.stderr)
 
@@ -33,12 +33,12 @@ class MainHelperFuncsTest(PikaurTestCase):
                 # fails if testrunner (like nosetests) capturing output:
                 # self.assertNotEqual(real_stdout, sys.stdout)
 
-                raise Exception('test')
+                raise Exception("test")
         self.assertEqual(real_stdout, sys.stdout)
         self.assertEqual(real_stderr, sys.stderr)
 
     def test_output_encoding_wrapper_ascii(self):
-        with mock.patch('pikaur.main.DEFAULT_INPUT_ENCODING', new='ascii'):
+        with mock.patch("pikaur.main.DEFAULT_INPUT_ENCODING", new="ascii"):
             real_stdout = sys.stdout
             real_stderr = sys.stderr
             with OutputEncodingWrapper():
@@ -47,6 +47,6 @@ class MainHelperFuncsTest(PikaurTestCase):
                 # fails if testrunner (like nosetests) capturing output:
                 # self.assertNotEqual(real_stdout, sys.stdout)
 
-                print('test')
+                print("test")
             self.assertEqual(real_stdout, sys.stdout)
             self.assertEqual(real_stderr, sys.stderr)

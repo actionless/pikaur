@@ -14,7 +14,7 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_stdout
 def _info_packages_thread_repo() -> str | None:
     args = parse_args()
     proc = spawn(
-        get_pacman_command() + reconstruct_args(args, ignore_args=['refresh']) + args.positional
+        get_pacman_command() + reconstruct_args(args, ignore_args=["refresh"]) + args.positional
     )
     return proc.stdout_text
 
@@ -52,13 +52,13 @@ def get_info_fields() -> dict[str, str]:
 
 def _decorate_repo_info_output(output: str) -> str:
     return output.replace(
-        _p('None'), color_line(_p('None'), ColorsHighlight.black)
+        _p("None"), color_line(_p("None"), ColorsHighlight.black)
     )
 
 
 def _decorate_aur_info_output(output: str) -> str:
     return output.replace(
-        translate('None'), color_line(translate('None'), ColorsHighlight.black)
+        translate("None"), color_line(translate("None"), ColorsHighlight.black)
     )
 
 
@@ -76,7 +76,7 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
         aur_result = aur_thread.get()
 
     if repo_result:
-        print_stdout(_decorate_repo_info_output(repo_result), end='')
+        print_stdout(_decorate_repo_info_output(repo_result), end="")
 
     aur_pkgs = aur_result[0]
     num_found = len(aur_pkgs)
@@ -86,15 +86,15 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
         pkg_info_lines = []
         for key, display_name in info_fields.items():
             value = getattr(aur_pkg, key, None)
-            if key in ['firstsubmitted', 'lastmodified', 'outofdate'] and value:
-                value = datetime.fromtimestamp(value).strftime('%c')
+            if key in ["firstsubmitted", "lastmodified", "outofdate"] and value:
+                value = datetime.fromtimestamp(value).strftime("%c")
             elif isinstance(value, list):
-                value = ', '.join(value) or translate("None")
+                value = ", ".join(value) or translate("None")
             key_display = bold_line(_rightpad(display_name, longest_field_length + 1))
-            pkg_info_lines.append(f'{key_display}: {value}')
+            pkg_info_lines.append(f"{key_display}: {value}")
         print_stdout(
-            _decorate_aur_info_output('\n'.join(pkg_info_lines)) +
-            ('\n' if i + 1 < num_found else '')
+            _decorate_aur_info_output("\n".join(pkg_info_lines)) +
+            ("\n" if i + 1 < num_found else "")
         )
 
 

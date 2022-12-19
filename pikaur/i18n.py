@@ -10,7 +10,7 @@ class PikaurTranslation():
     @classmethod
     def get(cls) -> gettext.NullTranslations:
         if not cls.translation:
-            cls.translation = gettext.translation('pikaur', fallback=True)
+            cls.translation = gettext.translation("pikaur", fallback=True)
         return cls.translation
 
 

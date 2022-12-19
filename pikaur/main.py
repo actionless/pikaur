@@ -54,17 +54,17 @@ from .urllib import ProxyInitSocks5Error, init_proxy
 
 def init_readline() -> None:
     # follow GNU readline config in prompts:
-    system_inputrc_path = '/etc/inputrc'
+    system_inputrc_path = "/etc/inputrc"
     if os.path.exists(system_inputrc_path):
         readline.read_init_file(system_inputrc_path)
-    user_inputrc_path = os.path.expanduser('~/.inputrc')
+    user_inputrc_path = os.path.expanduser("~/.inputrc")
     if os.path.exists(user_inputrc_path):
         readline.read_init_file(user_inputrc_path)
 
 
 init_readline()
 
-_debug = create_debug_logger('main')
+_debug = create_debug_logger("main")
 
 
 class OutputEncodingWrapper(AbstractContextManager[None]):
@@ -73,23 +73,23 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
     original_stdout: int
 
     def __enter__(self) -> None:
-        for attr in ('stdout', 'stderr'):
-            _debug(f'Setting {attr} to {DEFAULT_INPUT_ENCODING}...', lock=False)
+        for attr in ("stdout", "stderr"):
+            _debug(f"Setting {attr} to {DEFAULT_INPUT_ENCODING}...", lock=False)
             real_stream = getattr(sys, attr)
             if real_stream.encoding == DEFAULT_INPUT_ENCODING:
-                _debug('already set - nothing to do', lock=False)
+                _debug("already set - nothing to do", lock=False)
                 continue
             real_stream.flush()
             try:
                 setattr(
-                    self, f'original_{attr}',
+                    self, f"original_{attr}",
                     real_stream
                 )
                 setattr(
                     sys, attr,
                     io.open(
                         real_stream.fileno(),
-                        mode='w',
+                        mode="w",
                         encoding=DEFAULT_INPUT_ENCODING,
                         closefd=False,
                     )
@@ -107,25 +107,25 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 # handling exception in context manager's __exit__ is not recommended
                 # but otherwise stderr would be closed before exception is printed...
                 if exc_tb:
-                    print_stderr(''.join(traceback.format_tb(exc_tb)), lock=False)
+                    print_stderr("".join(traceback.format_tb(exc_tb)), lock=False)
                 print_stderr(f"{exc_class.__name__}: {exc_instance}", lock=False)
                 sys.exit(121)
         finally:
-            for attr in ('stdout', 'stderr'):
-                _debug(f'Restoring {attr}...', lock=False)
+            for attr in ("stdout", "stderr"):
+                _debug(f"Restoring {attr}...", lock=False)
                 stream = getattr(sys, attr)
-                orig_stream = getattr(self, f'original_{attr}', None)
+                orig_stream = getattr(self, f"original_{attr}", None)
                 if orig_stream in (None, stream, ):
-                    _debug('nothing to do', lock=False)
+                    _debug("nothing to do", lock=False)
                     continue
                 stream.flush()
                 setattr(
                     sys, attr,
                     orig_stream
                 )
-                _debug(f'{attr} restored', lock=False)
+                _debug(f"{attr} restored", lock=False)
                 stream.close()
-                _debug(f'closed old {attr} stream', lock=False)
+                _debug(f"closed old {attr} stream", lock=False)
 
 
 def cli_print_upgradeable() -> None:
@@ -143,10 +143,10 @@ def cli_pkgbuild() -> None:
 def cli_print_version() -> None:
     args = parse_args()
     proc = spawn(
-        [PikaurConfig().misc.PacmanPath.get_str(), '--version', ],
+        [PikaurConfig().misc.PacmanPath.get_str(), "--version", ],
     )
     if proc.stdout_text:
-        pacman_version = proc.stdout_text.splitlines()[1].strip(' .-')
+        pacman_version = proc.stdout_text.splitlines()[1].strip(" .-")
     else:
         pacman_version = "N/A"
     print_version(
@@ -163,18 +163,18 @@ def cli_dynamic_select() -> None:  # pragma: no cover
     while True:
         try:
             print_stderr(
-                '\n' + translate(
+                "\n" + translate(
                     "Please enter the number of the package(s) you want to install "
                     "and press [Enter] (default={}):"
                 ).format(1)
             )
-            answers = get_multiple_numbers_input('> ', list(range(1, len(packages) + 1))) or [1]
+            answers = get_multiple_numbers_input("> ", list(range(1, len(packages) + 1))) or [1]
             print_stderr()
             selected_pkgs_idx = [idx - 1 for idx in answers]
             restart_prompt = False
             for idx in selected_pkgs_idx:
                 if not 0 <= idx < len(packages):
-                    print_error(translate('invalid value: {} is not between {} and {}').format(
+                    print_error(translate("invalid value: {} is not between {} and {}").format(
                         idx + 1, 1, len(packages) + 1
                     ))
                     restart_prompt = True
@@ -182,9 +182,9 @@ def cli_dynamic_select() -> None:  # pragma: no cover
                 continue
             break
         except NotANumberInputError as exc:
-            if exc.character.lower() == translate('n'):
+            if exc.character.lower() == translate("n"):
                 raise SysExit(128) from exc
-            print_error(translate('invalid number: {}').format(exc.character))
+            print_error(translate("invalid number: {}").format(exc.character))
 
     parse_args().positional = [packages[idx].name for idx in selected_pkgs_idx]
     cli_install_packages()
@@ -196,7 +196,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     try:
         init_proxy()
     except ProxyInitSocks5Error as exc:
-        print_error(''.join(exc.args))
+        print_error("".join(exc.args))
         sys.exit(2)
 
     # operations are parsed in order what the less destructive (like info and query)
@@ -255,11 +255,11 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             # Restart pikaur with sudo to use systemd dynamic users
             restart_args = sys.argv[:]
             config_overridden = max(
-                arg.startswith('--pikaur-config')
+                arg.startswith("--pikaur-config")
                 for arg in restart_args
             )
             if not config_overridden:
-                restart_args += ['--pikaur-config', get_config_path()]
+                restart_args += ["--pikaur-config", get_config_path()]
             sys.exit(interactive_spawn(
                 sudo(restart_args)
             ).returncode)
@@ -308,7 +308,7 @@ def migrate_old_aur_repos_dir() -> None:
 def create_dirs() -> None:
     if running_as_root():
         # Let systemd-run setup the directories and symlinks
-        true_cmd = isolate_root_cmd(['true'])
+        true_cmd = isolate_root_cmd(["true"])
         result = spawn(true_cmd)
         if result.returncode != 0:
             raise Exception(result)
@@ -375,5 +375,5 @@ def main(*, embed: bool = False) -> None:
         sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

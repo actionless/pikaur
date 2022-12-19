@@ -15,33 +15,33 @@ class ArchWikiTest(PikaurDbTestCase):
 
     def test_split_packages_1(self):
         # Split packages 1
-        fake_pikaur('-S clion')
-        self.assertInstalled('clion')
+        fake_pikaur("-S clion")
+        self.assertInstalled("clion")
 
     def test_split_packages_2(self):
         # Split packages 2: libc++
-        fake_pikaur('-S libc++ --mflags=--skippgpcheck')
-        self.assertInstalled('libc++')
+        fake_pikaur("-S libc++ --mflags=--skippgpcheck")
+        self.assertInstalled("libc++")
 
         # Split packages 2: libc++abi (installing already built package)
-        pikaur('-S libc++abi')
-        self.assertInstalled('libc++abi')
+        pikaur("-S libc++abi")
+        self.assertInstalled("libc++abi")
 
     def test_split_packages_3(self):
         # Split packages 3: 1 split package
-        fake_pikaur('-S python-pyalsaaudio --mflags=--skippgpcheck')
-        self.assertInstalled('python-pyalsaaudio')
-        self.assertNotInstalled('python2-pyalsaaudio')
+        fake_pikaur("-S python-pyalsaaudio --mflags=--skippgpcheck")
+        self.assertInstalled("python-pyalsaaudio")
+        self.assertNotInstalled("python2-pyalsaaudio")
 
-        self.remove_packages('python-pyalsaaudio')
+        self.remove_packages("python-pyalsaaudio")
 
         # Split packages 3: 2 split packages
-        fake_pikaur('-S python2-pyalsaaudio python-pyalsaaudio --mflags=--skippgpcheck')
-        self.assertInstalled('python2-pyalsaaudio')
-        self.assertInstalled('python-pyalsaaudio')
+        fake_pikaur("-S python2-pyalsaaudio python-pyalsaaudio --mflags=--skippgpcheck")
+        self.assertInstalled("python2-pyalsaaudio")
+        self.assertInstalled("python-pyalsaaudio")
 
     # def test_reliable_solver(self):
         # # Arch Wiki: Reliable solver
-        # fake_pikaur('-S ros-lunar-desktop')
-        # self.assertInstalled('ros-lunar-desktop')
+        # fake_pikaur("-S ros-lunar-desktop")
+        # self.assertInstalled("ros-lunar-desktop")
         # it's slow as hell even with mocked makepkg :(

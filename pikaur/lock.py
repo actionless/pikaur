@@ -4,7 +4,7 @@ from typing import Any
 
 class FancyLock():
 
-    _fancy_lock: 'Lock | None' = None
+    _fancy_lock: "Lock | None" = None
 
     @classmethod
     def get_lock(cls) -> Lock:

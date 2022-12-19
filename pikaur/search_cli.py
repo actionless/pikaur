@@ -14,7 +14,7 @@ from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
 from .pprint import print_error, print_stderr
 from .print_department import AnyPackage, print_package_search_results
 
-SamePackageTypeT = TypeVar('SamePackageTypeT', AURPackageInfo, pyalpm.Package)
+SamePackageTypeT = TypeVar("SamePackageTypeT", AURPackageInfo, pyalpm.Package)
 
 
 def package_search_thread_repo(query: str) -> list[pyalpm.Package]:
@@ -26,7 +26,7 @@ def package_search_thread_repo(query: str) -> list[pyalpm.Package]:
     else:
         result = PackageDB.get_repo_list(quiet=True)
     if not args.quiet:
-        sys.stderr.write('#')
+        sys.stderr.write("#")
     return result
 
 
@@ -37,7 +37,7 @@ def filter_aur_results(
     filtered_results: dict[str, list[AURPackageInfo]] = {}
     for _q, pkgs in results.items():
         for pkg in pkgs:
-            if query in pkg.name or query in (pkg.desc or ''):
+            if query in pkg.name or query in (pkg.desc or ""):
                 filtered_results.setdefault(_q, []).append(pkg)
     return filtered_results
 
@@ -85,7 +85,7 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                 ]
     else:
         if args.quiet:
-            result = {'all': [
+            result = {"all": [
                 AURPackageInfo(
                     name=name,
                     packagebase=name,
@@ -93,9 +93,9 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                 ) for name in get_all_aur_names()
             ]}
         else:
-            result = {'all': get_all_aur_packages()}
+            result = {"all": get_all_aur_packages()}
     if not args.quiet:
-        sys.stderr.write('#')
+        sys.stderr.write("#")
     return list(join_search_results(list(result.values())))
 
 
@@ -105,7 +105,7 @@ def package_search_thread_local() -> dict[str, str]:
         for pkg_name, pkg in PackageDB.get_local_dict(quiet=True).items()
     }
     if not parse_args().quiet:
-        sys.stderr.write('#')
+        sys.stderr.write("#")
     return result
 
 
@@ -140,14 +140,14 @@ def search_packages(  # pylint: disable=too-many-locals
 
     if not args.quiet:
         progressbar_length = max(len(search_query), 1) + (not repo_only) + (not aur_only)
-        print_stderr(translate("Searching... [{bar}]").format(bar='-' * progressbar_length), end='')
-        print_stderr('\x1b[1D' * (progressbar_length + 1), end='')
+        print_stderr(translate("Searching... [{bar}]").format(bar="-" * progressbar_length), end="")
+        print_stderr("\x1b[1D" * (progressbar_length + 1), end="")
 
     with ThreadPool() as pool:
         request_local = pool.apply_async(package_search_thread_local, ())
         requests_repo = [
             pool.apply_async(package_search_thread_repo, (search_word, ))
-            for search_word in (search_query or [''])
+            for search_word in (search_query or [""])
         ] if not aur_only else []
         request_aur = pool.apply_async(
             package_search_thread_aur, (search_query,)
@@ -165,12 +165,12 @@ def search_packages(  # pylint: disable=too-many-locals
             try:
                 result_aur = request_aur.get()
             except AURError as exc:
-                print_stderr(f'translate("AUR returned error:") {exc}')
+                print_stderr(f"{translate('AUR returned error:')} {exc}")
                 raise SysExit(121) from exc
         pool.join()
 
     if not args.quiet:
-        sys.stderr.write('\n')
+        sys.stderr.write("\n")
 
     joined_repo_results: Iterable[pyalpm.Package] = []
     if result_repo:

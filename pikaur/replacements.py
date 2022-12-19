@@ -42,7 +42,7 @@ def find_replacements() -> dict[str, list[str]]:
                         "'{packages}' packages are available in the repo but can't be installed",
                         len(exc.packages)
                     ).format(
-                        packages=', '.join(exc.packages)
+                        packages=", ".join(exc.packages)
                     )
                 )
     return new_pkgs_replaces

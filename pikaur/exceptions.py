@@ -17,7 +17,7 @@ class PackagesNotFoundError(DataType, Exception):
 
     def __init__(self, packages: list[str], wanted_by: list[str] | None = None) -> None:
         DataType.__init__(self, packages=packages, wanted_by=wanted_by)
-        message = ', '.join(packages)
+        message = ", ".join(packages)
         if wanted_by:
             message += f" wanted by {', '.join(wanted_by)}"
         Exception.__init__(self, message)
@@ -40,8 +40,8 @@ class BuildError(Exception):
 
 
 class CloneError(DataType, Exception):
-    build: 'PackageBuild'
-    result: 'InteractiveSpawn'
+    build: "PackageBuild"
+    result: "InteractiveSpawn"
 
 
 class DependencyError(Exception):
@@ -54,7 +54,7 @@ class DependencyVersionMismatchError(DataType, Exception):
     who_depends: str
     depends_on: str
     location: PackageSource
-    version_matcher: 'VersionMatcher | None' = None
+    version_matcher: "VersionMatcher | None" = None
 
     def __init__(  # pylint: disable=too-many-arguments
             self,
@@ -63,7 +63,7 @@ class DependencyVersionMismatchError(DataType, Exception):
             who_depends: str,
             depends_on: str,
             location: PackageSource,
-            version_matcher: 'VersionMatcher | None' = None,
+            version_matcher: "VersionMatcher | None" = None,
     ) -> None:
         super().__init__(
             version_found=version_found,

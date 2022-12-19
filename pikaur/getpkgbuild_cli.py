@@ -29,7 +29,7 @@ def cli_getpkgbuild() -> None:
             repo_pkgs.append(repo_pkg)
 
     if repo_pkgs:
-        check_runtime_deps(['asp'])
+        check_runtime_deps(["asp"])
 
     if not_found_repo_pkgs:
         print_not_found_packages(not_found_repo_pkgs)
@@ -42,8 +42,8 @@ def cli_getpkgbuild() -> None:
         repo_path = os.path.join(pwd, name)
         print_stdout()
         interactive_spawn(wrap_proxy_env([
-            'git',
-            'clone',
+            "git",
+            "clone",
             get_repo_url(aur_pkg.packagebase),
             repo_path,
         ]))
@@ -51,13 +51,13 @@ def cli_getpkgbuild() -> None:
     for repo_pkg in repo_pkgs:
         name = repo_pkg.name
         repo_path = os.path.join(pwd, name)
-        action = 'checkout'
+        action = "checkout"
         if os.path.exists(repo_path):
-            action = 'update'
+            action = "update"
         print_stdout()
         print_stdout(translate(f"Package '{name}' going to be cloned into '{repo_path}'..."))
         interactive_spawn([
-            'asp',
+            "asp",
             action,
             name,
         ])

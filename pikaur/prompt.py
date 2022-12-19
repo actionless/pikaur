@@ -22,8 +22,8 @@ from .pprint import (
     range_printable,
 )
 
-_debug = create_debug_logger('prompt')
-_debug_nolock = create_debug_logger('prompt_nolock', lock=False)
+_debug = create_debug_logger("prompt")
+_debug_nolock = create_debug_logger("prompt_nolock", lock=False)
 
 
 class Answers():
@@ -37,8 +37,8 @@ class Answers():
     @classmethod
     def _do_init(cls) -> None:
         if not cls._init_done:
-            cls.Y = translate('y')
-            cls.N = translate('n')
+            cls.Y = translate("y")
+            cls.N = translate("n")
             cls.Y_UP = cls.Y.upper()
             cls.N_UP = cls.N.upper()
             cls._init_done = True
@@ -54,7 +54,7 @@ def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) ->
     Valid answers are passed as 'answers' variable (the default is in capital).
     Invalid answer will return an empty string.
     """
-    default = ' '
+    default = " "
     all_answers = Answers()
     answers = answers or (all_answers.Y_UP, all_answers.N, )
 
@@ -81,19 +81,19 @@ def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) ->
             return default
         if answer in [choice.lower() for choice in answers]:
             return answer
-        return ' '
+        return " "
     except Exception:
-        return ' '
+        return " "
     finally:
         tty.tcsetattr(  # type: ignore[attr-defined]
             sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings  # type: ignore[attr-defined]
         )
-        sys.stdout.write(f'{answer}\r\n')
+        sys.stdout.write(f"{answer}\r\n")
         tty.tcdrain(sys.stdin.fileno())  # type: ignore[attr-defined]
 
 
 def split_last_line(text: str) -> str:
-    all_lines = text.split('\n')
+    all_lines = text.split("\n")
     n_lines = len(all_lines)
     last_line = all_lines[n_lines - 1]
     term_width = get_term_width()
@@ -104,34 +104,34 @@ def split_last_line(text: str) -> str:
         range_printable(last_line, 0, term_width),
         range_printable(last_line, term_width)
     )
-    return '\n'.join(prev_lines + [last_line])
+    return "\n".join(prev_lines + [last_line])
 
 
 def get_input(
         prompt: str, answers: Sequence[str] = (), *, require_confirm: bool = False
 ) -> str:
-    _debug('Gonna get input from user...')
-    answer = ''
+    _debug("Gonna get input from user...")
+    answer = ""
     with PrintLock():
         with TTYInputWrapper():
 
             if not (
                     require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
             ):
-                _debug_nolock('Using custom input reader...')
+                _debug_nolock("Using custom input reader...")
                 answer = read_answer_from_tty(prompt, answers=answers)
             else:
-                _debug_nolock('Restoring TTY...')
+                _debug_nolock("Restoring TTY...")
                 sub_tty = TTYRestore()
                 TTYRestore.restore()
                 try:
-                    _debug_nolock('Using standard input reader...')
+                    _debug_nolock("Using standard input reader...")
                     answer = input(split_last_line(prompt)).lower()
                 except EOFError as exc:
                     _debug_nolock(exc)
                     raise SysExit(125) from exc
                 finally:
-                    _debug_nolock('Reverting to prev TTY state...')
+                    _debug_nolock("Reverting to prev TTY state...")
                     sub_tty.restore_new()
 
     if not answer:
@@ -153,16 +153,16 @@ class NotANumberInputError(Exception):
 
 def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> list[int]:
     str_result = get_input(prompt, [str(answer) for answer in answers], require_confirm=True)
-    if str_result == '':
+    if str_result == "":
         return []
-    str_results = str_result.replace(',', ' ').split(' ')
+    str_results = str_result.replace(",", " ").split(" ")
     int_results: list[int] = []
     for block in str_results[:]:
-        if '..' in block:
-            block = block.replace('..', '-')
-        if '-' in block:
+        if ".." in block:
+            block = block.replace("..", "-")
+        if "-" in block:
             try:
-                range_start, range_end = [int(char) for char in block.split('-')]
+                range_start, range_end = [int(char) for char in block.split("-")]
             except ValueError as exc:
                 raise NotANumberInputError(block) from exc
             if range_start > range_end:
@@ -179,17 +179,17 @@ def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> list
 def ask_to_continue(text: str | None = None, *, default_yes: bool = True) -> bool:
     args = parse_args()
     if text is None:
-        text = translate('Do you want to proceed?')
+        text = translate("Do you want to proceed?")
 
     if args.noconfirm:
         default_option = ("[Y]es (--noconfirm)") if default_yes else translate("[N]o (--noconfirm)")
-        print_stderr(f'{text} {default_option}')
+        print_stderr(f"{text} {default_option}")
         return default_yes
 
     all_answers = Answers()
     prompt = text + (
-        f' [{all_answers.Y_UP}/{all_answers.N}] ' if default_yes else
-        f' [{all_answers.Y}/{all_answers.N_UP}] '
+        f" [{all_answers.Y_UP}/{all_answers.N}] " if default_yes else
+        f" [{all_answers.Y}/{all_answers.N_UP}] "
     )
     answers = (
         (all_answers.Y_UP + all_answers.N) if default_yes else
@@ -197,7 +197,7 @@ def ask_to_continue(text: str | None = None, *, default_yes: bool = True) -> boo
     )
 
     answer = get_input(prompt, answers)
-    return (answer == all_answers.Y) or (default_yes and answer == '')
+    return (answer == all_answers.Y) or (default_yes and answer == "")
 
 
 def retry_interactive_command(
@@ -209,7 +209,7 @@ def retry_interactive_command(
     args = parse_args()
     while True:
         good = None
-        if pikspect and ('--noconfirm' not in cmd_args):
+        if pikspect and ("--noconfirm" not in cmd_args):
             good = pikspect_spawn(
                 cmd_args,
                 conflicts=conflicts,
@@ -222,7 +222,7 @@ def retry_interactive_command(
             return good
         print_stderr(color_line(
             translate("Command '{}' failed to execute.").format(
-                ' '.join(cmd_args)
+                " ".join(cmd_args)
             ),
             ColorsHighlight.red
         ))

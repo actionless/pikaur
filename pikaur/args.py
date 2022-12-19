@@ -23,107 +23,107 @@ def debug_format(msg: Any) -> None:
 
 PACMAN_BOOL_OPTS: ArgSchema = [
     # sync options
-    ('S', 'sync', None),
-    ('g', 'groups', None),
-    ('w', 'downloadonly', None),
-    ('q', 'quiet', False),
-    ('s', 'search', None),
-    ('d', 'nodeps', None),
+    ("S", "sync", None),
+    ("g", "groups", None),
+    ("w", "downloadonly", None),
+    ("q", "quiet", False),
+    ("s", "search", None),
+    ("d", "nodeps", None),
     # query options
-    ('Q', 'query', None),
-    ('o', 'owns', None),
-    ('l', 'list', None),  # @TODO
+    ("Q", "query", None),
+    ("o", "owns", None),
+    ("l", "list", None),  # @TODO
     # operations
-    ('D', 'database', None),
-    ('F', 'files', None),
-    ('R', 'remove', None),
-    ('T', 'deptest', None),
-    ('U', 'upgrade', None),
-    ('V', 'version', None),
-    ('h', 'help', None),
+    ("D", "database", None),
+    ("F", "files", None),
+    ("R", "remove", None),
+    ("T", "deptest", None),
+    ("U", "upgrade", None),
+    ("V", "version", None),
+    ("h", "help", None),
     # universal options
-    ('v', 'verbose', None),
-    (None, 'debug', None),
-    (None, 'noconfirm', None),
-    (None, 'needed', False),
+    ("v", "verbose", None),
+    (None, "debug", None),
+    (None, "noconfirm", None),
+    (None, "needed", False),
 ]
 
 
 def get_pikaur_bool_opts() -> ArgSchema:
     return [
-        (None, 'noedit', PikaurConfig().review.NoEdit.get_bool()),
-        (None, 'edit', None),
-        (None, 'namesonly', False),
-        (None, 'repo', None),
-        ('a', 'aur', None),
-        (None, 'keepbuild', PikaurConfig().build.KeepBuildDir.get_bool()),
-        (None, 'keepbuilddeps', PikaurConfig().build.KeepBuildDeps.get_bool()),
-        (None, 'nodiff', PikaurConfig().review.NoDiff.get_bool()),
-        (None, 'rebuild', None),
-        (None, 'dynamic-users', PikaurConfig().build.AlwaysUseDynamicUsers.get_bool()),
-        ('P', 'pkgbuild', None),
-        (None, 'install', None),
-        ('G', 'getpkgbuild', None),
-        (None, 'deps', None),
-        (None, 'ignore-outofdate', PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool()),
-        (None, 'pikaur-debug', None),
+        (None, "noedit", PikaurConfig().review.NoEdit.get_bool()),
+        (None, "edit", None),
+        (None, "namesonly", False),
+        (None, "repo", None),
+        ("a", "aur", None),
+        (None, "keepbuild", PikaurConfig().build.KeepBuildDir.get_bool()),
+        (None, "keepbuilddeps", PikaurConfig().build.KeepBuildDeps.get_bool()),
+        (None, "nodiff", PikaurConfig().review.NoDiff.get_bool()),
+        (None, "rebuild", None),
+        (None, "dynamic-users", PikaurConfig().build.AlwaysUseDynamicUsers.get_bool()),
+        ("P", "pkgbuild", None),
+        (None, "install", None),
+        ("G", "getpkgbuild", None),
+        (None, "deps", None),
+        (None, "ignore-outofdate", PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool()),
+        (None, "pikaur-debug", None),
         # undocumented options:
-        (None, 'print-commands', PikaurConfig().ui.PrintCommands.get_bool()),
-        (None, 'hide-build-log', None),
-        (None, 'print-args-and-exit', None),
+        (None, "print-commands", PikaurConfig().ui.PrintCommands.get_bool()),
+        (None, "hide-build-log", None),
+        (None, "print-args-and-exit", None),
     ]
 
 
 PACMAN_STR_OPTS: ArgSchema = [
-    (None, 'color', None),
-    ('b', 'dbpath', None),  # @TODO: pyalpm?
-    ('r', 'root', None),
-    (None, 'arch', None),  # @TODO
-    (None, 'cachedir', None),  # @TODO
-    (None, 'config', None),
-    (None, 'gpgdir', None),
-    (None, 'hookdir', None),
-    (None, 'logfile', None),
-    (None, 'print-format', None),  # @TODO
+    (None, "color", None),
+    ("b", "dbpath", None),  # @TODO: pyalpm?
+    ("r", "root", None),
+    (None, "arch", None),  # @TODO
+    (None, "cachedir", None),  # @TODO
+    (None, "config", None),
+    (None, "gpgdir", None),
+    (None, "hookdir", None),
+    (None, "logfile", None),
+    (None, "print-format", None),  # @TODO
 ]
 
 
 def get_pikaur_str_opts() -> ArgSchema:
     return [
-        (None, 'build-gpgdir', PikaurConfig().build.GpgDir.get_str()),
-        (None, 'mflags', None),
-        (None, 'makepkg-config', None),
-        (None, 'makepkg-path', None),
-        (None, 'pikaur-config', None),
+        (None, "build-gpgdir", PikaurConfig().build.GpgDir.get_str()),
+        (None, "mflags", None),
+        (None, "makepkg-config", None),
+        (None, "makepkg-path", None),
+        (None, "pikaur-config", None),
     ]
 
 
 PACMAN_COUNT_OPTS: ArgSchema = [
-    ('y', 'refresh', 0),
-    ('u', 'sysupgrade', 0),
-    ('c', 'clean', 0),
-    ('k', 'check', 0),
-    ('i', 'info', 0),
+    ("y", "refresh", 0),
+    ("u", "sysupgrade", 0),
+    ("c", "clean", 0),
+    ("k", "check", 0),
+    ("i", "info", 0),
 ]
 
 
 def get_pikaur_count_opts() -> ArgSchema:
     return [
-        (None, 'devel', 0),
+        (None, "devel", 0),
     ]
 
 
 PACMAN_APPEND_OPTS: ArgSchema = [
-    (None, 'ignore', None),
-    (None, 'ignoregroup', None),  # @TODO
-    (None, 'overwrite', None),
-    (None, 'assume-installed', None),  # @TODO
+    (None, "ignore", None),
+    (None, "ignoregroup", None),  # @TODO
+    (None, "overwrite", None),
+    (None, "assume-installed", None),  # @TODO
 ]
 
 
 def get_pikaur_long_opts() -> list[str]:
     return [
-        long_opt.replace('-', '_')
+        long_opt.replace("-", "_")
         for _short_opt, long_opt, _default in (
             get_pikaur_bool_opts() + get_pikaur_str_opts() + get_pikaur_count_opts()
         )
@@ -132,7 +132,7 @@ def get_pikaur_long_opts() -> list[str]:
 
 def get_pacman_long_opts() -> list[str]:  # pragma: no cover
     return [
-        long_opt.replace('-', '_')
+        long_opt.replace("-", "_")
         for _short_opt, long_opt, _default
         in PACMAN_BOOL_OPTS + PACMAN_STR_OPTS + PACMAN_COUNT_OPTS + PACMAN_APPEND_OPTS
     ]
@@ -175,7 +175,7 @@ class PikaurArgs(Namespace):
         result: PossibleArgValuesTypes = getattr(
             super(),
             name,
-            getattr(self, name.replace('-', '_'))
+            getattr(self, name.replace("-", "_"))
         )
         return result
 
@@ -201,7 +201,7 @@ class PikaurArgs(Namespace):
 
         new_ignore: list[str] = []
         for ignored in self.ignore or []:
-            new_ignore += ignored.split(',')
+            new_ignore += ignored.split(",")
         self.ignore = new_ignore
 
         if self.debug:
@@ -213,9 +213,9 @@ class PikaurArgs(Namespace):
     def validate(self) -> None:
         if self.query:
             if not self.sysupgrade:
-                for arg_name in ('aur', 'repo'):
+                for arg_name in ("aur", "repo"):
                     if getattr(self, arg_name):
-                        raise MissingArgumentError('sysupgrade', arg_name)
+                        raise MissingArgumentError("sysupgrade", arg_name)
 
     @classmethod
     def from_namespace(
@@ -223,7 +223,7 @@ class PikaurArgs(Namespace):
             namespace: Namespace,
             unknown_args: list[str],
             raw_args: list[str]
-    ) -> 'PikaurArgs':
+    ) -> "PikaurArgs":
         result = cls()
         for key, value in namespace.__dict__.items():
             setattr(result, key, value)
@@ -235,7 +235,7 @@ class PikaurArgs(Namespace):
     @property
     def raw_without_pikaur_specific(self) -> list[str]:
         result = self.raw[:]
-        for arg in ('--pikaur-debug', ):
+        for arg in ("--pikaur-debug", ):
             if arg in result:
                 result.remove(arg)
         return result
@@ -252,7 +252,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
     def parse_pikaur_args(self, raw_args: list[str]) -> PikaurArgs:
         parsed_args, unknown_args = self.parse_known_args(raw_args)
         for arg in unknown_args[:]:
-            if arg.startswith('-'):
+            if arg.startswith("-"):
                 continue
             unknown_args.remove(arg)
             parsed_args.positional.append(arg)
@@ -272,28 +272,28 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
         if action:
             if letter and opt:
                 self.add_argument(
-                    '-' + letter, '--' + opt, action=action, default=default
+                    "-" + letter, "--" + opt, action=action, default=default
                 )
             elif opt:
                 self.add_argument(
-                    '--' + opt, action=action, default=default
+                    "--" + opt, action=action, default=default
                 )
             elif letter:
                 self.add_argument(
-                    '-' + letter, action=action, default=default
+                    "-" + letter, action=action, default=default
                 )
         else:
             if letter and opt:
                 self.add_argument(
-                    '-' + letter, '--' + opt, default=default
+                    "-" + letter, "--" + opt, default=default
                 )
             elif opt:
                 self.add_argument(
-                    '--' + opt, default=default
+                    "--" + opt, default=default
                 )
             elif letter:
                 self.add_argument(
-                    '-' + letter, default=default
+                    "-" + letter, default=default
                 )
 
 
@@ -332,7 +332,7 @@ def debug_args(args: list[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma:
     debug_format(reconstruct_args(parsed_args))
     debug()
     debug("Reconstructed pacman args without -S:")
-    debug_format(reconstruct_args(parsed_args, ignore_args=['sync']))
+    debug_format(reconstruct_args(parsed_args, ignore_args=["sync"]))
     sys.exit(0)
 
 
@@ -347,17 +347,17 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
 
     for letter, opt, default in PACMAN_BOOL_OPTS + get_pikaur_bool_opts():
         parser.add_letter_andor_opt(
-            action='store_true', letter=letter, opt=opt, default=default
+            action="store_true", letter=letter, opt=opt, default=default
         )
 
     for letter, opt, default in PACMAN_COUNT_OPTS + get_pikaur_count_opts():
         parser.add_letter_andor_opt(
-            action='count', letter=letter, opt=opt, default=default
+            action="count", letter=letter, opt=opt, default=default
         )
 
     for letter, opt, default in PACMAN_APPEND_OPTS:
         parser.add_letter_andor_opt(
-            action='append', letter=letter, opt=opt, default=default
+            action="append", letter=letter, opt=opt, default=default
         )
 
     for letter, opt, default in PACMAN_STR_OPTS + get_pikaur_str_opts():
@@ -365,12 +365,12 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
             action=None, letter=letter, opt=opt, default=default
         )
 
-    parser.add_argument('positional', nargs='*')
+    parser.add_argument("positional", nargs="*")
 
     parsed_args = parser.parse_pikaur_args(args)
 
-    if parsed_args.positional and '-' in parsed_args.positional and not sys.stdin.isatty():
-        parsed_args.positional.remove('-')
+    if parsed_args.positional and "-" in parsed_args.positional and not sys.stdin.isatty():
+        parsed_args.positional.remove("-")
         parsed_args.positional += [
             word
             for line in sys.stdin.readlines()
@@ -412,19 +412,19 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
         if letter:
             ignore_args.append(letter)
         if opt:
-            ignore_args.append(opt.replace('-', '_'))
+            ignore_args.append(opt.replace("-", "_"))
     count_args = []
     for letter, opt, _default in PACMAN_COUNT_OPTS:
         if letter:
             count_args.append(letter)
         if opt:
-            count_args.append(opt.replace('-', '_'))
+            count_args.append(opt.replace("-", "_"))
     reconstructed_args = {
-        f'--{key}' if len(key) > 1 else f'-{key}': value
+        f"--{key}" if len(key) > 1 else f"-{key}": value
         for key, value in vars(parsed_args).items()
         if value
         if key not in ignore_args + count_args + [
-            'raw', 'unknown_args', 'positional',  # computed members
+            "raw", "unknown_args", "positional",  # computed members
         ] + [
             long_arg
             for _short_arg, long_arg, default in PACMAN_STR_OPTS + PACMAN_APPEND_OPTS
@@ -435,7 +435,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
     ))
     for args_key, value in vars(parsed_args).items():
         for letter, _opt, _default in PACMAN_COUNT_OPTS:
-            opt = _opt.replace('-', '_')
+            opt = _opt.replace("-", "_")
             if value and opt == args_key and opt not in ignore_args and letter not in ignore_args:
-                result += ['--' + opt] * value
+                result += ["--" + opt] * value
     return result

@@ -36,7 +36,6 @@ ignore = [
 	"RET504",
 
 	# enable back later:
-	"Q000",  # force double-quotes
 
 	"C901",  # "too complex"
 	"ERA001", # commented out code
@@ -61,6 +60,7 @@ ignore = [
 	"D400",
 	"D415",
 
+	#"Q000",  # force double-quotes
 ]
 
 [tool.ruff.per-file-ignores]

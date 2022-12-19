@@ -15,9 +15,9 @@ PADDING = 4
 
 def color_enabled() -> bool:
     args = parse_args()
-    if args.color == 'never':
+    if args.color == "never":
         return False
-    if args.color == 'always':
+    if args.color == "always":
         return True
     try:
         if (sys.stderr.isatty() and sys.stdout.isatty()):
@@ -33,8 +33,8 @@ class PrintLock(FancyLock):
 
 def _print(
         destination: TextIO,
-        message: Any = '',
-        end: str = '\n',
+        message: Any = "",
+        end: str = "\n",
         *,
         flush: bool = False,
         lock: bool = True
@@ -44,7 +44,7 @@ def _print(
         message = str(message)
     if lock:
         PrintLock().__enter__()
-    destination.write(f'{message}{end}')
+    destination.write(f"{message}{end}")
     if flush:
         destination.flush()
     if lock:
@@ -52,8 +52,8 @@ def _print(
 
 
 def print_stdout(
-        message: Any = '',
-        end: str = '\n',
+        message: Any = "",
+        end: str = "\n",
         *,
         flush: bool = False,
         lock: bool = True
@@ -62,8 +62,8 @@ def print_stdout(
 
 
 def print_stderr(
-        message: Any = '',
-        end: str = '\n',
+        message: Any = "",
+        end: str = "\n",
         *,
         flush: bool = False,
         lock: bool = True
@@ -98,7 +98,7 @@ def color_line(
 ) -> str:
     if not color_enabled() and not force:
         return line
-    result = ''
+    result = ""
     if color_number >= 8:
         result += "\033[0;1m"
         color_number -= 8
@@ -112,19 +112,19 @@ def color_line(
 def bold_line(line: str) -> str:
     if not color_enabled():
         return line
-    return f'\033[0;1m{line}\033[0m'
+    return f"\033[0;1m{line}\033[0m"
 
 
-def print_warning(message: str = '') -> None:
-    print_stderr(' '.join([
-        color_line(':: ' + translate("warning:"), ColorsHighlight.yellow),
+def print_warning(message: str = "") -> None:
+    print_stderr(" ".join([
+        color_line(":: " + translate("warning:"), ColorsHighlight.yellow),
         message
     ]))
 
 
 def print_error(message: str) -> None:
-    print_stderr(' '.join([
-        color_line(':: ' + translate("error:"), ColorsHighlight.red),
+    print_stderr(" ".join([
+        color_line(":: " + translate("error:"), ColorsHighlight.red),
         message
     ]))
 
@@ -137,8 +137,8 @@ def print_debug(message: Any, *, lock: bool = True) -> None:
     if args.debug:
         # to avoid mixing together with pacman's debug messages:
         prefix = translate("pikaur debug:")
-    print_stderr(' '.join([
-        color_line(':: ' + prefix, Colors.cyan),
+    print_stderr(" ".join([
+        color_line(":: " + prefix, Colors.cyan),
         str(message)
     ]), lock=lock)
 
@@ -149,7 +149,7 @@ def get_term_width() -> int:
 
 def format_paragraph(line: str) -> str:
     if not color_enabled():
-        return PADDING * ' ' + line
+        return PADDING * " " + line
     term_width = get_term_width()
     max_line_width = term_width - PADDING * 2
 
@@ -165,11 +165,11 @@ def format_paragraph(line: str) -> str:
         line_length += len(word) + 1
     result.append(current_line)
 
-    return '\n'.join([
-        ' '.join(
-            [(PADDING - 1) * ' ', ] +
+    return "\n".join([
+        " ".join(
+            [(PADDING - 1) * " ", ] +
             words +
-            [(PADDING - 1) * ' ', ],
+            [(PADDING - 1) * " ", ],
         )
         for words in result
     ])
@@ -179,7 +179,7 @@ def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
     if not end:
         end = len(text)
 
-    result = ''
+    result = ""
     counter = 0
     escape_seq = False
     for char in text:
@@ -187,7 +187,7 @@ def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
             result += char
         if not escape_seq and char in printable:
             counter += 1
-        elif escape_seq and char == 'm':
+        elif escape_seq and char == "m":
             escape_seq = False
         else:
             escape_seq = True

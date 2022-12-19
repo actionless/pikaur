@@ -11,12 +11,12 @@ ConfigValueType = str | list[str] | None
 ConfigFormat = dict[str, ConfigValueType]
 
 
-FallbackValueT = TypeVar('FallbackValueT')
+FallbackValueT = TypeVar("FallbackValueT")
 
 
 class ConfigReader():
 
-    comment_prefixes = ('#', ';')
+    comment_prefixes = ("#", ";")
 
     _cached_config: dict[str, ConfigFormat] | None = None
     default_config_path: str
@@ -26,15 +26,15 @@ class ConfigReader():
     @classmethod
     def _parse_line(cls, line: str) -> tuple[str | None, ConfigValueType]:
         blank = (None, None, )
-        if line.startswith(' '):
+        if line.startswith(" "):
             return blank
-        if '=' not in line:
+        if "=" not in line:
             return blank
         line = line.strip()
         for comment_prefix in cls.comment_prefixes:
             line, *_comments = line.split(comment_prefix)
 
-        key, _sep, value = line.partition('=')
+        key, _sep, value = line.partition("=")
         key = key.strip()
         value = value.strip()
 
@@ -86,9 +86,9 @@ class MakepkgConfig():
 
     @classmethod
     def get_user_makepkg_path(cls) -> str | None:
-        if cls._user_makepkg_path == 'unset':
+        if cls._user_makepkg_path == "unset":
             possible_paths = [
-                os.path.expanduser('~/.makepkg.conf'),
+                os.path.expanduser("~/.makepkg.conf"),
                 os.path.join(CONFIG_ROOT, "pacman/makepkg.conf"),
             ]
             config_path: str | None = None
@@ -118,12 +118,12 @@ class MakepkgConfig():
         return value
 
 
-CONFIG_PKGDEST = MakepkgConfig.get('PKGDEST')
+CONFIG_PKGDEST = MakepkgConfig.get("PKGDEST")
 if not isinstance(CONFIG_PKGDEST, str):
     CONFIG_PKGDEST = None
-PKGDEST: str | None = os.environ.get('PKGDEST', CONFIG_PKGDEST)
+PKGDEST: str | None = os.environ.get("PKGDEST", CONFIG_PKGDEST)
 if PKGDEST:
-    PKGDEST = PKGDEST.replace('$HOME', '~')
+    PKGDEST = PKGDEST.replace("$HOME", "~")
     PKGDEST = os.path.expanduser(PKGDEST)
 
 
@@ -135,12 +135,12 @@ class MakePkgCommand:
     @classmethod
     def _apply_dynamic_users_workaround(cls) -> None:
         if running_as_root() and PKGDEST and (
-                PKGDEST.startswith('/tmp') or  # nosec B108
-                PKGDEST.startswith('/var/tmp')  # nosec B108
+                PKGDEST.startswith("/tmp") or  # nosec B108
+                PKGDEST.startswith("/var/tmp")  # nosec B108
         ):
             if not cls._cmd:
                 raise RuntimeError()
-            cls._cmd = ['env', 'PKGDEST='] + cls._cmd
+            cls._cmd = ["env", "PKGDEST="] + cls._cmd
             cls.pkgdest_skipped = True
 
     @classmethod
@@ -148,11 +148,11 @@ class MakePkgCommand:
         if cls._cmd is None:
             args = parse_args()
             makepkg_flags = (
-                args.mflags.split(',') if args.mflags else []
+                args.mflags.split(",") if args.mflags else []
             )
             config_args = (
-                ['--config', args.makepkg_config] if args.makepkg_config else []
+                ["--config", args.makepkg_config] if args.makepkg_config else []
             )
-            cls._cmd = [args.makepkg_path or 'makepkg', ] + makepkg_flags + config_args
+            cls._cmd = [args.makepkg_path or "makepkg", ] + makepkg_flags + config_args
             cls._apply_dynamic_users_workaround()
         return cls._cmd

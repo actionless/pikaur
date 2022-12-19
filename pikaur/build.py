@@ -60,7 +60,7 @@ if TYPE_CHECKING:
     from .core import SpawnArgs
 
 
-_debug = create_debug_logger('build')
+_debug = create_debug_logger("build")
 
 
 class PkgbuildChanged(Exception):  # noqa: N818
@@ -72,7 +72,7 @@ def _shell(cmds: list[str]) -> InteractiveSpawn:
 
 
 def _mkdir(to_path: str) -> None:
-    mkdir_result = spawn(isolate_root_cmd(['mkdir', '-p', to_path]))
+    mkdir_result = spawn(isolate_root_cmd(["mkdir", "-p", to_path]))
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
         print_stderr(mkdir_result.stderr_text)
@@ -86,12 +86,12 @@ def copy_aur_repo(from_path: str, to_path: str) -> None:
         _mkdir(to_path)
 
     from_paths = []
-    for src_path in glob(f'{from_path}/*') + glob(f'{from_path}/.*'):
-        if os.path.basename(src_path) != '.git':
+    for src_path in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):
+        if os.path.basename(src_path) != ".git":
             from_paths.append(src_path)
-    to_path = f'{to_path}/'
+    to_path = f"{to_path}/"
 
-    cmd_args = isolate_root_cmd(['cp', '-r'] + from_paths + [to_path])
+    cmd_args = isolate_root_cmd(["cp", "-r"] + from_paths + [to_path])
 
     result = spawn(cmd_args)
     if result.returncode != 0:
@@ -147,7 +147,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             self.repo_path = dirname(pkgbuild_path)
             self.pkgbuild_path = pkgbuild_path
             srcinfo = SrcInfo(pkgbuild_path=pkgbuild_path)
-            pkgbase = srcinfo.get_value('pkgbase')
+            pkgbase = srcinfo.get_value("pkgbase")
             if pkgbase and srcinfo.pkgnames:
                 self.package_names = package_names or srcinfo.pkgnames
                 self.package_base = pkgbase
@@ -157,9 +157,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
             self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
-            self.pkgbuild_path = os.path.join(self.repo_path, 'PKGBUILD')
+            self.pkgbuild_path = os.path.join(self.repo_path, "PKGBUILD")
         else:
-            raise NotImplementedError('Either `package_names` or `pkgbuild_path` should be set')
+            raise NotImplementedError("Either `package_names` or `pkgbuild_path` should be set")
 
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
         self.build_gpgdir = self.args.build_gpgdir
@@ -170,7 +170,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self.skip_carch_check = PikaurConfig().build.IgnoreArch.get_bool()
 
         if os.path.exists(self.repo_path):
-            if os.path.exists(os.path.join(self.repo_path, '.git')):
+            if os.path.exists(os.path.join(self.repo_path, ".git")):
                 self.pull = True
             else:
                 self.clone = True
@@ -186,42 +186,42 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def git_reset_changed(self) -> InteractiveSpawn:
         return _shell([
-            'git',
-            '-C', self.repo_path,
-            'checkout',
-            '--',
+            "git",
+            "-C", self.repo_path,
+            "checkout",
+            "--",
             "*"
         ])
 
     def git_stash(self) -> InteractiveSpawn:
         return _shell([
-            'git',
-            '-C', self.repo_path,
-            'stash',
+            "git",
+            "-C", self.repo_path,
+            "stash",
         ])
 
     def git_stash_pop(self) -> InteractiveSpawn:
         return _shell([
-            'git',
-            '-C', self.repo_path,
-            'stash',
-            'pop',
+            "git",
+            "-C", self.repo_path,
+            "stash",
+            "pop",
         ])
 
     def update_aur_repo(self) -> InteractiveSpawn:
         cmd_args: list[str]
         if self.pull:
             cmd_args = [
-                'git',
-                '-C', self.repo_path,
-                'pull',
-                'origin',
-                'master'
+                "git",
+                "-C", self.repo_path,
+                "pull",
+                "origin",
+                "master"
             ]
         if self.clone:
             cmd_args = [
-                'git',
-                'clone',
+                "git",
+                "clone",
                 get_repo_url(self.package_base),
                 self.repo_path,
             ]
@@ -235,7 +235,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def last_installed_file_path(self) -> str:
         return os.path.join(
             self.repo_path,
-            'last_installed.txt'
+            "last_installed.txt"
         )
 
     @property
@@ -251,7 +251,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def update_last_installed_file(self) -> None:
         git_hash_path = os.path.join(
             self.repo_path,
-            '.git/refs/heads/master'
+            ".git/refs/heads/master"
         )
         if os.path.exists(git_hash_path):
             shutil.copy2(
@@ -264,7 +264,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         """Commit hash of AUR repo of the pkg."""
         git_hash_path = os.path.join(
             self.repo_path,
-            '.git/refs/heads/master'
+            ".git/refs/heads/master"
         )
         if not os.path.exists(git_hash_path):
             return None
@@ -281,20 +281,20 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             not (is_devel_pkg(self.package_base) and check_dev_pkgs)
         ):
             return
-        print_stdout('{} {}...'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', ColorsHighlight.white),
+        print_stdout("{} {}...".format(  # pylint: disable=consider-using-f-string
+            color_line("::", ColorsHighlight.white),
             translate_many(
                 "Downloading the latest sources for a devel package {}",
                 "Downloading the latest sources for devel packages {}",
                 len(self.package_names)
             ).format(
-                bold_line(', '.join(self.package_names))
+                bold_line(", ".join(self.package_names))
             )
         ))
         pkgver_result = joined_spawn(
             isolate_root_cmd(
                 MakePkgCommand.get() + [
-                    '--nobuild', '--nocheck', '--nodeps'
+                    "--nobuild", "--nocheck", "--nodeps"
                 ],
                 cwd=self.build_dir
             ),
@@ -342,7 +342,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def _filter_built_deps(
             self,
-            all_package_builds: dict[str, 'PackageBuild']
+            all_package_builds: dict[str, "PackageBuild"]
     ) -> None:
 
         def _mark_dep_resolved(dep: str) -> None:
@@ -360,7 +360,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 all_provided_pkgnames.update({
                     provided_name: pkg_name
                     for provided_name in
-                    [pkg_name] + srcinfo.get_values('provides')
+                    [pkg_name] + srcinfo.get_values("provides")
                 })
 
         self.built_deps_to_install = {}
@@ -385,22 +385,22 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def _get_pacman_command(self, ignore_args: list[str] | None = None) -> list[str]:
         return get_pacman_command(ignore_args=ignore_args) + (
-            ['--noconfirm'] if self.args.noconfirm else []
+            ["--noconfirm"] if self.args.noconfirm else []
         )
 
     def install_built_deps(
             self,
-            all_package_builds: dict[str, 'PackageBuild']
+            all_package_builds: dict[str, "PackageBuild"]
     ) -> None:
 
         self.get_deps(all_package_builds)
         if not self.built_deps_to_install:
             return
 
-        print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', ColorsHighlight.purple),
+        print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
+            color_line("::", ColorsHighlight.purple),
             translate("Installing already built dependencies for {}").format(
-                bold_line(', '.join(self.package_names)))
+                bold_line(", ".join(self.package_names)))
         ))
 
         try:
@@ -423,7 +423,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def _set_built_package_path(self) -> None:
         pkg_paths_spawn = spawn(
-            isolate_root_cmd(MakePkgCommand.get() + ['--packagelist'],
+            isolate_root_cmd(MakePkgCommand.get() + ["--packagelist"],
                              cwd=self.build_dir),
             cwd=self.build_dir
         )
@@ -438,11 +438,11 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         for pkg_name in self.package_names:
             pkg_path = pkg_paths[0]
             if len(pkg_paths) > 1:
-                arch = MakepkgConfig.get('CARCH')
+                arch = MakepkgConfig.get("CARCH")
                 for each_path in pkg_paths:
                     each_filename = os.path.basename(each_path)
                     if pkg_name in each_filename and (
-                            (f'-{arch}.' in each_filename) or ('-any.' in each_filename)
+                            (f"-{arch}." in each_filename) or ("-any." in each_filename)
                     ):
                         pkg_path = each_filename
                         break
@@ -492,8 +492,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         copy_aur_repo(self.repo_path, self.build_dir)
 
         pkgbuild_name = os.path.basename(self.pkgbuild_path)
-        if pkgbuild_name != 'PKGBUILD':
-            default_pkgbuild_path = os.path.join(self.build_dir, 'PKGBUILD')
+        if pkgbuild_name != "PKGBUILD":
+            default_pkgbuild_path = os.path.join(self.build_dir, "PKGBUILD")
             custom_pkgbuild_path = os.path.join(self.build_dir, pkgbuild_name)
             if os.path.exists(default_pkgbuild_path):
                 os.unlink(default_pkgbuild_path)
@@ -502,7 +502,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def get_deps(
             self,
-            all_package_builds: dict[str, 'PackageBuild'],
+            all_package_builds: dict[str, "PackageBuild"],
             *,
             filter_built: bool = True,
             exclude_pkg_names: list[str] | None = None,
@@ -528,7 +528,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 new_deps_to_install = [
                     dep_line
                     for dep_lines in [
-                        new_deps_version_matchers[dep_name].line.split(',')
+                        new_deps_version_matchers[dep_name].line.split(",")
                         for dep_name in PackageDB.get_not_found_local_packages([
                             vm.line for vm in new_deps_version_matchers.values()
                         ])
@@ -546,17 +546,17 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not self.all_deps_to_install:
             return
 
-        print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', ColorsHighlight.purple),
+        print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
+            color_line("::", ColorsHighlight.purple),
             translate("Installing repository dependencies for {}").format(
-                bold_line(', '.join(self.package_names)))
+                bold_line(", ".join(self.package_names)))
         ))
 
         retry_interactive_command_or_exit(
             sudo(
                 self._get_pacman_command() + [
-                    '--sync',
-                    '--asdeps',
+                    "--sync",
+                    "--asdeps",
                 ] + self.all_deps_to_install
             ),
             pikspect=True,
@@ -566,7 +566,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self._local_pkgs_with_build_deps = set(PackageDB.get_local_dict().keys())
         self._local_provided_pkgs_with_build_deps = PackageDB.get_local_provided_dict()
 
-    def install_all_deps(self, all_package_builds: dict[str, 'PackageBuild']) -> None:
+    def install_all_deps(self, all_package_builds: dict[str, "PackageBuild"]) -> None:
         with FileLock(BUILD_DEPS_LOCK):
             self.get_deps(all_package_builds)
             if self.all_deps_to_install or self.built_deps_to_install:
@@ -612,7 +612,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             error_text = translate(
                 "Failed to remove installed dependencies, packages inconsistency: {}"
             ).format(
-                bold_line(', '.join(deps_packages_removed))
+                bold_line(", ".join(deps_packages_removed))
             )
             print_error(error_text)
             if not ask_to_continue():
@@ -620,18 +620,18 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not deps_packages_installed or self.args.keepbuilddeps:
             return
 
-        print_stderr('{} {}:'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', ColorsHighlight.purple),
+        print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
+            color_line("::", ColorsHighlight.purple),
             translate("Removing already installed dependencies for {}").format(
-                bold_line(', '.join(self.package_names)))
+                bold_line(", ".join(self.package_names)))
         ))
         retry_interactive_command_or_exit(
             sudo(
                 # pacman --remove flag conflicts with some --sync options:
                 self._get_pacman_command(ignore_args=[
-                    'overwrite',
+                    "overwrite",
                 ]) + [
-                    '--remove',
+                    "--remove",
                 ] + list(deps_packages_installed)
             ),
             pikspect=True,
@@ -643,10 +643,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return
 
         src_info = SrcInfo(pkgbuild_path=self.pkgbuild_path)
-        arch = MakepkgConfig.get('CARCH')
-        supported_archs = src_info.get_values('arch')
+        arch = MakepkgConfig.get("CARCH")
+        supported_archs = src_info.get_values("arch")
         if supported_archs and (
-                'any' not in supported_archs
+                "any" not in supported_archs
         ) and (
             arch not in supported_archs
         ):
@@ -656,9 +656,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     "Supported: {suparch}"
                 )
             ).format(
-                name=bold_line(', '.join(self.package_names)),
+                name=bold_line(", ".join(self.package_names)),
                 arch=arch,
-                suparch=', '.join(supported_archs)
+                suparch=", ".join(supported_archs)
             )
             print_error(error_text)
             if (
@@ -672,13 +672,13 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def build_with_makepkg(self) -> bool:  # pylint: disable=too-many-branches,too-many-statements
         makepkg_args = []
         if not self.args.needed:
-            makepkg_args.append('--force')
+            makepkg_args.append("--force")
         if not color_enabled():
-            makepkg_args.append('--nocolor')
+            makepkg_args.append("--nocolor")
 
-        print_stderr('\n{} {}:'.format(  # pylint: disable=consider-using-f-string
-            color_line('::', ColorsHighlight.purple),
-            translate('Starting the build')
+        print_stderr("\n{} {}:".format(  # pylint: disable=consider-using-f-string
+            color_line("::", ColorsHighlight.purple),
+            translate("Starting the build")
         ))
         build_succeeded = False
         skip_pgp_check = False
@@ -688,22 +688,22 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         while True:
             cmd_args = MakePkgCommand.get() + makepkg_args
             if skip_pgp_check:
-                cmd_args += ['--skippgpcheck']
+                cmd_args += ["--skippgpcheck"]
             if skip_file_checksums:
-                cmd_args += ['--skipchecksums']
+                cmd_args += ["--skipchecksums"]
             if self.skip_carch_check:
-                cmd_args += ['--ignorearch']
+                cmd_args += ["--ignorearch"]
             if skip_check:
-                cmd_args += ['--nocheck']
+                cmd_args += ["--nocheck"]
             if no_prepare:
-                cmd_args += ['--noprepare']
+                cmd_args += ["--noprepare"]
 
             env = {}
-            if self.build_gpgdir != '':
-                env['GNUPGHOME'] = self.build_gpgdir
+            if self.build_gpgdir != "":
+                env["GNUPGHOME"] = self.build_gpgdir
 
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
-            spawn_kwargs: 'SpawnArgs' = {
+            spawn_kwargs: "SpawnArgs" = {
                 "cwd": self.build_dir,
                 "env": {**os.environ, **env},
             }
@@ -725,7 +725,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             print_stderr(
                 color_line(
                     translate("Command '{}' failed to execute.").format(
-                        ' '.join(cmd_args)
+                        " ".join(cmd_args)
                     ),
                     ColorsHighlight.red
                 )
@@ -735,8 +735,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             elif self.args.noconfirm:
                 answer = translate("a")
             else:  # pragma: no cover
-                prompt = '{} {}\n{}\n> '.format(
-                    color_line('::', ColorsHighlight.yellow),
+                prompt = "{} {}\n{}\n> ".format(
+                    color_line("::", ColorsHighlight.yellow),
                     translate("Try recovering?"),
                     "\n".join((
                         translate("[R] retry build"),
@@ -754,16 +754,16 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 )
                 answer = get_input(
                     prompt,
-                    translate('r').upper() +
-                    translate('p') +
-                    translate('c') +
-                    translate('f') +
-                    translate('n') +
-                    translate('i') +
-                    translate('d') +
-                    translate('e') +
-                    translate('s') +
-                    translate('a')
+                    translate("r").upper() +
+                    translate("p") +
+                    translate("c") +
+                    translate("f") +
+                    translate("n") +
+                    translate("i") +
+                    translate("d") +
+                    translate("e") +
+                    translate("s") +
+                    translate("a")
                 )
 
             answer = answer.lower()[0]
@@ -787,16 +787,16 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             if answer == translate("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)
                 continue
-            if answer == translate('e'):  # pragma: no cover
+            if answer == translate("e"):  # pragma: no cover
                 editor_cmd = get_editor_or_exit()
                 if editor_cmd:
                     interactive_spawn(
                         editor_cmd + [self.pkgbuild_path]
                     )
                     interactive_spawn(isolate_root_cmd([
-                        'cp',
+                        "cp",
                         self.pkgbuild_path,
-                        os.path.join(self.build_dir, 'PKGBUILD')
+                        os.path.join(self.build_dir, "PKGBUILD")
                     ]))
                     raise PkgbuildChanged()
                 continue
@@ -809,7 +809,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def build(
             self,
-            all_package_builds: dict[str, 'PackageBuild'],
+            all_package_builds: dict[str, "PackageBuild"],
             resolved_conflicts: list[list[str]]
     ) -> None:
         self.resolved_conflicts = resolved_conflicts

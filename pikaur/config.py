@@ -23,25 +23,25 @@ if TYPE_CHECKING:
         migrated: NotRequired[bool]
 
 
-DEFAULT_CONFIG_ENCODING = 'utf-8'
+DEFAULT_CONFIG_ENCODING = "utf-8"
 
 
 RUNNING_AS_ROOT = os.geteuid() == 0  # @TODO: could global var be avoided here?
 
 
-VERSION = '1.14.5-dev'
+VERSION = "1.14.5-dev"
 
 _USER_CACHE_HOME = os.environ.get(
     "XDG_CACHE_HOME",
     os.path.join(Path.home(), ".cache/")
 )
 if RUNNING_AS_ROOT:
-    CACHE_ROOT = '/var/cache/pikaur'
+    CACHE_ROOT = "/var/cache/pikaur"
 else:
-    CACHE_ROOT = os.path.join(_USER_CACHE_HOME, 'pikaur/')
+    CACHE_ROOT = os.path.join(_USER_CACHE_HOME, "pikaur/")
 
-BUILD_CACHE_PATH = os.path.join(CACHE_ROOT, 'build')
-PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, 'pkg')
+BUILD_CACHE_PATH = os.path.join(CACHE_ROOT, "build")
+PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, "pkg")
 
 CONFIG_ROOT = os.environ.get(
     "XDG_CONFIG_HOME",
@@ -54,20 +54,20 @@ DATA_ROOT = os.path.join(
         os.path.join(Path.home(), ".local/share/")
     ), "pikaur"
 )
-_OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
+_OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, "aur_repos")
 if RUNNING_AS_ROOT:
-    AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, 'aur_repos')
+    AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, "aur_repos")
 else:
-    AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, 'aur_repos')
+    AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, "aur_repos")
 
 if RUNNING_AS_ROOT:
-    BUILD_DEPS_LOCK = os.path.join(_USER_CACHE_HOME, 'pikaur_build_deps.lock')
+    BUILD_DEPS_LOCK = os.path.join(_USER_CACHE_HOME, "pikaur_build_deps.lock")
 else:
-    BUILD_DEPS_LOCK = '/tmp/pikaur_build_deps.lock'  # nosec B108
+    BUILD_DEPS_LOCK = "/tmp/pikaur_build_deps.lock"  # nosec B108
 
 
 def get_config_path() -> str:
-    config_flag = '--pikaur-config'
+    config_flag = "--pikaur-config"
     if config_flag in sys.argv:
         return sys.argv[
             sys.argv.index(config_flag) + 1
@@ -78,223 +78,223 @@ def get_config_path() -> str:
     )
 
 
-CONFIG_SCHEMA: dict[str, dict[str, 'ConfigValueType']] = {
-    'sync': {
-        'AlwaysShowPkgOrigin': {
-            'data_type': 'bool',
-            'default': 'no',
+CONFIG_SCHEMA: dict[str, dict[str, "ConfigValueType"]] = {
+    "sync": {
+        "AlwaysShowPkgOrigin": {
+            "data_type": "bool",
+            "default": "no",
         },
-        'DevelPkgsExpiration': {
-            'data_type': 'int',
-            'default': '-1',
+        "DevelPkgsExpiration": {
+            "data_type": "int",
+            "default": "-1",
         },
-        'UpgradeSorting': {
-            'data_type': 'str',
-            'default': 'versiondiff'
+        "UpgradeSorting": {
+            "data_type": "str",
+            "default": "versiondiff"
         },
-        'ShowDownloadSize': {
-            'data_type': 'bool',
-            'default': 'no',
+        "ShowDownloadSize": {
+            "data_type": "bool",
+            "default": "no",
         },
-        'IgnoreOutofdateAURUpgrades': {
-            'data_type': 'bool',
-            'default': 'no',
-        },
-    },
-    'build': {
-        'KeepBuildDir': {
-            'data_type': 'bool',
-            'default': 'no',
-        },
-        'KeepDevBuildDir': {
-            'data_type': 'bool',
-            'default': 'yes',
-        },
-        'KeepBuildDeps': {
-            'data_type': 'bool',
-            'default': 'no',
-        },
-        'GpgDir': {
-            'data_type': 'str',
-            'default': ('/etc/pacman.d/gnupg/' if RUNNING_AS_ROOT else '')
-        },
-        'SkipFailedBuild': {
-            'data_type': 'bool',
-            'default': 'no',
-        },
-        'AlwaysUseDynamicUsers': {
-            'data_type': 'bool',
-            'default': 'no',
-        },
-        'NoEdit': {
-            'data_type': 'bool',
-            'deprecated': {
-                'section': 'review',
-                'option': 'NoEdit',
-            },
-        },
-        'DontEditByDefault': {
-            'data_type': 'bool',
-            'deprecated': {
-                'section': 'review',
-                'option': 'DontEditByDefault',
-            },
-        },
-        'NoDiff': {
-            'data_type': 'bool',
-            'deprecated': {
-                'section': 'review',
-                'option': 'NoDiff',
-            },
-        },
-        'GitDiffArgs': {
-            'data_type': 'str',
-            'deprecated': {
-                'section': 'review',
-                'option': 'GitDiffArgs',
-            },
-        },
-        'IgnoreArch': {
-            'data_type': 'bool',
-            'default': 'no'
+        "IgnoreOutofdateAURUpgrades": {
+            "data_type": "bool",
+            "default": "no",
         },
     },
-    'review': {
-        'NoEdit': {
-            'data_type': 'bool',
-            'default': 'no',
+    "build": {
+        "KeepBuildDir": {
+            "data_type": "bool",
+            "default": "no",
         },
-        'DontEditByDefault': {
-            'data_type': 'bool',
-            'default': 'no',
+        "KeepDevBuildDir": {
+            "data_type": "bool",
+            "default": "yes",
         },
-        'NoDiff': {
-            'data_type': 'bool',
-            'default': 'no',
+        "KeepBuildDeps": {
+            "data_type": "bool",
+            "default": "no",
         },
-        'GitDiffArgs': {
-            'data_type': 'str',
-            'default': '--ignore-space-change,--ignore-all-space',
+        "GpgDir": {
+            "data_type": "str",
+            "default": ("/etc/pacman.d/gnupg/" if RUNNING_AS_ROOT else "")
         },
-        'DiffPager': {
-            'data_type': 'str',
-            'default': 'auto'
+        "SkipFailedBuild": {
+            "data_type": "bool",
+            "default": "no",
         },
-        'HideDiffFiles': {
-            'data_type': 'str',
-            'default': '.SRCINFO'
+        "AlwaysUseDynamicUsers": {
+            "data_type": "bool",
+            "default": "no",
         },
-    },
-    'colors': {
-        'Version': {
-            'data_type': 'int',
-            'default': '10',
-        },
-        'VersionDiffOld': {
-            'data_type': 'int',
-            'default': '11',
-        },
-        'VersionDiffNew': {
-            'data_type': 'int',
-            'default': '9',
-        },
-    },
-    'ui': {
-        'RequireEnterConfirm': {
-            'data_type': 'bool',
-            'default': 'yes'
-        },
-        'DiffPager': {
-            'data_type': 'str',
-            'deprecated': {
-                'section': 'review',
-                'option': 'DiffPager',
+        "NoEdit": {
+            "data_type": "bool",
+            "deprecated": {
+                "section": "review",
+                "option": "NoEdit",
             },
         },
-        'PrintCommands': {
-            'data_type': 'bool',
-            'default': 'no'
-        },
-        'AurSearchSorting': {
-            'data_type': 'str',
-            'default': 'hottest'
-        },
-        'DisplayLastUpdated': {
-            'data_type': 'bool',
-            'default': 'no'
-        },
-        'GroupByRepository': {
-            'data_type': 'bool',
-            'default': 'yes'
-        },
-        'ReverseSearchSorting': {
-            'data_type': 'bool',
-            'default': 'no'
-        },
-        'WarnAboutPackageUpdates': {
-            'data_type': 'str',
-            'default': ''
-        },
-    },
-    'misc': {
-        'SudoLoopInterval': {
-            'data_type': 'int',
-            'default': '59',
-        },
-        'PacmanPath': {
-            'data_type': 'str',
-            'default': 'pacman'
-        },
-        'PrivilegeEscalationTool': {
-            'data_type': 'str',
-            'default': 'sudo',
-        },
-        'AurHost': {
-            'data_type': 'str',
-            'deprecated': {
-                'section': 'network',
-                'option': 'AurUrl',
-                'transform': lambda old_value, _config: f'https://{old_value}'
+        "DontEditByDefault": {
+            "data_type": "bool",
+            "deprecated": {
+                "section": "review",
+                "option": "DontEditByDefault",
             },
         },
-        'NewsUrl': {
-            'data_type': 'str',
-            'deprecated': {
-                'section': 'network',
-                'option': 'NewsUrl',
+        "NoDiff": {
+            "data_type": "bool",
+            "deprecated": {
+                "section": "review",
+                "option": "NoDiff",
+            },
+        },
+        "GitDiffArgs": {
+            "data_type": "str",
+            "deprecated": {
+                "section": "review",
+                "option": "GitDiffArgs",
+            },
+        },
+        "IgnoreArch": {
+            "data_type": "bool",
+            "default": "no"
+        },
+    },
+    "review": {
+        "NoEdit": {
+            "data_type": "bool",
+            "default": "no",
+        },
+        "DontEditByDefault": {
+            "data_type": "bool",
+            "default": "no",
+        },
+        "NoDiff": {
+            "data_type": "bool",
+            "default": "no",
+        },
+        "GitDiffArgs": {
+            "data_type": "str",
+            "default": "--ignore-space-change,--ignore-all-space",
+        },
+        "DiffPager": {
+            "data_type": "str",
+            "default": "auto"
+        },
+        "HideDiffFiles": {
+            "data_type": "str",
+            "default": ".SRCINFO"
+        },
+    },
+    "colors": {
+        "Version": {
+            "data_type": "int",
+            "default": "10",
+        },
+        "VersionDiffOld": {
+            "data_type": "int",
+            "default": "11",
+        },
+        "VersionDiffNew": {
+            "data_type": "int",
+            "default": "9",
+        },
+    },
+    "ui": {
+        "RequireEnterConfirm": {
+            "data_type": "bool",
+            "default": "yes"
+        },
+        "DiffPager": {
+            "data_type": "str",
+            "deprecated": {
+                "section": "review",
+                "option": "DiffPager",
+            },
+        },
+        "PrintCommands": {
+            "data_type": "bool",
+            "default": "no"
+        },
+        "AurSearchSorting": {
+            "data_type": "str",
+            "default": "hottest"
+        },
+        "DisplayLastUpdated": {
+            "data_type": "bool",
+            "default": "no"
+        },
+        "GroupByRepository": {
+            "data_type": "bool",
+            "default": "yes"
+        },
+        "ReverseSearchSorting": {
+            "data_type": "bool",
+            "default": "no"
+        },
+        "WarnAboutPackageUpdates": {
+            "data_type": "str",
+            "default": ""
+        },
+    },
+    "misc": {
+        "SudoLoopInterval": {
+            "data_type": "int",
+            "default": "59",
+        },
+        "PacmanPath": {
+            "data_type": "str",
+            "default": "pacman"
+        },
+        "PrivilegeEscalationTool": {
+            "data_type": "str",
+            "default": "sudo",
+        },
+        "AurHost": {
+            "data_type": "str",
+            "deprecated": {
+                "section": "network",
+                "option": "AurUrl",
+                "transform": lambda old_value, _config: f"https://{old_value}"
+            },
+        },
+        "NewsUrl": {
+            "data_type": "str",
+            "deprecated": {
+                "section": "network",
+                "option": "NewsUrl",
             },
         },
     },
-    'network': {
-        'AurUrl': {
-            'data_type': 'str',
-            'default': 'https://aur.archlinux.org',
+    "network": {
+        "AurUrl": {
+            "data_type": "str",
+            "default": "https://aur.archlinux.org",
         },
-        'NewsUrl': {
-            'data_type': 'str',
-            'default': 'https://www.archlinux.org/feeds/news/',
+        "NewsUrl": {
+            "data_type": "str",
+            "default": "https://www.archlinux.org/feeds/news/",
         },
-        'Socks5Proxy': {
-            'data_type': 'str',
-            'default': '',
+        "Socks5Proxy": {
+            "data_type": "str",
+            "default": "",
         },
-        'AurHttpProxy': {
-            'data_type': 'str',
-            'default': '',
+        "AurHttpProxy": {
+            "data_type": "str",
+            "default": "",
         },
-        'AurHttpsProxy': {
-            'data_type': 'str',
-            'default': '',
+        "AurHttpsProxy": {
+            "data_type": "str",
+            "default": "",
         },
     },
 }
 
 
 def get_key_type(section_name: str, key_name: str) -> str | None:
-    config_value: 'ConfigValueType' | None = CONFIG_SCHEMA.get(section_name, {}).get(key_name, None)
+    config_value: "ConfigValueType" | None = CONFIG_SCHEMA.get(section_name, {}).get(key_name, None)
     if not config_value:
         return None
-    return config_value.get('data_type')
+    return config_value.get("data_type")
 
 
 def write_config(config: configparser.ConfigParser | None = None) -> None:
@@ -305,18 +305,18 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
         if section_name not in config:
             config[section_name] = {}
         for option_name, option_schema in section.items():
-            if option_schema.get('migrated'):
+            if option_schema.get("migrated"):
                 need_write = True
                 continue
-            if option_schema.get('deprecated'):
+            if option_schema.get("deprecated"):
                 continue
             if option_name not in config[section_name]:
-                config[section_name][option_name] = option_schema['default']
+                config[section_name][option_name] = option_schema["default"]
                 need_write = True
     if need_write:
         if not os.path.exists(CONFIG_ROOT):
             os.makedirs(CONFIG_ROOT)
-        with open(get_config_path(), 'w', encoding=DEFAULT_CONFIG_ENCODING) as configfile:
+        with open(get_config_path(), "w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
 
 
@@ -335,18 +335,18 @@ class PikaurConfigItem:
         self.value = self.section.get(key)
 
     def get_bool(self) -> bool:
-        if get_key_type(self.section.name, self.key) != 'bool':
+        if get_key_type(self.section.name, self.key) != "bool":
             raise TypeError(f"{self.key} is not 'bool'")
         return str_to_bool(self.value)
 
     def get_int(self) -> int:
-        if get_key_type(self.section.name, self.key) != 'int':
+        if get_key_type(self.section.name, self.key) != "int":
             raise TypeError(f"{self.key} is not 'int'")
         return int(self.value)
 
     def get_str(self) -> str:
         # note: it's basically needed for mypy
-        if get_key_type(self.section.name, self.key) != 'str':
+        if get_key_type(self.section.name, self.key) != "str":
             raise TypeError(f"{self.key} is not 'str'")
         return str(self.value)
 
@@ -378,7 +378,7 @@ class PikaurConfig():
 
     @classmethod
     def get_config(cls) -> configparser.ConfigParser:
-        if not getattr(cls, '_config', None):
+        if not getattr(cls, "_config", None):
             config_path = get_config_path()
             cls._config = configparser.ConfigParser()
             if not os.path.exists(config_path):
@@ -393,14 +393,14 @@ class PikaurConfig():
     def migrate_config(cls) -> None:
         for section_name, section in CONFIG_SCHEMA.items():
             for option_name, option_schema in section.items():
-                if not option_schema.get('deprecated'):
+                if not option_schema.get("deprecated"):
                     continue
 
-                new_section_name: str = option_schema['deprecated']['section']
-                new_option_name: str = option_schema['deprecated']['option']
+                new_section_name: str = option_schema["deprecated"]["section"]
+                new_option_name: str = option_schema["deprecated"]["option"]
                 transform: Callable[
                     [str, configparser.ConfigParser], str
-                ] | None = option_schema['deprecated'].get('transform')
+                ] | None = option_schema["deprecated"].get("transform")
 
                 old_value_was_migrated = False
                 if (
@@ -415,31 +415,31 @@ class PikaurConfig():
                         if new_section_name not in cls._config:
                             cls._config[new_section_name] = {}
                         cls._config[new_section_name][new_option_name] = value_to_migrate
-                        CONFIG_SCHEMA[new_section_name][new_option_name]['migrated'] = True
+                        CONFIG_SCHEMA[new_section_name][new_option_name]["migrated"] = True
                         old_value_was_migrated = True
 
                 old_value_was_removed = False
                 if option_name in cls._config[section_name]:
                     del cls._config[section_name][option_name]
-                    CONFIG_SCHEMA[section_name][option_name]['migrated'] = True
+                    CONFIG_SCHEMA[section_name][option_name]["migrated"] = True
                     old_value_was_removed = True
 
                 if old_value_was_migrated or old_value_was_removed:
-                    print(' '.join([  # noqa: T201
-                        '::',
+                    print(" ".join([  # noqa: T201
+                        "::",
                         translate("warning:"),
                         translate('Migrating [{}]{} config option to [{}]{} = "{}"...').format(
                             section_name, option_name,
                             new_section_name, new_option_name,
                             cls._config[new_section_name][new_option_name]
                         ),
-                        '\n',
+                        "\n",
                     ]))
 
     @classmethod
     def validate_config(cls) -> None:
-        pacman_path = cls._config['misc']['PacmanPath']
-        if pacman_path == 'pikaur' or pacman_path.endswith('/pikaur'):
+        pacman_path = cls._config["misc"]["PacmanPath"]
+        if pacman_path == "pikaur" or pacman_path.endswith("/pikaur"):
             print("BAM! I am a shell bomb.")  # noqa: T201
             sys.exit(1)
 

@@ -6,6 +6,8 @@ from pikaur_test.helpers import PikaurDbTestCase, pikaur
 MSG_CANNOT_BE_FOUND = "cannot be found"
 MSG_DEPS_MISSING = "Dependencies missing"
 MSG_VERSION_MISMATCH = "Version mismatch"
+MSG_MAKEPKG_FAILED_TO_EXECUTE = "Command 'makepkg --force' failed to execute."
+MSG_FAILED_TO_BUILD_PKGS = "Failed to build following packages:"
 
 
 class FailureTest(PikaurDbTestCase):
@@ -80,3 +82,33 @@ class FailureTest(PikaurDbTestCase):
         self.assertIn(MSG_VERSION_MISMATCH, result.stderr)
         self.assertIn(pkg_name, result.stderr)
         self.assertNotInstalled(pkg_name)
+
+    def test_build_error(self):
+        pkg_name_failed = "pikaur-test-build-error"
+        pkg_name_succeeded = "pikaur-test-placeholder"
+        self.remove_if_installed(pkg_name_failed, pkg_name_succeeded)
+        result = pikaur(
+            "-Pi ./pikaur_test/PKGBUILD_build_error",
+            capture_stderr=True
+        )
+        self.assertEqual(result.returncode, 125)
+        self.assertIn(MSG_MAKEPKG_FAILED_TO_EXECUTE, result.stderr)
+        self.assertNotIn(MSG_FAILED_TO_BUILD_PKGS, result.stderr)
+        self.assertIn(pkg_name_failed, result.stderr)
+        self.assertNotInstalled(pkg_name_failed)
+        self.assertNotInstalled(pkg_name_succeeded)
+
+    def test_build_error_skipfailedbuild(self):
+        pkg_name_failed = "pikaur-test-build-error"
+        pkg_name_succeeded = "pikaur-test-placeholder"
+        self.remove_if_installed(pkg_name_failed, pkg_name_succeeded)
+        result = pikaur(
+            "-Pi ./pikaur_test/PKGBUILD_build_error --skip-failed-build",
+            capture_stderr=True
+        )
+        self.assertEqual(result.returncode, 1)
+        self.assertIn(MSG_MAKEPKG_FAILED_TO_EXECUTE, result.stderr)
+        self.assertIn(MSG_FAILED_TO_BUILD_PKGS, result.stderr)
+        self.assertIn(pkg_name_failed, result.stderr)
+        self.assertNotInstalled(pkg_name_failed)
+        self.assertInstalled(pkg_name_succeeded)

@@ -49,7 +49,7 @@ class SysupgradeTest(PikaurDbTestCase):
 
     def downgrade_aur2_pkg(self) -> None:
         self.aur2_old_version = self.downgrade_aur_pkg(
-            self.aur2_pkg_name, count=1, fake_makepkg=True
+            self.aur2_pkg_name, count=2, fake_makepkg=True
         )
 
     def downgrade_dev_pkg(self) -> None:

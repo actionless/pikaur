@@ -313,6 +313,44 @@ class PikaurDbTestCase(PikaurTestCase):
             if pkg_is_installed(pkg_name):
                 self.remove_packages(pkg_name)
 
+    def _checkout_older_version(  # pylint: disable=too-many-arguments
+            self,
+            repo_dir: str,
+            build_dir: str,
+            pkg_name: str,
+            count: int,
+            to_version: str | None,
+    ) -> None:
+        srcinfo = SrcInfo(build_dir, pkg_name)
+        srcinfo.regenerate()
+        from_version = srcinfo.get_version()
+        if not to_version:
+            proc = spawn(
+                f"git -C {repo_dir} log --format=%h"
+            )
+            if not proc.stdout_text:
+                raise RuntimeError()
+            some_older_commit = proc.stdout_text.splitlines()[1::][count]
+            spawn(f"git -C {repo_dir} checkout {some_older_commit}")
+            srcinfo.regenerate()
+            to_version = srcinfo.get_version()
+        else:
+            current_version = srcinfo.get_version()
+            count = 1
+            while current_version != to_version:
+                proc = spawn(
+                    f"git -C {repo_dir} log --format=%h"
+                )
+                if not proc.stdout_text:
+                    raise RuntimeError()
+                some_older_commit = proc.stdout_text.splitlines()[count]
+                spawn(f"git -C {repo_dir} checkout {some_older_commit}")
+                srcinfo.regenerate()
+                current_version = srcinfo.get_version()
+                log_stderr(current_version)
+                count += 1
+        log_stderr(f"Downgrading from {from_version} to {to_version}...")
+
     def downgrade_repo_pkg(
             self,
             repo_pkg_name: str,
@@ -328,36 +366,15 @@ class PikaurDbTestCase(PikaurTestCase):
             self.remove_if_installed(repo_pkg_name)
         spawn(f"rm -fr {build_root}/{repo_pkg_name}")
         pikaur(f"-G {repo_pkg_name}")
-        build_dir = f"{build_root}/{repo_pkg_name}/trunk/"
-        srcinfo = SrcInfo(build_dir, repo_pkg_name)
-        srcinfo.regenerate()
-        from_version = srcinfo.get_version()
-        if not to_version:
-            proc = spawn(
-                f"git -C {build_root}/{repo_pkg_name} log --format=%h"
-            )
-            if not proc.stdout_text:
-                raise RuntimeError()
-            some_older_commit = proc.stdout_text.splitlines()[1::][count]
-            spawn(f"git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}")
-            srcinfo.regenerate()
-            to_version = srcinfo.get_version()
-        else:
-            current_version = srcinfo.get_version()
-            count = 1
-            while current_version != to_version:
-                proc = spawn(
-                    f"git -C {build_root}/{repo_pkg_name} log --format=%h"
-                )
-                if not proc.stdout_text:
-                    raise RuntimeError()
-                some_older_commit = proc.stdout_text.splitlines()[count]
-                spawn(f"git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}")
-                srcinfo.regenerate()
-                current_version = srcinfo.get_version()
-                log_stderr(current_version)
-                count += 1
-        log_stderr(f"Downgrading from {from_version} to {to_version}...")
+        repo_dir = f"{build_root}/{repo_pkg_name}/"
+        build_dir = f"{repo_dir}/trunk/"
+        self._checkout_older_version(
+            build_dir=build_dir,
+            repo_dir=repo_dir,
+            pkg_name=repo_pkg_name,
+            count=count,
+            to_version=to_version,
+        )
         pikaur(
             "-P -i --noconfirm "
             f"{build_dir}/PKGBUILD",
@@ -373,6 +390,8 @@ class PikaurDbTestCase(PikaurTestCase):
             fake_makepkg: bool = False,
             skippgpcheck: bool = False,
             count: int = 1,
+            build_root: str = ".",
+            remove_before_upgrade: bool = True,
             to_version: str | None = None,
     ) -> str:
         # and test -P and -G during downgrading :-)
@@ -381,45 +400,21 @@ class PikaurDbTestCase(PikaurTestCase):
             if aur_pkg_name in PackageDB.get_local_pkgnames()
             else None
         )
-        self.remove_if_installed(aur_pkg_name)
-        build_dir = f"./{aur_pkg_name}"
+        if remove_before_upgrade:
+            self.remove_if_installed(aur_pkg_name)
+        build_dir = f"{build_root}/{aur_pkg_name}"
         spawn(f"rm -fr {build_dir}")
         pikaur(f"-G {aur_pkg_name}")
-
-        srcinfo = SrcInfo(build_dir, aur_pkg_name)
-        srcinfo.regenerate()
-        from_version = srcinfo.get_version()
-
-        if not to_version:
-            proc = spawn(
-                f"git -C {build_dir} log --format=%h"
-            )
-            if not proc.stdout_text:
-                raise RuntimeError()
-            some_older_commit = proc.stdout_text.splitlines()[1::][count]
-            spawn(f"git -C {build_dir} checkout {some_older_commit}")
-            srcinfo.regenerate()
-            to_version = srcinfo.get_version()
-        else:
-            current_version = srcinfo.get_version()
-            count = 1
-            while current_version != to_version:
-                proc = spawn(
-                    f"git -C {build_dir} log --format=%h"
-                )
-                if not proc.stdout_text:
-                    raise RuntimeError()
-                some_older_commit = proc.stdout_text.splitlines()[count]
-                spawn(f"git -C {build_dir} checkout {some_older_commit}")
-                srcinfo.regenerate()
-                current_version = srcinfo.get_version()
-                log_stderr(current_version)
-                count += 1
-        log_stderr(f"Downgrading from {from_version} to {to_version}...")
-
+        self._checkout_older_version(
+            build_dir=build_dir,
+            repo_dir=build_dir,
+            pkg_name=aur_pkg_name,
+            count=count,
+            to_version=to_version,
+        )
         pikaur(
             "-P -i --noconfirm "
-            f"./{aur_pkg_name}/PKGBUILD",
+            f"{build_dir}/PKGBUILD",
             fake_makepkg=fake_makepkg,
             skippgpcheck=skippgpcheck
         )

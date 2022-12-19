@@ -52,8 +52,12 @@ def spawn(cmd: str | list[str], env: dict[str, str] | None = None) -> Interactiv
 
 
 def log_stderr(line: str) -> None:
-    sys.stderr.buffer.write((line + "\n").encode("utf-8"))
-    sys.stderr.buffer.flush()
+    if getattr(sys.stderr, "buffer", None):
+        sys.stderr.buffer.write((line + "\n").encode("utf-8"))
+        sys.stderr.buffer.flush()
+    else:
+        sys.stderr.write(line + "\n")
+        sys.stderr.flush()
 
 
 class CmdResult:
@@ -114,16 +118,16 @@ class InterceptSysOutput():
         self.capture_stdout = capture_stdout
         self.capture_stderr = capture_stderr
 
-        class PrintInteractiveSpawn(InteractiveSpawn):
-            def __init__(self, *args: Any, **kwargs: Any) -> None:
-                kwargs.setdefault("stdout", sys.stdout)
-                kwargs.setdefault("stderr", sys.stderr)
-                super().__init__(*args, **kwargs)
-
-        self.out_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
-        self.err_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
+        self.out_file = out_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
+        self.err_file = err_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
         self.out_file.isatty = lambda: False  # type: ignore[assignment]
         self.err_file.isatty = lambda: False  # type: ignore[assignment]
+
+        class PrintInteractiveSpawn(InteractiveSpawn):
+            def __init__(self, *args: Any, **kwargs: Any) -> None:
+                kwargs.setdefault("stdout", out_file)
+                kwargs.setdefault("stderr", err_file)
+                super().__init__(*args, **kwargs)
 
         if self.capture_stdout:
             self._patcher_stdout = mock.patch("sys.stdout", new=self.out_file)
@@ -171,7 +175,8 @@ def pikaur(
         cmd: str,
         *,
         capture_stdout: bool = True, capture_stderr: bool = False,
-        fake_makepkg: bool = False, skippgpcheck: bool = False
+        fake_makepkg: bool = False, skippgpcheck: bool = False,
+        print_on_fails: bool = True,
 ) -> CmdResult:
 
     PackageDB.discard_local_cache()
@@ -229,11 +234,14 @@ def pikaur(
     PackageDB.discard_local_cache()
     PackageDB.discard_repo_cache()
 
-    return CmdResult(
+    result = CmdResult(
         returncode=intercepted.returncode,
         stdout=intercepted.stdout_text,
         stderr=intercepted.stderr_text,
     )
+    if print_on_fails and (intercepted.returncode != 0):
+        log_stderr(str(result))
+    return result
 
 
 def fake_pikaur(cmd_args: str) -> CmdResult:

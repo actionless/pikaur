@@ -46,7 +46,7 @@ class FailureTest(PikaurDbTestCase):
         pkg_name = "pikaur-test-not-found-dep"
         not_existing_dep_name = "not-existing-package-y8r73ruue99y5u77t5u4r"
         result = pikaur(
-            "-Pi ./pikaur_test/PKGBUILD_not_found_dep",
+            "-Pi --noconfirm ./pikaur_test/PKGBUILD_not_found_dep",
             capture_stderr=True
         )
         self.assertEqual(result.returncode, 125)

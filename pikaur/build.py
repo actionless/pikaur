@@ -33,7 +33,7 @@ from .core import (
 from .exceptions import BuildError, CloneError, DependencyError, DependencyNotBuiltYetError, SysExit
 from .filelock import FileLock
 from .i18n import translate, translate_many
-from .makepkg_config import PKGDEST, MakePkgCommand, MakepkgConfig
+from .makepkg_config import MakePkgCommand, MakepkgConfig, get_pkgdest
 from .pacman import PackageDB, ProvidedDependency, get_pacman_command, install_built_deps
 from .pprint import (
     ColorsHighlight,
@@ -441,6 +441,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         pkg_paths = pkg_paths_spawn.stdout_text.splitlines()
         if not pkg_paths:
             return
+        pkg_dest = get_pkgdest()
         pkg_paths.sort(key=len)
         for pkg_name in self.package_names:
             pkg_path = pkg_paths[0]
@@ -455,9 +456,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                         break
             pkg_filename = os.path.basename(pkg_path)
             if pkg_path == pkg_filename:
-                pkg_path = os.path.join(PKGDEST or self.build_dir, pkg_path)
-            if not PKGDEST or MakePkgCommand.pkgdest_skipped:
-                new_package_path = os.path.join(PKGDEST or PACKAGE_CACHE_PATH, pkg_filename)
+                pkg_path = os.path.join(pkg_dest or self.build_dir, pkg_path)
+            if not pkg_dest or MakePkgCommand.pkgdest_skipped:
+                new_package_path = os.path.join(pkg_dest or PACKAGE_CACHE_PATH, pkg_filename)
                 pkg_sig_path = pkg_path + ".sig"
                 new_package_sig_path = new_package_path + ".sig"
                 if not os.path.exists(PACKAGE_CACHE_PATH):

@@ -118,13 +118,15 @@ class MakepkgConfig():
         return value
 
 
-CONFIG_PKGDEST = MakepkgConfig.get("PKGDEST")
-if not isinstance(CONFIG_PKGDEST, str):
-    CONFIG_PKGDEST = None
-PKGDEST: str | None = os.environ.get("PKGDEST", CONFIG_PKGDEST)
-if PKGDEST:
-    PKGDEST = PKGDEST.replace("$HOME", "~")
-    PKGDEST = os.path.expanduser(PKGDEST)
+def get_pkgdest() -> str | None:
+    config_pkgdest = MakepkgConfig.get("PKGDEST")
+    if not isinstance(config_pkgdest, str):
+        config_pkgdest = None
+    pkgdest: str | None = os.environ.get("PKGDEST", config_pkgdest)
+    if pkgdest:
+        pkgdest = pkgdest.replace("$HOME", "~")
+        pkgdest = os.path.expanduser(pkgdest)
+    return pkgdest
 
 
 class MakePkgCommand:
@@ -134,9 +136,10 @@ class MakePkgCommand:
 
     @classmethod
     def _apply_dynamic_users_workaround(cls) -> None:
-        if running_as_root() and PKGDEST and (
-                PKGDEST.startswith("/tmp") or  # nosec B108
-                PKGDEST.startswith("/var/tmp")  # nosec B108
+        pkgdest = get_pkgdest()
+        if running_as_root() and pkgdest and (
+                pkgdest.startswith("/tmp") or  # nosec B108
+                pkgdest.startswith("/var/tmp")  # nosec B108
         ):
             if not cls._cmd:
                 raise RuntimeError()

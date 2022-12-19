@@ -338,7 +338,7 @@ class PikaurDbTestCase(PikaurTestCase):
             )
             if not proc.stdout_text:
                 raise RuntimeError()
-            some_older_commit = proc.stdout_text.splitlines()[count]
+            some_older_commit = proc.stdout_text.splitlines()[1::][count]
             spawn(f"git -C {build_root}/{repo_pkg_name} checkout {some_older_commit}")
             srcinfo.regenerate()
             to_version = srcinfo.get_version()
@@ -372,7 +372,8 @@ class PikaurDbTestCase(PikaurTestCase):
             *,
             fake_makepkg: bool = False,
             skippgpcheck: bool = False,
-            count: int = 1
+            count: int = 1,
+            to_version: str | None = None,
     ) -> str:
         # and test -P and -G during downgrading :-)
         old_version = (
@@ -381,15 +382,41 @@ class PikaurDbTestCase(PikaurTestCase):
             else None
         )
         self.remove_if_installed(aur_pkg_name)
-        spawn(f"rm -fr ./{aur_pkg_name}")
+        build_dir = f"./{aur_pkg_name}"
+        spawn(f"rm -fr {build_dir}")
         pikaur(f"-G {aur_pkg_name}")
-        proc = spawn(
-            f"git -C ./{aur_pkg_name} log --format=%h"
-        )
-        if not proc.stdout_text:
-            raise RuntimeError()
-        prev_commit = proc.stdout_text.splitlines()[count]
-        spawn(f"git -C ./{aur_pkg_name} checkout {prev_commit}")
+
+        srcinfo = SrcInfo(build_dir, aur_pkg_name)
+        srcinfo.regenerate()
+        from_version = srcinfo.get_version()
+
+        if not to_version:
+            proc = spawn(
+                f"git -C {build_dir} log --format=%h"
+            )
+            if not proc.stdout_text:
+                raise RuntimeError()
+            some_older_commit = proc.stdout_text.splitlines()[1::][count]
+            spawn(f"git -C {build_dir} checkout {some_older_commit}")
+            srcinfo.regenerate()
+            to_version = srcinfo.get_version()
+        else:
+            current_version = srcinfo.get_version()
+            count = 1
+            while current_version != to_version:
+                proc = spawn(
+                    f"git -C {build_dir} log --format=%h"
+                )
+                if not proc.stdout_text:
+                    raise RuntimeError()
+                some_older_commit = proc.stdout_text.splitlines()[count]
+                spawn(f"git -C {build_dir} checkout {some_older_commit}")
+                srcinfo.regenerate()
+                current_version = srcinfo.get_version()
+                log_stderr(current_version)
+                count += 1
+        log_stderr(f"Downgrading from {from_version} to {to_version}...")
+
         pikaur(
             "-P -i --noconfirm "
             f"./{aur_pkg_name}/PKGBUILD",

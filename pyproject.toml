@@ -32,9 +32,6 @@ select = [
 	#"RUF100",
 ]
 ignore = [
-	# https://github.com/charliermarsh/ruff/issues/1290 :
-	"RET504",
-
 	# enable back later:
 
 	"C901",  # "too complex"

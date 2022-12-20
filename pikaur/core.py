@@ -68,7 +68,7 @@ class ComparableType:
                     del values[skip_prop]
         result = self_values == others_values
         self.__compare_stack__ = None
-        return result
+        return result  # noqa: RET504
 
 
 class DataType(ComparableType):

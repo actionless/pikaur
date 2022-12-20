@@ -115,7 +115,7 @@ class MakepkgConfig():
             value = ConfigReader.get(key, value, config_path=arg_path)
         if config_path:
             value = ConfigReader.get(key, value, config_path=config_path)
-        return value
+        return value  # noqa: RET504
 
 
 def get_pkgdest() -> str | None:
@@ -126,7 +126,7 @@ def get_pkgdest() -> str | None:
     if pkgdest:
         pkgdest = pkgdest.replace("$HOME", "~")
         pkgdest = os.path.expanduser(pkgdest)
-    return pkgdest
+    return pkgdest  # noqa: RET504
 
 
 class MakePkgCommand:

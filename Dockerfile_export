@@ -21,11 +21,11 @@ ENV LANG=en_US.utf8 \
 	LANGUAGE=en_US.UTF-8 \
 	LC_ALL=en_US.UTF-8
 
-RUN echo ">>>> Installing opt deps:" && \
-	pacman -Sy asp python-pysocks --noconfirm --needed && \
-	echo ">>>> Installing test deps:" && \
-	pacman -S --noconfirm --needed --color=always iputils python-virtualenv \
-		python-pylint flake8 shellcheck && \
+RUN echo ">>>> Installing opt and test deps:" && \
+	pacman -Sy --noconfirm --needed --color=always \
+		asp python-pysocks \
+		iputils python-virtualenv \
+		flake8 python-pylint mypy vulture bandit shellcheck && \
 	echo ">>>> Preparing build directory:" && \
 	chown -R user /opt/app-build/
 
@@ -34,10 +34,11 @@ RUN git clone https://github.com/actionless/pikaur.git /opt/app-build/
 
 RUN	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
-	rm -fr ./src/ ./pkg/ && \
-	sleep 0.1 && \
-	echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -S --noconfirm --color=always vulture mypy # python-coveralls
+	rm -fr ./src/ ./pkg/
+	#rm -fr ./src/ ./pkg/ && \
+	#sleep 0.1 && \
+	#echo ">>>> Installing test deps using Pikaur itself:" && \
+	#sudo -u user pikaur -S --noconfirm --color=always python-coveralls
 # Workaround for broken coveralls:
 ADD ./maintenance_scripts/coveralls_PKGBUILD ./coveralls_PKGBUILD
 RUN sudo -u user pikaur -Pi --noconfirm --color=always coveralls_PKGBUILD

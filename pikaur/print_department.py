@@ -10,7 +10,7 @@ import pyalpm
 from .args import parse_args
 from .aur import AURPackageInfo
 from .config import VERSION, PikaurConfig
-from .core import AURInstallInfo, InstallInfo, PackageSource, RepoInstallInfo
+from .core import DEFAULT_TIMEZONE, AURInstallInfo, InstallInfo, PackageSource, RepoInstallInfo
 from .i18n import translate, translate_many
 from .pacman import OFFICIAL_REPOS, PackageDB
 from .pprint import (
@@ -45,7 +45,7 @@ def print_version(pacman_version: str, pyalpm_version: str, *, quiet: bool = Fal
         print_stdout(f"Pikaur v{VERSION}")
         print_stdout(f"{pacman_version} - pyalpm v{pyalpm_version}")
     else:
-        year = str(datetime.now().year)
+        year = str(datetime.now(tz=DEFAULT_TIMEZONE).year)
         sys.stdout.write(r"""
       /:}               _
      /--1             / :}
@@ -268,7 +268,10 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             out_of_date = _color_line(
                 " [{}: {}]".format(  # pylint: disable=consider-using-f-string
                     translate("outofdate"),
-                    datetime.fromtimestamp(pkg_update.package.outofdate).strftime("%Y/%m/%d")
+                    datetime.fromtimestamp(
+                        pkg_update.package.outofdate,
+                        tz=DEFAULT_TIMEZONE
+                    ).strftime("%Y/%m/%d")
                 ),
                 color_config.VersionDiffOld.get_int()
             )
@@ -581,7 +584,13 @@ def print_ignored_package(
         ignored_from: str | None = None
 ) -> None:
     if not (package_name or install_info):
-        raise TypeError("Either 'package_name' or 'install_info' should be specified")
+        missing_property_error = translate(
+            "Either `{prop1}` or `{prop2}` should be set"
+        ).format(
+            prop1="package_name",
+            prop2="install_info",
+        )
+        raise TypeError(missing_property_error)
     install_info = install_info or InstallInfo(
         name=package_name,
         current_version="",
@@ -775,7 +784,10 @@ def print_package_search_results(
                 version = "{} [{}: {}]".format(  # pylint: disable=consider-using-f-string
                     package.version,
                     translate("outofdate"),
-                    datetime.fromtimestamp(package.outofdate).strftime("%Y/%m/%d")
+                    datetime.fromtimestamp(
+                        package.outofdate,
+                        tz=DEFAULT_TIMEZONE
+                    ).strftime("%Y/%m/%d")
                 )
 
             last_updated = ""
@@ -789,7 +801,10 @@ def print_package_search_results(
 
                 last_updated = color_line(
                     " (last updated: {})".format(  # pylint: disable=consider-using-f-string
-                        datetime.fromtimestamp(last_update_date).strftime("%Y/%m/%d")
+                        datetime.fromtimestamp(
+                            last_update_date,
+                            tz=DEFAULT_TIMEZONE
+                        ).strftime("%Y/%m/%d")
                         if last_update_date is not None
                         else "unknown"
                     ),

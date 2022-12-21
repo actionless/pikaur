@@ -11,7 +11,7 @@ except ModuleNotFoundError:
     from xml.etree.ElementTree import fromstring  # nosec B405
 
 from .config import CACHE_ROOT, PikaurConfig
-from .core import open_file
+from .core import DEFAULT_TIMEZONE, open_file
 from .i18n import translate
 from .pacman import PackageDB
 from .pprint import (
@@ -94,7 +94,7 @@ class News:
             _debug(f"loading date from {self.CACHE_FILE}")
             with open_file(self.CACHE_FILE) as last_seen_fd:
                 file_data = last_seen_fd.readline().strip()
-                parsed_date = datetime.datetime.strptime(
+                parsed_date = datetime.datetime.strptime(  # noqa: DTZ007
                     file_data, DT_FORMAT
                 )
                 _debug(f"{file_data=}, {parsed_date=}")
@@ -104,10 +104,8 @@ class News:
             # this feature was run the first time
             # then we get take the date from the last installed package:
             last_pkg_date: datetime.datetime = datetime.datetime.fromtimestamp(
-                PackageDB.get_last_installed_package_date()
-            )
-            last_pkg_date = last_pkg_date.replace(
-                tzinfo=datetime.datetime.now().astimezone().tzinfo
+                PackageDB.get_last_installed_package_date(),
+                tz=DEFAULT_TIMEZONE
             )
             time_formatted: str = last_pkg_date.strftime(DT_FORMAT)
             try:
@@ -121,7 +119,7 @@ class News:
         if not last_online_news:
             print_error(translate("The news feed could not be received or parsed."))
             return False
-        last_online_news_date: datetime.datetime = datetime.datetime.strptime(
+        last_online_news_date: datetime.datetime = datetime.datetime.strptime(  # noqa: DTZ007
             last_online_news, DT_FORMAT
         )
         last_seen_news_date = self._get_last_seen_news_date()

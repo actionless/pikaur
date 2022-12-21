@@ -216,12 +216,21 @@ class PikaurArgs(Namespace):
         if self.pikaur_debug or self.verbose:
             self.print_commands = True
 
+    arg_depends = {
+        "query": {
+            "upgrades": ["aur", "repo", ],
+        },
+    }
+
     def validate(self) -> None:
-        if self.query:
-            if not self.upgrades:
-                for arg_name in ("aur", "repo"):
-                    if getattr(self, arg_name):
-                        raise MissingArgumentError("upgrades", arg_name)
+        # pylint: disable=too-many-nested-blocks
+        for operation, operation_depends in self.arg_depends.items():
+            if getattr(self, operation):
+                for arg_depend_on, dependant_args in operation_depends.items():
+                    if not getattr(self, arg_depend_on):
+                        for arg_name in dependant_args:
+                            if getattr(self, arg_name):
+                                raise MissingArgumentError(arg_depend_on, arg_name)
 
     @classmethod
     def from_namespace(

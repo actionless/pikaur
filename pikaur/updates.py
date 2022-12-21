@@ -8,7 +8,7 @@ import pyalpm
 from .args import parse_args
 from .aur import AURPackageInfo, find_aur_packages
 from .config import PikaurConfig
-from .core import AURInstallInfo, InstallInfo, RepoInstallInfo
+from .core import DEFAULT_TIMEZONE, AURInstallInfo, InstallInfo, RepoInstallInfo
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate, translate_many
 from .pacman import (
@@ -94,7 +94,7 @@ def find_aur_devel_updates(
         package_ttl_days: int
 ) -> list[AURInstallInfo]:
     local_packages = PackageDB.get_local_dict()
-    now = datetime.now()
+    now = datetime.now(tz=DEFAULT_TIMEZONE)
     aur_updates = []
     for aur_pkg in sorted(aur_pkgs_info, key=lambda x: x.name):
         pkg_name = aur_pkg.name
@@ -102,7 +102,7 @@ def find_aur_devel_updates(
             continue
         local_pkg = local_packages[pkg_name]
         pkg_install_datetime = datetime.fromtimestamp(
-            local_pkg.installdate
+            local_pkg.installdate, tz=DEFAULT_TIMEZONE
         )
         pkg_age_days = (now - pkg_install_datetime).days
         if pkg_age_days >= package_ttl_days:

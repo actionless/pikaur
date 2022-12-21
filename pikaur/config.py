@@ -333,21 +333,27 @@ class PikaurConfigItem:
         self.section = section
         self.key = key
         self.value = self.section.get(key)
+        self._type_error_template = translate(
+            "{key} is not '{typeof}'"
+        )
 
     def get_bool(self) -> bool:
         if get_key_type(self.section.name, self.key) != "bool":
-            raise TypeError(f"{self.key} is not 'bool'")
+            not_bool_error = self._type_error_template.format(key=self.key, typeof="bool")
+            raise TypeError(not_bool_error)
         return str_to_bool(self.value)
 
     def get_int(self) -> int:
         if get_key_type(self.section.name, self.key) != "int":
-            raise TypeError(f"{self.key} is not 'int'")
+            not_int_error = self._type_error_template.format(key=self.key, typeof="int")
+            raise TypeError(not_int_error)
         return int(self.value)
 
     def get_str(self) -> str:
-        # note: it's basically needed for mypy
+        # note: it"s basically needed for mypy
         if get_key_type(self.section.name, self.key) != "str":
-            raise TypeError(f"{self.key} is not 'str'")
+            not_str_error = self._type_error_template.format(key=self.key, typeof="str")
+            raise TypeError(not_str_error)
         return str(self.value)
 
     def __str__(self) -> str:

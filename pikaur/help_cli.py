@@ -25,7 +25,8 @@ def cli_print_help() -> None:
         reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
     )
     if not proc.stdout_text:
-        raise RuntimeError("No response from Pacman")
+        no_response_from_pacman = translate("No response from Pacman")
+        raise RuntimeError(no_response_from_pacman)
     pacman_help = proc.stdout_text.replace(
         "pacman", "pikaur"
     ).replace(

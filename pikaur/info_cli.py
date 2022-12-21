@@ -4,7 +4,7 @@ from unicodedata import east_asian_width
 
 from .args import parse_args, reconstruct_args
 from .aur import find_aur_packages, get_all_aur_names
-from .core import spawn
+from .core import DEFAULT_TIMEZONE, spawn
 from .i18n import translate
 from .pacman import get_pacman_command, refresh_pkg_db_if_needed
 from .pacman_i18n import _p
@@ -87,7 +87,7 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
         for key, display_name in info_fields.items():
             value = getattr(aur_pkg, key, None)
             if key in ["firstsubmitted", "lastmodified", "outofdate"] and value:
-                value = datetime.fromtimestamp(value).strftime("%c")
+                value = datetime.fromtimestamp(value, tz=DEFAULT_TIMEZONE).strftime("%c")
             elif isinstance(value, list):
                 value = ", ".join(value) or translate("None")
             key_display = bold_line(_rightpad(display_name, longest_field_length + 1))

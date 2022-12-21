@@ -54,7 +54,13 @@ class SrcInfo():
             self.pkgbuild_path = pkgbuild_path
             self.repo_path = dirname(pkgbuild_path)
         else:
-            raise NotImplementedError("Either `repo_path` or `pkgbuild_path` should be set")
+            missing_property_error = translate(
+                "Either `{prop1}` or `{prop2}` should be set"
+            ).format(
+                prop1="repo_path",
+                prop2="pkgbuild_path",
+            )
+            raise NotImplementedError(missing_property_error)
         self.path = os.path.join(
             self.repo_path,
             ".SRCINFO"

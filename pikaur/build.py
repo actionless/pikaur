@@ -160,14 +160,21 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 self.package_names = package_names or srcinfo.pkgnames
                 self.package_base = pkgbase
             else:
-                raise BuildError(translate("Can't get package name from PKGBUILD"))
+                no_pkgname_error = translate("Can't get package name from PKGBUILD")
+                raise BuildError(no_pkgname_error)
         elif package_names:
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
             self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
             self.pkgbuild_path = os.path.join(self.repo_path, "PKGBUILD")
         else:
-            raise NotImplementedError("Either `package_names` or `pkgbuild_path` should be set")
+            missing_property_error = translate(
+                "Either `{prop1}` or `{prop2}` should be set"
+            ).format(
+                prop1="package_names",
+                prop2="pkgbuild_path",
+            )
+            raise NotImplementedError(missing_property_error)
 
         self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
         self.build_gpgdir = self.args.build_gpgdir

@@ -17,19 +17,22 @@ select = [
 	"A",
 	"C4",
 	"T10",
+	"EM",
 	"ICN",
 	"T20",
 	"Q",
 	"RET",
+	"SIM",
 	"TID",
 	"ARG",
+	"DTZ",
 	"ERA",
+	#"PD",
 	"PGH",
 	"PLC", "PLE", "PLR", "PLW",
 	"RUF",
 	#"C",
 	#"T",
-	#"RUF100",
 ]
 ignore = [
 	# enable back later:

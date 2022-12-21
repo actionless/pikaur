@@ -13,11 +13,11 @@ https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
 
 """
 
+import datetime
 import inspect
 import re
 import sys
 from collections.abc import MutableMapping
-from datetime import datetime
 from typing import Any, Sequence
 
 import markdown_it
@@ -56,7 +56,8 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
         for i, token in enumerate(tokens):
             if token.type == "inline":
                 if token.children is None:
-                    raise RuntimeError(f"{token}.children is `None`.")
+                    token_children_is_none_msg = f"{token}.children is `None`."
+                    raise RuntimeError(token_children_is_none_msg)
                 result += self.render_inline(token.children, options, env)
             elif token.type in self.rules:
                 result += self.rules[token.type](tokens, i, options, env)
@@ -239,7 +240,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
         return text.startswith("http://") or text.startswith("https://")
 
     def document_open(self) -> str:
-        date = datetime.now().strftime("%B %Y")
+        date = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%B %Y")
         return rf""".\" generated with Pikaman
 .
 .TH "{self.name.upper()}" "{self.section}" "{date}" "" "{self.name.capitalize()} manual"

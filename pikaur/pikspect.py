@@ -18,6 +18,7 @@ from typing import Any, BinaryIO, Callable, TextIO
 
 from .args import parse_args
 from .core import DEFAULT_INPUT_ENCODING, get_sudo_refresh_command
+from .i18n import translate
 from .pacman_i18n import _p
 from .pprint import (
     ColorsHighlight,
@@ -221,7 +222,10 @@ class PikspectPopen(subprocess.Popen[bytes]):
 
     def run(self) -> None:
         if not isinstance(self.args, list):
-            raise TypeError("`args` should be list")
+            not_a_list_error = translate(
+                "`{var_name}` should be list."
+            ).format(var_name="args")
+            raise TypeError(not_a_list_error)
         PikspectSignalHandler.set_handler(
             lambda *_whatever: self.send_signal(signal.SIGINT)
         )

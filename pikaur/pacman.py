@@ -263,7 +263,8 @@ class PackageDB(PackageDBCommon):
         if not cls._alpm_handle:
             cls._alpm_handle = PacmanConfig().initialize_alpm()
         if not cls._alpm_handle:
-            raise Exception("Cannot initialize ALPM")
+            cant_init_alpm = translate("Cannot initialize ALPM")
+            raise Exception(cant_init_alpm)
         return cls._alpm_handle
 
     @classmethod
@@ -297,7 +298,8 @@ class PackageDB(PackageDBCommon):
         """0 is the highest priority."""
         repos = [r.name for r in cls.get_alpm_handle().get_syncdbs()]
         if repo_name not in repos:
-            raise RepositoryNotFoundError(f"'{repo_name}' in {repos}")
+            repo_not_found = f"'{repo_name}' in {repos}"
+            raise RepositoryNotFoundError(repo_not_found)
         return repos.index(repo_name)
 
     @classmethod

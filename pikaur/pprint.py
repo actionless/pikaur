@@ -2,13 +2,17 @@
 
 import shutil
 import sys
-import typing as t
 from string import printable
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, Any, TextIO
 
 from .args import parse_args
 from .i18n import translate
 from .lock import FancyLock
+
+if TYPE_CHECKING:
+    from typing import Callable
+
+    from mypy_extensions import DefaultNamedArg
 
 PADDING = 4
 
@@ -225,11 +229,13 @@ class DebugColorCounter:
         return color
 
 
-def create_debug_logger(module_name: str, lock: bool | None = None) -> t.Callable[..., None]:
+def create_debug_logger(
+        module_name: str, *, lock: bool | None = None
+) -> "Callable[[Any, DefaultNamedArg(bool | None, name='lock')], None]":  # noqa: F821,RUF100
     color = DebugColorCounter.get_next()
     parent_lock = lock
 
-    def debug(msg: Any, lock: bool | None = None) -> None:
+    def debug(msg: Any, *, lock: bool | None = None) -> None:
         lock = lock if (lock is not None) else parent_lock
         msg = f"{color_line(module_name, color)}: {str(msg)}"
         if lock is not None:

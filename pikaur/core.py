@@ -1,6 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import codecs
+import datetime
 import enum
 import os
 import shutil
@@ -32,6 +33,7 @@ if TYPE_CHECKING:
 
 
 DEFAULT_INPUT_ENCODING = "utf-8"
+DEFAULT_TIMEZONE = datetime.datetime.now().astimezone().tzinfo  # noqa: DTZ005
 PIPE = subprocess.PIPE
 IOStream = IO[bytes] | int | None
 
@@ -91,10 +93,12 @@ class DataType(ComparableType):
             setattr(self, key, value)
         for key in self.__all_annotations__:
             if not self._key_exists(key):
-                raise TypeError(
-                    f"'{self.__class__.__name__}' does "
-                    f"not have required attribute '{key}' set"
+                missing_required_attribute = translate(
+                    "'{class_name}' does not have required attribute '{key}' set."
+                ).format(
+                    class_name=self.__class__.__name__, key=key,
                 )
+                raise TypeError(missing_required_attribute)
 
     def __setattr__(self, key: str, value: Any) -> None:
         if not (
@@ -102,13 +106,15 @@ class DataType(ComparableType):
                 key in self.__all_annotations__
             ) or self._key_exists(key)
         ):
+            unknown_attribute = translate(
+                "'{class_name}' does not have attribute '{key}' defined."
+            ).format(
+                class_name=self.__class__.__name__, key=key,
+            )
             if self.ignore_extra_properties:
-                print_error(f"Unexpected key `{key}` in {self.__class__.__name__}")
+                print_error(unknown_attribute)
             else:
-                raise TypeError(
-                    f"'{self.__class__.__name__}' does "
-                    f"not have attribute '{key}'"
-                )
+                raise TypeError(unknown_attribute)
         super().__setattr__(key, value)
 
 

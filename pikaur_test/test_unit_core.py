@@ -112,7 +112,7 @@ class DataTypeTest(PikaurTestCase):
                 spam="bzzzzzz",
                 ignore_extra_properties=True
             )
-        self.assertIn("unexpected key", intercepted.stderr_text.lower())
+        self.assertIn("does not have attribute", intercepted.stderr_text.lower())
         self.assertEqual(a1.foo, 1)
         self.assertEqual(a1.bar, "a")
         self.assertEqual(a1.spam, "bzzzzzz")  # pylint: disable=no-member

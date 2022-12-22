@@ -9,7 +9,6 @@ from pikaur_test.helpers import PikaurTestCase
 
 class PikaurConfigItemTestCase(PikaurTestCase):
 
-    config_section: configparser.SectionProxy
     config_item_bool: PikaurConfigItem
     config_item_int: PikaurConfigItem
     config_item_str: PikaurConfigItem
@@ -18,25 +17,25 @@ class PikaurConfigItemTestCase(PikaurTestCase):
     def setUpClass(cls):
         parser = configparser.RawConfigParser()
         parser.add_section("sync")
-        cls.config_section = configparser.SectionProxy(
+        config_section = configparser.SectionProxy(
             parser=parser,
             name="sync",
         )
-        cls.config_section["AlwaysShowPkgOrigin"] = "yes"
-        cls.config_section["DevelPkgsExpiration"] = "2"
-        cls.config_section["UpgradeSorting"] = "pkgname"
+        config_section["AlwaysShowPkgOrigin"] = "yes"
+        config_section["DevelPkgsExpiration"] = "2"
+        config_section["UpgradeSorting"] = "pkgname"
         # @TODO: implement allowed value and test for trying to set unallowed value:
-        # cls.config_section["UpgradeSorting"] = "foo"
+        # config_section["UpgradeSorting"] = "foo"
         cls.config_item_bool = PikaurConfigItem(
-            section=cls.config_section,
+            section=config_section,
             key="AlwaysShowPkgOrigin",
         )
         cls.config_item_int = PikaurConfigItem(
-            section=cls.config_section,
+            section=config_section,
             key="DevelPkgsExpiration",
         )
         cls.config_item_str = PikaurConfigItem(
-            section=cls.config_section,
+            section=config_section,
             key="UpgradeSorting",
         )
 

@@ -26,11 +26,11 @@ ENV LANG=en_US.utf8 \
 	LANGUAGE=en_US.UTF-8 \
 	LC_ALL=en_US.UTF-8
 
-COPY ./pikaur/. /opt/app-build/pikaur
-COPY ./locale/. /opt/app-build/locale
 COPY ./maintenance_scripts/pikaman.py /opt/app-build/maintenance_scripts/pikaman.py
 COPY ./packaging/. /opt/app-build/packaging
+COPY ./locale/. /opt/app-build/locale
 COPY ./PKGBUILD ./Makefile ./README.md ./setup.py ./LICENSE /opt/app-build/
+COPY ./pikaur/. /opt/app-build/pikaur
 RUN echo ">>>> Installing opt deps:" && \
 	pacman -Sy asp python-pysocks --noconfirm --needed && \
 	echo ">>>> Preparing build directory:" && \

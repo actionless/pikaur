@@ -158,7 +158,7 @@ class PackageDBCommon(metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def get_repo_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:
+    def get_repo_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:  # pragma: no cover
         pass
         # if not cls._packages_list_cache.get(PackageSource.REPO):
             # cls._packages_list_cache[PackageSource.REPO] = list(
@@ -168,7 +168,7 @@ class PackageDBCommon(metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def get_local_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:
+    def get_local_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:  # pragma: no cover
         pass
         # if not cls._packages_list_cache.get(PackageSource.LOCAL):
             # cls._packages_list_cache[PackageSource.LOCAL] = list(

@@ -150,10 +150,12 @@ class PackageDBCommon(metaclass=ABCMeta):
 
     @classmethod
     def discard_local_cache(cls) -> None:
+        _debug("Discarding local cache...")
         cls._discard_cache(PackageSource.LOCAL)
 
     @classmethod
     def discard_repo_cache(cls) -> None:
+        _debug("Discarding repo cache...")
         cls._discard_cache(PackageSource.REPO)
 
     @classmethod
@@ -404,9 +406,9 @@ class PackageDB(PackageDBCommon):
         if not cmd_args:
             return []
         cache_index = " ".join(sorted(cmd_args))
-        cached_pkg = cls._pacman_test_cache.get(cache_index)
-        if cached_pkg is not None:
-            return cached_pkg
+        cached_pkgs = cls._pacman_test_cache.get(cache_index)
+        if cached_pkgs is not None:
+            return cached_pkgs
         results: list[VersionMatcher] = []
         not_found_packages_output = spawn(
             # pacman --deptest flag conflicts with some --sync options:

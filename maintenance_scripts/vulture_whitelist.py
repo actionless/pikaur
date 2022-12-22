@@ -44,6 +44,7 @@ whitelist.pprint.DefaultNamedArg
 
 whitelist.pikaur_test.helpers.DefaultArg
 whitelist.pikaur_test.setUpClass
+whitelist.pikaur_test.tearDownClass
 whitelist.pikaur_test.foo
 whitelist.pikaur_test.bar
 whitelist.pikaur_test.baz

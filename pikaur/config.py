@@ -78,7 +78,8 @@ def get_config_path() -> str:
     )
 
 
-CONFIG_SCHEMA: dict[str, dict[str, "ConfigValueType"]] = {
+ConfigSchemaT = dict[str, dict[str, "ConfigValueType"]]
+CONFIG_SCHEMA: ConfigSchemaT = {
     "sync": {
         "AlwaysShowPkgOrigin": {
             "data_type": "bool",

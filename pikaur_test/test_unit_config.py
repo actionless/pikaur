@@ -2,42 +2,65 @@
 # mypy: disable-error-code=no-untyped-def
 
 import configparser
+from unittest import mock
 
-from pikaur.config import PikaurConfigItem
+from pikaur.config import ConfigSchemaT, PikaurConfigItem
 from pikaur_test.helpers import PikaurTestCase
 
 
 class PikaurConfigItemTestCase(PikaurTestCase):
 
+    example_config_schema: ConfigSchemaT = {
+        "test_section": {
+            "SomeBoolProperty": {
+                "data_type": "bool",
+            },
+            "SomeIntProperty": {
+                "data_type": "int",
+            },
+            "SomeStrProperty": {
+                "data_type": "str",
+            },
+        },
+    }
     config_item_bool: PikaurConfigItem
     config_item_int: PikaurConfigItem
     config_item_str: PikaurConfigItem
+    config_patcher: "mock._patch[ConfigSchemaT]"
 
     @classmethod
     def setUpClass(cls):
+        cls.config_patcher = mock.patch(
+            "pikaur.config.CONFIG_SCHEMA", new=cls.example_config_schema
+        )
+        cls.config_patcher.start()
         parser = configparser.RawConfigParser()
-        parser.add_section("sync")
+        parser.add_section("test_section")
         config_section = configparser.SectionProxy(
             parser=parser,
-            name="sync",
+            name="test_section",
         )
-        config_section["AlwaysShowPkgOrigin"] = "yes"
-        config_section["DevelPkgsExpiration"] = "2"
-        config_section["UpgradeSorting"] = "pkgname"
+        config_section["SomeBoolProperty"] = "yes"
+        config_section["SomeIntProperty"] = "2"
+        config_section["SomeStrProperty"] = "pkgname"
         # @TODO: implement allowed value and test for trying to set unallowed value:
-        # config_section["UpgradeSorting"] = "foo"
+        # config_section["SomeStrProperty"] = "foo"
         cls.config_item_bool = PikaurConfigItem(
             section=config_section,
-            key="AlwaysShowPkgOrigin",
+            key="SomeBoolProperty",
         )
         cls.config_item_int = PikaurConfigItem(
             section=config_section,
-            key="DevelPkgsExpiration",
+            key="SomeIntProperty",
         )
         cls.config_item_str = PikaurConfigItem(
             section=config_section,
-            key="UpgradeSorting",
+            key="SomeStrProperty",
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.config_patcher.start()
 
     def test_get_value_bool(self):
         value = self.config_item_bool.value

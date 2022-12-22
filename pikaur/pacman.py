@@ -425,6 +425,7 @@ class PackageDB(PackageDBCommon):
                 continue
             else:
                 results.append(version_matcher)
+        cls._pacman_test_cache[cache_index] = results
         return results
 
     @classmethod

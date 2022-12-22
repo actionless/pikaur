@@ -177,11 +177,12 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
 
     stdout_text: str | None
     stderr_text: str | None
+    _terminated: bool = False
 
     def communicate(
             self, com_input: bytes | None = None, timeout: float | None = None
     ) -> tuple[bytes, bytes]:
-        if parse_args().print_commands:
+        if parse_args().print_commands and not self._terminated:
             if self.args != get_sudo_refresh_command():
                 print_stderr(
                     color_line("=> ", ColorsHighlight.cyan) +
@@ -206,6 +207,7 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
 
     def __del__(self) -> None:
         self.terminate()
+        self._terminated = True
         self.communicate()
 
 

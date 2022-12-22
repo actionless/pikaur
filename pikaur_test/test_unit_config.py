@@ -80,12 +80,15 @@ class PikaurConfigItemTestCase(PikaurTestCase):
         value = self.config_item_str.value
         typed_value = self.config_item_str.get_str()
         self.assertEqual(value, typed_value)
+        self.assertEqual(value, str(self.config_item_str))
         self.assertEqual(typed_value, "pkgname")
         self.assertIsInstance(typed_value, str)
 
     def test_error_item_bool_get_str(self):
         with self.assertRaises(TypeError):
             self.config_item_bool.get_str()
+        with self.assertRaises(TypeError):
+            str(self.config_item_bool)
 
     def test_error_item_bool_get_int(self):
         with self.assertRaises(TypeError):
@@ -94,6 +97,8 @@ class PikaurConfigItemTestCase(PikaurTestCase):
     def test_error_item_int_get_str(self):
         with self.assertRaises(TypeError):
             self.config_item_int.get_str()
+        with self.assertRaises(TypeError):
+            str(self.config_item_int)
 
     def test_error_item_int_get_bool(self):
         with self.assertRaises(TypeError):

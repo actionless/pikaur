@@ -60,7 +60,7 @@ class PikaurConfigItemTestCase(PikaurTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.config_patcher.start()
+        cls.config_patcher.stop()
 
     def test_get_value_bool(self):
         value = self.config_item_bool.value

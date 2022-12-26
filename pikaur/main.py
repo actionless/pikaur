@@ -20,6 +20,7 @@ import pyalpm
 from .args import parse_args
 from .config import (
     _OLD_AUR_REPOS_CACHE_PATH,
+    _USER_CACHE_ROOT,
     AUR_REPOS_CACHE_PATH,
     CACHE_ROOT,
     DATA_ROOT,
@@ -315,6 +316,8 @@ def create_dirs() -> None:
         # Chown the private CacheDirectory to root to signal systemd that
         # it needs to recursively chown it to the correct user
         os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
+        if not os.path.exists(_USER_CACHE_ROOT):
+            os.makedirs(_USER_CACHE_ROOT)
     if not os.path.exists(CACHE_ROOT):
         os.makedirs(CACHE_ROOT)
     migrate_old_aur_repos_dir()

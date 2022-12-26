@@ -29,14 +29,14 @@ RUNNING_AS_ROOT: Final = os.geteuid() == 0  # @TODO: could global var be avoided
 
 VERSION: Final = "1.14.6-dev"
 
-_USER_CACHE_HOME: Final = os.environ.get(
+_USER_CACHE_ROOT: Final = os.environ.get(
     "XDG_CACHE_HOME",
     os.path.join(Path.home(), ".cache/")
 )
 CACHE_ROOT: Final = (
     "/var/cache/pikaur"
     if RUNNING_AS_ROOT else
-    os.path.join(_USER_CACHE_HOME, "pikaur/")
+    os.path.join(_USER_CACHE_ROOT, "pikaur/")
 )
 
 BUILD_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "build")
@@ -62,7 +62,7 @@ AUR_REPOS_CACHE_PATH: Final = (
 )
 
 BUILD_DEPS_LOCK: Final = (
-    os.path.join(_USER_CACHE_HOME, "pikaur_build_deps.lock")
+    os.path.join(_USER_CACHE_ROOT, "pikaur_build_deps.lock")
     if RUNNING_AS_ROOT else
     "/tmp/pikaur_build_deps.lock"  # nosec B108
 )

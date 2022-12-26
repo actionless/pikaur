@@ -4,7 +4,7 @@ import configparser
 import os
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Final
 
 from .i18n import translate
 
@@ -23,47 +23,49 @@ if TYPE_CHECKING:
         migrated: NotRequired[bool]
 
 
-DEFAULT_CONFIG_ENCODING = "utf-8"
+DEFAULT_CONFIG_ENCODING: Final = "utf-8"
 
+RUNNING_AS_ROOT: Final = os.geteuid() == 0  # @TODO: could global var be avoided here?
 
-RUNNING_AS_ROOT = os.geteuid() == 0  # @TODO: could global var be avoided here?
+VERSION: Final = "1.14.6-dev"
 
-
-VERSION = "1.14.6-dev"
-
-_USER_CACHE_HOME = os.environ.get(
+_USER_CACHE_HOME: Final = os.environ.get(
     "XDG_CACHE_HOME",
     os.path.join(Path.home(), ".cache/")
 )
-if RUNNING_AS_ROOT:
-    CACHE_ROOT = "/var/cache/pikaur"
-else:
-    CACHE_ROOT = os.path.join(_USER_CACHE_HOME, "pikaur/")
+CACHE_ROOT: Final = (
+    "/var/cache/pikaur"
+    if RUNNING_AS_ROOT else
+    os.path.join(_USER_CACHE_HOME, "pikaur/")
+)
 
-BUILD_CACHE_PATH = os.path.join(CACHE_ROOT, "build")
-PACKAGE_CACHE_PATH = os.path.join(CACHE_ROOT, "pkg")
+BUILD_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "build")
+PACKAGE_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "pkg")
 
-CONFIG_ROOT = os.environ.get(
+CONFIG_ROOT: Final = os.environ.get(
     "XDG_CONFIG_HOME",
     os.path.join(Path.home(), ".config/")
 )
 
-DATA_ROOT = os.path.join(
+DATA_ROOT: Final = os.path.join(
     os.environ.get(
         "XDG_DATA_HOME",
         os.path.join(Path.home(), ".local/share/")
     ), "pikaur"
 )
-_OLD_AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, "aur_repos")
-if RUNNING_AS_ROOT:
-    AUR_REPOS_CACHE_PATH = os.path.join(CACHE_ROOT, "aur_repos")
-else:
-    AUR_REPOS_CACHE_PATH = os.path.join(DATA_ROOT, "aur_repos")
 
-if RUNNING_AS_ROOT:
-    BUILD_DEPS_LOCK = os.path.join(_USER_CACHE_HOME, "pikaur_build_deps.lock")
-else:
-    BUILD_DEPS_LOCK = "/tmp/pikaur_build_deps.lock"  # nosec B108
+_OLD_AUR_REPOS_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "aur_repos")
+AUR_REPOS_CACHE_PATH: Final = (
+    os.path.join(CACHE_ROOT, "aur_repos")
+    if RUNNING_AS_ROOT else
+    os.path.join(DATA_ROOT, "aur_repos")
+)
+
+BUILD_DEPS_LOCK: Final = (
+    os.path.join(_USER_CACHE_HOME, "pikaur_build_deps.lock")
+    if RUNNING_AS_ROOT else
+    "/tmp/pikaur_build_deps.lock"  # nosec B108
+)
 
 
 def get_config_path() -> str:

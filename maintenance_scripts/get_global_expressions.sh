@@ -2,16 +2,17 @@
 set -ue
 
 result=$(
-	grep -REn "^[a-zA-Z_]+ = " pikaur --color=always \
+	grep -REn "^[a-zA-Z_]+ = [^'\"].*" pikaur --color=always \
 	| grep -Ev \
 		-e ': Final' \
 		\
 		-e '\|' \
-		-e '(dict|list|str)\[' \
+		-e ' = [a-zA-Z_]+\[' \
+		-e ' = str[^(]' \
 		-e TypeVar \
 		-e namedtuple \
 		\
-		-e 'create_debug_logger' \
+		-e ' = create_debug_logger\(' \
 	| sort
 )
 echo -n "$result"

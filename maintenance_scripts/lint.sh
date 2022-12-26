@@ -28,6 +28,9 @@ python3 -c "import pikaur.main"
 echo Checking for non-Final globals...
 ./maintenance_scripts/get_non_final_expressions.sh
 
+echo Checking for unreasonable global vars...
+./maintenance_scripts/get_global_expressions.sh
+
 echo Ruff...
 if [[ ! -f "${APP_DIR}/env/bin/activate" ]] ; then
 	python -m venv "${APP_DIR}/env" --system-site-packages

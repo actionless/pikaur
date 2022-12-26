@@ -3,7 +3,7 @@
 import shutil
 import sys
 from string import printable
-from typing import TYPE_CHECKING, Any, TextIO
+from typing import TYPE_CHECKING, Any, Final, TextIO
 
 from .args import parse_args
 from .i18n import translate
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
     from mypy_extensions import DefaultNamedArg
 
-PADDING = 4
+PADDING: Final = 4
 
 
 def color_enabled() -> bool:

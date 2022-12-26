@@ -3,7 +3,7 @@
 import datetime
 import os
 from html.parser import HTMLParser
-from typing import TYPE_CHECKING, TextIO
+from typing import TYPE_CHECKING, Final, TextIO
 
 try:
     from defusedxml.ElementTree import fromstring  # type: ignore[import]
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from xml.etree.ElementTree import Element  # nosec B405
 
 
-DT_FORMAT = "%a, %d %b %Y %H:%M:%S %z"
+DT_FORMAT: Final = "%a, %d %b %Y %H:%M:%S %z"
 
 _debug = create_debug_logger("news")
 

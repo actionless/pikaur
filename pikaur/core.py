@@ -10,7 +10,7 @@ import sys
 import tempfile
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import IO, TYPE_CHECKING, Any, Callable, TypeVar
+from typing import IO, TYPE_CHECKING, Any, Callable, Final, TypeVar
 
 import pyalpm
 
@@ -31,11 +31,11 @@ if TYPE_CHECKING:
         cwd: NotRequired[str]
         env: NotRequired[dict[str, str]]
 
-
-DEFAULT_INPUT_ENCODING = "utf-8"
-DEFAULT_TIMEZONE = datetime.datetime.now().astimezone().tzinfo  # noqa: DTZ005
-PIPE = subprocess.PIPE
 IOStream = IO[bytes] | int | None
+
+DEFAULT_INPUT_ENCODING: Final = "utf-8"
+DEFAULT_TIMEZONE: Final = datetime.datetime.now().astimezone().tzinfo  # noqa: DTZ005
+PIPE: Final = subprocess.PIPE
 
 
 class ComparableType:

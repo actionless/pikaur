@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 from urllib import parse
 from urllib.parse import quote
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from .srcinfo import SrcInfo
 
 
-MAX_URL_LENGTH = 8177  # default value in many web servers
+MAX_URL_LENGTH: Final = 8177  # default value in many web servers
 
 
 class AurBaseUrl:

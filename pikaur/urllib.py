@@ -2,7 +2,7 @@ import gzip
 import json
 import socket
 from time import sleep
-from typing import Any
+from typing import Any, Final
 from urllib import request
 from urllib.error import URLError
 
@@ -13,8 +13,8 @@ from .i18n import translate
 from .pprint import ColorsHighlight, color_line, print_error, print_stderr
 from .prompt import ask_to_continue
 
-DEFAULT_WEB_ENCODING = "utf-8"
-NOCONFIRM_RETRY_INTERVAL = 3
+DEFAULT_WEB_ENCODING: Final = "utf-8"
+NOCONFIRM_RETRY_INTERVAL: Final = 3
 
 
 def read_bytes_from_url(

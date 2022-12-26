@@ -3,7 +3,7 @@
 import fnmatch
 import re
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Pattern
+from typing import TYPE_CHECKING, Final, Pattern
 
 import pyalpm
 from pycman.config import PacmanConfig as PycmanConfig
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from .aur import AURPackageInfo
 
 
-OFFICIAL_REPOS = (
+OFFICIAL_REPOS: Final = (
     "core",
     "extra",
     "community",

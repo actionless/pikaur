@@ -1,11 +1,11 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/ ."""
 
 from itertools import zip_longest
-from typing import Callable
+from typing import Callable, Final
 
 import pyalpm
 
-VERSION_SEPARATORS = (".", "+", "-", ":")
+VERSION_SEPARATORS: Final = (".", "+", "-", ":")
 
 
 def compare_versions(version1: str, version2: str) -> int:

@@ -3,7 +3,7 @@
 import sys
 from datetime import datetime
 from fnmatch import fnmatch
-from typing import TYPE_CHECKING, Iterable, Sequence, TypeVar
+from typing import TYPE_CHECKING, Final, Iterable, Sequence, TypeVar
 
 import pyalpm
 
@@ -31,13 +31,13 @@ if TYPE_CHECKING:
     from .install_info_fetcher import InstallInfoFetcher
 
 
-GROUP_COLOR = Colors.blue
-REPLACEMENTS_COLOR = ColorsHighlight.cyan
-ORPHANED_COLOR = ColorsHighlight.red
-
-
 AnyPackage = AURPackageInfo | pyalpm.Package
 InstallInfoT = TypeVar("InstallInfoT", bound=InstallInfo)
+
+
+GROUP_COLOR: Final = Colors.blue
+REPLACEMENTS_COLOR: Final = ColorsHighlight.cyan
+ORPHANED_COLOR: Final = ColorsHighlight.red
 
 
 def print_version(pacman_version: str, pyalpm_version: str, *, quiet: bool = False) -> None:

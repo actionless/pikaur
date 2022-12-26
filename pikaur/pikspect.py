@@ -14,7 +14,7 @@ import termios
 import tty
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import Any, BinaryIO, Callable, TextIO
+from typing import Any, BinaryIO, Callable, Final, TextIO
 
 from .args import parse_args
 from .core import DEFAULT_INPUT_ENCODING, get_sudo_refresh_command
@@ -30,8 +30,7 @@ from .pprint import (
     print_stderr,
 )
 
-# SMALL_TIMEOUT = 0.1
-SMALL_TIMEOUT = 0.01
+SMALL_TIMEOUT: Final = 0.01
 
 
 TcAttrsType = list[int | list[bytes | int]]

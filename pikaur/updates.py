@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from datetime import datetime
-from typing import Sequence
+from typing import Final, Sequence
 
 import pyalpm
 
@@ -26,7 +26,7 @@ from .print_department import (
 )
 from .version import compare_versions
 
-DEVEL_PKGS_POSTFIXES = (
+DEVEL_PKGS_POSTFIXES: Final = (
     "-git",
     "-svn",
     "-bzr",

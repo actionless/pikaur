@@ -4,7 +4,7 @@ import os
 from typing import TypeVar
 
 from .args import parse_args
-from .config import CONFIG_ROOT
+from .config import _USER_TEMP_ROOT, CONFIG_ROOT
 from .core import open_file, running_as_root
 
 ConfigValueType = str | list[str] | None
@@ -138,6 +138,7 @@ class MakePkgCommand:
     def _apply_dynamic_users_workaround(cls) -> None:
         pkgdest = get_pkgdest()
         if running_as_root() and pkgdest and (
+                pkgdest.startswith(_USER_TEMP_ROOT) or
                 pkgdest.startswith("/tmp") or  # nosec B108
                 pkgdest.startswith("/var/tmp")  # nosec B108
         ):

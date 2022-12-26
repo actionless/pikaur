@@ -15,7 +15,7 @@ from typing import IO, TYPE_CHECKING, Any, Callable, Final, TypeVar
 import pyalpm
 
 from .args import parse_args
-from .config import RUNNING_AS_ROOT, PikaurConfig
+from .config import _USER_TEMP_ROOT, RUNNING_AS_ROOT, PikaurConfig
 from .i18n import translate
 from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 
@@ -284,7 +284,7 @@ def isolate_root_cmd(
         "--pipe", "--wait", "--pty",
         "-p", "DynamicUser=yes",
         "-p", "CacheDirectory=pikaur",
-        "-E", "HOME=/tmp",
+        "-E", f"HOME={_USER_TEMP_ROOT}",
     ]
     if env is not None:
         for env_var_name, env_var_value in env.items():

@@ -4,6 +4,7 @@ import configparser
 import os
 import sys
 from pathlib import Path
+from tempfile import gettempdir
 from typing import TYPE_CHECKING, Any, Callable, Final
 
 from .i18n import translate
@@ -29,10 +30,12 @@ RUNNING_AS_ROOT: Final = os.geteuid() == 0  # @TODO: could global var be avoided
 
 VERSION: Final = "1.14.6-dev"
 
+_USER_TEMP_ROOT: Final = gettempdir()
 _USER_CACHE_ROOT: Final = os.environ.get(
     "XDG_CACHE_HOME",
     os.path.join(Path.home(), ".cache/")
 )
+
 CACHE_ROOT: Final = (
     "/var/cache/pikaur"
     if RUNNING_AS_ROOT else
@@ -61,10 +64,9 @@ AUR_REPOS_CACHE_PATH: Final = (
     os.path.join(DATA_ROOT, "aur_repos")
 )
 
-BUILD_DEPS_LOCK: Final = (
-    os.path.join(_USER_CACHE_ROOT, "pikaur_build_deps.lock")
-    if RUNNING_AS_ROOT else
-    "/tmp/pikaur_build_deps.lock"  # nosec B108
+BUILD_DEPS_LOCK: Final = os.path.join(
+    _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT,
+    "pikaur_build_deps.lock"
 )
 
 

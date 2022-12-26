@@ -75,6 +75,3 @@ ignore = [
 "maintenance_scripts/pikaman.py" = [
 	"ARG002",
 ]
-"pikaur_test/helpers.py" = [
-	"RUF100",  # @TODO
-]

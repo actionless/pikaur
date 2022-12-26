@@ -66,7 +66,7 @@ class PikaurConfigItemTestCase(PikaurTestCase):
         value = self.config_item_bool.value
         typed_value = self.config_item_bool.get_bool()
         self.assertEqual(value, "yes")
-        self.assertEqual(typed_value, True)  # noqa: FBT003
+        self.assertEqual(typed_value, True)
         self.assertIsInstance(typed_value, bool)
 
     def test_get_value_int(self):

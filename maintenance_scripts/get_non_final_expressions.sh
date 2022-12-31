@@ -7,7 +7,7 @@ result=$(
 		-e ': Final' \
 		\
 		-e '\|' \
-		-e '(dict|list|str)\[' \
+		-e '(dict|list)\[' \
 		-e TypeVar \
 		-e namedtuple \
 		\

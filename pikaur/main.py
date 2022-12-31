@@ -88,7 +88,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 )
                 setattr(
                     sys, attr,
-                    io.open(
+                    open(
                         real_stream.fileno(),
                         mode="w",
                         encoding=DEFAULT_INPUT_ENCODING,

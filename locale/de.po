@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 08:14+0100\n"
+"POT-Creation-Date: 2023-01-03 18:00+0100\n"
 "PO-Revision-Date: 2020-08-18 00:08+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: de <>\n"
@@ -68,7 +68,7 @@ msgid_plural "AUR packages will be installed:"
 msgstr[0] "Zu installierendes AUR-Paket:"
 msgstr[1] "Zu installierende AUR-Pakete:"
 
-#: pikaur/main.py:299
+#: pikaur/main.py:300
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "AUR-Repository-Verzeichnis wurde von '{old}' nach '{new}' verschoben."
@@ -90,7 +90,7 @@ msgid ""
 msgstr ""
 "Alle allgemeinen Optionen wie bei `pacman -U <pkg_file>`. Siehe `pacman -Uh`."
 
-#: pikaur/pacman.py:540
+#: pikaur/pacman.py:543
 msgid "Because of:"
 msgstr ""
 
@@ -137,7 +137,7 @@ msgstr "'{name}' in '{path}' kann nicht vom AUR bezogen werden:"
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
 msgstr "Kann Abhängigkeiten für AUR-Paket '{pkg}' nicht auflösen:"
 
-#: pikaur/pacman.py:266
+#: pikaur/pacman.py:268
 #, fuzzy
 msgid "Cannot initialize ALPM"
 msgstr "Konnte {} nicht initialisieren"
@@ -175,7 +175,7 @@ msgstr "Konnte {} nicht initialisieren"
 msgid "Could not update {}"
 msgstr "Konnte {} nicht updaten"
 
-#: pikaur/pacman.py:531
+#: pikaur/pacman.py:534
 msgid "Dependencies can't be satisfied for the following packages:"
 msgstr ""
 
@@ -313,7 +313,7 @@ msgstr "Maintainer"
 msgid "Make Deps"
 msgstr "Build-Abhängigkeiten"
 
-#: pikaur/config.py:437
+#: pikaur/config.py:442
 msgid "Migrating [{}]{} config option to [{}]{} = \"{}\"..."
 msgstr "Migriere Konfigurationsoption [{}]{} nach [{}]{} = \"{}\"..."
 
@@ -410,7 +410,7 @@ msgstr "Paket-Verzeichnis"
 msgid "Pikaur-specific options:"
 msgstr "Pikaur-spezifische Optionen:"
 
-#: pikaur/main.py:167
+#: pikaur/main.py:168
 msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
@@ -436,11 +436,11 @@ msgid_plural "Reading AUR packages info..."
 msgstr[0] "Lese AUR-Paketinformationen..."
 msgstr[1] "Lese AUR Paketinfos..."
 
-#: pikaur/pacman.py:292
+#: pikaur/pacman.py:294
 msgid "Reading local package database..."
 msgstr "Lese lokale Paketdatenbank..."
 
-#: pikaur/pacman.py:350
+#: pikaur/pacman.py:352
 msgid "Reading repository package databases..."
 msgstr "Lese Repository-Paketdatenbank..."
 
@@ -642,7 +642,7 @@ msgstr "[u] überspringe dieses Paket"
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[P]aketdetails anzeigen, Pakete [m]anuell auswählen"
 
-#: pikaur/pikspect.py:226
+#: pikaur/pikspect.py:225
 #, python-brace-format
 msgid "`{var_name}` should be list."
 msgstr ""
@@ -721,7 +721,7 @@ msgstr "Editiere"
 msgid "error:"
 msgstr "Fehler:"
 
-#: pikaur/core.py:446
+#: pikaur/core.py:448
 msgid "executable not found"
 msgstr ""
 
@@ -768,11 +768,11 @@ msgstr "installiere gebautes Paket"
 msgid "installing for the first time"
 msgstr "Paket wird zum ersten Mal installiert"
 
-#: pikaur/main.py:187
+#: pikaur/main.py:188
 msgid "invalid number: {}"
 msgstr "ungültige Nummer: {}"
 
-#: pikaur/main.py:177
+#: pikaur/main.py:178
 msgid "invalid value: {} is not between {} and {}"
 msgstr "ungültiger Wert: {} liegt nicht zwischen {} und {}"
 
@@ -785,7 +785,7 @@ msgid "m"
 msgstr "m"
 
 #: pikaur/install_cli.py:437 pikaur/build.py:777 pikaur/build.py:797
-#: pikaur/prompt.py:41 pikaur/main.py:185
+#: pikaur/prompt.py:41 pikaur/main.py:186
 msgid "n"
 msgstr "n"
 
@@ -829,7 +829,7 @@ msgstr "Pfad der angepassten Konfiguration von pikaur"
 msgid "pikaur debug:"
 msgstr "pikaur debug:"
 
-#: pikaur/core.py:428
+#: pikaur/core.py:430
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "Pikaur benötigt Python >= 3.7 um zu funktionieren."
 
@@ -838,7 +838,7 @@ msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr ""
 "Pikaur benötigt python-pysocks um einen SOCKS5-Proxy benutzen zu können."
 
-#: pikaur/core.py:433
+#: pikaur/core.py:435
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "Pikaur benötigt systemd >= 235 (dynamic users) um als root ausgeführt werden "
@@ -920,7 +920,7 @@ msgstr "Benutzung: pikaur {-P --pkgbuild} [Optionen] <Datei(en)>"
 msgid "v"
 msgstr "p"
 
-#: pikaur/pprint.py:124 pikaur/config.py:436
+#: pikaur/pprint.py:124 pikaur/config.py:441
 msgid "warning:"
 msgstr "Warnung:"
 
@@ -936,7 +936,7 @@ msgid_plural "{grp} groups"
 msgstr[0] "{grp} Gruppe"
 msgstr[1] "{grp} Gruppen"
 
-#: pikaur/config.py:337
+#: pikaur/config.py:342
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr ""

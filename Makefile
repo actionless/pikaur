@@ -70,5 +70,5 @@ clean:
 	$(RM) $(MAN_FILE)
 	$(RM) -r $(DISTDIR)
 
-.PHONY: all clean $(POTFILE) man bin locale $(DISTDIR)/usr/bin/pikaur
+.PHONY: all clean $(POTFILE) man bin locale $(DISTDIR)/usr/bin/pikaur $(MAN_FILE)
 .PRECIOUS: $(LOCALEDIR)/%.po

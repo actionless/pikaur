@@ -28,7 +28,7 @@ DEFAULT_CONFIG_ENCODING: Final = "utf-8"
 
 RUNNING_AS_ROOT: Final = os.geteuid() == 0  # @TODO: could global var be avoided here?
 
-VERSION: Final = "1.14.6-dev"
+VERSION: Final = "${new_version}-dev"
 
 _USER_TEMP_ROOT: Final = gettempdir()
 _USER_CACHE_ROOT: Final = os.environ.get(

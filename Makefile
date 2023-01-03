@@ -32,7 +32,7 @@ $(POTFILE):
 	# find pikaur -type f -name '*.py' -not -name 'argparse.py' \
 		#
 	find pikaur -type f -name '*.py' -print0 \
-		| xargs xgettext --language=python --add-comments --sort-output \
+		| xargs --null xgettext --language=python --add-comments --sort-output \
 			--default-domain=pikaur --from-code=UTF-8 \
 			--keyword='translate' --keyword='translate_many:1,2' \
 			--output=$@

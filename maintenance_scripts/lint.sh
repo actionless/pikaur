@@ -82,5 +82,10 @@ echo Shellcheck...
 		-name '*.sh' \
 	)
 )
+echo Shellcheck Makefile...
+(
+	cd "${APP_DIR}"
+	shellcheck <(make -n) --shell=sh
+)
 
 echo '== GOOD!'

@@ -244,7 +244,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return NotImplemented
         result = spawn(isolate_root_cmd(wrap_proxy_env(cmd_args)))
         self.reviewed = self.current_hash == self.last_installed_hash
-        return result  # noqa: RET504
+        return result
 
     @property
     def last_installed_file_path(self) -> str:

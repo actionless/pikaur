@@ -162,7 +162,7 @@ def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> list
             block = block.replace("..", "-")
         if "-" in block:
             try:
-                range_start, range_end = [int(char) for char in block.split("-")]
+                range_start, range_end = (int(char) for char in block.split("-"))
             except ValueError as exc:
                 raise NotANumberInputError(block) from exc
             if range_start > range_end:

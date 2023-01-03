@@ -99,7 +99,7 @@ class News:
                 )
                 _debug(f"{file_data=}, {parsed_date=}")
                 return parsed_date
-        except (IOError, ValueError):
+        except (OSError, ValueError):
             # if file doesn't exist or corrupted,
             # this feature was run the first time
             # then we get take the date from the last installed package:
@@ -111,7 +111,7 @@ class News:
             try:
                 with open_file(self.CACHE_FILE, "w") as last_seen_fd:
                     last_seen_fd.write(time_formatted)
-            except IOError:
+            except OSError:
                 print_error(translate("Could not initialize {}").format(self.CACHE_FILE))
             return last_pkg_date
 
@@ -154,7 +154,7 @@ class News:
         try:
             with open_file(self.CACHE_FILE, "w") as last_seen_fd:
                 last_seen_fd.write(pub_date)
-        except IOError:
+        except OSError:
             print_error(translate("Could not update {}").format(self.CACHE_FILE))
 
 

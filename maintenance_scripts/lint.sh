@@ -85,7 +85,7 @@ echo Shellcheck...
 echo Shellcheck Makefile...
 (
 	cd "${APP_DIR}"
-	shellcheck <(make -n) --shell=sh
+	./maintenance_scripts/makefile_shellcheck.py
 )
 
 echo '== GOOD!'

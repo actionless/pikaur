@@ -21,6 +21,7 @@ select = [
 	"ISC",
 	"ICN",
 	"T20",
+	#"PT",  # pytest
 	"Q",
 	"RET",
 	"SIM",
@@ -28,9 +29,10 @@ select = [
 	"ARG",
 	"DTZ",
 	"ERA",
-	#"PD",
+	#"PD",  # pandas
 	"PGH",
 	"PLC", "PLE", "PLR", "PLW",
+	"PIE",
 	"RUF",
 	#"C",
 	#"T",

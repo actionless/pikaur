@@ -196,7 +196,7 @@ class PikaurArgs(Namespace):
             if self.check:  # handle "-k"
                 self.keepbuild = True
                 self.check = None
-        if self.sysupgrade:  # handle "-u"
+        if self.sysupgrade:  # handle "-u"  # noqa: SIM102
             if self.query:
                 self.sysupgrade = 0
                 self.upgrades = True

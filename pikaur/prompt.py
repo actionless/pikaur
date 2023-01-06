@@ -112,27 +112,28 @@ def get_input(
 ) -> str:
     _debug("Gonna get input from user...")
     answer = ""
-    with PrintLock():
-        with TTYInputWrapper():
-
-            if not (
-                    require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
-            ):
-                _debug_nolock("Using custom input reader...")
-                answer = read_answer_from_tty(prompt, answers=answers)
-            else:
-                _debug_nolock("Restoring TTY...")
-                sub_tty = TTYRestore()
-                TTYRestore.restore()
-                try:
-                    _debug_nolock("Using standard input reader...")
-                    answer = input(split_last_line(prompt)).lower()
-                except EOFError as exc:
-                    _debug_nolock(exc)
-                    raise SysExit(125) from exc
-                finally:
-                    _debug_nolock("Reverting to prev TTY state...")
-                    sub_tty.restore_new()
+    with (
+            PrintLock(),
+            TTYInputWrapper(),
+    ):
+        if not (
+                require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
+        ):
+            _debug_nolock("Using custom input reader...")
+            answer = read_answer_from_tty(prompt, answers=answers)
+        else:
+            _debug_nolock("Restoring TTY...")
+            sub_tty = TTYRestore()
+            TTYRestore.restore()
+            try:
+                _debug_nolock("Using standard input reader...")
+                answer = input(split_last_line(prompt)).lower()
+            except EOFError as exc:
+                _debug_nolock(exc)
+                raise SysExit(125) from exc
+            finally:
+                _debug_nolock("Reverting to prev TTY state...")
+                sub_tty.restore_new()
 
     if not answer:
         for choice in answers:
@@ -243,9 +244,8 @@ def retry_interactive_command_or_exit(
             cmd_args,
             pikspect=pikspect,
             conflicts=conflicts,
-    ):
-        if not ask_to_continue(default_yes=False):
-            raise SysExit(125)
+    ) and not ask_to_continue(default_yes=False):
+        raise SysExit(125)
 
 
 def get_editor_or_exit() -> list[str] | None:

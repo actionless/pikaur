@@ -1,6 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 # pylint: disable=too-many-lines
+import contextlib
 import hashlib
 import os
 from multiprocessing.pool import ThreadPool
@@ -188,7 +189,7 @@ class InstallPackagesCLI():
         """Raise when need to finish Install CLI"""
 
     def main_sequence(self) -> None:
-        try:
+        with contextlib.suppress(self.ExitMainSequence):
             self.get_all_packages_info()
             if self.news:
                 self.news.print_news()
@@ -202,8 +203,6 @@ class InstallPackagesCLI():
             self.review_build_files()
 
             self.install_packages()
-        except self.ExitMainSequence:
-            pass
 
     @property
     def aur_packages_names(self) -> list[str]:
@@ -1019,10 +1018,9 @@ class InstallPackagesCLI():
                 ),
                 pikspect=True,
                 conflicts=self.resolved_conflicts,
-        ):
-            if not ask_to_continue(default_yes=False):  # pragma: no cover
-                self._revert_transaction(PackageSource.REPO)
-                raise SysExit(125)
+        ) and not ask_to_continue(default_yes=False):  # pragma: no cover
+            self._revert_transaction(PackageSource.REPO)
+            raise SysExit(125)
         PackageDB.discard_local_cache()
         self._save_transaction(
             PackageSource.REPO, installed=self.install_package_names
@@ -1067,10 +1065,9 @@ class InstallPackagesCLI():
                     ),
                     pikspect=True,
                     conflicts=self.resolved_conflicts,
-            ):
-                if not ask_to_continue(default_yes=False):  # pragma: no cover
-                    self._revert_transaction(PackageSource.AUR)
-                    raise SysExit(125)
+            ) and not ask_to_continue(default_yes=False):  # pragma: no cover
+                self._revert_transaction(PackageSource.AUR)
+                raise SysExit(125)
             PackageDB.discard_local_cache()
             self._save_transaction(
                 PackageSource.AUR, installed=list(aur_packages_to_install.keys())

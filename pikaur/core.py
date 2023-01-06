@@ -182,16 +182,19 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
     def communicate(
             self, com_input: bytes | None = None, timeout: float | None = None
     ) -> tuple[bytes, bytes]:
-        if parse_args().print_commands and not self._terminated:
-            if self.args != get_sudo_refresh_command():
-                print_stderr(
-                    color_line("=> ", ColorsHighlight.cyan) +
-                    (
-                        " ".join(str(arg) for arg in self.args)
-                        if isinstance(self.args, list) else
-                        str(self.args)
-                    )
+        if (
+                parse_args().print_commands
+                and not self._terminated
+                and self.args != get_sudo_refresh_command()
+        ):
+            print_stderr(
+                color_line("=> ", ColorsHighlight.cyan) +
+                (
+                    " ".join(str(arg) for arg in self.args)
+                    if isinstance(self.args, list) else
+                    str(self.args)
                 )
+            )
 
         stdout, stderr = super().communicate(com_input, timeout)
         self.stdout_text = stdout.decode(DEFAULT_INPUT_ENCODING) if stdout else None
@@ -239,16 +242,18 @@ def spawn(
         cwd: str | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
-    with tempfile.TemporaryFile() as out_file:
-        with tempfile.TemporaryFile() as err_file:
-            proc = interactive_spawn(
-                cmd, stdout=out_file, stderr=err_file,
-                cwd=cwd, env=env,
-            )
-            out_file.seek(0)
-            err_file.seek(0)
-            proc.stdout_text = out_file.read().decode(DEFAULT_INPUT_ENCODING)
-            proc.stderr_text = err_file.read().decode(DEFAULT_INPUT_ENCODING)
+    with (
+            tempfile.TemporaryFile() as out_file,
+            tempfile.TemporaryFile() as err_file
+    ):
+        proc = interactive_spawn(
+            cmd, stdout=out_file, stderr=err_file,
+            cwd=cwd, env=env,
+        )
+        out_file.seek(0)
+        err_file.seek(0)
+        proc.stdout_text = out_file.read().decode(DEFAULT_INPUT_ENCODING)
+        proc.stderr_text = err_file.read().decode(DEFAULT_INPUT_ENCODING)
     return proc
 
 

@@ -26,14 +26,16 @@ class MainHelperFuncsTest(PikaurTestCase):
     def test_output_encoding_wrapper_2(self):
         real_stdout = sys.stdout
         real_stderr = sys.stderr
-        with self.assertRaises(SystemExit):
-            with OutputEncodingWrapper():
-                # self.assertNotEqual(real_stderr, sys.stderr)
+        with (
+                self.assertRaises(SystemExit),
+                OutputEncodingWrapper(),
+        ):
+            # self.assertNotEqual(real_stderr, sys.stderr)
 
-                # fails if testrunner (like nosetests) capturing output:
-                # self.assertNotEqual(real_stdout, sys.stdout)
+            # fails if testrunner (like nosetests) capturing output:
+            # self.assertNotEqual(real_stdout, sys.stdout)
 
-                raise Exception("test")  # noqa: EM101
+            raise Exception("test")  # noqa: EM101
         self.assertEqual(real_stdout, sys.stdout)
         self.assertEqual(real_stderr, sys.stderr)
 

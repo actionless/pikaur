@@ -261,14 +261,16 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
         return r"\fR"
 
 
-with open(README_PATH, encoding=ENCODING) as input_fobj:
-    with open(OUTPUT_PATH, "w", encoding=ENCODING) as output_fobj:
-        output_fobj.write(
-            NroffRenderer(name="pikaur", section=1).render(
-                markdown_it.MarkdownIt().parse(
-                    input_fobj.read()
-                ),
-                options=OptionsDict(),
-                env={}
-            )
+with (
+        open(README_PATH, encoding=ENCODING) as input_fobj,
+        open(OUTPUT_PATH, "w", encoding=ENCODING) as output_fobj
+):
+    output_fobj.write(
+        NroffRenderer(name="pikaur", section=1).render(
+            markdown_it.MarkdownIt().parse(
+                input_fobj.read()
+            ),
+            options=OptionsDict(),
+            env={}
         )
+    )

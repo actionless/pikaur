@@ -1,5 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
+import contextlib
 import fcntl
 import os
 import pty
@@ -68,10 +69,8 @@ class TTYRestore():  # pragma: no cover
         cls._restore(cls.old_tcattrs)
 
     def __init__(self) -> None:
-        try:
+        with contextlib.suppress(termios.error):
             self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
-        except termios.error:
-            pass
 
     def restore_new(self, *_whatever: Any) -> None:
         self._restore(self.sub_tty_old_tcattrs)
@@ -236,27 +235,31 @@ class PikspectPopen(subprocess.Popen[bytes]):
                         get_sudo_refresh_command(),
                         check=True
                     )
-                with open(
-                        self.pty_user_master, "w", encoding=DEFAULT_INPUT_ENCODING
-                ) as self.pty_in:
-                    with open(self.pty_cmd_master, "rb", buffering=0) as self.pty_out:
-                        set_terminal_geometry(
-                            self.pty_out.fileno(),
-                            columns=real_term_geometry.columns,
-                            rows=real_term_geometry.lines
-                        )
-                        with ThreadPool(processes=3) as pool:
-                            output_task = pool.apply_async(self.cmd_output_reader_thread, ())
-                            input_task = pool.apply_async(self.user_input_reader_thread, ())
-                            communicate_task = pool.apply_async(self.communicator_thread, ())
-                            pool.close()
+                with (
+                        open(
+                            self.pty_user_master, "w", encoding=DEFAULT_INPUT_ENCODING
+                        ) as self.pty_in,
+                        open(
+                            self.pty_cmd_master, "rb", buffering=0
+                        ) as self.pty_out,
+                ):
+                    set_terminal_geometry(
+                        self.pty_out.fileno(),
+                        columns=real_term_geometry.columns,
+                        rows=real_term_geometry.lines
+                    )
+                    with ThreadPool(processes=3) as pool:
+                        output_task = pool.apply_async(self.cmd_output_reader_thread, ())
+                        input_task = pool.apply_async(self.user_input_reader_thread, ())
+                        communicate_task = pool.apply_async(self.communicator_thread, ())
+                        pool.close()
 
-                            output_task.get()
-                            sys.stdout.buffer.write(self._write_buffer)
-                            sys.stdout.buffer.flush()
-                            communicate_task.get()
-                            input_task.get()
-                            pool.join()
+                        output_task.get()
+                        sys.stdout.buffer.write(self._write_buffer)
+                        sys.stdout.buffer.flush()
+                        communicate_task.get()
+                        input_task.get()
+                        pool.join()
         finally:
             PikspectSignalHandler.clear()
             os.close(self.pty_cmd_slave)

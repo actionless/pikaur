@@ -1,5 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
+import contextlib
 import os
 import sys
 import tempfile
@@ -208,25 +209,22 @@ def pikaur(
     log_stderr(color_line("\n => ", 10, force=True) + " ".join(new_args))
 
     try:
-        with InterceptSysOutput(
-                capture_stderr=capture_stderr,
-                capture_stdout=capture_stdout
-        ) as intercepted:
-            try:
-
-                # re-parse args:
-                CachedArgs.args = None
-                MakePkgCommand._cmd = None  # pylint: disable=protected-access
-                with mock.patch("sys.argv", new=new_args):
-                    parse_args()
-                # monkey-patch to force always uncolored output:
-                CachedArgs.args.color = "never"  # type: ignore[attr-defined]
-
-                # finally run pikaur's main loop
-                main(embed=True)
-
-            except FakeExit:
-                pass
+        with (
+                InterceptSysOutput(
+                    capture_stderr=capture_stderr,
+                    capture_stdout=capture_stdout
+                ) as intercepted,
+                contextlib.suppress(FakeExit),
+        ):
+            # re-parse args:
+            CachedArgs.args = None
+            MakePkgCommand._cmd = None  # pylint: disable=protected-access
+            with mock.patch("sys.argv", new=new_args):
+                parse_args()
+            # monkey-patch to force always uncolored output:
+            CachedArgs.args.color = "never"  # type: ignore[attr-defined]
+            # finally run pikaur's main loop
+            main(embed=True)
     except Exception as exc:
         log_stderr(str(exc))
         log_stderr(traceback.format_exc())

@@ -11,9 +11,9 @@ if len(sys.argv) > 1:
 
 DEFAULT_ENCODING = "utf-8"
 MAKE_SHELL = os.environ.get("MAKE_SHELL", "sh")
-# DISALLOWED_CHARS = ("%", )
-DISALLOWED_CHARS = ("%", "/", )
-DISALLOWED_TARGETS = (".PHONY", ".PRECIOUS", )
+# SKIP_TARGETS_WITH_CHARS = ("%", )
+SKIP_TARGETS_WITH_CHARS = ("%", "/", )
+SKIP_TARGETS = (".PHONY", ".PRECIOUS", )
 
 
 def get_targets() -> list[str]:
@@ -39,14 +39,14 @@ def get_targets() -> list[str]:
             continue
 
         skip = False
-        for char in DISALLOWED_CHARS:
+        for char in SKIP_TARGETS_WITH_CHARS:
             if char in word:
                 skip = True
         if skip:
             continue
 
         target = word.rstrip(":")
-        if target in DISALLOWED_TARGETS:
+        if target in SKIP_TARGETS:
             continue
 
         targets.append(target)

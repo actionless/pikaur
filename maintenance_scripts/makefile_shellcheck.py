@@ -9,31 +9,50 @@ MAKEFILE = "./Makefile"
 if len(sys.argv) > 1:
     MAKEFILE = sys.argv[1]
 
-MAKE_SHELL = os.environ.get("MAKE_SHELL", "sh")
 DEFAULT_ENCODING = "utf-8"
+MAKE_SHELL = os.environ.get("MAKE_SHELL", "sh")
+# DISALLOWED_CHARS = ("%", )
+DISALLOWED_CHARS = ("%", "/", )
+DISALLOWED_TARGETS = (".PHONY", ".PRECIOUS", )
 
 
 def get_targets() -> list[str]:
-    targets = subprocess.check_output(
-        args=(
-            "make"
-            " --dry-run"
-            f' --makefile="{MAKEFILE}"'
-            " --print-data-base"
-            " --no-builtin-rules"
-            " --no-builtin-variables"
-            " | grep -E '^[^. ]+:' -o"
-            # " | sort"
-            " | sort -r"
-            " | uniq"
-            " | sed 's/:$//g'"
-        ),
-        shell=True,
+    lines = subprocess.check_output(
+        args=[
+            "make",
+            "--dry-run",
+            f"--makefile={MAKEFILE}",
+            "--print-data-base",
+            "--no-builtin-rules",
+            "--no-builtin-variables",
+        ],
         encoding=DEFAULT_ENCODING
     ).splitlines()
 
-    targets.remove("Makefile")
-    # # check it last:
+    targets = []
+    for idx, line in enumerate(lines):
+        if lines[idx-1] == "# Not a target:":
+            continue
+
+        word = line.split(" ", maxsplit=1)[0]
+        if not word.endswith(":"):
+            continue
+
+        skip = False
+        for char in DISALLOWED_CHARS:
+            if char in word:
+                skip = True
+        if skip:
+            continue
+
+        target = word.rstrip(":")
+        if target in DISALLOWED_TARGETS:
+            continue
+
+        targets.append(target)
+    targets = sorted(set(targets), reverse=True)
+
+    # check it last:
     targets.remove("all")
     targets.append("all")
     return targets

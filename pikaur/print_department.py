@@ -749,18 +749,14 @@ def print_package_search_results(
 
             installed = ""
             if pkg_name in local_pkgs_names:
-                if package.version != local_pkgs_versions[pkg_name]:
-                    installed = color_line(
-                        translate("[installed: {version}]").format(
-                            version=local_pkgs_versions[pkg_name],
-                        ) + " ",
-                        ColorsHighlight.cyan
-                    )
-                else:
-                    installed = color_line(
-                        translate("[installed]") + " ",
-                        ColorsHighlight.cyan
-                    )
+                installed = color_line(
+                    translate("[installed: {version}]").format(
+                        version=local_pkgs_versions[pkg_name],
+                    ) + " "
+                    if package.version != local_pkgs_versions[pkg_name] else
+                    translate("[installed]") + " ",
+                    ColorsHighlight.cyan
+                )
 
             rating = ""
             if (

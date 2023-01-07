@@ -146,10 +146,7 @@ def cli_print_version() -> None:
     proc = spawn(
         [PikaurConfig().misc.PacmanPath.get_str(), "--version", ],
     )
-    if proc.stdout_text:
-        pacman_version = proc.stdout_text.splitlines()[1].strip(" .-")
-    else:
-        pacman_version = "N/A"
+    pacman_version = proc.stdout_text.splitlines()[1].strip(" .-") if proc.stdout_text else "N/A"
     print_version(
         pacman_version=pacman_version, pyalpm_version=pyalpm.version(),
         quiet=args.quiet

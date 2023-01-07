@@ -209,16 +209,16 @@ def retry_interactive_command(
 ) -> bool:
     args = parse_args()
     while True:
-        good = None
-        if pikspect and ("--noconfirm" not in cmd_args):
-            good = pikspect_spawn(
+        good = (
+            pikspect_spawn(
                 cmd_args,
                 conflicts=conflicts,
-            ).returncode == 0
-        else:
-            good = interactive_spawn(
+            )
+            if pikspect and ("--noconfirm" not in cmd_args) else
+            interactive_spawn(
                 cmd_args
-            ).returncode == 0
+            )
+        ).returncode == 0
         if good:
             return good
         print_stderr(color_line(

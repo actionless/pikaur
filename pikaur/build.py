@@ -834,10 +834,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         self.install_all_deps(all_package_builds)
         try:
-            if self.check_if_already_built():
-                build_succeeded = True
-            else:
-                build_succeeded = self.build_with_makepkg()
+            build_succeeded = True if self.check_if_already_built() else self.build_with_makepkg()
         finally:
             self._remove_installed_deps()
 

@@ -34,10 +34,7 @@ class SrcInfo():
                 if line.startswith("pkgname ="):
                     pkgname = line.split("=")[1].strip()
                     self.pkgnames.append(pkgname)
-                    if pkgname == self.package_name:
-                        destination = self._package_lines
-                    else:
-                        destination = []
+                    destination = self._package_lines if pkgname == self.package_name else []
                 else:
                     destination.append(line)
 

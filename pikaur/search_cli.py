@@ -19,12 +19,11 @@ SamePackageTypeT = TypeVar("SamePackageTypeT", AURPackageInfo, pyalpm.Package)
 
 def package_search_thread_repo(query: str) -> list[pyalpm.Package]:
     args = parse_args()
-    if query:
-        result = PackageDB.search_repo(
-            query, names_only=args.namesonly
-        )
-    else:
-        result = PackageDB.get_repo_list(quiet=True)
+    result = (
+        PackageDB.search_repo(query, names_only=args.namesonly)
+        if query else
+        PackageDB.get_repo_list(quiet=True)
+    )
     if not args.quiet:
         sys.stderr.write("#")
     return result
@@ -124,10 +123,11 @@ def join_search_results(
     pkgnames_set: set[str] = set()
     for search_results in all_search_results:
         new_pkgnames_set = {get_pkg_id(result) for result in search_results}
-        if pkgnames_set:
-            pkgnames_set = pkgnames_set.intersection(new_pkgnames_set)
-        else:
-            pkgnames_set = new_pkgnames_set
+        pkgnames_set = (
+            pkgnames_set.intersection(new_pkgnames_set)
+            if pkgnames_set else
+            new_pkgnames_set
+        )
     return {
         get_pkg_id(result): result
         for result in all_search_results[0]

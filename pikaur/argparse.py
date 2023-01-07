@@ -190,10 +190,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         # passed the last option string
         extras = []
         start_index = 0
-        if option_string_indices:
-            max_option_string_index = max(option_string_indices)
-        else:
-            max_option_string_index = -1
+        max_option_string_index = max(option_string_indices) if option_string_indices else -1
         while start_index <= max_option_string_index:
 
             # consume any Positionals preceding the next option

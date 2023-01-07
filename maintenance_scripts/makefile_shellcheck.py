@@ -33,8 +33,8 @@ def get_targets() -> list[str]:
 
     targets.remove("Makefile")
     # # check it last:
-    # targets.remove("all")
-    # targets.append("all")
+    targets.remove("all")
+    targets.append("all")
     return targets
 
 

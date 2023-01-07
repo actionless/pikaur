@@ -17,7 +17,7 @@ DISALLOWED_TARGETS = (".PHONY", ".PRECIOUS", )
 
 
 def get_targets() -> list[str]:
-    lines = subprocess.check_output(
+    lines = subprocess.check_output(  # nosec B603
         args=[
             "make",
             "--dry-run",
@@ -31,7 +31,7 @@ def get_targets() -> list[str]:
 
     targets = []
     for idx, line in enumerate(lines):
-        if lines[idx-1] == "# Not a target:":
+        if lines[idx - 1] == "# Not a target:":
             continue
 
         word = line.split(" ", maxsplit=1)[0]

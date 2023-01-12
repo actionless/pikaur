@@ -34,12 +34,9 @@ select = [
 	"PLC", "PLE", "PLR", "PLW",
 	"PIE",
 	"RUF",
-	#"C",
-	#"T",
 ]
 ignore = [
 	# enable back later:
-
 	"C901",  # "too complex"
 	"ERA001", # commented out code
 

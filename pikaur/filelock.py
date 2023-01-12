@@ -18,7 +18,7 @@ class FileLock():
         self.lock_file_path = lock_file_path
 
     def __enter__(self) -> None:
-        self.lock_file = open(
+        self.lock_file = open(  # noqa: SIM115
             self.lock_file_path, "a", encoding=DEFAULT_INPUT_ENCODING
         )
         while True:

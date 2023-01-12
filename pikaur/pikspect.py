@@ -98,7 +98,7 @@ class TTYInputWrapper():  # pragma: no cover
             self.old_stdin = sys.stdin
             try:
                 _debug("Attaching to TTY manually...")
-                sys.stdin = open("/dev/tty", encoding=DEFAULT_INPUT_ENCODING)
+                sys.stdin = open("/dev/tty", encoding=DEFAULT_INPUT_ENCODING)  # noqa: SIM115
                 self.tty_opened = True
             except Exception as exc:
                 _debug(exc)

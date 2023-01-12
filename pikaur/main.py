@@ -88,7 +88,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 )
                 setattr(
                     sys, attr,
-                    open(
+                    open(  # noqa: SIM115
                         real_stream.fileno(),
                         mode="w",
                         encoding=DEFAULT_INPUT_ENCODING,

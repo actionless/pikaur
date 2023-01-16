@@ -134,7 +134,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
                     # if the action expect exactly one argument, we've
                     # successfully matched the option; exit the loop
-                    elif arg_count == 1:  # noqa: RET508
+                    elif arg_count == 1:
                         stop = start_index + 1
                         args = [explicit_arg]
                         action_tuples.append((action, args, option_string))
@@ -142,7 +142,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
                     # error if a double-dash option did not use the
                     # explicit argument
-                    else:
+                    else:  # noqa: RET508
                         msg = _("ignored explicit argument %r")
                         raise ArgumentError(action, msg % explicit_arg)
 

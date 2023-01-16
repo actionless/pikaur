@@ -4,7 +4,7 @@ import os
 import shutil
 from glob import glob
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from .args import PikaurArgs, parse_args
 from .aur import find_aur_packages, get_repo_url
@@ -62,6 +62,10 @@ if TYPE_CHECKING:
 
 _debug = create_debug_logger("build")
 
+DEFAULT_PKGBUILD_BASENAME: Final = "PKGBUILD"
+ARCH_ANY: Final = "any"
+IGNORE_PATHS_WHEN_COPYING: Final[tuple[str]] = (".git", )
+
 
 class PkgbuildChanged(Exception):  # noqa: N818
     pass
@@ -87,7 +91,7 @@ def copy_aur_repo(from_path: str, to_path: str) -> None:
 
     from_paths = []
     for src_path in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):
-        if os.path.basename(src_path) != ".git":
+        if os.path.basename(src_path) not in IGNORE_PATHS_WHEN_COPYING:
             from_paths.append(src_path)
     to_path = f"{to_path}/"
 
@@ -166,7 +170,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
             self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
-            self.pkgbuild_path = os.path.join(self.repo_path, "PKGBUILD")
+            self.pkgbuild_path = os.path.join(self.repo_path, DEFAULT_PKGBUILD_BASENAME)
         else:
             missing_property_error = translate(
                 "Either `{prop1}` or `{prop2}` should be set"
@@ -458,7 +462,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 for each_path in pkg_paths:
                     each_filename = os.path.basename(each_path)
                     if pkg_name in each_filename and (
-                            (f"-{arch}." in each_filename) or ("-any." in each_filename)
+                            (f"-{arch}." in each_filename) or (f"-{ARCH_ANY}." in each_filename)
                     ):
                         pkg_path = each_filename
                         break
@@ -508,8 +512,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         copy_aur_repo(self.repo_path, self.build_dir)
 
         pkgbuild_name = os.path.basename(self.pkgbuild_path)
-        if pkgbuild_name != "PKGBUILD":
-            default_pkgbuild_path = os.path.join(self.build_dir, "PKGBUILD")
+        if pkgbuild_name != DEFAULT_PKGBUILD_BASENAME:
+            default_pkgbuild_path = os.path.join(self.build_dir, DEFAULT_PKGBUILD_BASENAME)
             custom_pkgbuild_path = os.path.join(self.build_dir, pkgbuild_name)
             if os.path.exists(default_pkgbuild_path):
                 os.unlink(default_pkgbuild_path)
@@ -662,7 +666,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         arch = MakepkgConfig.get("CARCH")
         supported_archs = src_info.get_values("arch")
         if supported_archs and (
-                "any" not in supported_archs
+                ARCH_ANY not in supported_archs
         ) and (
             arch not in supported_archs
         ):
@@ -812,7 +816,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     interactive_spawn(isolate_root_cmd([
                         "cp",
                         self.pkgbuild_path,
-                        os.path.join(self.build_dir, "PKGBUILD")
+                        os.path.join(self.build_dir, DEFAULT_PKGBUILD_BASENAME)
                     ]))
                     raise PkgbuildChanged()
                 continue

@@ -3,8 +3,11 @@
 # pylint: disable=too-many-statements,too-many-locals,too-many-branches,protected-access
 
 from argparse import SUPPRESS, Action, ArgumentError, ArgumentParser, Namespace, _get_action_name
+from typing import Final
 
 from .i18n import translate as _
+
+LONG_ARG_PREFIX: Final = "--"
 
 
 class ArgumentParserWithUnknowns(ArgumentParser):
@@ -35,7 +38,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         for i, arg_string in enumerate(arg_strings_iter):
 
             # all args after -- are non-options
-            if arg_string == "--":
+            if arg_string == LONG_ARG_PREFIX:
                 arg_string_pattern_parts.append("-")
                 for _arg_string in arg_strings_iter:
                     arg_string_pattern_parts.append("A")

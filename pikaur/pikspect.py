@@ -18,6 +18,7 @@ from time import sleep
 from typing import Any, BinaryIO, Callable, Final, TextIO
 
 from .args import parse_args
+from .config import PikaurConfig
 from .core import DEFAULT_INPUT_ENCODING, get_sudo_refresh_command
 from .i18n import translate
 from .pacman_i18n import _p
@@ -38,6 +39,14 @@ TcAttrsType = list[int | list[bytes | int]]
 
 
 _debug = create_debug_logger("pikspect", lock=False)
+
+
+class ReadlineKeycodes:
+    CTRL_C: Final = 3
+    CTRL_D: Final = 4
+    CTRL_W: Final = 23
+    ENTER: Final = 13
+    BACKSPACE: Final = 127
 
 
 class TTYRestore():  # pragma: no cover
@@ -133,10 +142,13 @@ class NestedTerminal():
         TTYRestore.restore()
 
 
+RECOGNIZED_REGEX_SEQUENCES: Final[tuple[str]] = (".*", )
+
+
 def _match(pattern: str, line: str) -> bool:
     return len(line) >= len(pattern) and bool(
         re.compile(pattern).search(line)
-        if ".*" in pattern else
+        if max(sequence in pattern for sequence in RECOGNIZED_REGEX_SEQUENCES) else
         (pattern in line)
     )
 
@@ -230,7 +242,9 @@ class PikspectPopen(subprocess.Popen[bytes]):
         try:
             with NestedTerminal() as real_term_geometry:
 
-                if "sudo" in self.args:  # pragma: no cover
+                if (
+                        PikaurConfig().misc.PrivilegeEscalationTool.get_str() in self.args
+                ):  # pragma: no cover
                     subprocess.run(  # nosec B603
                         get_sudo_refresh_command(),
                         check=True
@@ -348,9 +362,9 @@ class PikspectPopen(subprocess.Popen[bytes]):
 
             try:
                 with PrintLock():
-                    if ord(char) == 127:  # BackSpace
+                    if ord(char) == ReadlineKeycodes.BACKSPACE:
                         sys.stdout.write("\b \b")
-                    if ord(char) == 23:  # Ctrl+W
+                    elif ord(char) == ReadlineKeycodes.CTRL_W:
                         sys.stdout.write(
                             "\r" + " " * get_term_width() + "\r" +
                             b"".join(

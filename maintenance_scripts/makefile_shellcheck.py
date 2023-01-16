@@ -16,6 +16,9 @@ SKIP_TARGETS_WITH_CHARS = ("%", "/", )
 SKIP_TARGETS = (".PHONY", ".PRECIOUS", )
 
 
+_ALL = "all"
+
+
 def get_targets() -> list[str]:
     lines = subprocess.check_output(  # nosec B603
         args=[
@@ -28,10 +31,11 @@ def get_targets() -> list[str]:
         ],
         encoding=DEFAULT_ENCODING
     ).splitlines()
+    not_a_target_comment = "# Not a target:"
 
     targets = []
     for idx, line in enumerate(lines):
-        if lines[idx - 1] == "# Not a target:":
+        if lines[idx - 1] == not_a_target_comment:
             continue
 
         word = line.split(" ", maxsplit=1)[0]
@@ -53,8 +57,8 @@ def get_targets() -> list[str]:
     targets = sorted(set(targets), reverse=True)
 
     # check it last:
-    targets.remove("all")
-    targets.append("all")
+    targets.remove(_ALL)
+    targets.append(_ALL)
     return targets
 
 
@@ -74,8 +78,8 @@ def print_error_in_target(target: str) -> None:
 def main() -> None:
     print("Starting the check...")
     targets = get_targets()
-    if "all" not in targets:
-        print("ERROR: `all` target is not defined.")
+    if _ALL not in targets:
+        print(f"ERROR: `{_ALL}` target is not defined.")
         sys.exit(1)
 
     print("\nMake targets:")

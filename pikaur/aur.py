@@ -18,6 +18,12 @@ if TYPE_CHECKING:
 MAX_URL_LENGTH: Final = 8177  # default value in many web servers
 
 
+class AurRPCErrors:
+    ERROR_KEY: Final = "error"
+    TOO_MANY_RESULTS: Final = "Too many package results."
+    QUERY_TOO_SMALL: Final = "Query arg too small."
+
+
 class AurBaseUrl:
     aur_base_url: str | None = None
 
@@ -121,8 +127,8 @@ def aur_rpc_search_name_desc(search_query: str) -> list[AURPackageInfo]:
         "by": "name-desc"
     })
     result_json = get_json_from_url(url)
-    if "error" in result_json:
-        raise AURError(url=url, error=result_json["error"])
+    if AurRPCErrors.ERROR_KEY in result_json:
+        raise AURError(url=url, error=result_json[AurRPCErrors.ERROR_KEY])
     return [
         AURPackageInfo(
             **{key.lower(): value for key, value in aur_json.items()},
@@ -145,8 +151,8 @@ def _get_aur_rpc_info_url(search_queries: list[str]) -> str:
 def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
     url = _get_aur_rpc_info_url(search_queries=search_queries)
     result_json = get_json_from_url(url)
-    if "error" in result_json:
-        raise AURError(url=url, error=result_json["error"])
+    if AurRPCErrors.ERROR_KEY in result_json:
+        raise AURError(url=url, error=result_json[AurRPCErrors.ERROR_KEY])
     return [
         AURPackageInfo(
             **{key.lower(): value for key, value in aur_json.items()},

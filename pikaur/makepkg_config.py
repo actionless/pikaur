@@ -17,6 +17,7 @@ FallbackValueT = TypeVar("FallbackValueT")
 class ConfigReader():
 
     comment_prefixes = ("#", ";")
+    key_value_delimiter = "="
 
     _cached_config: dict[str, ConfigFormat] | None = None
     default_config_path: str
@@ -28,13 +29,13 @@ class ConfigReader():
         blank = (None, None, )
         if line.startswith(" "):
             return blank
-        if "=" not in line:
+        if cls.key_value_delimiter not in line:
             return blank
         line = line.strip()
         for comment_prefix in cls.comment_prefixes:
             line, *_comments = line.split(comment_prefix)
 
-        key, _sep, value = line.partition("=")
+        key, _sep, value = line.partition(cls.key_value_delimiter)
         key = key.strip()
         value = value.strip()
 
@@ -82,11 +83,12 @@ class ConfigReader():
 
 class MakepkgConfig():
 
-    _user_makepkg_path: str | None = "unset"
+    _UNSET = "unset"
+    _user_makepkg_path: str | None = _UNSET
 
     @classmethod
     def get_user_makepkg_path(cls) -> str | None:
-        if cls._user_makepkg_path == "unset":
+        if cls._user_makepkg_path == cls._UNSET:
             possible_paths = [
                 os.path.expanduser("~/.makepkg.conf"),
                 os.path.join(CONFIG_ROOT, "pacman/makepkg.conf"),

@@ -35,6 +35,9 @@ OFFICIAL_REPOS: Final = (
 )
 
 
+REPO_NAME_DELIMITER: Final = "/"
+
+
 _debug = create_debug_logger("pacman")
 
 
@@ -328,8 +331,8 @@ class PackageDB(PackageDBCommon):
             names_only: bool = False,
             exact_match: bool = False,
     ) -> list[pyalpm.Package]:
-        if "/" in search_query:
-            db_name, search_query = search_query.split("/")
+        if REPO_NAME_DELIMITER in search_query:
+            db_name, search_query = search_query.split(REPO_NAME_DELIMITER)
         result = []
         for sync_db in reversed(cls.get_alpm_handle().get_syncdbs()):
             if not db_name or db_name == sync_db.name:
@@ -388,7 +391,7 @@ class PackageDB(PackageDBCommon):
         if found_packages_output:
             for line in found_packages_output.splitlines():
                 try:
-                    repo_name, pkg_name = line.split("/")
+                    repo_name, pkg_name = line.split(REPO_NAME_DELIMITER)
                 except ValueError:
                     print_stderr(line)
                     continue
@@ -650,7 +653,7 @@ def install_built_deps(
 
 
 def strip_repo_name(pkg_name: str) -> str:
-    return pkg_name.split("/", 1)[-1]
+    return pkg_name.split(REPO_NAME_DELIMITER, 1)[-1]
 
 
 def get_ignored_pkgnames_from_patterns(

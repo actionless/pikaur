@@ -10,7 +10,7 @@ import sys
 import tempfile
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import IO, TYPE_CHECKING, Any, Callable, Final, TypeVar
+from typing import IO, TYPE_CHECKING, Any, Callable, Final, Sequence, TypeVar
 
 import pyalpm
 
@@ -36,6 +36,8 @@ IOStream = IO[bytes] | int | None
 DEFAULT_INPUT_ENCODING: Final = "utf-8"
 DEFAULT_TIMEZONE: Final = datetime.datetime.now().astimezone().tzinfo  # noqa: DTZ005
 PIPE: Final = subprocess.PIPE
+SYSTEMD_MIN_VERSION: Final = 235
+READ_MODE: Final = "r"
 
 
 class ComparableType:
@@ -304,6 +306,12 @@ def isolate_root_cmd(
     return base_root_isolator + cmd
 
 
+class CodepageSequences:
+    UTF_8: Final[Sequence[bytes]] = (b"\xef\xbb\xbf", )
+    UTF_16: Final[Sequence[bytes]] = (b"\xfe\xff", b"\xff\xfe", )
+    UTF_32: Final[Sequence[bytes]] = (b"\xfe\xff\x00\x00", b"\x00\x00\xff\xfe", )
+
+
 def detect_bom_type(file_path: str) -> str:
     """
     returns file encoding string for open() function
@@ -312,23 +320,15 @@ def detect_bom_type(file_path: str) -> str:
     with open(file_path, "rb") as test_file:
         first_bytes = test_file.read(4)
 
-    if first_bytes[0:3] == b"\xef\xbb\xbf":
+    if first_bytes[0:3] in CodepageSequences.UTF_8:
         return "utf-8"
 
     # Python automatically detects endianness if utf-16 bom is present
     # write endianness generally determined by endianness of CPU
-    if (
-            first_bytes[0:2] == b"\xfe\xff"
-    ) or (
-        first_bytes[0:2] == b"\xff\xfe"
-    ):
+    if first_bytes[0:2] in CodepageSequences.UTF_16:
         return "utf16"
 
-    if (
-            first_bytes[0:5] == b"\xfe\xff\x00\x00"
-    ) or (
-        first_bytes[0:5] == b"\x00\x00\xff\xfe"
-    ):
+    if first_bytes[0:5] in CodepageSequences.UTF_32:
         return "utf32"
 
     # If BOM is not provided, then assume its the codepage
@@ -338,9 +338,9 @@ def detect_bom_type(file_path: str) -> str:
 
 
 def open_file(
-        file_path: str, mode: str = "r", encoding: str | None = None
+        file_path: str, mode: str = READ_MODE, encoding: str | None = None
 ) -> codecs.StreamReaderWriter:
-    if encoding is None and (mode and "r" in mode):
+    if encoding is None and (mode and READ_MODE in mode):
         encoding = detect_bom_type(file_path)
     if encoding:
         return codecs.open(
@@ -426,7 +426,7 @@ def check_systemd_dynamic_users() -> bool:  # pragma: no cover
         return False
     first_line = out.split("\n", maxsplit=1)[0]
     version = int(first_line.split(maxsplit=2)[1])
-    return version >= 235
+    return version >= SYSTEMD_MIN_VERSION
 
 
 def check_runtime_deps(dep_names: list[str] | None = None) -> None:

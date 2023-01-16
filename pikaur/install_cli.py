@@ -12,7 +12,7 @@ import pyalpm
 from .args import PikaurArgs, parse_args, reconstruct_args
 from .aur import AURPackageInfo
 from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
-from .config import PikaurConfig
+from .config import DiffPagerValues, PikaurConfig
 from .conflicts import find_aur_conflicts
 from .core import (
     PackageSource,
@@ -795,9 +795,9 @@ class InstallPackagesCLI():
                 ):
                     git_args: list[str] = []
                     diff_pager = PikaurConfig().review.DiffPager
-                    if diff_pager == "always":
+                    if diff_pager == DiffPagerValues.ALWAYS:
                         git_args = ["env", "GIT_PAGER=less -+F"]
-                    elif diff_pager == "never":
+                    elif diff_pager == DiffPagerValues.NEVER:
                         git_args = ["env", "GIT_PAGER=cat"]
                     git_args += [
                         "git",

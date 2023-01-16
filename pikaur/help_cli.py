@@ -1,17 +1,26 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
-from .args import get_pikaur_long_opts, parse_args, reconstruct_args
+from typing import Final
+
+from .args import LiteralArgs, get_pikaur_long_opts, parse_args, reconstruct_args
 from .config import PikaurConfig
 from .core import spawn
-from .i18n import translate
+from .i18n import PIKAUR_NAME, translate
 from .pprint import print_stdout
+
+FIRST_COLUMN_MARGIN: Final = 5
+FIRST_COLUMN_WIDTH: Final = 16
 
 
 def _format_options_help(options: list[tuple[str, str, str]]) -> str:
     return "\n".join([
-        "{:>5} {:<16} {}".format(
+        "{:>{first_column_margin}} {:<{first_column_width}} {}".format(
             short_opt and (short_opt + ",") or "",
             long_opt or "",
-            descr if ((len(short_opt) + len(long_opt)) < 16) else f"\n{23 * ' '}{descr}"
+            descr if (
+                (len(short_opt) + len(long_opt)) < FIRST_COLUMN_WIDTH
+            ) else f"\n{(FIRST_COLUMN_MARGIN + FIRST_COLUMN_WIDTH + 2) * ' '}{descr}",
+            first_column_margin=FIRST_COLUMN_MARGIN,
+            first_column_width=FIRST_COLUMN_WIDTH,
         )
         for short_opt, long_opt, descr in options
     ])
@@ -28,11 +37,11 @@ def cli_print_help() -> None:
         no_response_from_pacman = translate("No response from Pacman")
         raise RuntimeError(no_response_from_pacman)
     pacman_help = proc.stdout_text.replace(
-        "pacman", "pikaur"
+        "pacman", PIKAUR_NAME
     ).replace(
         "options:", "\n" + translate("Common pacman options:")
     )
-    if "--help" in pacman_help:
+    if LiteralArgs.HELP in pacman_help:
         pacman_help += (
             "\n" +
             translate("pikaur-specific operations:") + "\n    " +

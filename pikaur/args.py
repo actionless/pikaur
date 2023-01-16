@@ -3,7 +3,7 @@
 import sys
 from argparse import Namespace
 from pprint import pformat
-from typing import Any, NoReturn
+from typing import Any, Final, NoReturn
 
 from .argparse import ArgumentParserWithUnknowns
 from .config import PikaurConfig
@@ -21,7 +21,15 @@ def debug_format(msg: Any) -> None:
     debug(pformat(msg))
 
 
-PACMAN_BOOL_OPTS: ArgSchema = [
+FLAG_READ_STDIN: Final = "-"
+
+
+class LiteralArgs:
+    NOCONFIRM: Final = "--noconfirm"
+    HELP: Final = "--help"
+
+
+PACMAN_BOOL_OPTS: Final[ArgSchema] = [
     # sync options
     ("S", "sync", None),
     ("g", "groups", None),
@@ -76,7 +84,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
     ]
 
 
-PACMAN_STR_OPTS: ArgSchema = [
+PACMAN_STR_OPTS: Final[ArgSchema] = [
     (None, "color", None),
     ("b", "dbpath", None),  # @TODO: pyalpm?
     ("r", "root", None),
@@ -90,6 +98,11 @@ PACMAN_STR_OPTS: ArgSchema = [
 ]
 
 
+class ColorFlagValues:
+    ALWAYS: Final = "always"
+    NEVER: Final = "never"
+
+
 def get_pikaur_str_opts() -> ArgSchema:
     return [
         (None, "build-gpgdir", PikaurConfig().build.GpgDir.get_str()),
@@ -100,7 +113,7 @@ def get_pikaur_str_opts() -> ArgSchema:
     ]
 
 
-PACMAN_COUNT_OPTS: ArgSchema = [
+PACMAN_COUNT_OPTS: Final[ArgSchema] = [
     ("y", "refresh", 0),
     ("u", "sysupgrade", 0),
     ("c", "clean", 0),
@@ -115,7 +128,7 @@ def get_pikaur_count_opts() -> ArgSchema:
     ]
 
 
-PACMAN_APPEND_OPTS: ArgSchema = [
+PACMAN_APPEND_OPTS: Final[ArgSchema] = [
     (None, "ignore", None),
     (None, "ignoregroup", None),  # @TODO
     (None, "overwrite", None),
@@ -384,8 +397,12 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
 
     parsed_args = parser.parse_pikaur_args(args)
 
-    if parsed_args.positional and "-" in parsed_args.positional and not sys.stdin.isatty():
-        parsed_args.positional.remove("-")
+    if (
+            parsed_args.positional
+            and FLAG_READ_STDIN in parsed_args.positional
+            and not sys.stdin.isatty()
+    ):
+        parsed_args.positional.remove(FLAG_READ_STDIN)
         parsed_args.positional += [
             word
             for line in sys.stdin.readlines()

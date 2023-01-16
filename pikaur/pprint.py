@@ -5,7 +5,7 @@ import sys
 from string import printable
 from typing import TYPE_CHECKING, Any, Final, TextIO
 
-from .args import parse_args
+from .args import ColorFlagValues, parse_args
 from .i18n import translate
 from .lock import FancyLock
 
@@ -19,9 +19,9 @@ PADDING: Final = 4
 
 def color_enabled() -> bool:
     args = parse_args()
-    if args.color == "never":
+    if args.color == ColorFlagValues.NEVER:
         return False
-    if args.color == "always":
+    if args.color == ColorFlagValues.ALWAYS:
         return True
     try:
         if (sys.stderr.isatty() and sys.stdout.isatty()):
@@ -103,9 +103,9 @@ def color_line(
     if not color_enabled() and not force:
         return line
     result = ""
-    if color_number >= 8:
+    if color_number >= ColorsHighlight.black:
         result += "\033[0;1m"
-        color_number -= 8
+        color_number -= ColorsHighlight.black
     result += f"\033[03{color_number}m{line}"
     # reset font:
     if reset:
@@ -191,7 +191,7 @@ def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
             result += char
         if not escape_seq and char in printable:
             counter += 1
-        elif escape_seq and char == "m":
+        elif escape_seq and char == "m":   # noqa: PLR2004
             escape_seq = False
         else:
             escape_seq = True

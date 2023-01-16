@@ -67,6 +67,7 @@ ignore = [
 "pikaur_test/test_*.py" = [
 	"ANN201",
 	"ANN206",
+	"PLR2004",
 	"T201",
 ]
 "maintenance_scripts/*.py" = [

@@ -18,16 +18,21 @@ import inspect
 import re
 import sys
 from collections.abc import MutableMapping
-from typing import Any, Sequence
+from typing import Any, Final, Sequence
 
 import markdown_it
 
 Token = markdown_it.token.Token
 OptionsDict = markdown_it.utils.OptionsDict
 
-README_PATH = sys.argv[1]
-OUTPUT_PATH = sys.argv[2]
-ENCODING = "utf-8"
+
+class TokenType:
+    INLINE: Final[str] = "inline"
+
+
+README_PATH: Final = sys.argv[1]
+OUTPUT_PATH: Final = sys.argv[2]
+ENCODING: Final = "utf-8"
 
 
 class NroffRenderer(  # pylint: disable=too-many-public-methods
@@ -54,7 +59,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
     ) -> str:
         result = self.document_open()
         for i, token in enumerate(tokens):
-            if token.type == "inline":
+            if token.type == TokenType.INLINE:
                 if token.children is None:
                     token_children_is_none_msg = f"{token}.children is `None`."
                     raise RuntimeError(token_children_is_none_msg)
@@ -114,7 +119,8 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
     ) -> str:
         token = tokens[idx]
         level = int(token.tag[1])
-        if level <= 2:
+        sh_tag_max_level = 2
+        if level <= sh_tag_max_level:
             return '\n.SH "'
         return '\n.SS "'
 

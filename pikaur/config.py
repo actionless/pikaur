@@ -7,7 +7,7 @@ from pathlib import Path
 from tempfile import gettempdir
 from typing import TYPE_CHECKING, Any, Callable, Final
 
-from .i18n import translate
+from .i18n import PIKAUR_NAME, translate
 
 if TYPE_CHECKING:
     from typing_extensions import NotRequired, TypedDict
@@ -25,10 +25,11 @@ if TYPE_CHECKING:
 
 
 DEFAULT_CONFIG_ENCODING: Final = "utf-8"
-
+BOOL: Final = "bool"
+INT: Final = "int"
+STR: Final = "str"
 RUNNING_AS_ROOT: Final = os.geteuid() == 0  # @TODO: could global var be avoided here?
-
-VERSION: Final = "${new_version}-dev"
+VERSION: Final = "1.14.7-dev"
 
 _USER_TEMP_ROOT: Final = gettempdir()
 _USER_CACHE_ROOT: Final = os.environ.get(
@@ -82,180 +83,200 @@ def get_config_path() -> str:
     )
 
 
+class UpgradeSortingValues:
+    VERSIONDIFF: Final = "versiondiff"
+    PKGNAME: Final = "pkgname"
+    REPO: Final = "repo"
+
+
+class AurSearchSortingValues:
+    HOTTEST: Final = "hottest"
+    PKGNAME: Final = "pkgname"
+    POPULARITY: Final = "popularity"
+    NUMVOTES: Final = "numvotes"
+    LASTMODIFIED: Final = "lastmodified"
+
+
+class DiffPagerValues:
+    AUTO: Final = "auto"
+    ALWAYS: Final = "always"
+    NEVER: Final = "never"
+
+
 ConfigSchemaT = dict[str, dict[str, "ConfigValueType"]]
 CONFIG_SCHEMA: ConfigSchemaT = {
     "sync": {
         "AlwaysShowPkgOrigin": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "DevelPkgsExpiration": {
-            "data_type": "int",
+            "data_type": INT,
             "default": "-1",
         },
         "UpgradeSorting": {
-            "data_type": "str",
-            "default": "versiondiff"
+            "data_type": STR,
+            "default": UpgradeSortingValues.VERSIONDIFF,
         },
         "ShowDownloadSize": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "IgnoreOutofdateAURUpgrades": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
     },
     "build": {
         "KeepBuildDir": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "KeepDevBuildDir": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "yes",
         },
         "KeepBuildDeps": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "GpgDir": {
-            "data_type": "str",
+            "data_type": STR,
             "default": ("/etc/pacman.d/gnupg/" if RUNNING_AS_ROOT else "")
         },
         "SkipFailedBuild": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "AlwaysUseDynamicUsers": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "NoEdit": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "deprecated": {
                 "section": "review",
                 "option": "NoEdit",
             },
         },
         "DontEditByDefault": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "deprecated": {
                 "section": "review",
                 "option": "DontEditByDefault",
             },
         },
         "NoDiff": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "deprecated": {
                 "section": "review",
                 "option": "NoDiff",
             },
         },
         "GitDiffArgs": {
-            "data_type": "str",
+            "data_type": STR,
             "deprecated": {
                 "section": "review",
                 "option": "GitDiffArgs",
             },
         },
         "IgnoreArch": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no"
         },
     },
     "review": {
         "NoEdit": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "DontEditByDefault": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "NoDiff": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no",
         },
         "GitDiffArgs": {
-            "data_type": "str",
+            "data_type": STR,
             "default": "--ignore-space-change,--ignore-all-space",
         },
         "DiffPager": {
-            "data_type": "str",
-            "default": "auto"
+            "data_type": STR,
+            "default": DiffPagerValues.AUTO,
         },
         "HideDiffFiles": {
-            "data_type": "str",
+            "data_type": STR,
             "default": ".SRCINFO"
         },
     },
     "colors": {
         "Version": {
-            "data_type": "int",
+            "data_type": INT,
             "default": "10",
         },
         "VersionDiffOld": {
-            "data_type": "int",
+            "data_type": INT,
             "default": "11",
         },
         "VersionDiffNew": {
-            "data_type": "int",
+            "data_type": INT,
             "default": "9",
         },
     },
     "ui": {
         "RequireEnterConfirm": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "yes"
         },
         "DiffPager": {
-            "data_type": "str",
+            "data_type": STR,
             "deprecated": {
                 "section": "review",
                 "option": "DiffPager",
             },
         },
         "PrintCommands": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no"
         },
         "AurSearchSorting": {
-            "data_type": "str",
-            "default": "hottest"
+            "data_type": STR,
+            "default": AurSearchSortingValues.HOTTEST,
         },
         "DisplayLastUpdated": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no"
         },
         "GroupByRepository": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "yes"
         },
         "ReverseSearchSorting": {
-            "data_type": "bool",
+            "data_type": BOOL,
             "default": "no"
         },
         "WarnAboutPackageUpdates": {
-            "data_type": "str",
+            "data_type": STR,
             "default": ""
         },
     },
     "misc": {
         "SudoLoopInterval": {
-            "data_type": "int",
+            "data_type": INT,
             "default": "59",
         },
         "PacmanPath": {
-            "data_type": "str",
+            "data_type": STR,
             "default": "pacman"
         },
         "PrivilegeEscalationTool": {
-            "data_type": "str",
+            "data_type": STR,
             "default": "sudo",
         },
         "AurHost": {
-            "data_type": "str",
+            "data_type": STR,
             "deprecated": {
                 "section": "network",
                 "option": "AurUrl",
@@ -263,7 +284,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
             },
         },
         "NewsUrl": {
-            "data_type": "str",
+            "data_type": STR,
             "deprecated": {
                 "section": "network",
                 "option": "NewsUrl",
@@ -272,23 +293,23 @@ CONFIG_SCHEMA: ConfigSchemaT = {
     },
     "network": {
         "AurUrl": {
-            "data_type": "str",
+            "data_type": STR,
             "default": "https://aur.archlinux.org",
         },
         "NewsUrl": {
-            "data_type": "str",
+            "data_type": STR,
             "default": "https://www.archlinux.org/feeds/news/",
         },
         "Socks5Proxy": {
-            "data_type": "str",
+            "data_type": STR,
             "default": "",
         },
         "AurHttpProxy": {
-            "data_type": "str",
+            "data_type": STR,
             "default": "",
         },
         "AurHttpsProxy": {
-            "data_type": "str",
+            "data_type": STR,
             "default": "",
         },
     },
@@ -343,21 +364,21 @@ class PikaurConfigItem:
         )
 
     def get_bool(self) -> bool:
-        if get_key_type(self.section.name, self.key) != "bool":
-            not_bool_error = self._type_error_template.format(key=self.key, typeof="bool")
+        if get_key_type(self.section.name, self.key) != BOOL:
+            not_bool_error = self._type_error_template.format(key=self.key, typeof=BOOL)
             raise TypeError(not_bool_error)
         return str_to_bool(self.value)
 
     def get_int(self) -> int:
-        if get_key_type(self.section.name, self.key) != "int":
-            not_int_error = self._type_error_template.format(key=self.key, typeof="int")
+        if get_key_type(self.section.name, self.key) != INT:
+            not_int_error = self._type_error_template.format(key=self.key, typeof=INT)
             raise TypeError(not_int_error)
         return int(self.value)
 
     def get_str(self) -> str:
         # note: it"s basically needed for mypy
-        if get_key_type(self.section.name, self.key) != "str":
-            not_str_error = self._type_error_template.format(key=self.key, typeof="str")
+        if get_key_type(self.section.name, self.key) != STR:
+            not_str_error = self._type_error_template.format(key=self.key, typeof=STR)
             raise TypeError(not_str_error)
         return str(self.value)
 
@@ -450,7 +471,7 @@ class PikaurConfig():
     @classmethod
     def validate_config(cls) -> None:
         pacman_path = cls._config["misc"]["PacmanPath"]
-        if pacman_path == "pikaur" or pacman_path.endswith("/pikaur"):
+        if pacman_path in (PIKAUR_NAME, sys.argv[0]) or pacman_path.endswith(f"/{PIKAUR_NAME}"):
             print("BAM! I am a shell bomb.")  # noqa: T201
             sys.exit(1)
 

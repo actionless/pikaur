@@ -2,14 +2,14 @@
 
 import sys
 import tty
-from typing import Iterable, Sequence
+from typing import Final, Iterable, Sequence
 
-from .args import parse_args
+from .args import LiteralArgs, parse_args
 from .config import PikaurConfig
 from .core import get_editor, interactive_spawn
 from .exceptions import SysExit
 from .i18n import translate
-from .pikspect import TTYInputWrapper, TTYRestore
+from .pikspect import ReadlineKeycodes, TTYInputWrapper, TTYRestore
 from .pikspect import pikspect as pikspect_spawn
 from .pprint import (
     ColorsHighlight,
@@ -72,11 +72,9 @@ def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) ->
         tty.setraw(sys.stdin.fileno())
         answer = sys.stdin.read(1).lower()
 
-        # Exit when CRTL+C or CTRL+D
-        if ord(answer) == 3 or ord(answer) == 4:
+        if ord(answer) in (ReadlineKeycodes.CTRL_C, ReadlineKeycodes.CTRL_D, ):
             raise SysExit(1)
-        # Default when Enter
-        if ord(answer) == 13:
+        if ord(answer) == ReadlineKeycodes.ENTER:
             answer = default
             return default
         if answer in [choice.lower() for choice in answers]:
@@ -152,18 +150,27 @@ class NotANumberInputError(Exception):
         super().__init__(f'"{character} is not a number')
 
 
+class NumberRangeInputSyntax:
+    DELIMITERS: Final[Sequence[str]] = (" ", ",", )
+    RANGES: Final[Sequence[str]] = ("-", "..", )
+
+
 def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> list[int]:
     str_result = get_input(prompt, [str(answer) for answer in answers], require_confirm=True)
     if str_result == "":
         return []
-    str_results = str_result.replace(",", " ").split(" ")
+    for delimiter in NumberRangeInputSyntax.DELIMITERS[1:]:
+        str_result = str_result.replace(delimiter, NumberRangeInputSyntax.DELIMITERS[0])
+    str_results = str_result.split(NumberRangeInputSyntax.DELIMITERS[0])
     int_results: list[int] = []
     for block in str_results[:]:
-        if ".." in block:
-            block = block.replace("..", "-")
-        if "-" in block:
+        for range_char in NumberRangeInputSyntax.RANGES:
+            block = block.replace(range_char, NumberRangeInputSyntax.RANGES[0])
+        if NumberRangeInputSyntax.RANGES[0] in block:
             try:
-                range_start, range_end = (int(char) for char in block.split("-"))
+                range_start, range_end = (
+                    int(char) for char in block.split(NumberRangeInputSyntax.RANGES[0], maxsplit=1)
+                )
             except ValueError as exc:
                 raise NotANumberInputError(block) from exc
             if range_start > range_end:
@@ -183,7 +190,11 @@ def ask_to_continue(text: str | None = None, *, default_yes: bool = True) -> boo
         text = translate("Do you want to proceed?")
 
     if args.noconfirm:
-        default_option = ("[Y]es (--noconfirm)") if default_yes else translate("[N]o (--noconfirm)")
+        default_option = translate(
+            "[Y]es ({reason})"
+            if default_yes else
+            "[N]o ({reason})"
+        ).format(reason=LiteralArgs.NOCONFIRM)
         print_stderr(f"{text} {default_option}")
         return default_yes
 
@@ -214,7 +225,7 @@ def retry_interactive_command(
                 cmd_args,
                 conflicts=conflicts,
             )
-            if pikspect and ("--noconfirm" not in cmd_args) else
+            if pikspect and (LiteralArgs.NOCONFIRM not in cmd_args) else
             interactive_spawn(
                 cmd_args
             )

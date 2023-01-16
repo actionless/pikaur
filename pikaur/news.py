@@ -34,6 +34,12 @@ DT_FORMAT: Final = "%a, %d %b %Y %H:%M:%S %z"
 _debug = create_debug_logger("news")
 
 
+class ArchNewsMarkup:
+    PUBLICATION_DATE: Final = "pubDate"
+    TITLE: Final = "title"
+    DESCRIPTION: Final = "description"
+
+
 class News:
     URL = PikaurConfig().network.NewsUrl.get_str()
     CACHE_FILE = os.path.join(CACHE_ROOT, "last_seen_news.dat")
@@ -55,7 +61,7 @@ class News:
             for news_entry in self._news_feed.iter("item"):
                 child: "Element"
                 for child in news_entry:
-                    if "pubDate" in child.tag:
+                    if ArchNewsMarkup.PUBLICATION_DATE in child.tag:
                         if self._is_new(str(child.text)):
                             if first_news:
                                 print_stdout(
@@ -130,11 +136,11 @@ class News:
     def _print_one_entry(news_entry: "Element") -> None:
         child: "Element"
         for child in news_entry:
-            if "title" in child.tag:
+            if ArchNewsMarkup.TITLE in child.tag:
                 title = str(child.text)
-            if "pubDate" in child.tag:
+            if ArchNewsMarkup.PUBLICATION_DATE in child.tag:
                 pub_date = str(child.text)
-            if "description" in child.tag:
+            if ArchNewsMarkup.DESCRIPTION in child.tag:
                 description = str(child.text)
         print_stdout(
             color_line(title, ColorsHighlight.cyan) +
@@ -148,7 +154,7 @@ class News:
     def _update_last_seen_news(self, news_entry: "Element") -> None:
         child: "Element"
         for child in news_entry:
-            if "pubDate" in child.tag:
+            if ArchNewsMarkup.PUBLICATION_DATE in child.tag:
                 pub_date = str(child.text)
                 break
         try:

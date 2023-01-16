@@ -7,7 +7,13 @@ from typing import Iterable, TypeVar
 import pyalpm
 
 from .args import parse_args
-from .aur import AURPackageInfo, aur_rpc_search_name_desc, get_all_aur_names, get_all_aur_packages
+from .aur import (
+    AURPackageInfo,
+    AurRPCErrors,
+    aur_rpc_search_name_desc,
+    get_all_aur_names,
+    get_all_aur_packages,
+)
 from .exceptions import AURError, SysExit
 from .i18n import translate
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
@@ -64,14 +70,14 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                 try:
                     result[query] = request.get()
                 except AURError as exc:
-                    if exc.error == "Too many package results.":
+                    if exc.error == AurRPCErrors.TOO_MANY_RESULTS:
                         print_error(
                             translate("AUR: Too many package results for '{query}'").format(
                                 query=query
                             )
                         )
                         use_as_filters.append(query)
-                    elif exc.error == "Query arg too small.":
+                    elif exc.error == AurRPCErrors.QUERY_TOO_SMALL:
                         print_error(
                             translate("AUR: Query arg too small '{query}'").format(
                                 query=query

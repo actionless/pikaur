@@ -24,7 +24,7 @@ from .print_department import (
     print_ignored_package,
     print_ignoring_outofdate_upgrade,
 )
-from .version import compare_versions
+from .version import VERSION_DEVEL, compare_versions
 
 DEVEL_PKGS_POSTFIXES: Final = (
     "-git",
@@ -109,7 +109,7 @@ def find_aur_devel_updates(
             aur_updates.append(AURInstallInfo(
                 name=pkg_name,
                 current_version=local_pkg.version,
-                new_version="devel",
+                new_version=VERSION_DEVEL,
                 description=aur_pkg.desc,
                 devel_pkg_age_days=pkg_age_days,
                 maintainer=aur_pkg.maintainer,

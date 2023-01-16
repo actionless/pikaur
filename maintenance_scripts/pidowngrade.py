@@ -25,7 +25,9 @@ def print_usage() -> None:
 
 def main() -> None:
     print(sys.argv)
-    if len(sys.argv) < 2:
+    min_args = 2
+
+    if len(sys.argv) < min_args:
         print_usage()
         sys.exit(1)
     pkg_name = sys.argv[1]

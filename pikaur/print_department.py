@@ -9,7 +9,7 @@ import pyalpm
 
 from .args import parse_args
 from .aur import AURPackageInfo
-from .config import VERSION, PikaurConfig
+from .config import VERSION, AurSearchSortingValues, PikaurConfig, UpgradeSortingValues
 from .core import DEFAULT_TIMEZONE, AURInstallInfo, InstallInfo, PackageSource, RepoInstallInfo
 from .i18n import translate, translate_many
 from .pacman import OFFICIAL_REPOS, PackageDB
@@ -88,6 +88,8 @@ class RepoColorGenerator:
     _cache: dict[str, dict[str, int]] = {}
     _init_done = False
 
+    _MAX_COLOR = 15
+
     @classmethod
     def do_init(cls) -> None:
         if cls._init_done:
@@ -107,7 +109,7 @@ class RepoColorGenerator:
 
         if (
                 not cls._type_storage.get(color_type) or
-                cls._type_storage[color_type] >= 15
+                cls._type_storage[color_type] >= cls._MAX_COLOR
         ):
             cls._type_storage[color_type] = 10
         else:
@@ -170,9 +172,9 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             pkg_update.name
         )
         user_chosen_sorting = user_config.sync.UpgradeSorting
-        if user_chosen_sorting == "pkgname":
+        if user_chosen_sorting == UpgradeSortingValues.PKGNAME:
             sort_by = pkg_update.name
-        elif user_chosen_sorting == "repo":
+        elif user_chosen_sorting == UpgradeSortingValues.REPO:
             sort_by = (
                 pkg_update.repository or "zzz_(aur)",
                 pkg_update.name
@@ -694,13 +696,13 @@ def print_package_search_results(
         pkg_numvotes = pkg.numvotes if isinstance(pkg.numvotes, int) else 0
         pkg_popularity = pkg.popularity if isinstance(pkg.popularity, float) else 0.0
 
-        if user_aur_sort == "pkgname":
+        if user_aur_sort == AurSearchSortingValues.PKGNAME:
             return (-1.0, pkg.name)
-        if user_aur_sort == "popularity":
+        if user_aur_sort == AurSearchSortingValues.POPULARITY:
             return ((-pkg_popularity, -pkg_numvotes), pkg.name)
-        if user_aur_sort == "numvotes":
+        if user_aur_sort == AurSearchSortingValues.NUMVOTES:
             return ((-pkg_numvotes, -pkg_popularity), pkg.name)
-        if user_aur_sort == "lastmodified":
+        if user_aur_sort == AurSearchSortingValues.LASTMODIFIED:
             return (
                 -pkg.lastmodified
                 if isinstance(pkg.lastmodified, int)

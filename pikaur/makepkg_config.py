@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import os
-from typing import TypeVar
+from typing import Final, TypeVar
 
 from .args import parse_args
 from .config import _USER_TEMP_ROOT, CONFIG_ROOT
@@ -16,8 +16,8 @@ FallbackValueT = TypeVar("FallbackValueT")
 
 class ConfigReader():
 
-    comment_prefixes = ("#", ";")
-    key_value_delimiter = "="
+    COMMENT_PREFIXES: Final = ("#", ";", )
+    KEY_VALUE_DELIMITER: Final = "="
 
     _cached_config: dict[str, ConfigFormat] | None = None
     default_config_path: str
@@ -29,13 +29,13 @@ class ConfigReader():
         blank = (None, None, )
         if line.startswith(" "):
             return blank
-        if cls.key_value_delimiter not in line:
+        if cls.KEY_VALUE_DELIMITER not in line:
             return blank
         line = line.strip()
-        for comment_prefix in cls.comment_prefixes:
+        for comment_prefix in cls.COMMENT_PREFIXES:
             line, *_comments = line.split(comment_prefix)
 
-        key, _sep, value = line.partition(cls.key_value_delimiter)
+        key, _sep, value = line.partition(cls.KEY_VALUE_DELIMITER)
         key = key.strip()
         value = value.strip()
 
@@ -83,7 +83,7 @@ class ConfigReader():
 
 class MakepkgConfig():
 
-    _UNSET = "unset"
+    _UNSET: Final = "unset"
     _user_makepkg_path: str | None = _UNSET
 
     @classmethod

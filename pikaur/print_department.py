@@ -599,7 +599,7 @@ def print_ignored_package(
         new_version="",
         package=None,
     )
-    message = "{} {}".format(  # pylint: disable=consider-using-f-string
+    message = " ".join((
         color_line("::", ColorsHighlight.yellow),
         translate("Ignoring package update {}").format(
             pretty_format_upgradeable(
@@ -616,7 +616,7 @@ def print_ignored_package(
                     "{pkg_name} {new_version}"
                 )
             ))
-    )
+    ))
     if ignored_from:
         message += f" {ignored_from}"
     print_stderr(message)

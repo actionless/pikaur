@@ -122,8 +122,8 @@ class DataType(ComparableType):
 
 class PackageSource(enum.Enum):
     REPO = enum.auto()
-    AUR = enum.auto()
-    LOCAL = enum.auto()
+    AUR = enum.auto()  # noqa: PIE796
+    LOCAL = enum.auto()  # noqa: PIE796
 
 
 class InstallInfo(DataType):

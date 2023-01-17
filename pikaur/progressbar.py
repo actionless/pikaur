@@ -2,7 +2,7 @@
 
 import sys
 from threading import Lock
-from typing import Any, Callable
+from typing import Any, Callable, Final
 
 from .pprint import color_enabled, get_term_width
 
@@ -13,10 +13,10 @@ class ProgressBar():
     index = 0
     progress = 0
 
-    LEFT_DECORATION = "["
-    RIGHT_DECORATION = "]"
-    EMPTY = "-"
-    FULL = "#"
+    LEFT_DECORATION: Final = "["
+    RIGHT_DECORATION: Final = "]"
+    EMPTY: Final = "-"
+    FULL: Final = "#"
 
     def __init__(self, length: int, message: str = "") -> None:
         width = (

@@ -191,7 +191,7 @@ def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
             result += char
         if not escape_seq and char in printable:
             counter += 1
-        elif escape_seq and char == "m":   # noqa: PLR2004
+        elif escape_seq and char == "m":
             escape_seq = False
         else:
             escape_seq = True

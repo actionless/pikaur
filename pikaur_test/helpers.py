@@ -185,7 +185,7 @@ def pikaur(
     new_args = ["pikaur"] + cmd.split(" ")
     mflags = []
 
-    if "-S " in cmd:  # noqa: PLR2004
+    if "-S " in cmd:
         new_args += [
             "--noconfirm",
         ]
@@ -196,7 +196,7 @@ def pikaur(
         mflags.append("--noextract")
     if skippgpcheck:
         mflags.append("--skippgpcheck")
-    if "--mflags" in cmd:  # noqa: PLR2004
+    if "--mflags" in cmd:
         for arg in new_args[::]:
             if arg.startswith("--mflags"):
                 for mflag in arg.split("=", maxsplit=1)[1].split(","):

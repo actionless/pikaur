@@ -88,4 +88,14 @@ echo Shellcheck Makefile...
 	./maintenance_scripts/makefile_shellcheck.py
 )
 
+echo Validate pyproject file...
+(
+	exit_code=0
+	result=$(validate-pyproject pyproject.toml 2>&1) || exit_code=$?
+	if [[ $exit_code -gt 0 ]] ; then
+		echo "$result"
+		exit $exit_code
+	fi
+)
+
 echo '== GOOD!'

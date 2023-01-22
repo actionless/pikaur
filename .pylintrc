@@ -34,7 +34,6 @@ single-line-if-stmt=no
 [TYPECHECK]
 contextmanager-decorators=contextlib.contextmanager
 generated-members=self.props
-ignore-mixin-members=yes
 ignored-classes=optparse.Values,thread._local,_thread._local
 ignored-modules=
 missing-member-hint=yes
@@ -96,4 +95,4 @@ max-statements=50
 min-public-methods=2
 [EXCEPTIONS]
 overgeneral-exceptions=
-# vim: set ft=conf :
+# vim: set ft=config :

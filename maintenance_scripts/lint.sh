@@ -42,24 +42,12 @@ fi
 "${APP_DIR}/env/bin/ruff" "${TARGETS[@]}"
 
 echo Flake8...
-flake8 "${TARGETS[@]}" 2>&1 \
-| (
-	grep -v \
-		-e "^  warnings.warn($" \
-		-e "^/usr/lib/python3.10/site-packages/" \
-	|| true \
-)
+flake8 "${TARGETS[@]}"
 
 echo PyLint...
 #python -m pylint --jobs="$(nproc)" "${TARGETS[@]}" --score no 2>&1 \
 # @TODO: --jobs is broken at the moment: https://github.com/PyCQA/pylint/issues/374
-python -m pylint "${TARGETS[@]}" --score no 2>&1 \
-| (
-	grep -v \
-		-e "^  warnings.warn($" \
-		-e "^/usr/lib/python3.10/site-packages/" \
-	|| true \
-)
+python -m pylint "${TARGETS[@]}" --score no
 
 echo MyPy...
 python -m mypy "${TARGETS[@]}" --no-error-summary

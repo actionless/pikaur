@@ -71,7 +71,9 @@ def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) ->
     try:
         tty.setraw(sys.stdin.fileno())
         answer = sys.stdin.read(1).lower()
-
+    except Exception:
+        return " "
+    else:
         if ord(answer) in (ReadlineKeycodes.CTRL_C, ReadlineKeycodes.CTRL_D):
             raise SysExit(1)
         if ord(answer) == ReadlineKeycodes.ENTER:
@@ -79,8 +81,6 @@ def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) ->
             return default
         if answer in [choice.lower() for choice in answers]:
             return answer
-        return " "
-    except Exception:
         return " "
     finally:
         tty.tcsetattr(  # type: ignore[attr-defined]

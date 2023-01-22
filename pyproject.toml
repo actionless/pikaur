@@ -34,10 +34,10 @@ select = [
 	"PLC", "PLE", "PLR", "PLW",
 	"PIE",
 	"COM",
-	#"INP",
-	#"EXE",
-	#"TYP",
-	#"TRY",
+	"INP",
+	"EXE",
+	"TYP",
+	"TRY",
 	"RUF",
 ]
 ignore = [
@@ -77,6 +77,7 @@ ignore = [
 	"T201",
 ]
 "maintenance_scripts/*.py" = [
+	"INP001",
 	"T201",
 ]
 "maintenance_scripts/pikaman.py" = [

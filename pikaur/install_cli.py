@@ -547,10 +547,6 @@ class InstallPackagesCLI():
         while True:
             try:
                 pkgbuild_by_name = clone_aur_repos(package_names=package_names)
-                for pkg_build in pkgbuild_by_name.values():
-                    if pkg_build.package_base in stash_pop_list:
-                        pkg_build.git_stash_pop()
-                return pkgbuild_by_name
             except CloneError as err:
                 package_build = err.build
                 print_stderr(color_line(
@@ -601,6 +597,11 @@ class InstallPackagesCLI():
                             package_names.remove(skip_pkg_name)
                 else:
                     raise SysExit(125) from err
+            else:
+                for pkg_build in pkgbuild_by_name.values():
+                    if pkg_build.package_base in stash_pop_list:
+                        pkg_build.git_stash_pop()
+                return pkgbuild_by_name
 
     def get_package_builds(self) -> None:
         while self.all_aur_packages_names:

@@ -62,7 +62,7 @@ python -m pylint "${TARGETS[@]}" --score no 2>&1 \
 )
 
 echo MyPy...
-python -m mypy "${TARGETS[@]}"
+python -m mypy "${TARGETS[@]}" --no-error-summary
 
 echo Vulture...
 	#--exclude argparse.py \

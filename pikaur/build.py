@@ -149,7 +149,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def __init__(  # pylint: disable=super-init-not-called
             self,
             package_names: list[str] | None = None,
-            pkgbuild_path: str | None = None
+            pkgbuild_path: str | None = None,
     ) -> None:
         self.args = parse_args()
 
@@ -173,7 +173,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             self.pkgbuild_path = os.path.join(self.repo_path, DEFAULT_PKGBUILD_BASENAME)
         else:
             missing_property_error = translate(
-                "Either `{prop1}` or `{prop2}` should be set"
+                "Either `{prop1}` or `{prop2}` should be set",
             ).format(
                 prop1="package_names",
                 prop2="pkgbuild_path",
@@ -209,7 +209,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             "-C", self.repo_path,
             "checkout",
             "--",
-            "*"
+            "*",
         ])
 
     def git_stash(self) -> InteractiveSpawn:
@@ -235,7 +235,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 "-C", self.repo_path,
                 "pull",
                 "origin",
-                "master"
+                "master",
             ]
         if self.clone:
             cmd_args = [
@@ -254,7 +254,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def last_installed_file_path(self) -> str:
         return os.path.join(
             self.repo_path,
-            "last_installed.txt"
+            "last_installed.txt",
         )
 
     @property
@@ -270,12 +270,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def update_last_installed_file(self) -> None:
         git_hash_path = os.path.join(
             self.repo_path,
-            ".git/refs/heads/master"
+            ".git/refs/heads/master",
         )
         if os.path.exists(git_hash_path):
             shutil.copy2(
                 git_hash_path,
-                self.last_installed_file_path
+                self.last_installed_file_path,
             )
 
     @property
@@ -283,7 +283,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         """Commit hash of AUR repo of the pkg."""
         git_hash_path = os.path.join(
             self.repo_path,
-            ".git/refs/heads/master"
+            ".git/refs/heads/master",
         )
         if not os.path.exists(git_hash_path):
             return None
@@ -305,15 +305,15 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             translate_many(
                 "Downloading the latest sources for a devel package {}",
                 "Downloading the latest sources for devel packages {}",
-                len(self.package_names)
+                len(self.package_names),
             ).format(
-                bold_line(", ".join(self.package_names))
-            )
+                bold_line(", ".join(self.package_names)),
+            ),
         ))
         pkgver_result = joined_spawn(
             isolate_root_cmd(
                 [*MakePkgCommand.get(), "--nobuild", "--nocheck", "--nodeps"],
-                cwd=self.build_dir
+                cwd=self.build_dir,
             ),
             cwd=self.build_dir,
         )
@@ -339,7 +339,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         return min(
             compare_versions(
                 local_db[pkg_name].version,
-                self.get_version(pkg_name)
+                self.get_version(pkg_name),
             ) == compare_to
             if pkg_name in local_db else False
             for pkg_name in self.package_names
@@ -359,7 +359,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def _filter_built_deps(
             self,
-            all_package_builds: dict[str, "PackageBuild"]
+            all_package_builds: dict[str, "PackageBuild"],
     ) -> None:
 
         def _mark_dep_resolved(dep: str) -> None:
@@ -372,7 +372,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         for pkg_build in all_package_builds.values():
             for pkg_name in pkg_build.package_names:
                 srcinfo = SrcInfo(
-                    pkgbuild_path=pkg_build.pkgbuild_path, package_name=pkg_name
+                    pkgbuild_path=pkg_build.pkgbuild_path, package_name=pkg_name,
                 )
                 all_provided_pkgnames.update({
                     provided_name: pkg_name
@@ -407,7 +407,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def install_built_deps(
             self,
-            all_package_builds: dict[str, "PackageBuild"]
+            all_package_builds: dict[str, "PackageBuild"],
     ) -> None:
 
         self.get_deps(all_package_builds)
@@ -417,7 +417,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
             color_line("::", ColorsHighlight.purple),
             translate("Installing already built dependencies for {}").format(
-                bold_line(", ".join(self.package_names)))
+                bold_line(", ".join(self.package_names))),
         ))
 
         try:
@@ -430,7 +430,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 self.get_deps(all_package_builds)
             install_built_deps(
                 deps_names_and_paths=self.built_deps_to_install,
-                resolved_conflicts=self.resolved_conflicts
+                resolved_conflicts=self.resolved_conflicts,
             )
         except DependencyError as dep_exc:
             self.failed = True
@@ -442,9 +442,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         pkg_paths_spawn = spawn(
             isolate_root_cmd(
                 [*MakePkgCommand.get(), "--packagelist"],
-                cwd=self.build_dir
+                cwd=self.build_dir,
             ),
-            cwd=self.build_dir
+            cwd=self.build_dir,
         )
         if pkg_paths_spawn.returncode != 0:
             return
@@ -493,10 +493,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 translate_many(
                     "Package {pkg} is already built. Pass '--rebuild' flag to force the build.",
                     "Packages {pkg} are already built. Pass '--rebuild' flag to force the build.",
-                    len(self.package_names)
+                    len(self.package_names),
                 ).format(
-                    pkg=bold_line(", ".join(self.package_names))
-                )
+                    pkg=bold_line(", ".join(self.package_names)),
+                ),
             ))
             return True
         return False
@@ -537,7 +537,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             src_info = SrcInfo(pkgbuild_path=self.pkgbuild_path, package_name=package_name)
             for new_deps_version_matchers, deps_destination in (
                     (
-                        src_info.get_build_depends(), self.new_deps_to_install
+                        src_info.get_build_depends(), self.new_deps_to_install,
                     ), (
                         src_info.get_build_makedepends(), new_make_deps_to_install,
                     ), (
@@ -557,7 +557,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 ]
                 deps_destination += new_deps_to_install
         self.new_make_deps_to_install = list(set(
-            new_make_deps_to_install + new_check_deps_to_install
+            new_make_deps_to_install + new_check_deps_to_install,
         ))
         if filter_built:
             self._filter_built_deps(all_package_builds)
@@ -569,14 +569,14 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
             color_line("::", ColorsHighlight.purple),
             translate("Installing repository dependencies for {}").format(
-                bold_line(", ".join(self.package_names)))
+                bold_line(", ".join(self.package_names))),
         ))
 
         retry_interactive_command_or_exit(
             sudo([
                 *self._get_pacman_command(),
                 "--sync", "--asdeps",
-                *self.all_deps_to_install
+                *self.all_deps_to_install,
             ]),
             pikspect=True,
             conflicts=self.resolved_conflicts,
@@ -600,10 +600,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         _debug("Gonna compute diff of installed pkgs")
         deps_packages_installed = self._local_pkgs_with_build_deps.difference(
-            self._local_pkgs_wo_build_deps
+            self._local_pkgs_wo_build_deps,
         )
         deps_packages_removed = self._local_pkgs_wo_build_deps.difference(
-            self._local_pkgs_with_build_deps
+            self._local_pkgs_with_build_deps,
         )
         _debug(f"{deps_packages_installed=}")
         _debug(f"{deps_packages_removed=}")
@@ -629,9 +629,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         if deps_packages_removed:
             error_text = translate(
-                "Failed to remove installed dependencies, packages inconsistency: {}"
+                "Failed to remove installed dependencies, packages inconsistency: {}",
             ).format(
-                bold_line(", ".join(deps_packages_removed))
+                bold_line(", ".join(deps_packages_removed)),
             )
             print_error(error_text)
             if not ask_to_continue():
@@ -642,7 +642,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
             color_line("::", ColorsHighlight.purple),
             translate("Removing already installed dependencies for {}").format(
-                bold_line(", ".join(self.package_names)))
+                bold_line(", ".join(self.package_names))),
         ))
         retry_interactive_command_or_exit(
             sudo(
@@ -650,8 +650,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 [
                     *self._get_pacman_command(ignore_args=["overwrite"]),
                     "--remove",
-                    *list(deps_packages_installed)
-                ]
+                    *list(deps_packages_installed),
+                ],
             ),
             pikspect=True,
         )
@@ -671,11 +671,11 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         ):
             error_text = translate(
                 "{name} can't be built on the current arch ({arch}). "
-                "Supported: {suparch}"
+                "Supported: {suparch}",
             ).format(
                 name=bold_line(", ".join(self.package_names)),
                 arch=arch,
-                suparch=", ".join(supported_archs)
+                suparch=", ".join(supported_archs),
             )
             print_error(error_text)
             if (
@@ -695,7 +695,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         print_stderr("\n{} {}:".format(  # pylint: disable=consider-using-f-string
             color_line("::", ColorsHighlight.purple),
-            translate("Starting the build")
+            translate("Starting the build"),
         ))
         build_succeeded = False
         skip_pgp_check = False
@@ -727,12 +727,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             if self.args.hide_build_log:
                 spawn_kwargs.update({
                     "stdout": PIPE,
-                    "stderr": PIPE
+                    "stderr": PIPE,
                 })
 
             result = interactive_spawn(
                 cmd_args,
-                **spawn_kwargs
+                **spawn_kwargs,
             )
             print_stdout()
             build_succeeded = result.returncode == 0
@@ -742,10 +742,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             print_stderr(
                 color_line(
                     translate("Command '{}' failed to execute.").format(
-                        " ".join(cmd_args)
+                        " ".join(cmd_args),
                     ),
-                    ColorsHighlight.red
-                )
+                    ColorsHighlight.red,
+                ),
             )
             if self.args.skip_failed_build:
                 answer = translate("s")
@@ -767,7 +767,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                         "-" * 24,
                         translate("[s] skip building this package"),
                         translate("[a] abort building all the packages"),
-                    ))
+                    )),
                 )
                 answer = get_input(
                     prompt,
@@ -780,7 +780,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     translate("d") +
                     translate("e") +
                     translate("s") +
-                    translate("a")
+                    translate("a"),
                 )
 
             answer = answer.lower()[0]
@@ -808,12 +808,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 editor_cmd = get_editor_or_exit()
                 if editor_cmd:
                     interactive_spawn(
-                        [*editor_cmd, self.pkgbuild_path]
+                        [*editor_cmd, self.pkgbuild_path],
                     )
                     interactive_spawn(isolate_root_cmd([
                         "cp",
                         self.pkgbuild_path,
-                        os.path.join(self.build_dir, DEFAULT_PKGBUILD_BASENAME)
+                        os.path.join(self.build_dir, DEFAULT_PKGBUILD_BASENAME),
                     ]))
                     raise PkgbuildChanged()
                 continue
@@ -827,7 +827,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def build(
             self,
             all_package_builds: dict[str, "PackageBuild"],
-            resolved_conflicts: list[list[str]]
+            resolved_conflicts: list[list[str]],
     ) -> None:
         self.resolved_conflicts = resolved_conflicts
 
@@ -874,6 +874,6 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
             if result.returncode > 0:
                 raise CloneError(
                     build=package_builds_by_base[package_base],
-                    result=result
+                    result=result,
                 )
     return package_builds_by_name

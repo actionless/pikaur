@@ -190,7 +190,7 @@ class PikaurArgs(Namespace):
         result: PossibleArgValuesTypes = getattr(
             super(),
             name,
-            getattr(self, name.replace("-", "_"))
+            getattr(self, name.replace("-", "_")),
         )
         return result
 
@@ -231,7 +231,7 @@ class PikaurArgs(Namespace):
 
     arg_depends = {
         "query": {
-            "upgrades": ["aur", "repo", ],
+            "upgrades": ["aur", "repo"],
         },
     }
 
@@ -250,7 +250,7 @@ class PikaurArgs(Namespace):
             cls,
             namespace: Namespace,
             unknown_args: list[str],
-            raw_args: list[str]
+            raw_args: list[str],
     ) -> "PikaurArgs":
         result = cls()
         for key, value in namespace.__dict__.items():
@@ -287,7 +287,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
         return PikaurArgs.from_namespace(
             namespace=parsed_args,
             unknown_args=unknown_args,
-            raw_args=raw_args
+            raw_args=raw_args,
         )
 
     def add_letter_andor_opt(
@@ -295,33 +295,33 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             action: str | None = None,
             letter: str | None = None,
             opt: str | None = None,
-            default: PossibleArgValuesTypes = None
+            default: PossibleArgValuesTypes = None,
     ) -> None:
         if action:
             if letter and opt:
                 self.add_argument(
-                    "-" + letter, "--" + opt, action=action, default=default
+                    "-" + letter, "--" + opt, action=action, default=default,
                 )
             elif opt:
                 self.add_argument(
-                    "--" + opt, action=action, default=default
+                    "--" + opt, action=action, default=default,
                 )
             elif letter:
                 self.add_argument(
-                    "-" + letter, action=action, default=default
+                    "-" + letter, action=action, default=default,
                 )
         else:
             if letter and opt:
                 self.add_argument(
-                    "-" + letter, "--" + opt, default=default
+                    "-" + letter, "--" + opt, default=default,
                 )
             elif opt:
                 self.add_argument(
-                    "--" + opt, default=default
+                    "--" + opt, default=default,
                 )
             elif letter:
                 self.add_argument(
-                    "-" + letter, default=default
+                    "-" + letter, default=default,
                 )
 
 
@@ -375,22 +375,22 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
 
     for letter, opt, default in PACMAN_BOOL_OPTS + get_pikaur_bool_opts():
         parser.add_letter_andor_opt(
-            action="store_true", letter=letter, opt=opt, default=default
+            action="store_true", letter=letter, opt=opt, default=default,
         )
 
     for letter, opt, default in PACMAN_COUNT_OPTS + get_pikaur_count_opts():
         parser.add_letter_andor_opt(
-            action="count", letter=letter, opt=opt, default=default
+            action="count", letter=letter, opt=opt, default=default,
         )
 
     for letter, opt, default in PACMAN_APPEND_OPTS:
         parser.add_letter_andor_opt(
-            action="append", letter=letter, opt=opt, default=default
+            action="append", letter=letter, opt=opt, default=default,
         )
 
     for letter, opt, default in PACMAN_STR_OPTS + get_pikaur_str_opts():
         parser.add_letter_andor_opt(
-            action=None, letter=letter, opt=opt, default=default
+            action=None, letter=letter, opt=opt, default=default,
         )
 
     parser.add_argument("positional", nargs="*")
@@ -416,7 +416,7 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
         parsed_args.validate()
     except IncompatibleArgumentsError as exc:
         debug(translate(":: error: options {} can't be used together.").format(
-            ", ".join([f"'--{opt}'" for opt in exc.args])
+            ", ".join([f"'--{opt}'" for opt in exc.args]),
         ))
         sys.exit(1)
     except MissingArgumentError as exc:
@@ -424,11 +424,11 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
             translate_many(
                 ":: error: option {} can't be used without {}.",
                 ":: error: options {} can't be used without {}.",
-                len(exc.args[1:])
+                len(exc.args[1:]),
             ).format(
                 ", ".join([f"'--{opt}'" for opt in exc.args[1:]]),
-                f"'--{exc.args[0]}'"
-            )
+                f"'--{exc.args[0]}'",
+            ),
         )
         sys.exit(1)
     CachedArgs.args = parsed_args
@@ -463,7 +463,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
         ]
     }
     result = list(set(
-        list(reconstructed_args.keys()) + parsed_args.unknown_args
+        list(reconstructed_args.keys()) + parsed_args.unknown_args,
     ))
     for args_key, value in vars(parsed_args).items():
         for letter, _opt, _default in PACMAN_COUNT_OPTS:

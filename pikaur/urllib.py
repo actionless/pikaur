@@ -26,7 +26,7 @@ def read_bytes_from_url(
     args = parse_args()
     if args.print_commands:
         print_stderr(
-            color_line("=> ", ColorsHighlight.cyan) + f"GET {url}"
+            color_line("=> ", ColorsHighlight.cyan) + f"GET {url}",
         )
     req = request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     try:
@@ -40,8 +40,8 @@ def read_bytes_from_url(
             if args.noconfirm:
                 print_stderr(
                     translate("Sleeping for {} seconds...").format(
-                        NOCONFIRM_RETRY_INTERVAL
-                    )
+                        NOCONFIRM_RETRY_INTERVAL,
+                    ),
                 )
                 sleep(NOCONFIRM_RETRY_INTERVAL)
             return read_bytes_from_url(url, optional=optional)
@@ -71,8 +71,8 @@ def get_gzip_from_url(url: str, *, autoretry: bool = True) -> str:
             if args.noconfirm:
                 print_stderr(
                     translate("Sleeping for {} seconds...").format(
-                        NOCONFIRM_RETRY_INTERVAL
-                    )
+                        NOCONFIRM_RETRY_INTERVAL,
+                    ),
                 )
                 sleep(NOCONFIRM_RETRY_INTERVAL)
             return get_gzip_from_url(url)
@@ -99,7 +99,7 @@ def init_proxy() -> None:
             import socks  # type: ignore[import]  # pylint: disable=import-outside-toplevel
         except ImportError as exc:
             raise ProxyInitSocks5Error(
-                translate("pikaur requires python-pysocks to use a socks5 proxy.")
+                translate("pikaur requires python-pysocks to use a socks5 proxy."),
             ) from exc
         socks.set_default_proxy(socks.PROXY_TYPE_SOCKS5, socks_proxy_addr, port)
         socket.socket = socks.socksocket  # type: ignore[misc]
@@ -124,7 +124,7 @@ def wrap_proxy_env(cmd: list[str]) -> list[str]:  # pragma: no cover:
     https_proxy_addr = net_config.AurHttpsProxy.get_str()
     if not (http_proxy_addr or https_proxy_addr):
         return cmd
-    proxy_prefix = ["env", ]
+    proxy_prefix = ["env"]
     if http_proxy_addr:
         proxy_prefix.append(f"HTTP_PROXY={http_proxy_addr}")
     if https_proxy_addr:

@@ -49,12 +49,12 @@ class RegressionTest(PikaurDbTestCase):
 
         self.remove_if_installed(aur_pkg_name, explicitly_installed_dep_name)
         explicitly_installed_dep_old_version = self.downgrade_aur_pkg(
-            explicitly_installed_dep_name, fake_makepkg=True
+            explicitly_installed_dep_name, fake_makepkg=True,
         )
         self.assertInstalled(explicitly_installed_dep_name)
         self.assertEqual(
             PackageDB.get_local_dict()[explicitly_installed_dep_name].reason,
-            0
+            0,
         )
 
         fake_pikaur(f"-S {aur_pkg_name}")
@@ -62,21 +62,21 @@ class RegressionTest(PikaurDbTestCase):
         self.assertInstalled(explicitly_installed_dep_name)
         self.assertNotEqual(
             PackageDB.get_local_dict()[explicitly_installed_dep_name].version,
-            explicitly_installed_dep_old_version
+            explicitly_installed_dep_old_version,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[explicitly_installed_dep_name].reason,
-            0
+            0,
         )
 
     def test_getpkgbuild_group_package(self):
         result = pikaur("-G gnome", capture_stderr=True)
         self.assertEqual(
-            result.returncode, 0
+            result.returncode, 0,
         )
         self.assertIn(
             "cannot be found",
-            result.stderr
+            result.stderr,
         )
 
     def test_splitted_pkg_with_base_deps(self):
@@ -111,13 +111,13 @@ class RegressionTest(PikaurDbTestCase):
             attempts += 1
         self.assertIn(
             "nothing to do",
-            output
+            output,
         )
 
         result_sy = pikaur("-Sy", capture_stdout=True)
         self.assertNotIn(
             "nothing to do",
-            result_sy.stdout.lower()
+            result_sy.stdout.lower(),
         )
 
     def test_aur_rpc_didnt_fully_parsed_srcinfo(self):

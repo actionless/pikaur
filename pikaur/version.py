@@ -60,7 +60,7 @@ class VersionMatcher():
             self.version += "," + version_matcher.version
 
     def _set_version_matcher_func(  # pylint: disable=too-many-locals
-            self, *, is_pkg_deps: bool = False
+            self, *, is_pkg_deps: bool = False,
     ) -> None:
         # pylint: disable=invalid-name
 
@@ -197,7 +197,7 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
         return common_string, diff_weight
     for weight, version_chunk1, version_chunk2 in (
             (
-                1000, _split_epoch(version1)[0], _split_epoch(version2)[0]
+                1000, _split_epoch(version1)[0], _split_epoch(version2)[0],
             ),
             (
                 500, _split_release(_split_major(_split_epoch(version1)[1])[0])[0],
@@ -214,7 +214,7 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
         for block1, block2 in zip_longest(
                 split_version(version_chunk1),
                 split_version(version_chunk2),
-                fillvalue=" "
+                fillvalue=" ",
         ):
             if block1 != block2:
                 diff_found = True
@@ -236,5 +236,5 @@ def get_version_diff(version: str, common_version: str) -> str:
     if common_version == "":
         return version
     return common_version.join(
-        version.split(common_version)[1:]
+        version.split(common_version)[1:],
     )

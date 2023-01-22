@@ -44,12 +44,12 @@ class SysupgradeTest(PikaurDbTestCase):
 
     def downgrade_aur1_pkg(self) -> None:
         self.aur_old_version = self.downgrade_aur_pkg(
-            self.aur_pkg_name, count=2, fake_makepkg=True, skippgpcheck=True
+            self.aur_pkg_name, count=2, fake_makepkg=True, skippgpcheck=True,
         )
 
     def downgrade_aur2_pkg(self) -> None:
         self.aur2_old_version = self.downgrade_aur_pkg(
-            self.aur2_pkg_name, count=3, fake_makepkg=True
+            self.aur2_pkg_name, count=3, fake_makepkg=True,
         )
 
     def downgrade_dev_pkg(self) -> None:
@@ -66,7 +66,7 @@ class SysupgradeTest(PikaurDbTestCase):
             "^source=.*"
             "/"
             f'source=("git+{dev_pkg_url}#branch=master~1")'
-            "/' PKGBUILD > PKGBUILD_prev"
+            "/' PKGBUILD > PKGBUILD_prev",
         ])
         pikaur(f"-P -i --noconfirm ./{self.dev_pkg_name}/PKGBUILD_prev")
         self.assertInstalled(self.dev_pkg_name)
@@ -85,7 +85,7 @@ class SysupgradeTest(PikaurDbTestCase):
         # pikaur(f"-S {self.dev_pkg_name} --noconfirm --devel")
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.dev_pkg_name].version,
-            self.dev_old_version
+            self.dev_old_version,
         )
 
     @property
@@ -114,25 +114,25 @@ class SysupgradeTest(PikaurDbTestCase):
         self.downgrade_aur1_pkg()
 
         self.assertEqual(
-            self.upgradeable_aur_pkgs_list, [self.aur_pkg_name]
+            self.upgradeable_aur_pkgs_list, [self.aur_pkg_name],
         )
         self.assertEqual(
-            self.upgradeable_repo_pkgs_list, [self.repo_pkg_name]
+            self.upgradeable_repo_pkgs_list, [self.repo_pkg_name],
         )
         self.assertEqual(
             sorted(self.upgradeable_pkgs_list),
-            sorted([self.repo_pkg_name, self.aur_pkg_name])
+            sorted([self.repo_pkg_name, self.aur_pkg_name]),
         )
 
         # and finally test the sysupgrade itself
         pikaur("-Su --noconfirm", skippgpcheck=True)
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
-            self.repo_old_version
+            self.repo_old_version,
         )
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.aur_pkg_name].version,
-            self.aur_old_version
+            self.aur_old_version,
         )
 
     def test_syu_ignore(self):
@@ -148,46 +148,46 @@ class SysupgradeTest(PikaurDbTestCase):
             f"--ignore {self.repo_pkg_name} "
             f"--ignore {self.aur_pkg_name} "
             f"--ignore {self.repo2_pkg_name} "
-            f"--ignore {self.aur2_pkg_name}"
+            f"--ignore {self.aur2_pkg_name}",
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
-            self.repo_old_version
+            self.repo_old_version,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.aur_pkg_name].version,
-            self.aur_old_version
+            self.aur_old_version,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo2_pkg_name].version,
-            self.repo2_old_version
+            self.repo2_old_version,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.aur2_pkg_name].version,
-            self.aur2_old_version
+            self.aur2_old_version,
         )
 
         # ignore one of repo pkgs and one of AUR pkgs
         pikaur(
             "-Su --noconfirm "
             f"--ignore {self.repo_pkg_name} "
-            f"--ignore {self.aur_pkg_name}"
+            f"--ignore {self.aur_pkg_name}",
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
-            self.repo_old_version
+            self.repo_old_version,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.aur_pkg_name].version,
-            self.aur_old_version
+            self.aur_old_version,
         )
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo2_pkg_name].version,
-            self.repo2_old_version
+            self.repo2_old_version,
         )
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.aur2_pkg_name].version,
-            self.aur2_old_version
+            self.aur2_old_version,
         )
 
         # ignore the only remaining AUR package
@@ -195,11 +195,11 @@ class SysupgradeTest(PikaurDbTestCase):
                f"--ignore {self.aur_pkg_name}")
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
-            self.repo_old_version
+            self.repo_old_version,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.aur_pkg_name].version,
-            self.aur_old_version
+            self.aur_old_version,
         )
 
         self.downgrade_repo1_pkg()
@@ -209,11 +209,11 @@ class SysupgradeTest(PikaurDbTestCase):
                f"--ignore {self.repo_pkg_name}")
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
-            self.repo_old_version
+            self.repo_old_version,
         )
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.aur_pkg_name].version,
-            self.aur_old_version
+            self.aur_old_version,
         )
 
     def test_syu_aur_repo_flags(self):
@@ -224,11 +224,11 @@ class SysupgradeTest(PikaurDbTestCase):
         pikaur("-Su --noconfirm --repo")
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
-            self.repo_old_version
+            self.repo_old_version,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.aur_pkg_name].version,
-            self.aur_old_version
+            self.aur_old_version,
         )
 
         self.downgrade_repo1_pkg()
@@ -236,9 +236,9 @@ class SysupgradeTest(PikaurDbTestCase):
         pikaur("-Su --noconfirm --aur")
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
-            self.repo_old_version
+            self.repo_old_version,
         )
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.aur_pkg_name].version,
-            self.aur_old_version
+            self.aur_old_version,
         )

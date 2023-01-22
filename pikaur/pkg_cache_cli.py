@@ -20,8 +20,8 @@ _debug = create_debug_logger("pkg_cache_cli")
 def clean_aur_cache() -> None:
     args = parse_args()
     for directory, message, minimal_clean_level in (
-            (BUILD_CACHE_PATH, translate("Build directory"), 1, ),
-            (PACKAGE_CACHE_PATH, translate("Packages directory"), 2, ),
+            (BUILD_CACHE_PATH, translate("Build directory"), 1),
+            (PACKAGE_CACHE_PATH, translate("Packages directory"), 2),
     ):
         print_stdout(f"\n{message}: {directory}")
         if minimal_clean_level > args.clean:
@@ -30,7 +30,7 @@ def clean_aur_cache() -> None:
             print_stdout(translate("Directory is empty."))
         elif ask_to_continue(text="{} {}".format(  # pylint: disable=consider-using-f-string
                 color_line("::", ColorsHighlight.blue),
-                bold_line(translate("Do you want to remove all files?"))
+                bold_line(translate("Do you want to remove all files?")),
         )):
             print_stdout(translate("removing all files from cache..."))
             remove_dir(directory)
@@ -48,7 +48,7 @@ def clean_repo_cache() -> None:
                     question=YesNo.QUESTION_YN_NO,
                 ),
                 format_pacman_question(
-                    "Do you want to remove all other packages from cache?"
+                    "Do you want to remove all other packages from cache?",
                 ),
                 format_pacman_question(
                     "Do you want to remove unused repositories?",
@@ -58,8 +58,8 @@ def clean_repo_cache() -> None:
     raise SysExit(
         spawn_func(sudo([
             PikaurConfig().misc.PacmanPath.get_str(),
-            *reconstruct_args(args, ignore_args=["noconfirm"])
-        ])).returncode
+            *reconstruct_args(args, ignore_args=["noconfirm"]),
+        ])).returncode,
     )
 
 

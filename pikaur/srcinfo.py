@@ -42,7 +42,7 @@ class SrcInfo():
             self,
             repo_path: str | None = None,
             package_name: str | None = None,
-            pkgbuild_path: str | None = None
+            pkgbuild_path: str | None = None,
     ) -> None:
         if repo_path:
             self.repo_path = repo_path
@@ -52,7 +52,7 @@ class SrcInfo():
             self.repo_path = dirname(pkgbuild_path)
         else:
             missing_property_error = translate(
-                "Either `{prop1}` or `{prop2}` should be set"
+                "Either `{prop1}` or `{prop2}` should be set",
             ).format(
                 prop1="repo_path",
                 prop2="pkgbuild_path",
@@ -60,7 +60,7 @@ class SrcInfo():
             raise NotImplementedError(missing_property_error)
         self.path = os.path.join(
             self.repo_path,
-            ".SRCINFO"
+            ".SRCINFO",
         )
         self.package_name = package_name
         self.load_config()
@@ -132,7 +132,7 @@ class SrcInfo():
         if running_as_root() and not self.repo_path.startswith(CACHE_ROOT):
             working_directory = os.path.join(
                 BUILD_CACHE_PATH,
-                "_info_" + (self.get_value("pkgbase") or "unknown")
+                "_info_" + (self.get_value("pkgbase") or "unknown"),
             )
             if not os.path.exists(working_directory):
                 os.mkdir(working_directory)
@@ -142,15 +142,15 @@ class SrcInfo():
                 [
                     *MakePkgCommand.get(),
                     "--printsrcinfo",
-                    "-p", os.path.basename(self.pkgbuild_path)
+                    "-p", os.path.basename(self.pkgbuild_path),
                 ],
-                cwd=working_directory
+                cwd=working_directory,
             ),
-            cwd=working_directory
+            cwd=working_directory,
         )
         if result.returncode != 0 or not result.stdout_text:
             print_error(
-                translate("failed to generate .SRCINFO from {}:").format(self.pkgbuild_path)
+                translate("failed to generate .SRCINFO from {}:").format(self.pkgbuild_path),
             )
             print_stderr(result.stderr_text)
             raise SysExit(5)

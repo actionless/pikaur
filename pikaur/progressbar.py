@@ -55,6 +55,6 @@ class ThreadSafeProgressBar():
                     sys.stderr.write("\n")
                     cls._progressbar_storage[progressbar_id] = ProgressBar(
                         length=progressbar_length,
-                        message="Synchronizing AUR database... "
+                        message="Synchronizing AUR database... ",
                     )
         return cls._progressbar_storage[progressbar_id]

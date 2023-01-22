@@ -33,6 +33,11 @@ select = [
 	"PGH",
 	"PLC", "PLE", "PLR", "PLW",
 	"PIE",
+	"COM",
+	#"INP",
+	#"EXE",
+	#"TYP",
+	#"TRY",
 	"RUF",
 ]
 ignore = [

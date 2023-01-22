@@ -17,34 +17,34 @@ class VersionTest(PikaurTestCase):
 
     def test_basic(self):
         self.assertFalse(
-            VersionMatcher("=12")("12.0.2.u10-1")
+            VersionMatcher("=12")("12.0.2.u10-1"),
         )
         self.assertFalse(
-            VersionMatcher("=12.0.2.u10")("12")
+            VersionMatcher("=12.0.2.u10")("12"),
         )
         self.assertFalse(
-            VersionMatcher("<=12")("12.0.2.u10-1")
+            VersionMatcher("<=12")("12.0.2.u10-1"),
         )
         self.assertTrue(
-            VersionMatcher("<=12.0.2.u10")("12")
+            VersionMatcher("<=12.0.2.u10")("12"),
         )
         self.assertFalse(
-            VersionMatcher(">=12.0.2.u10")("12")
+            VersionMatcher(">=12.0.2.u10")("12"),
         )
 
     def test_pkg_deps(self):
         self.assertTrue(
-            VersionMatcher("=12", is_pkg_deps=True)("12.0.2.u10-1")
+            VersionMatcher("=12", is_pkg_deps=True)("12.0.2.u10-1"),
         )
         self.assertFalse(
-            VersionMatcher("=12.0.2.u10", is_pkg_deps=True)("12")
+            VersionMatcher("=12.0.2.u10", is_pkg_deps=True)("12"),
         )
         self.assertTrue(
-            VersionMatcher("<=12", is_pkg_deps=True)("12.0.2.u10-1")
+            VersionMatcher("<=12", is_pkg_deps=True)("12.0.2.u10-1"),
         )
         self.assertTrue(
-            VersionMatcher("<=12.0.2.u10", is_pkg_deps=True)("12")
+            VersionMatcher("<=12.0.2.u10", is_pkg_deps=True)("12"),
         )
         self.assertFalse(
-            VersionMatcher(">=12.0.2.u10", is_pkg_deps=True)("12")
+            VersionMatcher(">=12.0.2.u10", is_pkg_deps=True)("12"),
         )

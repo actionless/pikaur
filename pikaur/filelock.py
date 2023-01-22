@@ -19,7 +19,7 @@ class FileLock():
 
     def __enter__(self) -> None:
         self.lock_file = open(  # noqa: SIM115
-            self.lock_file_path, "a", encoding=DEFAULT_INPUT_ENCODING
+            self.lock_file_path, "a", encoding=DEFAULT_INPUT_ENCODING,
         )
         while True:
             try:
@@ -29,7 +29,7 @@ class FileLock():
             except BlockingIOError as err:
                 print_error(translate("Can't lock {lock_file}: {reason}").format(
                     lock_file=self.lock_file_path,
-                    reason=err.strerror
+                    reason=err.strerror,
                 ))
                 if not ask_to_continue(translate("Do you want to retry?")):
                     raise SysExit(128) from err

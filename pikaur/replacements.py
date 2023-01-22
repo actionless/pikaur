@@ -27,9 +27,9 @@ def find_replacements() -> dict[str, list[str]]:
                         (pkg_name not in all_repo_pkg_names) or (
                             replace_pkg_name not in all_repo_pkg_names or (
                                 PackageDB.get_repo_priority(
-                                    PackageDB.find_repo_package(replace_pkg_name).db.name
+                                    PackageDB.find_repo_package(replace_pkg_name).db.name,
                                 ) >= PackageDB.get_repo_priority(
-                                    PackageDB.find_repo_package(pkg_name).db.name
+                                    PackageDB.find_repo_package(pkg_name).db.name,
                                 )
                             )
                         )
@@ -40,9 +40,9 @@ def find_replacements() -> dict[str, list[str]]:
                     translate_many(
                         "'{packages}' package is available in the repo but can't be installed",
                         "'{packages}' packages are available in the repo but can't be installed",
-                        len(exc.packages)
+                        len(exc.packages),
                     ).format(
-                        packages=", ".join(exc.packages)
-                    )
+                        packages=", ".join(exc.packages),
+                    ),
                 )
     return new_pkgs_replaces

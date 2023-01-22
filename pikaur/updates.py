@@ -46,7 +46,7 @@ def is_devel_pkg(pkg_name: str) -> bool:
 
 
 def get_remote_package(
-        new_pkg_name: str
+        new_pkg_name: str,
 ) -> pyalpm.Package | AURPackageInfo | None:
     try:
         repo_pkg = PackageDB.find_repo_package(new_pkg_name)
@@ -84,14 +84,14 @@ def find_repo_upgradeable() -> list[RepoInstallInfo]:
                 description=repo_pkg.desc,
                 repository=repo_pkg.db.name,
                 package=repo_pkg,
-            )
+            ),
         )
     return repo_packages_updates
 
 
 def find_aur_devel_updates(
         aur_pkgs_info: list[AURPackageInfo],
-        package_ttl_days: int
+        package_ttl_days: int,
 ) -> list[AURInstallInfo]:
     local_packages = PackageDB.get_local_dict()
     now = datetime.now(tz=DEFAULT_TIMEZONE)
@@ -102,7 +102,7 @@ def find_aur_devel_updates(
             continue
         local_pkg = local_packages[pkg_name]
         pkg_install_datetime = datetime.fromtimestamp(
-            local_pkg.installdate, tz=DEFAULT_TIMEZONE
+            local_pkg.installdate, tz=DEFAULT_TIMEZONE,
         )
         pkg_age_days = (now - pkg_install_datetime).days
         if pkg_age_days >= package_ttl_days:
@@ -124,7 +124,7 @@ def find_aur_updates() -> tuple[list[AURInstallInfo], list[str]]:
     print_stderr(translate_many(
         "Reading AUR package info...",
         "Reading AUR packages info...",
-        len(package_names)
+        len(package_names),
     ))
     aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(package_names)
     local_packages = PackageDB.get_local_dict()
@@ -158,7 +158,7 @@ def find_aur_updates() -> tuple[list[AURInstallInfo], list[str]]:
         if devel_packages_expiration > -1:
             aur_updates += find_aur_devel_updates(
                 aur_pkgs_up_to_date,
-                package_ttl_days=devel_packages_expiration
+                package_ttl_days=devel_packages_expiration,
             )
     return aur_updates, not_found_aur_pkgs
 
@@ -182,11 +182,11 @@ def print_upgradeable(
     pkg_names = [pkg.name for pkg in updates]
     manually_ignored_pkg_names = get_ignored_pkgnames_from_patterns(
         pkg_names,
-        args.ignore
+        args.ignore,
     )
     config_ignored_pkg_names = get_ignored_pkgnames_from_patterns(
         pkg_names,
-        PacmanConfig().options.get("IgnorePkg", [])
+        PacmanConfig().options.get("IgnorePkg", []),
     )
     ignored_pkg_names = manually_ignored_pkg_names + config_ignored_pkg_names
     for pkg in updates[:]:
@@ -205,5 +205,5 @@ def print_upgradeable(
     else:
         print_stdout(pretty_format_upgradeable(
             updates,
-            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool()
+            print_repo=PikaurConfig().sync.AlwaysShowPkgOrigin.get_bool(),
         ))

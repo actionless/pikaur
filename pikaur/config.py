@@ -34,7 +34,7 @@ VERSION: Final = "1.14.7-dev"
 _USER_TEMP_ROOT: Final = gettempdir()
 _USER_CACHE_ROOT: Final = os.environ.get(
     "XDG_CACHE_HOME",
-    os.path.join(Path.home(), ".cache/")
+    os.path.join(Path.home(), ".cache/"),
 )
 
 CACHE_ROOT: Final = (
@@ -48,14 +48,14 @@ PACKAGE_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "pkg")
 
 CONFIG_ROOT: Final = os.environ.get(
     "XDG_CONFIG_HOME",
-    os.path.join(Path.home(), ".config/")
+    os.path.join(Path.home(), ".config/"),
 )
 
 DATA_ROOT: Final = os.path.join(
     os.environ.get(
         "XDG_DATA_HOME",
-        os.path.join(Path.home(), ".local/share/")
-    ), "pikaur"
+        os.path.join(Path.home(), ".local/share/"),
+    ), "pikaur",
 )
 
 _OLD_AUR_REPOS_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "aur_repos")
@@ -67,7 +67,7 @@ AUR_REPOS_CACHE_PATH: Final = (
 
 BUILD_DEPS_LOCK: Final = os.path.join(
     _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT,
-    "pikaur_build_deps.lock"
+    "pikaur_build_deps.lock",
 )
 
 
@@ -79,7 +79,7 @@ def get_config_path() -> str:
         ]
     return os.path.join(
         CONFIG_ROOT,
-        "pikaur.conf"
+        "pikaur.conf",
     )
 
 
@@ -142,7 +142,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "GpgDir": {
             "data_type": STR,
-            "default": ("/etc/pacman.d/gnupg/" if RUNNING_AS_ROOT else "")
+            "default": ("/etc/pacman.d/gnupg/" if RUNNING_AS_ROOT else ""),
         },
         "SkipFailedBuild": {
             "data_type": BOOL,
@@ -182,7 +182,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "IgnoreArch": {
             "data_type": BOOL,
-            "default": "no"
+            "default": "no",
         },
     },
     "review": {
@@ -208,7 +208,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "HideDiffFiles": {
             "data_type": STR,
-            "default": ".SRCINFO"
+            "default": ".SRCINFO",
         },
     },
     "colors": {
@@ -228,7 +228,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
     "ui": {
         "RequireEnterConfirm": {
             "data_type": BOOL,
-            "default": "yes"
+            "default": "yes",
         },
         "DiffPager": {
             "data_type": STR,
@@ -239,7 +239,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "PrintCommands": {
             "data_type": BOOL,
-            "default": "no"
+            "default": "no",
         },
         "AurSearchSorting": {
             "data_type": STR,
@@ -247,19 +247,19 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "DisplayLastUpdated": {
             "data_type": BOOL,
-            "default": "no"
+            "default": "no",
         },
         "GroupByRepository": {
             "data_type": BOOL,
-            "default": "yes"
+            "default": "yes",
         },
         "ReverseSearchSorting": {
             "data_type": BOOL,
-            "default": "no"
+            "default": "no",
         },
         "WarnAboutPackageUpdates": {
             "data_type": STR,
-            "default": ""
+            "default": "",
         },
     },
     "misc": {
@@ -269,7 +269,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "PacmanPath": {
             "data_type": STR,
-            "default": "pacman"
+            "default": "pacman",
         },
         "PrivilegeEscalationTool": {
             "data_type": STR,
@@ -280,7 +280,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
             "deprecated": {
                 "section": "network",
                 "option": "AurUrl",
-                "transform": lambda old_value, _config: f"https://{old_value}"
+                "transform": lambda old_value, _config: f"https://{old_value}",
             },
         },
         "NewsUrl": {
@@ -360,7 +360,7 @@ class PikaurConfigItem:
         self.key = key
         self.value = self.section.get(key)
         self._type_error_template = translate(
-            "{key} is not '{typeof}'"
+            "{key} is not '{typeof}'",
         )
 
     def get_bool(self) -> bool:
@@ -431,7 +431,7 @@ class PikaurConfig():
                 new_section_name: str = option_schema["deprecated"]["section"]
                 new_option_name: str = option_schema["deprecated"]["option"]
                 transform: Callable[
-                    [str, configparser.ConfigParser], str
+                    [str, configparser.ConfigParser], str,
                 ] | None = option_schema["deprecated"].get("transform")
 
                 old_value_was_migrated = False
@@ -463,7 +463,7 @@ class PikaurConfig():
                         translate('Migrating [{}]{} config option to [{}]{} = "{}"...').format(
                             section_name, option_name,
                             new_section_name, new_option_name,
-                            cls._config[new_section_name][new_option_name]
+                            cls._config[new_section_name][new_option_name],
                         ),
                         "\n",
                     ]))

@@ -69,9 +69,9 @@ class AURPackageInfo(DataType):
 
     def __init__(self, **kwargs: Any) -> None:
         for aur_api_name, pikaur_class_name in (
-            ("description", "desc", ),
-            ("id", "aur_id", ),
-            ("license", "pkg_license", ),
+            ("description", "desc"),
+            ("id", "aur_id"),
+            ("license", "pkg_license"),
         ):
             if aur_api_name in kwargs:
                 kwargs[pikaur_class_name] = kwargs.pop(aur_api_name)
@@ -95,7 +95,7 @@ class AURPackageInfo(DataType):
                     "replaces",
                     "provides",
                 ]
-            }
+            },
         )
 
     def __repr__(self) -> str:
@@ -124,7 +124,7 @@ def aur_rpc_search_name_desc(search_query: str) -> list[AURPackageInfo]:
         "v": 5,
         "type": "search",
         "arg": strip_aur_repo_name(search_query),
-        "by": "name-desc"
+        "by": "name-desc",
     })
     result_json = get_json_from_url(url)
     if AurRPCErrors.ERROR_KEY in result_json:
@@ -132,7 +132,7 @@ def aur_rpc_search_name_desc(search_query: str) -> list[AURPackageInfo]:
     return [
         AURPackageInfo(
             **{key.lower(): value for key, value in aur_json.items()},
-            ignore_extra_properties=True
+            ignore_extra_properties=True,
         )
         for aur_json in result_json.get("results", [])
     ]
@@ -156,14 +156,14 @@ def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
     return [
         AURPackageInfo(
             **{key.lower(): value for key, value in aur_json.items()},
-            ignore_extra_properties=True
+            ignore_extra_properties=True,
         )
         for aur_json in result_json.get("results", [])
     ]
 
 
 def aur_rpc_info_with_progress(
-        search_queries: list[str], *, progressbar_length: int, with_progressbar: bool
+        search_queries: list[str], *, progressbar_length: int, with_progressbar: bool,
 ) -> list[AURPackageInfo]:
     result = aur_rpc_info(search_queries)
     if with_progressbar:
@@ -219,7 +219,7 @@ def get_max_pkgs_chunks(package_names: list[str]) -> list[list[str]]:
 
 
 def find_aur_packages(
-        package_names: list[str], *, with_progressbar: bool = False
+        package_names: list[str], *, with_progressbar: bool = False,
 ) -> tuple[list[AURPackageInfo], list[str]]:
 
     # @TODO: return only packages for the current architecture
@@ -239,7 +239,7 @@ def find_aur_packages(
                 pool.apply_async(aur_rpc_info_with_progress, [], {
                     "search_queries": chunk,
                     "progressbar_length": len(search_chunks),
-                    "with_progressbar": with_progressbar
+                    "with_progressbar": with_progressbar,
                 })
                 for chunk in search_chunks
             ]

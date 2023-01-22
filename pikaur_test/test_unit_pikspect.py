@@ -18,6 +18,6 @@ class PikspectTest(PikaurTestCase):
         self.assertEqual(result.output, b"test\r\n")
         result = pikspect(
             cmd=["bash", "-c", "echo foo ; sleep 0.1 ; echo bar"],
-            capture_output=True
+            capture_output=True,
         )
         self.assertEqual(result.output, b"foo\r\nbar\r\n")

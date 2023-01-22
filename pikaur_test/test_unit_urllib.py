@@ -15,17 +15,17 @@ class UrllibTestcase(PikaurTestCase):
     def test_read_bytes_error(self):
         with self.assertRaises(SysExit):
             read_bytes_from_url(
-                "http://example.com12345678901412380", autoretry=False
+                "http://example.com12345678901412380", autoretry=False,
             )
 
     def test_read_bytes_error_optional(self):
         result = read_bytes_from_url(
-            "http://example.com12345678901412380", optional=True, autoretry=False
+            "http://example.com12345678901412380", optional=True, autoretry=False,
         )
         self.assertEqual(b"", result)
 
     def test_read_gzip_error(self):
         with self.assertRaises(SysExit):
             get_gzip_from_url(
-                "http://example.com", autoretry=False
+                "http://example.com", autoretry=False,
             )

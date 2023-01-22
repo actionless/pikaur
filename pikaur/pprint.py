@@ -41,7 +41,7 @@ def _print(
         end: str = "\n",
         *,
         flush: bool = False,
-        lock: bool = True
+        lock: bool = True,
 ) -> None:
     # pylint: disable=unnecessary-dunder-call
     if not isinstance(message, str):
@@ -60,7 +60,7 @@ def print_stdout(
         end: str = "\n",
         *,
         flush: bool = False,
-        lock: bool = True
+        lock: bool = True,
 ) -> None:
     _print(sys.stdout, message=message, end=end, flush=flush, lock=lock)
 
@@ -70,7 +70,7 @@ def print_stderr(
         end: str = "\n",
         *,
         flush: bool = False,
-        lock: bool = True
+        lock: bool = True,
 ) -> None:
     _print(sys.stderr, message=message, end=end, flush=flush, lock=lock)
 
@@ -98,7 +98,7 @@ class ColorsHighlight:
 
 
 def color_line(
-        line: str, color_number: int, *, reset: bool = True, force: bool = False
+        line: str, color_number: int, *, reset: bool = True, force: bool = False,
 ) -> str:
     if not color_enabled() and not force:
         return line
@@ -122,14 +122,14 @@ def bold_line(line: str) -> str:
 def print_warning(message: str = "") -> None:
     print_stderr(" ".join([
         color_line(":: " + translate("warning:"), ColorsHighlight.yellow),
-        message
+        message,
     ]))
 
 
 def print_error(message: str) -> None:
     print_stderr(" ".join([
         color_line(":: " + translate("error:"), ColorsHighlight.red),
-        message
+        message,
     ]))
 
 
@@ -143,7 +143,7 @@ def print_debug(message: Any, *, lock: bool = True) -> None:
         prefix = translate("pikaur debug:")
     print_stderr(" ".join([
         color_line(":: " + prefix, Colors.cyan),
-        str(message)
+        str(message),
     ]), lock=lock)
 
 
@@ -228,7 +228,7 @@ class DebugColorCounter:
 
 
 def create_debug_logger(
-        module_name: str, *, lock: bool | None = None
+        module_name: str, *, lock: bool | None = None,
 ) -> "Callable[[Any, DefaultNamedArg(bool | None, name='lock')], None]":  # noqa: F821,RUF100
     color = DebugColorCounter.get_next()
     parent_lock = lock

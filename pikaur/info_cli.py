@@ -14,7 +14,7 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_stdout
 def _info_packages_thread_repo() -> str | None:
     args = parse_args()
     proc = spawn(
-        get_pacman_command() + reconstruct_args(args, ignore_args=["refresh"]) + args.positional
+        get_pacman_command() + reconstruct_args(args, ignore_args=["refresh"]) + args.positional,
     )
     return proc.stdout_text
 
@@ -52,13 +52,13 @@ def get_info_fields() -> dict[str, str]:
 
 def _decorate_repo_info_output(output: str) -> str:
     return output.replace(
-        _p("None"), color_line(_p("None"), ColorsHighlight.black)
+        _p("None"), color_line(_p("None"), ColorsHighlight.black),
     )
 
 
 def _decorate_aur_info_output(output: str) -> str:
     return output.replace(
-        translate("None"), color_line(translate("None"), ColorsHighlight.black)
+        translate("None"), color_line(translate("None"), ColorsHighlight.black),
     )
 
 
@@ -94,14 +94,14 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
             pkg_info_lines.append(f"{key_display}: {value}")
         print_stdout(
             _decorate_aur_info_output("\n".join(pkg_info_lines)) +
-            ("\n" if i + 1 < num_found else "")
+            ("\n" if i + 1 < num_found else ""),
         )
 
 
 def _rightpad(text: str, num: int) -> str:
     space = num
     for i in text:
-        if east_asian_width(i) in ["F", "W", ]:
+        if east_asian_width(i) in ["F", "W"]:
             space -= 2
         else:
             space -= 1

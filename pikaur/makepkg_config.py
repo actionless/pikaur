@@ -16,7 +16,7 @@ FallbackValueT = TypeVar("FallbackValueT")
 
 class ConfigReader():
 
-    COMMENT_PREFIXES: Final = ("#", ";", )
+    COMMENT_PREFIXES: Final = ("#", ";")
     KEY_VALUE_DELIMITER: Final = "="
 
     _cached_config: dict[str, ConfigFormat] | None = None
@@ -26,7 +26,7 @@ class ConfigReader():
 
     @classmethod
     def _parse_line(cls, line: str) -> tuple[str | None, ConfigValueType]:
-        blank = (None, None, )
+        blank = (None, None)
         if line.startswith(" "):
             return blank
         if cls.KEY_VALUE_DELIMITER not in line:
@@ -76,7 +76,7 @@ class ConfigReader():
             cls,
             key: str,
             fallback: FallbackValueT | None = None,
-            config_path: str | None = None
+            config_path: str | None = None,
     ) -> ConfigValueType | FallbackValueT:
         return cls.get_config(config_path=config_path).get(key) or fallback
 
@@ -105,11 +105,11 @@ class MakepkgConfig():
             cls,
             key: str,
             fallback: FallbackValueT | None = None,
-            config_path: str | None = None
+            config_path: str | None = None,
     ) -> ConfigValueType | FallbackValueT:
         arg_path: str | None = parse_args().makepkg_config
         value: ConfigValueType | FallbackValueT = ConfigReader.get(
-            key, fallback, config_path="/etc/makepkg.conf"
+            key, fallback, config_path="/etc/makepkg.conf",
         )
         if cls.get_user_makepkg_path():
             value = ConfigReader.get(key, value, config_path=cls.get_user_makepkg_path())

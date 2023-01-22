@@ -104,7 +104,7 @@ class InstallTest(PikaurDbTestCase):
         pkg_name = "zfs-utils"
         pkg_keys = [
             "4F3BA9AB6D1F8D683DC2DFB56AD860EED4598027",
-            "C33DF142657ED1F7C328A2960AB9E991C6AF658B"
+            "C33DF142657ED1F7C328A2960AB9E991C6AF658B",
         ]
         keyserver = "hkp://keyserver.ubuntu.com:11371"
 
@@ -116,7 +116,7 @@ class InstallTest(PikaurDbTestCase):
                 *[f"gpg --quick-lsign-key {key}" for key in pkg_keys],
                 f"chmod 755 {tmpdirname}",
                 f"chmod 644 {tmpdirname}/pubring.gpg",
-                f"chmod 644 {tmpdirname}/trust.gpg"
+                f"chmod 644 {tmpdirname}/trust.gpg",
             ]
 
             for command in commands:
@@ -133,13 +133,13 @@ class InstallTest(PikaurDbTestCase):
         conflicting_aur_package2 = "resvg-git"
         self.remove_if_installed(
             conflicting_aur_package1,
-            conflicting_aur_package2
+            conflicting_aur_package2,
         )
         self.assertEqual(
             pikaur(
                 f"-S {conflicting_aur_package1}"
-                f" {conflicting_aur_package2}"
-            ).returncode, 131
+                f" {conflicting_aur_package2}",
+            ).returncode, 131,
         )
         self.assertNotInstalled(conflicting_aur_package1)
         self.assertNotInstalled(conflicting_aur_package2)
@@ -147,7 +147,7 @@ class InstallTest(PikaurDbTestCase):
     def test_conflicting_aur_and_repo_packages(self):
         self.remove_if_installed("pacaur", "expac-git", "expac")
         self.assertEqual(
-            pikaur("-S expac-git expac").returncode, 131
+            pikaur("-S expac-git expac").returncode, 131,
         )
         self.assertNotInstalled("expac")
         self.assertNotInstalled("expac-git")
@@ -155,10 +155,10 @@ class InstallTest(PikaurDbTestCase):
     def test_conflicting_aur_and_installed_repo_packages(self):
         self.remove_if_installed("pacaur", "expac-git", "expac")
         self.assertEqual(
-            pikaur("-S expac").returncode, 0
+            pikaur("-S expac").returncode, 0,
         )
         self.assertEqual(
-            pikaur("-S expac-git").returncode, 131
+            pikaur("-S expac-git").returncode, 131,
         )
         self.assertInstalled("expac")
         self.assertNotInstalled("expac-git")
@@ -169,18 +169,18 @@ class InstallTest(PikaurDbTestCase):
 
         pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
-            len(os.listdir(BUILD_CACHE_PATH)), 1
+            len(os.listdir(BUILD_CACHE_PATH)), 1,
         )
         self.assertGreaterEqual(
-            len(os.listdir(PACKAGE_CACHE_PATH)), 1
+            len(os.listdir(PACKAGE_CACHE_PATH)), 1,
         )
 
         pikaur("-Sc --noconfirm")
         self.assertFalse(
-            os.path.exists(BUILD_CACHE_PATH)
+            os.path.exists(BUILD_CACHE_PATH),
         )
         self.assertGreaterEqual(
-            len(os.listdir(PACKAGE_CACHE_PATH)), 1
+            len(os.listdir(PACKAGE_CACHE_PATH)), 1,
         )
 
     def test_cache_full_clean(self):
@@ -189,28 +189,28 @@ class InstallTest(PikaurDbTestCase):
 
         pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
-            len(os.listdir(BUILD_CACHE_PATH)), 1
+            len(os.listdir(BUILD_CACHE_PATH)), 1,
         )
         self.assertGreaterEqual(
-            len(os.listdir(PACKAGE_CACHE_PATH)), 1
+            len(os.listdir(PACKAGE_CACHE_PATH)), 1,
         )
 
         pikaur("-Scc --noconfirm")
         self.assertFalse(
-            os.path.exists(BUILD_CACHE_PATH)
+            os.path.exists(BUILD_CACHE_PATH),
         )
         self.assertFalse(
-            os.path.exists(PACKAGE_CACHE_PATH)
+            os.path.exists(PACKAGE_CACHE_PATH),
         )
 
     def test_print_commands_and_needed(self):
         """Test that `--print--commands` option not fails."""
         self.assertEqual(
-            fake_pikaur("-S python-pygobject-stubs nano --print-commands").returncode, 0
+            fake_pikaur("-S python-pygobject-stubs nano --print-commands").returncode, 0,
         )
 
     def test_needed(self):
         """Test that `--needed` option not fails."""
         self.assertEqual(
-            pikaur("-S python-pygobject-stubs nano --needed").returncode, 0
+            pikaur("-S python-pygobject-stubs nano --needed").returncode, 0,
         )

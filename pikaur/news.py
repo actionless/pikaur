@@ -68,9 +68,9 @@ class News:
                                     "\n" +
                                     color_line(
                                         translate("There is news from archlinux.org!"),
-                                        ColorsHighlight.red
+                                        ColorsHighlight.red,
                                     ) +
-                                    "\n"
+                                    "\n",
                                 )
                             self._print_one_entry(news_entry)
                             # news are in inverse chronological order (newest first).
@@ -101,7 +101,7 @@ class News:
             with open_file(self.CACHE_FILE) as last_seen_fd:
                 file_data = last_seen_fd.readline().strip()
                 parsed_date = datetime.datetime.strptime(  # noqa: DTZ007
-                    file_data, DT_FORMAT
+                    file_data, DT_FORMAT,
                 )
                 _debug(f"{file_data=}, {parsed_date=}")
                 return parsed_date
@@ -111,7 +111,7 @@ class News:
             # then we get take the date from the last installed package:
             last_pkg_date: datetime.datetime = datetime.datetime.fromtimestamp(
                 PackageDB.get_last_installed_package_date(),
-                tz=DEFAULT_TIMEZONE
+                tz=DEFAULT_TIMEZONE,
             )
             time_formatted: str = last_pkg_date.strftime(DT_FORMAT)
             try:
@@ -126,7 +126,7 @@ class News:
             print_error(translate("The news feed could not be received or parsed."))
             return False
         last_online_news_date: datetime.datetime = datetime.datetime.strptime(  # noqa: DTZ007
-            last_online_news, DT_FORMAT
+            last_online_news, DT_FORMAT,
         )
         last_seen_news_date = self._get_last_seen_news_date()
         _debug(f"is_new, {last_online_news_date=}, {last_seen_news_date=}")
@@ -144,10 +144,10 @@ class News:
                 description = str(child.text)
         print_stdout(
             color_line(title, ColorsHighlight.cyan) +
-            " (" + bold_line(pub_date) + ")"
+            " (" + bold_line(pub_date) + ")",
         )
         print_stdout(
-            format_paragraph(strip_tags(description))
+            format_paragraph(strip_tags(description)),
         )
         print_stdout()
 

@@ -12,8 +12,8 @@ if len(sys.argv) > 1:
 DEFAULT_ENCODING = "utf-8"
 MAKE_SHELL = os.environ.get("MAKE_SHELL", "sh")
 # SKIP_TARGETS_WITH_CHARS = ("%", )
-SKIP_TARGETS_WITH_CHARS = ("%", "/", )
-SKIP_TARGETS = (".PHONY", ".PRECIOUS", )
+SKIP_TARGETS_WITH_CHARS = ("%", "/")
+SKIP_TARGETS = (".PHONY", ".PRECIOUS")
 
 
 _ALL = "all"
@@ -29,7 +29,7 @@ def get_targets() -> list[str]:
             "--no-builtin-rules",
             "--no-builtin-variables",
         ],
-        encoding=DEFAULT_ENCODING
+        encoding=DEFAULT_ENCODING,
     ).splitlines()
     not_a_target_comment = "# Not a target:"
 
@@ -71,7 +71,7 @@ def print_error_in_target(target: str) -> None:
     print(
         f"\n{'-'*30}\n"
         f"ERROR in target `{target}`:"
-        f"\n{'-'*30}"
+        f"\n{'-'*30}",
     )
 
 
@@ -109,7 +109,7 @@ def main() -> None:
                         "shellcheck",
                         fobj.name,
                         f"--shell={MAKE_SHELL}",
-                        "--color=always"
+                        "--color=always",
                     ],
                     encoding=DEFAULT_ENCODING,
                 )

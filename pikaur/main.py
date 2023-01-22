@@ -84,7 +84,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
             try:
                 setattr(
                     self, f"original_{attr}",
-                    real_stream
+                    real_stream,
                 )
                 setattr(
                     sys, attr,
@@ -93,18 +93,20 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                         mode="w",
                         encoding=DEFAULT_INPUT_ENCODING,
                         closefd=False,
-                    )
+                    ),
                 )
             except io.UnsupportedOperation as exc:
                 _debug(f"Can't set {attr} to {DEFAULT_INPUT_ENCODING}:\n{exc}", lock=False)
 
     def __exit__(
             self,
-            exc_class: type | None, exc_instance: BaseException | None, exc_tb: TracebackType | None
+            exc_class: type | None,
+            exc_instance: BaseException | None,
+            exc_tb: TracebackType | None,
     ) -> None:
         try:
             # @TODO: replace all SysExit-s to SystemExit-s eventually :3
-            if exc_instance and exc_class and (exc_class not in (SysExit, SystemExit, )):
+            if exc_instance and exc_class and (exc_class not in (SysExit, SystemExit)):
                 # handling exception in context manager's __exit__ is not recommended
                 # but otherwise stderr would be closed before exception is printed...
                 if exc_tb:
@@ -116,13 +118,13 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 _debug(f"Restoring {attr}...", lock=False)
                 stream = getattr(sys, attr)
                 orig_stream = getattr(self, f"original_{attr}", None)
-                if orig_stream in (None, stream, ):
+                if orig_stream in (None, stream):
                     _debug("nothing to do", lock=False)
                     continue
                 stream.flush()
                 setattr(
                     sys, attr,
-                    orig_stream
+                    orig_stream,
                 )
                 _debug(f"{attr} restored", lock=False)
                 stream.close()
@@ -143,13 +145,13 @@ def cli_pkgbuild() -> None:
 
 def cli_print_version() -> None:
     args = parse_args()
-    proc = spawn(
-        [PikaurConfig().misc.PacmanPath.get_str(), "--version", ],
-    )
+    proc = spawn([
+        PikaurConfig().misc.PacmanPath.get_str(), "--version",
+    ])
     pacman_version = proc.stdout_text.splitlines()[1].strip(" .-") if proc.stdout_text else "N/A"
     print_version(
         pacman_version=pacman_version, pyalpm_version=pyalpm.version(),
-        quiet=args.quiet
+        quiet=args.quiet,
     )
 
 
@@ -163,8 +165,8 @@ def cli_dynamic_select() -> None:  # pragma: no cover
             print_stderr(
                 "\n" + translate(
                     "Please enter the number of the package(s) you want to install "
-                    "and press [Enter] (default={}):"
-                ).format(1)
+                    "and press [Enter] (default={}):",
+                ).format(1),
             )
             answers = get_multiple_numbers_input("> ", list(range(1, len(packages) + 1))) or [1]
             print_stderr()
@@ -173,7 +175,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
             for idx in selected_pkgs_idx:
                 if not 0 <= idx < len(packages):
                     print_error(translate("invalid value: {} is not between {} and {}").format(
-                        idx + 1, 1, len(packages) + 1
+                        idx + 1, 1, len(packages) + 1,
                     ))
                     restart_prompt = True
             if restart_prompt:
@@ -259,7 +261,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             if not config_overridden:
                 restart_args += ["--pikaur-config", get_config_path()]
             sys.exit(interactive_spawn(
-                sudo(restart_args)
+                sudo(restart_args),
             ).returncode)
         else:
             if not require_sudo or running_as_root():
@@ -276,7 +278,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         if require_sudo:
             pacman_args = sudo(pacman_args)
         sys.exit(
-            interactive_spawn(pacman_args).returncode
+            interactive_spawn(pacman_args).returncode,
         )
 
 
@@ -292,11 +294,11 @@ def migrate_old_aur_repos_dir() -> None:
     print_stderr()
     print_warning(
         translate(
-            "AUR repos dir has been moved from '{old}' to '{new}'."
+            "AUR repos dir has been moved from '{old}' to '{new}'.",
         ).format(
             old=_OLD_AUR_REPOS_CACHE_PATH,
-            new=AUR_REPOS_CACHE_PATH
-        )
+            new=AUR_REPOS_CACHE_PATH,
+        ),
     )
     print_stderr()
 

@@ -110,7 +110,7 @@ class DataTypeTest(PikaurTestCase):
             a1 = self.DataClass1(
                 foo=1, bar="a",
                 spam="bzzzzzz",
-                ignore_extra_properties=True
+                ignore_extra_properties=True,
             )
         self.assertIn("does not have attribute", intercepted.stderr_text.lower())
         self.assertEqual(a1.foo, 1)
@@ -130,14 +130,14 @@ class InstallInfoTest(PikaurTestCase):
             name=repo_pkg.name,
             current_version=repo_pkg.version,
             new_version=420,
-            package=repo_pkg
+            package=repo_pkg,
         )
-        aur_pkg = find_aur_packages(["pikaur", ])[0][0]
+        aur_pkg = find_aur_packages(["pikaur"])[0][0]
         cls.aur_install_info = InstallInfo(
             name=aur_pkg.name,
             current_version=aur_pkg.version,
             new_version=420,
-            package=aur_pkg
+            package=aur_pkg,
         )
 
     def test_basic(self):

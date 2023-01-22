@@ -51,7 +51,7 @@ def get_all_local_pkgs_conflicts() -> dict[str, list[str]]:
 def find_conflicting_with_new_pkgs(
         new_pkg_name: str,
         all_pkgs_names: list[str],
-        new_pkg_conflicts_list: list[str]
+        new_pkg_conflicts_list: list[str],
 ) -> dict[str, list[str]]:
     """
     find if any of new packages have Conflicts with
@@ -82,7 +82,7 @@ def find_conflicting_with_new_pkgs(
                         not conflict_version_matcher or
                         conflict_version_matcher(
                             provided_pkg.version_matcher.version or
-                            get_remote_package_version(installed_pkg_name)
+                            get_remote_package_version(installed_pkg_name),
                         )
                     ):
                         new_pkgs_conflicts.setdefault(new_pkg_name, [])
@@ -94,7 +94,7 @@ def find_conflicting_with_new_pkgs(
 
 def find_conflicting_with_local_pkgs(
         new_pkg_name: str,
-        all_local_pgks_conflicts_lists: dict[str, list[str]]
+        all_local_pgks_conflicts_lists: dict[str, list[str]],
 ) -> dict[str, list[str]]:
     """Find if any of already installed packages have Conflicts with the new ones."""
     new_pkgs_conflicts: dict[str, list[str]] = {}
@@ -116,7 +116,7 @@ def find_conflicting_with_local_pkgs(
 
 def find_aur_conflicts(
         aur_pkgs_install_infos: Sequence[AURInstallInfo],
-        repo_packages_names: list[str]
+        repo_packages_names: list[str],
 ) -> dict[str, list[str]]:
     aur_pkgs: list[AURPackageInfo] = [ii.package for ii in aur_pkgs_install_infos]
     aur_packages_names = [ii.name for ii in aur_pkgs_install_infos]
@@ -129,10 +129,10 @@ def find_aur_conflicts(
 
     new_pkgs_conflicts_lists = {}
     new_pkgs_conflicts_lists.update(
-        get_new_repo_pkgs_conflicts(repo_deps_names)
+        get_new_repo_pkgs_conflicts(repo_deps_names),
     )
     new_pkgs_conflicts_lists.update(
-        get_new_aur_pkgs_conflicts(aur_pkgs)
+        get_new_aur_pkgs_conflicts(aur_pkgs),
     )
     all_local_pgks_conflicts_lists = get_all_local_pkgs_conflicts()
 
@@ -142,12 +142,12 @@ def find_aur_conflicts(
             find_conflicting_with_new_pkgs(
                 new_pkg_name,
                 all_local_pkgs_names + all_pkgs_to_be_installed + repo_packages_names,
-                new_pkg_conflicts_list
-            )
+                new_pkg_conflicts_list,
+            ),
         )
     for new_pkg_name in all_pkgs_to_be_installed:
         conflicts_result.update(
-            find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_lists)
+            find_conflicting_with_local_pkgs(new_pkg_name, all_local_pgks_conflicts_lists),
         )
 
     return conflicts_result

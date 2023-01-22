@@ -56,7 +56,7 @@ def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) ->
     """
     default = " "
     all_answers = Answers()
-    answers = answers or (all_answers.Y_UP, all_answers.N, )
+    answers = answers or (all_answers.Y_UP, all_answers.N)
 
     for letter in answers:
         if letter.isupper():
@@ -72,7 +72,7 @@ def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) ->
         tty.setraw(sys.stdin.fileno())
         answer = sys.stdin.read(1).lower()
 
-        if ord(answer) in (ReadlineKeycodes.CTRL_C, ReadlineKeycodes.CTRL_D, ):
+        if ord(answer) in (ReadlineKeycodes.CTRL_C, ReadlineKeycodes.CTRL_D):
             raise SysExit(1)
         if ord(answer) == ReadlineKeycodes.ENTER:
             answer = default
@@ -84,7 +84,7 @@ def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) ->
         return " "
     finally:
         tty.tcsetattr(  # type: ignore[attr-defined]
-            sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings  # type: ignore[attr-defined]
+            sys.stdin.fileno(), tty.TCSADRAIN, previous_tty_settings,  # type: ignore[attr-defined]
         )
         sys.stdout.write(f"{answer}\r\n")
         tty.tcdrain(sys.stdin.fileno())  # type: ignore[attr-defined]
@@ -106,7 +106,7 @@ def split_last_line(text: str) -> str:
 
 
 def get_input(
-        prompt: str, answers: Sequence[str] = (), *, require_confirm: bool = False
+        prompt: str, answers: Sequence[str] = (), *, require_confirm: bool = False,
 ) -> str:
     _debug("Gonna get input from user...")
     answer = ""
@@ -151,8 +151,8 @@ class NotANumberInputError(Exception):
 
 
 class NumberRangeInputSyntax:
-    DELIMITERS: Final[Sequence[str]] = (" ", ",", )
-    RANGES: Final[Sequence[str]] = ("-", "..", )
+    DELIMITERS: Final[Sequence[str]] = (" ", ",")
+    RANGES: Final[Sequence[str]] = ("-", "..")
 
 
 def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> list[int]:
@@ -193,7 +193,7 @@ def ask_to_continue(text: str | None = None, *, default_yes: bool = True) -> boo
         default_option = translate(
             "[Y]es ({reason})"
             if default_yes else
-            "[N]o ({reason})"
+            "[N]o ({reason})",
         ).format(reason=LiteralArgs.NOCONFIRM)
         print_stderr(f"{text} {default_option}")
         return default_yes
@@ -227,20 +227,20 @@ def retry_interactive_command(
             )
             if pikspect and (LiteralArgs.NOCONFIRM not in cmd_args) else
             interactive_spawn(
-                cmd_args
+                cmd_args,
             )
         ).returncode == 0
         if good:
             return good
         print_stderr(color_line(
             translate("Command '{}' failed to execute.").format(
-                " ".join(cmd_args)
+                " ".join(cmd_args),
             ),
-            ColorsHighlight.red
+            ColorsHighlight.red,
         ))
         if not ask_to_continue(
                 text=translate("Do you want to retry?"),
-                default_yes=not args.noconfirm
+                default_yes=not args.noconfirm,
         ):
             return False
 
@@ -264,7 +264,7 @@ def get_editor_or_exit() -> list[str] | None:
     if not editor:
         print_warning(translate("no editor found. Try setting $VISUAL or $EDITOR."))
         if not ask_to_continue(
-                translate("Do you want to proceed without editing?")
+                translate("Do you want to proceed without editing?"),
         ):  # pragma: no cover
             raise SysExit(125)
     return editor

@@ -70,7 +70,7 @@ class CmdResult:
             self,
             returncode: int | None = None,
             stdout: str | None = None,
-            stderr: str | None = None
+            stderr: str | None = None,
     ) -> None:
         self.returncode = returncode
         self.stdout = stdout or ""
@@ -191,7 +191,7 @@ def pikaur(
         ]
     if fake_makepkg:
         new_args += [
-            "--makepkg-path=" + os.path.join(TEST_DIR, "fake_makepkg")
+            "--makepkg-path=" + os.path.join(TEST_DIR, "fake_makepkg"),
         ]
         mflags.append("--noextract")
     if skippgpcheck:
@@ -204,7 +204,7 @@ def pikaur(
                 new_args.remove(arg)
                 break
     if mflags:
-        new_args += [f"--mflags={','.join(mflags)}", ]
+        new_args += [f"--mflags={','.join(mflags)}"]
 
     log_stderr(color_line("\n => ", 10, force=True) + " ".join(new_args))
 
@@ -212,7 +212,7 @@ def pikaur(
         with (
                 InterceptSysOutput(
                     capture_stderr=capture_stderr,
-                    capture_stdout=capture_stdout
+                    capture_stdout=capture_stdout,
                 ) as intercepted,
                 contextlib.suppress(FakeExit),
         ):
@@ -290,11 +290,11 @@ class PikaurTestCase(TestCase):
     def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:  # noqa: N802
         cmd_result: str = pacman(f"-Qiq {dep_name}").stdout
         self.assertTrue(
-            cmd_result
+            cmd_result,
         )
         self.assertEqual(
             cmd_result.splitlines()[0].split(":")[1].strip(),
-            provider_name
+            provider_name,
         )
 
 
@@ -337,7 +337,7 @@ class PikaurDbTestCase(PikaurTestCase):
         from_version = srcinfo.get_version()
         if not to_version:
             proc = spawn(
-                f"git -C {repo_dir} log --format=%h"
+                f"git -C {repo_dir} log --format=%h",
             )
             if not proc.stdout_text:
                 raise RuntimeError()
@@ -350,7 +350,7 @@ class PikaurDbTestCase(PikaurTestCase):
             count = 1
             while current_version != to_version:
                 proc = spawn(
-                    f"git -C {repo_dir} log --format=%h"
+                    f"git -C {repo_dir} log --format=%h",
                 )
                 if not proc.stdout_text:
                     raise RuntimeError()
@@ -390,7 +390,7 @@ class PikaurDbTestCase(PikaurTestCase):
             "-P -i --noconfirm "
             f"{build_dir}/PKGBUILD",
             fake_makepkg=fake_makepkg,
-            skippgpcheck=skippgpcheck
+            skippgpcheck=skippgpcheck,
         )
         self.assertInstalled(repo_pkg_name)
         return PackageDB.get_local_dict()[repo_pkg_name].version
@@ -427,12 +427,12 @@ class PikaurDbTestCase(PikaurTestCase):
             "-P -i --noconfirm "
             f"{build_dir}/PKGBUILD",
             fake_makepkg=fake_makepkg,
-            skippgpcheck=skippgpcheck
+            skippgpcheck=skippgpcheck,
         )
         self.assertInstalled(aur_pkg_name)
         new_version = PackageDB.get_local_dict()[aur_pkg_name].version
         self.assertNotEqual(
             old_version, new_version,
-            f"After downgrading version of {aur_pkg_name} still stays on {old_version}"
+            f"After downgrading version of {aur_pkg_name} still stays on {old_version}",
         )
         return new_version

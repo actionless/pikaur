@@ -13,7 +13,7 @@ LONG_ARG_PREFIX: Final = "--"
 class ArgumentParserWithUnknowns(ArgumentParser):
 
     def _parse_known_args(
-            self, arg_strings: list[str], namespace: Namespace
+            self, arg_strings: list[str], namespace: Namespace,
     ) -> tuple[Namespace, list[str]]:
         # replace arg strings that are file references
         if self.fromfile_prefix_chars is not None:
@@ -62,7 +62,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         seen_non_default_actions = set()
 
         def take_action(
-                action: Action, argument_strings: list[str], option_string: str | None = None
+                action: Action, argument_strings: list[str], option_string: str | None = None,
         ) -> None:
             seen_actions.add(action)
             argument_values = self._get_values(action, argument_strings)

@@ -31,15 +31,15 @@ def cli_print_help() -> None:
 
     proc = spawn([
         PikaurConfig().misc.PacmanPath.get_str(),
-        *reconstruct_args(args, ignore_args=get_pikaur_long_opts())
+        *reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
     ])
     if not proc.stdout_text:
         no_response_from_pacman = translate("No response from Pacman")
         raise RuntimeError(no_response_from_pacman)
     pacman_help = proc.stdout_text.replace(
-        "pacman", PIKAUR_NAME
+        "pacman", PIKAUR_NAME,
     ).replace(
-        "options:", "\n" + translate("Common pacman options:")
+        "options:", "\n" + translate("Common pacman options:"),
     )
     if LiteralArgs.HELP in pacman_help:
         pacman_help += (
@@ -52,7 +52,7 @@ def cli_print_help() -> None:
         pacman_help = (
             translate("usage:  pikaur {-P --pkgbuild} [options] <file(s)>") + "\n\n" +
             translate(
-                "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -Uh`."
+                "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -Uh`.",
             )
         )
     if args.getpkgbuild:
@@ -100,7 +100,7 @@ def cli_print_help() -> None:
             ("", "--devel", translate("always sysupgrade '-git', '-svn' and other dev packages")),
             ("", "--nodiff", translate("don't prompt to show the build files diff")),
             ("", "--ignore-outofdate", translate(
-                "ignore AUR packages' updates which marked 'outofdate'"
+                "ignore AUR packages' updates which marked 'outofdate'",
             )),
         ]
 

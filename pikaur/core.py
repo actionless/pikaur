@@ -96,7 +96,7 @@ class DataType(ComparableType):
         for key in self.__all_annotations__:
             if not self._key_exists(key):
                 missing_required_attribute = translate(
-                    "'{class_name}' does not have required attribute '{key}' set."
+                    "'{class_name}' does not have required attribute '{key}' set.",
                 ).format(
                     class_name=self.__class__.__name__, key=key,
                 )
@@ -109,7 +109,7 @@ class DataType(ComparableType):
             ) or self._key_exists(key)
         ):
             unknown_attribute = translate(
-                "'{class_name}' does not have attribute '{key}' defined."
+                "'{class_name}' does not have attribute '{key}' defined.",
             ).format(
                 class_name=self.__class__.__name__, key=key,
             )
@@ -182,7 +182,7 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
     _terminated: bool = False
 
     def communicate(
-            self, com_input: bytes | None = None, timeout: float | None = None
+            self, com_input: bytes | None = None, timeout: float | None = None,
     ) -> tuple[bytes, bytes]:
         if (
                 parse_args().print_commands
@@ -195,7 +195,7 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
                     " ".join(str(arg) for arg in self.args)
                     if isinstance(self.args, list) else
                     str(self.args)
-                )
+                ),
             )
 
         stdout, stderr = super().communicate(com_input, timeout)
@@ -233,7 +233,7 @@ def interactive_spawn(
     if env:
         kwargs["env"] = env
     process = InteractiveSpawn(
-        cmd, **kwargs
+        cmd, **kwargs,
     )
     process.communicate()
     return process
@@ -246,7 +246,7 @@ def spawn(
 ) -> InteractiveSpawn:
     with (
             tempfile.TemporaryFile() as out_file,
-            tempfile.TemporaryFile() as err_file
+            tempfile.TemporaryFile() as err_file,
     ):
         proc = interactive_spawn(
             cmd, stdout=out_file, stderr=err_file,
@@ -308,8 +308,8 @@ def isolate_root_cmd(
 
 class CodepageSequences:
     UTF_8: Final[Sequence[bytes]] = (b"\xef\xbb\xbf", )
-    UTF_16: Final[Sequence[bytes]] = (b"\xfe\xff", b"\xff\xfe", )
-    UTF_32: Final[Sequence[bytes]] = (b"\xfe\xff\x00\x00", b"\x00\x00\xff\xfe", )
+    UTF_16: Final[Sequence[bytes]] = (b"\xfe\xff", b"\xff\xfe")
+    UTF_32: Final[Sequence[bytes]] = (b"\xfe\xff\x00\x00", b"\x00\x00\xff\xfe")
 
 
 def detect_bom_type(file_path: str) -> str:
@@ -338,16 +338,16 @@ def detect_bom_type(file_path: str) -> str:
 
 
 def open_file(
-        file_path: str, mode: str = READ_MODE, encoding: str | None = None
+        file_path: str, mode: str = READ_MODE, encoding: str | None = None,
 ) -> codecs.StreamReaderWriter:
     if encoding is None and (mode and READ_MODE in mode):
         encoding = detect_bom_type(file_path)
     if encoding:
         return codecs.open(
-            file_path, mode, errors="ignore", encoding=encoding
+            file_path, mode, errors="ignore", encoding=encoding,
         )
     return codecs.open(
-        file_path, mode, errors="ignore"
+        file_path, mode, errors="ignore",
     )
 
 
@@ -376,7 +376,7 @@ def get_editor() -> list[str] | None:
     ):
         path = shutil.which(editor)
         if path:
-            return [path, ]
+            return [path]
     return None
 
 
@@ -442,7 +442,7 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
         sys.exit(65)
     if not dep_names:
         privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
-        dep_names = ["fakeroot", ] + (
+        dep_names = ["fakeroot"] + (
             [privilege_escalation_tool] if not running_as_root() else []
         )
 
@@ -450,6 +450,6 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
         if not shutil.which(dep_bin):
             print_error("'{}' {}.".format(  # pylint: disable=consider-using-f-string
                 bold_line(dep_bin),
-                translate("executable not found")
+                translate("executable not found"),
             ))
             sys.exit(2)

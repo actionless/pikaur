@@ -36,7 +36,7 @@ ENCODING: Final = "utf-8"
 
 
 class NroffRenderer(  # pylint: disable=too-many-public-methods
-        markdown_it.renderer.RendererProtocol
+        markdown_it.renderer.RendererProtocol,
 ):
     # pylint: disable=unused-argument
 
@@ -55,7 +55,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
         }
 
     def render(
-        self, tokens: Sequence[Token], options: OptionsDict, env: MutableMapping[str, str]
+        self, tokens: Sequence[Token], options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         result = self.document_open()
         for i, token in enumerate(tokens):
@@ -71,7 +71,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
         return result
 
     def render_inline(
-        self, tokens: Sequence[Token], options: OptionsDict, env: MutableMapping[str, str]
+        self, tokens: Sequence[Token], options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         result = ""
         for i, token in enumerate(tokens):
@@ -83,13 +83,13 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def text(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return self.escape(tokens[idx].content)
 
     def softbreak(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return self.escape(" ")
 
@@ -97,7 +97,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def html_inline(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         text = tokens[idx].content
         text = self._html_tag_regex.sub("", text)
@@ -105,7 +105,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def html_block(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return (
             "\n" +
@@ -115,7 +115,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def heading_open(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         token = tokens[idx]
         level = int(token.tag[1])
@@ -126,19 +126,19 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def heading_close(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return '"\n.\n'
 
     def paragraph_open(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return ".P\n"
 
     def paragraph_close(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return "\n.\n"
 
@@ -146,7 +146,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def link_open(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         token = tokens[idx]
         self._last_link = str(dict(token.attrItems()).get("href", ""))
@@ -154,7 +154,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def link_close(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         result = r"\fR"
         if self._last_link and self.is_url(self._last_link):
@@ -167,13 +167,13 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def image(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return ""
 
     def code_inline(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         token = tokens[idx]
         return (
@@ -184,19 +184,19 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def bullet_list_open(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return ""
 
     def bullet_list_close(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return ""
 
     def list_item_open(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         list_deco = r"\(bu"  # bullet
         # bullet_char = node.parent.list_data.get("bullet_char")
@@ -206,7 +206,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def list_item_close(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         return ".\n"
 
@@ -222,7 +222,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     def fence(
             self, tokens: Sequence[Token], idx: int,
-            options: OptionsDict, env: MutableMapping[str, str]
+            options: OptionsDict, env: MutableMapping[str, str],
     ) -> str:
         token = tokens[idx]
         return (
@@ -269,14 +269,14 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
 with (
         open(README_PATH, encoding=ENCODING) as input_fobj,
-        open(OUTPUT_PATH, "w", encoding=ENCODING) as output_fobj
+        open(OUTPUT_PATH, "w", encoding=ENCODING) as output_fobj,
 ):
     output_fobj.write(
         NroffRenderer(name="pikaur", section=1).render(
             markdown_it.MarkdownIt().parse(
-                input_fobj.read()
+                input_fobj.read(),
             ),
             options=OptionsDict(),
-            env={}
-        )
+            env={},
+        ),
     )

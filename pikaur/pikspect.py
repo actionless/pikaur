@@ -91,7 +91,7 @@ TTYRestore.save()
 def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
     term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
     fcntl.ioctl(
-        file_descriptor, termios.TIOCSWINSZ, term_geometry_struct
+        file_descriptor, termios.TIOCSWINSZ, term_geometry_struct,
     )
 
 
@@ -149,7 +149,7 @@ def _match(pattern: str, line: str) -> bool:
     return len(line) >= len(pattern) and bool(
         re.compile(pattern).search(line)
         if max(sequence in pattern for sequence in RECOGNIZED_REGEX_SEQUENCES) else
-        (pattern in line)
+        (pattern in line),
     )
 
 
@@ -193,7 +193,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
             print_output: bool = True,
             capture_input: bool = True,
             capture_output: bool = False,
-            default_questions: dict[str, list[str]] | None = None
+            default_questions: dict[str, list[str]] | None = None,
     ) -> None:
         self.args = args
         self.print_output = print_output
@@ -233,11 +233,11 @@ class PikspectPopen(subprocess.Popen[bytes]):
     def run(self) -> None:
         if not isinstance(self.args, list):
             not_a_list_error = translate(
-                "`{var_name}` should be list."
+                "`{var_name}` should be list.",
             ).format(var_name="args")
             raise TypeError(not_a_list_error)
         PikspectSignalHandler.set_handler(
-            lambda *_whatever: self.send_signal(signal.SIGINT)
+            lambda *_whatever: self.send_signal(signal.SIGINT),
         )
         try:
             with NestedTerminal() as real_term_geometry:
@@ -247,20 +247,20 @@ class PikspectPopen(subprocess.Popen[bytes]):
                 ):  # pragma: no cover
                     subprocess.run(  # nosec B603
                         get_sudo_refresh_command(),
-                        check=True
+                        check=True,
                     )
                 with (
                         open(
-                            self.pty_user_master, "w", encoding=DEFAULT_INPUT_ENCODING
+                            self.pty_user_master, "w", encoding=DEFAULT_INPUT_ENCODING,
                         ) as self.pty_in,
                         open(
-                            self.pty_cmd_master, "rb", buffering=0
+                            self.pty_cmd_master, "rb", buffering=0,
                         ) as self.pty_out,
                 ):
                     set_terminal_geometry(
                         self.pty_out.fileno(),
                         columns=real_term_geometry.columns,
-                        rows=real_term_geometry.lines
+                        rows=real_term_geometry.lines,
                     )
                     with ThreadPool(processes=3) as pool:
                         output_task = pool.apply_async(self.cmd_output_reader_thread, ())
@@ -322,7 +322,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
         while True:
 
             try:
-                selected = select.select([self.pty_out, ], [], [], SMALL_TIMEOUT)
+                selected = select.select([self.pty_out], [], [], SMALL_TIMEOUT)
             except ValueError:  # pragma: no cover
                 return
             else:
@@ -338,7 +338,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
             output = pty_reader.read(4096)
 
             self.historic_output = (
-                self.historic_output[-self.max_question_length:] + [output, ]
+                self.historic_output[-self.max_question_length:] + [output]
             )
             self.write_something(output)
             self.check_questions()
@@ -368,8 +368,8 @@ class PikspectPopen(subprocess.Popen[bytes]):
                         sys.stdout.write(
                             "\r" + " " * get_term_width() + "\r" +
                             b"".join(
-                                self.historic_output
-                            ).decode(DEFAULT_INPUT_ENCODING).splitlines()[-1]
+                                self.historic_output,
+                            ).decode(DEFAULT_INPUT_ENCODING).splitlines()[-1],
                         )
                     self.pty_in.write(char)
                     self.pty_in.flush()
@@ -408,10 +408,10 @@ def pikspect(
             format_pacman_question("Do you want to remove these packages?"),
         ]
         CONFLICT = format_pacman_question(
-            "%s and %s are in conflict. Remove %s?", YesNo.QUESTION_YN_NO
+            "%s and %s are in conflict. Remove %s?", YesNo.QUESTION_YN_NO,
         )
         CONFLICT_VIA_PROVIDED = format_pacman_question(
-            "%s and %s are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO
+            "%s and %s are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO,
         )
 
     def format_conflicts(conflicts: list[list[str]]) -> list[str]:
@@ -421,7 +421,7 @@ def pikspect(
         ] + [
             (
                 re.escape(Questions.CONFLICT_VIA_PROVIDED % (
-                    new_pkg, old_pkg, ".*", old_pkg
+                    new_pkg, old_pkg, ".*", old_pkg,
                 ))
             ).replace(r"\.\*", ".*")
             for new_pkg, old_pkg in conflicts
@@ -452,7 +452,7 @@ def pikspect(
         if parse_args().print_commands:
             print_stderr(
                 color_line("pikspect => ", ColorsHighlight.cyan) +
-                " ".join(cmd)
+                " ".join(cmd),
             )
         proc.run()
         return proc

@@ -55,7 +55,7 @@ def filter_aur_results(
 
 
 def package_search_thread_aur(  # pylint: disable=too-many-branches
-        queries: list[str]
+        queries: list[str],
 ) -> list[AURPackageInfo]:
     args = parse_args()
     result = {}
@@ -73,15 +73,15 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                     if exc.error == AurRPCErrors.TOO_MANY_RESULTS:
                         print_error(
                             translate("AUR: Too many package results for '{query}'").format(
-                                query=query
-                            )
+                                query=query,
+                            ),
                         )
                         use_as_filters.append(query)
                     elif exc.error == AurRPCErrors.QUERY_TOO_SMALL:
                         print_error(
                             translate("AUR: Query arg too small '{query}'").format(
-                                query=query
-                            )
+                                query=query,
+                            ),
                         )
                         use_as_filters.append(query)
                     else:
@@ -122,7 +122,7 @@ def package_search_thread_local() -> dict[str, str]:
 
 
 def join_search_results(
-        all_search_results: list[list[SamePackageTypeT]]
+        all_search_results: list[list[SamePackageTypeT]],
 ) -> Iterable[SamePackageTypeT]:
     if not all_search_results:
         return []
@@ -142,7 +142,7 @@ def join_search_results(
 
 
 def search_packages(  # pylint: disable=too-many-locals
-        *, enumerated: bool = False
+        *, enumerated: bool = False,
 ) -> list[AnyPackage]:
     refresh_pkg_db_if_needed()
 
@@ -163,7 +163,7 @@ def search_packages(  # pylint: disable=too-many-locals
             for search_word in (search_query or [""])
         ] if not aur_only else []
         request_aur = pool.apply_async(
-            package_search_thread_aur, (search_query,)
+            package_search_thread_aur, (search_query,),
         ) if not repo_only else None
         pool.close()
 

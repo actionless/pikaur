@@ -54,11 +54,10 @@ class VersionMatcher():
             return
         self.version_matchers.append(version_matcher.version_matchers[0])
         self.line += "," + version_matcher.line
-        if self.version:
-            if version_matcher.version:
-                self.version += "," + version_matcher.version
-        else:
+        if not self.version:
             self.version = version_matcher.version
+        elif version_matcher.version:
+            self.version += "," + version_matcher.version
 
     def _set_version_matcher_func(  # pylint: disable=too-many-locals
             self, *, is_pkg_deps: bool = False
@@ -217,13 +216,12 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
                 split_version(version_chunk2),
                 fillvalue=" "
         ):
-            if block1 == block2:
-                if not diff_found:
-                    common_string += block1
-            else:
+            if block1 != block2:
                 diff_found = True
                 if diff_weight == 0 and block1 not in VERSION_SEPARATORS:
                     diff_weight += weight
+            elif not diff_found:
+                common_string += block1
             weight -= 1
     if version2 == VERSION_DEVEL:
         diff_weight = 9999

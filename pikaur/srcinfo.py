@@ -139,10 +139,14 @@ class SrcInfo():
             shutil.copy(self.pkgbuild_path, working_directory)
         result = spawn(
             isolate_root_cmd(
-                MakePkgCommand.get() + ["--printsrcinfo"] +
-                ["-p", os.path.basename(self.pkgbuild_path)],
+                [
+                    *MakePkgCommand.get(),
+                    "--printsrcinfo",
+                    "-p", os.path.basename(self.pkgbuild_path)
+                ],
                 cwd=working_directory
-            ), cwd=working_directory
+            ),
+            cwd=working_directory
         )
         if result.returncode != 0 or not result.stdout_text:
             print_error(

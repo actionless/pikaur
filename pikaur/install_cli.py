@@ -91,9 +91,9 @@ def edit_file(filename: str) -> bool:  # pragma: no cover
     if not editor_cmd:
         return False
     old_hash = hash_file(filename)
-    interactive_spawn(
-        editor_cmd + [filename]
-    )
+    interactive_spawn([
+        *editor_cmd, filename
+    ])
     new_hash = hash_file(filename)
     return old_hash != new_hash
 
@@ -399,9 +399,9 @@ class InstallPackagesCLI():
         with NamedTemporaryFile() as tmp_file:
             with open_file(tmp_file.name, "w") as write_file:
                 write_file.write(text_before)
-            interactive_spawn(
-                editor_cmd + [tmp_file.name, ]
-            )
+            interactive_spawn([
+                *editor_cmd, tmp_file.name
+            ])
             with open_file(tmp_file.name, "r") as read_file:
                 selected_packages = parse_pkg_names(read_file.read())
 
@@ -744,15 +744,16 @@ class InstallPackagesCLI():
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_install_info(package_name)
                 elif (
+                    (
                         self.args.sysupgrade > 1
-                ) or (
-                    is_devel_pkg(pkg_build.package_base) and (self.args.devel > 1)
+                    ) or (
+                        is_devel_pkg(pkg_build.package_base) and (self.args.devel > 1)
+                    ) and not pkg_build.version_is_upgradeable
                 ):
-                    if not pkg_build.version_is_upgradeable:
-                        print_package_downgrading(
-                            package_name,
-                            downgrade_version=pkg_build.get_version(package_name)
-                        )
+                    print_package_downgrading(
+                        package_name,
+                        downgrade_version=pkg_build.get_version(package_name)
+                    )
                 elif not pkg_build.version_is_upgradeable:
                     print_local_package_newer(
                         package_name,
@@ -784,41 +785,46 @@ class InstallPackagesCLI():
                 pkg_build.current_hash
             ) and (
                 not self.args.noconfirm
+            ) and (
+                not self.args.nodiff
+            ) and ask_to_continue(
+                    translate(
+                        "Do you want to see build files {diff} for {name} package?"
+                    ).format(
+                        diff=bold_line(translate("diff")),
+                        name=_pkg_label
+                    )
             ):
-                if not self.args.nodiff and ask_to_continue(
-                        translate(
-                            "Do you want to see build files {diff} for {name} package?"
-                        ).format(
-                            diff=bold_line(translate("diff")),
-                            name=_pkg_label
-                        )
-                ):
-                    git_args: list[str] = []
-                    diff_pager = PikaurConfig().review.DiffPager
-                    if diff_pager == DiffPagerValues.ALWAYS:
-                        git_args = ["env", "GIT_PAGER=less -+F"]
-                    elif diff_pager == DiffPagerValues.NEVER:
-                        git_args = ["env", "GIT_PAGER=cat"]
-                    git_args += [
-                        "git",
-                        "-C",
-                        pkg_build.repo_path,
-                        "diff",
-                    ] + PikaurConfig().review.GitDiffArgs.get_str().split(",") + [
-                        pkg_build.last_installed_hash,
-                        pkg_build.current_hash,
-                        "--", ".",
-                    ]
-                    for file_path in PikaurConfig().review.HideDiffFiles.get_str().split(","):
-                        if file_path:
-                            git_args += [
-                                f":(exclude){file_path}",
-                            ]
-                    interactive_spawn(isolate_root_cmd(git_args))
+                git_args: list[str] = []
+                diff_pager = PikaurConfig().review.DiffPager
+                if diff_pager == DiffPagerValues.ALWAYS:
+                    git_args = ["env", "GIT_PAGER=less -+F"]
+                elif diff_pager == DiffPagerValues.NEVER:
+                    git_args = ["env", "GIT_PAGER=cat"]
+                git_args += [
+                    "git",
+                    "-C", pkg_build.repo_path,
+                    "diff",
+                    *PikaurConfig().review.GitDiffArgs.get_str().split(","),
+                    pkg_build.last_installed_hash,
+                    pkg_build.current_hash,
+                    "--", ".",
+                ]
+                for file_path in PikaurConfig().review.HideDiffFiles.get_str().split(","):
+                    if file_path:
+                        git_args += [
+                            f":(exclude){file_path}",
+                        ]
+                interactive_spawn(isolate_root_cmd(git_args))
             elif self.args.noconfirm:
                 print_stdout(_skip_diff_label.format(
                     pkg=_pkg_label,
                     reason="--noconfirm"
+                ))
+            elif self.args.nodiff:
+                print_stdout(_skip_diff_label.format(
+                    pkg=_pkg_label,
+                    reason="--nodiff"
                 ))
             elif not pkg_build.last_installed_hash:
                 print_warning(_skip_diff_label.format(
@@ -958,11 +964,9 @@ class InstallPackagesCLI():
     def _remove_packages(self, packages_to_be_removed: list[str]) -> None:
         if packages_to_be_removed:
             retry_interactive_command_or_exit(
-                sudo(
-                    get_pacman_command() + [
-                        "-Rs",
-                    ] + packages_to_be_removed
-                ),
+                sudo([
+                    *get_pacman_command(), "-Rs", *packages_to_be_removed
+                ]),
                 pikspect=True,
             )
             PackageDB.discard_local_cache()
@@ -1007,15 +1011,13 @@ class InstallPackagesCLI():
             # pacman's --ignore doesn't work with repo name:
             extra_args.append(strip_repo_name(excluded_pkg_name))
         if not retry_interactive_command(
-                sudo(
-                    get_pacman_command() + [
-                        "--sync",
-                    ] + reconstruct_args(self.args, ignore_args=[
-                        "sync",
-                        "ignore",
-                        "refresh",
-                    ]) + self.install_package_names + extra_args
-                ),
+                sudo([
+                    *get_pacman_command(),
+                    "--sync",
+                    *reconstruct_args(self.args, ignore_args=["sync", "ignore", "refresh"]),
+                    *self.install_package_names,
+                    *extra_args
+                ]),
                 pikspect=True,
                 conflicts=self.resolved_conflicts,
         ) and not ask_to_continue(default_yes=False):  # pragma: no cover
@@ -1052,17 +1054,15 @@ class InstallPackagesCLI():
         }
         if aur_packages_to_install:
             if not retry_interactive_command(
-                    sudo(
-                        get_pacman_command() + [
-                            "--upgrade",
-                        ] + reconstruct_args(self.args, ignore_args=[
-                            "upgrade",
-                            "sync",
-                            "sysupgrade",
-                            "refresh",
-                            "ignore",
-                        ]) + list(aur_packages_to_install.values())
-                    ),
+                    sudo([
+                        *get_pacman_command(),
+                        "--upgrade",
+                        *reconstruct_args(
+                            self.args,
+                            ignore_args=["upgrade", "sync", "sysupgrade", "refresh", "ignore"]
+                        ),
+                        *list(aur_packages_to_install.values())
+                    ]),
                     pikspect=True,
                     conflicts=self.resolved_conflicts,
             ) and not ask_to_continue(default_yes=False):  # pragma: no cover
@@ -1101,12 +1101,8 @@ class InstallPackagesCLI():
                         remove_dir(package_build.build_dir)
 
         if self.failed_to_build_package_names:
-            print_stderr("\n".join(
-                [
-                    color_line(
-                        translate("Failed to build following packages:"),
-                        ColorsHighlight.red
-                    ),
-                ] + self.failed_to_build_package_names
-            ))
+            print_stderr("\n".join([
+                color_line(translate("Failed to build following packages:"), ColorsHighlight.red),
+                *self.failed_to_build_package_names
+            ]))
             raise SysExit(1)

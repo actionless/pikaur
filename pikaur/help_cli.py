@@ -29,10 +29,10 @@ def _format_options_help(options: list[tuple[str, str, str]]) -> str:
 def cli_print_help() -> None:
     args = parse_args()
 
-    proc = spawn(
-        [PikaurConfig().misc.PacmanPath.get_str(), ] +
-        reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
-    )
+    proc = spawn([
+        PikaurConfig().misc.PacmanPath.get_str(),
+        *reconstruct_args(args, ignore_args=get_pikaur_long_opts())
+    ])
     if not proc.stdout_text:
         no_response_from_pacman = translate("No response from Pacman")
         raise RuntimeError(no_response_from_pacman)

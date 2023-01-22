@@ -170,11 +170,9 @@ def format_paragraph(line: str) -> str:
     result.append(current_line)
 
     return "\n".join([
-        " ".join(
-            [(PADDING - 1) * " ", ] +
-            words +
-            [(PADDING - 1) * " ", ],
-        )
+        " ".join([
+            (PADDING - 1) * " ", *words, (PADDING - 1) * " ",
+        ])
         for words in result
     ])
 

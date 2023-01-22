@@ -95,7 +95,7 @@ def copy_aur_repo(from_path: str, to_path: str) -> None:
             from_paths.append(src_path)
     to_path = f"{to_path}/"
 
-    cmd_args = isolate_root_cmd(["cp", "-r"] + from_paths + [to_path])
+    cmd_args = isolate_root_cmd(["cp", "-r", *from_paths, to_path])
 
     result = spawn(cmd_args)
     if result.returncode != 0:
@@ -312,9 +312,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         ))
         pkgver_result = joined_spawn(
             isolate_root_cmd(
-                MakePkgCommand.get() + [
-                    "--nobuild", "--nocheck", "--nodeps"
-                ],
+                [*MakePkgCommand.get(), "--nobuild", "--nocheck", "--nodeps"],
                 cwd=self.build_dir
             ),
             cwd=self.build_dir,
@@ -379,7 +377,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 all_provided_pkgnames.update({
                     provided_name: pkg_name
                     for provided_name in
-                    [pkg_name] + srcinfo.get_values("provides")
+                    [pkg_name, *srcinfo.get_values("provides")]
                 })
 
         self.built_deps_to_install = {}
@@ -442,8 +440,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     def _set_built_package_path(self) -> None:
         pkg_paths_spawn = spawn(
-            isolate_root_cmd(MakePkgCommand.get() + ["--packagelist"],
-                             cwd=self.build_dir),
+            isolate_root_cmd(
+                [*MakePkgCommand.get(), "--packagelist"],
+                cwd=self.build_dir
+            ),
             cwd=self.build_dir
         )
         if pkg_paths_spawn.returncode != 0:
@@ -573,12 +573,11 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         ))
 
         retry_interactive_command_or_exit(
-            sudo(
-                self._get_pacman_command() + [
-                    "--sync",
-                    "--asdeps",
-                ] + self.all_deps_to_install
-            ),
+            sudo([
+                *self._get_pacman_command(),
+                "--sync", "--asdeps",
+                *self.all_deps_to_install
+            ]),
             pikspect=True,
             conflicts=self.resolved_conflicts,
         )
@@ -648,11 +647,11 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         retry_interactive_command_or_exit(
             sudo(
                 # pacman --remove flag conflicts with some --sync options:
-                self._get_pacman_command(ignore_args=[
-                    "overwrite",
-                ]) + [
+                [
+                    *self._get_pacman_command(ignore_args=["overwrite"]),
                     "--remove",
-                ] + list(deps_packages_installed)
+                    *list(deps_packages_installed)
+                ]
             ),
             pikspect=True,
         )
@@ -671,10 +670,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             arch not in supported_archs
         ):
             error_text = translate(
-                (
-                    "{name} can't be built on the current arch ({arch}). "
-                    "Supported: {suparch}"
-                )
+                "{name} can't be built on the current arch ({arch}). "
+                "Supported: {suparch}"
             ).format(
                 name=bold_line(", ".join(self.package_names)),
                 arch=arch,
@@ -811,7 +808,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 editor_cmd = get_editor_or_exit()
                 if editor_cmd:
                     interactive_spawn(
-                        editor_cmd + [self.pkgbuild_path]
+                        [*editor_cmd, self.pkgbuild_path]
                     )
                     interactive_spawn(isolate_root_cmd([
                         "cp",

@@ -182,7 +182,7 @@ def pikaur(
 
     PackageDB.discard_local_cache()
 
-    new_args = ["pikaur"] + cmd.split(" ")
+    new_args = ["pikaur", *cmd.split(" ")]
     mflags = []
 
     if "-S " in cmd:
@@ -247,7 +247,7 @@ def fake_pikaur(cmd_args: str) -> CmdResult:
 
 
 def pacman(cmd: str) -> CmdResult:
-    args = ["pacman"] + cmd.split(" ")
+    args = ["pacman", *cmd.split(" ")]
     proc = spawn(args)
     return CmdResult(
         returncode=proc.returncode,

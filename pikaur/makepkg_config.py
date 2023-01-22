@@ -146,7 +146,7 @@ class MakePkgCommand:
         ):
             if not cls._cmd:
                 raise RuntimeError()
-            cls._cmd = ["env", "PKGDEST="] + cls._cmd
+            cls._cmd = ["env", "PKGDEST=", *cls._cmd]
             cls.pkgdest_skipped = True
 
     @classmethod
@@ -159,6 +159,6 @@ class MakePkgCommand:
             config_args = (
                 ["--config", args.makepkg_config] if args.makepkg_config else []
             )
-            cls._cmd = [args.makepkg_path or "makepkg", ] + makepkg_flags + config_args
+            cls._cmd = [args.makepkg_path or "makepkg", *makepkg_flags, *config_args]
             cls._apply_dynamic_users_workaround()
         return cls._cmd

@@ -86,7 +86,7 @@ exclude-protected=_asdict,_fields,_replace,_source,_make
 [DESIGN]
 max-args=5
 max-attributes=16
-max-bool-expr=5
+max-bool-expr=6
 max-branches=12
 max-locals=15
 max-parents=7

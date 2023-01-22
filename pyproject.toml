@@ -58,6 +58,7 @@ ignore = [
 	"D205",
 	"D212", # conflicts with D213
 	"D400",
+	"D401", # idk, it seems broken? pydocstyle.org is down so i can't check how it's supposed to work
 	"D415",
 
 	#"Q000",  # force double-quotes

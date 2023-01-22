@@ -167,7 +167,7 @@ class AURInstallInfo(InstallInfo):
 def sudo(cmd: list[str]) -> list[str]:
     if running_as_root():
         return cmd
-    return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), ] + cmd
+    return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), *cmd]
 
 
 def get_sudo_refresh_command() -> list[str]:

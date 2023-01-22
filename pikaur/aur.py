@@ -208,7 +208,7 @@ def get_max_pkgs_chunks(package_names: list[str]) -> list[list[str]]:
     chunk: list[str] = []
     pkgs_to_do = package_names[::]
     while pkgs_to_do:
-        if len(_get_aur_rpc_info_url(chunk + [pkgs_to_do[0]])) < MAX_URL_LENGTH:
+        if len(_get_aur_rpc_info_url([*chunk, pkgs_to_do[0]])) < MAX_URL_LENGTH:
             chunk.append(pkgs_to_do.pop(0))
         else:
             chunks.append(chunk)

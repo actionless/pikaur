@@ -211,7 +211,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     elif args.version:
         pikaur_operation = cli_print_version
 
-    elif args.query:
+    elif args.query:  # noqa: SIM102
         if args.upgrades:
             pikaur_operation = cli_print_upgradeable
 
@@ -240,7 +240,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             require_sudo = True
             pikaur_operation = cli_install_packages
 
-    elif not (args.database or args.remove or args.deptest or args.upgrade):
+    elif not (args.database or args.remove or args.deptest or args.upgrade):  # noqa: SIM102
         if args.positional:
             pikaur_operation = cli_dynamic_select
 
@@ -272,9 +272,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         # Just bypass all the args to pacman
         _debug(f"Pikaur operation not found for {sys.argv=}")
         _debug(args)
-        pacman_args = [
-            PikaurConfig().misc.PacmanPath.get_str(),
-        ] + args.raw_without_pikaur_specific
+        pacman_args = [PikaurConfig().misc.PacmanPath.get_str(), *args.raw_without_pikaur_specific]
         if require_sudo:
             pacman_args = sudo(pacman_args)
         sys.exit(

@@ -341,7 +341,7 @@ class PackageDB(PackageDBCommon):
                             (
                                 not names_only or search_query in pkg.name
                             ) and (
-                                not exact_match or search_query in ([pkg.name, ] + pkg.groups)
+                                not exact_match or search_query in ([pkg.name, *pkg.groups])
                             )
                     ):
                         result.append(pkg)
@@ -379,7 +379,7 @@ class PackageDB(PackageDBCommon):
         if cached_pkg is not None:
             return cached_pkg
         results: list[PacmanPrint] = []
-        final_args = cmd_args + ["--print-format", "%r/%n", ]
+        final_args = [*cmd_args, "--print-format", "%r/%n"]
         if not check_deps and not package_only:
             final_args.append("--nodeps")
         if package_only:
@@ -413,12 +413,12 @@ class PackageDB(PackageDBCommon):
         if cached_pkgs is not None:
             return cached_pkgs
         results: list[VersionMatcher] = []
-        not_found_packages_output = spawn(
+        not_found_packages_output = spawn([
             # pacman --deptest flag conflicts with some --sync options:
-            get_pacman_command(ignore_args=[
-                "overwrite"
-            ]) + ["--deptest", ] + cmd_args
-        ).stdout_text
+            *get_pacman_command(ignore_args=["overwrite"]),
+            "--deptest",
+            *cmd_args
+        ]).stdout_text
         if not not_found_packages_output:
             cls._pacman_test_cache[cache_index] = results
             return results
@@ -442,20 +442,20 @@ class PackageDB(PackageDBCommon):
         not_found_pkg_names = []
         pkg_names_to_check: list[str] = []
         for pkg_name in pkg_lines:
-            if pkg_name in cls._pacman_repo_pkg_present_cache:
-                if not cls._pacman_repo_pkg_present_cache[pkg_name]:
-                    not_found_pkg_names.append(pkg_name)
-            else:
+            if pkg_name not in cls._pacman_repo_pkg_present_cache:
                 pkg_names_to_check += pkg_name.split(",")
+            elif not cls._pacman_repo_pkg_present_cache[pkg_name]:
+                not_found_pkg_names.append(pkg_name)
 
         if not pkg_names_to_check:
             return not_found_pkg_names
 
         results = (
-            spawn(
-                get_pacman_command() + ["--sync", "--print-format=%%", "--nodeps"] +
-                pkg_names_to_check
-            ).stderr_text or ""
+            spawn([
+                *get_pacman_command(),
+                "--sync", "--print-format=%%", "--nodeps",
+                *pkg_names_to_check
+            ]).stderr_text or ""
         ).splitlines()
         new_not_found_pkg_names = []
         for result in results:
@@ -489,7 +489,7 @@ class PackageDB(PackageDBCommon):
         all_repo_pkgs = PackageDB.get_repo_dict()
         try:
             results = cls.get_print_format_output(
-                get_pacman_command() + ["--sync"] + pkg_name.split(","),
+                [*get_pacman_command(), "--sync", *pkg_name.split(",")],
                 package_only=True
             )
         except DependencyError as exc:
@@ -512,9 +512,9 @@ class PackageDB(PackageDBCommon):
 
 
 def get_upgradeable_package_names() -> list[str]:
-    upgradeable_packages_output = spawn(
-        get_pacman_command() + ["--query", "--upgrades", "--quiet"]
-    ).stdout_text
+    upgradeable_packages_output = spawn([
+        *get_pacman_command(), "--query", "--upgrades", "--quiet"
+    ]).stdout_text
     if not upgradeable_packages_output:
         return []
     return upgradeable_packages_output.splitlines()
@@ -530,9 +530,9 @@ def find_upgradeable_packages() -> list[pyalpm.Package]:
     all_local_pkgs = PackageDB.get_local_dict()
     results: list[PacmanPrint] = []
     try:
-        results = PackageDB.get_print_format_output(
-            get_pacman_command() + ["--sync"] + pkg_names
-        )
+        results = PackageDB.get_print_format_output([
+            *get_pacman_command(), "--sync", *pkg_names
+        ])
     except DependencyError as exc:
         print_error(translate("Dependencies can't be satisfied for the following packages:"))
         print_stderr(" " * 12 + " ".join(pkg_names))
@@ -540,7 +540,7 @@ def find_upgradeable_packages() -> list[pyalpm.Package]:
         for pkg_name in pkg_names:
             try:
                 results += PackageDB.get_print_format_output(
-                    get_pacman_command() + ["--sync"] + [pkg_name, ]
+                    [*get_pacman_command(), "--sync"] + [pkg_name, ]
                 )
             except DependencyError as exc2:
                 print_error(translate("Because of:"))
@@ -561,7 +561,7 @@ def find_sysupgrade_packages(ignore_pkgs: list[str] | None = None) -> list[pyalp
         extra_args.append(strip_repo_name(excluded_pkg_name))
 
     results = PackageDB.get_print_format_output(
-        get_pacman_command() + ["--sync"] +
+        [*get_pacman_command(), "--sync"] +
         ["--sysupgrade"] * parse_args().sysupgrade +
         extra_args
     )
@@ -584,7 +584,7 @@ def refresh_pkg_db_if_needed() -> None:
     args = parse_args()
     if args.refresh:
         pacman_args = (sudo(
-            get_pacman_command() + ["--sync"] + ["--refresh"] * args.refresh
+            [*get_pacman_command(), "--sync"] + ["--refresh"] * args.refresh
         ))
         retry_interactive_command_or_exit(pacman_args)
 
@@ -619,10 +619,7 @@ def install_built_deps(
     if len(explicitly_installed_deps) < len(deps_names_and_paths):
         deps_upgrade_success = retry_interactive_command(
             sudo(
-                _get_pacman_command() + [
-                    "--upgrade",
-                    "--asdeps",
-                ] + [
+                [*_get_pacman_command(), "--upgrade", "--asdeps"] + [
                     path for name, path in deps_names_and_paths.items()
                     if name not in explicitly_installed_deps
                 ],
@@ -635,9 +632,7 @@ def install_built_deps(
     if explicitly_installed_deps:
         explicit_upgrade_success = retry_interactive_command(
             sudo(
-                _get_pacman_command() + [
-                    "--upgrade",
-                ] + [
+                [*_get_pacman_command(), "--upgrade"] + [
                     path for name, path in deps_names_and_paths.items()
                     if name in explicitly_installed_deps
                 ]

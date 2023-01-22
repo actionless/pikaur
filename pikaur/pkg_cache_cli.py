@@ -24,15 +24,16 @@ def clean_aur_cache() -> None:
             (PACKAGE_CACHE_PATH, translate("Packages directory"), 2, ),
     ):
         print_stdout(f"\n{message}: {directory}")
-        if minimal_clean_level <= args.clean and os.path.exists(directory):
-            if ask_to_continue(text="{} {}".format(  # pylint: disable=consider-using-f-string
-                    color_line("::", ColorsHighlight.blue),
-                    bold_line(translate("Do you want to remove all files?"))
-            )):
-                print_stdout(translate("removing all files from cache..."))
-                remove_dir(directory)
-        else:
+        if minimal_clean_level > args.clean:
+            continue
+        if not os.path.exists(directory):
             print_stdout(translate("Directory is empty."))
+        elif ask_to_continue(text="{} {}".format(  # pylint: disable=consider-using-f-string
+                color_line("::", ColorsHighlight.blue),
+                bold_line(translate("Do you want to remove all files?"))
+        )):
+            print_stdout(translate("removing all files from cache..."))
+            remove_dir(directory)
 
 
 def clean_repo_cache() -> None:
@@ -55,10 +56,10 @@ def clean_repo_cache() -> None:
             ]})
         spawn_func = noconfirm_cache_remove
     raise SysExit(
-        spawn_func(sudo(
-            [PikaurConfig().misc.PacmanPath.get_str(), ] +
-            reconstruct_args(args, ignore_args=["noconfirm", ])
-        )).returncode
+        spawn_func(sudo([
+            PikaurConfig().misc.PacmanPath.get_str(),
+            *reconstruct_args(args, ignore_args=["noconfirm"])
+        ])).returncode
     )
 
 

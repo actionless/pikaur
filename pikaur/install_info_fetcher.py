@@ -178,7 +178,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
             if canceled_pkg_name == aur_pkg_name:
                 _debug(f"{aur_pkg_name=}: {aur_deps=}")
-                for pkg_name in aur_deps + [aur_pkg_name]:
+                for pkg_name in [*aur_deps, aur_pkg_name]:
                     if pkg_name not in already_discarded:
                         already_discarded += self.discard_package(pkg_name, already_discarded)
                 if aur_pkg_name in self.aur_deps_relations:
@@ -236,20 +236,25 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         all_local_pkgs = PackageDB.get_local_dict()
 
         # pacman print-info flag conflicts with some normal --sync options:
-        pacman_args = get_pacman_command(ignore_args=[
-            "overwrite"
-        ]) + [
+        pacman_args = [
+            *get_pacman_command(ignore_args=[
+                "overwrite"
+            ]),
             "--sync",
-        ] + reconstruct_args(self.args, ignore_args=[
-            "sync",
-            "ignore",
-            "sysupgrade",
-            "refresh",
-            "needed",
-            "verbose",
-            "overwrite",
-            "search",
-        ]) + extra_args
+            *reconstruct_args(
+                self.args, ignore_args=[
+                    "sync",
+                    "ignore",
+                    "sysupgrade",
+                    "refresh",
+                    "needed",
+                    "verbose",
+                    "overwrite",
+                    "search",
+                ]
+            ),
+            *extra_args
+        ]
 
         def _get_pkg_install_infos(results: list[PacmanPrint]) -> list[RepoInstallInfo]:
             install_infos = []

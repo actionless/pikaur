@@ -98,12 +98,11 @@ def split_last_line(text: str) -> str:
     if len(last_line) < term_width:
         return text
     prev_lines = all_lines[:n_lines - 1]
-    return "\n".join(
-        prev_lines + [
-            range_printable(last_line, 0, term_width),
-            range_printable(last_line, term_width),
-        ]
-    )
+    return "\n".join([
+        *prev_lines,
+        range_printable(last_line, 0, term_width),
+        range_printable(last_line, term_width),
+    ])
 
 
 def get_input(

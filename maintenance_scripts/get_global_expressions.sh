@@ -6,7 +6,7 @@ result=$(
 	| grep -Ev \
 		-e ': Final' \
 		\
-		-e '\|' \
+		-e ' =.*\|' \
 		-e ' = [a-zA-Z_]+\[' \
 		-e ' = str[^(]' \
 		-e TypeVar \

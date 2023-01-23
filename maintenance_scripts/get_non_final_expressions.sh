@@ -6,12 +6,12 @@ result=$(
 	| grep -Ev \
 		-e ': Final' \
 		\
-		-e '\|' \
-		-e '(dict|list)\[' \
+		-e '=.*\|' \
+		-e '=.*(dict|list)\[' \
 		-e TypeVar \
 		-e namedtuple \
 		\
-		-e 'create_logger' \
+		-e 'create_logger\(' \
 	| sort
 )
 echo -n "$result"

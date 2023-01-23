@@ -136,9 +136,9 @@ def get_input(
     if not answer:
         for choice in answers:
             if choice.isupper():
-                logger.debug(f'No answer provided - using "{choice}".')
+                logger.debug('No answer provided - using "{}".', choice)
                 return choice.lower()
-    logger.debug(f"Got answer: '{answer}'")
+    logger.debug("Got answer: '{}'", answer)
     return answer
 
 

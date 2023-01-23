@@ -56,12 +56,19 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             manually_excluded_packages_names: list[str],
             pkgbuilds_packagelists: dict[str, list[str]],
     ) -> None:
-        logger.debug(f"""Gonna fetch install info for:
-    {install_package_names=}
-    {not_found_repo_pkgs_names=}
-    {pkgbuilds_packagelists=}
-    {manually_excluded_packages_names=}
-""")
+        logger.debug(
+            """
+Gonna fetch install info for:
+    install_package_names={}
+    not_found_repo_pkgs_names={}
+    pkgbuilds_packagelists={}
+    manually_excluded_packages_names={}
+""",
+            install_package_names,
+            not_found_repo_pkgs_names,
+            pkgbuilds_packagelists,
+            manually_excluded_packages_names,
+        )
         self.args = parse_args()
         self.install_package_names = install_package_names
         self.not_found_repo_pkgs_names = not_found_repo_pkgs_names
@@ -169,7 +176,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
     def discard_package(
             self, canceled_pkg_name: str, already_discarded: list[str] | None = None,
     ) -> list[str]:
-        logger.debug(f"discarding {canceled_pkg_name=}")
+        logger.debug("discarding {}", canceled_pkg_name)
         for container in self.all_install_info_containers:
             for info in container[:]:
                 if info.name == canceled_pkg_name:
@@ -178,7 +185,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         already_discarded = (already_discarded or []) + [canceled_pkg_name]
         for aur_pkg_name, aur_deps in list(self.aur_deps_relations.items())[:]:
             if canceled_pkg_name == aur_pkg_name:
-                logger.debug(f"{aur_pkg_name=}: {aur_deps=}")
+                logger.debug("{} have deps: {}", aur_pkg_name, aur_deps)
                 for pkg_name in [*aur_deps, aur_pkg_name]:
                     if pkg_name not in already_discarded:
                         already_discarded += self.discard_package(pkg_name, already_discarded)
@@ -283,7 +290,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             return install_infos
 
         try:
-            logger.debug(f"Checking if '{pkg_lines=}' is installable:")
+            logger.debug("Checking if '{}' is installable:", pkg_lines)
             composed_result = PackageDB.get_print_format_output(
                 pacman_args + [
                     pkg
@@ -302,7 +309,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
         with ThreadPool() as pool:
             pkg_exists_requests = {}
             for pkg_name in pkg_lines[:]:
-                logger.debug(f"Checking if '{pkg_name}' exists in the repo:")
+                logger.debug("Checking if '{}' exists in the repo:", pkg_name)
                 pkg_exists_requests[pkg_name] = pool.apply_async(
                     PackageDB.get_print_format_output,
                     (pacman_args + pkg_name.split(","), ),
@@ -313,17 +320,17 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             for pkg_name, request in pkg_exists_requests.items():
                 try:
                     all_results[pkg_name] = request.get()
-                    logger.debug(f"  '{pkg_name}' is found in the repo.")
+                    logger.debug("  '{}' is found in the repo.", pkg_name)
                 except DependencyError:
                     all_results[pkg_name] = []
-                    logger.debug(f"  '{pkg_name}' is NOT found in the repo.")
+                    logger.debug("  '{}' is NOT found in the repo.", pkg_name)
 
         with ThreadPool() as pool:
             pkg_installable_requests = {}
             for pkg_name, results in all_results.items():
                 if not results:
                     continue
-                logger.debug(f"Checking if '{pkg_name}' is installable:")
+                logger.debug("Checking if '{}' is installable:", pkg_name)
                 pkg_installable_requests[pkg_name] = pool.apply_async(
                     PackageDB.get_print_format_output,
                     (pacman_args + pkg_name.split(","), ),
@@ -333,7 +340,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             for pkg_name, request in pkg_installable_requests.items():
                 try:
                     request.get()
-                    logger.debug(f"  '{pkg_name}' is installable.")
+                    logger.debug("  '{}' is installable.", pkg_name)
                 except DependencyError as exc:
                     print_error(f"'{pkg_name}' is NOT installable.")
                     print_stderr(str(exc))
@@ -457,19 +464,25 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]
         }
         logger.debug(
-            f"gonna get AUR pkgs install info for:\n"
-            f"    {aur_packages_versionmatchers=}\n"
-            f"    {self.aur_updates_install_info=}\n"
-            f"    {aur_packages_names_to_versions=}",
+            "gonna get AUR pkgs install info for:\n"
+            "    aur_packages_versionmatchers={}\n"
+            "    self.aur_updates_install_info={}\n"
+            "    aur_packages_names_to_versions={}",
+            aur_packages_versionmatchers,
+            self.aur_updates_install_info,
+            aur_packages_names_to_versions,
         )
         local_pkgs = PackageDB.get_local_dict()
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(
             list(aur_packages_names_to_versions.keys()),
         )
         logger.debug(
-            f"found AUR pkgs:\n"
-            f"    {aur_pkg_list=}\n"
-            f"    {not_found_aur_pkgs=}\n",
+            "found AUR pkgs:\n"
+            "    aur_pkg_list={}\n"
+            "not found AUR pkgs:\n"
+            "    not_found_aur_pkgs={}",
+            aur_pkg_list,
+            not_found_aur_pkgs,
         )
         aur_pkgs = {}
         for aur_pkg in aur_pkg_list:
@@ -514,10 +527,10 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                 if pkg_name in pkg_list:
                     del aur_updates_install_info_by_name[pkg_name]
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
-        logger.debug(f"got AUR pkgs install info: {self.aur_updates_install_info=}")
+        logger.debug("got AUR pkgs install info: {}", self.aur_updates_install_info)
 
     def get_info_from_pkgbuilds(self) -> None:
-        logger.debug(f"gonna get install info from PKGBUILDs... {self.aur_updates_install_info=}")
+        logger.debug("gonna get install info from PKGBUILDs: {}...", self.aur_updates_install_info)
         aur_updates_install_info_by_name: dict[str, AURInstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path, pkg_names in self.pkgbuilds_packagelists.items():
@@ -543,7 +556,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
                     pkgbuild_path=path,
                 )
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
-        logger.debug(f"got install info from PKGBUILDs... {self.aur_updates_install_info=}")
+        logger.debug("got install info from PKGBUILDs: {}.", self.aur_updates_install_info)
 
     def get_aur_deps_info(self) -> None:
         all_aur_pkgs = []

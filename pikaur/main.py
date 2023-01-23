@@ -76,7 +76,10 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
 
     def __enter__(self) -> None:
         for attr in ("stdout", "stderr"):
-            logger.debug(f"Setting {attr} to {DEFAULT_INPUT_ENCODING}...", lock=False)
+            logger.debug(
+                "Setting {} to {}...", attr, DEFAULT_INPUT_ENCODING,
+                lock=False,
+            )
             real_stream = getattr(sys, attr)
             if real_stream.encoding == DEFAULT_INPUT_ENCODING:
                 logger.debug("already set - nothing to do", lock=False)
@@ -97,7 +100,11 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                     ),
                 )
             except io.UnsupportedOperation as exc:
-                logger.debug(f"Can't set {attr} to {DEFAULT_INPUT_ENCODING}:\n{exc}", lock=False)
+                logger.debug(
+                    "Can't set {} to {}:\n{}",
+                    attr, DEFAULT_INPUT_ENCODING, exc,
+                    lock=False,
+                )
 
     def __exit__(
             self,
@@ -116,7 +123,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 sys.exit(121)
         finally:
             for attr in ("stdout", "stderr"):
-                logger.debug(f"Restoring {attr}...", lock=False)
+                logger.debug("Restoring {}...", attr, lock=False)
                 stream = getattr(sys, attr)
                 orig_stream = getattr(self, f"original_{attr}", None)
                 if orig_stream in (None, stream):
@@ -127,9 +134,9 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                     sys, attr,
                     orig_stream,
                 )
-                logger.debug(f"{attr} restored", lock=False)
+                logger.debug("{} restored", attr, lock=False)
                 stream.close()
-                logger.debug(f"closed old {attr} stream", lock=False)
+                logger.debug("closed old {} stream", attr, lock=False)
 
 
 def cli_print_upgradeable() -> None:
@@ -251,7 +258,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         require_sudo = True
 
     if pikaur_operation:
-        logger.debug(f"Pikaur operation found for {sys.argv=}: {pikaur_operation.__name__}")
+        logger.debug("Pikaur operation found for args {}: {}", sys.argv, pikaur_operation.__name__)
         if require_sudo and args.dynamic_users and not running_as_root():
             # Restart pikaur with sudo to use systemd dynamic users
             restart_args = sys.argv[:]
@@ -273,7 +280,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
                 run_with_sudo_loop(pikaur_operation)
     else:
         # Just bypass all the args to pacman
-        logger.debug(f"Pikaur operation not found for {sys.argv=}")
+        logger.debug("Pikaur operation not found for args: {}", sys.argv)
         logger.debug(args)
         pacman_args = [PikaurConfig().misc.PacmanPath.get_str(), *args.raw_without_pikaur_specific]
         if require_sudo:

@@ -97,13 +97,13 @@ class News:
     def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: TextIO
         try:
-            logger.debug(f"loading date from {self.CACHE_FILE}")
+            logger.debug("loading date from {}", self.CACHE_FILE)
             with open_file(self.CACHE_FILE) as last_seen_fd:
                 file_data = last_seen_fd.readline().strip()
                 parsed_date = datetime.datetime.strptime(  # noqa: DTZ007
                     file_data, DT_FORMAT,
                 )
-                logger.debug(f"{file_data=}, {parsed_date=}")
+                logger.debug("data: {}, parsed: {}", file_data, parsed_date)
                 return parsed_date
         except (OSError, ValueError):
             # if file doesn't exist or corrupted,
@@ -129,7 +129,10 @@ class News:
             last_online_news, DT_FORMAT,
         )
         last_seen_news_date = self._get_last_seen_news_date()
-        logger.debug(f"is_new, {last_online_news_date=}, {last_seen_news_date=}")
+        logger.debug(
+            "Arch News Date: {}, Last-seen date: {}",
+            last_online_news_date, last_seen_news_date,
+        )
         return last_online_news_date > last_seen_news_date
 
     @staticmethod

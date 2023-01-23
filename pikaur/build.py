@@ -605,8 +605,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         deps_packages_removed = self._local_pkgs_wo_build_deps.difference(
             self._local_pkgs_with_build_deps,
         )
-        logger.debug(f"{deps_packages_installed=}")
-        logger.debug(f"{deps_packages_removed=}")
+        logger.debug("Deps installed: {}", deps_packages_installed)
+        logger.debug("Deps removed: {}", deps_packages_removed)
         if not deps_packages_installed:
             return
 

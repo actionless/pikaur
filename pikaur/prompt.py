@@ -9,21 +9,21 @@ from .config import PikaurConfig
 from .core import get_editor, interactive_spawn
 from .exceptions import SysExit
 from .i18n import translate
+from .logging import create_logger
 from .pikspect import ReadlineKeycodes, TTYInputWrapper, TTYRestore
 from .pikspect import pikspect as pikspect_spawn
 from .pprint import (
     ColorsHighlight,
     PrintLock,
     color_line,
-    create_debug_logger,
     get_term_width,
     print_stderr,
     print_warning,
     range_printable,
 )
 
-_debug = create_debug_logger("prompt")
-_debug_nolock = create_debug_logger("prompt_nolock", lock=False)
+logger = create_logger("prompt")
+logger_no_lock = create_logger("prompt_nolock", lock=False)
 
 
 class Answers():
@@ -108,7 +108,7 @@ def split_last_line(text: str) -> str:
 def get_input(
         prompt: str, answers: Sequence[str] = (), *, require_confirm: bool = False,
 ) -> str:
-    _debug("Gonna get input from user...")
+    logger.debug("Gonna get input from user...")
     answer = ""
     with (
             PrintLock(),
@@ -117,28 +117,28 @@ def get_input(
         if not (
                 require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
         ):
-            _debug_nolock("Using custom input reader...")
+            logger_no_lock.debug("Using custom input reader...")
             answer = read_answer_from_tty(prompt, answers=answers)
         else:
-            _debug_nolock("Restoring TTY...")
+            logger_no_lock.debug("Restoring TTY...")
             sub_tty = TTYRestore()
             TTYRestore.restore()
             try:
-                _debug_nolock("Using standard input reader...")
+                logger_no_lock.debug("Using standard input reader...")
                 answer = input(split_last_line(prompt)).lower()
             except EOFError as exc:
-                _debug_nolock(exc)
+                logger_no_lock.debug(exc)
                 raise SysExit(125) from exc
             finally:
-                _debug_nolock("Reverting to prev TTY state...")
+                logger_no_lock.debug("Reverting to prev TTY state...")
                 sub_tty.restore_new()
 
     if not answer:
         for choice in answers:
             if choice.isupper():
-                _debug(f'No answer provided - using "{choice}".')
+                logger.debug(f'No answer provided - using "{choice}".')
                 return choice.lower()
-    _debug(f"Got answer: '{answer}'")
+    logger.debug(f"Got answer: '{answer}'")
     return answer
 
 

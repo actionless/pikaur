@@ -13,12 +13,12 @@ except ModuleNotFoundError:
 from .config import CACHE_ROOT, PikaurConfig
 from .core import DEFAULT_TIMEZONE, open_file
 from .i18n import translate
+from .logging import create_logger
 from .pacman import PackageDB
 from .pprint import (
     ColorsHighlight,
     bold_line,
     color_line,
-    create_debug_logger,
     format_paragraph,
     print_error,
     print_stdout,
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 
 DT_FORMAT: Final = "%a, %d %b %Y %H:%M:%S %z"
 
-_debug = create_debug_logger("news")
+logger = create_logger("news")
 
 
 class ArchNewsMarkup:
@@ -47,10 +47,10 @@ class News:
 
     def __init__(self) -> None:
         self._news_feed = None
-        _debug("init")
+        logger.debug("init")
 
     def print_news(self) -> None:
-        _debug("print")
+        logger.debug("print")
         if self._news_feed is None:
             print_error(translate("Could not fetch archlinux.org news"))
             return
@@ -87,7 +87,7 @@ class News:
                 self._update_last_seen_news(news_entry_to_update_last_seen_date)
 
     def fetch_latest(self) -> None:
-        _debug("fetch_latest")
+        logger.debug("fetch_latest")
         str_response = get_unicode_from_url(self.URL, optional=True)
         if not str_response:
             print_error(translate("Could not fetch archlinux.org news"))
@@ -97,13 +97,13 @@ class News:
     def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: TextIO
         try:
-            _debug(f"loading date from {self.CACHE_FILE}")
+            logger.debug(f"loading date from {self.CACHE_FILE}")
             with open_file(self.CACHE_FILE) as last_seen_fd:
                 file_data = last_seen_fd.readline().strip()
                 parsed_date = datetime.datetime.strptime(  # noqa: DTZ007
                     file_data, DT_FORMAT,
                 )
-                _debug(f"{file_data=}, {parsed_date=}")
+                logger.debug(f"{file_data=}, {parsed_date=}")
                 return parsed_date
         except (OSError, ValueError):
             # if file doesn't exist or corrupted,
@@ -129,7 +129,7 @@ class News:
             last_online_news, DT_FORMAT,
         )
         last_seen_news_date = self._get_last_seen_news_date()
-        _debug(f"is_new, {last_online_news_date=}, {last_seen_news_date=}")
+        logger.debug(f"is_new, {last_online_news_date=}, {last_seen_news_date=}")
         return last_online_news_date > last_seen_news_date
 
     @staticmethod

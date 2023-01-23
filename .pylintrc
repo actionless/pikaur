@@ -46,6 +46,7 @@ ignore-imports=no
 min-similarity-lines=4
 [LOGGING]
 logging-modules=logging
+logging-format-style=new
 [SPELLING]
 #spelling-dict=en_US
 #spelling-ignore-words=

@@ -33,6 +33,7 @@ from .core import (
 from .exceptions import BuildError, CloneError, DependencyError, DependencyNotBuiltYetError, SysExit
 from .filelock import FileLock
 from .i18n import translate, translate_many
+from .logging import create_logger
 from .makepkg_config import MakePkgCommand, MakepkgConfig, get_pkgdest
 from .pacman import PackageDB, ProvidedDependency, get_pacman_command, install_built_deps
 from .pprint import (
@@ -40,7 +41,6 @@ from .pprint import (
     bold_line,
     color_enabled,
     color_line,
-    create_debug_logger,
     print_error,
     print_stderr,
     print_stdout,
@@ -60,7 +60,7 @@ if TYPE_CHECKING:
     from .core import SpawnArgs
 
 
-_debug = create_debug_logger("build")
+logger = create_logger("build")
 
 DEFAULT_PKGBUILD_BASENAME: Final = "PKGBUILD"
 ARCH_ANY: Final = "any"
@@ -598,15 +598,15 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not self._local_pkgs_wo_build_deps:
             return
 
-        _debug("Gonna compute diff of installed pkgs")
+        logger.debug("Gonna compute diff of installed pkgs")
         deps_packages_installed = self._local_pkgs_with_build_deps.difference(
             self._local_pkgs_wo_build_deps,
         )
         deps_packages_removed = self._local_pkgs_wo_build_deps.difference(
             self._local_pkgs_with_build_deps,
         )
-        _debug(f"{deps_packages_installed=}")
-        _debug(f"{deps_packages_removed=}")
+        logger.debug(f"{deps_packages_installed=}")
+        logger.debug(f"{deps_packages_removed=}")
         if not deps_packages_installed:
             return
 

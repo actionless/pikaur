@@ -12,7 +12,7 @@ result=$(
 		-e TypeVar \
 		-e namedtuple \
 		\
-		-e ' = create_debug_logger\(' \
+		-e 'create_logger\(' \
 	| sort
 )
 echo -n "$result"

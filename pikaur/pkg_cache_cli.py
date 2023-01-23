@@ -6,15 +6,16 @@ from .config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, PikaurConfig
 from .core import interactive_spawn, remove_dir, sudo
 from .exceptions import SysExit
 from .i18n import translate
+from .logging import create_logger
 from .pikspect import YesNo, format_pacman_question, pikspect
-from .pprint import ColorsHighlight, bold_line, color_line, create_debug_logger, print_stdout
+from .pprint import ColorsHighlight, bold_line, color_line, print_stdout
 from .prompt import ask_to_continue
 
 if TYPE_CHECKING:
     from subprocess import Popen  # nosec B404
 
 
-_debug = create_debug_logger("pkg_cache_cli")
+_debug = create_logger("pkg_cache_cli").debug
 
 
 def clean_aur_cache() -> None:

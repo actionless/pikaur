@@ -21,13 +21,13 @@ from .args import parse_args
 from .config import PikaurConfig
 from .core import DEFAULT_INPUT_ENCODING, get_sudo_refresh_command
 from .i18n import translate
+from .logging import create_logger
 from .pacman_i18n import _p
 from .pprint import (
     ColorsHighlight,
     PrintLock,
     bold_line,
     color_line,
-    create_debug_logger,
     get_term_width,
     print_stderr,
 )
@@ -38,7 +38,7 @@ SMALL_TIMEOUT: Final = 0.01
 TcAttrsType = list[int | list[bytes | int]]
 
 
-_debug = create_debug_logger("pikspect", lock=False)
+logger = create_logger("pikspect", lock=False)
 
 
 class ReadlineKeycodes:
@@ -71,7 +71,7 @@ class TTYRestore():  # pragma: no cover
             try:
                 termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
             except termios.error as exc:
-                _debug(",".join(str(arg) for arg in exc.args))
+                logger.debug(",".join(str(arg) for arg in exc.args))
 
     @classmethod
     def restore(cls, *_whatever: Any) -> None:
@@ -106,15 +106,15 @@ class TTYInputWrapper():  # pragma: no cover
         if self.is_pipe:
             self.old_stdin = sys.stdin
             try:
-                _debug("Attaching to TTY manually...")
+                logger.debug("Attaching to TTY manually...")
                 sys.stdin = open("/dev/tty", encoding=DEFAULT_INPUT_ENCODING)  # noqa: SIM115
                 self.tty_opened = True
             except Exception as exc:
-                _debug(exc)
+                logger.debug(exc)
 
     def __exit__(self, *_exc_details: Any) -> None:
         if self.is_pipe and self.tty_opened:
-            _debug("Restoring stdin...", lock=False)
+            logger.debug("Restoring stdin...", lock=False)
             sys.stdin.close()
             sys.stdin = self.old_stdin
 
@@ -125,7 +125,7 @@ class NestedTerminal():
         self.tty_wrapper = TTYInputWrapper()
 
     def __enter__(self) -> os.terminal_size:
-        _debug("Opening virtual terminal...")
+        logger.debug("Opening virtual terminal...")
         self.tty_wrapper.__enter__()
         real_term_geometry = shutil.get_terminal_size((80, 80))
         for stream in (

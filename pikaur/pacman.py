@@ -14,8 +14,9 @@ from .core import DataType, PackageSource, spawn, sudo
 from .exceptions import DependencyError, PackagesNotFoundInRepoError
 from .i18n import translate
 from .lock import FancyLock
+from .logging import create_logger
 from .pacman_i18n import _p
-from .pprint import color_enabled, create_debug_logger, print_error, print_stderr
+from .pprint import color_enabled, print_error, print_stderr
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .version import VersionMatcher
 
@@ -38,7 +39,7 @@ OFFICIAL_REPOS: Final = (
 REPO_NAME_DELIMITER: Final = "/"
 
 
-_debug = create_debug_logger("pacman")
+logger = create_logger("pacman")
 
 
 def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
@@ -153,12 +154,12 @@ class PackageDBCommon(metaclass=ABCMeta):
 
     @classmethod
     def discard_local_cache(cls) -> None:
-        _debug("Discarding local cache...")
+        logger.debug("Discarding local cache...")
         cls._discard_cache(PackageSource.LOCAL)
 
     @classmethod
     def discard_repo_cache(cls) -> None:
-        _debug("Discarding repo cache...")
+        logger.debug("Discarding repo cache...")
         cls._discard_cache(PackageSource.REPO)
 
     @classmethod
@@ -612,7 +613,7 @@ def install_built_deps(
 
     explicitly_installed_deps = []
     for pkg_name, _path in deps_names_and_paths.items():
-        _debug(pkg_name)
+        logger.debug(pkg_name)
         if pkg_name in local_packages and local_packages[pkg_name].reason == 0:
             explicitly_installed_deps.append(pkg_name)
     deps_upgrade_success = True

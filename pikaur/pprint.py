@@ -3,16 +3,11 @@
 import shutil
 import sys
 from string import printable
-from typing import TYPE_CHECKING, Any, Final, TextIO
+from typing import Any, Final, TextIO
 
 from .args import ColorFlagValues, parse_args
 from .i18n import translate
 from .lock import FancyLock
-
-if TYPE_CHECKING:
-    from typing import Callable
-
-    from mypy_extensions import DefaultNamedArg
 
 PADDING: Final = 4
 
@@ -133,20 +128,6 @@ def print_error(message: str) -> None:
     ]))
 
 
-def print_debug(message: Any, *, lock: bool = True) -> None:
-    args = parse_args()
-    if not args.pikaur_debug:
-        return
-    prefix = translate("debug:")
-    if args.debug:
-        # to avoid mixing together with pacman's debug messages:
-        prefix = translate("pikaur debug:")
-    print_stderr(" ".join([
-        color_line(":: " + prefix, Colors.cyan),
-        str(message),
-    ]), lock=lock)
-
-
 def get_term_width() -> int:
     return shutil.get_terminal_size((80, 80)).columns
 
@@ -196,48 +177,3 @@ def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
         if counter >= end:
             break
     return result
-
-
-class DebugColorCounter:
-
-    # cyan is purposely skipped as it's used in print_debug itself,
-    # highlight-red is purposely skipped as it's used in print_error,
-    # highlight-yellow is purposely skipped as it's used in print_warning:
-    colors = [
-        Colors.red,
-        Colors.green,
-        Colors.yellow,
-        Colors.blue,
-        Colors.purple,
-        Colors.white,
-        ColorsHighlight.green,
-        ColorsHighlight.blue,
-        ColorsHighlight.purple,
-        ColorsHighlight.cyan,
-        ColorsHighlight.white,
-    ]
-    _current_color_idx = 0
-
-    @classmethod
-    def get_next(cls) -> int:
-        color = cls.colors[cls._current_color_idx]
-        cls._current_color_idx += 1
-        if cls._current_color_idx >= len(cls.colors):
-            cls._current_color_idx = 0
-        return color
-
-
-def create_debug_logger(
-        module_name: str, *, lock: bool | None = None,
-) -> "Callable[[Any, DefaultNamedArg(bool | None, name='lock')], None]":  # noqa: F821,RUF100
-    color = DebugColorCounter.get_next()
-    parent_lock = lock
-
-    def debug(msg: Any, *, lock: bool | None = None) -> None:
-        lock = lock if (lock is not None) else parent_lock
-        msg = f"{color_line(module_name, color)}: {str(msg)}"
-        if lock is not None:
-            print_debug(msg, lock=lock)
-        else:
-            print_debug(msg)
-    return debug

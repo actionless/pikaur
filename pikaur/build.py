@@ -434,7 +434,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             )
         except DependencyError as dep_exc:
             self.failed = True
-            raise dep_exc from None
+            raise dep_exc from None   # noqa: TRY201
         finally:
             PackageDB.discard_local_cache()
 

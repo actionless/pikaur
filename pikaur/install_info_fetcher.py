@@ -571,13 +571,13 @@ Gonna fetch install info for:
             self.aur_deps_relations = find_aur_deps(all_aur_pkgs)
         except DependencyVersionMismatchError as exc:
             if exc.location is not PackageSource.LOCAL:
-                raise exc
+                raise
             # if local package is too old
             # let's see if a newer one can be found in AUR:
             pkg_name = exc.depends_on
             _aur_pkg_list, not_found_aur_pkgs = find_aur_packages([pkg_name])
             if not_found_aur_pkgs:
-                raise exc
+                raise
             # start over computing deps and include just found AUR package:
             self.install_package_names.append(pkg_name)
             self.get_all_packages_info()

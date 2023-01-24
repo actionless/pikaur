@@ -221,7 +221,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     elif args.version:
         pikaur_operation = cli_print_version
 
-    elif args.query:  # noqa: SIM102
+    elif args.query:
         if args.upgrades:
             pikaur_operation = cli_print_upgradeable
 
@@ -250,7 +250,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             require_sudo = True
             pikaur_operation = cli_install_packages
 
-    elif not (args.database or args.remove or args.deptest or args.upgrade):  # noqa: SIM102
+    elif not (args.database or args.remove or args.deptest or args.upgrade):
         if args.positional:
             pikaur_operation = cli_dynamic_select
 

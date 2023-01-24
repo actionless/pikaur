@@ -291,11 +291,11 @@ def find_aur_deps(aur_pkgs_infos: list[AURPackageInfo]) -> dict[str, list[str]]:
             for aur_pkg_name, request in all_requests.items():
                 try:
                     results = request.get()
-                except Exception as exc:
+                except Exception:
                     print_error(translate(
                         "Can't resolve dependencies for AUR package '{pkg}':",
                     ).format(pkg=aur_pkg_name))
-                    raise exc
+                    raise
                 not_found_local_pkgs += results
                 for dep_pkg_name in results:
                     if dep_pkg_name not in package_names:

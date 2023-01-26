@@ -185,6 +185,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             raise NotImplementedError(missing_property_error)
 
         self.build_dir = BUILD_CACHE_PATH / self.package_base
+        logger.debug("Build dir: {}", self.build_dir)
         self.build_gpgdir = self.args.build_gpgdir
         self.built_packages_paths = {}
         self.keep_build_dir = self.args.keepbuild or (
@@ -445,10 +446,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return
         if not pkg_paths_spawn.stdout_text:
             return
+        logger.debug("Package names: {}", pkg_paths_spawn)
         pkg_paths = [Path(line) for line in pkg_paths_spawn.stdout_text.splitlines()]
         if not pkg_paths:
             return
         pkg_dest = get_pkgdest()
+        logger.debug("PKGDEST: {}", pkg_dest)
         pkg_paths.sort(key=lambda x: len(str(x)))
         for pkg_name in self.package_names:
             pkg_path = pkg_paths[0]
@@ -461,13 +464,15 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     ):
                         pkg_path = Path(each_filename)
                         break
-            pkg_filename = Path(pkg_path).name
-            if pkg_path == pkg_filename:
+            pkg_basename = Path(pkg_path).name
+            logger.debug("Full path: {}, base path: {}", pkg_path, pkg_basename)
+            if pkg_path == Path(pkg_basename):
                 pkg_path = (Path(pkg_dest) if pkg_dest else self.build_dir) / pkg_path
+                logger.debug("Resolving full path: {} from base path: {}", pkg_path, pkg_basename)
             if not pkg_dest or MakePkgCommand.pkgdest_skipped:
                 new_package_path = (
                     Path(pkg_dest) if pkg_dest else PACKAGE_CACHE_PATH
-                ) / pkg_filename
+                ) / pkg_basename
                 pkg_sig_path = pkg_path.parent / (pkg_path.name + ".sig")
                 new_package_sig_path = new_package_path.parent / (
                     new_package_path.name + ".sig"
@@ -477,7 +482,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 replace_file(pkg_path, new_package_path)
                 replace_file(pkg_sig_path, new_package_sig_path)
                 pkg_path = new_package_path
-            if pkg_path and Path(pkg_path).exists():
+            if pkg_path and pkg_path.exists():
                 self.built_packages_paths[pkg_name] = pkg_path
 
     def check_if_already_built(self) -> bool:

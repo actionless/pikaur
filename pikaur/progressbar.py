@@ -2,9 +2,12 @@
 
 import sys
 from threading import Lock
-from typing import Any, Callable, Final
+from typing import TYPE_CHECKING
 
 from .pprint import color_enabled, get_term_width
+
+if TYPE_CHECKING:
+    from typing import Any, Callable, Final
 
 
 class ProgressBar():
@@ -13,10 +16,10 @@ class ProgressBar():
     index = 0
     progress = 0
 
-    LEFT_DECORATION: Final = "["
-    RIGHT_DECORATION: Final = "]"
-    EMPTY: Final = "-"
-    FULL: Final = "#"
+    LEFT_DECORATION: "Final" = "["
+    RIGHT_DECORATION: "Final" = "]"
+    EMPTY: "Final" = "-"
+    FULL: "Final" = "#"
 
     def __init__(self, length: int, message: str = "") -> None:
         width = (
@@ -35,10 +38,10 @@ class ProgressBar():
             if color_enabled():
                 sys.stderr.write(self.FULL)
 
-    def __enter__(self) -> Callable[[], None]:
+    def __enter__(self) -> "Callable[[], None]":
         return self.update
 
-    def __exit__(self, *_exc_details: Any) -> None:
+    def __exit__(self, *_exc_details: "Any") -> None:
         sys.stderr.write("\n")
 
 

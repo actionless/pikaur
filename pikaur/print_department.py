@@ -3,14 +3,14 @@
 import sys
 from datetime import datetime
 from fnmatch import fnmatch
-from typing import TYPE_CHECKING, Final, Iterable, Sequence, TypeVar
+from typing import TYPE_CHECKING
 
 import pyalpm
 
 from .args import parse_args
 from .aur import AURPackageInfo
 from .config import VERSION, AurSearchSortingValues, PikaurConfig, UpgradeSortingValues
-from .core import DEFAULT_TIMEZONE, AURInstallInfo, InstallInfo, PackageSource, RepoInstallInfo
+from .core import DEFAULT_TIMEZONE, InstallInfo
 from .i18n import translate, translate_many
 from .pacman import OFFICIAL_REPOS, PackageDB
 from .pprint import (
@@ -28,16 +28,18 @@ from .version import get_common_version, get_version_diff
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
+    from typing import Final, Iterable, Sequence, TypeVar
+
+    from .core import AURInstallInfo, PackageSource, RepoInstallInfo
     from .install_info_fetcher import InstallInfoFetcher
 
+    AnyPackage = AURPackageInfo | pyalpm.Package
+    InstallInfoT = TypeVar("InstallInfoT", bound=InstallInfo)
 
-AnyPackage = AURPackageInfo | pyalpm.Package
-InstallInfoT = TypeVar("InstallInfoT", bound=InstallInfo)
 
-
-GROUP_COLOR: Final = Colors.blue
-REPLACEMENTS_COLOR: Final = ColorsHighlight.cyan
-ORPHANED_COLOR: Final = ColorsHighlight.red
+GROUP_COLOR: "Final" = Colors.blue
+REPLACEMENTS_COLOR: "Final" = ColorsHighlight.cyan
+ORPHANED_COLOR: "Final" = ColorsHighlight.red
 
 
 def print_version(pacman_version: str, pyalpm_version: str, *, quiet: bool = False) -> None:
@@ -128,7 +130,7 @@ def pretty_format_repo_name(repo_name: str, *, color: bool = True) -> str:
 
 
 def pretty_format_upgradeable(  # pylint: disable=too-many-statements
-        packages_updates: Sequence[InstallInfo],
+        packages_updates: "Sequence[InstallInfo]",
         *,
         verbose: bool = False,
         print_repo: bool = False,
@@ -348,22 +350,22 @@ class SysupgradePrettyFormatter:
         self.install_info = install_info
         self.verbose = verbose
 
-        self.repo_packages_updates: list[RepoInstallInfo] = \
+        self.repo_packages_updates: "list[RepoInstallInfo]" = \
             install_info.repo_packages_install_info[::]
         self.thirdparty_repo_packages_updates: list[RepoInstallInfo] = \
             install_info.thirdparty_repo_packages_install_info[::]
-        self.aur_updates: list[AURInstallInfo] = \
+        self.aur_updates: "list[AURInstallInfo]" = \
             install_info.aur_updates_install_info[::]
-        self.repo_replacements: list[RepoInstallInfo] = \
+        self.repo_replacements: "list[RepoInstallInfo]" = \
             install_info.repo_replacements_install_info[::]
         self.thirdparty_repo_replacements: list[RepoInstallInfo] = \
             install_info.thirdparty_repo_replacements_install_info[::]
 
-        self.new_repo_deps: list[RepoInstallInfo] = \
+        self.new_repo_deps: "list[RepoInstallInfo]" = \
             install_info.new_repo_deps_install_info[::]
         self.new_thirdparty_repo_deps: list[RepoInstallInfo] = \
             install_info.new_thirdparty_repo_deps_install_info[::]
-        self.new_aur_deps: list[AURInstallInfo] = \
+        self.new_aur_deps: "list[AURInstallInfo]" = \
             install_info.aur_deps_install_info[::]
 
         if manual_package_selection:
@@ -372,9 +374,9 @@ class SysupgradePrettyFormatter:
             self.new_thirdparty_repo_deps = []
             self.new_aur_deps = []
 
-        self.all_install_info_lists: Sequence[
+        self.all_install_info_lists: """Sequence[
             list[AURInstallInfo] | list[RepoInstallInfo]
-        ] = [
+        ]""" = [
             self.repo_packages_updates,
             self.thirdparty_repo_packages_updates,
             self.aur_updates,
@@ -396,7 +398,7 @@ class SysupgradePrettyFormatter:
 
     def pretty_format_upgradeable(
             self,
-            install_infos: Sequence[InstallInfo],
+            install_infos: "Sequence[InstallInfo]",
             print_repo: bool | None = None,
     ) -> str:
         if print_repo is None:
@@ -410,8 +412,8 @@ class SysupgradePrettyFormatter:
         warn_about_packages_str = self.config.ui.WarnAboutPackageUpdates.get_str()
         warn_about_packages_list: list[InstallInfo] = []
 
-        def remove_globs_from_pkg_list(pkg_list: list[InstallInfoT]) -> None:
-            pkg_install_info: InstallInfoT
+        def remove_globs_from_pkg_list(pkg_list: "list[InstallInfoT]") -> None:
+            pkg_install_info: "InstallInfoT"
             for pkg_install_info in pkg_list[::]:
                 for glob in globs_and_names:
                     if fnmatch(pkg_install_info.name, glob):
@@ -420,7 +422,7 @@ class SysupgradePrettyFormatter:
 
         if warn_about_packages_str:
             globs_and_names = warn_about_packages_str.split(",")
-            pkg_list: list[RepoInstallInfo] | list[AURInstallInfo]
+            pkg_list: "list[RepoInstallInfo] | list[AURInstallInfo]"
             for pkg_list in self.all_install_info_lists:
                 remove_globs_from_pkg_list(pkg_list)  # type: ignore[misc]
 
@@ -626,7 +628,7 @@ def _get_local_version(package_name: str) -> str:
     return PackageDB.get_local_dict()[package_name].version
 
 
-def print_package_uptodate(package_name: str, package_source: PackageSource) -> None:
+def print_package_uptodate(package_name: str, package_source: "PackageSource") -> None:
     print_warning(
         translate("{name} {version} {package_source} package is up to date - skipping").format(
             name=package_name,
@@ -669,12 +671,12 @@ def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
 
 # pylint:disable=too-many-locals,too-many-statements,too-many-branches
 def print_package_search_results(
-        repo_packages: Iterable[pyalpm.Package],
-        aur_packages: Iterable[AURPackageInfo],
+        repo_packages: "Iterable[pyalpm.Package]",
+        aur_packages: "Iterable[AURPackageInfo]",
         local_pkgs_versions: dict[str, str],
         *,
         enumerated: bool = False,
-) -> list[AnyPackage]:
+) -> "list[AnyPackage]":
 
     repos = [db.name for db in PackageDB.get_alpm_handle().get_syncdbs()]
     user_config = PikaurConfig()
@@ -713,15 +715,15 @@ def print_package_search_results(
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
 
-    sorted_repo_pkgs: list[pyalpm.Package] = sorted(
+    sorted_repo_pkgs: "list[pyalpm.Package]" = sorted(
         repo_packages,
         key=get_repo_sort_key,
     )
-    sorted_aur_pkgs: list[AURPackageInfo] = sorted(
+    sorted_aur_pkgs: "list[AURPackageInfo]" = sorted(
         aur_packages,
         key=get_aur_sort_key,
     )
-    sorted_packages: list[AnyPackage] = [*sorted_repo_pkgs, *sorted_aur_pkgs]
+    sorted_packages: "list[AnyPackage]" = [*sorted_repo_pkgs, *sorted_aur_pkgs]
     # mypy is always funny ^^ https://github.com/python/mypy/issues/5492#issuecomment-545992992
 
     enumerated_packages = list(enumerate(sorted_packages))

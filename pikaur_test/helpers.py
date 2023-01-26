@@ -5,10 +5,9 @@ import os
 import sys
 import tempfile
 import traceback
-from subprocess import Popen  # nosec B404
 from time import time
-from typing import TYPE_CHECKING, Any, Callable, NoReturn, Sequence
-from unittest import TestCase, TestResult, mock
+from typing import TYPE_CHECKING
+from unittest import TestCase, mock
 from unittest.runner import TextTestResult
 
 from pycman.config import PacmanConfig
@@ -21,6 +20,12 @@ from pikaur.makepkg_config import MakePkgCommand
 from pikaur.pacman import PackageDB
 from pikaur.pprint import color_line, get_term_width
 from pikaur.srcinfo import SrcInfo
+
+if TYPE_CHECKING:
+    from subprocess import Popen  # nosec B404
+    from typing import Any, Callable, NoReturn, Sequence
+    from unittest import TestResult
+
 
 WRITE_DB = bool(os.environ.get("WRITE_DB"))
 
@@ -109,9 +114,9 @@ class InterceptSysOutput():
     _patcher_stderr: "mock._patch[IO[str]] | None" = None
     _patcher_exit: "mock._patch[Callable[[DefaultArg(int, 'code')], NoReturn]]"  # noqa: F821,RUF100
     _patcher_spawn: "mock._patch[Callable[[list[str]], Popen[bytes]]]"
-    patchers: Sequence["mock._patch[Any] | None"] = []
+    patchers: "Sequence[mock._patch[Any] | None]" = []
 
-    def _fake_exit(self, code: int = 0) -> NoReturn:
+    def _fake_exit(self, code: int = 0) -> "NoReturn":
         self.returncode = code
         raise FakeExit()
 
@@ -125,7 +130,7 @@ class InterceptSysOutput():
         self.err_file.isatty = lambda: False  # type: ignore[assignment]
 
         class PrintInteractiveSpawn(InteractiveSpawn):
-            def __init__(self, *args: Any, **kwargs: Any) -> None:
+            def __init__(self, *args: "Any", **kwargs: "Any") -> None:
                 kwargs.setdefault("stdout", out_file)
                 kwargs.setdefault("stderr", err_file)
                 super().__init__(*args, **kwargs)
@@ -150,7 +155,7 @@ class InterceptSysOutput():
                 patcher.start()
         return self
 
-    def __exit__(self, *_exc_details: Any) -> None:
+    def __exit__(self, *_exc_details: "Any") -> None:
         if self._exited:
             return
         for patcher in self.patchers:
@@ -268,7 +273,7 @@ class PikaurTestCase(TestCase):
 
     separator = color_line(f"\n{'-' * get_term_width()}", 12, force=True)
 
-    def run(self, result: TestResult | None = None) -> TestResult | None:
+    def run(self, result: "TestResult | None" = None) -> "TestResult | None":
         time_started = time()
         log_stderr(self.separator)
         result = super().run(result)
@@ -301,7 +306,7 @@ class PikaurTestCase(TestCase):
 class PikaurDbTestCase(PikaurTestCase):
     """Tests which are modifying local package DB."""
 
-    def run(self, result: TestResult | None = None) -> TestResult | None:
+    def run(self, result: "TestResult | None" = None) -> "TestResult | None":
         if WRITE_DB:
             return super().run(result)
         if result:

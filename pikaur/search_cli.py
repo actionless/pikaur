@@ -2,9 +2,7 @@
 
 import sys
 from multiprocessing.pool import ThreadPool
-from typing import Iterable, TypeVar
-
-import pyalpm
+from typing import TYPE_CHECKING
 
 from .args import parse_args
 from .aur import (
@@ -18,12 +16,19 @@ from .exceptions import AURError, SysExit
 from .i18n import translate
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
 from .pprint import print_error, print_stderr
-from .print_department import AnyPackage, print_package_search_results
+from .print_department import print_package_search_results
 
-SamePackageTypeT = TypeVar("SamePackageTypeT", AURPackageInfo, pyalpm.Package)
+if TYPE_CHECKING:
+    from typing import Iterable, TypeVar
+
+    import pyalpm
+
+    from .print_department import AnyPackage
+
+    SamePackageTypeT = TypeVar("SamePackageTypeT", AURPackageInfo, pyalpm.Package)
 
 
-def package_search_thread_repo(query: str) -> list[pyalpm.Package]:
+def package_search_thread_repo(query: str) -> "list[pyalpm.Package]":
     args = parse_args()
     result = (
         PackageDB.search_repo(query, names_only=args.namesonly)
@@ -122,8 +127,8 @@ def package_search_thread_local() -> dict[str, str]:
 
 
 def join_search_results(
-        all_search_results: list[list[SamePackageTypeT]],
-) -> Iterable[SamePackageTypeT]:
+        all_search_results: "list[list[SamePackageTypeT]]",
+) -> "Iterable[SamePackageTypeT]":
     if not all_search_results:
         return []
     pkgnames_set: set[str] = set()
@@ -143,7 +148,7 @@ def join_search_results(
 
 def search_packages(  # pylint: disable=too-many-locals
         *, enumerated: bool = False,
-) -> list[AnyPackage]:
+) -> "list[AnyPackage]":
     refresh_pkg_db_if_needed()
 
     args = parse_args()
@@ -168,7 +173,7 @@ def search_packages(  # pylint: disable=too-many-locals
         pool.close()
 
         result_local = request_local.get()
-        result_repo: list[list[pyalpm.Package]] = []
+        result_repo: "list[list[pyalpm.Package]]" = []
         for request_repo in requests_repo:
             pkgs_found = request_repo.get()
             if pkgs_found:
@@ -185,10 +190,10 @@ def search_packages(  # pylint: disable=too-many-locals
     if not args.quiet:
         sys.stderr.write("\n")
 
-    joined_repo_results: Iterable[pyalpm.Package] = []
+    joined_repo_results: "Iterable[pyalpm.Package]" = []
     if result_repo:
         joined_repo_results = join_search_results(result_repo)
-    joined_aur_results: Iterable[AURPackageInfo] = result_aur or []
+    joined_aur_results: "Iterable[AURPackageInfo]" = result_aur or []
 
     return print_package_search_results(
         repo_packages=joined_repo_results,

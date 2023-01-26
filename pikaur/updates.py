@@ -1,14 +1,12 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from datetime import datetime
-from typing import Final, Sequence
-
-import pyalpm
+from typing import TYPE_CHECKING
 
 from .args import parse_args
-from .aur import AURPackageInfo, find_aur_packages
+from .aur import find_aur_packages
 from .config import PikaurConfig
-from .core import DEFAULT_TIMEZONE, AURInstallInfo, InstallInfo, RepoInstallInfo
+from .core import DEFAULT_TIMEZONE, AURInstallInfo, RepoInstallInfo
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate, translate_many
 from .pacman import (
@@ -26,7 +24,16 @@ from .print_department import (
 )
 from .version import VERSION_DEVEL, compare_versions
 
-DEVEL_PKGS_POSTFIXES: Final = (
+if TYPE_CHECKING:
+    from typing import Final, Sequence
+
+    import pyalpm
+
+    from .aur import AURPackageInfo
+    from .core import InstallInfo
+
+
+DEVEL_PKGS_POSTFIXES: "Final" = (
     "-git",
     "-svn",
     "-bzr",
@@ -47,7 +54,7 @@ def is_devel_pkg(pkg_name: str) -> bool:
 
 def get_remote_package(
         new_pkg_name: str,
-) -> pyalpm.Package | AURPackageInfo | None:
+) -> "pyalpm.Package | AURPackageInfo | None":
     try:
         repo_pkg = PackageDB.find_repo_package(new_pkg_name)
     except PackagesNotFoundInRepoError:
@@ -90,7 +97,7 @@ def find_repo_upgradeable() -> list[RepoInstallInfo]:
 
 
 def find_aur_devel_updates(
-        aur_pkgs_info: list[AURPackageInfo],
+        aur_pkgs_info: "list[AURPackageInfo]",
         package_ttl_days: int,
 ) -> list[AURInstallInfo]:
     local_packages = PackageDB.get_local_dict()
@@ -164,12 +171,12 @@ def find_aur_updates() -> tuple[list[AURInstallInfo], list[str]]:
 
 
 def print_upgradeable(
-        aur_install_infos: Sequence[InstallInfo] | None = None,
+        aur_install_infos: "Sequence[InstallInfo] | None" = None,
         *,
         ignored_only: bool = False,
 ) -> None:
     args = parse_args()
-    updates: list[InstallInfo] = []
+    updates: "list[InstallInfo]" = []
     if aur_install_infos is not None:
         updates += aur_install_infos
     elif not args.repo:

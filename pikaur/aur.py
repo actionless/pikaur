@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING
 from urllib import parse
 from urllib.parse import quote
 
@@ -12,16 +12,18 @@ from .progressbar import ThreadSafeProgressBar
 from .urllib import get_gzip_from_url, get_json_from_url
 
 if TYPE_CHECKING:
+    from typing import Any, Final
+
     from .srcinfo import SrcInfo
 
 
-MAX_URL_LENGTH: Final = 8177  # default value in many web servers
+MAX_URL_LENGTH: "Final" = 8177  # default value in many web servers
 
 
 class AurRPCErrors:
-    ERROR_KEY: Final = "error"
-    TOO_MANY_RESULTS: Final = "Too many package results."
-    QUERY_TOO_SMALL: Final = "Query arg too small."
+    ERROR_KEY: "Final" = "error"
+    TOO_MANY_RESULTS: "Final" = "Too many package results."
+    QUERY_TOO_SMALL: "Final" = "Query arg too small."
 
 
 class AurBaseUrl:
@@ -67,7 +69,7 @@ class AURPackageInfo(DataType):
     def git_url(self) -> str:
         return f"{AurBaseUrl.get()}/{self.packagebase}.git"
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: "Any") -> None:
         for aur_api_name, pikaur_class_name in (
             ("description", "desc"),
             ("id", "aur_id"),

@@ -15,7 +15,7 @@ import termios
 import tty
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import Any, BinaryIO, Callable, Final, TextIO
+from typing import TYPE_CHECKING
 
 from .args import parse_args
 from .config import PikaurConfig
@@ -32,7 +32,11 @@ from .pprint import (
     print_stderr,
 )
 
-SMALL_TIMEOUT: Final = 0.01
+if TYPE_CHECKING:
+    from typing import Any, BinaryIO, Callable, Final, TextIO
+
+
+SMALL_TIMEOUT: "Final" = 0.01
 
 
 TcAttrsType = list[int | list[bytes | int]]
@@ -42,11 +46,11 @@ logger = create_logger("pikspect", lock=False)
 
 
 class ReadlineKeycodes:
-    CTRL_C: Final = 3
-    CTRL_D: Final = 4
-    CTRL_W: Final = 23
-    ENTER: Final = 13
-    BACKSPACE: Final = 127
+    CTRL_C: "Final" = 3
+    CTRL_D: "Final" = 4
+    CTRL_W: "Final" = 23
+    ENTER: "Final" = 13
+    BACKSPACE: "Final" = 127
 
 
 class TTYRestore():  # pragma: no cover
@@ -74,14 +78,14 @@ class TTYRestore():  # pragma: no cover
                 logger.debug(",".join(str(arg) for arg in exc.args))
 
     @classmethod
-    def restore(cls, *_whatever: Any) -> None:
+    def restore(cls, *_whatever: "Any") -> None:
         cls._restore(cls.old_tcattrs)
 
     def __init__(self) -> None:
         with contextlib.suppress(termios.error):
             self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
 
-    def restore_new(self, *_whatever: Any) -> None:
+    def restore_new(self, *_whatever: "Any") -> None:
         self._restore(self.sub_tty_old_tcattrs)
 
 
@@ -112,7 +116,7 @@ class TTYInputWrapper():  # pragma: no cover
             except Exception as exc:
                 logger.debug(exc)
 
-    def __exit__(self, *_exc_details: Any) -> None:
+    def __exit__(self, *_exc_details: "Any") -> None:
         if self.is_pipe and self.tty_opened:
             logger.debug("Restoring stdin...", lock=False)
             sys.stdin.close()
@@ -137,12 +141,12 @@ class NestedTerminal():
                 tty.setcbreak(stream.fileno())
         return real_term_geometry
 
-    def __exit__(self, *exc_details: Any) -> None:
+    def __exit__(self, *exc_details: "Any") -> None:
         self.tty_wrapper.__exit__(*exc_details)
         TTYRestore.restore()
 
 
-RECOGNIZED_REGEX_SEQUENCES: Final[tuple[str]] = (".*", )
+RECOGNIZED_REGEX_SEQUENCES: "Final[tuple[str]]" = (".*", )
 
 
 def _match(pattern: str, line: str) -> bool:
@@ -155,10 +159,10 @@ def _match(pattern: str, line: str) -> bool:
 
 class PikspectSignalHandler():
 
-    signal_handler: Callable[..., Any] | None = None
+    signal_handler: "Callable[..., Any] | None" = None
 
     @classmethod
-    def set_handler(cls, signal_handler: Callable[..., Any]) -> None:
+    def set_handler(cls, signal_handler: "Callable[..., Any]") -> None:
         cls.signal_handler = signal_handler
 
     @classmethod
@@ -166,7 +170,7 @@ class PikspectSignalHandler():
         cls.signal_handler = None
 
     @classmethod
-    def get(cls) -> Callable[..., Any] | None:
+    def get(cls) -> "Callable[..., Any] | None":
         return cls.signal_handler
 
 
@@ -176,8 +180,8 @@ class PikspectPopen(subprocess.Popen[bytes]):
     capture_input: bool
     capture_output: bool
     historic_output: list[bytes]
-    pty_in: TextIO
-    pty_out: BinaryIO
+    pty_in: "TextIO"
+    pty_out: "BinaryIO"
     default_questions: dict[str, list[str]]
     # max_question_length = 0  # preserve enough information to analyze questions
     max_question_length = get_term_width() * 2  # preserve also at least last line

@@ -1,11 +1,14 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from logging import Logger
-from typing import Any
+from typing import TYPE_CHECKING
 
 from .args import parse_args
 from .i18n import translate
 from .pprint import Colors, ColorsHighlight, color_line, print_stderr
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class DebugColorCounter:
@@ -37,7 +40,7 @@ class DebugColorCounter:
         return color
 
 
-def print_debug(message: Any, *, lock: bool = True) -> None:
+def print_debug(message: "Any", *, lock: bool = True) -> None:
     args = parse_args()
     if not args.pikaur_debug:
         return
@@ -60,7 +63,7 @@ class PikaurLogger(Logger):  # we inherit `Logger` class only for pylint warning
         self.parent_lock = lock
 
     def debug(
-        self, msg: Any, *args: Any, lock: bool | None = None, **kwargs: Any,
+        self, msg: "Any", *args: "Any", lock: bool | None = None, **kwargs: "Any",
     ) -> None:
         lock = lock if (lock is not None) else self.parent_lock
         str_message = msg.format(*args, **kwargs) if isinstance(msg, str) else str(msg)

@@ -10,7 +10,7 @@ import sys
 import tempfile
 from multiprocessing.pool import ThreadPool
 from time import sleep
-from typing import IO, TYPE_CHECKING, Any, Callable, Final, Sequence, TypeVar
+from typing import TYPE_CHECKING
 
 import pyalpm
 
@@ -21,9 +21,14 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_s
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
+    from typing import IO, Any, Callable, Final, Sequence, TypeVar
+
     from typing_extensions import NotRequired, TypedDict
 
     from .aur import AURPackageInfo
+
+    IOStream = IO[bytes] | int | None
+    SudoLoopResultT = TypeVar("SudoLoopResultT")
 
     class SpawnArgs(TypedDict):
         stdout: NotRequired["IOStream"]
@@ -31,13 +36,12 @@ if TYPE_CHECKING:
         cwd: NotRequired[str]
         env: NotRequired[dict[str, str]]
 
-IOStream = IO[bytes] | int | None
 
-DEFAULT_INPUT_ENCODING: Final = "utf-8"
-DEFAULT_TIMEZONE: Final = datetime.datetime.now().astimezone().tzinfo  # noqa: DTZ005
-PIPE: Final = subprocess.PIPE
-SYSTEMD_MIN_VERSION: Final = 235
-READ_MODE: Final = "r"
+DEFAULT_INPUT_ENCODING: "Final" = "utf-8"
+DEFAULT_TIMEZONE: "Final" = datetime.datetime.now().astimezone().tzinfo  # noqa: DTZ005
+PIPE: "Final" = subprocess.PIPE
+SYSTEMD_MIN_VERSION: "Final" = 235
+READ_MODE: "Final" = "r"
 
 
 class ComparableType:
@@ -48,7 +52,7 @@ class ComparableType:
     __compare_stack__: list["ComparableType"] | None = None
 
     @property
-    def public_values(self) -> dict[str, Any]:
+    def public_values(self) -> dict[str, "Any"]:
         return {
             var: val for var, val in vars(self).items()
             if not var.startswith("__")
@@ -89,7 +93,7 @@ class DataType(ComparableType):
     def _key_exists(self, key: str) -> bool:
         return key in dir(self)
 
-    def __init__(self, *, ignore_extra_properties: bool = False, **kwargs: Any) -> None:
+    def __init__(self, *, ignore_extra_properties: bool = False, **kwargs: "Any") -> None:
         self.ignore_extra_properties = ignore_extra_properties
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -102,7 +106,7 @@ class DataType(ComparableType):
                 )
                 raise TypeError(missing_required_attribute)
 
-    def __setattr__(self, key: str, value: Any) -> None:
+    def __setattr__(self, key: str, value: "Any") -> None:
         if not (
             (
                 key in self.__all_annotations__
@@ -218,8 +222,8 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
 
 def interactive_spawn(
         cmd: list[str],
-        stdout: IOStream = None,
-        stderr: IOStream = None,
+        stdout: "IOStream" = None,
+        stderr: "IOStream" = None,
         cwd: str | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
@@ -307,9 +311,9 @@ def isolate_root_cmd(
 
 
 class CodepageSequences:
-    UTF_8: Final[Sequence[bytes]] = (b"\xef\xbb\xbf", )
-    UTF_16: Final[Sequence[bytes]] = (b"\xfe\xff", b"\xff\xfe")
-    UTF_32: Final[Sequence[bytes]] = (b"\xfe\xff\x00\x00", b"\x00\x00\xff\xfe")
+    UTF_8: "Final[Sequence[bytes]]" = (b"\xef\xbb\xbf", )
+    UTF_16: "Final[Sequence[bytes]]" = (b"\xfe\xff", b"\xff\xfe")
+    UTF_32: "Final[Sequence[bytes]]" = (b"\xfe\xff\x00\x00", b"\x00\x00\xff\xfe")
 
 
 def detect_bom_type(file_path: str) -> str:
@@ -396,17 +400,14 @@ def sudo_loop(*, once: bool = False) -> None:
         sleep(sudo_loop_interval)
 
 
-SudoLoopResultT = TypeVar("SudoLoopResultT")
-
-
-def run_with_sudo_loop(function: Callable[..., SudoLoopResultT]) -> SudoLoopResultT | None:
+def run_with_sudo_loop(function: "Callable[..., SudoLoopResultT]") -> "SudoLoopResultT | None":
     sudo_loop(once=True)
     with ThreadPool(processes=2) as pool:
         main_thread = pool.apply_async(function, ())
         pool.apply_async(sudo_loop)
         pool.close()
-        catched_exc = None
-        result: SudoLoopResultT | None = None
+        catched_exc: Exception | None = None
+        result: "SudoLoopResultT | None" = None
         try:
             result = main_thread.get()
         except Exception as exc:

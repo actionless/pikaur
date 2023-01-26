@@ -2,12 +2,15 @@
 # mypy: disable-error-code=no-untyped-def
 # pylint: disable=invalid-name,disallowed-name
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from pikaur.aur import find_aur_packages
 from pikaur.core import ComparableType, DataType, InstallInfo, PackageSource
 from pikaur.pacman import PackageDB
 from pikaur_test.helpers import InterceptSysOutput, PikaurTestCase
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class ComparableTypeTest(PikaurTestCase):
@@ -20,8 +23,8 @@ class ComparableTypeTest(PikaurTestCase):
 
         class ClassA(ComparableType):
             __ignore_in_eq__ = ("bar", )
-            foo: Any
-            bar: Any
+            foo: "Any"
+            bar: "Any"
 
         class ClassB(ComparableType):
             pass

@@ -2,7 +2,7 @@ import gzip
 import json
 import socket
 from time import sleep
-from typing import Any, Final
+from typing import TYPE_CHECKING
 from urllib import request
 from urllib.error import URLError
 
@@ -13,8 +13,12 @@ from .i18n import translate
 from .pprint import ColorsHighlight, color_line, print_error, print_stderr
 from .prompt import ask_to_continue
 
-DEFAULT_WEB_ENCODING: Final = "utf-8"
-NOCONFIRM_RETRY_INTERVAL: Final = 3
+if TYPE_CHECKING:
+    from typing import Any, Final
+
+
+DEFAULT_WEB_ENCODING: "Final" = "utf-8"
+NOCONFIRM_RETRY_INTERVAL: "Final" = 3
 
 
 def read_bytes_from_url(
@@ -55,7 +59,7 @@ def get_unicode_from_url(url: str, *, optional: bool = False) -> str:
     return result_bytes.decode(DEFAULT_WEB_ENCODING)
 
 
-def get_json_from_url(url: str) -> Any:
+def get_json_from_url(url: str) -> "Any":
     return json.loads(get_unicode_from_url(url))
 
 

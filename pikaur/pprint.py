@@ -3,13 +3,17 @@
 import shutil
 import sys
 from string import printable
-from typing import Any, Final, TextIO
+from typing import TYPE_CHECKING
 
 from .args import ColorFlagValues, parse_args
 from .i18n import translate
 from .lock import FancyLock
 
-PADDING: Final = 4
+if TYPE_CHECKING:
+    from typing import Any, Final, TextIO
+
+
+PADDING: "Final" = 4
 
 
 def color_enabled() -> bool:
@@ -31,8 +35,8 @@ class PrintLock(FancyLock):
 
 
 def _print(
-        destination: TextIO,
-        message: Any = "",
+        destination: "TextIO",
+        message: "Any" = "",
         end: str = "\n",
         *,
         flush: bool = False,
@@ -51,7 +55,7 @@ def _print(
 
 
 def print_stdout(
-        message: Any = "",
+        message: "Any" = "",
         end: str = "\n",
         *,
         flush: bool = False,
@@ -61,7 +65,7 @@ def print_stdout(
 
 
 def print_stderr(
-        message: Any = "",
+        message: "Any" = "",
         end: str = "\n",
         *,
         flush: bool = False,

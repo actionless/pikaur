@@ -1,9 +1,12 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import gettext
-from typing import Final
+from typing import TYPE_CHECKING
 
-PIKAUR_NAME: Final = "pikaur"
+if TYPE_CHECKING:
+    from typing import Final
+
+PIKAUR_NAME: "Final" = "pikaur"
 
 
 class PikaurTranslation():

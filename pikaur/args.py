@@ -3,11 +3,14 @@
 import sys
 from argparse import Namespace
 from pprint import pformat
-from typing import Any, Final, NoReturn
+from typing import TYPE_CHECKING
 
 from .argparse import ArgumentParserWithUnknowns
 from .config import PikaurConfig
 from .i18n import translate, translate_many
+
+if TYPE_CHECKING:
+    from typing import Any, Final, NoReturn
 
 ArgSchema = list[tuple[str | None, str, None | bool | str | int]]
 PossibleArgValuesTypes = list[str] | str | bool | int | None
@@ -17,19 +20,19 @@ def debug(msg: str | None = None) -> None:
     sys.stderr.write(f'{msg or ""}\n')
 
 
-def debug_format(msg: Any) -> None:
+def debug_format(msg: "Any") -> None:
     debug(pformat(msg))
 
 
-FLAG_READ_STDIN: Final = "-"
+FLAG_READ_STDIN: "Final" = "-"
 
 
 class LiteralArgs:
-    NOCONFIRM: Final = "--noconfirm"
-    HELP: Final = "--help"
+    NOCONFIRM: "Final" = "--noconfirm"
+    HELP: "Final" = "--help"
 
 
-PACMAN_BOOL_OPTS: Final[ArgSchema] = [
+PACMAN_BOOL_OPTS: "Final[ArgSchema]" = [
     # sync options
     ("S", "sync", None),
     ("g", "groups", None),
@@ -84,7 +87,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
     ]
 
 
-PACMAN_STR_OPTS: Final[ArgSchema] = [
+PACMAN_STR_OPTS: "Final[ArgSchema]" = [
     (None, "color", None),
     ("b", "dbpath", None),  # @TODO: pyalpm?
     ("r", "root", None),
@@ -99,8 +102,8 @@ PACMAN_STR_OPTS: Final[ArgSchema] = [
 
 
 class ColorFlagValues:
-    ALWAYS: Final = "always"
-    NEVER: Final = "never"
+    ALWAYS: "Final" = "always"
+    NEVER: "Final" = "never"
 
 
 def get_pikaur_str_opts() -> ArgSchema:
@@ -113,7 +116,7 @@ def get_pikaur_str_opts() -> ArgSchema:
     ]
 
 
-PACMAN_COUNT_OPTS: Final[ArgSchema] = [
+PACMAN_COUNT_OPTS: "Final[ArgSchema]" = [
     ("y", "refresh", 0),
     ("u", "sysupgrade", 0),
     ("c", "clean", 0),
@@ -128,7 +131,7 @@ def get_pikaur_count_opts() -> ArgSchema:
     ]
 
 
-PACMAN_APPEND_OPTS: Final[ArgSchema] = [
+PACMAN_APPEND_OPTS: "Final[ArgSchema]" = [
     (None, "ignore", None),
     (None, "ignoregroup", None),  # @TODO
     (None, "overwrite", None),
@@ -271,7 +274,7 @@ class PikaurArgs(Namespace):
 
 class PikaurArgumentParser(ArgumentParserWithUnknowns):
 
-    def error(self, message: str) -> NoReturn:
+    def error(self, message: str) -> "NoReturn":
         exc = sys.exc_info()[1]
         if exc:
             raise exc
@@ -330,7 +333,7 @@ class CachedArgs():
     args: PikaurArgs | None = None
 
 
-def debug_args(args: list[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
+def debug_args(args: list[str], parsed_args: PikaurArgs) -> "NoReturn":  # pragma: no cover
     debug("Input:")
     debug_format(args)
     debug()

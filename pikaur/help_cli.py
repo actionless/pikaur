@@ -1,5 +1,5 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
-from typing import Final
+from typing import TYPE_CHECKING
 
 from .args import LiteralArgs, get_pikaur_long_opts, parse_args, reconstruct_args
 from .config import PikaurConfig
@@ -7,8 +7,11 @@ from .core import spawn
 from .i18n import PIKAUR_NAME, translate
 from .pprint import print_stdout
 
-FIRST_COLUMN_MARGIN: Final = 5
-FIRST_COLUMN_WIDTH: Final = 16
+if TYPE_CHECKING:
+    from typing import Final
+
+FIRST_COLUMN_MARGIN: "Final" = 5
+FIRST_COLUMN_WIDTH: "Final" = 16
 
 
 def _format_options_help(options: list[tuple[str, str, str]]) -> str:

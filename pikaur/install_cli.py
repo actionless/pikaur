@@ -6,10 +6,9 @@ import hashlib
 import os
 from multiprocessing.pool import ThreadPool
 from tempfile import NamedTemporaryFile
+from typing import TYPE_CHECKING
 
-import pyalpm
-
-from .args import PikaurArgs, parse_args, reconstruct_args
+from .args import parse_args, reconstruct_args
 from .aur import AURPackageInfo
 from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
 from .config import DiffPagerValues, PikaurConfig
@@ -70,6 +69,11 @@ from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .version import compare_versions
 
+if TYPE_CHECKING:
+    import pyalpm
+
+    from .args import PikaurArgs
+
 logger = create_logger("install_cli")
 
 
@@ -101,7 +105,7 @@ def edit_file(filename: str) -> bool:  # pragma: no cover
 class InstallPackagesCLI():
 
     # User input
-    args: PikaurArgs
+    args: "PikaurArgs"
     install_package_names: list[str]
     # @TODO: define @property for manually_excluded_packages_names+args.ignore:
     manually_excluded_packages_names: list[str]
@@ -113,7 +117,7 @@ class InstallPackagesCLI():
     # computed package lists:
     not_found_repo_pkgs_names: list[str]
     found_conflicts: dict[str, list[str]]
-    repo_packages_by_name: dict[str, pyalpm.Package]
+    repo_packages_by_name: "dict[str, pyalpm.Package]"
     # pkgbuilds from cloned aur repos:
     package_builds_by_name: dict[str, PackageBuild]
 

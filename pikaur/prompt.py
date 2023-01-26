@@ -2,7 +2,7 @@
 
 import sys
 import tty
-from typing import Final, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 from .args import LiteralArgs, parse_args
 from .config import PikaurConfig
@@ -21,6 +21,10 @@ from .pprint import (
     print_warning,
     range_printable,
 )
+
+if TYPE_CHECKING:
+    from typing import Final, Iterable, Sequence
+
 
 logger = create_logger("prompt")
 logger_no_lock = create_logger("prompt_nolock", lock=False)
@@ -47,7 +51,7 @@ class Answers():
         self._do_init()
 
 
-def read_answer_from_tty(question: str, answers: Sequence[str] | None = None) -> str:
+def read_answer_from_tty(question: str, answers: "Sequence[str] | None" = None) -> str:
     """
     Function displays a question and reads a single character
     from STDIN as an answer. Then returns the character as lower character.
@@ -106,7 +110,7 @@ def split_last_line(text: str) -> str:
 
 
 def get_input(
-        prompt: str, answers: Sequence[str] = (), *, require_confirm: bool = False,
+        prompt: str, answers: "Sequence[str]" = (), *, require_confirm: bool = False,
 ) -> str:
     logger.debug("Gonna get input from user...")
     answer = ""
@@ -151,11 +155,11 @@ class NotANumberInputError(Exception):
 
 
 class NumberRangeInputSyntax:
-    DELIMITERS: Final[Sequence[str]] = (" ", ",")
-    RANGES: Final[Sequence[str]] = ("-", "..")
+    DELIMITERS: "Final[Sequence[str]]" = (" ", ",")
+    RANGES: "Final[Sequence[str]]" = ("-", "..")
 
 
-def get_multiple_numbers_input(prompt: str, answers: Iterable[int] = ()) -> list[int]:
+def get_multiple_numbers_input(prompt: str, answers: "Iterable[int]" = ()) -> list[int]:
     str_result = get_input(prompt, [str(answer) for answer in answers], require_confirm=True)
     if str_result == "":
         return []

@@ -2,26 +2,31 @@
 # Original author: Steven J. Bethard <steven.bethard@gmail.com>.
 # pylint: disable=too-many-statements,too-many-locals,too-many-branches,protected-access
 
-from argparse import SUPPRESS, Action, ArgumentError, ArgumentParser, Namespace, _get_action_name
-from typing import Final
+from argparse import SUPPRESS, ArgumentError, ArgumentParser, _get_action_name
+from typing import TYPE_CHECKING
 
 from .i18n import translate as _
 
-LONG_ARG_PREFIX: Final = "--"
+if TYPE_CHECKING:
+    from argparse import Action, Namespace
+    from typing import Final
+
+
+LONG_ARG_PREFIX: "Final" = "--"
 
 
 class ArgumentParserWithUnknowns(ArgumentParser):
 
     def _parse_known_args(
-            self, arg_strings: list[str], namespace: Namespace,
-    ) -> tuple[Namespace, list[str]]:
+            self, arg_strings: list[str], namespace: "Namespace",
+    ) -> "tuple[Namespace, list[str]]":
         # replace arg strings that are file references
         if self.fromfile_prefix_chars is not None:
             arg_strings = self._read_args_from_files(arg_strings)
 
         # map all mutually exclusive arguments to the other arguments
         # they can't occur with
-        action_conflicts: dict[Action, list[Action]] = {}
+        action_conflicts: "dict[Action, list[Action]]" = {}
         for mutex_group in self._mutually_exclusive_groups:
             group_actions = mutex_group._group_actions
             for i, mutex_action in enumerate(mutex_group._group_actions):
@@ -62,7 +67,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         seen_non_default_actions = set()
 
         def take_action(
-                action: Action, argument_strings: list[str], option_string: str | None = None,
+                action: "Action", argument_strings: list[str], option_string: str | None = None,
         ) -> None:
             seen_actions.add(action)
             argument_values = self._get_values(action, argument_strings)
@@ -95,7 +100,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             # identify additional optionals in the same arg string
             # (e.g. -xyz is the same as -x -y -z if no args are required)
             match_argument = self._match_argument
-            action_tuples: list[tuple[Action, list[str], str]] = []
+            action_tuples: "list[tuple[Action, list[str], str]]" = []
             while True:
 
                 # if we found no optional action, skip it

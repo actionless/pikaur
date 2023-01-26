@@ -1,23 +1,25 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import os
-from typing import Final, TypeVar
+from typing import TYPE_CHECKING
 
 from .args import parse_args
 from .config import _USER_TEMP_ROOT, CONFIG_ROOT
 from .core import open_file, running_as_root
 
+if TYPE_CHECKING:
+    from typing import Final, TypeVar
+
+    FallbackValueT = TypeVar("FallbackValueT")
+
 ConfigValueType = str | list[str] | None
 ConfigFormat = dict[str, ConfigValueType]
 
 
-FallbackValueT = TypeVar("FallbackValueT")
-
-
 class ConfigReader():
 
-    COMMENT_PREFIXES: Final = ("#", ";")
-    KEY_VALUE_DELIMITER: Final = "="
+    COMMENT_PREFIXES: "Final" = ("#", ";")
+    KEY_VALUE_DELIMITER: "Final" = "="
 
     _cached_config: dict[str, ConfigFormat] | None = None
     default_config_path: str
@@ -75,15 +77,15 @@ class ConfigReader():
     def get(
             cls,
             key: str,
-            fallback: FallbackValueT | None = None,
+            fallback: "FallbackValueT | None" = None,
             config_path: str | None = None,
-    ) -> ConfigValueType | FallbackValueT:
+    ) -> "ConfigValueType | FallbackValueT":
         return cls.get_config(config_path=config_path).get(key) or fallback
 
 
 class MakepkgConfig():
 
-    _UNSET: Final = "unset"
+    _UNSET: "Final" = "unset"
     _user_makepkg_path: str | None = _UNSET
 
     @classmethod
@@ -104,11 +106,11 @@ class MakepkgConfig():
     def get(
             cls,
             key: str,
-            fallback: FallbackValueT | None = None,
+            fallback: "FallbackValueT | None" = None,
             config_path: str | None = None,
-    ) -> ConfigValueType | FallbackValueT:
+    ) -> "ConfigValueType | FallbackValueT":
         arg_path: str | None = parse_args().makepkg_config
-        value: ConfigValueType | FallbackValueT = ConfigReader.get(
+        value: "ConfigValueType | FallbackValueT" = ConfigReader.get(
             key, fallback, config_path="/etc/makepkg.conf",
         )
         if cls.get_user_makepkg_path():

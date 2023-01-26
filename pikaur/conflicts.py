@@ -1,13 +1,17 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-from typing import Sequence
+from typing import TYPE_CHECKING
 
-from .aur import AURPackageInfo
 from .aur_deps import find_repo_deps_of_aur_pkgs
-from .core import AURInstallInfo
 from .pacman import PackageDB
 from .updates import get_remote_package_version
 from .version import VersionMatcher
+
+if TYPE_CHECKING:
+    from typing import Sequence
+
+    from .aur import AURPackageInfo
+    from .core import AURInstallInfo
 
 
 def get_new_repo_pkgs_conflicts(repo_packages: list[str]) -> dict[str, list[str]]:
@@ -24,7 +28,7 @@ def get_new_repo_pkgs_conflicts(repo_packages: list[str]) -> dict[str, list[str]
     return new_pkgs_conflicts_lists
 
 
-def get_new_aur_pkgs_conflicts(aur_packages: list[AURPackageInfo]) -> dict[str, list[str]]:
+def get_new_aur_pkgs_conflicts(aur_packages: "list[AURPackageInfo]") -> dict[str, list[str]]:
     new_pkgs_conflicts_lists = {}
     for aur_json in aur_packages:
         conflicts: list[str] = []
@@ -115,10 +119,10 @@ def find_conflicting_with_local_pkgs(
 
 
 def find_aur_conflicts(
-        aur_pkgs_install_infos: Sequence[AURInstallInfo],
+        aur_pkgs_install_infos: "Sequence[AURInstallInfo]",
         repo_packages_names: list[str],
 ) -> dict[str, list[str]]:
-    aur_pkgs: list[AURPackageInfo] = [ii.package for ii in aur_pkgs_install_infos]
+    aur_pkgs: "list[AURPackageInfo]" = [ii.package for ii in aur_pkgs_install_infos]
     aur_packages_names = [ii.name for ii in aur_pkgs_install_infos]
     repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(aur_pkgs)
     repo_deps_names = [vm.pkg_name for vm in repo_deps_version_matchers]

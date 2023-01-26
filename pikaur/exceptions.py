@@ -2,12 +2,12 @@
 
 from typing import TYPE_CHECKING
 
-from .core import DataType, PackageSource
+from .core import DataType
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
     from .build import PackageBuild
-    from .core import InteractiveSpawn
+    from .core import InteractiveSpawn, PackageSource
     from .version import VersionMatcher
 
 
@@ -53,7 +53,7 @@ class DependencyVersionMismatchError(DataType, Exception):
     dependency_line: str
     who_depends: str
     depends_on: str
-    location: PackageSource
+    location: "PackageSource"
     version_matcher: "VersionMatcher | None" = None
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -62,7 +62,7 @@ class DependencyVersionMismatchError(DataType, Exception):
             dependency_line: str,
             who_depends: str,
             depends_on: str,
-            location: PackageSource,
+            location: "PackageSource",
             version_matcher: "VersionMatcher | None" = None,
     ) -> None:
         super().__init__(

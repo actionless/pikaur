@@ -1,12 +1,12 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 from itertools import chain
 from multiprocessing.pool import ThreadPool
-from typing import Sequence
+from typing import TYPE_CHECKING
 
-from .args import PikaurArgs, parse_args, reconstruct_args
+from .args import parse_args, reconstruct_args
 from .aur import AURPackageInfo, find_aur_packages, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
-from .core import AURInstallInfo, ComparableType, InstallInfo, PackageSource, RepoInstallInfo
+from .core import AURInstallInfo, ComparableType, PackageSource, RepoInstallInfo
 from .exceptions import DependencyError, DependencyVersionMismatchError, SysExit
 from .i18n import translate
 from .logging import create_logger
@@ -14,7 +14,6 @@ from .pacman import (
     OFFICIAL_REPOS,
     PackageDB,
     PacmanConfig,
-    PacmanPrint,
     find_sysupgrade_packages,
     get_ignored_pkgnames_from_patterns,
     get_pacman_command,
@@ -27,6 +26,13 @@ from .replacements import find_replacements
 from .srcinfo import SrcInfo
 from .updates import find_aur_updates, print_upgradeable
 from .version import VersionMatcher
+
+if TYPE_CHECKING:
+    from typing import Sequence
+
+    from .args import PikaurArgs
+    from .core import InstallInfo
+    from .pacman import PacmanPrint
 
 logger = create_logger("install_info_fetcher")
 
@@ -43,7 +49,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
     aur_deps_install_info: list[AURInstallInfo]
     _all_aur_updates_raw: list[AURInstallInfo]
 
-    args: PikaurArgs
+    args: "PikaurArgs"
     aur_deps_relations: dict[str, list[str]]
     replacements: dict[str, list[str]]
 
@@ -127,14 +133,14 @@ Gonna fetch install info for:
         return list(set(_aur_deps_names))
 
     @property
-    def aur_install_info_containers(self) -> Sequence[list[AURInstallInfo]]:
+    def aur_install_info_containers(self) -> "Sequence[list[AURInstallInfo]]":
         return (
             self.aur_updates_install_info,
             self.aur_deps_install_info,
         )
 
     @property
-    def repo_install_info_containers(self) -> Sequence[list[RepoInstallInfo]]:
+    def repo_install_info_containers(self) -> "Sequence[list[RepoInstallInfo]]":
         return (
             self.repo_packages_install_info,
             self.new_repo_deps_install_info,
@@ -147,7 +153,7 @@ Gonna fetch install info for:
     @property
     def all_install_info_containers(
             self,
-    ) -> Sequence[list[RepoInstallInfo] | list[AURInstallInfo]]:
+    ) -> "Sequence[list[RepoInstallInfo] | list[AURInstallInfo]]":
         return (
             *self.repo_install_info_containers,
             *self.aur_install_info_containers,
@@ -170,7 +176,7 @@ Gonna fetch install info for:
         ]
 
     @property
-    def all_install_info(self) -> Sequence[RepoInstallInfo | AURInstallInfo]:
+    def all_install_info(self) -> "Sequence[RepoInstallInfo | AURInstallInfo]":
         return list(self.repo_install_info) + list(self.aur_install_info)
 
     def discard_package(
@@ -264,7 +270,7 @@ Gonna fetch install info for:
             *extra_args,
         ]
 
-        def _get_pkg_install_infos(results: list[PacmanPrint]) -> list[RepoInstallInfo]:
+        def _get_pkg_install_infos(results: "list[PacmanPrint]") -> list[RepoInstallInfo]:
             install_infos = []
             for pkg_print in results:
                 pkg = all_repo_pkgs[pkg_print.full_name]
@@ -605,7 +611,7 @@ Gonna fetch install info for:
         """Update packages' install info to show deps in prompt."""
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
         all_local_pkgnames = PackageDB.get_local_pkgnames()
-        all_deps_install_infos: Sequence[InstallInfo] = (
+        all_deps_install_infos: "Sequence[InstallInfo]" = (
             self.new_repo_deps_install_info +
             self.new_thirdparty_repo_deps_install_info +
             self.aur_deps_install_info  # type: ignore[operator]

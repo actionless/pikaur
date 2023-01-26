@@ -2,15 +2,19 @@
 # mypy: disable-error-code=no-untyped-def
 
 import configparser
+from typing import TYPE_CHECKING
 from unittest import mock
 
-from pikaur.config import ConfigSchemaT, PikaurConfigItem
+from pikaur.config import PikaurConfigItem
 from pikaur_test.helpers import PikaurTestCase
+
+if TYPE_CHECKING:
+    from pikaur.config import ConfigSchemaT
 
 
 class PikaurConfigItemTestCase(PikaurTestCase):
 
-    example_config_schema: ConfigSchemaT = {
+    example_config_schema: "ConfigSchemaT" = {
         "test_section": {
             "SomeBoolProperty": {
                 "data_type": "bool",

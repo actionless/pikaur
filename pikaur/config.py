@@ -5,11 +5,13 @@ import os
 import sys
 from pathlib import Path
 from tempfile import gettempdir
-from typing import TYPE_CHECKING, Any, Callable, Final
+from typing import TYPE_CHECKING
 
 from .i18n import PIKAUR_NAME, translate
 
 if TYPE_CHECKING:
+    from typing import Any, Callable, Final
+
     from typing_extensions import NotRequired, TypedDict
 
     class DeprecatedConfigValue(TypedDict):
@@ -24,48 +26,48 @@ if TYPE_CHECKING:
         migrated: NotRequired[bool]
 
 
-DEFAULT_CONFIG_ENCODING: Final = "utf-8"
-BOOL: Final = "bool"
-INT: Final = "int"
-STR: Final = "str"
-RUNNING_AS_ROOT: Final = os.geteuid() == 0  # @TODO: could global var be avoided here?
-VERSION: Final = "1.14.7-dev"
+DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
+BOOL: "Final" = "bool"
+INT: "Final" = "int"
+STR: "Final" = "str"
+RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
+VERSION: "Final" = "1.14.7-dev"
 
-_USER_TEMP_ROOT: Final = gettempdir()
-_USER_CACHE_ROOT: Final = os.environ.get(
+_USER_TEMP_ROOT: "Final" = gettempdir()
+_USER_CACHE_ROOT: "Final" = os.environ.get(
     "XDG_CACHE_HOME",
     os.path.join(Path.home(), ".cache/"),
 )
 
-CACHE_ROOT: Final = (
+CACHE_ROOT: "Final" = (
     "/var/cache/pikaur"
     if RUNNING_AS_ROOT else
     os.path.join(_USER_CACHE_ROOT, "pikaur/")
 )
 
-BUILD_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "build")
-PACKAGE_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "pkg")
+BUILD_CACHE_PATH: "Final" = os.path.join(CACHE_ROOT, "build")
+PACKAGE_CACHE_PATH: "Final" = os.path.join(CACHE_ROOT, "pkg")
 
-CONFIG_ROOT: Final = os.environ.get(
+CONFIG_ROOT: "Final" = os.environ.get(
     "XDG_CONFIG_HOME",
     os.path.join(Path.home(), ".config/"),
 )
 
-DATA_ROOT: Final = os.path.join(
+DATA_ROOT: "Final" = os.path.join(
     os.environ.get(
         "XDG_DATA_HOME",
         os.path.join(Path.home(), ".local/share/"),
     ), "pikaur",
 )
 
-_OLD_AUR_REPOS_CACHE_PATH: Final = os.path.join(CACHE_ROOT, "aur_repos")
-AUR_REPOS_CACHE_PATH: Final = (
+_OLD_AUR_REPOS_CACHE_PATH: "Final" = os.path.join(CACHE_ROOT, "aur_repos")
+AUR_REPOS_CACHE_PATH: "Final" = (
     os.path.join(CACHE_ROOT, "aur_repos")
     if RUNNING_AS_ROOT else
     os.path.join(DATA_ROOT, "aur_repos")
 )
 
-BUILD_DEPS_LOCK: Final = os.path.join(
+BUILD_DEPS_LOCK: "Final" = os.path.join(
     _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT,
     "pikaur_build_deps.lock",
 )
@@ -84,23 +86,23 @@ def get_config_path() -> str:
 
 
 class UpgradeSortingValues:
-    VERSIONDIFF: Final = "versiondiff"
-    PKGNAME: Final = "pkgname"
-    REPO: Final = "repo"
+    VERSIONDIFF: "Final" = "versiondiff"
+    PKGNAME: "Final" = "pkgname"
+    REPO: "Final" = "repo"
 
 
 class AurSearchSortingValues:
-    HOTTEST: Final = "hottest"
-    PKGNAME: Final = "pkgname"
-    POPULARITY: Final = "popularity"
-    NUMVOTES: Final = "numvotes"
-    LASTMODIFIED: Final = "lastmodified"
+    HOTTEST: "Final" = "hottest"
+    PKGNAME: "Final" = "pkgname"
+    POPULARITY: "Final" = "popularity"
+    NUMVOTES: "Final" = "numvotes"
+    LASTMODIFIED: "Final" = "lastmodified"
 
 
 class DiffPagerValues:
-    AUTO: Final = "auto"
-    ALWAYS: Final = "always"
-    NEVER: Final = "never"
+    AUTO: "Final" = "auto"
+    ALWAYS: "Final" = "always"
+    NEVER: "Final" = "never"
 
 
 ConfigSchemaT = dict[str, dict[str, "ConfigValueType"]]
@@ -385,7 +387,7 @@ class PikaurConfigItem:
     def __str__(self) -> str:
         return self.get_str()
 
-    def __eq__(self, item: Any) -> bool:
+    def __eq__(self, item: "Any") -> bool:
         result: bool = self.get_str() == item
         return result
 
@@ -430,9 +432,9 @@ class PikaurConfig():
 
                 new_section_name: str = option_schema["deprecated"]["section"]
                 new_option_name: str = option_schema["deprecated"]["option"]
-                transform: Callable[
+                transform: """Callable[
                     [str, configparser.ConfigParser], str,
-                ] | None = option_schema["deprecated"].get("transform")
+                ] | None""" = option_schema["deprecated"].get("transform")
 
                 old_value_was_migrated = False
                 if (

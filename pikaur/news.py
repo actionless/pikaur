@@ -3,7 +3,7 @@
 import datetime
 import os
 from html.parser import HTMLParser
-from typing import TYPE_CHECKING, Final, TextIO
+from typing import TYPE_CHECKING
 
 try:
     from defusedxml.ElementTree import fromstring  # type: ignore[import]
@@ -26,18 +26,19 @@ from .pprint import (
 from .urllib import get_unicode_from_url
 
 if TYPE_CHECKING:
+    from typing import Final, TextIO
     from xml.etree.ElementTree import Element  # nosec B405
 
 
-DT_FORMAT: Final = "%a, %d %b %Y %H:%M:%S %z"
+DT_FORMAT: "Final" = "%a, %d %b %Y %H:%M:%S %z"
 
 logger = create_logger("news")
 
 
 class ArchNewsMarkup:
-    PUBLICATION_DATE: Final = "pubDate"
-    TITLE: Final = "title"
-    DESCRIPTION: Final = "description"
+    PUBLICATION_DATE: "Final" = "pubDate"
+    TITLE: "Final" = "title"
+    DESCRIPTION: "Final" = "description"
 
 
 class News:
@@ -95,7 +96,7 @@ class News:
         self._news_feed = fromstring(str_response)  # nosec B314
 
     def _get_last_seen_news_date(self) -> datetime.datetime:
-        last_seen_fd: TextIO
+        last_seen_fd: "TextIO"
         try:
             logger.debug("loading date from {}", self.CACHE_FILE)
             with open_file(self.CACHE_FILE) as last_seen_fd:

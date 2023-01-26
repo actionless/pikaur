@@ -1,5 +1,5 @@
 import os
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from .args import parse_args, reconstruct_args
 from .config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, PikaurConfig
@@ -13,6 +13,7 @@ from .prompt import ask_to_continue
 
 if TYPE_CHECKING:
     from subprocess import Popen  # nosec B404
+    from typing import Callable
 
 
 _debug = create_logger("pkg_cache_cli").debug
@@ -39,7 +40,7 @@ def clean_aur_cache() -> None:
 
 def clean_repo_cache() -> None:
     args = parse_args()
-    spawn_func: Callable[[list[str]], "Popen[bytes]"] = interactive_spawn
+    spawn_func: "Callable[[list[str]], Popen[bytes]]" = interactive_spawn
     if args.noconfirm:
 
         def noconfirm_cache_remove(pacman_args: list[str]) -> "Popen[bytes]":

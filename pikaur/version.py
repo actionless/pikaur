@@ -1,12 +1,16 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/ ."""
 
 from itertools import zip_longest
-from typing import Callable, Final
+from typing import TYPE_CHECKING
 
 import pyalpm
 
-VERSION_SEPARATORS: Final = (".", "+", "-", ":")
-VERSION_DEVEL: Final = "devel"
+if TYPE_CHECKING:
+    from typing import Callable, Final
+
+
+VERSION_SEPARATORS: "Final" = (".", "+", "-", ":")
+VERSION_DEVEL: "Final" = "devel"
 
 
 def compare_versions(version1: str, version2: str) -> int:
@@ -27,7 +31,7 @@ class VersionMatcher():
     """
 
     version: str | None = None
-    version_matchers: list[Callable[[str], int]]
+    version_matchers: "list[Callable[[str], int]]"
     line: str
     pkg_name: str
 

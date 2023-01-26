@@ -4,9 +4,9 @@ import os
 import shutil
 from glob import glob
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
-from .args import PikaurArgs, parse_args
+from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
 from .config import (
     AUR_REPOS_CACHE_PATH,
@@ -18,7 +18,6 @@ from .config import (
 from .core import (
     PIPE,
     DataType,
-    InteractiveSpawn,
     dirname,
     interactive_spawn,
     isolate_root_cmd,
@@ -35,7 +34,7 @@ from .filelock import FileLock
 from .i18n import translate, translate_many
 from .logging import create_logger
 from .makepkg_config import MakePkgCommand, MakepkgConfig, get_pkgdest
-from .pacman import PackageDB, ProvidedDependency, get_pacman_command, install_built_deps
+from .pacman import PackageDB, get_pacman_command, install_built_deps
 from .pprint import (
     ColorsHighlight,
     bold_line,
@@ -57,21 +56,24 @@ from .urllib import wrap_proxy_env
 from .version import VersionMatcher, compare_versions
 
 if TYPE_CHECKING:
-    from .core import SpawnArgs
+    from typing import Final
 
+    from .args import PikaurArgs
+    from .core import InteractiveSpawn, SpawnArgs
+    from .pacman import ProvidedDependency
 
 logger = create_logger("build")
 
-DEFAULT_PKGBUILD_BASENAME: Final = "PKGBUILD"
-ARCH_ANY: Final = "any"
-IGNORE_PATHS_WHEN_COPYING: Final[tuple[str]] = (".git", )
+DEFAULT_PKGBUILD_BASENAME: "Final" = "PKGBUILD"
+ARCH_ANY: "Final" = "any"
+IGNORE_PATHS_WHEN_COPYING: "Final[tuple[str]]" = (".git", )
 
 
 class PkgbuildChanged(Exception):  # noqa: N818
     pass
 
 
-def _shell(cmds: list[str]) -> InteractiveSpawn:
+def _shell(cmds: list[str]) -> "InteractiveSpawn":
     return interactive_spawn(isolate_root_cmd(wrap_proxy_env(cmds)))
 
 
@@ -133,12 +135,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     new_make_deps_to_install: list[str]
     built_deps_to_install: dict[str, str]
 
-    args: PikaurArgs
+    args: "PikaurArgs"
     resolved_conflicts: list[list[str]] | None = None
 
     _local_pkgs_wo_build_deps: set[str]
     _local_pkgs_with_build_deps: set[str]
-    _local_provided_pkgs_with_build_deps: dict[str, list[ProvidedDependency]]
+    _local_provided_pkgs_with_build_deps: dict[str, list["ProvidedDependency"]]
 
     def __repr__(self) -> str:
         return (
@@ -203,7 +205,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self._local_pkgs_with_build_deps = set()
         self._local_provided_pkgs_with_build_deps = {}
 
-    def git_reset_changed(self) -> InteractiveSpawn:
+    def git_reset_changed(self) -> "InteractiveSpawn":
         return _shell([
             "git",
             "-C", self.repo_path,
@@ -212,14 +214,14 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             "*",
         ])
 
-    def git_stash(self) -> InteractiveSpawn:
+    def git_stash(self) -> "InteractiveSpawn":
         return _shell([
             "git",
             "-C", self.repo_path,
             "stash",
         ])
 
-    def git_stash_pop(self) -> InteractiveSpawn:
+    def git_stash_pop(self) -> "InteractiveSpawn":
         return _shell([
             "git",
             "-C", self.repo_path,
@@ -227,7 +229,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             "pop",
         ])
 
-    def update_aur_repo(self) -> InteractiveSpawn:
+    def update_aur_repo(self) -> "InteractiveSpawn":
         cmd_args: list[str]
         if self.pull:
             cmd_args = [

@@ -3,7 +3,7 @@
 import fnmatch
 import re
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Final, Pattern
+from typing import TYPE_CHECKING
 
 import pyalpm
 from pycman.config import PacmanConfig as PycmanConfig
@@ -22,10 +22,12 @@ from .version import VersionMatcher
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
+    from typing import Final, Pattern
+
     from .aur import AURPackageInfo
 
 
-OFFICIAL_REPOS: Final = (
+OFFICIAL_REPOS: "Final" = (
     "core",
     "extra",
     "community",
@@ -36,13 +38,13 @@ OFFICIAL_REPOS: Final = (
 )
 
 
-REPO_NAME_DELIMITER: Final = "/"
+REPO_NAME_DELIMITER: "Final" = "/"
 
 
 logger = create_logger("pacman")
 
 
-def create_pacman_pattern(pacman_message: str) -> Pattern[str]:
+def create_pacman_pattern(pacman_message: str) -> "Pattern[str]":
     return re.compile(
         _p(pacman_message).replace(
             "(", r"\(",

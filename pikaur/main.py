@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import atexit
@@ -12,8 +10,7 @@ import sys
 import traceback
 from argparse import ArgumentError
 from contextlib import AbstractContextManager
-from types import TracebackType
-from typing import Any, Callable
+from typing import TYPE_CHECKING
 
 import pyalpm
 
@@ -52,6 +49,10 @@ from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .search_cli import cli_search_packages, search_packages
 from .updates import print_upgradeable
 from .urllib import ProxyInitSocks5Error, init_proxy
+
+if TYPE_CHECKING:
+    from types import TracebackType
+    from typing import Any, Callable
 
 
 def init_readline() -> None:
@@ -110,7 +111,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
             self,
             exc_class: type | None,
             exc_instance: BaseException | None,
-            exc_tb: TracebackType | None,
+            exc_tb: "TracebackType | None",
     ) -> None:
         try:
             # @TODO: replace all SysExit-s to SystemExit-s eventually :3
@@ -212,7 +213,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # specified both operations, like `pikaur -QS smth`
 
     args = parse_args()
-    pikaur_operation: Callable[[], None] | None = None
+    pikaur_operation: "Callable[[], None] | None" = None
     require_sudo = False
 
     if args.help:
@@ -334,7 +335,7 @@ def restore_tty() -> None:
     TTYRestore.restore()
 
 
-def handle_sig_int(*_whatever: Any) -> None:  # pragma: no cover
+def handle_sig_int(*_whatever: "Any") -> None:  # pragma: no cover
     if signal_handler := PikspectSignalHandler.get():
         signal_handler(*_whatever)  # pylint: disable=not-callable
         return
@@ -349,7 +350,7 @@ class EmptyWrapper:
     def __enter__(self) -> None:
         pass
 
-    def __exit__(self, *_exc_details: Any) -> None:
+    def __exit__(self, *_exc_details: "Any") -> None:
         pass
 
 

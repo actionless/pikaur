@@ -1,20 +1,20 @@
-import os
 import pickle  # nosec B403
+from pathlib import Path
 
 from pikaur.aur import get_all_aur_packages
 
-PICKLE_FILE = "aur_db.dump"
+PICKLE_FILE = Path("aur_db.dump")
 
 
-if os.path.exists(PICKLE_FILE):
+if PICKLE_FILE.exists():
     print(f"Opening db dump '{PICKLE_FILE}'...")
-    with open(PICKLE_FILE, "rb") as fobj:
+    with PICKLE_FILE.open("rb") as fobj:
         aur_pkgs = pickle.load(fobj)  # nosec B301
 else:
     print("Fetching...")
     aur_pkgs = get_all_aur_packages()
     print(f"Saving db dump to '{PICKLE_FILE}'...")
-    with open(PICKLE_FILE, "wb") as fobj:
+    with PICKLE_FILE.open("wb") as fobj:
         pickle.dump(aur_pkgs, fobj)
 
 print("Filtering...\n")

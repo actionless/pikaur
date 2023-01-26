@@ -1,4 +1,3 @@
-import os
 from typing import TYPE_CHECKING
 
 from .args import parse_args, reconstruct_args
@@ -28,7 +27,7 @@ def clean_aur_cache() -> None:
         print_stdout(f"\n{message}: {directory}")
         if minimal_clean_level > args.clean:
             continue
-        if not os.path.exists(directory):
+        if not directory.exists():
             print_stdout(translate("Directory is empty."))
         elif ask_to_continue(text="{} {}".format(  # pylint: disable=consider-using-f-string
                 color_line("::", ColorsHighlight.blue),

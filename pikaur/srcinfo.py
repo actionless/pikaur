@@ -1,10 +1,10 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import os
 import shutil
+from pathlib import Path
 
 from .config import BUILD_CACHE_PATH, CACHE_ROOT
-from .core import dirname, isolate_root_cmd, open_file, running_as_root, spawn
+from .core import isolate_root_cmd, open_file, running_as_root, spawn
 from .exceptions import SysExit
 from .i18n import translate
 from .makepkg_config import MakePkgCommand, MakepkgConfig
@@ -16,9 +16,9 @@ class SrcInfo():
 
     _common_lines: list[str]
     _package_lines: list[str]
-    path: str
-    repo_path: str
-    pkgbuild_path: str
+    path: Path
+    repo_path: Path
+    pkgbuild_path: Path
     package_name: str | None
     pkgnames: list[str]
 
@@ -26,7 +26,7 @@ class SrcInfo():
         self.pkgnames = []
         self._common_lines = []
         self._package_lines = []
-        if not os.path.exists(self.path):
+        if not self.path.exists():
             return
         destination = self._common_lines
         with open_file(self.path) as srcinfo_file:
@@ -40,16 +40,16 @@ class SrcInfo():
 
     def __init__(
             self,
-            repo_path: str | None = None,
+            repo_path: str | Path | None = None,
             package_name: str | None = None,
-            pkgbuild_path: str | None = None,
+            pkgbuild_path: str | Path | None = None,
     ) -> None:
         if repo_path:
-            self.repo_path = repo_path
-            self.pkgbuild_path = os.path.join(repo_path, "PKGBUILD")
+            self.repo_path = Path(repo_path)
+            self.pkgbuild_path = self.repo_path / "PKGBUILD"
         elif pkgbuild_path:
-            self.pkgbuild_path = pkgbuild_path
-            self.repo_path = dirname(pkgbuild_path)
+            self.pkgbuild_path = Path(pkgbuild_path)
+            self.repo_path = self.pkgbuild_path.parent
         else:
             missing_property_error = translate(
                 "Either `{prop1}` or `{prop2}` should be set",
@@ -58,10 +58,7 @@ class SrcInfo():
                 prop2="pkgbuild_path",
             )
             raise NotImplementedError(missing_property_error)
-        self.path = os.path.join(
-            self.repo_path,
-            ".SRCINFO",
-        )
+        self.path = self.repo_path / ".SRCINFO"
         self.package_name = package_name
         self.load_config()
 
@@ -129,20 +126,19 @@ class SrcInfo():
 
     def regenerate(self) -> None:
         working_directory = self.repo_path
-        if running_as_root() and not self.repo_path.startswith(CACHE_ROOT):
-            working_directory = os.path.join(
-                BUILD_CACHE_PATH,
-                "_info_" + (self.get_value("pkgbase") or "unknown"),
+        if running_as_root() and not str(self.repo_path).startswith(str(CACHE_ROOT)):
+            working_directory = BUILD_CACHE_PATH / (
+                "_info_" + (self.get_value("pkgbase") or "unknown")
             )
-            if not os.path.exists(working_directory):
-                os.mkdir(working_directory)
+            if not working_directory.exists():
+                working_directory.mkdir()
             shutil.copy(self.pkgbuild_path, working_directory)
         result = spawn(
             isolate_root_cmd(
                 [
                     *MakePkgCommand.get(),
                     "--printsrcinfo",
-                    "-p", os.path.basename(self.pkgbuild_path),
+                    "-p", self.pkgbuild_path.name,
                 ],
                 cwd=working_directory,
             ),

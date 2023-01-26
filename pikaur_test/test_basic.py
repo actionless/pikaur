@@ -177,7 +177,7 @@ class InstallTest(PikaurDbTestCase):
 
         pikaur("-Sc --noconfirm")
         self.assertFalse(
-            os.path.exists(BUILD_CACHE_PATH),
+            BUILD_CACHE_PATH.exists(),
         )
         self.assertGreaterEqual(
             len(os.listdir(PACKAGE_CACHE_PATH)), 1,
@@ -197,10 +197,10 @@ class InstallTest(PikaurDbTestCase):
 
         pikaur("-Scc --noconfirm")
         self.assertFalse(
-            os.path.exists(BUILD_CACHE_PATH),
+            BUILD_CACHE_PATH.exists(),
         )
         self.assertFalse(
-            os.path.exists(PACKAGE_CACHE_PATH),
+            PACKAGE_CACHE_PATH.exists(),
         )
 
     def test_print_commands_and_needed(self):

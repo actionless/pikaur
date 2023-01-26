@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
@@ -14,7 +15,7 @@ from .urllib import wrap_proxy_env
 
 def cli_getpkgbuild() -> None:
     args = parse_args()
-    pwd = os.path.abspath(os.path.curdir)
+    pwd = Path(os.path.curdir).resolve()
     aur_pkg_names = args.positional
 
     aur_pkgs, not_found_aur_pkgs = find_aur_packages(aur_pkg_names)
@@ -39,20 +40,20 @@ def cli_getpkgbuild() -> None:
 
     for aur_pkg in aur_pkgs:
         name = aur_pkg.name
-        repo_path = os.path.join(pwd, name)
+        repo_path = pwd / name
         print_stdout()
         interactive_spawn(wrap_proxy_env([
             "git",
             "clone",
             get_repo_url(aur_pkg.packagebase),
-            repo_path,
+            str(repo_path),
         ]))
 
     for repo_pkg in repo_pkgs:
         name = repo_pkg.name
-        repo_path = os.path.join(pwd, name)
+        repo_path = pwd / name
         action = "checkout"
-        if os.path.exists(repo_path):
+        if repo_path.exists():
             action = "update"
         print_stdout()
         print_stdout(translate(f"Package '{name}' going to be cloned into '{repo_path}'..."))

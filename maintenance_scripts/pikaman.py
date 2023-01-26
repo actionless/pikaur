@@ -17,6 +17,7 @@ import datetime
 import inspect
 import re
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import markdown_it
@@ -33,8 +34,8 @@ class TokenType:
     INLINE: "Final[str]" = "inline"
 
 
-README_PATH: "Final" = sys.argv[1]
-OUTPUT_PATH: "Final" = sys.argv[2]
+README_PATH: "Final" = Path(sys.argv[1])
+OUTPUT_PATH: "Final" = Path(sys.argv[2])
 ENCODING: "Final" = "utf-8"
 
 
@@ -271,8 +272,8 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
 
 with (
-        open(README_PATH, encoding=ENCODING) as input_fobj,
-        open(OUTPUT_PATH, "w", encoding=ENCODING) as output_fobj,
+        README_PATH.open(encoding=ENCODING) as input_fobj,
+        OUTPUT_PATH.open("w", encoding=ENCODING) as output_fobj,
 ):
     output_fobj.write(
         NroffRenderer(name="pikaur", section=1).render(

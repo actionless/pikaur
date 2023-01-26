@@ -4,6 +4,7 @@ import os
 import shutil
 from glob import glob
 from multiprocessing.pool import ThreadPool
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .args import parse_args
@@ -77,31 +78,32 @@ def _shell(cmds: list[str]) -> "InteractiveSpawn":
     return interactive_spawn(isolate_root_cmd(wrap_proxy_env(cmds)))
 
 
-def _mkdir(to_path: str) -> None:
-    mkdir_result = spawn(isolate_root_cmd(["mkdir", "-p", to_path]))
+def _mkdir(to_path: Path) -> None:
+    mkdir_result = spawn(isolate_root_cmd(["mkdir", "-p", str(to_path)]))
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
         print_stderr(mkdir_result.stderr_text)
         raise Exception(translate(f"Can't create destination directory '{to_path}'."))
 
 
-def copy_aur_repo(from_path: str, to_path: str) -> None:
-    from_path = os.path.realpath(from_path)
-    to_path = os.path.realpath(to_path)
-    if not os.path.exists(to_path):
+def copy_aur_repo(from_path: Path, to_path: Path) -> None:
+    from_path = from_path.resolve()
+    to_path = to_path.resolve()
+    if not to_path.exists():
         _mkdir(to_path)
 
     from_paths = []
-    for src_path in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):
-        if os.path.basename(src_path) not in IGNORE_PATHS_WHEN_COPYING:
+    for src_path_str in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):
+        src_path = Path(src_path_str)
+        if src_path.name not in IGNORE_PATHS_WHEN_COPYING:
             from_paths.append(src_path)
-    to_path = f"{to_path}/"
+    to_path = to_path.parent / f"{to_path.name}/"
 
-    cmd_args = isolate_root_cmd(["cp", "-r", *from_paths, to_path])
+    cmd_args = isolate_root_cmd(["cp", "-r", *[str(path) for path in [*from_paths, to_path]]])
 
     result = spawn(cmd_args)
     if result.returncode != 0:
-        if os.path.exists(to_path):
+        if to_path.exists():
             remove_dir(to_path)
             _mkdir(to_path)
         result = interactive_spawn(cmd_args)
@@ -117,11 +119,11 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     package_base: str
     package_names: list[str]
 
-    repo_path: str
-    pkgbuild_path: str
-    build_dir: str
+    repo_path: Path
+    pkgbuild_path: Path
+    build_dir: Path
     build_gpgdir: str
-    built_packages_paths: dict[str, str]
+    built_packages_paths: dict[str, Path]
 
     reviewed = False
     keep_build_dir = False
@@ -133,7 +135,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
     new_deps_to_install: list[str]
     new_make_deps_to_install: list[str]
-    built_deps_to_install: dict[str, str]
+    built_deps_to_install: dict[str, Path]
 
     args: "PikaurArgs"
     resolved_conflicts: list[list[str]] | None = None
@@ -157,7 +159,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         if pkgbuild_path:
             self.repo_path = dirname(pkgbuild_path)
-            self.pkgbuild_path = pkgbuild_path
+            self.pkgbuild_path = Path(pkgbuild_path)
             srcinfo = SrcInfo(pkgbuild_path=pkgbuild_path)
             srcinfo.regenerate()  # @TODO: this is a workaround for building
             # multiple PKGBUILDs from the same directory, find some better way.
@@ -171,8 +173,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         elif package_names:
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
-            self.repo_path = os.path.join(AUR_REPOS_CACHE_PATH, self.package_base)
-            self.pkgbuild_path = os.path.join(self.repo_path, DEFAULT_PKGBUILD_BASENAME)
+            self.repo_path = AUR_REPOS_CACHE_PATH / self.package_base
+            self.pkgbuild_path = self.repo_path / DEFAULT_PKGBUILD_BASENAME
         else:
             missing_property_error = translate(
                 "Either `{prop1}` or `{prop2}` should be set",
@@ -182,7 +184,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             )
             raise NotImplementedError(missing_property_error)
 
-        self.build_dir = os.path.join(BUILD_CACHE_PATH, self.package_base)
+        self.build_dir = BUILD_CACHE_PATH / self.package_base
         self.build_gpgdir = self.args.build_gpgdir
         self.built_packages_paths = {}
         self.keep_build_dir = self.args.keepbuild or (
@@ -190,13 +192,13 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         )
         self.skip_carch_check = PikaurConfig().build.IgnoreArch.get_bool()
 
-        if os.path.exists(self.repo_path):
-            if os.path.exists(os.path.join(self.repo_path, ".git")):
+        if self.repo_path.exists():
+            if (self.repo_path / ".git").exists():
                 self.pull = True
             else:
                 self.clone = True
         else:
-            os.makedirs(self.repo_path)
+            self.repo_path.mkdir(parents=True)
             self.clone = True
 
         self.reviewed = self.current_hash == self.last_installed_hash
@@ -208,7 +210,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def git_reset_changed(self) -> "InteractiveSpawn":
         return _shell([
             "git",
-            "-C", self.repo_path,
+            "-C", str(self.repo_path),
             "checkout",
             "--",
             "*",
@@ -217,14 +219,14 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     def git_stash(self) -> "InteractiveSpawn":
         return _shell([
             "git",
-            "-C", self.repo_path,
+            "-C", str(self.repo_path),
             "stash",
         ])
 
     def git_stash_pop(self) -> "InteractiveSpawn":
         return _shell([
             "git",
-            "-C", self.repo_path,
+            "-C", str(self.repo_path),
             "stash",
             "pop",
         ])
@@ -234,7 +236,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if self.pull:
             cmd_args = [
                 "git",
-                "-C", self.repo_path,
+                "-C", str(self.repo_path),
                 "pull",
                 "origin",
                 "master",
@@ -244,7 +246,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 "git",
                 "clone",
                 get_repo_url(self.package_base),
-                self.repo_path,
+                str(self.repo_path),
             ]
         if not cmd_args:
             return NotImplemented
@@ -253,16 +255,13 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         return result
 
     @property
-    def last_installed_file_path(self) -> str:
-        return os.path.join(
-            self.repo_path,
-            "last_installed.txt",
-        )
+    def last_installed_file_path(self) -> Path:
+        return self.repo_path / "last_installed.txt"
 
     @property
     def last_installed_hash(self) -> str | None:
         """Commit hash of AUR repo of last version of the pkg installed by Pikaur."""
-        if os.path.exists(self.last_installed_file_path):
+        if self.last_installed_file_path.exists():
             with open_file(self.last_installed_file_path) as last_installed_file:
                 lines = last_installed_file.readlines()
                 if lines:
@@ -270,11 +269,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         return None
 
     def update_last_installed_file(self) -> None:
-        git_hash_path = os.path.join(
-            self.repo_path,
-            ".git/refs/heads/master",
-        )
-        if os.path.exists(git_hash_path):
+        git_hash_path = self.repo_path / ".git/refs/heads/master"
+        if git_hash_path.exists():
             shutil.copy2(
                 git_hash_path,
                 self.last_installed_file_path,
@@ -283,11 +279,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
     @property
     def current_hash(self) -> str | None:
         """Commit hash of AUR repo of the pkg."""
-        git_hash_path = os.path.join(
-            self.repo_path,
-            ".git/refs/heads/master",
-        )
-        if not os.path.exists(git_hash_path):
+        git_hash_path = self.repo_path / ".git/refs/heads/master"
+        if not git_hash_path.exists():
             return None
         with open_file(git_hash_path) as current_hash_file:
             return current_hash_file.readlines()[0].strip()
@@ -452,35 +445,39 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             return
         if not pkg_paths_spawn.stdout_text:
             return
-        pkg_paths = pkg_paths_spawn.stdout_text.splitlines()
+        pkg_paths = [Path(line) for line in pkg_paths_spawn.stdout_text.splitlines()]
         if not pkg_paths:
             return
         pkg_dest = get_pkgdest()
-        pkg_paths.sort(key=len)
+        pkg_paths.sort(key=lambda x: len(str(x)))
         for pkg_name in self.package_names:
             pkg_path = pkg_paths[0]
             if len(pkg_paths) > 1:
                 arch = MakepkgConfig.get("CARCH")
                 for each_path in pkg_paths:
-                    each_filename = os.path.basename(each_path)
+                    each_filename = Path(each_path).name
                     if pkg_name in each_filename and (
                             (f"-{arch}." in each_filename) or (f"-{ARCH_ANY}." in each_filename)
                     ):
-                        pkg_path = each_filename
+                        pkg_path = Path(each_filename)
                         break
-            pkg_filename = os.path.basename(pkg_path)
+            pkg_filename = Path(pkg_path).name
             if pkg_path == pkg_filename:
-                pkg_path = os.path.join(pkg_dest or self.build_dir, pkg_path)
+                pkg_path = (Path(pkg_dest) if pkg_dest else self.build_dir) / pkg_path
             if not pkg_dest or MakePkgCommand.pkgdest_skipped:
-                new_package_path = os.path.join(pkg_dest or PACKAGE_CACHE_PATH, pkg_filename)
-                pkg_sig_path = pkg_path + ".sig"
-                new_package_sig_path = new_package_path + ".sig"
-                if not os.path.exists(PACKAGE_CACHE_PATH):
-                    os.makedirs(PACKAGE_CACHE_PATH)
+                new_package_path = (
+                    Path(pkg_dest) if pkg_dest else PACKAGE_CACHE_PATH
+                ) / pkg_filename
+                pkg_sig_path = pkg_path.parent / (pkg_path.name + ".sig")
+                new_package_sig_path = new_package_path.parent / (
+                    new_package_path.name + ".sig"
+                )
+                if not PACKAGE_CACHE_PATH.exists():
+                    PACKAGE_CACHE_PATH.mkdir(parents=True)
                 replace_file(pkg_path, new_package_path)
                 replace_file(pkg_sig_path, new_package_sig_path)
                 pkg_path = new_package_path
-            if pkg_path and os.path.exists(pkg_path):
+            if pkg_path and Path(pkg_path).exists():
                 self.built_packages_paths[pkg_name] = pkg_path
 
     def check_if_already_built(self) -> bool:
@@ -509,16 +506,16 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             self._build_files_copied = False
         if self._build_files_copied:
             return
-        if os.path.exists(self.build_dir) and not self.keep_build_dir:
+        if self.build_dir.exists() and not self.keep_build_dir:
             remove_dir(self.build_dir)
         copy_aur_repo(self.repo_path, self.build_dir)
 
-        pkgbuild_name = os.path.basename(self.pkgbuild_path)
+        pkgbuild_name = self.pkgbuild_path.name
         if pkgbuild_name != DEFAULT_PKGBUILD_BASENAME:
-            default_pkgbuild_path = os.path.join(self.build_dir, DEFAULT_PKGBUILD_BASENAME)
-            custom_pkgbuild_path = os.path.join(self.build_dir, pkgbuild_name)
-            if os.path.exists(default_pkgbuild_path):
-                os.unlink(default_pkgbuild_path)
+            default_pkgbuild_path = self.build_dir / DEFAULT_PKGBUILD_BASENAME
+            custom_pkgbuild_path = self.build_dir / pkgbuild_name
+            if default_pkgbuild_path.exists():
+                default_pkgbuild_path.unlink()
             os.renames(custom_pkgbuild_path, default_pkgbuild_path)
         self._build_files_copied = True
 
@@ -723,7 +720,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
             spawn_kwargs: "SpawnArgs" = {
-                "cwd": self.build_dir,
+                "cwd": str(self.build_dir),
                 "env": {**os.environ, **env},
             }
             if self.args.hide_build_log:
@@ -810,12 +807,12 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 editor_cmd = get_editor_or_exit()
                 if editor_cmd:
                     interactive_spawn(
-                        [*editor_cmd, self.pkgbuild_path],
+                        [*editor_cmd, str(self.pkgbuild_path)],
                     )
                     interactive_spawn(isolate_root_cmd([
                         "cp",
-                        self.pkgbuild_path,
-                        os.path.join(self.build_dir, DEFAULT_PKGBUILD_BASENAME),
+                        str(self.pkgbuild_path),
+                        str(self.build_dir / DEFAULT_PKGBUILD_BASENAME),
                     ]))
                     raise PkgbuildChanged()
                 continue

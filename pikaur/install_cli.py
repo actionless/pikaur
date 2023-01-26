@@ -3,8 +3,8 @@
 # pylint: disable=too-many-lines
 import contextlib
 import hashlib
-import os
 from multiprocessing.pool import ThreadPool
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING
 
@@ -77,9 +77,10 @@ if TYPE_CHECKING:
 logger = create_logger("install_cli")
 
 
-def hash_file(filename: str) -> str:  # pragma: no cover
+def hash_file(filename: str | Path) -> str:  # pragma: no cover
+    filename = Path(filename)
     md5 = hashlib.new("md5", usedforsecurity=False)
-    with open(filename, "rb") as file:
+    with filename.open("rb") as file:
         eof = False
         while not eof:
             data = file.read(1024)
@@ -90,13 +91,13 @@ def hash_file(filename: str) -> str:  # pragma: no cover
     return md5.hexdigest()
 
 
-def edit_file(filename: str) -> bool:  # pragma: no cover
+def edit_file(filename: Path) -> bool:  # pragma: no cover
     editor_cmd = get_editor_or_exit()
     if not editor_cmd:
         return False
     old_hash = hash_file(filename)
     interactive_spawn([
-        *editor_cmd, filename,
+        *editor_cmd, str(filename),
     ])
     new_hash = hash_file(filename)
     return old_hash != new_hash
@@ -252,7 +253,7 @@ class InstallPackagesCLI():
             else:
                 self.handle_pkgbuild_changed(pkg_build)
             self._ignore_package(pkg_name)
-            self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
+            self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
             self.main_sequence()
         elif answer == translate("s"):
             self._ignore_package(pkg_name)
@@ -544,7 +545,7 @@ class InstallPackagesCLI():
                     )
                 for pkg_name in pkgbuild.package_names:
                     self.discard_install_info(pkg_name, ignore=False)
-                self.pkgbuilds_packagelists[pkgbuild.pkgbuild_path] = pkgbuild.package_names
+                self.pkgbuilds_packagelists[str(pkgbuild.pkgbuild_path)] = pkgbuild.package_names
                 need_to_show_install_prompt = True
         if need_to_show_install_prompt:
             self.main_sequence()
@@ -710,10 +711,7 @@ class InstallPackagesCLI():
                                  PikaurConfig().review.DontEditByDefault.get_bool()),
         ):
             return False
-        full_filename = os.path.join(
-            package_build.repo_path,
-            filename,
-        )
+        full_filename = package_build.repo_path / filename
         return edit_file(full_filename)
 
     def _get_installed_status(self) -> None:
@@ -814,7 +812,7 @@ class InstallPackagesCLI():
                     git_args = ["env", "GIT_PAGER=cat"]
                 git_args += [
                     "git",
-                    "-C", pkg_build.repo_path,
+                    "-C", str(pkg_build.repo_path),
                     "diff",
                     *PikaurConfig().review.GitDiffArgs.get_str().split(","),
                     pkg_build.last_installed_hash,
@@ -849,7 +847,7 @@ class InstallPackagesCLI():
                 ))
 
             if self.ask_to_edit_file(
-                    os.path.basename(pkg_build.pkgbuild_path), pkg_build,
+                    pkg_build.pkgbuild_path.name, pkg_build,
             ):
                 self.handle_pkgbuild_changed(pkg_build)
 
@@ -875,7 +873,7 @@ class InstallPackagesCLI():
         src_info.regenerate()
         new_srcinfo_hash = hash_file(src_info.path)
 
-        self.pkgbuilds_packagelists[pkg_build.pkgbuild_path] = pkg_build.package_names
+        self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
         self.reviewed_package_bases.append(pkg_build.package_base)
 
         if not getattr(self, "install_info", None):  # @TODO: make it nicer?
@@ -1073,7 +1071,7 @@ class InstallPackagesCLI():
                             self.args,
                             ignore_args=["upgrade", "sync", "sysupgrade", "refresh", "ignore"],
                         ),
-                        *list(aur_packages_to_install.values()),
+                        *[str(path) for path in aur_packages_to_install.values()],
                     ]),
                     pikspect=True,
                     conflicts=self.resolved_conflicts,

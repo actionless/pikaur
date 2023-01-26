@@ -22,6 +22,7 @@ from .version import VersionMatcher
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
+    from pathlib import Path
     from typing import Final, Pattern
 
     from .aur import AURPackageInfo
@@ -593,7 +594,7 @@ def refresh_pkg_db_if_needed() -> None:
 
 
 def install_built_deps(
-        deps_names_and_paths: dict[str, str],
+        deps_names_and_paths: "dict[str, Path]",
         resolved_conflicts: list[list[str]] | None = None,
 ) -> None:
     if not deps_names_and_paths:
@@ -623,7 +624,7 @@ def install_built_deps(
         deps_upgrade_success = retry_interactive_command(
             sudo(
                 [*_get_pacman_command(), "--upgrade", "--asdeps"] + [
-                    path for name, path in deps_names_and_paths.items()
+                    str(path) for name, path in deps_names_and_paths.items()
                     if name not in explicitly_installed_deps
                 ],
             ),
@@ -636,7 +637,7 @@ def install_built_deps(
         explicit_upgrade_success = retry_interactive_command(
             sudo(
                 [*_get_pacman_command(), "--upgrade"] + [
-                    path for name, path in deps_names_and_paths.items()
+                    str(path) for name, path in deps_names_and_paths.items()
                     if name in explicitly_installed_deps
                 ],
             ),

@@ -14,6 +14,7 @@ import sys
 import termios
 import tty
 from multiprocessing.pool import ThreadPool
+from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING
 
@@ -111,7 +112,7 @@ class TTYInputWrapper():  # pragma: no cover
             self.old_stdin = sys.stdin
             try:
                 logger.debug("Attaching to TTY manually...")
-                sys.stdin = open("/dev/tty", encoding=DEFAULT_INPUT_ENCODING)  # noqa: SIM115
+                sys.stdin = Path("/dev/tty").open(encoding=DEFAULT_INPUT_ENCODING)
                 self.tty_opened = True
             except Exception as exc:
                 logger.debug(exc)
@@ -254,10 +255,10 @@ class PikspectPopen(subprocess.Popen[bytes]):
                         check=True,
                     )
                 with (
-                        open(
+                        open(  # noqa: PTH123
                             self.pty_user_master, "w", encoding=DEFAULT_INPUT_ENCODING,
                         ) as self.pty_in,
-                        open(
+                        open(  # noqa: PTH123
                             self.pty_cmd_master, "rb", buffering=0,
                         ) as self.pty_out,
                 ):

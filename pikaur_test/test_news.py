@@ -1,7 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
 
-import os
 from unittest import TestCase
 
 from pikaur.core import open_file
@@ -12,8 +11,8 @@ from pikaur_test.helpers import InterceptSysOutput
 class NewsTest(TestCase):
 
     def test_news(self):
-        if os.path.exists(News.CACHE_FILE):
-            os.remove(News.CACHE_FILE)
+        if News.CACHE_FILE.exists():
+            News.CACHE_FILE.unlink()
         news = News()
         news.fetch_latest()
 

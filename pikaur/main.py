@@ -10,6 +10,7 @@ import sys
 import traceback
 from argparse import ArgumentError
 from contextlib import AbstractContextManager
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pyalpm
@@ -57,11 +58,11 @@ if TYPE_CHECKING:
 
 def init_readline() -> None:
     # follow GNU readline config in prompts:
-    system_inputrc_path = "/etc/inputrc"
-    if os.path.exists(system_inputrc_path):
+    system_inputrc_path = Path("/etc/inputrc")
+    if system_inputrc_path.exists():
         readline.read_init_file(system_inputrc_path)
-    user_inputrc_path = os.path.expanduser("~/.inputrc")
-    if os.path.exists(user_inputrc_path):
+    user_inputrc_path = Path("~/.inputrc").expanduser()
+    if user_inputrc_path.exists():
         readline.read_init_file(user_inputrc_path)
 
 
@@ -93,7 +94,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 )
                 setattr(
                     sys, attr,
-                    open(  # noqa: SIM115
+                    open(  # noqa: SIM115,PTH123
                         real_stream.fileno(),
                         mode="w",
                         encoding=DEFAULT_INPUT_ENCODING,
@@ -268,7 +269,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
                 for arg in restart_args
             )
             if not config_overridden:
-                restart_args += ["--pikaur-config", get_config_path()]
+                restart_args += ["--pikaur-config", str(get_config_path())]
             sys.exit(interactive_spawn(
                 sudo(restart_args),
             ).returncode)
@@ -293,11 +294,11 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
 
 def migrate_old_aur_repos_dir() -> None:
     if not (
-            os.path.exists(_OLD_AUR_REPOS_CACHE_PATH) and not os.path.exists(AUR_REPOS_CACHE_PATH)
+            _OLD_AUR_REPOS_CACHE_PATH.exists() and not AUR_REPOS_CACHE_PATH.exists()
     ):
         return
-    if not os.path.exists(DATA_ROOT):
-        os.makedirs(DATA_ROOT)
+    if not DATA_ROOT.exists():
+        DATA_ROOT.mkdir(parents=True)
     shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
 
     print_stderr()
@@ -322,13 +323,13 @@ def create_dirs() -> None:
         # Chown the private CacheDirectory to root to signal systemd that
         # it needs to recursively chown it to the correct user
         os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
-        if not os.path.exists(_USER_CACHE_ROOT):
-            os.makedirs(_USER_CACHE_ROOT)
-    if not os.path.exists(CACHE_ROOT):
-        os.makedirs(CACHE_ROOT)
+        if not _USER_CACHE_ROOT.exists():
+            _USER_CACHE_ROOT.mkdir(parents=True)
+    if not CACHE_ROOT.exists():
+        CACHE_ROOT.mkdir(parents=True)
     migrate_old_aur_repos_dir()
-    if not os.path.exists(AUR_REPOS_CACHE_PATH):
-        os.makedirs(AUR_REPOS_CACHE_PATH)
+    if not AUR_REPOS_CACHE_PATH.exists():
+        AUR_REPOS_CACHE_PATH.mkdir(parents=True)
 
 
 def restore_tty() -> None:

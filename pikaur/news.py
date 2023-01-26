@@ -1,7 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import datetime
-import os
 from html.parser import HTMLParser
 from typing import TYPE_CHECKING
 
@@ -43,7 +42,7 @@ class ArchNewsMarkup:
 
 class News:
     URL = PikaurConfig().network.NewsUrl.get_str()
-    CACHE_FILE = os.path.join(CACHE_ROOT, "last_seen_news.dat")
+    CACHE_FILE = CACHE_ROOT / "last_seen_news.dat"
     _news_feed: "Element | None"
 
     def __init__(self) -> None:

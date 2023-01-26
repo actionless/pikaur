@@ -31,13 +31,14 @@ select = [
 	"ERA",
 	#"PD",  # pandas
 	"PGH",
-	"PLC", "PLE", "PLR", "PLW",
+	"PL",
 	"PIE",
 	"COM",
 	"INP",
 	"EXE",
 	"TCH",
 	"TRY",
+	"PTH",
 	"RUF",
 ]
 ignore = [

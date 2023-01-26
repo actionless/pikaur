@@ -1,6 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import os
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .args import parse_args
@@ -21,7 +22,7 @@ class ConfigReader():
     COMMENT_PREFIXES: "Final" = ("#", ";")
     KEY_VALUE_DELIMITER: "Final" = "="
 
-    _cached_config: dict[str, ConfigFormat] | None = None
+    _cached_config: dict[str | Path, ConfigFormat] | None = None
     default_config_path: str
     list_fields: list[str] = []
     ignored_fields: list[str] = []
@@ -56,7 +57,7 @@ class ConfigReader():
         return key, value
 
     @classmethod
-    def get_config(cls, config_path: str | None = None) -> ConfigFormat:
+    def get_config(cls, config_path: str | Path | None = None) -> ConfigFormat:
         config_path = config_path or cls.default_config_path
         if cls._cached_config is None:
             cls._cached_config = {}
@@ -78,29 +79,29 @@ class ConfigReader():
             cls,
             key: str,
             fallback: "FallbackValueT | None" = None,
-            config_path: str | None = None,
+            config_path: str | Path | None = None,
     ) -> "ConfigValueType | FallbackValueT":
         return cls.get_config(config_path=config_path).get(key) or fallback
 
 
 class MakepkgConfig():
 
-    _UNSET: "Final" = "unset"
-    _user_makepkg_path: str | None = _UNSET
+    _UNSET: "Final" = object()
+    _user_makepkg_path: Path | object | None = _UNSET
 
     @classmethod
-    def get_user_makepkg_path(cls) -> str | None:
-        if cls._user_makepkg_path == cls._UNSET:
+    def get_user_makepkg_path(cls) -> Path | None:
+        if cls._user_makepkg_path is cls._UNSET:
             possible_paths = [
-                os.path.expanduser("~/.makepkg.conf"),
-                os.path.join(CONFIG_ROOT, "pacman/makepkg.conf"),
+                Path("~/.makepkg.conf").expanduser(),
+                CONFIG_ROOT / "pacman/makepkg.conf",
             ]
-            config_path: str | None = None
+            config_path: Path | None = None
             for path in possible_paths:
-                if os.path.exists(path):
+                if path.exists():
                     config_path = path
             cls._user_makepkg_path = config_path
-        return cls._user_makepkg_path
+        return cls._user_makepkg_path if isinstance(cls._user_makepkg_path, Path) else None
 
     @classmethod
     def get(
@@ -122,15 +123,14 @@ class MakepkgConfig():
         return value  # noqa: RET504
 
 
-def get_pkgdest() -> str | None:
+def get_pkgdest() -> Path | None:
     config_pkgdest = MakepkgConfig.get("PKGDEST")
     if not isinstance(config_pkgdest, str):
         config_pkgdest = None
     pkgdest: str | None = os.environ.get("PKGDEST", config_pkgdest)
-    if pkgdest:
-        pkgdest = pkgdest.replace("$HOME", "~")
-        pkgdest = os.path.expanduser(pkgdest)
-    return pkgdest  # noqa: RET504
+    if not pkgdest:
+        return None
+    return Path(pkgdest.replace("$HOME", "~")).expanduser()
 
 
 class MakePkgCommand:
@@ -140,9 +140,9 @@ class MakePkgCommand:
 
     @classmethod
     def _apply_dynamic_users_workaround(cls) -> None:
-        pkgdest = get_pkgdest()
+        pkgdest = str(get_pkgdest())
         if running_as_root() and pkgdest and (
-                pkgdest.startswith(_USER_TEMP_ROOT) or
+                pkgdest.startswith(str(_USER_TEMP_ROOT)) or
                 pkgdest.startswith("/tmp") or  # nosec B108  # noqa: S108
                 pkgdest.startswith("/var/tmp")  # nosec B108  # noqa: S108
         ):

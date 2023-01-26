@@ -9,6 +9,7 @@ import subprocess  # nosec B404
 import sys
 import tempfile
 from multiprocessing.pool import ThreadPool
+from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING
 
@@ -224,7 +225,7 @@ def interactive_spawn(
         cmd: list[str],
         stdout: "IOStream" = None,
         stderr: "IOStream" = None,
-        cwd: str | None = None,
+        cwd: str | Path | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
     kwargs: "SpawnArgs" = {}
@@ -233,7 +234,7 @@ def interactive_spawn(
     if stderr:
         kwargs["stderr"] = stderr
     if cwd:
-        kwargs["cwd"] = cwd
+        kwargs["cwd"] = str(cwd)
     if env:
         kwargs["env"] = env
     process = InteractiveSpawn(
@@ -245,7 +246,7 @@ def interactive_spawn(
 
 def spawn(
         cmd: list[str],
-        cwd: str | None = None,
+        cwd: str | Path | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
     with (
@@ -265,7 +266,7 @@ def spawn(
 
 def joined_spawn(
         cmd: list[str],
-        cwd: str | None = None,
+        cwd: str | Path | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
     with tempfile.TemporaryFile() as out_file:
@@ -284,11 +285,13 @@ def running_as_root() -> bool:
 
 def isolate_root_cmd(
         cmd: list[str],
-        cwd: str | None = None,
+        cwd: str | Path | None = None,
         env: dict[str, str] | None = None,
 ) -> list[str]:
     if not running_as_root():
         return cmd
+    if isinstance(cwd, str):
+        cwd = Path(cwd)
     base_root_isolator = [
         "/usr/sbin/systemd-run",
         "--service-type=oneshot",
@@ -301,7 +304,7 @@ def isolate_root_cmd(
         for env_var_name, env_var_value in env.items():
             base_root_isolator += ["-E", f"{env_var_name}={env_var_value}"]
     if cwd is not None:
-        base_root_isolator += ["-p", "WorkingDirectory=" + os.path.abspath(cwd)]
+        base_root_isolator += ["-p", "WorkingDirectory=" + str(cwd.resolve())]
     for env_var_name in (
             "http_proxy", "https_proxy", "ftp_proxy",
     ):
@@ -316,12 +319,14 @@ class CodepageSequences:
     UTF_32: "Final[Sequence[bytes]]" = (b"\xfe\xff\x00\x00", b"\x00\x00\xff\xfe")
 
 
-def detect_bom_type(file_path: str) -> str:
+def detect_bom_type(file_path: str | Path) -> str:
     """
     returns file encoding string for open() function
     https://stackoverflow.com/a/44295590/1850190
     """
-    with open(file_path, "rb") as test_file:
+    if isinstance(file_path, str):
+        file_path = Path(file_path)
+    with file_path.open("rb") as test_file:
         first_bytes = test_file.read(4)
 
     if first_bytes[0:3] in CodepageSequences.UTF_8:
@@ -342,31 +347,35 @@ def detect_bom_type(file_path: str) -> str:
 
 
 def open_file(
-        file_path: str, mode: str = READ_MODE, encoding: str | None = None,
+        file_path: str | Path, mode: str = READ_MODE, encoding: str | None = None,
 ) -> codecs.StreamReaderWriter:
     if encoding is None and (mode and READ_MODE in mode):
         encoding = detect_bom_type(file_path)
     if encoding:
         return codecs.open(
-            file_path, mode, errors="ignore", encoding=encoding,
+            str(file_path), mode, errors="ignore", encoding=encoding,
         )
     return codecs.open(
-        file_path, mode, errors="ignore",
+        str(file_path), mode, errors="ignore",
     )
 
 
-def replace_file(src: str, dest: str) -> None:
-    if os.path.exists(src):
-        if os.path.exists(dest):
-            os.remove(dest)
+def replace_file(src: str | Path, dest: str | Path) -> None:
+    if isinstance(src, str):
+        src = Path(src)
+    if isinstance(dest, str):
+        dest = Path(dest)
+    if src.exists():
+        if dest.exists():
+            dest.unlink()
         shutil.move(src, dest)
 
 
-def remove_dir(dir_path: str) -> None:
+def remove_dir(dir_path: str | Path) -> None:
     try:
         shutil.rmtree(dir_path)
     except PermissionError:
-        interactive_spawn(sudo(["rm", "-rf", dir_path]))
+        interactive_spawn(sudo(["rm", "-rf", str(dir_path)]))
 
 
 def get_editor() -> list[str] | None:
@@ -384,8 +393,8 @@ def get_editor() -> list[str] | None:
     return None
 
 
-def dirname(path: str) -> str:
-    return os.path.dirname(path) or "."
+def dirname(path: str | Path) -> Path:
+    return Path(path).parent if path else Path(".")
 
 
 def sudo_loop(*, once: bool = False) -> None:

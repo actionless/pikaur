@@ -33,56 +33,52 @@ STR: "Final" = "str"
 RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
 VERSION: "Final" = "1.14.7-dev"
 
-_USER_TEMP_ROOT: "Final" = gettempdir()
-_USER_CACHE_ROOT: "Final" = os.environ.get(
+_USER_TEMP_ROOT: "Final" = Path(gettempdir())
+_USER_CACHE_ROOT: "Final" = Path(os.environ.get(
     "XDG_CACHE_HOME",
-    os.path.join(Path.home(), ".cache/"),
-)
+    Path.home() / ".cache/",
+))
 
 CACHE_ROOT: "Final" = (
-    "/var/cache/pikaur"
+    Path("/var/cache/pikaur")
     if RUNNING_AS_ROOT else
-    os.path.join(_USER_CACHE_ROOT, "pikaur/")
+    _USER_CACHE_ROOT / "pikaur/"
 )
 
-BUILD_CACHE_PATH: "Final" = os.path.join(CACHE_ROOT, "build")
-PACKAGE_CACHE_PATH: "Final" = os.path.join(CACHE_ROOT, "pkg")
+BUILD_CACHE_PATH: "Final" = CACHE_ROOT / "build"
+PACKAGE_CACHE_PATH: "Final" = CACHE_ROOT / "pkg"
 
-CONFIG_ROOT: "Final" = os.environ.get(
+CONFIG_ROOT: "Final" = Path(os.environ.get(
     "XDG_CONFIG_HOME",
-    os.path.join(Path.home(), ".config/"),
-)
+    Path.home() / ".config/",
+))
 
-DATA_ROOT: "Final" = os.path.join(
-    os.environ.get(
+DATA_ROOT: "Final" = (
+    Path(os.environ.get(
         "XDG_DATA_HOME",
-        os.path.join(Path.home(), ".local/share/"),
-    ), "pikaur",
+        Path.home() / ".local/share/",
+    )) / "pikaur"
 )
 
-_OLD_AUR_REPOS_CACHE_PATH: "Final" = os.path.join(CACHE_ROOT, "aur_repos")
+_OLD_AUR_REPOS_CACHE_PATH: "Final" = CACHE_ROOT / "aur_repos"
 AUR_REPOS_CACHE_PATH: "Final" = (
-    os.path.join(CACHE_ROOT, "aur_repos")
+    (CACHE_ROOT / "aur_repos")
     if RUNNING_AS_ROOT else
-    os.path.join(DATA_ROOT, "aur_repos")
+    (DATA_ROOT / "aur_repos")
 )
 
-BUILD_DEPS_LOCK: "Final" = os.path.join(
-    _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT,
-    "pikaur_build_deps.lock",
+BUILD_DEPS_LOCK: "Final" = (
+    (_USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT) / "pikaur_build_deps.lock"
 )
 
 
-def get_config_path() -> str:
+def get_config_path() -> Path:
     config_flag = "--pikaur-config"
     if config_flag in sys.argv:
-        return sys.argv[
+        return Path(sys.argv[
             sys.argv.index(config_flag) + 1
-        ]
-    return os.path.join(
-        CONFIG_ROOT,
-        "pikaur.conf",
-    )
+        ])
+    return CONFIG_ROOT / "pikaur.conf"
 
 
 class UpgradeSortingValues:
@@ -342,9 +338,9 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
                 config[section_name][option_name] = option_schema["default"]
                 need_write = True
     if need_write:
-        if not os.path.exists(CONFIG_ROOT):
-            os.makedirs(CONFIG_ROOT)
-        with open(get_config_path(), "w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
+        if not CONFIG_ROOT.exists():
+            CONFIG_ROOT.mkdir(parents=True)
+        with get_config_path().open("w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
 
 
@@ -415,7 +411,7 @@ class PikaurConfig():
         if not getattr(cls, "_config", None):
             config_path = get_config_path()
             cls._config = configparser.ConfigParser()
-            if not os.path.exists(config_path):
+            if not config_path.exists():
                 write_config()
             cls._config.read(config_path, encoding=DEFAULT_CONFIG_ENCODING)
             cls.migrate_config()

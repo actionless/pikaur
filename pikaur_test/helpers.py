@@ -5,6 +5,7 @@ import os
 import sys
 import tempfile
 import traceback
+from pathlib import Path
 from time import time
 from typing import TYPE_CHECKING
 from unittest import TestCase, mock
@@ -37,9 +38,9 @@ if WRITE_DB:
     from pikaur.config import PikaurConfig, get_config_path
 
     CONFIG_PATH = get_config_path()
-    if os.path.exists(CONFIG_PATH):
+    if CONFIG_PATH.exists():
         shutil.copy(CONFIG_PATH, f"{CONFIG_PATH}.pikaur_test_bak")
-        os.unlink(CONFIG_PATH)
+        CONFIG_PATH.unlink()
     PikaurConfig._config = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
@@ -48,7 +49,7 @@ if TYPE_CHECKING:
     from mypy_extensions import DefaultArg
 
 
-TEST_DIR = os.path.dirname(os.path.realpath(__file__))
+TEST_DIR = Path(os.path.realpath(__file__)).parent
 
 
 def spawn(cmd: str | list[str], env: dict[str, str] | None = None) -> InteractiveSpawn:
@@ -196,7 +197,7 @@ def pikaur(
         ]
     if fake_makepkg:
         new_args += [
-            "--makepkg-path=" + os.path.join(TEST_DIR, "fake_makepkg"),
+            "--makepkg-path=" + str(TEST_DIR / "fake_makepkg"),
         ]
         mflags.append("--noextract")
     if skippgpcheck:

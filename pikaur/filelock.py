@@ -1,5 +1,5 @@
 import fcntl
-import os
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .core import DEFAULT_INPUT_ENCODING
@@ -17,13 +17,11 @@ class FileLock():
     locked = False
     lock_file: "TextIO | None"
 
-    def __init__(self, lock_file_path: str) -> None:
-        self.lock_file_path = lock_file_path
+    def __init__(self, lock_file_path: str | Path) -> None:
+        self.lock_file_path = Path(lock_file_path)
 
     def __enter__(self) -> None:
-        self.lock_file = open(  # noqa: SIM115
-            self.lock_file_path, "a", encoding=DEFAULT_INPUT_ENCODING,
-        )
+        self.lock_file = self.lock_file_path.open("a", encoding=DEFAULT_INPUT_ENCODING)
         while True:
             try:
                 fcntl.flock(self.lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -44,8 +42,8 @@ class FileLock():
             if not self.lock_file.closed:
                 self.lock_file.close()
         self.locked = False
-        if os.path.exists(self.lock_file_path):
-            os.remove(self.lock_file_path)
+        if self.lock_file_path.exists():
+            self.lock_file_path.unlink()
 
     def __del__(self) -> None:
         self.__exit__()

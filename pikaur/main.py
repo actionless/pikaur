@@ -319,7 +319,7 @@ def create_dirs() -> None:
         true_cmd = isolate_root_cmd(["true"])
         result = spawn(true_cmd)
         if result.returncode != 0:
-            raise Exception(result)
+            raise RuntimeError(result)
         # Chown the private CacheDirectory to root to signal systemd that
         # it needs to recursively chown it to the correct user
         os.chown(os.path.realpath(CACHE_ROOT), 0, 0)

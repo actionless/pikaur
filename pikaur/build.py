@@ -83,7 +83,7 @@ def _mkdir(to_path: Path) -> None:
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
         print_stderr(mkdir_result.stderr_text)
-        raise Exception(translate(f"Can't create destination directory '{to_path}'."))
+        raise RuntimeError(translate(f"Can't create destination directory '{to_path}'."))
 
 
 def copy_aur_repo(from_path: Path, to_path: Path) -> None:
@@ -108,7 +108,7 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
             _mkdir(to_path)
         result = interactive_spawn(cmd_args)
         if result.returncode != 0:
-            raise Exception(translate(f"Can't copy '{from_path}' to '{to_path}'."))
+            raise RuntimeError(translate(f"Can't copy '{from_path}' to '{to_path}'."))
 
 
 class PackageBuild(DataType):  # pylint: disable=too-many-public-methods

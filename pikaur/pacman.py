@@ -273,7 +273,7 @@ class PackageDB(PackageDBCommon):
             cls._alpm_handle = PacmanConfig().initialize_alpm()
         if not cls._alpm_handle:
             cant_init_alpm = translate("Cannot initialize ALPM")
-            raise Exception(cant_init_alpm)
+            raise RuntimeError(cant_init_alpm)
         return cls._alpm_handle
 
     @classmethod

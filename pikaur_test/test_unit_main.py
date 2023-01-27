@@ -35,7 +35,7 @@ class MainHelperFuncsTest(PikaurTestCase):
             # fails if testrunner (like nosetests) capturing output:
             # self.assertNotEqual(real_stdout, sys.stdout)
 
-            raise Exception("test")  # noqa: EM101
+            raise RuntimeError("test")  # noqa: EM101
         self.assertEqual(real_stdout, sys.stdout)
         self.assertEqual(real_stderr, sys.stderr)
 

@@ -85,6 +85,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, "skip-failed-build", PikaurConfig().build.SkipFailedBuild.get_bool()),
         # undocumented options:
         (None, "print-args-and-exit", None),
+        (None, "skip-aur-pull", None),
     ]
 
 
@@ -114,7 +115,6 @@ def get_pikaur_str_opts() -> ArgSchema:
         (None, "makepkg-config", None),
         (None, "makepkg-path", None),
         (None, "pikaur-config", None),
-        (None, "skip-aur-pull", None),
     ]
 
 

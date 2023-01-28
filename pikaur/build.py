@@ -233,7 +233,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         ])
 
     def update_aur_repo(self) -> "InteractiveSpawn | None":
-        cmd_args: list[str]
+        cmd_args: list[str] | None = None
         if self.pull and not self.args.skip_aur_pull:
             cmd_args = [
                 "git",

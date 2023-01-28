@@ -591,8 +591,8 @@ class InstallPackagesCLI():
                     )
                     answer = get_input(
                         prompt,
-                        translate("t") + translate("c") + translate("r")
-                        + translate("s") + translate("a").upper(),
+                        translate("t").upper() + translate("c") + translate("r")
+                        + translate("s") + translate("a"),
                     )
 
                 answer = answer.lower()[0]

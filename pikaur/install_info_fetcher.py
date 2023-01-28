@@ -410,11 +410,6 @@ Gonna fetch install info for:
             ) or (
                 self.package_is_ignored(pkg_name)
             ):
-                # @TODO: probably this branch is never called anymore
-                print_error(
-                    "ERROR code 4891234: "
-                    "if you encounter this please report an issue at Pikaur bug tracker.",
-                )
                 continue
 
             if pkg_update.current_version == "" and (

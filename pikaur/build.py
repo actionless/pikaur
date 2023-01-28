@@ -849,6 +849,19 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self._set_built_package_path()
 
 
+class AlreadyClonedRepos:
+
+    repos: list[str] = []
+
+    @classmethod
+    def add(cls, repo: str) -> None:
+        cls.repos.append(repo)
+
+    @classmethod
+    def get(cls, repo: str) -> bool:
+        return repo in cls.repos
+
+
 def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
     aur_pkgs, _ = find_aur_packages(package_names)
     packages_bases: dict[str, list[str]] = {}
@@ -857,6 +870,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
     package_builds_by_base = {
         pkgbase: PackageBuild(pkg_names)
         for pkgbase, pkg_names in packages_bases.items()
+        if not AlreadyClonedRepos.get(pkgbase)
     }
     package_builds_by_name = {
         pkg_name: package_builds_by_base[pkgbase]
@@ -882,4 +896,5 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
                     build=package_builds_by_base[package_base],
                     result=result,
                 )
+            AlreadyClonedRepos.add(package_base)
     return package_builds_by_name

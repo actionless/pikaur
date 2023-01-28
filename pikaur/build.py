@@ -877,7 +877,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         pool_size = clone_c
     elif running_as_root():
         pool_size = 1
-    exc: CloneError | None
+    exc: CloneError | None = None
     with ThreadPool(processes=pool_size) as pool:
         requests = {
             key: pool.apply_async(repo_status.update_aur_repo, ())

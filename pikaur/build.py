@@ -877,6 +877,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         pool_size = clone_c
     elif running_as_root():
         pool_size = 1
+    exc: CloneError | None
     with ThreadPool(processes=pool_size) as pool:
         requests = {
             key: pool.apply_async(repo_status.update_aur_repo, ())
@@ -887,11 +888,14 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         for package_base, request in requests.items():
             result = request.get()
             if result.returncode > 0:
-                raise CloneError(
+                exc = CloneError(
                     build=package_builds_by_base[package_base],
                     result=result,
                 )
-            AlreadyClonedRepos.add(package_base)
+            else:
+                AlreadyClonedRepos.add(package_base)
+    if exc:
+        raise exc
     all_package_builds_by_base = {
         pkgbase: PackageBuild(pkg_names)
         for pkgbase, pkg_names in packages_bases.items()

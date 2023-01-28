@@ -580,17 +580,19 @@ class InstallPackagesCLI():
                         color_line("::", ColorsHighlight.yellow),
                         "\n".join((
                             translate("Try recovering?"),
+                            translate("[T] try again"),
                             translate("[c] git checkout -- '*'"),
                             # translate("[c] git checkout -- '*' ; git clean -f -d -x"),
                             translate("[r] remove dir and clone again"),
                             translate("[p] git stash && ... && git stash pop"),
                             translate("[s] skip this package"),
-                            translate("[A] abort"),
+                            translate("[a] abort"),
                         )),
                     )
                     answer = get_input(
                         prompt,
-                        translate("c") + translate("r") + translate("s") + translate("a").upper(),
+                        translate("t") + translate("c") + translate("r")
+                        + translate("s") + translate("a").upper(),
                     )
 
                 answer = answer.lower()[0]
@@ -606,7 +608,7 @@ class InstallPackagesCLI():
                         self.discard_install_info(skip_pkg_name)
                         if skip_pkg_name in package_names:
                             package_names.remove(skip_pkg_name)
-                else:
+                elif answer == translate("a"):  # pragma: no cover
                     raise SysExit(125) from err
             else:
                 for pkg_build in pkgbuild_by_name.values():

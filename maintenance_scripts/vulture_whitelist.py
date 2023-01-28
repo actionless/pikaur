@@ -24,6 +24,8 @@ whitelist.pikaur.AnyPackage
 whitelist.argparse.Action
 whitelist.argparse.ArgumentParserWithUnknowns._parse_known_args
 
+whitelist.args.FileType
+
 whitelist.aur.AURPackageInfo.optdepends
 whitelist.aur.AURPackageInfo.aur_id
 whitelist.aur.AURPackageInfo.packagebaseid

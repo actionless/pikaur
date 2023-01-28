@@ -864,7 +864,9 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         for pkg_name in pkg_names
     }
     pool_size: int | None = None
-    if running_as_root():
+    if clone_c := parse_args().clone_concurrency:
+        pool_size = clone_c
+    elif running_as_root():
         pool_size = 1
     with ThreadPool(processes=pool_size) as pool:
         requests = {

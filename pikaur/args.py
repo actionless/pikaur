@@ -10,7 +10,8 @@ from .config import PikaurConfig
 from .i18n import translate, translate_many
 
 if TYPE_CHECKING:
-    from typing import Any, Final, NoReturn
+    from argparse import FileType
+    from typing import Any, Callable, Final, NoReturn
 
 ArgSchema = list[tuple[str | None, str, None | bool | str | int]]
 PossibleArgValuesTypes = list[str] | str | bool | int | None
@@ -116,6 +117,12 @@ def get_pikaur_str_opts() -> ArgSchema:
     ]
 
 
+def get_pikaur_int_opts() -> ArgSchema:
+    return [
+        (None, "clone-concurrency", None),
+    ]
+
+
 PACMAN_COUNT_OPTS: "Final[ArgSchema]" = [
     ("y", "refresh", 0),
     ("u", "sysupgrade", 0),
@@ -143,7 +150,8 @@ def get_pikaur_long_opts() -> list[str]:
     return [
         long_opt.replace("-", "_")
         for _short_opt, long_opt, _default in (
-            get_pikaur_bool_opts() + get_pikaur_str_opts() + get_pikaur_count_opts()
+            get_pikaur_bool_opts() + get_pikaur_str_opts()
+            + get_pikaur_count_opts() + get_pikaur_int_opts()
         )
     ]
 
@@ -185,6 +193,7 @@ class PikaurArgs(Namespace):
     config: str | None
     refresh: int
     clean: int
+    clone_concurrency: int | None
     # positional: List[str]
     # @TODO: pylint bug:
     positional: list[str] = []
@@ -293,12 +302,13 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             raw_args=raw_args,
         )
 
-    def add_letter_andor_opt(
+    def add_letter_andor_opt(  # pylint: disable=too-many-arguments
             self,
             action: str | None = None,
             letter: str | None = None,
             opt: str | None = None,
             default: PossibleArgValuesTypes = None,
+            arg_type: "Callable[[str], Any] | FileType | None" = None,
     ) -> None:
         if action:
             if letter and opt:
@@ -312,6 +322,19 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             elif letter:
                 self.add_argument(
                     "-" + letter, action=action, default=default,
+                )
+        elif arg_type:
+            if letter and opt:
+                self.add_argument(
+                    "-" + letter, "--" + opt, default=default, type=arg_type,
+                )
+            elif opt:
+                self.add_argument(
+                    "--" + opt, default=default, type=arg_type,
+                )
+            elif letter:
+                self.add_argument(
+                    "-" + letter, default=default, type=arg_type,
                 )
         else:
             if letter and opt:
@@ -329,7 +352,6 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
 
 
 class CachedArgs():
-
     args: PikaurArgs | None = None
 
 
@@ -396,6 +418,11 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
             action=None, letter=letter, opt=opt, default=default,
         )
 
+    for letter, opt, default in get_pikaur_int_opts():
+        parser.add_letter_andor_opt(
+            action=None, letter=letter, opt=opt, default=default, arg_type=int,
+        )
+
     parser.add_argument("positional", nargs="*")
 
     parsed_args = parser.parse_pikaur_args(args)
@@ -442,7 +469,8 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
     if not ignore_args:
         ignore_args = []
     for letter, opt, _default in (
-            get_pikaur_bool_opts() + get_pikaur_str_opts() + get_pikaur_count_opts()
+            get_pikaur_bool_opts() + get_pikaur_str_opts()
+            + get_pikaur_count_opts() + get_pikaur_int_opts()
     ):
         if letter:
             ignore_args.append(letter)

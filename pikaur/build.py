@@ -232,9 +232,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             "pop",
         ])
 
-    def update_aur_repo(self) -> "InteractiveSpawn":
+    def update_aur_repo(self) -> "InteractiveSpawn | None":
         cmd_args: list[str]
-        if self.pull:
+        if self.pull and not self.args.skip_aur_pull:
             cmd_args = [
                 "git",
                 "-C", str(self.repo_path),
@@ -249,9 +249,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 get_repo_url(self.package_base),
                 str(self.repo_path),
             ]
-        if not cmd_args:
-            return NotImplemented
-        result = spawn(isolate_root_cmd(wrap_proxy_env(cmd_args)))
+        result: "InteractiveSpawn | None" = None
+        if cmd_args:
+            result = spawn(isolate_root_cmd(wrap_proxy_env(cmd_args)))
         self.reviewed = self.current_hash == self.last_installed_hash
         return result
 
@@ -873,7 +873,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         if not AlreadyClonedRepos.get(pkgbase)
     }
     pool_size: int | None = None
-    if clone_c := parse_args().clone_concurrency:
+    if clone_c := parse_args().aur_clone_concurrency:
         pool_size = clone_c
     elif running_as_root():
         pool_size = 1
@@ -887,7 +887,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         pool.join()
         for package_base, request in requests.items():
             result = request.get()
-            if result.returncode > 0:
+            if result and result.returncode > 0:
                 exc = CloneError(
                     build=package_builds_by_base[package_base],
                     result=result,

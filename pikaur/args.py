@@ -114,12 +114,13 @@ def get_pikaur_str_opts() -> ArgSchema:
         (None, "makepkg-config", None),
         (None, "makepkg-path", None),
         (None, "pikaur-config", None),
+        (None, "skip-aur-pull", None),
     ]
 
 
 def get_pikaur_int_opts() -> ArgSchema:
     return [
-        (None, "clone-concurrency", None),
+        (None, "aur-clone-concurrency", None),
     ]
 
 
@@ -193,7 +194,8 @@ class PikaurArgs(Namespace):
     config: str | None
     refresh: int
     clean: int
-    clone_concurrency: int | None
+    aur_clone_concurrency: int | None
+    skip_aur_pull: bool | None
     # positional: List[str]
     # @TODO: pylint bug:
     positional: list[str] = []

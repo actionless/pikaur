@@ -96,6 +96,8 @@ def cli_print_help() -> None:
                 translate("set GnuPG home directory used when validating package sources")),
             ("", "--skip-failed-build", translate("skip failed builds")),
             ("", "--hide-build-log", translate("hide build log")),
+            ("", "--skip-aur-pull", translate("don't pull already cloned PKGBUILD")),
+            ("", "--aur-clone-concurrency", translate("how many git-clones/pulls to do from AUR")),
         ]
     if args.sync:
         pikaur_options_help += [

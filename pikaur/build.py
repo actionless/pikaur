@@ -315,6 +315,8 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         )
         if pkgver_result.returncode != 0:
             error_text = translate("failed to retrieve latest dev sources:")
+            print_stderr()
+            print_stderr()
             print_error(error_text)
             print_stderr(pkgver_result.stdout_text)
             if (

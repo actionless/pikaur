@@ -876,6 +876,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         pkg_name: package_builds_by_base[pkgbase]
         for pkgbase, pkg_names in packages_bases.items()
         for pkg_name in pkg_names
+        if pkgbase in package_builds_by_base
     }
     pool_size: int | None = None
     if clone_c := parse_args().clone_concurrency:

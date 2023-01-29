@@ -201,6 +201,7 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
                     if isinstance(self.args, list) else
                     str(self.args)
                 ),
+                lock=False,
             )
 
         stdout, stderr = super().communicate(com_input, timeout)

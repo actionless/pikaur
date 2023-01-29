@@ -42,6 +42,7 @@ from .pacman import (
     refresh_pkg_db_if_needed,
     strip_repo_name,
 )
+from .pikspect import TTYRestore
 from .pprint import (
     ColorsHighlight,
     bold_line,
@@ -96,9 +97,12 @@ def edit_file(filename: Path) -> bool:  # pragma: no cover
     if not editor_cmd:
         return False
     old_hash = hash_file(filename)
+    sub_tty = TTYRestore()
+    TTYRestore.restore()
     interactive_spawn([
         *editor_cmd, str(filename),
     ])
+    sub_tty.restore_new()
     new_hash = hash_file(filename)
     return old_hash != new_hash
 
@@ -385,9 +389,6 @@ class InstallPackagesCLI():
                 self.not_found_repo_pkgs_names.remove(name)
 
     def manual_package_selection(self) -> None:  # pragma: no cover
-        editor_cmd = get_editor_or_exit()
-        if not editor_cmd:
-            return
 
         def parse_pkg_names(text: str) -> set[str]:
             selected_packages = []
@@ -410,9 +411,7 @@ class InstallPackagesCLI():
         with NamedTemporaryFile() as tmp_file:
             with open_file(tmp_file.name, "w") as write_file:
                 write_file.write(text_before)
-            interactive_spawn([
-                *editor_cmd, tmp_file.name,
-            ])
+            edit_file(tmp_file.name)
             with open_file(tmp_file.name, "r") as read_file:
                 selected_packages = parse_pkg_names(read_file.read())
 

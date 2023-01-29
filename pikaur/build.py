@@ -578,6 +578,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 bold_line(", ".join(self.package_names))),
         ))
 
+        # @TODO: add support for --skip-failed-build here:
         retry_interactive_command_or_exit(
             sudo([
                 *self._get_pacman_command(),

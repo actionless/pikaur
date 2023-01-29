@@ -621,6 +621,7 @@ def install_built_deps(
             explicitly_installed_deps.append(pkg_name)
     deps_upgrade_success = True
     if len(explicitly_installed_deps) < len(deps_names_and_paths):
+        # @TODO: add support for --skip-failed-build here:
         deps_upgrade_success = retry_interactive_command(
             sudo(
                 [*_get_pacman_command(), "--upgrade", "--asdeps"] + [

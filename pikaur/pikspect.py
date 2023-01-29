@@ -57,15 +57,28 @@ class ReadlineKeycodes:
 class TTYRestore():  # pragma: no cover
 
     old_tcattrs = None
+    old_tcattrs_out = None
+    old_tcattrs_err = None
     sub_tty_old_tcattrs = None
+    sub_tty_old_tcattrs_out = None
+    sub_tty_old_tcattrs_err = None
 
     @classmethod
     def save(cls) -> None:
         if sys.stdin.isatty():
             cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        if sys.stdout.isatty():
+            cls.old_tcattrs_out = termios.tcgetattr(sys.stdout.fileno())
+        if sys.stderr.isatty():
+            cls.old_tcattrs_err = termios.tcgetattr(sys.stderr.fileno())
 
     @classmethod
-    def _restore(cls, what: TcAttrsType | None = None) -> None:
+    def _restore(
+            cls,
+            what: TcAttrsType | None = None,
+            what_out: TcAttrsType | None = None,
+            what_err: TcAttrsType | None = None,
+    ) -> None:
         # if sys.stdout.isatty():
         #     termios.tcdrain(sys.stdout.fileno())
         # if sys.stderr.isatty():
@@ -77,17 +90,33 @@ class TTYRestore():  # pragma: no cover
                 termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
             except termios.error as exc:
                 logger.debug(",".join(str(arg) for arg in exc.args))
+        if what_out:
+            try:
+                termios.tcsetattr(sys.stdout.fileno(), termios.TCSANOW, what_out)
+            except termios.error as exc:
+                logger.debug(",".join(str(arg) for arg in exc.args))
+        if what_err:
+            try:
+                termios.tcsetattr(sys.stderr.fileno(), termios.TCSANOW, what_err)
+            except termios.error as exc:
+                logger.debug(",".join(str(arg) for arg in exc.args))
 
     @classmethod
     def restore(cls, *_whatever: "Any") -> None:
-        cls._restore(cls.old_tcattrs)
+        cls._restore(cls.old_tcattrs, cls.old_tcattrs_out, cls.old_tcattrs_err)
 
     def __init__(self) -> None:
-        with contextlib.suppress(termios.error):
+        with contextlib.suppress(termios.error, ValueError):
             self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        with contextlib.suppress(termios.error):
+            self.sub_tty_old_tcattrs_out = termios.tcgetattr(sys.stdout.fileno())
+        with contextlib.suppress(termios.error):
+            self.sub_tty_old_tcattrs_err = termios.tcgetattr(sys.stderr.fileno())
 
     def restore_new(self, *_whatever: "Any") -> None:
-        self._restore(self.sub_tty_old_tcattrs)
+        self._restore(
+            self.sub_tty_old_tcattrs, self.sub_tty_old_tcattrs_out, self.sub_tty_old_tcattrs_err
+        )
 
 
 TTYRestore.save()

@@ -5,16 +5,16 @@ import tty
 from typing import TYPE_CHECKING
 
 from .args import LiteralArgs, parse_args
-from .config import PikaurConfig
+from .config import PROMPT_LOCK, PikaurConfig
 from .core import get_editor, interactive_spawn
 from .exceptions import SysExit
+from .filelock import FileLock
 from .i18n import translate
 from .logging import create_logger
 from .pikspect import ReadlineKeycodes, TTYInputWrapper, TTYRestore
 from .pikspect import pikspect as pikspect_spawn
 from .pprint import (
     ColorsHighlight,
-    PrintLock,
     color_line,
     get_term_width,
     print_stderr,
@@ -115,7 +115,7 @@ def get_input(
     logger.debug("Gonna get input from user...")
     answer = ""
     with (
-            PrintLock(),
+            FileLock(PROMPT_LOCK),
             TTYInputWrapper(),
     ):
         if not (

@@ -2,6 +2,7 @@
 
 import configparser
 import os
+import random
 import sys
 from pathlib import Path
 from tempfile import gettempdir
@@ -68,7 +69,14 @@ AUR_REPOS_CACHE_PATH: "Final" = (
 )
 
 BUILD_DEPS_LOCK: "Final" = (
-    (_USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT) / "pikaur_build_deps.lock"
+    (
+        _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT)
+    / "pikaur_build_deps.lock"
+)
+PROMPT_LOCK: "Final" = (
+    (
+        _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT
+    ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"
 )
 
 

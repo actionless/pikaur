@@ -1,15 +1,19 @@
 import fcntl
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .core import DEFAULT_INPUT_ENCODING
-from .exceptions import SysExit
-from .i18n import translate
-from .pprint import print_error
-from .prompt import ask_to_continue
+from .logging import create_logger
 
 if TYPE_CHECKING:
     from typing import Any, TextIO
+
+
+logger_no_lock = create_logger("FileLock", lock=False)
+
+
+LOCK_CHECK_INTERVAL = 0.01  # seconds
 
 
 class FileLock():
@@ -21,29 +25,49 @@ class FileLock():
         self.lock_file_path = Path(lock_file_path)
 
     def __enter__(self) -> None:
+        logger_no_lock.debug(
+            "Acquiring {lock_file}...",
+            lock_file=self.lock_file_path,
+        )
         self.lock_file = self.lock_file_path.open("a", encoding=DEFAULT_INPUT_ENCODING)
+        already_logged = False
         while True:
             try:
                 fcntl.flock(self.lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 self.locked = True
                 break
             except BlockingIOError as err:
-                print_error(translate("Can't lock {lock_file}: {reason}").format(
-                    lock_file=self.lock_file_path,
-                    reason=err.strerror,
-                ))
-                if not ask_to_continue(translate("Do you want to retry?")):
-                    raise SysExit(128) from err
+                if not already_logged:
+                    logger_no_lock.debug(
+                        "Can't lock {lock_file}: {reason}",
+                        lock_file=self.lock_file_path,
+                        reason=err.strerror,
+                    )
+                    already_logged = True
+                time.sleep(LOCK_CHECK_INTERVAL)
+        logger_no_lock.debug(
+            "Acquired {lock_file}",
+            lock_file=self.lock_file_path,
+        )
 
     def __exit__(self, *_exc_details: "Any") -> None:
         if self.lock_file:
+            logger_no_lock.debug(
+                "Releasing {lock_file}",
+                lock_file=self.lock_file_path,
+            )
             if self.locked:
                 fcntl.flock(self.lock_file, fcntl.LOCK_UN)
             if not self.lock_file.closed:
                 self.lock_file.close()
-        self.locked = False
-        if self.lock_file_path.exists():
-            self.lock_file_path.unlink()
+            self.lock_file = None
+            self.locked = False
+            if self.lock_file_path.exists():
+                self.lock_file_path.unlink()
+                logger_no_lock.debug(
+                    "Released {lock_file}",
+                    lock_file=self.lock_file_path,
+                )
 
     def __del__(self) -> None:
         self.__exit__()

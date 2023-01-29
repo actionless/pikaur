@@ -115,7 +115,7 @@ class TTYRestore():  # pragma: no cover
 
     def restore_new(self, *_whatever: "Any") -> None:
         self._restore(
-            self.sub_tty_old_tcattrs, self.sub_tty_old_tcattrs_out, self.sub_tty_old_tcattrs_err
+            self.sub_tty_old_tcattrs, self.sub_tty_old_tcattrs_out, self.sub_tty_old_tcattrs_err,
         )
 
 

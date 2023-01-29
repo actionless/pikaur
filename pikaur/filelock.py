@@ -7,13 +7,13 @@ from .core import DEFAULT_INPUT_ENCODING
 from .logging import create_logger
 
 if TYPE_CHECKING:
-    from typing import Any, TextIO
+    from typing import Any, Final, TextIO
 
 
 logger_no_lock = create_logger("FileLock", lock=False)
 
 
-LOCK_CHECK_INTERVAL = 0.01  # seconds
+LOCK_CHECK_INTERVAL: "Final" = 0.01  # seconds
 
 
 class FileLock():

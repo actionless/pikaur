@@ -92,7 +92,7 @@ def hash_file(filename: str | Path) -> str:  # pragma: no cover
     return md5.hexdigest()
 
 
-def edit_file(filename: Path) -> bool:  # pragma: no cover
+def edit_file(filename: str | Path) -> bool:  # pragma: no cover
     editor_cmd = get_editor_or_exit()
     if not editor_cmd:
         return False

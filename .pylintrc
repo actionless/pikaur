@@ -1,4 +1,5 @@
 [MASTER]
+jobs=0
 extension-pkg-whitelist=pyalpm
 ignore=CVS,ignoreme.py
 ignore-patterns=

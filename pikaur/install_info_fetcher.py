@@ -28,7 +28,7 @@ from .updates import find_aur_updates, print_upgradeable
 from .version import VersionMatcher
 
 if TYPE_CHECKING:
-    from typing import Sequence
+    from collections.abc import Sequence
 
     from .args import PikaurArgs
     from .core import InstallInfo

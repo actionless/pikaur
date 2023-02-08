@@ -25,7 +25,8 @@ from .print_department import (
 from .version import VERSION_DEVEL, compare_versions
 
 if TYPE_CHECKING:
-    from typing import Final, Sequence
+    from collections.abc import Sequence
+    from typing import Final
 
     import pyalpm
 

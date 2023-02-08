@@ -23,7 +23,8 @@ from .pprint import (
 )
 
 if TYPE_CHECKING:
-    from typing import Final, Iterable, Sequence
+    from collections.abc import Iterable, Sequence
+    from typing import Final
 
 
 logger = create_logger("prompt")

@@ -34,7 +34,8 @@ from .pprint import (
 )
 
 if TYPE_CHECKING:
-    from typing import Any, BinaryIO, Callable, Final, TextIO
+    from collections.abc import Callable
+    from typing import Any, BinaryIO, Final, TextIO
 
 
 SMALL_TIMEOUT: "Final" = 0.01

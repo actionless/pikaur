@@ -23,8 +23,9 @@ from pikaur.pprint import color_line, get_term_width
 from pikaur.srcinfo import SrcInfo
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
     from subprocess import Popen  # nosec B404
-    from typing import Any, Callable, NoReturn, Sequence
+    from typing import Any, NoReturn
     from unittest import TestResult
 
 

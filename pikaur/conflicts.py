@@ -8,7 +8,7 @@ from .updates import get_remote_package_version
 from .version import VersionMatcher
 
 if TYPE_CHECKING:
-    from typing import Sequence
+    from collections.abc import Sequence
 
     from .aur import AURPackageInfo
     from .core import AURInstallInfo

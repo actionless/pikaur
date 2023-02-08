@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 from .pprint import color_enabled, get_term_width
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Final
+    from collections.abc import Callable
+    from typing import Any, Final
 
 
 class ProgressBar():

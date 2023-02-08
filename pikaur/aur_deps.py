@@ -104,7 +104,7 @@ def handle_not_found_aur_pkgs(  # pylint: disable=too-many-locals
                 try:
                     failed_pkg = PackageDB.find_repo_package(not_found_pkg)
                 except PackagesNotFoundInRepoError:
-                    pass  # noqa: S110
+                    pass
                 else:
                     version_found = failed_pkg.version
                     if not_found_pkg in all_repo_provided_packages:

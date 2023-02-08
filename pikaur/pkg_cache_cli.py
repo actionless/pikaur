@@ -11,8 +11,8 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_stdout
 from .prompt import ask_to_continue
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from subprocess import Popen  # nosec B404
-    from typing import Callable
 
 
 _debug = create_logger("pkg_cache_cli").debug

@@ -52,8 +52,9 @@ from .updates import print_upgradeable
 from .urllib import ProxyInitSocks5Error, init_proxy
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from types import TracebackType
-    from typing import Any, Callable
+    from typing import Any
 
 
 def init_readline() -> None:

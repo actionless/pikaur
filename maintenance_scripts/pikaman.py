@@ -23,8 +23,8 @@ from typing import TYPE_CHECKING
 import markdown_it
 
 if TYPE_CHECKING:
-    from collections.abc import MutableMapping
-    from typing import Any, Final, Sequence
+    from collections.abc import MutableMapping, Sequence
+    from typing import Any, Final
 
 Token = markdown_it.token.Token
 OptionsDict = markdown_it.utils.OptionsDict

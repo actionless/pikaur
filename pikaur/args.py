@@ -11,7 +11,8 @@ from .i18n import translate, translate_many
 
 if TYPE_CHECKING:
     from argparse import FileType
-    from typing import Any, Callable, Final, NoReturn
+    from collections.abc import Callable
+    from typing import Any, Final, NoReturn
 
 ArgSchema = list[tuple[str | None, str, None | bool | str | int]]
 PossibleArgValuesTypes = list[str] | str | bool | int | None

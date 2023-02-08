@@ -11,7 +11,8 @@ from typing import TYPE_CHECKING
 from .i18n import PIKAUR_NAME, translate
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Final
+    from collections.abc import Callable
+    from typing import Any, Final
 
     from typing_extensions import NotRequired, TypedDict
 

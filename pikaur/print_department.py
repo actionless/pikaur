@@ -28,7 +28,8 @@ from .version import get_common_version, get_version_diff
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
-    from typing import Final, Iterable, Sequence, TypeVar
+    from collections.abc import Iterable, Sequence
+    from typing import Final, TypeVar
 
     from .core import AURInstallInfo, PackageSource, RepoInstallInfo
     from .install_info_fetcher import InstallInfoFetcher

@@ -22,7 +22,8 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_s
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
-    from typing import IO, Any, Callable, Final, Sequence, TypeVar
+    from collections.abc import Callable, Sequence
+    from typing import IO, Any, Final, TypeVar
 
     from typing_extensions import NotRequired, TypedDict
 

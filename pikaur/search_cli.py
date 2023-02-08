@@ -19,7 +19,8 @@ from .pprint import print_error, print_stderr
 from .print_department import print_package_search_results
 
 if TYPE_CHECKING:
-    from typing import Iterable, TypeVar
+    from collections.abc import Iterable
+    from typing import TypeVar
 
     import pyalpm
 

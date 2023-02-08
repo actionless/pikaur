@@ -23,7 +23,8 @@ from .version import VersionMatcher
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
     from pathlib import Path
-    from typing import Final, Pattern
+    from re import Pattern
+    from typing import Final
 
     from .aur import AURPackageInfo
 

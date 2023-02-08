@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 if TYPE_CHECKING:
-    from typing import Callable, Final
+    from collections.abc import Callable
+    from typing import Final
 
 
 VERSION_SEPARATORS: "Final" = (".", "+", "-", ":")

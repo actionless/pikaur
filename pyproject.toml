@@ -41,7 +41,7 @@ select = [
 	"PL",
 	"TRY",
 	"RSE",
-	#"SLF",
+	"SLF",
 	"RUF",
 ]
 ignore = [
@@ -84,6 +84,11 @@ ignore = [
 "pikaur/argparse.py" = [
 	"PLR0912",
 	"PLR0915",
+	"SLF001",
+]
+
+"pikaur_test/*.py" = [
+	"SLF001",
 ]
 "pikaur_test/test_*.py" = [
 	"ANN201",
@@ -97,4 +102,7 @@ ignore = [
 ]
 "maintenance_scripts/pikaman.py" = [
 	"ARG002",
+]
+"maintenance_scripts/vulture_whitelist.py" = [
+	"SLF001",
 ]

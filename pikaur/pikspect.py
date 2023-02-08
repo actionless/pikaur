@@ -360,8 +360,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
                 selected = select.select([self.pty_out], [], [], SMALL_TIMEOUT)
             except ValueError:  # pragma: no cover
                 return
-            else:
-                readers = selected[0]
+            readers = selected[0]
             if not readers:
                 if self.returncode is not None:
                     break

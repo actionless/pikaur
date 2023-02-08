@@ -63,8 +63,7 @@ def get_remote_package(
         if aur_packages:
             return aur_packages[0]
         return None
-    else:
-        return repo_pkg
+    return repo_pkg
 
 
 def get_remote_package_version(new_pkg_name: str) -> str | None:

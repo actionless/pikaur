@@ -55,7 +55,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
         self.rules = {
             k: v
             for k, v in inspect.getmembers(self, predicate=inspect.ismethod)
-            if not (k.startswith("render") or k.startswith("_"))
+            if not (k.startswith(("render", "_")))
         }
 
     def render(
@@ -247,7 +247,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
 
     @staticmethod
     def is_url(text: str) -> bool:
-        return text.startswith("http://") or text.startswith("https://")
+        return text.startswith(("http://", "https://"))
 
     def document_open(self) -> str:
         date = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%B %Y")

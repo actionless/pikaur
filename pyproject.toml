@@ -45,12 +45,19 @@ ignore = [
 	# enable back later:
 	"C901",  # "too complex"
 	"ERA001", # commented out code
+	# already managed by pulint, mb replace completely to ruff later:
+	"PLR0912",  # too many branches
+	"PLR0913",  # too many arguments
+	"PLR0915",  # too many statements
+
 
 	"ANN101",  # annotate self
 	"ANN102",  # annotate cls
 	"ANN401",  # disable Any
 
 	"BLE001",  # disallow catching Exception
+
+	"UP036", # remove code with py version checks
 
 	# docstrings
 	"D100",
@@ -71,6 +78,10 @@ ignore = [
 ]
 
 [tool.ruff.per-file-ignores]
+"pikaur/argparse.py" = [
+	"PLR0912",
+	"PLR0915",
+]
 "pikaur_test/test_*.py" = [
 	"ANN201",
 	"ANN206",

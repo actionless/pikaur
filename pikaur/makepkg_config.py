@@ -142,9 +142,9 @@ class MakePkgCommand:
     def _apply_dynamic_users_workaround(cls) -> None:
         pkgdest = str(get_pkgdest())
         if running_as_root() and pkgdest and (
-                pkgdest.startswith(str(_USER_TEMP_ROOT)) or
-                pkgdest.startswith("/tmp") or  # nosec B108  # noqa: S108
-                pkgdest.startswith("/var/tmp")  # nosec B108  # noqa: S108
+                pkgdest.startswith(
+                    (str(_USER_TEMP_ROOT), "/tmp", "/var/tmp"),  # nosec B108  # noqa: S108
+                )
         ):
             if not cls._cmd:
                 raise RuntimeError()

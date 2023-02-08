@@ -650,7 +650,7 @@ def install_built_deps(
     PackageDB.discard_local_cache()
 
     if not (deps_upgrade_success and explicit_upgrade_success):
-        raise DependencyError()
+        raise DependencyError
 
 
 def strip_repo_name(pkg_name: str) -> str:

@@ -23,7 +23,7 @@ select = [
 	"EXE",
 	"ISC",
 	"ICN",
-	#"G",
+	"G",
 	"INP",
 	"PIE",
 	"T20",
@@ -40,7 +40,7 @@ select = [
 	"PGH",
 	"PL",
 	"TRY",
-	#"RSE",
+	"RSE",
 	#"SLF",
 	"RUF",
 ]

@@ -565,7 +565,7 @@ Gonna fetch install info for:
             if isinstance(info.package, AURPackageInfo):
                 all_aur_pkgs.append(info.package)
             else:
-                raise TypeError()
+                raise TypeError
         if all_aur_pkgs:
             print_stdout(translate("Resolving AUR dependencies..."))
         try:

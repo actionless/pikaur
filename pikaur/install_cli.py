@@ -548,7 +548,7 @@ class InstallPackagesCLI():
                 need_to_show_install_prompt = True
         if need_to_show_install_prompt:
             self.main_sequence()
-            raise self.ExitMainSequence()
+            raise self.ExitMainSequence
 
     def _clone_aur_repos(  # pylint: disable=too-many-branches
             self, package_names: list[str],
@@ -623,7 +623,7 @@ class InstallPackagesCLI():
             for info in self.install_info.aur_install_info:
                 if info.pkgbuild_path:
                     if not isinstance(info.package, AURPackageInfo):
-                        raise TypeError()
+                        raise TypeError
                     pkg_base = info.package.packagebase
                     if pkg_base not in pkgbuilds_by_base:
                         package_names = self.pkgbuilds_packagelists.get(info.pkgbuild_path)
@@ -886,7 +886,7 @@ class InstallPackagesCLI():
                     pkg=bold_line(", ".join(pkg_build.package_names)),
                 ))
                 self.main_sequence()
-                raise self.ExitMainSequence()
+                raise self.ExitMainSequence
             return
 
         old_install_info = self.install_info
@@ -902,7 +902,7 @@ class InstallPackagesCLI():
                 pkg=bold_line(", ".join(pkg_build.package_names)),
             ))
             self.main_sequence()
-            raise self.ExitMainSequence()
+            raise self.ExitMainSequence
 
     def build_packages(self) -> None:  # pylint: disable=too-many-branches
         if self.args.needed or self.args.devel:

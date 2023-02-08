@@ -166,7 +166,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             # add the Optional to the list and return the index at which
             # the Optional's string args stopped
             if not action_tuples:
-                raise RuntimeError()
+                raise RuntimeError
             for action, args, option_string in action_tuples:
                 take_action(action, args, option_string)
             return stop, unknown_args

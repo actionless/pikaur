@@ -120,7 +120,7 @@ class InterceptSysOutput():
 
     def _fake_exit(self, code: int = 0) -> "NoReturn":
         self.returncode = code
-        raise FakeExit()
+        raise FakeExit
 
     def __init__(self, *, capture_stdout: bool = True, capture_stderr: bool = False) -> None:
         self.capture_stdout = capture_stdout
@@ -347,7 +347,7 @@ class PikaurDbTestCase(PikaurTestCase):
                 f"git -C {repo_dir} log --format=%h",
             )
             if not proc.stdout_text:
-                raise RuntimeError()
+                raise RuntimeError
             some_older_commit = proc.stdout_text.splitlines()[count]
             spawn(f"git -C {repo_dir} checkout {some_older_commit}")
             srcinfo.regenerate()
@@ -360,7 +360,7 @@ class PikaurDbTestCase(PikaurTestCase):
                     f"git -C {repo_dir} log --format=%h",
                 )
                 if not proc.stdout_text:
-                    raise RuntimeError()
+                    raise RuntimeError
                 some_older_commit = proc.stdout_text.splitlines()[count]
                 spawn(f"git -C {repo_dir} checkout {some_older_commit}")
                 srcinfo.regenerate()

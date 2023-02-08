@@ -342,7 +342,7 @@ def handle_sig_int(*_whatever: "Any") -> None:  # pragma: no cover
         signal_handler(*_whatever)  # pylint: disable=not-callable
         return
     if parse_args().pikaur_debug:
-        raise KeyboardInterrupt()
+        raise KeyboardInterrupt
     print_stderr("\n\nCanceled by user (SIGINT)", lock=False)
     raise SysExit(125)
 

@@ -71,7 +71,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
             elif token.type in self.rules:
                 result += self.rules[token.type](tokens, i, options, env)
             else:
-                raise NotImplementedError()
+                raise NotImplementedError
         return result
 
     def render_inline(
@@ -82,7 +82,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
             if token.type in self.rules:
                 result += self.rules[token.type](tokens, i, options, env)
             else:
-                raise NotImplementedError()
+                raise NotImplementedError
         return result
 
     def text(

@@ -391,9 +391,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             for pkg_name in package_build.package_names:
                 if package_build.failed:
                     self.failed = True
-                    raise DependencyError()
+                    raise DependencyError
                 if not package_build.built_packages_paths.get(pkg_name):
-                    raise DependencyNotBuiltYetError()
+                    raise DependencyNotBuiltYetError
                 self.built_deps_to_install[pkg_name] = \
                     package_build.built_packages_paths[pkg_name]
                 _mark_dep_resolved(dep)
@@ -822,7 +822,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                         str(self.pkgbuild_path),
                         str(self.build_dir / DEFAULT_PKGBUILD_BASENAME),
                     ]))
-                    raise PkgbuildChanged()
+                    raise PkgbuildChanged
                 continue
             if answer == translate("a"):
                 raise SysExit(125)
@@ -848,7 +848,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         if not build_succeeded:
             self.failed = True
-            raise BuildError()
+            raise BuildError
         self._set_built_package_path()
 
 

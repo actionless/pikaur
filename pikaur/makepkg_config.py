@@ -147,7 +147,7 @@ class MakePkgCommand:
                 )
         ):
             if not cls._cmd:
-                raise RuntimeError()
+                raise RuntimeError
             cls._cmd = ["env", "PKGDEST=", *cls._cmd]
             cls.pkgdest_skipped = True
 

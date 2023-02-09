@@ -471,10 +471,11 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             if pkg_path == Path(pkg_basename):
                 pkg_path = (Path(pkg_dest) if pkg_dest else self.build_dir) / pkg_path
                 logger.debug("Resolving full path: {} from base path: {}", pkg_path, pkg_basename)
+            new_package_path = (
+                Path(pkg_dest) if pkg_dest else PACKAGE_CACHE_PATH
+            ) / pkg_basename
+            logger.debug("New package path: {}", new_package_path)
             if not pkg_dest or MakePkgCommand.pkgdest_skipped:
-                new_package_path = (
-                    Path(pkg_dest) if pkg_dest else PACKAGE_CACHE_PATH
-                ) / pkg_basename
                 pkg_sig_path = pkg_path.parent / (pkg_path.name + ".sig")
                 new_package_sig_path = new_package_path.parent / (
                     new_package_path.name + ".sig"
@@ -483,7 +484,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     PACKAGE_CACHE_PATH.mkdir(parents=True)
                 replace_file(pkg_path, new_package_path)
                 replace_file(pkg_sig_path, new_package_sig_path)
-                pkg_path = new_package_path
+            pkg_path = new_package_path
             if pkg_path and pkg_path.exists():
                 self.built_packages_paths[pkg_name] = pkg_path
 

@@ -110,6 +110,9 @@ class DiffPagerValues:
     NEVER: "Final" = "never"
 
 
+CONFIG_YES_VALUES: "Final" = ("yes", "y", "true", "1")
+
+
 ConfigSchemaT = dict[str, dict[str, "ConfigValueType"]]
 CONFIG_SCHEMA: ConfigSchemaT = {
     "sync": {
@@ -354,10 +357,7 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
 
 
 def str_to_bool(value: str) -> bool:
-    # pylint:disable=protected-access
-    result: bool = \
-        configparser.RawConfigParser()._convert_to_boolean(value)  # type: ignore[attr-defined]
-    return result
+    return value.lower() in CONFIG_YES_VALUES
 
 
 class PikaurConfigItem:

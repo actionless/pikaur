@@ -205,7 +205,7 @@ class PackageDBCommon(metaclass=ABCMeta):
         return cls._packages_dict_cache[PackageSource.LOCAL]
 
     @classmethod
-    def _get_provided_dict(
+    def get_provided_dict(
             cls, package_source: PackageSource,
     ) -> dict[str, list[ProvidedDependency]]:
 
@@ -241,11 +241,11 @@ class PackageDBCommon(metaclass=ABCMeta):
 
     @classmethod
     def get_repo_provided_dict(cls) -> dict[str, list[ProvidedDependency]]:
-        return cls._get_provided_dict(PackageSource.REPO)
+        return cls.get_provided_dict(PackageSource.REPO)
 
     @classmethod
     def get_local_provided_dict(cls) -> dict[str, list[ProvidedDependency]]:
-        return cls._get_provided_dict(PackageSource.LOCAL)
+        return cls.get_provided_dict(PackageSource.LOCAL)
 
     @classmethod
     def get_repo_pkgnames(cls) -> list[str]:
@@ -313,12 +313,12 @@ class PackageDB(PackageDBCommon):
         return repos.index(repo_name)
 
     @classmethod
-    def _get_provided_dict(
+    def get_provided_dict(
             cls, package_source: PackageSource,
     ) -> dict[str, list[ProvidedDependency]]:
 
         if not cls._provided_dict_cache.get(package_source):
-            provided_pkg_names = super()._get_provided_dict(package_source)
+            provided_pkg_names = super().get_provided_dict(package_source)
             if package_source == PackageSource.REPO:
                 for _what_provides, provided_pkgs in provided_pkg_names.items():
                     provided_pkgs.sort(

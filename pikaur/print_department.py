@@ -153,8 +153,8 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
     # @TODO: python 3.11
     # type_sort_key = tuple[str, *tuple[int, ...]] | str
     type_sort_key = (
-        tuple[str, str] | tuple[str, int] |  # type: ignore[misc]
-        tuple[int, str] | str  # type: ignore[misc]
+        tuple[str, str] | tuple[str, int] |
+        tuple[int, str] | str
     )
 
     def pretty_format(  # pylint:disable=too-many-locals,R0912
@@ -691,8 +691,7 @@ def print_package_search_results(
             pkg.name,
         )
 
-    # https://github.com/python/mypy/issues/11098
-    type_aur_sort_key = tuple[float, float] | float  # type: ignore[misc]
+    type_aur_sort_key = tuple[float, float] | float
 
     def get_aur_sort_key(pkg: AURPackageInfo) -> tuple[type_aur_sort_key, str]:
         user_aur_sort = user_config.ui.AurSearchSorting

@@ -321,17 +321,22 @@ find ~/.local/share/pikaur/aur_repos -mindepth 1 -maxdepth 1 -type d | xargs -r 
 
 ##### How to downgrade a package?
 
-This will show a list of commits to choose one to downgarade to.
+Run the following to:
+1) Clone the PKGBUILD repo and show a log of commits to choose from
+2) Choose a commit hash to downgrade to
+3) Build and install the downgraded PKGBUILD
+4) Use `makepkg` if `pikaur -P` fails to install
+5) Remove the cloned PKGBUILD repo and build files
 
 ```sh
-pikaur -G <package>
+pikaur -G <package>  # clone the PKGBUILD repo
 cd <package>
-git log # choose <commit> from the list
+git log  # choose <commit> from the list
 git checkout <commit>
-pikaur -Rns <package> # Uninstal current version
-pikaur -P  # Uninstal current version
-makepkg -si # If previous command failed to install
-cd .. && rm -rf <package> # Remove the temp directory
+pikaur -Rns <package>  # uninstall current version
+pikaur -P  # build and install the local downgraded PKGBUILD
+makepkg -si  # run makepkg only if the previous pikaur command failed to install
+cd .. && rm -rf <package>  # remove the cloned PKGBUILD directory
 ```
 
 ##### How to add additional trusted keys when building with systemd dynamic users?

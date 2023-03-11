@@ -19,6 +19,7 @@ select = [
 	"C4",
 	"DTZ",
 	"T10",
+	#"DJ",  # django
 	"EM",
 	"EXE",
 	"ISC",
@@ -27,9 +28,12 @@ select = [
 	"INP",
 	"PIE",
 	"T20",
+	"PYI",
 	#"PT",  # pytest
 	"Q",
+	"RSE",
 	"RET",
+	"SLF",
 	"SIM",
 	"TID",
 	"TCH",
@@ -40,8 +44,7 @@ select = [
 	"PGH",
 	"PL",
 	"TRY",
-	"RSE",
-	"SLF",
+	#"NPY",  # numpy
 	"RUF",
 ]
 ignore = [

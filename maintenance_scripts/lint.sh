@@ -13,7 +13,7 @@ if [[ -n "${1:-}" ]] ; then
 	TARGETS=("$1")
 fi
 
-export PYTHONWARNINGS='default,error:::pikaur[.*],error:::pikaur_test[.*]'
+export PYTHONWARNINGS='ignore,error:::pikaur[.*],error:::pikaur_test[.*]'
 PYTHON=python3
 
 echo Python compile...

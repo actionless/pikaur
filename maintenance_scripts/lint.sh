@@ -1,8 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-script_dir=$(readlink -e "$(dirname "${0}")")
-APP_DIR="$(readlink -e "${script_dir}"/..)"
+PYTHON=python3
+
+
+FIX_MODE=0
+while getopts f name
+do
+   case $name in
+   f)   FIX_MODE=1;;
+   ?)   printf "Usage: %s: [-f] [TARGETS]\n" "$0"
+	   echo "Arguments:"
+	   echo "  -f	run in fix mode"
+		 exit 2;;
+   esac
+done
+shift $((OPTIND - 1))
+printf "Remaining arguments are: %s\n$*"
+
 
 TARGETS=(
 	'pikaur'
@@ -10,11 +25,14 @@ TARGETS=(
 	./maintenance_scripts/*.py
 )
 if [[ -n "${1:-}" ]] ; then
-	TARGETS=("$1")
+	TARGETS=("$@")
 fi
 
+
+script_dir=$(readlink -e "$(dirname "${0}")")
+APP_DIR="$(readlink -e "${script_dir}"/..)"
+
 export PYTHONWARNINGS='ignore,error:::pikaur[.*],error:::pikaur_test[.*]'
-PYTHON=python3
 
 echo Python compile...
 "$PYTHON" -O -m compileall "${TARGETS[@]}" \
@@ -40,7 +58,11 @@ if [[ ! -f "${APP_DIR}/env/bin/activate" ]] ; then
 	"$PYTHON" -m pip install ruff --upgrade
 	deactivate
 fi
-"${APP_DIR}/env/bin/ruff" "${TARGETS[@]}"
+if [[ "$FIX_MODE" -eq 1 ]] ; then
+	"${APP_DIR}/env/bin/ruff" --fix "${TARGETS[@]}"
+else
+	"${APP_DIR}/env/bin/ruff" "${TARGETS[@]}"
+fi
 
 echo Flake8...
 "$PYTHON" -m flake8 "${TARGETS[@]}"

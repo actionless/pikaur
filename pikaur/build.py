@@ -573,6 +573,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         if not self.all_deps_to_install:
             return
 
+        if PikaurConfig().build.SkipRedundantDepRemovals.get_bool():
+            return
+
         print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
             color_line("::", ColorsHighlight.purple),
             translate("Installing repository dependencies for {}").format(

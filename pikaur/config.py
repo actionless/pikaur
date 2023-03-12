@@ -194,6 +194,10 @@ CONFIG_SCHEMA: ConfigSchemaT = {
             "data_type": BOOL,
             "default": "no",
         },
+        "SkipRedundantDepRemovals": {
+            "data_type": BOOL,
+            "default": "no",
+        },
     },
     "review": {
         "NoEdit": {

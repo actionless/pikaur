@@ -147,7 +147,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
                     # error if a double-dash option did not use the
                     # explicit argument
-                    else:  # noqa: RET508
+                    else:
                         msg = _("ignored explicit argument %r")
                         raise ArgumentError(action, msg % explicit_arg)
 
@@ -241,19 +241,18 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 action_name = _get_action_name(action)
                 if action.required and action_name:
                     required_actions.append(action_name)
-                else:
+                elif (
                     # Convert action default now instead of doing it before
                     # parsing arguments to avoid calling convert functions
                     # twice (which may fail) if the argument was given, but
                     # only if it was defined already in the namespace
-                    if (
-                            action.default is not None and
-                            isinstance(action.default, str) and
-                            hasattr(namespace, action.dest) and
-                            action.default is getattr(namespace, action.dest)
-                    ):
-                        setattr(namespace, action.dest,
-                                self._get_value(action, action.default))
+                        action.default is not None and
+                        isinstance(action.default, str) and
+                        hasattr(namespace, action.dest) and
+                        action.default is getattr(namespace, action.dest)
+                ):
+                    setattr(namespace, action.dest,
+                            self._get_value(action, action.default))
 
         if required_actions:
             self.error(_("the following arguments are required: %s") %

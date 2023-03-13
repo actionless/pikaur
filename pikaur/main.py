@@ -274,13 +274,12 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             sys.exit(interactive_spawn(
                 sudo(restart_args),
             ).returncode)
+        elif not require_sudo or running_as_root():
+            # Just run the operation normally
+            pikaur_operation()
         else:
-            if not require_sudo or running_as_root():
-                # Just run the operation normally
-                pikaur_operation()
-            else:
-                # Or use sudo loop if not running as root but need to have it later
-                run_with_sudo_loop(pikaur_operation)
+            # Or use sudo loop if not running as root but need to have it later
+            run_with_sudo_loop(pikaur_operation)
     else:
         # Just bypass all the args to pacman
         logger.debug("Pikaur operation not found for args: {}", sys.argv)

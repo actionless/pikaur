@@ -56,6 +56,7 @@ ignore = [
 	"PLR0913",  # too many arguments
 	"PLR0915",  # too many statements
 
+	"PLE1205",  # pikaur is using non-default `logging`
 
 	"ANN101",  # annotate self
 	"ANN102",  # annotate cls

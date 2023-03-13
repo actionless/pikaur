@@ -200,7 +200,7 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
     diff_found = False
     if "" in (version1, version2):
         return common_string, diff_weight
-    for weight, version_chunk1, version_chunk2 in (
+    for initial_weight, version_chunk1, version_chunk2 in (
             (
                 1000, _split_epoch(version1)[0], _split_epoch(version2)[0],
             ),
@@ -216,6 +216,7 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
                 10, _split_release(version1)[1], _split_release(version2)[1],
             ),
     ):
+        weight = initial_weight
         for block1, block2 in zip_longest(
                 split_version(version_chunk1),
                 split_version(version_chunk2),

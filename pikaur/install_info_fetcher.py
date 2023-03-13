@@ -535,11 +535,12 @@ Gonna fetch install info for:
         aur_updates_install_info_by_name: dict[str, AURInstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path, pkg_names in self.pkgbuilds_packagelists.items():
-            if not pkg_names:
+            found_pkg_names = pkg_names
+            if not found_pkg_names:
                 common_srcinfo = SrcInfo(pkgbuild_path=path)
                 common_srcinfo.regenerate()
-                pkg_names = common_srcinfo.pkgnames
-            for pkg_name in pkg_names:
+                found_pkg_names = common_srcinfo.pkgnames
+            for pkg_name in found_pkg_names:
                 if pkg_name in self.manually_excluded_packages_names:
                     continue
                 srcinfo = SrcInfo(pkgbuild_path=path, package_name=pkg_name)

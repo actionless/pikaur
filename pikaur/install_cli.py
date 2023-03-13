@@ -392,8 +392,8 @@ class InstallPackagesCLI():
 
         def parse_pkg_names(text: str) -> set[str]:
             selected_packages = []
-            for line in text.splitlines():
-                line = line.lstrip()
+            for raw_line in text.splitlines():
+                line = raw_line.lstrip()
                 if not line:
                     continue
                 if not line.startswith("::") and not line.startswith("#"):

@@ -562,7 +562,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                     ]
                     for dep_line in dep_lines
                 ]
-                deps_destination += new_deps_to_install
+                deps_destination += new_deps_to_install  # noqa: PLW2901
         self.new_make_deps_to_install = list(set(
             new_make_deps_to_install + new_check_deps_to_install,
         ))

@@ -168,7 +168,8 @@ def get_multiple_numbers_input(prompt: str, answers: "Iterable[int]" = ()) -> li
         str_result = str_result.replace(delimiter, NumberRangeInputSyntax.DELIMITERS[0])
     str_results = str_result.split(NumberRangeInputSyntax.DELIMITERS[0])
     int_results: list[int] = []
-    for block in str_results[:]:
+    for raw_block in str_results[:]:
+        block = raw_block
         for range_char in NumberRangeInputSyntax.RANGES:
             block = block.replace(range_char, NumberRangeInputSyntax.RANGES[0])
         if NumberRangeInputSyntax.RANGES[0] in block:

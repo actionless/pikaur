@@ -342,7 +342,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
                     "-" + letter, default=default, type=arg_type,
                 )
         else:
-            if letter and opt:
+            if letter and opt:  # noqa: PLR5501
                 self.add_argument(
                     "-" + letter, "--" + opt, default=default,
                 )

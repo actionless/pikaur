@@ -102,7 +102,7 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                     if subindex in pkg.name
                 ]
     else:
-        if args.quiet:
+        if args.quiet:  # noqa: PLR5501
             result = {"all": [
                 AURPackageInfo(
                     name=name,

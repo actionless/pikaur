@@ -102,11 +102,13 @@ ignore = [
 ]
 "maintenance_scripts/*.py" = [
 	"INP001",
+	"S301",
 	"T201",
 ]
 "maintenance_scripts/pikaman.py" = [
 	"ARG002",
 ]
 "maintenance_scripts/vulture_whitelist.py" = [
+	"B018",
 	"SLF001",
 ]

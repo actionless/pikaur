@@ -148,7 +148,7 @@ def split_version(version: str) -> list[str]:
             block = ""
         else:
             block += char
-    if block != "":
+    if block:
         splitted_version.append(block)
     return splitted_version
 
@@ -239,7 +239,7 @@ def get_version_diff(version: str, common_version: str) -> str:
     Get the different part of the version and version prefix returned by `get_common_version()`.
     E.g. if version is '1.2.3' and common part - '1.2.' - the different part would be '3'.
     """
-    if common_version == "":
+    if not common_version:
         return version
     return common_version.join(
         version.split(common_version)[1:],

@@ -120,7 +120,7 @@ class MakepkgConfig():
             value = ConfigReader.get(key, value, config_path=arg_path)
         if config_path:
             value = ConfigReader.get(key, value, config_path=config_path)
-        return value  # noqa: RET504
+        return value
 
 
 def get_pkgdest() -> Path | None:

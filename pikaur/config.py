@@ -77,7 +77,7 @@ BUILD_DEPS_LOCK: "Final" = (
 PROMPT_LOCK: "Final" = (
     (
         _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT
-    ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311
+    ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
 )
 
 

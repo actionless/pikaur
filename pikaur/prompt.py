@@ -162,7 +162,7 @@ class NumberRangeInputSyntax:
 
 def get_multiple_numbers_input(prompt: str, answers: "Iterable[int]" = ()) -> list[int]:
     str_result = get_input(prompt, [str(answer) for answer in answers], require_confirm=True)
-    if str_result == "":
+    if not str_result:
         return []
     for delimiter in NumberRangeInputSyntax.DELIMITERS[1:]:
         str_result = str_result.replace(delimiter, NumberRangeInputSyntax.DELIMITERS[0])
@@ -215,7 +215,7 @@ def ask_to_continue(text: str | None = None, *, default_yes: bool = True) -> boo
     )
 
     answer = get_input(prompt, answers)
-    return (answer == all_answers.Y) or (default_yes and answer == "")
+    return (answer == all_answers.Y) or (default_yes and not answer)
 
 
 def retry_interactive_command(

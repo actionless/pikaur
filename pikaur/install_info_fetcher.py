@@ -412,10 +412,11 @@ Gonna fetch install info for:
             ):
                 continue
 
-            if pkg_update.current_version == "" and (
-                    (
-                        pkg_name not in self.install_package_names
-                    ) and (not pkg_update.provided_by) and (not pkg_update.members_of)
+            if (
+                    (not pkg_update.current_version)
+                    and (pkg_name not in self.install_package_names)
+                    and (not pkg_update.provided_by)
+                    and (not pkg_update.members_of)
             ):
                 if pkg_name in self.replacements:
                     pkg_update.replaces = self.replacements[pkg_name]

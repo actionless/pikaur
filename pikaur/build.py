@@ -724,7 +724,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 cmd_args += ["--noprepare"]
 
             env = {}
-            if self.build_gpgdir != "":
+            if self.build_gpgdir:
                 env["GNUPGHOME"] = self.build_gpgdir
 
             cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)

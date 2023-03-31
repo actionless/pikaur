@@ -128,8 +128,8 @@ class InterceptSysOutput():
 
         self.out_file = out_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
         self.err_file = err_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
-        self.out_file.isatty = lambda: False  # type: ignore[assignment]
-        self.err_file.isatty = lambda: False  # type: ignore[assignment]
+        self.out_file.isatty = lambda: False  # type: ignore[method-assign]
+        self.err_file.isatty = lambda: False  # type: ignore[method-assign]
 
         class PrintInteractiveSpawn(InteractiveSpawn):
             def __init__(self, *args: "Any", **kwargs: "Any") -> None:

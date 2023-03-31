@@ -95,6 +95,9 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
             # get the optional identified at this index
             option_tuple = option_string_indices[start_index]
+            action: Action | None
+            option_string: str
+            explicit_arg: str | None
             action, option_string, explicit_arg = option_tuple
 
             # identify additional optionals in the same arg string
@@ -133,7 +136,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                             unknown_args.append(option_string)
                             start_index += 1
                             explicit_arg = "".join(explicit_arg[1:])
-                            if explicit_arg == "":
+                            if explicit_arg == "":  # noqa: PLC1901
                                 stop = start_index
                                 break
 

@@ -92,7 +92,7 @@ class News:
         if not str_response:
             print_error(translate("Could not fetch archlinux.org news"))
             return
-        self._news_feed = fromstring(str_response)  # nosec B314
+        self._news_feed = fromstring(str_response)  # nosec B314  # noqa: S314
 
     def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: "TextIO"

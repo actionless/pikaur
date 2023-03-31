@@ -37,6 +37,7 @@ select = [
 	"SIM",
 	"TID",
 	"TCH",
+	"INT",
 	"ARG",
 	"PTH",
 	"ERA",

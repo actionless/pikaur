@@ -1,5 +1,0 @@
-[bandit]
-exclude = ./dumpster,./maintenance_scripts
-skips = B404
-
-# vim: set ft=conf :

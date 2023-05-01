@@ -135,8 +135,9 @@ Will be overridden by `--keepbuilddeps` flag.
 ##### SkipFailedBuild (default: no)
 Always skip the build if it fails and don't show recovery prompt.
 
-##### AlwaysUseDynamicUsers (default: no)
-Always isolate the build using systemd dynamic users.
+##### DynamicUsers (default: root) [root|never|always]
+When to isolate the build using systemd dynamic users.
+(`root` - only when running as root)
 Will be overridden by `--dynamic-users` flag.
 
 ##### IgnoreArch (default: no)

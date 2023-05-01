@@ -158,9 +158,18 @@ CONFIG_SCHEMA: ConfigSchemaT = {
             "data_type": BOOL,
             "default": "no",
         },
+        "DynamicUsers": {
+            "data_type": STR,
+            "default": "root",
+        },
         "AlwaysUseDynamicUsers": {
             "data_type": BOOL,
             "default": "no",
+            "deprecated": {
+                "section": "build",
+                "option": "DynamicUsers",
+                "transform": lambda old_value, _config: "always" if old_value == "yes" else "root",
+            },
         },
         "NoEdit": {
             "data_type": BOOL,
@@ -450,10 +459,12 @@ class PikaurConfig():
                     value_to_migrate = cls._config[section_name].get(option_name)
                     if value_to_migrate is not None:
                         if transform:
-                            value_to_migrate = transform(value_to_migrate, cls._config)
+                            new_value = transform(value_to_migrate, cls._config)
+                        else:
+                            new_value = value_to_migrate
                         if new_section_name not in cls._config:
                             cls._config[new_section_name] = {}
-                        cls._config[new_section_name][new_option_name] = value_to_migrate
+                        cls._config[new_section_name][new_option_name] = new_value
                         CONFIG_SCHEMA[new_section_name][new_option_name]["migrated"] = True
                         old_value_was_migrated = True
 
@@ -467,10 +478,9 @@ class PikaurConfig():
                     print(" ".join([  # noqa: T201
                         "::",
                         translate("warning:"),
-                        translate('Migrating [{}]{} config option to [{}]{} = "{}"...').format(
-                            section_name, option_name,
-                            new_section_name, new_option_name,
-                            cls._config[new_section_name][new_option_name],
+                        translate('Migrating [{}]{}="{}" config option to [{}]{}="{}"...').format(
+                            section_name, option_name, value_to_migrate,
+                            new_section_name, new_option_name, new_value,
                         ),
                         "\n",
                     ]))

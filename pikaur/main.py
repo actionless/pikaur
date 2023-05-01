@@ -262,7 +262,10 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
 
     if pikaur_operation:
         logger.debug("Pikaur operation found for args {}: {}", sys.argv, pikaur_operation.__name__)
-        if require_sudo and args.dynamic_users and not running_as_root():
+        if running_as_root() and (PikaurConfig().build.DynamicUsers.get_str() == "never"):
+            print_error("SystemD Dynamic Users must be enabled if running as root.")
+            sys.exit(1)
+        elif require_sudo and args.dynamic_users and not running_as_root():
             # Restart pikaur with sudo to use systemd dynamic users
             restart_args = sys.argv[:]
             config_overridden = max(

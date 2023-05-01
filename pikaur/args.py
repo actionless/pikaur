@@ -74,7 +74,7 @@ def get_pikaur_bool_opts() -> ArgSchema:
         (None, "keepbuilddeps", PikaurConfig().build.KeepBuildDeps.get_bool()),
         (None, "nodiff", PikaurConfig().review.NoDiff.get_bool()),
         (None, "rebuild", None),
-        (None, "dynamic-users", PikaurConfig().build.AlwaysUseDynamicUsers.get_bool()),
+        (None, "dynamic-users", PikaurConfig().build.DynamicUsers.get_str() == "always"),
         ("P", "pkgbuild", None),
         (None, "install", None),
         ("G", "getpkgbuild", None),

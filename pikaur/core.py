@@ -432,8 +432,10 @@ def run_with_sudo_loop(function: "Callable[..., SudoLoopResultT]") -> "SudoLoopR
 
 def check_systemd_dynamic_users() -> bool:  # pragma: no cover
     try:
-        out = subprocess.check_output(["/usr/sbin/systemd-run", "--version"],  # nosec B603
-                                      universal_newlines=True)
+        out = subprocess.check_output(
+            ["/usr/sbin/systemd-run", "--version"],  # nosec B603  # noqa: S603
+            universal_newlines=True,
+        )
     except FileNotFoundError:
         return False
     first_line = out.split("\n", maxsplit=1)[0]

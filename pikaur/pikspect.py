@@ -281,7 +281,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
                         PikaurConfig().misc.PrivilegeEscalationTool.get_str() in self.args
                 ):  # pragma: no cover
                     subprocess.run(  # nosec B603
-                        get_sudo_refresh_command(),
+                        get_sudo_refresh_command(),  # noqa: S603
                         check=True,
                     )
                 with (

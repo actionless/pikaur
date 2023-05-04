@@ -135,7 +135,7 @@ warn_redundant_casts = true
 warn_return_any = true
 warn_unused_configs = true
 warn_unused_ignores = true
-mypy_path = './maintenance_scripts/scripts/mypy_stubs'
+mypy_path = './maintenance_scripts/mypy_stubs'
 
 [tool.pylint.MASTER]
 jobs = '0'
@@ -166,7 +166,7 @@ expected-line-ending-format = 'LF'
 ignore-long-lines = '^\s*(# )?<?https?://\S+>?$'
 indent-after-paren = '4'
 indent-string = '    '
-max-line-length = '88'
+max-line-length = '100'
 max-module-lines = '1000'
 single-line-if-stmt = 'no'
 [tool.pylint.TYPECHECK]
@@ -218,7 +218,7 @@ defining-attr-methods = '__init__,__new__,setUp,__enter__'
 exclude-protected = '_asdict,_fields,_replace,_source,_make'
 [tool.pylint.DESIGN]
 max-args = '5'
-max-attributes = '16'
+max-attributes = '20'
 max-bool-expr = '6'
 max-branches = '12'
 max-locals = '15'

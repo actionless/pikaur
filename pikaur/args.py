@@ -41,7 +41,6 @@ PACMAN_BOOL_OPTS: "Final[ArgSchema]" = [
     ("w", "downloadonly", None),
     ("q", "quiet", False),
     ("s", "search", None),
-    ("d", "nodeps", None),
     # query options
     ("Q", "query", None),
     ("o", "owns", None),
@@ -131,6 +130,7 @@ PACMAN_COUNT_OPTS: "Final[ArgSchema]" = [
     ("c", "clean", 0),
     ("k", "check", 0),
     ("i", "info", 0),
+    ("d", "nodeps", 0),
 ]
 
 

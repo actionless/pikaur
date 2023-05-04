@@ -33,7 +33,7 @@ BOOL: "Final" = "bool"
 INT: "Final" = "int"
 STR: "Final" = "str"
 RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
-VERSION: "Final" = "1.14.7-dev"
+VERSION: Final = "1.15-dev"
 
 _USER_TEMP_ROOT: "Final" = Path(gettempdir())
 _USER_CACHE_ROOT: "Final" = Path(os.environ.get(
@@ -91,7 +91,7 @@ def get_config_path() -> Path:
 
 
 class UpgradeSortingValues:
-    VERSIONDIFF: "Final" = "versiondiff"
+    VERSION: Final = "1.15-dev"
     PKGNAME: "Final" = "pkgname"
     REPO: "Final" = "repo"
 

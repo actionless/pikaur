@@ -48,7 +48,7 @@ def cli_print_help() -> None:
         pacman_help += (
             "\n" +
             translate("pikaur-specific operations:") + "\n    " +
-            translate("pikaur {-P --pkgbuild}    [options] <file(s)>") + "\n    " +
+            translate("pikaur {-P --pkgbuild}    [options] [file(s)]") + "\n    " +
             translate("pikaur {-G --getpkgbuild} [options] <package(s)>")
         )
     if args.pkgbuild:

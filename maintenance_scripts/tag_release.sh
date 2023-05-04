@@ -42,7 +42,7 @@ echo
 
 sed -i -e "s/pkgver=.*/pkgver=${new_version}/g" PKGBUILD
 sed -i -e "s/pkgrel=.*/pkgrel=1/g" PKGBUILD
-sed -i -e "s/VERSION.*=.*/VERSION: Final = \"${new_version}-dev\"/g" pikaur/config.py
+sed -i -e "s/VERSION: .*=.*/VERSION: \"Final\" = \"${new_version}-dev\"/g" pikaur/config.py
 sed -i -e "s/    version='.*',/    version='${new_version}',/g" setup.py
 
 echo

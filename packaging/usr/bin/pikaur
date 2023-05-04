@@ -21,6 +21,9 @@ except ModuleNotFoundError:
         from pikaur.pprint import print_warning
     except:   # noqa: E722
         print("System Python had breaking version update. You need to rebuild Pikaur manually.")
+        print()
+        print("    https://github.com/actionless/pikaur#installation")
+        print()
         sys.exit(1)
 
     else:

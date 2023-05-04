@@ -271,7 +271,7 @@ class PikaurArgs(Namespace):
         for key, value in namespace.__dict__.items():
             setattr(result, key, value)
         result.unknown_args = unknown_args
-        if unknown_args:
+        if unknown_args and (result.pikaur_debug or result.debug):
             print_stderr(translate("WARNING, unknown args: {}").format(unknown_args))
         result.raw = raw_args
         result.post_process_args()

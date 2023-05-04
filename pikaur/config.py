@@ -451,6 +451,7 @@ class PikaurConfig():
                 ] | None""" = option_schema["deprecated"].get("transform")
 
                 old_value_was_migrated = False
+                value_to_migrate = None
                 if (
                         new_section_name not in cls._config
                 ) or (
@@ -479,8 +480,10 @@ class PikaurConfig():
                         "::",
                         translate("warning:"),
                         translate('Migrating [{}]{}="{}" config option to [{}]{}="{}"...').format(
-                            section_name, option_name, value_to_migrate,
-                            new_section_name, new_option_name, new_value,
+                            section_name, option_name,
+                            value_to_migrate or "",
+                            new_section_name, new_option_name,
+                            cls._config[new_section_name][new_option_name],
                         ),
                         "\n",
                     ]))

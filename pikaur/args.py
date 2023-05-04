@@ -200,6 +200,7 @@ class PikaurArgs(Namespace):
     # positional: List[str]
     # @TODO: pylint bug:
     positional: list[str] = []
+    read_stdin: bool = False
 
     def __getattr__(self, name: str) -> PossibleArgValuesTypes:
         result: PossibleArgValuesTypes = getattr(
@@ -438,11 +439,7 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
             and not sys.stdin.isatty()
     ):
         parsed_args.positional.remove(FLAG_READ_STDIN)
-        parsed_args.positional += [
-            word
-            for line in sys.stdin.readlines()
-            for word in line.split()
-        ]
+        parsed_args.read_stdin = True
 
     if parsed_args.print_args_and_exit:  # pragma: no cover
         debug_args(args, parsed_args)
@@ -492,7 +489,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
         for key, value in vars(parsed_args).items()
         if value
         if key not in ignore_args + count_args + [
-            "raw", "unknown_args", "positional",  # computed members
+            "raw", "unknown_args", "positional", "read_stdin",  # computed members
         ] + [
             long_arg
             for _short_arg, long_arg, default in PACMAN_STR_OPTS + PACMAN_APPEND_OPTS

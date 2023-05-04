@@ -91,7 +91,6 @@ ignore = [
 	"PLR0915",
 	"SLF001",
 ]
-
 "pikaur_test/*.py" = [
 	"SLF001",
 ]
@@ -112,6 +111,9 @@ ignore = [
 "maintenance_scripts/vulture_whitelist.py" = [
 	"B018",
 	"SLF001",
+]
+"packaging/usr/bin/pikaur" = [
+	"T201",
 ]
 
 [tool.bandit]

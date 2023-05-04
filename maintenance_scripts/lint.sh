@@ -23,6 +23,7 @@ TARGETS=(
 	'pikaur'
 	'pikaur_test'
 	./maintenance_scripts/*.py
+	packaging/usr/bin/pikaur
 )
 if [[ -n "${1:-}" ]] ; then
 	TARGETS=("$@")

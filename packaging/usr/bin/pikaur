@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-""" Licensed under GPLv3, see https://www.gnu.org/licenses/ """
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
+# pylint: disable=bare-except,ungrouped-imports, unused-import
 
 try:
     from pikaur.main import main
@@ -8,29 +8,31 @@ except ModuleNotFoundError:
     import sys
 
     try:
-        import pyalpm
-    except:
+        import pyalpm  # noqa: F401
+    except:   # noqa: E722
         print("Can't import Pyalpm. "
               "Probably it's not installed or system Python had breaking version update.")
         sys.exit(1)
 
-    sys.path.append('/usr/lib/python%PYTHON_BUILD_VERSION%/site-packages/')
+    sys.path.append("/usr/lib/python%PYTHON_BUILD_VERSION%/site-packages/")
     try:
+        from pikaur.i18n import translate
         from pikaur.main import main
-        from pikaur.i18n import _
         from pikaur.pprint import print_warning
-    except:
-        print('System Python had breaking version update. You need to rebuild Pikaur manually.')
+    except:   # noqa: E722
+        print("System Python had breaking version update. You need to rebuild Pikaur manually.")
         sys.exit(1)
 
     else:
         print_warning()
-        print_warning(_('System Python had minor version update. You need to rebuild Pikaur:'))
-        print_warning('    pikaur -S --rebuild --aur pikaur')
-        print_warning(_('or'))
-        print_warning('    pikaur -S --rebuild --aur pikaur-git')
+        print_warning(translate(
+            "System Python had minor version update. You need to rebuild Pikaur:",
+        ))
+        print_warning("    pikaur -S --rebuild --aur pikaur")
+        print_warning(translate("or"))
+        print_warning("    pikaur -S --rebuild --aur pikaur-git")
         print_warning()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

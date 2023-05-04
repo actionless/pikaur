@@ -263,7 +263,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     if pikaur_operation:
         logger.debug("Pikaur operation found for args {}: {}", sys.argv, pikaur_operation.__name__)
         if args.read_stdin:
-            logger.debug("Handling stdin as position args:")
+            logger.debug("Handling stdin as positional args:")
             logger.debug("    {}", args.positional)
             args.positional += [
                 word

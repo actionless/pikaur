@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-04 13:01+0200\n"
+"POT-Creation-Date: 2023-05-04 19:54+0200\n"
 "PO-Revision-Date: 2019-10-05 15:30+0200\n"
 "Last-Translator: Mattia Bertoni <mattia.b89@gmail.com>\n"
 "Language-Team: Italian <none>\n"
@@ -236,7 +236,7 @@ msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Sto scaricando gli ultimi sorgenti per un pacchetto devel {}"
 msgstr[1] "Sto scaricando gli ultimi sorgenti per i pacchetti devel {}"
 
-#: pikaur/print_department.py:593 pikaur/build.py:180 pikaur/srcinfo.py:55
+#: pikaur/build.py:180 pikaur/print_department.py:593 pikaur/srcinfo.py:55
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr ""
@@ -547,7 +547,7 @@ msgstr ""
 msgid "Try recovering {pkg_name}?"
 msgstr "Provare a ripristinare?"
 
-#: pikaur/install_cli.py:581 pikaur/build.py:765
+#: pikaur/build.py:765 pikaur/install_cli.py:581
 msgid "Try recovering?"
 msgstr "Provare a ripristinare?"
 
@@ -622,7 +622,7 @@ msgid "[d] delete build dir and try again"
 msgstr "[c] cancella la cartella di compilazione e riprova"
 
 # 'm' stands for "modifica"
-#: pikaur/install_cli.py:240 pikaur/build.py:774
+#: pikaur/build.py:774 pikaur/install_cli.py:240
 msgid "[e] edit PKGBUILD"
 msgstr "[m] modifica PKGBUILD"
 
@@ -682,9 +682,9 @@ msgid "`{var_name}` should be list."
 msgstr ""
 
 # 'a' stands for "annulla"
+#: pikaur/build.py:761 pikaur/build.py:791 pikaur/build.py:828
 #: pikaur/install_cli.py:244 pikaur/install_cli.py:576
-#: pikaur/install_cli.py:594 pikaur/install_cli.py:610 pikaur/build.py:761
-#: pikaur/build.py:791 pikaur/build.py:828
+#: pikaur/install_cli.py:594 pikaur/install_cli.py:610
 msgid "a"
 msgstr "a"
 
@@ -706,8 +706,8 @@ msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "aggiorna sempre i pacchetti '-git, '-svn' e gli altri pacchetti devel"
 
 # 'c' stands for "controlla"
-#: pikaur/install_cli.py:593 pikaur/install_cli.py:598 pikaur/build.py:784
-#: pikaur/build.py:800
+#: pikaur/build.py:784 pikaur/build.py:800 pikaur/install_cli.py:593
+#: pikaur/install_cli.py:598
 msgid "c"
 msgstr "c"
 
@@ -753,8 +753,8 @@ msgid "download also AUR dependencies"
 msgstr "scarica anche le dipendenze AUR"
 
 # 'm' stands for "modifica"
-#: pikaur/install_cli.py:244 pikaur/install_cli.py:247 pikaur/build.py:789
-#: pikaur/build.py:815
+#: pikaur/build.py:789 pikaur/build.py:815 pikaur/install_cli.py:244
+#: pikaur/install_cli.py:247
 msgid "e"
 msgstr "m"
 
@@ -837,8 +837,8 @@ msgid "m"
 msgstr "m"
 
 # 'n' stands for "no"
-#: pikaur/install_cli.py:446 pikaur/build.py:786 pikaur/build.py:806
-#: pikaur/prompt.py:46 pikaur/main.py:196
+#: pikaur/build.py:786 pikaur/build.py:806 pikaur/main.py:196
+#: pikaur/prompt.py:46 pikaur/install_cli.py:446
 msgid "n"
 msgstr "n"
 
@@ -867,7 +867,7 @@ msgid "override path to makepkg executable"
 msgstr "dare la precedenza al percorso dell'eseguibile makepkg"
 
 # 'p' stands for "PGP"
-#: pikaur/install_cli.py:600 pikaur/build.py:783 pikaur/build.py:797
+#: pikaur/build.py:783 pikaur/build.py:797 pikaur/install_cli.py:600
 msgid "p"
 msgstr "p"
 
@@ -930,8 +930,8 @@ msgid "query packages from repository only"
 msgstr "ricerca pacchetti solo dal repository"
 
 # 'r' stands for "rimuovi"
-#: pikaur/install_cli.py:593 pikaur/install_cli.py:603 pikaur/build.py:782
-#: pikaur/build.py:795
+#: pikaur/build.py:782 pikaur/build.py:795 pikaur/install_cli.py:593
+#: pikaur/install_cli.py:603
 msgid "r"
 msgstr "r"
 
@@ -940,9 +940,9 @@ msgid "removing all files from cache..."
 msgstr ""
 
 # 's' stands for "salta"
-#: pikaur/install_cli.py:244 pikaur/install_cli.py:262
-#: pikaur/install_cli.py:594 pikaur/install_cli.py:605 pikaur/build.py:759
-#: pikaur/build.py:790
+#: pikaur/build.py:759 pikaur/build.py:790 pikaur/install_cli.py:244
+#: pikaur/install_cli.py:262 pikaur/install_cli.py:594
+#: pikaur/install_cli.py:605
 msgid "s"
 msgstr "s"
 
@@ -989,7 +989,7 @@ msgid "warning:"
 msgstr "attenzione:"
 
 # 's' stands for "sì"
-#: pikaur/install_cli.py:446 pikaur/install_cli.py:458 pikaur/prompt.py:45
+#: pikaur/prompt.py:45 pikaur/install_cli.py:446 pikaur/install_cli.py:458
 msgid "y"
 msgstr "s"
 

@@ -32,11 +32,15 @@ if TYPE_CHECKING:
 OFFICIAL_REPOS: "Final" = (
     "core",
     "extra",
-    "community",
+    "community",  # @TODO: remove this
     "multilib",
-    "testing",
-    "community-testing",
+    "testing",  # @TODO: remove this
+    "core-testing",
+    "extra-testing",
+    "community-testing",  # @TODO: remove this
     "multilib-testing",
+    "core-staging",
+    "extra-staging",
 )
 
 

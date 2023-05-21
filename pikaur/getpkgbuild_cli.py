@@ -30,7 +30,7 @@ def cli_getpkgbuild() -> None:
             repo_pkgs.append(repo_pkg)
 
     if repo_pkgs:
-        check_runtime_deps(["asp"])
+        check_runtime_deps(["pkgctl"])
 
     if not_found_repo_pkgs:
         print_not_found_packages(not_found_repo_pkgs)
@@ -52,13 +52,26 @@ def cli_getpkgbuild() -> None:
     for repo_pkg in repo_pkgs:
         name = repo_pkg.name
         repo_path = pwd / name
-        action = "checkout"
+        action = "clone"
         if repo_path.exists():
             action = "update"
         print_stdout()
         print_stdout(translate(f"Package '{name}' going to be cloned into '{repo_path}'..."))
-        interactive_spawn([
-            "asp",
-            action,
-            name,
-        ])
+        if action == "clone":
+            interactive_spawn([
+                "pkgctl",
+                "repo",
+                "clone",
+                "--unprivileged",
+                name,
+            ])
+        elif action == "update":
+            interactive_spawn([
+                "git",
+                "-C", repo_path.as_posix(),
+                "pull",
+                "origin",
+                "main",
+            ])
+        else:
+            raise NotImplementedError

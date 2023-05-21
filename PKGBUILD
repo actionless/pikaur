@@ -26,7 +26,7 @@ makedepends=(
 	'python-markdown-it-py'
 )
 optdepends=(
-	'asp: for ABS support in -G/--getpkgbuild operation'
+	'devtools: for Arch Pkgs support in -G/--getpkgbuild operation'
 	'python-pysocks: for socks5 proxy support'
 	'python-defusedxml: securely wrap Arch news replies'
 )

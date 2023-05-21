@@ -385,7 +385,7 @@ class PikaurDbTestCase(PikaurTestCase):
         spawn(f"rm -fr {build_root}/{repo_pkg_name}")
         pikaur(f"-G {repo_pkg_name}")
         repo_dir = f"{build_root}/{repo_pkg_name}/"
-        build_dir = f"{repo_dir}/trunk/"
+        build_dir = f"{repo_dir}/"
         self._checkout_older_version(
             build_dir=build_dir,
             repo_dir=repo_dir,

@@ -29,7 +29,7 @@ ENV LANG=en_US.utf8 \
 COPY ./maintenance_scripts/pikaman.py /opt/app-build/maintenance_scripts/pikaman.py
 COPY ./packaging/. /opt/app-build/packaging
 COPY ./locale/. /opt/app-build/locale
-COPY ./PKGBUILD ./Makefile ./README.md ./setup.py ./LICENSE /opt/app-build/
+COPY ./PKGBUILD ./Makefile ./README.md ./pyproject.toml ./LICENSE /opt/app-build/
 COPY ./pikaur/. /opt/app-build/pikaur
 RUN echo ">>>> Installing opt deps:" && \
 	pacman -Sy devtools python-pysocks --noconfirm --needed && \
@@ -53,7 +53,7 @@ ARG TESTSUITE=all
 ARG SKIP_LINTING=0
 COPY ./pikaur_test /opt/app-build/pikaur_test
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
-COPY .flake8 pyproject.toml /opt/app-build/
+COPY .flake8 /opt/app-build/
 RUN echo ">>>> Starting CI linting:" && \
 	chown -R user /opt/app-build/pikaur_test && \
 	if [[ "$SKIP_LINTING" -eq 0 ]] ; then sudo -u user env \

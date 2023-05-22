@@ -1,6 +1,6 @@
 [project]
 name = "pikaur"
-version = '1.14.7'
+version = '1.15.2'
 description = 'AUR helper with minimal dependencies'
 authors = [
   {name = 'Yauheni Kirylau', email = 'actionless.loveless@gmail.com'},
@@ -32,6 +32,9 @@ repository = 'https://github.com/actionless/pikaur'
 
 [project.scripts]
 pikaur = "pikaur.main:main"
+
+[tool.setuptools.packages.find]
+include = ["pikaur"]
 
 [tool.ruff]
 line-length = 100

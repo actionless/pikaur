@@ -2,7 +2,7 @@
 # shellcheck disable=SC2034,SC2154
 
 pkgname=pikaur-git
-pkgver=1.15.1
+pkgver=1.15.2
 pkgrel=1
 pkgdesc="AUR helper which asks all questions before installing/building. Inspired by pacaur, yaourt and yay."
 arch=('any')
@@ -26,7 +26,7 @@ makedepends=(
 	'python-markdown-it-py'
 )
 optdepends=(
-	'asp: for ABS support in -G/--getpkgbuild operation'
+	'devtools: for Arch Pkgs support in -G/--getpkgbuild operation'
 	'python-pysocks: for socks5 proxy support'
 	'python-defusedxml: securely wrap Arch news replies'
 )

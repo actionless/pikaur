@@ -23,7 +23,7 @@ ENV LANG=en_US.utf8 \
 
 RUN echo ">>>> Installing opt and test deps:" && \
 	pacman -Sy --noconfirm --needed --color=always \
-		asp python-pysocks \
+		devtools python-pysocks \
 		iputils python-virtualenv \
 		flake8 python-pylint mypy vulture bandit shellcheck && \
 	echo ">>>> Preparing build directory:" && \

@@ -32,11 +32,12 @@ if TYPE_CHECKING:
 OFFICIAL_REPOS: "Final" = (
     "core",
     "extra",
-    "community",
     "multilib",
-    "testing",
-    "community-testing",
+    "core-testing",
+    "extra-testing",
     "multilib-testing",
+    "core-staging",
+    "extra-staging",
 )
 
 

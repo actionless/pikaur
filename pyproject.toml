@@ -36,6 +36,10 @@ pikaur = "pikaur.main:main"
 [tool.setuptools.packages.find]
 include = ["pikaur"]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [tool.ruff]
 line-length = 100
 select = [

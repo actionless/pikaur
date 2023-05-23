@@ -52,6 +52,7 @@ select = [
   "UP",
   "YTT",
   "ANN",
+  "ASYNC",
   "S",
   "BLE",
   "FBT",
@@ -64,6 +65,7 @@ select = [
   #"DJ",  # django
   "EM",
   "EXE",
+  "FA",
   "ISC",
   "ICN",
   "G",
@@ -82,11 +84,13 @@ select = [
   "INT",
   "ARG",
   "PTH",
+  "TD",
   "ERA",
   #"PD",  # pandas
   "PGH",
   "PL",
   "TRY",
+  "FLY",
   #"NPY",  # numpy
   "RUF",
 ]

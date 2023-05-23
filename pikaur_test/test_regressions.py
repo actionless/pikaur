@@ -87,8 +87,7 @@ class RegressionTest(PikaurDbTestCase):
         see #320
         """
         self.remove_if_installed("python2-twisted", "python-twisted")
-        # pikaur("-S python-txtorcon")
-        pikaur("-S python-txtorcon --mflags=--skippgpcheck")  # todo
+        pikaur("-S python-txtorcon --mflags=--skippgpcheck")
         self.assertInstalled("python-txtorcon")
         self.assertInstalled("python-twisted")
         self.assertNotInstalled("python2-twisted")

@@ -26,6 +26,7 @@ dependencies = [
   "pyalpm"
 ]
 keywords = ["arch", "linux", "aur", "helper"]
+readme = "README.md"
 
 [project.urls]
 repository = 'https://github.com/actionless/pikaur'

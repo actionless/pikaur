@@ -130,7 +130,7 @@ echo
 if [[ "${answer}" = "y" ]] ; then
 	cd "${src_repo_dir}"
 	rm -fr ./dist
-	python -m build
+	python -m build --no-isolation
 	twine check ./dist/*
 	twine upload ./dist/*
 fi

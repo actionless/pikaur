@@ -20,6 +20,7 @@ depends=(
 )
 makedepends=(
 	'python-wheel'
+	'python-hatchling'
 	'python-build'
 	'python-installer'
 	'python-setuptools'  # i think it normally should be required by python-pep517 which required by python-build/installer

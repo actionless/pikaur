@@ -62,7 +62,7 @@ def cli_getpkgbuild() -> None:
                 "pkgctl",
                 "repo",
                 "clone",
-                "--unprivileged",
+                "--protocol=https",
                 name,
             ])
         elif action == "update":

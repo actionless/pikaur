@@ -557,7 +557,10 @@ def find_upgradeable_packages() -> list[pyalpm.Package]:
     ]
 
 
-def find_sysupgrade_packages(ignore_pkgs: list[str] | None = None) -> list[pyalpm.Package]:
+def find_sysupgrade_packages(
+        ignore_pkgs: list[str] | None = None,
+        install_pkgs: list[str] | None = None,
+) -> list[pyalpm.Package]:
     all_repo_pkgs = PackageDB.get_repo_dict()
 
     extra_args: list[str] = []
@@ -565,7 +568,10 @@ def find_sysupgrade_packages(ignore_pkgs: list[str] | None = None) -> list[pyalp
         extra_args.append("--ignore")
         # pacman's --ignore doesn't work with repo name:
         extra_args.append(strip_repo_name(excluded_pkg_name))
+    for added_pkg_name in install_pkgs or []:
+        extra_args.append(added_pkg_name)
 
+    logger.debug("Gonna get sysupgrade info...")
     results = PackageDB.get_print_format_output(
         [*get_pacman_command(), "--sync"] +
         ["--sysupgrade"] * parse_args().sysupgrade +

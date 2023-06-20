@@ -17,7 +17,7 @@ LONG_ARG_PREFIX: "Final" = "--"
 
 class ArgumentParserWithUnknowns(ArgumentParser):
 
-    def _parse_known_args(
+    def _parse_known_args(  # noqa: C901
             self, arg_strings: list[str], namespace: "Namespace",
     ) -> "tuple[Namespace, list[str]]":
         # replace arg strings that are file references

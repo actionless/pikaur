@@ -694,6 +694,49 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 raise BuildError(error_text)
             self.skip_carch_check = True
 
+    def _run_makepkg_cmd(
+            self,
+            makepkg_args: list[str],
+            *,
+            skip_pgp_check: bool,
+            skip_file_checksums: bool,
+            skip_check: bool,
+            no_prepare: bool,
+    ) -> "InteractiveSpawn":
+        cmd_args = MakePkgCommand.get() + makepkg_args
+        if skip_pgp_check:
+            cmd_args += ["--skippgpcheck"]
+        if skip_file_checksums:
+            cmd_args += ["--skipchecksums"]
+        if self.skip_carch_check:
+            cmd_args += ["--ignorearch"]
+        if skip_check:
+            cmd_args += ["--nocheck"]
+        if no_prepare:
+            cmd_args += ["--noprepare"]
+
+        env = {}
+        if self.build_gpgdir:
+            env["GNUPGHOME"] = self.build_gpgdir
+
+        cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
+        spawn_kwargs: "SpawnArgs" = {
+            "cwd": str(self.build_dir),
+            "env": {**os.environ, **env},
+        }
+        if self.args.hide_build_log:
+            spawn_kwargs.update({
+                "stdout": PIPE,
+                "stderr": PIPE,
+            })
+
+        result = interactive_spawn(
+            cmd_args,
+            **spawn_kwargs,
+        )
+        print_stdout()
+        return result
+
     def build_with_makepkg(self) -> bool:  # pylint: disable=too-many-branches,too-many-statements
         makepkg_args = []
         if not self.args.needed:
@@ -711,38 +754,13 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         skip_check = False
         no_prepare = False
         while True:
-            cmd_args = MakePkgCommand.get() + makepkg_args
-            if skip_pgp_check:
-                cmd_args += ["--skippgpcheck"]
-            if skip_file_checksums:
-                cmd_args += ["--skipchecksums"]
-            if self.skip_carch_check:
-                cmd_args += ["--ignorearch"]
-            if skip_check:
-                cmd_args += ["--nocheck"]
-            if no_prepare:
-                cmd_args += ["--noprepare"]
-
-            env = {}
-            if self.build_gpgdir:
-                env["GNUPGHOME"] = self.build_gpgdir
-
-            cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
-            spawn_kwargs: "SpawnArgs" = {
-                "cwd": str(self.build_dir),
-                "env": {**os.environ, **env},
-            }
-            if self.args.hide_build_log:
-                spawn_kwargs.update({
-                    "stdout": PIPE,
-                    "stderr": PIPE,
-                })
-
-            result = interactive_spawn(
-                cmd_args,
-                **spawn_kwargs,
+            result = self._run_makepkg_cmd(
+                makepkg_args=makepkg_args,
+                skip_pgp_check=skip_pgp_check,
+                skip_file_checksums=skip_file_checksums,
+                skip_check=skip_check,
+                no_prepare=no_prepare,
             )
-            print_stdout()
             build_succeeded = result.returncode == 0
             if build_succeeded:
                 break
@@ -750,7 +768,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             print_stderr(
                 color_line(
                     translate("Command '{}' failed to execute.").format(
-                        " ".join(cmd_args),
+                        result.args,
                     ),
                     ColorsHighlight.red,
                 ),

@@ -201,6 +201,45 @@ def cli_dynamic_select() -> None:  # pragma: no cover
     cli_install_packages()
 
 
+def _pikaur_operation(
+        pikaur_operation: "Callable[[], None]",
+        *,
+        require_sudo: bool,
+) -> None:
+    args = parse_args()
+    logger.debug("Pikaur operation found for args {}: {}", sys.argv, pikaur_operation.__name__)
+    if args.read_stdin:
+        logger.debug("Handling stdin as positional args:")
+        logger.debug("    {}", args.positional)
+        args.positional += [
+            word
+            for line in sys.stdin.readlines()
+            for word in line.split()
+        ]
+        logger.debug("    {}", args.positional)
+    if running_as_root() and (PikaurConfig().build.DynamicUsers.get_str() == "never"):
+        print_error(translate("SystemD Dynamic Users must be enabled if running as root."))
+        sys.exit(1)
+    elif require_sudo and args.dynamic_users and not running_as_root():
+        # Restart pikaur with sudo to use systemd dynamic users
+        restart_args = sys.argv[:]
+        config_overridden = max(
+            arg.startswith("--pikaur-config")
+            for arg in restart_args
+        )
+        if not config_overridden:
+            restart_args += ["--pikaur-config", str(get_config_path())]
+        sys.exit(interactive_spawn(
+            sudo(restart_args),
+        ).returncode)
+    elif not require_sudo or running_as_root():
+        # Just run the operation normally
+        pikaur_operation()
+    else:
+        # Or use sudo loop if not running as root but need to have it later
+        run_with_sudo_loop(pikaur_operation)
+
+
 def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
 
@@ -261,37 +300,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         require_sudo = True
 
     if pikaur_operation:
-        logger.debug("Pikaur operation found for args {}: {}", sys.argv, pikaur_operation.__name__)
-        if args.read_stdin:
-            logger.debug("Handling stdin as positional args:")
-            logger.debug("    {}", args.positional)
-            args.positional += [
-                word
-                for line in sys.stdin.readlines()
-                for word in line.split()
-            ]
-            logger.debug("    {}", args.positional)
-        if running_as_root() and (PikaurConfig().build.DynamicUsers.get_str() == "never"):
-            print_error(translate("SystemD Dynamic Users must be enabled if running as root."))
-            sys.exit(1)
-        elif require_sudo and args.dynamic_users and not running_as_root():
-            # Restart pikaur with sudo to use systemd dynamic users
-            restart_args = sys.argv[:]
-            config_overridden = max(
-                arg.startswith("--pikaur-config")
-                for arg in restart_args
-            )
-            if not config_overridden:
-                restart_args += ["--pikaur-config", str(get_config_path())]
-            sys.exit(interactive_spawn(
-                sudo(restart_args),
-            ).returncode)
-        elif not require_sudo or running_as_root():
-            # Just run the operation normally
-            pikaur_operation()
-        else:
-            # Or use sudo loop if not running as root but need to have it later
-            run_with_sudo_loop(pikaur_operation)
+        _pikaur_operation(pikaur_operation=pikaur_operation, require_sudo=require_sudo)
     else:
         # Just bypass all the args to pacman
         logger.debug("Pikaur operation not found for args: {}", sys.argv)

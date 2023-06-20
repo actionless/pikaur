@@ -93,6 +93,7 @@ select = [
   "TRY",
   "FLY",
   #"NPY",  # numpy
+  "AIR",
   "RUF",
 ]
 ignore = [

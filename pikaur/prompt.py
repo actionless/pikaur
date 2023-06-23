@@ -31,7 +31,7 @@ logger = create_logger("prompt")
 logger_no_lock = create_logger("prompt_nolock", lock=False)
 
 
-class Answers():
+class Answers:
 
     _init_done: bool = False
     Y: str  # pylint: disable=invalid-name

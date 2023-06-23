@@ -16,7 +16,7 @@ logger_no_lock = create_logger("FileLock", lock=False)
 LOCK_CHECK_INTERVAL: "Final" = 0.01  # seconds
 
 
-class FileLock():
+class FileLock:
 
     locked = False
     lock_file: "TextIO | None"

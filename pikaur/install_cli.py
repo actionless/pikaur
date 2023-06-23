@@ -107,7 +107,7 @@ def edit_file(filename: str | Path) -> bool:  # pragma: no cover
     return old_hash != new_hash
 
 
-class InstallPackagesCLI():
+class InstallPackagesCLI:
 
     # User input
     args: "PikaurArgs"

@@ -5,7 +5,7 @@ import shutil
 from glob import glob
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
@@ -873,7 +873,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
 class AlreadyClonedRepos:
 
-    repos: list[str] = []
+    repos: ClassVar[list[str]] = []
 
     @classmethod
     def add(cls, repo: str) -> None:

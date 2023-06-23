@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 PIKAUR_NAME: "Final" = "pikaur"
 
 
-class PikaurTranslation():
+class PikaurTranslation:
 
     translation: gettext.NullTranslations | None = None
 

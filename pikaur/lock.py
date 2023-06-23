@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from typing import Any
 
 
-class FancyLock():
+class FancyLock:
 
     _fancy_lock: "Lock | None" = None
 

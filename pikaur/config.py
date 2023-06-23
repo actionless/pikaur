@@ -406,7 +406,7 @@ class PikaurConfigItem:
         return result
 
 
-class PikaurConfigSection():
+class PikaurConfigSection:
 
     section: configparser.SectionProxy
 
@@ -420,7 +420,7 @@ class PikaurConfigSection():
         return str(self.section)
 
 
-class PikaurConfig():
+class PikaurConfig:
 
     _config: configparser.ConfigParser
 

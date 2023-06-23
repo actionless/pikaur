@@ -148,6 +148,13 @@ PACMAN_APPEND_OPTS: "Final[ArgSchema]" = [
 ]
 
 
+ARG_DEPENDS: "Final[dict[str, dict[str, list[str]]]]" = {
+    "query": {
+        "upgrades": ["aur", "repo"],
+    },
+}
+
+
 def get_pikaur_long_opts() -> list[str]:
     return [
         long_opt.replace("-", "_")
@@ -197,9 +204,7 @@ class PikaurArgs(Namespace):
     clean: int
     aur_clone_concurrency: int | None
     skip_aur_pull: bool | None
-    # positional: List[str]
-    # @TODO: pylint bug:
-    positional: list[str] = []
+    positional: list[str]
     read_stdin: bool = False
 
     def __getattr__(self, name: str) -> PossibleArgValuesTypes:
@@ -245,15 +250,9 @@ class PikaurArgs(Namespace):
         if self.pikaur_debug or self.verbose:
             self.print_commands = True
 
-    arg_depends = {
-        "query": {
-            "upgrades": ["aur", "repo"],
-        },
-    }
-
     def validate(self) -> None:
         # pylint: disable=too-many-nested-blocks
-        for operation, operation_depends in self.arg_depends.items():
+        for operation, operation_depends in ARG_DEPENDS.items():
             if getattr(self, operation):
                 for arg_depend_on, dependant_args in operation_depends.items():
                     if not getattr(self, arg_depend_on):
@@ -313,7 +312,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             action: str | None = None,
             letter: str | None = None,
             opt: str | None = None,
-            default: PossibleArgValuesTypes = None,
+            default: PossibleArgValuesTypes | None = None,
             arg_type: "Callable[[str], Any] | FileType | None" = None,
     ) -> None:
         if action:
@@ -357,7 +356,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
                 )
 
 
-class CachedArgs():
+class CachedArgs:
     args: PikaurArgs | None = None
 
 

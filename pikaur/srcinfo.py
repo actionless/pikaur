@@ -12,7 +12,7 @@ from .pprint import print_error, print_stderr
 from .version import VersionMatcher
 
 
-class SrcInfo():
+class SrcInfo:
 
     _common_lines: list[str]
     _package_lines: list[str]

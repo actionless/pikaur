@@ -1,7 +1,7 @@
 import gettext
 
 
-class PacmanTranslation():
+class PacmanTranslation:
 
     translation: gettext.NullTranslations | None = None
 

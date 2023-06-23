@@ -2,7 +2,7 @@
 
 import sys
 from threading import Lock
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from .pprint import color_enabled, get_term_width
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from typing import Any, Final
 
 
-class ProgressBar():
+class ProgressBar:
 
     print_ratio: float
     index = 0
@@ -46,9 +46,9 @@ class ProgressBar():
         sys.stderr.write("\n")
 
 
-class ThreadSafeProgressBar():
+class ThreadSafeProgressBar:
 
-    _progressbar_storage: dict[str, ProgressBar] = {}
+    _progressbar_storage: ClassVar[dict[str, ProgressBar]] = {}
     _progressbar_lock = Lock()
 
     @classmethod

@@ -3,7 +3,7 @@
 import sys
 from datetime import datetime
 from fnmatch import fnmatch
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pyalpm
 
@@ -87,8 +87,8 @@ def print_not_found_packages(not_found_packages: list[str], *, repo: bool = Fals
 
 class RepoColorGenerator:
 
-    _type_storage: dict[str, int] = {}
-    _cache: dict[str, dict[str, int]] = {}
+    _type_storage: ClassVar[dict[str, int]] = {}
+    _cache: ClassVar[dict[str, dict[str, int]]] = {}
     _init_done = False
 
     _MAX_COLOR = 15

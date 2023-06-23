@@ -25,7 +25,7 @@ def compare_versions(version1: str, version2: str) -> int:
     return pyalpm.vercmp(version1, version2)
 
 
-class VersionMatcher():
+class VersionMatcher:
     """
     Represents version string as stated in dependencies (e.g. `>=1.23`).
     And can match that pattern against some version.

@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 from urllib import parse
 from urllib.parse import quote
 
@@ -43,13 +43,13 @@ class AURPackageInfo(DataType):
     desc: str | None = None
     numvotes: int | None = None
     popularity: float | None = None
-    depends: list[str] = []
-    makedepends: list[str] = []
-    optdepends: list[str] = []
-    checkdepends: list[str] = []
-    conflicts: list[str] = []
-    replaces: list[str] = []
-    provides: list[str] = []
+    depends: list[str]
+    makedepends: list[str]
+    optdepends: list[str]
+    checkdepends: list[str]
+    conflicts: list[str]
+    replaces: list[str]
+    provides: list[str]
 
     aur_id: str | None = None
     packagebaseid: str | None = None
@@ -60,10 +60,10 @@ class AURPackageInfo(DataType):
     lastmodified: int | None = None
     urlpath: str | None = None
     pkg_license: str | None = None
-    keywords: list[str] = []
-    groups: list[str] = []
+    keywords: list[str]
+    groups: list[str]
     submitter: str | None = None
-    comaintainers: list[str] = []
+    comaintainers: list[str]
 
     @property
     def git_url(self) -> str:
@@ -77,6 +77,19 @@ class AURPackageInfo(DataType):
         ):
             if aur_api_name in kwargs:
                 kwargs[pikaur_class_name] = kwargs.pop(aur_api_name)
+        for key in (
+            "depends",
+            "makedepends",
+            "optdepends",
+            "checkdepends",
+            "conflicts",
+            "replaces",
+            "provides",
+            "keywords",
+            "groups",
+            "comaintainers",
+        ):
+            kwargs.setdefault(key, [])
         super().__init__(**kwargs)
 
     @classmethod
@@ -179,7 +192,7 @@ def aur_rpc_info_with_progress(
 
 class AurPackageListCache:
 
-    cache: list[str] = []
+    cache: ClassVar[list[str]] = []
 
     @classmethod
     def get(cls) -> list[str]:
@@ -190,7 +203,7 @@ class AurPackageListCache:
 
 class AurPackageSearchCache:
 
-    cache: dict[str, AURPackageInfo] = {}
+    cache: ClassVar[dict[str, AURPackageInfo]] = {}
 
     @classmethod
     def put(cls, pkg: AURPackageInfo) -> None:

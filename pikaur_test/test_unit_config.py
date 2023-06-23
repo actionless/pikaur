@@ -12,21 +12,23 @@ if TYPE_CHECKING:
     from pikaur.config import ConfigSchemaT
 
 
+EXAMPLE_CONFIG_SCHEMA: "ConfigSchemaT" = {
+    "test_section": {
+        "SomeBoolProperty": {
+            "data_type": "bool",
+        },
+        "SomeIntProperty": {
+            "data_type": "int",
+        },
+        "SomeStrProperty": {
+            "data_type": "str",
+        },
+    },
+}
+
+
 class PikaurConfigItemTestCase(PikaurTestCase):
 
-    example_config_schema: "ConfigSchemaT" = {
-        "test_section": {
-            "SomeBoolProperty": {
-                "data_type": "bool",
-            },
-            "SomeIntProperty": {
-                "data_type": "int",
-            },
-            "SomeStrProperty": {
-                "data_type": "str",
-            },
-        },
-    }
     config_item_bool: PikaurConfigItem
     config_item_int: PikaurConfigItem
     config_item_str: PikaurConfigItem
@@ -35,7 +37,7 @@ class PikaurConfigItemTestCase(PikaurTestCase):
     @classmethod
     def setUpClass(cls):
         cls.config_patcher = mock.patch(
-            "pikaur.config.CONFIG_SCHEMA", new=cls.example_config_schema,
+            "pikaur.config.CONFIG_SCHEMA", new=EXAMPLE_CONFIG_SCHEMA,
         )
         cls.config_patcher.start()
         parser = configparser.RawConfigParser()

@@ -8,34 +8,36 @@ from .i18n import translate
 from .pprint import Colors, ColorsHighlight, color_line, print_stderr
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Final
+
+
+# cyan is purposely skipped as it's used in print_debug itself,
+# highlight-red is purposely skipped as it's used in print_error,
+# highlight-yellow is purposely skipped as it's used in print_warning:
+DEBUG_COLORS: "Final[list[int]]" = [
+    Colors.red,
+    Colors.green,
+    Colors.yellow,
+    Colors.blue,
+    Colors.purple,
+    Colors.white,
+    ColorsHighlight.green,
+    ColorsHighlight.blue,
+    ColorsHighlight.purple,
+    ColorsHighlight.cyan,
+    ColorsHighlight.white,
+]
 
 
 class DebugColorCounter:
 
-    # cyan is purposely skipped as it's used in print_debug itself,
-    # highlight-red is purposely skipped as it's used in print_error,
-    # highlight-yellow is purposely skipped as it's used in print_warning:
-    colors = [
-        Colors.red,
-        Colors.green,
-        Colors.yellow,
-        Colors.blue,
-        Colors.purple,
-        Colors.white,
-        ColorsHighlight.green,
-        ColorsHighlight.blue,
-        ColorsHighlight.purple,
-        ColorsHighlight.cyan,
-        ColorsHighlight.white,
-    ]
     _current_color_idx = 0
 
     @classmethod
     def get_next(cls) -> int:
-        color = cls.colors[cls._current_color_idx]
+        color = DEBUG_COLORS[cls._current_color_idx]
         cls._current_color_idx += 1
-        if cls._current_color_idx >= len(cls.colors):
+        if cls._current_color_idx >= len(DEBUG_COLORS):
             cls._current_color_idx = 0
         return color
 

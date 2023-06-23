@@ -225,8 +225,8 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
 
 def interactive_spawn(
         cmd: list[str],
-        stdout: "IOStream" = None,
-        stderr: "IOStream" = None,
+        stdout: "IOStream | None" = None,
+        stderr: "IOStream | None" = None,
         cwd: str | Path | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:

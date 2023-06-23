@@ -136,7 +136,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                             unknown_args.append(option_string)
                             start_index += 1
                             explicit_arg = "".join(explicit_arg[1:])
-                            if explicit_arg == "":  # noqa: PLC1901
+                            if explicit_arg == "":
                                 stop = start_index
                                 break
 

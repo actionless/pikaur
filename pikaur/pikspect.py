@@ -55,7 +55,7 @@ class ReadlineKeycodes:
     BACKSPACE: "Final" = 127
 
 
-class TTYRestore():  # pragma: no cover
+class TTYRestore:  # pragma: no cover
 
     old_tcattrs = None
     old_tcattrs_out = None
@@ -130,7 +130,7 @@ def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None
     )
 
 
-class TTYInputWrapper():  # pragma: no cover
+class TTYInputWrapper:  # pragma: no cover
 
     tty_opened = False
 
@@ -154,7 +154,7 @@ class TTYInputWrapper():  # pragma: no cover
             sys.stdin = self.old_stdin
 
 
-class NestedTerminal():
+class NestedTerminal:
 
     def __init__(self) -> None:
         self.tty_wrapper = TTYInputWrapper()
@@ -188,7 +188,7 @@ def _match(pattern: str, line: str) -> bool:
     )
 
 
-class PikspectSignalHandler():
+class PikspectSignalHandler:
 
     signal_handler: "Callable[..., Any] | None" = None
 
@@ -433,28 +433,27 @@ def pikspect(
         capture_output: bool | None = None,
 ) -> PikspectPopen:
 
-    class Questions:
-        PROCEED = [
-            format_pacman_question("Proceed with installation?"),
-            format_pacman_question("Proceed with download?"),
-        ]
-        REMOVE = [
-            format_pacman_question("Do you want to remove these packages?"),
-        ]
-        CONFLICT = format_pacman_question(
-            "%s and %s are in conflict. Remove %s?", YesNo.QUESTION_YN_NO,
-        )
-        CONFLICT_VIA_PROVIDED = format_pacman_question(
-            "%s and %s are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO,
-        )
+    questions_proceed: "Final[list[str]]" = [
+        format_pacman_question("Proceed with installation?"),
+        format_pacman_question("Proceed with download?"),
+    ]
+    questions_remove = [
+        format_pacman_question("Do you want to remove these packages?"),
+    ]
+    questions_conflict = format_pacman_question(
+        "%s and %s are in conflict. Remove %s?", YesNo.QUESTION_YN_NO,
+    )
+    questions_conflict_via_provided = format_pacman_question(
+        "%s and %s are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO,
+    )
 
     def format_conflicts(conflicts: list[list[str]]) -> list[str]:
         return [
-            Questions.CONFLICT % (new_pkg, old_pkg, old_pkg)
+            questions_conflict % (new_pkg, old_pkg, old_pkg)
             for new_pkg, old_pkg in conflicts
         ] + [
             (
-                re.escape(Questions.CONFLICT_VIA_PROVIDED % (
+                re.escape(questions_conflict_via_provided % (
                     new_pkg, old_pkg, ".*", old_pkg,
                 ))
             ).replace(r"\.\*", ".*")
@@ -464,7 +463,7 @@ def pikspect(
     default_questions: dict[str, list[str]] = {}
     if auto_proceed:
         default_questions = {
-            YesNo.ANSWER_Y: Questions.PROCEED + Questions.REMOVE,
+            YesNo.ANSWER_Y: questions_proceed + questions_remove,
             YesNo.ANSWER_N: [],
         }
 

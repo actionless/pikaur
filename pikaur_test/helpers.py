@@ -104,7 +104,7 @@ class FakeExit(Exception):  # noqa: N818
     pass
 
 
-class InterceptSysOutput():
+class InterceptSysOutput:
 
     stdout_text: str
     stderr_text: str
@@ -116,7 +116,7 @@ class InterceptSysOutput():
     _patcher_stderr: "mock._patch[IO[str]] | None" = None
     _patcher_exit: "mock._patch[Callable[[DefaultArg(int, 'code')], NoReturn]]"  # noqa: F821,RUF100
     _patcher_spawn: "mock._patch[Callable[[list[str]], Popen[bytes]]]"
-    patchers: "Sequence[mock._patch[Any] | None]" = []
+    patchers: "Sequence[mock._patch[Any] | None] | None" = None
 
     def _fake_exit(self, code: int = 0) -> "NoReturn":
         self.returncode = code
@@ -152,7 +152,7 @@ class InterceptSysOutput():
         ]
 
     def __enter__(self) -> "InterceptSysOutput":
-        for patcher in self.patchers:
+        for patcher in self.patchers or []:
             if patcher:
                 patcher.start()
         return self
@@ -160,7 +160,7 @@ class InterceptSysOutput():
     def __exit__(self, *_exc_details: "Any") -> None:
         if self._exited:
             return
-        for patcher in self.patchers:
+        for patcher in self.patchers or []:
             if patcher:
                 patcher.stop()
 

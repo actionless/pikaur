@@ -133,7 +133,7 @@ ignore = [
 ]
 
 [tool.ruff.mccabe]
-max-complexity = 20
+max-complexity = 19
 
 [tool.ruff.per-file-ignores]
 "pikaur/argparse.py" = [

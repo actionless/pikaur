@@ -3,7 +3,7 @@
 import fnmatch
 import re
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pyalpm
 from pycman.config import PacmanConfig as PycmanConfig
@@ -138,10 +138,10 @@ def get_db_lock(package_source: PackageSource) -> type[DbLockRepo] | type[DbLock
 
 class PackageDBCommon(metaclass=ABCMeta):
 
-    _packages_list_cache: dict[PackageSource, list[pyalpm.Package]] = {}
-    _packages_dict_cache: dict[PackageSource, dict[str, pyalpm.Package]] = {}
-    _provided_list_cache: dict[PackageSource, list[str]] = {}
-    _provided_dict_cache: dict[PackageSource, dict[str, list[ProvidedDependency]]] = {}
+    _packages_list_cache: ClassVar[dict[PackageSource, list[pyalpm.Package]]] = {}
+    _packages_dict_cache: ClassVar[dict[PackageSource, dict[str, pyalpm.Package]]] = {}
+    _provided_list_cache: ClassVar[dict[PackageSource, list[str]]] = {}
+    _provided_dict_cache: ClassVar[dict[PackageSource, dict[str, list[ProvidedDependency]]]] = {}
 
     @classmethod
     def _discard_cache(
@@ -265,9 +265,9 @@ class PackageDB(PackageDBCommon):
 
     _alpm_handle: pyalpm.Handle | None = None
 
-    _pacman_find_cache: dict[str, list[PacmanPrint]] = {}
-    _pacman_test_cache: dict[str, list[VersionMatcher]] = {}
-    _pacman_repo_pkg_present_cache: dict[str, bool] = {}
+    _pacman_find_cache: ClassVar[dict[str, list[PacmanPrint]]] = {}
+    _pacman_test_cache: ClassVar[dict[str, list[VersionMatcher]]] = {}
+    _pacman_repo_pkg_present_cache: ClassVar[dict[str, bool]] = {}
 
     @classmethod
     def get_alpm_handle(cls) -> pyalpm.Handle:

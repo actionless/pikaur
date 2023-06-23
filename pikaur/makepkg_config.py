@@ -16,16 +16,17 @@ if TYPE_CHECKING:
 ConfigValueType = str | list[str] | None
 ConfigFormat = dict[str, ConfigValueType]
 
+CONFIG_LIST_FIELDS: "Final[list[str]]" = []
+CONFIG_IGNORED_FIELDS: "Final[list[str]]" = []
 
-class ConfigReader():
+
+class ConfigReader:
 
     COMMENT_PREFIXES: "Final" = ("#", ";")
     KEY_VALUE_DELIMITER: "Final" = "="
 
     _cached_config: dict[str | Path, ConfigFormat] | None = None
     default_config_path: str
-    list_fields: list[str] = []
-    ignored_fields: list[str] = []
 
     @classmethod
     def _parse_line(cls, line: str) -> tuple[str | None, ConfigValueType]:
@@ -42,7 +43,7 @@ class ConfigReader():
         key = key.strip()
         value = value.strip()
 
-        if key in cls.ignored_fields:
+        if key in CONFIG_IGNORED_FIELDS:
             return blank
 
         if value:
@@ -50,7 +51,7 @@ class ConfigReader():
         else:
             return key, value
 
-        if key in cls.list_fields:
+        if key in CONFIG_LIST_FIELDS:
             list_value = value.split()
             return key, list_value
 
@@ -84,7 +85,7 @@ class ConfigReader():
         return cls.get_config(config_path=config_path).get(key) or fallback
 
 
-class MakepkgConfig():
+class MakepkgConfig:
 
     _UNSET: "Final" = object()
     _user_makepkg_path: Path | object | None = _UNSET

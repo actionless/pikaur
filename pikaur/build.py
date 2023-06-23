@@ -768,7 +768,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             print_stderr(
                 color_line(
                     translate("Command '{}' failed to execute.").format(
-                        result.args,
+                        " ".join(str(a) for a in result.args)
+                        if isinstance(result.args, list)
+                        else result.args,
                     ),
                     ColorsHighlight.red,
                 ),

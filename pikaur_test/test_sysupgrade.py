@@ -30,6 +30,7 @@ class SysupgradeTest(PikaurDbTestCase):
     dev_pkg_name = "xst-git"
     dev_pkg_url = "https://github.com/gnotclub/xst.git"
     dev_old_version: str
+    dev_downgrade_amount = 2
 
     def setUp(self):
         # just update to make sure everything is on the latest version,
@@ -69,7 +70,7 @@ class SysupgradeTest(PikaurDbTestCase):
             "sed -e 's/"
             "^source=.*"
             "/"
-            f'source=("git+{dev_pkg_url}#branch=master~1")'
+            f'source=("git+{dev_pkg_url}#branch=master~{self.dev_downgrade_amount}")'
             "/' PKGBUILD > PKGBUILD_prev",
         ])
         pikaur(f"-P -i --noconfirm ./{self.dev_pkg_name}/PKGBUILD_prev")

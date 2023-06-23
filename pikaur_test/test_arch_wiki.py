@@ -13,21 +13,23 @@ class ArchWikiTest(PikaurDbTestCase):
         self.assertInstalled("aws-cli-git")
 
     def test_split_packages_1(self):
-        # Split packages 1
+        # Split packages 1:
+        # Multiple packages from the same package base,
+        # without rebuilding or reinstalling multiple times, such as clion.
         fake_pikaur("-S clion")
         self.assertInstalled("clion")
 
     def test_split_packages_2(self):
-        # Split packages 2: libc++
-        fake_pikaur("-S libc++ --mflags=--skippgpcheck")
-        self.assertInstalled("libc++")
-
-        # Split packages 2: libc++abi (installing already built package)
-        pikaur("-S libc++abi")
-        self.assertInstalled("libc++abi")
+        # Split packages 2:
+        # Split packages which depend on a package from the same package base,
+        # such as jellyfin
+        fake_pikaur("-S jellyfin --mflags=--skippgpcheck")
+        self.assertInstalled("jellyfin")
 
     # def test_split_packages_3(self):
-    #     # Split packages 3: 1 split package
+    #     # Split packages 3:
+    #     # Split packages independently,
+    #     # such as python-pyalsaaudio and python2-pyalsaaudio.
     #     fake_pikaur("-S python-pyalsaaudio --mflags=--skippgpcheck")
     #     self.assertInstalled("python-pyalsaaudio")
     #     self.assertNotInstalled("python2-pyalsaaudio")
@@ -40,7 +42,9 @@ class ArchWikiTest(PikaurDbTestCase):
     #     self.assertInstalled("python-pyalsaaudio")
 
     def test_split_packages_3(self):
-        # Split packages 3: 1 split package
+        # Split packages 3:
+        # Split packages independently,
+        # such as python-pyalsaaudio and python2-pyalsaaudio.
         fake_pikaur("-S lua51-xmlrpc --mflags=--skippgpcheck")
         self.assertInstalled("lua51-xmlrpc")
         self.assertNotInstalled("lua52-xmlrpc")

@@ -88,15 +88,15 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name)
 
     def test_pkgbuild_split_packages(self):
-        pkg_base = "python-pyalsaaudio"
-        pkg_name1 = pkg_base
-        pkg_name2 = "python2-pyalsaaudio"
+        # pkg_base = "lua-xmlrpc"
+        pkg_name1 = "lua51-xmlrpc"
+        pkg_name2 = "lua52-xmlrpc"
 
         self.remove_if_installed(pkg_name1)
         self.remove_if_installed(pkg_name2)
 
-        pikaur(f"-G {pkg_base}")
-        fake_pikaur(f"-P ./{pkg_base}/PKGBUILD --noconfirm --install --mflags=--skippgpcheck")
+        pikaur(f"-G {pkg_name1}")
+        fake_pikaur(f"-P ./{pkg_name1}/PKGBUILD --noconfirm --install --mflags=--skippgpcheck")
         self.assertInstalled(pkg_name1)
         self.assertInstalled(pkg_name2)
 

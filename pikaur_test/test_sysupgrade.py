@@ -30,7 +30,7 @@ class SysupgradeTest(PikaurDbTestCase):
     dev_pkg_name = "xst-git"
     dev_pkg_url = "https://github.com/gnotclub/xst.git"
     dev_old_version: str
-    dev_downgrade_amount = 2
+    dev_downgrade_amount = 1
 
     def setUp(self):
         # just update to make sure everything is on the latest version,

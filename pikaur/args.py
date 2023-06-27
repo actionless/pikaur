@@ -14,8 +14,33 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Any, Final, NoReturn
 
-ArgSchema = list[tuple[str | None, str, None | bool | str | int]]
+ArgSchema = list[tuple[str | None, str, None | bool | str | int, str | None]]
 PossibleArgValuesTypes = list[str] | str | bool | int | None
+HelpMessage = tuple[str | None, str, str | None]
+
+
+PACMAN_ACTIONS: "Final[ArgSchema]" = [
+    ("S", "sync", None, None),
+    ("Q", "query", None, None),
+    ("D", "database", None, None),
+    ("F", "files", None, None),
+    ("R", "remove", None, None),
+    ("T", "deptest", None, None),
+    ("U", "upgrade", None, None),
+    ("V", "version", None, None),
+]
+
+
+def get_pikaur_actions() -> ArgSchema:
+    return [
+        ("P", "pkgbuild", None, None),
+        ("G", "getpkgbuild", None, None),
+    ]
+
+
+ALL_PACMAN_ACTIONS: "Final[list[str]]" = [schema[1] for schema in PACMAN_ACTIONS]
+ALL_PIKAUR_ACTIONS: "Final[list[str]]" = [schema[1] for schema in get_pikaur_actions()]
+ALL_ACTIONS: "Final[list[str]]" = ALL_PACMAN_ACTIONS + ALL_PIKAUR_ACTIONS
 
 
 def print_stderr(msg: str | None = None) -> None:
@@ -34,72 +59,153 @@ class LiteralArgs:
     HELP: "Final" = "--help"
 
 
-PACMAN_BOOL_OPTS: "Final[ArgSchema]" = [
-    # sync options
-    ("S", "sync", None),
-    ("g", "groups", None),
-    ("w", "downloadonly", None),
-    ("q", "quiet", False),
-    ("s", "search", None),
-    # query options
-    ("Q", "query", None),
-    ("o", "owns", None),
-    ("l", "list", None),  # @TODO
-    (None, "upgrades", None),
-    # operations
-    ("D", "database", None),
-    ("F", "files", None),
-    ("R", "remove", None),
-    ("T", "deptest", None),
-    ("U", "upgrade", None),
-    ("V", "version", None),
-    ("h", "help", None),
-    # universal options
-    ("v", "verbose", None),
-    (None, "debug", None),
-    (None, "noconfirm", None),
-    (None, "needed", False),
-]
-
-
-def get_pikaur_bool_opts() -> ArgSchema:
-    return [
-        (None, "noedit", PikaurConfig().review.NoEdit.get_bool()),
-        (None, "edit", None),
-        (None, "namesonly", False),
-        (None, "repo", None),
-        ("a", "aur", None),
-        (None, "keepbuild", PikaurConfig().build.KeepBuildDir.get_bool()),
-        (None, "keepbuilddeps", PikaurConfig().build.KeepBuildDeps.get_bool()),
-        (None, "nodiff", PikaurConfig().review.NoDiff.get_bool()),
-        (None, "rebuild", None),
-        (None, "dynamic-users", PikaurConfig().build.DynamicUsers.get_str() == "always"),
-        ("P", "pkgbuild", None),
-        (None, "install", None),
-        ("G", "getpkgbuild", None),
-        (None, "deps", None),
-        (None, "ignore-outofdate", PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool()),
-        (None, "pikaur-debug", None),
-        (None, "hide-build-log", None),
-        (None, "print-commands", PikaurConfig().ui.PrintCommands.get_bool()),
-        (None, "skip-failed-build", PikaurConfig().build.SkipFailedBuild.get_bool()),
-        # undocumented options:
-        (None, "print-args-and-exit", None),
-        (None, "skip-aur-pull", None),
+def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
+    if not action:
+        result = []
+        for each_action in ALL_PACMAN_ACTIONS:
+            result += get_pacman_bool_opts(each_action)
+        return list(set(result))
+    result = [
+        # sync options
+        ("g", "groups", None, None),
+        ("w", "downloadonly", None, None),
+        ("q", "quiet", False, None),
+        ("s", "search", None, None),
+        # universal options
+        ("h", "help", None, None),
+        ("v", "verbose", None, None),
+        (None, "debug", None, None),
+        (None, "noconfirm", None, None),
+        (None, "needed", False, None),
     ]
+    if action in ("query", ):
+        result += [
+            ("u", "upgrades", None, None),
+            ("o", "owns", None, None),
+        ]
+    if action in ("sync", "query"):
+        result += [
+            ("l", "list", None, None),  # @TODO
+        ]
+    return result
+
+
+def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
+    result = []
+    if not action:
+        for each_action in ALL_PIKAUR_ACTIONS:
+            result += get_pikaur_bool_opts(each_action)
+        return list(set(result))
+    if action in ("sync", "pkgbuild", "query"):
+        result += [
+            (
+                "a", "aur", None,
+                translate("query packages from AUR only"),
+            ),
+        ]
+    if action in ("sync", "pkgbuild"):
+        result += [
+            (
+                "k", "keepbuild", PikaurConfig().build.KeepBuildDir.get_bool(),
+                translate("don't remove build dir after the build"),
+            ),
+            (
+                None, "keepbuilddeps", PikaurConfig().build.KeepBuildDeps.get_bool(),
+                translate("don't remove build dependencies between and after the builds"),
+            ),
+            (
+                "o", "repo", None, translate("query packages from repository only"),
+            ),
+            (
+                None, "noedit", PikaurConfig().review.NoEdit.get_bool(),
+                translate("don't prompt to edit PKGBUILDs and other build files"),
+            ),
+            (
+                None, "edit", None,
+                translate("prompt to edit PKGBUILDs and other build files"),
+            ),
+            (
+                None, "rebuild", None,
+                translate("always rebuild AUR packages"),
+            ),
+            (
+                None, "skip-failed-build", PikaurConfig().build.SkipFailedBuild.get_bool(),
+                translate("skip failed builds"),
+            ),
+            (
+                None, "dynamic-users", PikaurConfig().build.DynamicUsers.get_str() == "always",
+                translate("always isolate with systemd dynamic users"),
+            ),
+            (
+                None, "hide-build-log", None,
+                translate("hide build log"),
+            ),
+            (
+                None, "skip-aur-pull", None,
+                translate("don't pull already cloned PKGBUILD"),
+            ),
+        ]
+    if action in ("sync", ):
+        result += [
+            (
+                None, "namesonly", False,
+                translate("search only in package names"),
+            ),
+            (
+                None, "nodiff", PikaurConfig().review.NoDiff.get_bool(),
+                translate("don't prompt to show the build files diff"),
+            ),
+            (
+                None, "ignore-outofdate", PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool(),
+                translate("ignore AUR packages' updates which marked 'outofdate'"),
+            ),
+        ]
+    if action in ("query", ):
+        result += [
+            (
+                None, "repo", None,
+                translate("query packages from repository only")),
+        ]
+    if action == "getpkgbuild":
+        result += [
+            (
+                "d", "deps", None,
+                translate("download also AUR dependencies"),
+            ),
+        ]
+    if action == "pkgbuild":
+        result += [
+            (
+                "i", "install", None,
+                translate("install built package"),
+            ),
+        ]
+    result += [
+        (
+            None, "print-commands", PikaurConfig().ui.PrintCommands.get_bool(),
+            translate("print spawned by pikaur subshell commands"),
+        ),
+        (
+            None, "pikaur-debug", None,
+            translate("show only debug messages specific to pikaur"),
+        ),
+        # undocumented options:
+        (None, "print-args-and-exit", None, None),
+    ]
+    return result
 
 
 PACMAN_STR_OPTS: "Final[ArgSchema]" = [
-    (None, "color", None),
-    ("b", "dbpath", None),  # @TODO: pyalpm?
-    ("r", "root", None),
-    (None, "arch", None),  # @TODO
-    (None, "cachedir", None),  # @TODO
-    (None, "config", None),
-    (None, "gpgdir", None),
-    (None, "hookdir", None),
-    (None, "logfile", None),
-    (None, "print-format", None),  # @TODO
+    (None, "color", None, None),
+    ("b", "dbpath", None, None),  # @TODO: pyalpm?
+    ("r", "root", None, None),
+    (None, "arch", None, None),  # @TODO
+    (None, "cachedir", None, None),  # @TODO
+    (None, "config", None, None),
+    (None, "gpgdir", None, None),
+    (None, "hookdir", None, None),
+    (None, "logfile", None, None),
+    (None, "print-format", None, None),  # @TODO
 ]
 
 
@@ -108,43 +214,108 @@ class ColorFlagValues:
     NEVER: "Final" = "never"
 
 
-def get_pikaur_str_opts() -> ArgSchema:
-    return [
-        (None, "build-gpgdir", PikaurConfig().build.GpgDir.get_str()),
-        (None, "mflags", None),
-        (None, "makepkg-config", None),
-        (None, "makepkg-path", None),
-        (None, "pikaur-config", None),
+def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
+    result = []
+    if not action:
+        for each_action in ALL_PIKAUR_ACTIONS:
+            result += get_pikaur_str_opts(each_action)
+        return list(set(result))
+    if action in ("sync", "pkgbuild"):
+        result += [
+            (
+                None, "mflags", None,
+                translate("cli args to pass to makepkg"),
+            ),
+            (
+                None, "makepkg-config", None,
+                translate("path to custom makepkg config"),
+            ),
+            (
+                None, "makepkg-path", None,
+                translate("override path to makepkg executable"),
+            ),
+            (
+                None, "pikaur-config", None,
+                translate("path to custom pikaur config"),
+            ),
+            (
+                None, "build-gpgdir", PikaurConfig().build.GpgDir.get_str(),
+                translate("set GnuPG home directory used when validating package sources"),
+            ),
+        ]
+    # if action == "getpkgbuild":
+    #     result += [
+    #         ("o", "output-dir", None, None),
+    #     ]
+    return result
+
+
+def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
+    result = []
+    if not action:
+        for each_action in ALL_PIKAUR_ACTIONS:
+            result += get_pikaur_int_opts(each_action)
+        return list(set(result))
+    if action in ("sync", "pkgbuild"):
+        result += [
+            (
+                None, "aur-clone-concurrency", None,
+                translate("how many git-clones/pulls to do from AUR"),
+            ),
+        ]
+    return result
+
+
+def get_pacman_count_opts(action: str | None = None) -> ArgSchema:
+    if not action:
+        result = []
+        for each_action in ALL_PACMAN_ACTIONS:
+            result += get_pikaur_count_opts(each_action)
+        return list(set(result))
+    result = [
+        ("y", "refresh", 0, None),
+        ("c", "clean", 0, None),
     ]
+    if action in ("sync", ):
+        result += [
+            ("u", "sysupgrade", 0, None),
+        ]
+    if action in ("sync", "query"):
+        result += [
+            ("i", "info", 0, None),
+        ]
+    if action in ("database", "query"):
+        result += [
+            ("k", "check", 0, None),
+        ]
+    if action in ALL_PACMAN_ACTIONS:
+        result += [
+            ("d", "nodeps", 0, None),
+        ]
+    return result
 
 
-def get_pikaur_int_opts() -> ArgSchema:
-    return [
-        (None, "aur-clone-concurrency", None),
-    ]
-
-
-PACMAN_COUNT_OPTS: "Final[ArgSchema]" = [
-    ("y", "refresh", 0),
-    ("u", "sysupgrade", 0),
-    ("c", "clean", 0),
-    ("k", "check", 0),
-    ("i", "info", 0),
-    ("d", "nodeps", 0),
-]
-
-
-def get_pikaur_count_opts() -> ArgSchema:
-    return [
-        (None, "devel", 0),
-    ]
+def get_pikaur_count_opts(action: str | None = None) -> ArgSchema:
+    result = []
+    if not action:
+        for each_action in ALL_PIKAUR_ACTIONS:
+            result += get_pikaur_count_opts(each_action)
+        return list(set(result))
+    if action in ("sync", ):
+        result += [
+            (
+                None, "devel", 0,
+                translate("always sysupgrade '-git', '-svn' and other dev packages"),
+            ),
+        ]
+    return result
 
 
 PACMAN_APPEND_OPTS: "Final[ArgSchema]" = [
-    (None, "ignore", None),
-    (None, "ignoregroup", None),  # @TODO
-    (None, "overwrite", None),
-    (None, "assume-installed", None),  # @TODO
+    (None, "ignore", None, None),
+    (None, "ignoregroup", None, None),  # @TODO
+    (None, "overwrite", None, None),
+    (None, "assume-installed", None, None),  # @TODO
 ]
 
 
@@ -155,21 +326,34 @@ ARG_DEPENDS: "Final[dict[str, dict[str, list[str]]]]" = {
 }
 
 
+def get_all_pikaur_options() -> ArgSchema:
+    return (
+        get_pikaur_actions() +
+        get_pikaur_bool_opts() +
+        get_pikaur_str_opts() +
+        get_pikaur_count_opts() +
+        get_pikaur_int_opts()
+    )
+
+
 def get_pikaur_long_opts() -> list[str]:
     return [
         long_opt.replace("-", "_")
-        for _short_opt, long_opt, _default in (
-            get_pikaur_bool_opts() + get_pikaur_str_opts()
-            + get_pikaur_count_opts() + get_pikaur_int_opts()
-        )
+        for _short_opt, long_opt, _default, _help in get_all_pikaur_options()
     ]
 
 
 def get_pacman_long_opts() -> list[str]:  # pragma: no cover
     return [
         long_opt.replace("-", "_")
-        for _short_opt, long_opt, _default
-        in PACMAN_BOOL_OPTS + PACMAN_STR_OPTS + PACMAN_COUNT_OPTS + PACMAN_APPEND_OPTS
+        for _short_opt, long_opt, _default, _help
+        in (
+            PACMAN_ACTIONS +
+            get_pacman_bool_opts() +
+            PACMAN_STR_OPTS +
+            PACMAN_APPEND_OPTS +
+            get_pacman_count_opts()
+        )
     ]
 
 
@@ -186,9 +370,10 @@ class PikaurArgs(Namespace):
     raw: list[str]
     # typehints:
     info: bool | None
-    nodeps: bool | None
-    owns: bool | None
-    check: bool | None
+    # @TODO: remove? :
+    # nodeps: bool | None
+    # owns: bool | None
+    # check: bool | None
     ignore: list[str]
     makepkg_config: str | None
     mflags: str | None
@@ -208,37 +393,16 @@ class PikaurArgs(Namespace):
     read_stdin: bool = False
 
     def __getattr__(self, name: str) -> PossibleArgValuesTypes:
+        transformed_name = name.replace("-", "_")
         result: PossibleArgValuesTypes = getattr(
             super(),
             name,
-            getattr(self, name.replace("-", "_")),
+            getattr(self, transformed_name) if transformed_name in dir(self) else None,
         )
         return result
 
-    def handle_the_same_letter(self) -> None:
-        # pylint: disable=attribute-defined-outside-init
-        if self.pkgbuild and self.info:  # handle "-i"
-            self.install = self.info
-            self.info = False
-        if (self.getpkgbuild or self.query) and self.nodeps:  # handle "-d"
-            self.deps = self.nodeps
-            self.nodeps = False
-        if self.sync or self.pkgbuild:
-            if self.owns:  # handle "-o"
-                self.repo = self.owns
-                self.owns = False
-            if self.check:  # handle "-k"
-                self.keepbuild = True
-                self.check = None
-        if self.sysupgrade:  # handle "-u"  # noqa: SIM102
-            if self.query:
-                self.sysupgrade = 0
-                self.upgrades = True
-
     def post_process_args(self) -> None:
         # pylint: disable=attribute-defined-outside-init
-        self.handle_the_same_letter()
-
         new_ignore: list[str] = []
         for ignored in self.ignore or []:
             new_ignore += ignored.split(",")
@@ -394,41 +558,64 @@ def debug_args(args: list[str], parsed_args: PikaurArgs) -> "NoReturn":  # pragm
     sys.exit(0)
 
 
-def parse_args(args: list[str] | None = None) -> PikaurArgs:
-    if CachedArgs.args:
-        return CachedArgs.args
-    args = args or sys.argv[1:]
-    parser = PikaurArgumentParser(prog=sys.argv[0], add_help=False)
+def get_parser_for_action(  # pylint: disable=too-many-locals
+        app: str,
+        args: list[str],
+) -> tuple[PikaurArgumentParser, list[HelpMessage]]:
 
-    # add some of pacman options to argparser to have them registered by pikaur
-    # (they will be bypassed to pacman with the rest unrecognized args anyway)
-
-    for letter, opt, default in PACMAN_BOOL_OPTS + get_pikaur_bool_opts():
+    parser = PikaurArgumentParser(prog=app, add_help=False)
+    for letter, opt, default, _help in (
+            PACMAN_ACTIONS + get_pikaur_actions()
+    ):
         parser.add_letter_andor_opt(
             action="store_true", letter=letter, opt=opt, default=default,
         )
-
-    for letter, opt, default in PACMAN_COUNT_OPTS + get_pikaur_count_opts():
+    parsed_action = parser.parse_pikaur_args(args)
+    pikaur_action: str | None = None
+    for action_name in ALL_ACTIONS:
+        if getattr(parsed_action, action_name):
+            pikaur_action = action_name
+    if not pikaur_action:
         parser.add_letter_andor_opt(
-            action="count", letter=letter, opt=opt, default=default,
+            action="store_true", letter="h", opt="help",
         )
+        return parser, []
 
-    for letter, opt, default in PACMAN_APPEND_OPTS:
-        parser.add_letter_andor_opt(
-            action="append", letter=letter, opt=opt, default=default,
-        )
-
-    for letter, opt, default in PACMAN_STR_OPTS + get_pikaur_str_opts():
-        parser.add_letter_andor_opt(
-            action=None, letter=letter, opt=opt, default=default,
-        )
-
-    for letter, opt, default in get_pikaur_int_opts():
-        parser.add_letter_andor_opt(
-            action=None, letter=letter, opt=opt, default=default, arg_type=int,
-        )
-
+    help_msgs: list[HelpMessage] = []
+    for action_type, opt_list, is_pikaur, arg_type in (
+            ("store_true", get_pacman_bool_opts(action=pikaur_action), False, None),
+            ("store_true", get_pikaur_bool_opts(action=pikaur_action), True, None),
+            ("count", get_pacman_count_opts(action=pikaur_action), False, None),
+            ("count", get_pikaur_count_opts(action=pikaur_action), True, None),
+            ("append", PACMAN_APPEND_OPTS, False, None),
+            (None, PACMAN_STR_OPTS, False, None),
+            (None, get_pikaur_str_opts(action=pikaur_action), True, None),
+            (None, get_pikaur_int_opts(action=pikaur_action), True, int),
+    ):
+        for letter, opt, default, help_msg in opt_list:
+            if arg_type:
+                parser.add_letter_andor_opt(
+                    action=action_type, letter=letter, opt=opt, default=default, arg_type=arg_type,
+                )
+            else:
+                parser.add_letter_andor_opt(
+                    action=action_type, letter=letter, opt=opt, default=default,
+                )
+            if is_pikaur:
+                help_msgs.append(
+                    (letter, opt, help_msg),
+                )
     parser.add_argument("positional", nargs="*")
+    return parser, help_msgs
+
+
+def _parse_args(args: list[str] | None = None) -> tuple[PikaurArgs, list[HelpMessage]]:
+    args = args or sys.argv[1:]
+    app_name = sys.argv[0] if sys.argv else "pikaur"
+    parser, help_msgs = get_parser_for_action(app=app_name, args=args)
+
+    # add some of pacman options to argparser to have them registered by pikaur
+    # (they will be bypassed to pacman with the rest unrecognized args anyway)
 
     parsed_args = parser.parse_pikaur_args(args)
 
@@ -462,23 +649,32 @@ def parse_args(args: list[str] | None = None) -> PikaurArgs:
             ),
         )
         sys.exit(1)
+    return parsed_args, help_msgs
+
+
+def parse_args(args: list[str] | None = None) -> PikaurArgs:
+    if CachedArgs.args:
+        return CachedArgs.args
+    parsed_args, _help = _parse_args(args=args)
     CachedArgs.args = parsed_args
     return parsed_args
+
+
+def get_help() -> list[HelpMessage]:
+    _parsed_args, help_msgs = _parse_args()
+    return help_msgs
 
 
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = None) -> list[str]:
     if not ignore_args:
         ignore_args = []
-    for letter, opt, _default in (
-            get_pikaur_bool_opts() + get_pikaur_str_opts()
-            + get_pikaur_count_opts() + get_pikaur_int_opts()
-    ):
+    for letter, opt, _default, _help in get_all_pikaur_options():
         if letter:
             ignore_args.append(letter)
         if opt:
             ignore_args.append(opt.replace("-", "_"))
     count_args = []
-    for letter, opt, _default in PACMAN_COUNT_OPTS:
+    for letter, opt, _default, _help in get_pacman_count_opts():
         if letter:
             count_args.append(letter)
         if opt:
@@ -491,14 +687,16 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
             "raw", "unknown_args", "positional", "read_stdin",  # computed members
         ] + [
             long_arg
-            for _short_arg, long_arg, default in PACMAN_STR_OPTS + PACMAN_APPEND_OPTS
+            for _short_arg, long_arg, default, _help in PACMAN_STR_OPTS + PACMAN_APPEND_OPTS
         ]
     }
     result = list(set(
         list(reconstructed_args.keys()) + parsed_args.unknown_args,
     ))
     for args_key, value in vars(parsed_args).items():
-        for letter, _opt, _default in PACMAN_COUNT_OPTS:
+        for letter, _opt, _default, _help in (
+                get_pacman_count_opts()
+        ):
             opt = _opt.replace("-", "_")
             if value and opt == args_key and opt not in ignore_args and letter not in ignore_args:
                 result += ["--" + opt] * value

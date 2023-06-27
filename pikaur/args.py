@@ -370,6 +370,7 @@ class PikaurArgs(Namespace):
     raw: list[str]
     # typehints:
     info: bool | None
+    keepbuild: bool | None
     # @TODO: remove? :
     # nodeps: bool | None
     # owns: bool | None
@@ -564,6 +565,7 @@ def get_parser_for_action(  # pylint: disable=too-many-locals
 ) -> tuple[PikaurArgumentParser, list[HelpMessage]]:
 
     parser = PikaurArgumentParser(prog=app, add_help=False)
+    parser.add_argument("positional", nargs="*")
     for letter, opt, default, _help in (
             PACMAN_ACTIONS + get_pikaur_actions()
     ):
@@ -605,7 +607,6 @@ def get_parser_for_action(  # pylint: disable=too-many-locals
                 help_msgs.append(
                     (letter, opt, help_msg),
                 )
-    parser.add_argument("positional", nargs="*")
     return parser, help_msgs
 
 

@@ -52,6 +52,7 @@ def cli_print_help() -> None:
     ).replace(
         "options:", "\n" + translate("Common pacman options:"),
     )
+
     if LiteralArgs.HELP in pacman_help:
         pacman_help += (
             "\n" +

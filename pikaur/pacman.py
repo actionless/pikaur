@@ -73,7 +73,7 @@ def get_pacman_command(ignore_args: list[str] | None = None) -> list[str]:
     else:
         pacman_cmd += ["--color=never"]
 
-    for _short, arg, _default in PACMAN_STR_OPTS:
+    for _short, arg, _default, _help in PACMAN_STR_OPTS:
         if arg in ["color"]:  # we force it anyway
             continue
         if arg in ignore_args:
@@ -82,7 +82,7 @@ def get_pacman_command(ignore_args: list[str] | None = None) -> list[str]:
         if value:
             pacman_cmd += ["--" + arg, value]
 
-    for _short, arg, _default in PACMAN_APPEND_OPTS:
+    for _short, arg, _default, _help in PACMAN_APPEND_OPTS:
         if arg in ["ignore"]:  # we reprocess it anyway
             continue
         if arg in ignore_args:

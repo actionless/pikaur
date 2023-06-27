@@ -243,10 +243,13 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
                 translate("set GnuPG home directory used when validating package sources"),
             ),
         ]
-    # if action == "getpkgbuild":
-    #     result += [
-    #         ("o", "output-dir", None, None),
-    #     ]
+    if action == "getpkgbuild":
+        result += [
+            (
+                "o", "output-dir", None,
+                translate("path where to clone PKGBUILDs"),
+            ),
+        ]
     return result
 
 
@@ -371,6 +374,7 @@ class PikaurArgs(Namespace):
     # typehints:
     info: bool | None
     keepbuild: bool | None
+    output_dir: str | None
     # @TODO: remove? :
     # nodeps: bool | None
     # owns: bool | None

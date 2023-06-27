@@ -93,7 +93,7 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
 def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
     result = []
     if not action:
-        for each_action in ALL_PIKAUR_ACTIONS:
+        for each_action in ALL_ACTIONS:
             result += get_pikaur_bool_opts(each_action)
         return list(set(result))
     if action in ("sync", "pkgbuild", "query"):
@@ -217,7 +217,7 @@ class ColorFlagValues:
 def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
     result = []
     if not action:
-        for each_action in ALL_PIKAUR_ACTIONS:
+        for each_action in ALL_ACTIONS:
             result += get_pikaur_str_opts(each_action)
         return list(set(result))
     if action in ("sync", "pkgbuild"):
@@ -256,7 +256,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
 def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
     result = []
     if not action:
-        for each_action in ALL_PIKAUR_ACTIONS:
+        for each_action in ALL_ACTIONS:
             result += get_pikaur_int_opts(each_action)
         return list(set(result))
     if action in ("sync", "pkgbuild"):
@@ -273,7 +273,7 @@ def get_pacman_count_opts(action: str | None = None) -> ArgSchema:
     if not action:
         result = []
         for each_action in ALL_PACMAN_ACTIONS:
-            result += get_pikaur_count_opts(each_action)
+            result += get_pacman_count_opts(each_action)
         return list(set(result))
     result = [
         ("y", "refresh", 0, None),
@@ -301,7 +301,7 @@ def get_pacman_count_opts(action: str | None = None) -> ArgSchema:
 def get_pikaur_count_opts(action: str | None = None) -> ArgSchema:
     result = []
     if not action:
-        for each_action in ALL_PIKAUR_ACTIONS:
+        for each_action in ALL_ACTIONS:
             result += get_pikaur_count_opts(each_action)
         return list(set(result))
     if action in ("sync", ):

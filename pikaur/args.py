@@ -618,10 +618,6 @@ def _parse_args(args: list[str] | None = None) -> tuple[PikaurArgs, list[HelpMes
     args = args or sys.argv[1:]
     app_name = sys.argv[0] if sys.argv else "pikaur"
     parser, help_msgs = get_parser_for_action(app=app_name, args=args)
-
-    # add some of pacman options to argparser to have them registered by pikaur
-    # (they will be bypassed to pacman with the rest unrecognized args anyway)
-
     parsed_args = parser.parse_pikaur_args(args)
 
     if (
@@ -673,9 +669,9 @@ def get_help() -> list[HelpMessage]:
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = None) -> list[str]:
     if not ignore_args:
         ignore_args = []
-    for letter, opt, _default, _help in get_all_pikaur_options():
-        if letter:
-            ignore_args.append(letter)
+    for _letter, opt, _default, _help in get_all_pikaur_options():
+        # if letter:
+        #     ignore_args.append(letter)
         if opt:
             ignore_args.append(opt.replace("-", "_"))
     count_args = []

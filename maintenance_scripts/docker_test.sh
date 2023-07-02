@@ -26,6 +26,7 @@ fi
 
 return_code=0
 sudo docker build ./ \
+	--ulimit nofile=1024:524288 \
 	--build-arg GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
 	--build-arg GITHUB_RUN_ID="${GITHUB_RUN_ID:-}" \
 	--build-arg GITHUB_REF="${GITHUB_REF:-}" \

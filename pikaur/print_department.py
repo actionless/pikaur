@@ -188,10 +188,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
 
         pkg_name = _bold_line(pkg_name)
         if (print_repo or verbose) and pkg_update.repository:
-            pkg_name = "{}{}".format(  # pylint: disable=consider-using-f-string
-                pretty_format_repo_name(pkg_update.repository, color=color),
-                pkg_name,
-            )
+            pkg_name = f"{pretty_format_repo_name(pkg_update.repository, color=color)}{pkg_name}"
             pkg_len += len(pkg_update.repository) + 1
         elif print_repo:
             pkg_name = "{}{}".format(  # pylint: disable=consider-using-f-string

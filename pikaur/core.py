@@ -40,7 +40,7 @@ if TYPE_CHECKING:
 
 
 DEFAULT_INPUT_ENCODING: "Final" = "utf-8"
-DEFAULT_TIMEZONE: "Final" = datetime.datetime.now().astimezone().tzinfo  # noqa: DTZ005
+DEFAULT_TIMEZONE: "Final" = datetime.datetime.now().astimezone().tzinfo
 PIPE: "Final" = subprocess.PIPE
 SYSTEMD_MIN_VERSION: "Final" = 235
 READ_MODE: "Final" = "r"

@@ -156,6 +156,22 @@ class InstallPackagesCLI:
         self.transactions = {}
         self.failed_to_build_package_names = []
 
+        self._handle_refresh()
+
+        if self.args.sysupgrade and not self.args.repo:
+            print_stderr("{} {}".format(  # pylint: disable=consider-using-f-string
+                color_line("::", ColorsHighlight.blue),
+                bold_line(translate("Starting full AUR upgrade...")),
+            ))
+        if self.args.aur:
+            self.not_found_repo_pkgs_names = self.install_package_names
+            self.install_package_names = []
+        if self.args.pkgbuild:
+            self.get_info_from_pkgbuilds()
+
+        self.main_sequence()
+
+    def _handle_refresh(self) -> None:
         if not self.args.aur and (self.args.sysupgrade or self.args.refresh):
 
             with ThreadPool() as pool:
@@ -185,19 +201,6 @@ class InstallPackagesCLI:
             if self.args.refresh:
                 PackageDB.discard_repo_cache()
                 print_stdout()
-
-        if self.args.sysupgrade and not self.args.repo:
-            print_stderr("{} {}".format(  # pylint: disable=consider-using-f-string
-                color_line("::", ColorsHighlight.blue),
-                bold_line(translate("Starting full AUR upgrade...")),
-            ))
-        if self.args.aur:
-            self.not_found_repo_pkgs_names = self.install_package_names
-            self.install_package_names = []
-        if self.args.pkgbuild:
-            self.get_info_from_pkgbuilds()
-
-        self.main_sequence()
 
     class ExitMainSequence(Exception):  # noqa: N818
         """Raise when need to finish Install CLI"""

@@ -159,6 +159,9 @@ class InstallPackagesCLI:
         if not self.args.aur and (self.args.sysupgrade or self.args.refresh):
 
             with ThreadPool() as pool:
+                sub_tty = TTYRestore()
+                TTYRestore.restore()
+
                 threads = []
                 if self.args.sysupgrade:
                     self.news = News()
@@ -173,6 +176,8 @@ class InstallPackagesCLI:
                 for thread in threads:
                     thread.get()
                 pool.join()
+
+                sub_tty.restore_new()
 
             if not (self.install_package_names or self.args.sysupgrade):
                 return

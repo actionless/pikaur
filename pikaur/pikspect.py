@@ -23,7 +23,7 @@ from pty import (  # type: ignore[attr-defined]
     _writen,
     fork,
 )
-from tty import tcgetattr, tcsetattr  # type: ignore[attr-defined]
+from tty import setraw, tcgetattr, tcsetattr  # type: ignore[attr-defined]
 from typing import TYPE_CHECKING
 
 from .args import parse_args
@@ -42,9 +42,6 @@ from .pprint import (
 
 if TYPE_CHECKING:
     from typing import Any, Final
-
-
-SMALL_TIMEOUT: "Final" = 0.01
 
 
 TcAttrsType = list[int | list[bytes | int]]
@@ -71,12 +68,13 @@ def _copy(
         master_fd: int,
         master_read: MasterReaderType = _read,
         stdin_read: StdinReaderType = _read,
-        timeout: int | float | None = None,
 ) -> None:
-    """Fork of pty._copy to add support for `select`'s `timeout`."""
+    """Fork of pty._copy from python's stdlib."""
     fds = [master_fd, STDIN_FILENO]
+
     while fds:
-        rfds, _wfds, _xfds = select.select(fds, [], [], timeout)
+        rfds, _wfds, _xfds = select.select(fds, [], [])
+        file_debug(f"read fds: {rfds} {master_fd} {STDIN_FILENO}")
 
         if master_fd in rfds:
             # Some OSes signal EOF by returning an empty byte string,
@@ -99,16 +97,16 @@ def _copy(
             data = stdin_read(None)
             if data:
                 _writen(master_fd, data)
+    file_debug("FDS finished")
 
 
 def spawn(
         argv: list[str] | str,
         master_read: MasterReaderType = _read,
         stdin_read: StdinReaderType = _read,
-        timeout: int | float | None = None,
         after_fork: Callable[[int, int], None] | None = None,
 ) -> int:
-    """Fork of pty.spawn to add support for `select`'s `timeout` and `after_fork` callback."""
+    """Fork of pty.spawn to add support for `after_fork` callback."""
     if isinstance(argv, str):
         argv = [argv]
     # sys.audit('pty.spawn', argv)
@@ -119,7 +117,7 @@ def spawn(
 
     try:
         mode = tcgetattr(STDIN_FILENO)
-        # setraw(STDIN_FILENO)  # this breaks Ctrl+C
+        setraw(STDIN_FILENO)  # this might break Ctrl+C ?
         restore = True
     # This is the same as termios.error
     except tty.error:  # type: ignore[attr-defined]
@@ -128,7 +126,7 @@ def spawn(
     if after_fork:
         after_fork(master_fd, pid)
     try:
-        _copy(master_fd, master_read, stdin_read, timeout)
+        _copy(master_fd, master_read, stdin_read)
     finally:
         if restore:
             tcsetattr(STDIN_FILENO, tty.TCSAFLUSH, mode)  # type: ignore[attr-defined]
@@ -380,7 +378,6 @@ class PikspectPopen:
                     self.args,
                     master_read=self.cmd_output_reader,
                     stdin_read=self.user_input_reader,
-                    timeout=SMALL_TIMEOUT,
                     after_fork=self._pty_init,
                 )
                 self.pid = None
@@ -390,15 +387,15 @@ class PikspectPopen:
             PikspectSignalHandler.clear()
 
     def check_questions(self) -> None:
-        # file_debug("check_question1:")
+        file_debug("check_question1:")
 
         try:
             historic_output = b"".join(self.historic_output).decode(DEFAULT_INPUT_ENCODING)
         except UnicodeDecodeError:  # pragma: no cover
             return
 
-        # file_debug("check_question:")
-        # file_debug(historic_output)
+        file_debug("check_question:")
+        file_debug(historic_output)
 
         clear_buffer = False
 
@@ -438,15 +435,15 @@ class PikspectPopen:
                 columns=self.real_term_geometry.columns,
                 rows=self.real_term_geometry.lines,
             )
+        file_debug(f"UserInputReader {file_descriptor}:")
         if self.next_answers:
             char = ("\n".join(self.next_answers) + "\n").encode(DEFAULT_INPUT_ENCODING)
             self.next_answers = []
-        elif file_descriptor:
+        elif file_descriptor is not None:
             char = os.read(file_descriptor, 1)
         else:
             return b""
 
-        file_debug("UserInputReader:")
         file_debug(char)
 
         try:

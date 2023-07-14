@@ -17,6 +17,7 @@ whitelist.NoReturn
 whitelist.Pattern
 whitelist.Sequence
 whitelist.TextIO
+whitelist.FrameType
 whitelist.TracebackType
 
 whitelist.pikaur.AnyPackage

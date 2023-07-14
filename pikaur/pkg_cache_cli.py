@@ -11,8 +11,7 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_stdout
 from .prompt import ask_to_continue
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from subprocess import Popen  # nosec B404
+    from .pikspect import PikspectPopen
 
 
 _debug = create_logger("pkg_cache_cli").debug
@@ -39,10 +38,9 @@ def clean_aur_cache() -> None:
 
 def clean_repo_cache() -> None:
     args = parse_args()
-    spawn_func: "Callable[[list[str]], Popen[bytes]]" = interactive_spawn
     if args.noconfirm:
 
-        def noconfirm_cache_remove(pacman_args: list[str]) -> "Popen[bytes]":
+        def noconfirm_cache_remove(pacman_args: list[str]) -> "PikspectPopen":
             return pikspect(pacman_args, extra_questions={YesNo.ANSWER_Y: [
                 format_pacman_question(
                     "Do you want to remove ALL files from cache?",
@@ -55,9 +53,15 @@ def clean_repo_cache() -> None:
                     "Do you want to remove unused repositories?",
                 ),
             ]})
-        spawn_func = noconfirm_cache_remove
+        returncode = noconfirm_cache_remove(sudo([
+            PikaurConfig().misc.PacmanPath.get_str(),
+            *reconstruct_args(args, ignore_args=["noconfirm"]),
+        ])).returncode
+        if returncode is None:
+            returncode = 255
+        raise SysExit(returncode)
     raise SysExit(
-        spawn_func(sudo([
+        interactive_spawn(sudo([
             PikaurConfig().misc.PacmanPath.get_str(),
             *reconstruct_args(args, ignore_args=["noconfirm"]),
         ])).returncode,

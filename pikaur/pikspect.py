@@ -3,7 +3,6 @@
 import contextlib
 import fcntl
 import os
-import pty
 import re
 import select
 import shutil
@@ -13,9 +12,18 @@ import subprocess  # nosec B404
 import sys
 import termios
 import tty
-from multiprocessing.pool import ThreadPool
+from collections.abc import Callable
+from os import close, waitpid
 from pathlib import Path
-from time import sleep
+from pty import (  # type: ignore[attr-defined]
+    CHILD,
+    STDIN_FILENO,
+    STDOUT_FILENO,
+    _read,
+    _writen,
+    fork,
+)
+from tty import tcgetattr, tcsetattr  # type: ignore[attr-defined]
 from typing import TYPE_CHECKING
 
 from .args import parse_args
@@ -27,15 +35,13 @@ from .pacman_i18n import _p
 from .pprint import (
     ColorsHighlight,
     PrintLock,
-    bold_line,
     color_line,
     get_term_width,
     print_stderr,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import Any, BinaryIO, Final, TextIO
+    from typing import Any, Final
 
 
 SMALL_TIMEOUT: "Final" = 0.01
@@ -45,6 +51,90 @@ TcAttrsType = list[int | list[bytes | int]]
 
 
 logger = create_logger("pikspect", lock=False)
+
+
+MasterReaderType = Callable[[int], bytes]
+StdinReaderType = Callable[[int | None], bytes]
+
+
+# @TODO: use arg to enable it
+FILE_DEBUG: "Final" = False
+
+
+def file_debug(message: "Any") -> None:
+    if FILE_DEBUG:
+        with Path("./pikspect_debug.txt").open("a", encoding=DEFAULT_INPUT_ENCODING) as fobj:
+            fobj.write(str(message) + "\n")
+
+
+def _copy(
+        master_fd: int,
+        master_read: MasterReaderType = _read,
+        stdin_read: StdinReaderType = _read,
+        timeout: int | float | None = None,
+) -> None:
+    """Fork of pty._copy to add support for `select`'s `timeout`."""
+    fds = [master_fd, STDIN_FILENO]
+    while fds:
+        rfds, _wfds, _xfds = select.select(fds, [], [], timeout)
+
+        if master_fd in rfds:
+            # Some OSes signal EOF by returning an empty byte string,
+            # some throw OSErrors.
+            try:
+                data = master_read(master_fd)
+            except OSError:
+                data = b""
+            if not data:  # Reached EOF.
+                return    # Assume the child process has exited and is unreachable, so we clean up.
+            os.write(STDOUT_FILENO, data)
+
+        if STDIN_FILENO in rfds:
+            data = stdin_read(STDIN_FILENO)
+            if not data:
+                fds.remove(STDIN_FILENO)
+            else:
+                _writen(master_fd, data)
+        else:
+            data = stdin_read(None)
+            if data:
+                _writen(master_fd, data)
+
+
+def spawn(
+        argv: list[str] | str,
+        master_read: MasterReaderType = _read,
+        stdin_read: StdinReaderType = _read,
+        timeout: int | float | None = None,
+        after_fork: Callable[[int, int], None] | None = None,
+) -> int:
+    """Fork of pty.spawn to add support for `select`'s `timeout` and `after_fork` callback."""
+    if isinstance(argv, str):
+        argv = [argv]
+    # sys.audit('pty.spawn', argv)
+
+    pid, master_fd = fork()
+    if pid == CHILD:
+        os.execlp(argv[0], *argv)  # nosec B606  # noqa: S606
+
+    try:
+        mode = tcgetattr(STDIN_FILENO)
+        # setraw(STDIN_FILENO)  # this breaks Ctrl+C
+        restore = True
+    # This is the same as termios.error
+    except tty.error:  # type: ignore[attr-defined]
+        restore = False
+
+    if after_fork:
+        after_fork(master_fd, pid)
+    try:
+        _copy(master_fd, master_read, stdin_read, timeout)
+    finally:
+        if restore:
+            tcsetattr(STDIN_FILENO, tty.TCSAFLUSH, mode)  # type: ignore[attr-defined]
+
+        close(master_fd)
+    return waitpid(pid, 0)[1]
 
 
 class ReadlineKeycodes:
@@ -205,53 +295,42 @@ class PikspectSignalHandler:
         return cls.signal_handler
 
 
-class PikspectPopen(subprocess.Popen[bytes]):
+class PikspectPopen:
 
-    print_output: bool
-    capture_input: bool
-    capture_output: bool
     historic_output: list[bytes]
-    pty_in: "TextIO"
-    pty_out: "BinaryIO"
     default_questions: dict[str, list[str]]
     # max_question_length = 0  # preserve enough information to analyze questions
     max_question_length = get_term_width() * 2  # preserve also at least last line
-    # write buffer:
-    _write_buffer: bytes = b""
-    # some help for mypy:
-    output: bytes = b""
+    next_answers: list[str]
+    pid: int | None = None
+    returncode: int | None = None
+    real_term_geometry: os.terminal_size | None = None
+
+    capture_output: bool
+    output: bytes
+
+    def __enter__(self) -> "PikspectPopen":
+        return self
+
+    def __exit__(self, *exc_details: "Any") -> None:
+        logger.debug("Exit details: {}", exc_details)
 
     def __init__(
             self,
             args: list[str],
             *,
-            print_output: bool = True,
-            capture_input: bool = True,
             capture_output: bool = False,
             default_questions: dict[str, list[str]] | None = None,
     ) -> None:
-        self.args = args
-        self.print_output = print_output
-        self.capture_input = capture_input
         self.capture_output = capture_output
+        self.output = b""
+
+        self.next_answers = []
+        self.args = args
         self.default_questions = {}
         self.historic_output = []
         if default_questions:
             self.add_answers(default_questions)
-
-        self.pty_user_master, self.pty_user_slave = pty.openpty()
-        self.pty_cmd_master, self.pty_cmd_slave = pty.openpty()
-
-        super().__init__(
-            args=args,
-            stdin=self.pty_user_slave,
-            stdout=self.pty_cmd_slave,
-            stderr=self.pty_cmd_slave,
-        )
-
-    def __del__(self) -> None:
-        self.terminate()
-        self.communicate()
 
     def add_answers(self, extra_questions: dict[str, list[str]]) -> None:
         for answer, questions in extra_questions.items():
@@ -261,9 +340,21 @@ class PikspectPopen(subprocess.Popen[bytes]):
                     self.max_question_length = len(question.encode(DEFAULT_INPUT_ENCODING))
         self.check_questions()
 
-    def communicator_thread(self) -> int:
-        result: int = self._wait(None)  # type: ignore[attr-defined]
-        return result
+    def send_signal(self, sig: int) -> None:
+        file_debug(f"::: ::: TRYING TO HANDLE SIGNAL {sig} ::: :::")
+        if self.pid:
+            os.kill(self.pid, sig)
+
+    def _pty_init(self, file_descriptor: int, pid: int) -> None:
+        # @TODO: add support for sigwinch later
+        logger.debug("fd: {}, pid: {}", file_descriptor, pid)
+        if self.real_term_geometry:
+            set_terminal_geometry(
+                file_descriptor,
+                columns=self.real_term_geometry.columns,
+                rows=self.real_term_geometry.lines,
+            )
+        self.pid = pid
 
     def run(self) -> None:
         if not isinstance(self.args, list):
@@ -276,7 +367,7 @@ class PikspectPopen(subprocess.Popen[bytes]):
         )
         try:
             with NestedTerminal() as real_term_geometry:
-
+                self.real_term_geometry = real_term_geometry
                 if (
                         PikaurConfig().misc.PrivilegeEscalationTool.get_str() in self.args
                 ):  # pragma: no cover
@@ -284,41 +375,30 @@ class PikspectPopen(subprocess.Popen[bytes]):
                         get_sudo_refresh_command(),  # noqa: S603
                         check=True,
                     )
-                with (
-                        open(  # noqa: PTH123
-                            self.pty_user_master, "w", encoding=DEFAULT_INPUT_ENCODING,
-                        ) as self.pty_in,
-                        open(  # noqa: PTH123
-                            self.pty_cmd_master, "rb", buffering=0,
-                        ) as self.pty_out,
-                ):
-                    set_terminal_geometry(
-                        self.pty_out.fileno(),
-                        columns=real_term_geometry.columns,
-                        rows=real_term_geometry.lines,
-                    )
-                    with ThreadPool(processes=3) as pool:
-                        output_task = pool.apply_async(self.cmd_output_reader_thread, ())
-                        input_task = pool.apply_async(self.user_input_reader_thread, ())
-                        communicate_task = pool.apply_async(self.communicator_thread, ())
-                        pool.close()
 
-                        output_task.get()
-                        sys.stdout.buffer.write(self._write_buffer)
-                        sys.stdout.buffer.flush()
-                        communicate_task.get()
-                        input_task.get()
-                        pool.join()
+                result = spawn(
+                    self.args,
+                    master_read=self.cmd_output_reader,
+                    stdin_read=self.user_input_reader,
+                    timeout=SMALL_TIMEOUT,
+                    after_fork=self._pty_init,
+                )
+                self.pid = None
+                logger.debug("return code: {}", result)
+                self.returncode = result
         finally:
             PikspectSignalHandler.clear()
-            os.close(self.pty_cmd_slave)
-            os.close(self.pty_user_slave)
 
     def check_questions(self) -> None:
+        # file_debug("check_question1:")
+
         try:
             historic_output = b"".join(self.historic_output).decode(DEFAULT_INPUT_ENCODING)
         except UnicodeDecodeError:  # pragma: no cover
             return
+
+        # file_debug("check_question:")
+        # file_debug(historic_output)
 
         clear_buffer = False
 
@@ -326,76 +406,52 @@ class PikspectPopen(subprocess.Popen[bytes]):
             for question in questions:
                 if not _match(question, historic_output):
                     continue
-                self.write_something((answer + "\n").encode(DEFAULT_INPUT_ENCODING))
-                with PrintLock():
-                    self.pty_in.write(answer)
-                    sleep(SMALL_TIMEOUT)
-                    self.pty_in.write("\n")
-                    self.pty_in.flush()
+                logger.debug("Found right answer to `{}`: `{}`", question, answer)
+                self.next_answers.append(answer)
                 clear_buffer = True
                 break
 
         if clear_buffer:
             self.historic_output = [b""]
 
-    def write_buffer_contents(self) -> None:
-        if self._write_buffer:
-            sys.stdout.buffer.write(self._write_buffer)
-            sys.stdout.buffer.flush()
-            self._write_buffer = b""
-
-    def write_something(self, output: bytes) -> None:
-        if not (self.print_output or self.capture_output):
-            return
-        with PrintLock():
-            if self.capture_output:
-                self.output += output
-            self._write_buffer += output
-            self.write_buffer_contents()
-
-    def cmd_output_reader_thread(self) -> None:
-        while True:
-
-            try:
-                selected = select.select([self.pty_out], [], [], SMALL_TIMEOUT)
-            except ValueError:  # pragma: no cover
-                return
-            readers = selected[0]
-            if not readers:
-                if self.returncode is not None:
-                    break
-                if not self.historic_output:
-                    sleep(SMALL_TIMEOUT)
-                self.write_buffer_contents()
-                continue
-            pty_reader = readers[0]
-            output = pty_reader.read(4096)
-
-            self.historic_output = (
-                self.historic_output[-self.max_question_length:] + [output]
+    def cmd_output_reader(self, file_descriptor: int) -> bytes:
+        if self.real_term_geometry:
+            set_terminal_geometry(
+                file_descriptor,
+                columns=self.real_term_geometry.columns,
+                rows=self.real_term_geometry.lines,
             )
-            self.write_something(output)
-            self.check_questions()
+        output = os.read(file_descriptor, 4096)
+        if self.capture_output:
+            self.output += output
 
-    def user_input_reader_thread(self) -> None:  # pragma: no cover
-        while self.returncode is None:
-            if not self.capture_input:
-                sleep(SMALL_TIMEOUT)
-                continue
+        self.historic_output = (
+            self.historic_output[-self.max_question_length:] + [output]
+        )
+        self.check_questions()
+        return output
 
-            char = None
+    def user_input_reader(self, file_descriptor: int | None = None) -> bytes:  # pragma: no cover
+        if file_descriptor and self.real_term_geometry:
+            set_terminal_geometry(
+                file_descriptor,
+                columns=self.real_term_geometry.columns,
+                rows=self.real_term_geometry.lines,
+            )
+        if self.next_answers:
+            char = ("\n".join(self.next_answers) + "\n").encode(DEFAULT_INPUT_ENCODING)
+            self.next_answers = []
+        elif file_descriptor:
+            char = os.read(file_descriptor, 1)
+        else:
+            return b""
 
-            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-                char = sys.stdin.read(1)
-                if char in [None, ""]:
-                    sleep(SMALL_TIMEOUT)
-                    continue
-            else:
-                sleep(SMALL_TIMEOUT)
-                continue
+        file_debug("UserInputReader:")
+        file_debug(char)
 
-            try:
-                with PrintLock():
+        try:
+            with PrintLock():
+                if len(char) == 1:
                     if ord(char) == ReadlineKeycodes.BACKSPACE:
                         sys.stdout.write("\b \b")
                     elif ord(char) == ReadlineKeycodes.CTRL_W:
@@ -405,11 +461,9 @@ class PikspectPopen(subprocess.Popen[bytes]):
                                 self.historic_output,
                             ).decode(DEFAULT_INPUT_ENCODING).splitlines()[-1],
                         )
-                    self.pty_in.write(char)
-                    self.pty_in.flush()
-            except ValueError as exc:
-                print(exc)  # noqa: T201
-            self.write_something(char.encode(DEFAULT_INPUT_ENCODING))
+        except ValueError as exc:
+            print(exc)  # noqa: T201
+        return char
 
 
 class YesNo:
@@ -420,13 +474,12 @@ class YesNo:
 
 
 def format_pacman_question(message: str, question: str = YesNo.QUESTION_YN_YES) -> str:
-    return bold_line(f" {_p(message)} {question} ")
+    return f"{_p(message)} {question}"
 
 
 def pikspect(
         cmd: list[str],
         *,
-        print_output: bool = True,
         auto_proceed: bool = True,
         conflicts: list[list[str]] | None = None,
         extra_questions: dict[str, list[str]] | None = None,
@@ -469,7 +522,6 @@ def pikspect(
 
     with PikspectPopen(
         cmd,
-        print_output=print_output,
         default_questions=default_questions,
         capture_output=bool(capture_output),
     ) as proc:

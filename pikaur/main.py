@@ -53,8 +53,8 @@ from .urllib import ProxyInitSocks5Error, init_proxy
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from types import TracebackType
-    from typing import Any
+    from types import FrameType, TracebackType
+    from typing import Any, Final
 
 
 def init_readline() -> None:
@@ -70,6 +70,16 @@ def init_readline() -> None:
 init_readline()
 
 logger = create_logger("main")
+
+
+# @TODO: use arg to enable it
+FILE_DEBUG: "Final" = False
+
+
+def file_debug(message: "Any") -> None:
+    if FILE_DEBUG:
+        with Path("./pikaur_debug_main.txt").open("a", encoding=DEFAULT_INPUT_ENCODING) as fobj:
+            fobj.write(str(message) + "\n")
 
 
 class OutputEncodingWrapper(AbstractContextManager[None]):
@@ -357,14 +367,22 @@ def restore_tty() -> None:
     TTYRestore.restore()
 
 
-def handle_sig_int(*_whatever: "Any") -> None:  # pragma: no cover
-    if signal_handler := PikspectSignalHandler.get():
-        signal_handler(*_whatever)  # pylint: disable=not-callable
-        return
-    if parse_args().pikaur_debug:
-        raise KeyboardInterrupt
-    print_stderr("\n\nCanceled by user (SIGINT)", lock=False)
-    raise SysExit(125)
+def create_handle_stop(reason: str = "SIGINT") -> "Callable[[int, FrameType | None], Any]":
+    def handle_stop(sig: int, frame: "FrameType | None") -> None:  # pragma: no cover
+        msg_started = f"\n\nCanceling by user ({reason})..."
+        file_debug(msg_started)
+        logger.debug(msg_started, lock=False)
+        if signal_handler := PikspectSignalHandler.get():
+            msg_custom = "\n\nFound Pikspect handler"
+            file_debug(msg_custom)
+            logger.debug(msg_custom, lock=False)
+            signal_handler(sig, frame)  # pylint: disable=not-callable
+            return
+        if parse_args().pikaur_debug:
+            raise KeyboardInterrupt
+        print_stderr(f"\n\nCanceled by user ({reason})", lock=False)
+        raise SysExit(125)
+    return handle_stop
 
 
 class EmptyWrapper:
@@ -394,7 +412,8 @@ def main(*, embed: bool = False) -> None:
 
         atexit.register(restore_tty)
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-        signal.signal(signal.SIGINT, handle_sig_int)
+        signal.signal(signal.SIGINT, create_handle_stop())
+        signal.signal(signal.SIGTERM, create_handle_stop("SIGTERM"))
 
         try:
             cli_entry_point()

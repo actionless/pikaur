@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING
 
 from .args import LiteralArgs, parse_args
 from .config import PROMPT_LOCK, PikaurConfig
-from .core import get_editor, interactive_spawn
+from .core import InteractiveSpawn, get_editor, interactive_spawn
 from .exceptions import SysExit
 from .filelock import FileLock
 from .i18n import translate
 from .logging import create_logger
-from .pikspect import ReadlineKeycodes, TTYInputWrapper, TTYRestore
+from .pikspect import PikspectPopen, ReadlineKeycodes, TTYInputWrapper, TTYRestore
 from .pikspect import pikspect as pikspect_spawn
 from .pprint import (
     ColorsHighlight,
@@ -226,7 +226,7 @@ def retry_interactive_command(
 ) -> bool:
     args = parse_args()
     while True:
-        good = (
+        proc: InteractiveSpawn | PikspectPopen = (
             pikspect_spawn(
                 cmd_args,
                 conflicts=conflicts,
@@ -235,7 +235,8 @@ def retry_interactive_command(
             interactive_spawn(
                 cmd_args,
             )
-        ).returncode == 0
+        )
+        good = proc.returncode == 0
         if good:
             return good
         print_stderr(color_line(

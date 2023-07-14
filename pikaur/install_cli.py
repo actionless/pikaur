@@ -156,7 +156,10 @@ class InstallPackagesCLI:
         self.transactions = {}
         self.failed_to_build_package_names = []
 
-        self._handle_refresh()
+        try:
+            self._handle_refresh()
+        except self.ExitMainSequence:
+            return
 
         if self.args.sysupgrade and not self.args.repo:
             print_stderr("{} {}".format(  # pylint: disable=consider-using-f-string
@@ -196,7 +199,7 @@ class InstallPackagesCLI:
                 sub_tty.restore_new()
 
             if not (self.install_package_names or self.args.sysupgrade):
-                return
+                raise self.ExitMainSequence
 
             if self.args.refresh:
                 PackageDB.discard_repo_cache()

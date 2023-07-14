@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from .args import parse_args, reconstruct_args
 from .config import BUILD_CACHE_PATH, PACKAGE_CACHE_PATH, PikaurConfig
 from .core import interactive_spawn, remove_dir, sudo
@@ -9,10 +7,6 @@ from .logging import create_logger
 from .pikspect import YesNo, format_pacman_question, pikspect
 from .pprint import ColorsHighlight, bold_line, color_line, print_stdout
 from .prompt import ask_to_continue
-
-if TYPE_CHECKING:
-    from .pikspect import PikspectPopen
-
 
 _debug = create_logger("pkg_cache_cli").debug
 
@@ -38,10 +32,14 @@ def clean_aur_cache() -> None:
 
 def clean_repo_cache() -> None:
     args = parse_args()
-    if args.noconfirm:
 
-        def noconfirm_cache_remove(pacman_args: list[str]) -> "PikspectPopen":
-            return pikspect(pacman_args, extra_questions={YesNo.ANSWER_Y: [
+    if args.noconfirm:
+        returncode = pikspect(
+            sudo([
+                PikaurConfig().misc.PacmanPath.get_str(),
+                *reconstruct_args(args, ignore_args=["noconfirm"]),
+            ]),
+            extra_questions={YesNo.ANSWER_Y: [
                 format_pacman_question(
                     "Do you want to remove ALL files from cache?",
                     question=YesNo.QUESTION_YN_NO,
@@ -52,20 +50,16 @@ def clean_repo_cache() -> None:
                 format_pacman_question(
                     "Do you want to remove unused repositories?",
                 ),
-            ]})
-        returncode = noconfirm_cache_remove(sudo([
+            ]},
+        ).returncode
+        if returncode is None:
+            returncode = 255
+    else:
+        returncode = interactive_spawn(sudo([
             PikaurConfig().misc.PacmanPath.get_str(),
             *reconstruct_args(args, ignore_args=["noconfirm"]),
         ])).returncode
-        if returncode is None:
-            returncode = 255
-        raise SysExit(returncode)
-    raise SysExit(
-        interactive_spawn(sudo([
-            PikaurConfig().misc.PacmanPath.get_str(),
-            *reconstruct_args(args, ignore_args=["noconfirm"]),
-        ])).returncode,
-    )
+    raise SysExit(returncode)
 
 
 def cli_clean_packages_cache() -> None:

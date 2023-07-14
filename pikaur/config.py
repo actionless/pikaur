@@ -33,7 +33,7 @@ BOOL: "Final" = "bool"
 INT: "Final" = "int"
 STR: "Final" = "str"
 RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
-VERSION: "Final" = "1.16-dev"
+VERSION: "Final" = "1.16.1-dev"
 
 _USER_TEMP_ROOT: "Final" = Path(gettempdir())
 _USER_CACHE_ROOT: "Final" = Path(os.environ.get(

@@ -62,17 +62,48 @@ def file_debug(message: "Any") -> None:
             fobj.write(str(message) + "\n")
 
 
-def _copy(
+def _copy(  # pylint: disable=too-many-branches
         master_fd: int,
         master_read: MasterReaderType = _read,
         stdin_read: StdinReaderType = _read,
 ) -> None:
     """Fork of pty._copy from python's stdlib."""
-    fds = [master_fd, STDIN_FILENO]
+    if os.get_blocking(master_fd):
+        # If we write more than tty/ndisc is willing to buffer, we may block
+        # indefinitely. So we set master_fd to non-blocking temporarily during
+        # the copy operation.
+        os.set_blocking(master_fd, False)
+        try:
+            _copy(master_fd, master_read=master_read, stdin_read=stdin_read)
+        finally:
+            # restore blocking mode for backwards compatibility
+            os.set_blocking(master_fd, True)
+        return
+    high_waterlevel = 4096
+    stdin_avail = master_fd != STDIN_FILENO
+    stdout_avail = master_fd != STDOUT_FILENO
+    i_buf = b""
+    o_buf = b""
+    while 1:
+        rfds: list[int] = []
+        wfds: list[int] = []
+        if stdin_avail and len(i_buf) < high_waterlevel:
+            rfds.append(STDIN_FILENO)
+        if stdout_avail and len(o_buf) < high_waterlevel:
+            rfds.append(master_fd)
+        if stdout_avail and len(o_buf) > 0:
+            wfds.append(STDOUT_FILENO)
+        if len(i_buf) > 0:
+            wfds.append(master_fd)
 
-    while fds:
-        rfds, _wfds, _xfds = select.select(fds, [], [])
-        file_debug(f"read fds: {rfds} {master_fd} {STDIN_FILENO}")
+        rfds, wfds, _xfds = select.select(rfds, wfds, [])
+
+        if STDOUT_FILENO in wfds:
+            try:
+                written = os.write(STDOUT_FILENO, o_buf)
+                o_buf = o_buf[written:]
+            except OSError:
+                stdout_avail = False
 
         if master_fd in rfds:
             # Some OSes signal EOF by returning an empty byte string,
@@ -83,18 +114,23 @@ def _copy(
                 data = b""
             if not data:  # Reached EOF.
                 return    # Assume the child process has exited and is unreachable, so we clean up.
-            os.write(STDOUT_FILENO, data)
+            o_buf += data
 
-        if STDIN_FILENO in rfds:
+        if master_fd in wfds:
+            written = os.write(master_fd, i_buf)
+            i_buf = i_buf[written:]
+
+        if stdin_avail and STDIN_FILENO in rfds:
             data = stdin_read(STDIN_FILENO)
             if not data:
-                fds.remove(STDIN_FILENO)
+                stdin_avail = False
             else:
-                _writen(master_fd, data)
+                i_buf += data
         else:
             data = stdin_read(None)
             if data:
                 _writen(master_fd, data)
+
     file_debug("FDS finished")
 
 

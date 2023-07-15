@@ -189,12 +189,12 @@ def pikaur(
 
     PackageDB.discard_local_cache()
 
-    new_args = ["pikaur", "--privilege-escalation-target=pacman", *cmd.split(" ")]
+    new_args = ["pikaur", *cmd.split(" ")]
     mflags = []
 
-    if "-S " in cmd:
+    if "-S " in cmd or "-P" in cmd:
         new_args += [
-            "--noconfirm",
+            "--noconfirm", "--privilege-escalation-target=pacman",
         ]
     if fake_makepkg:
         new_args += [

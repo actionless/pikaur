@@ -16,10 +16,8 @@ from .conflicts import find_aur_conflicts
 from .core import (
     PackageSource,
     interactive_spawn,
-    isolate_root_cmd,
     open_file,
     remove_dir,
-    running_as_root,
     sudo,
 )
 from .exceptions import (
@@ -58,6 +56,10 @@ from .print_department import (
     print_not_found_packages,
     print_package_downgrading,
     print_package_uptodate,
+)
+from .privilege import (
+    isolate_root_cmd,
+    using_dynamic_users,
 )
 from .prompt import (
     ask_to_continue,
@@ -732,7 +734,7 @@ class InstallPackagesCLI:
         # if running as root get sources for dev packages synchronously
         # (to prevent race condition in systemd dynamic users)
         num_threads: int | None = None
-        if running_as_root():  # pragma: no cover
+        if using_dynamic_users():  # pragma: no cover
             num_threads = 1
 
         # check if pkgs versions already installed

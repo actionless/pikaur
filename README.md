@@ -213,6 +213,11 @@ permit persist :wheel
 ```
 Currently supported options are `sudo` and `doas`.
 
+##### UserId (default: 0)
+User ID to run makepkg if pikaur started from root.
+0 - means disabled, not that it will use uid=0.
+Setting this option would override DynamicUsers settings and force changing to this UID instead of a dynamic one.
+
 
 #### [network]
 

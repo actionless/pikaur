@@ -29,8 +29,6 @@ from .core import (
     DEFAULT_INPUT_ENCODING,
     check_runtime_deps,
     interactive_spawn,
-    isolate_root_cmd,
-    running_as_root,
     spawn,
     sudo,
 )
@@ -45,6 +43,12 @@ from .pikspect import PikspectSignalHandler, TTYRestore
 from .pkg_cache_cli import cli_clean_packages_cache
 from .pprint import print_error, print_stderr, print_warning
 from .print_department import print_version
+from .privilege import (
+    isolate_root_cmd,
+    need_dynamic_users,
+    running_as_root,
+    using_dynamic_users,
+)
 from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .search_cli import cli_search_packages, search_packages
 from .updates import print_upgradeable
@@ -210,7 +214,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
     cli_install_packages()
 
 
-def _pikaur_operation(
+def execute_pikaur_operation(
         pikaur_operation: "Callable[[], None]",
         *,
         require_sudo: bool,
@@ -226,18 +230,34 @@ def _pikaur_operation(
             for word in line.split()
         ]
         logger.debug("    {}", args.positional)
-    if running_as_root() and (PikaurConfig().build.DynamicUsers.get_str() == "never"):
-        print_error(translate("SystemD Dynamic Users must be enabled if running as root."))
-        sys.exit(1)
-    elif require_sudo and args.dynamic_users and not running_as_root():
-        # Restart pikaur with sudo to use systemd dynamic users
-        restart_args = sys.argv[:]
-        config_overridden = max(
-            arg.startswith("--pikaur-config")
-            for arg in restart_args
+    if (
+            running_as_root()
+            and (PikaurConfig().build.DynamicUsers.get_str() == "never" and not args.user_id)
+    ):
+        print_error(
+            translate(
+                "Either SystemD Dynamic Users must be enabled"
+                " or User ID should be set if running as root.",
+            ),
         )
-        if not config_overridden:
-            restart_args += ["--pikaur-config", str(get_config_path())]
+        sys.exit(1)
+    elif require_sudo and not running_as_root():
+        # Restart pikaur with sudo to use systemd dynamic users or current user id
+        restart_args = sys.argv[:]
+        extra_args = [
+            ("--pikaur-config", str(get_config_path())),
+        ]
+        if not need_dynamic_users():
+            extra_args.append(
+                ("--user-id", str(args.user_id or os.getuid())),
+            )
+        for flag, fallback in extra_args:
+            config_overridden = max(
+                arg.startswith(flag)
+                for arg in restart_args
+            )
+            if not config_overridden:
+                restart_args += [flag, fallback]
         sys.exit(interactive_spawn(
             sudo(restart_args),
         ).returncode)
@@ -306,7 +326,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
         require_sudo = True
 
     if pikaur_operation:
-        _pikaur_operation(pikaur_operation=pikaur_operation, require_sudo=require_sudo)
+        execute_pikaur_operation(pikaur_operation=pikaur_operation, require_sudo=require_sudo)
     else:
         # Just bypass all the args to pacman
         logger.debug("Pikaur operation not found for args: {}", sys.argv)
@@ -341,7 +361,7 @@ def migrate_old_aur_repos_dir() -> None:
 
 
 def create_dirs() -> None:
-    if running_as_root():
+    if using_dynamic_users():
         # Let systemd-run setup the directories and symlinks
         true_cmd = isolate_root_cmd(["true"])
         result = spawn(true_cmd)

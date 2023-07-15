@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 from .args import parse_args
-from .config import _USER_TEMP_ROOT, RUNNING_AS_ROOT, PikaurConfig
+from .config import RUNNING_AS_ROOT, USING_DYNAMIC_USERS, PikaurConfig
 from .i18n import translate
 from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 
@@ -168,9 +168,9 @@ class AURInstallInfo(InstallInfo):
 
 
 def sudo(cmd: list[str]) -> list[str]:
-    if running_as_root():
+    if RUNNING_AS_ROOT:
         return cmd
-    return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), *cmd]
+    return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), "--preserve-env", *cmd]
 
 
 class InteractiveSpawn(subprocess.Popen[bytes]):
@@ -272,40 +272,6 @@ def joined_spawn(
     return proc
 
 
-def running_as_root() -> bool:
-    return RUNNING_AS_ROOT
-
-
-def isolate_root_cmd(
-        cmd: list[str],
-        cwd: str | Path | None = None,
-        env: dict[str, str] | None = None,
-) -> list[str]:
-    if not running_as_root():
-        return cmd
-    if isinstance(cwd, str):
-        cwd = Path(cwd)
-    base_root_isolator = [
-        "/usr/sbin/systemd-run",
-        "--service-type=oneshot",
-        "--pipe", "--wait", "--pty",
-        "-p", "DynamicUser=yes",
-        "-p", "CacheDirectory=pikaur",
-        "-E", f"HOME={_USER_TEMP_ROOT}",
-    ]
-    if env is not None:
-        for env_var_name, env_var_value in env.items():
-            base_root_isolator += ["-E", f"{env_var_name}={env_var_value}"]
-    if cwd is not None:
-        base_root_isolator += ["-p", "WorkingDirectory=" + str(cwd.resolve())]
-    for env_var_name in (
-            "http_proxy", "https_proxy", "ftp_proxy",
-    ):
-        if os.environ.get(env_var_name) is not None:
-            base_root_isolator += ["-E", f"{env_var_name}={os.environ[env_var_name]}"]
-    return base_root_isolator + cmd
-
-
 class CodepageSequences:
     UTF_8: "Final[Sequence[bytes]]" = (b"\xef\xbb\xbf", )
     UTF_16: "Final[Sequence[bytes]]" = (b"\xfe\xff", b"\xff\xfe")
@@ -390,7 +356,7 @@ def dirname(path: str | Path) -> Path:
     return Path(path).parent if path else Path(".")
 
 
-def check_systemd_dynamic_users() -> bool:  # pragma: no cover
+def check_systemd_dynamic_users_version() -> bool:  # pragma: no cover
     try:
         out = subprocess.check_output(
             ["/usr/sbin/systemd-run", "--version"],  # nosec B603  # noqa: S603
@@ -409,7 +375,7 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
             translate("pikaur requires Python >= 3.7 to run."),
         )
         sys.exit(65)
-    if running_as_root() and not check_systemd_dynamic_users():
+    if USING_DYNAMIC_USERS and not check_systemd_dynamic_users_version():
         print_error(
             translate("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         )
@@ -417,7 +383,7 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
     if not dep_names:
         privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
         dep_names = ["fakeroot"] + (
-            [privilege_escalation_tool] if not running_as_root() else []
+            [privilege_escalation_tool] if not RUNNING_AS_ROOT else []
         )
 
     for dep_bin in dep_names:

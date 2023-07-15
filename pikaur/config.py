@@ -27,23 +27,28 @@ if TYPE_CHECKING:
         deprecated: NotRequired[DeprecatedConfigValue]
         migrated: NotRequired[bool]
 
+VERSION: "Final" = "1.16.1-dev"
 
 DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
 BOOL: "Final" = "bool"
 INT: "Final" = "int"
 STR: "Final" = "str"
+
 RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
-VERSION: "Final" = "1.16.1-dev"
+CUSTOM_USER_ID: "Final" = max(arg.startswith("--user-id") for arg in sys.argv)
+USING_DYNAMIC_USERS: "Final" = RUNNING_AS_ROOT and not CUSTOM_USER_ID
+
+HOME: "Final" = Path(os.environ["HOME"]) if (RUNNING_AS_ROOT and CUSTOM_USER_ID) else Path.home()
 
 _USER_TEMP_ROOT: "Final" = Path(gettempdir())
 _USER_CACHE_ROOT: "Final" = Path(os.environ.get(
     "XDG_CACHE_HOME",
-    Path.home() / ".cache/",
+    HOME / ".cache/",
 ))
 
 CACHE_ROOT: "Final" = (
     Path("/var/cache/pikaur")
-    if RUNNING_AS_ROOT else
+    if USING_DYNAMIC_USERS else
     _USER_CACHE_ROOT / "pikaur/"
 )
 
@@ -52,31 +57,31 @@ PACKAGE_CACHE_PATH: "Final" = CACHE_ROOT / "pkg"
 
 CONFIG_ROOT: "Final" = Path(os.environ.get(
     "XDG_CONFIG_HOME",
-    Path.home() / ".config/",
+    HOME / ".config/",
 ))
 
 DATA_ROOT: "Final" = (
     Path(os.environ.get(
         "XDG_DATA_HOME",
-        Path.home() / ".local/share/",
+        HOME / ".local/share/",
     )) / "pikaur"
 )
 
 _OLD_AUR_REPOS_CACHE_PATH: "Final" = CACHE_ROOT / "aur_repos"
 AUR_REPOS_CACHE_PATH: "Final" = (
     (CACHE_ROOT / "aur_repos")
-    if RUNNING_AS_ROOT else
+    if USING_DYNAMIC_USERS else
     (DATA_ROOT / "aur_repos")
 )
 
 BUILD_DEPS_LOCK: "Final" = (
     (
-        _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT)
+        _USER_CACHE_ROOT if USING_DYNAMIC_USERS else _USER_TEMP_ROOT)
     / "pikaur_build_deps.lock"
 )
 PROMPT_LOCK: "Final" = (
     (
-        _USER_CACHE_ROOT if RUNNING_AS_ROOT else _USER_TEMP_ROOT
+        _USER_CACHE_ROOT if USING_DYNAMIC_USERS else _USER_TEMP_ROOT
     ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
 )
 
@@ -304,6 +309,10 @@ CONFIG_SCHEMA: ConfigSchemaT = {
                 "section": "network",
                 "option": "NewsUrl",
             },
+        },
+        "UserId": {
+            "data_type": INT,
+            "default": "0",
         },
     },
     "network": {

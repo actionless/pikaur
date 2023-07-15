@@ -21,12 +21,10 @@ from .core import (
     DataType,
     dirname,
     interactive_spawn,
-    isolate_root_cmd,
     joined_spawn,
     open_file,
     remove_dir,
     replace_file,
-    running_as_root,
     spawn,
     sudo,
 )
@@ -44,6 +42,10 @@ from .pprint import (
     print_error,
     print_stderr,
     print_stdout,
+)
+from .privilege import (
+    isolate_root_cmd,
+    using_dynamic_users,
 )
 from .prompt import (
     ask_to_continue,
@@ -899,7 +901,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
     pool_size: int | None = None
     if clone_c := parse_args().aur_clone_concurrency:
         pool_size = clone_c
-    elif running_as_root():
+    elif using_dynamic_users():
         pool_size = 1
     exc: CloneError | None = None
     with ThreadPool(processes=pool_size) as pool:

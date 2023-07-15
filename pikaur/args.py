@@ -265,6 +265,10 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
                 None, "aur-clone-concurrency", None,
                 translate("how many git-clones/pulls to do from AUR"),
             ),
+            (
+                None, "user-id", PikaurConfig().misc.UserId.get_int(),
+                translate("user ID to run makepkg if pikaur started from root"),
+            ),
         ]
     return result
 

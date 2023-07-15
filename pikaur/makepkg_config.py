@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 
 from .args import parse_args
 from .config import _USER_TEMP_ROOT, CONFIG_ROOT
-from .core import open_file, running_as_root
+from .core import open_file
+from .privilege import using_dynamic_users
 
 if TYPE_CHECKING:
     from typing import Final, TypeVar
@@ -141,8 +142,10 @@ class MakePkgCommand:
 
     @classmethod
     def _apply_dynamic_users_workaround(cls) -> None:
+        if not using_dynamic_users():
+            return
         pkgdest = str(get_pkgdest())
-        if running_as_root() and pkgdest and (
+        if pkgdest and (
                 pkgdest.startswith(
                     (str(_USER_TEMP_ROOT), "/tmp", "/var/tmp"),  # nosec B108  # noqa: S108
                 )

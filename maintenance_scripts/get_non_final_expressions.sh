@@ -11,7 +11,7 @@ result=$(
 		-e TypeVar \
 		-e namedtuple \
 		\
-		-e 'create_logger\(' \
+		-e 'create_logger\(|running_as_root|sudo' \
 	| sort
 )
 echo -n "$result"

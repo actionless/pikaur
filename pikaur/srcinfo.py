@@ -4,11 +4,12 @@ import shutil
 from pathlib import Path
 
 from .config import BUILD_CACHE_PATH, CACHE_ROOT
-from .core import isolate_root_cmd, open_file, running_as_root, spawn
+from .core import open_file, spawn
 from .exceptions import SysExit
 from .i18n import translate
 from .makepkg_config import MakePkgCommand, MakepkgConfig
 from .pprint import print_error, print_stderr
+from .privilege import isolate_root_cmd, using_dynamic_users
 from .version import VersionMatcher
 
 
@@ -126,7 +127,7 @@ class SrcInfo:
 
     def regenerate(self) -> None:
         working_directory = self.repo_path
-        if running_as_root() and not str(self.repo_path).startswith(str(CACHE_ROOT)):
+        if using_dynamic_users() and not str(self.repo_path).startswith(str(CACHE_ROOT)):
             working_directory = BUILD_CACHE_PATH / (
                 "_info_" + (self.get_value("pkgbase") or "unknown")
             )

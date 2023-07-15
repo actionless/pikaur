@@ -241,7 +241,14 @@ def execute_pikaur_operation(
             ),
         )
         sys.exit(1)
-    elif require_sudo and not running_as_root() and args.privilege_escalation_tool == "pikaur":
+    elif (
+            require_sudo
+            and not running_as_root()
+            and (
+                args.privilege_escalation_target == "pikaur"
+                or need_dynamic_users()
+            )
+    ):
         # Restart pikaur with sudo to use systemd dynamic users or current user id
         restart_args = sys.argv[:]
         extra_args = [

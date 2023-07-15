@@ -19,7 +19,6 @@ from pty import (  # type: ignore[attr-defined]
     STDIN_FILENO,
     STDOUT_FILENO,
     _read,
-    _writen,
     fork,
 )
 from tty import setraw, tcgetattr, tcsetattr  # type: ignore[attr-defined]
@@ -129,7 +128,7 @@ def _copy(  # pylint: disable=too-many-branches
         else:
             data = stdin_read(None)
             if data:
-                _writen(master_fd, data)
+                i_buf += data
 
     file_debug("FDS finished")
 

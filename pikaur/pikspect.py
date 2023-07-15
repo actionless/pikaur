@@ -56,6 +56,7 @@ FILE_DEBUG: "Final" = False
 
 
 def file_debug(message: "Any") -> None:
+    # @TODO: move it to the logging module
     if FILE_DEBUG:
         with Path("./pikspect_debug.txt").open("a", encoding=DEFAULT_INPUT_ENCODING) as fobj:
             fobj.write(str(message) + "\n")
@@ -310,6 +311,11 @@ def _match(pattern: str, line: str) -> bool:
 
 
 class PikspectSignalHandler:
+    """
+    Because Python allows to handle signals only from the main thread
+    this class serves as singleton storage to set signal handler
+    from within child threads.
+    """
 
     signal_handler: "Callable[..., Any] | None" = None
 
@@ -372,7 +378,7 @@ class PikspectPopen:
         self.check_questions()
 
     def send_signal(self, sig: int) -> None:
-        file_debug(f"::: ::: TRYING TO HANDLE SIGNAL {sig} ::: :::")
+        file_debug(f"::: ::: TRYING TO HANDLE SIGNAL {sig} FOR PID {self.pid} ::: :::")
         if self.pid:
             os.kill(self.pid, sig)
 
@@ -405,8 +411,8 @@ class PikspectPopen:
                     stdin_read=self.user_input_reader,
                     after_fork=self._pty_init,
                 )
+                logger.debug("pid {} finished with return code: {}", self.pid, result)
                 self.pid = None
-                logger.debug("return code: {}", result)
                 self.returncode = result
         finally:
             PikspectSignalHandler.clear()

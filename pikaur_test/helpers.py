@@ -194,7 +194,11 @@ def pikaur(
 
     if "-S " in cmd or "-P" in cmd:
         new_args += [
-            "--noconfirm", "--privilege-escalation-target=pacman",
+            "--noconfirm",
+        ]
+    if "-S" in cmd or "-P" in cmd:
+        new_args += [
+            "--privilege-escalation-target=pacman",
         ]
     if fake_makepkg:
         new_args += [

@@ -48,7 +48,7 @@ from .print_department import print_version
 from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .search_cli import cli_search_packages, search_packages
 from .updates import print_upgradeable
-from .urllib import ProxyInitSocks5Error, init_proxy
+from .urllib_helper import ProxyInitSocks5Error, init_proxy
 
 if TYPE_CHECKING:
     from collections.abc import Callable

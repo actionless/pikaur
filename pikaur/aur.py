@@ -9,7 +9,7 @@ from .config import PikaurConfig
 from .core import DataType
 from .exceptions import AURError
 from .progressbar import ThreadSafeProgressBar
-from .urllib import get_gzip_from_url, get_json_from_url
+from .urllib_helper import get_gzip_from_url, get_json_from_url
 
 if TYPE_CHECKING:
     from typing import Any, Final

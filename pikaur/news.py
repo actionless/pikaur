@@ -22,7 +22,7 @@ from .pprint import (
     print_error,
     print_stdout,
 )
-from .urllib import get_unicode_from_url
+from .urllib_helper import get_unicode_from_url
 
 if TYPE_CHECKING:
     from typing import Final, TextIO

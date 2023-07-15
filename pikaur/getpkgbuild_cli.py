@@ -11,7 +11,7 @@ from .i18n import translate
 from .pacman import PackageDB
 from .pprint import print_stdout
 from .print_department import print_not_found_packages
-from .urllib import wrap_proxy_env
+from .urllib_helper import wrap_proxy_env
 
 if TYPE_CHECKING:
     import pyalpm

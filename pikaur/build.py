@@ -53,7 +53,7 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
-from .urllib import wrap_proxy_env
+from .urllib_helper import wrap_proxy_env
 from .version import VersionMatcher, compare_versions
 
 if TYPE_CHECKING:

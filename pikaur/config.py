@@ -282,10 +282,6 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
     },
     "misc": {
-        "SudoLoopInterval": {
-            "data_type": INT,
-            "default": "59",
-        },
         "PacmanPath": {
             "data_type": STR,
             "default": "pacman",

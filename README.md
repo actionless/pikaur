@@ -206,11 +206,6 @@ Comma-separated list of packages names or globs, which upgrade should have addit
 ##### PacmanPath (default: pacman)
 Path to pacman executable.
 
-##### SudoLoopInterval (default: 59)
-Interval in seconds in which `sudo` command will be spawned in the background
-to avoid asking for sudo password more than once
-(`-1` to disable sudo loop at all).
-
 ##### PrivilegeEscalationTool (default: sudo)
 A tool used to escalate user privileges. If using `doas` then `persistent` option is required in `doas.conf`. For example:
 ```

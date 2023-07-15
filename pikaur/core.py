@@ -8,9 +8,7 @@ import shutil
 import subprocess  # nosec B404
 import sys
 import tempfile
-from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from time import sleep
 from typing import TYPE_CHECKING
 
 import pyalpm
@@ -22,15 +20,14 @@ from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_s
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
-    from collections.abc import Callable, Sequence
-    from typing import IO, Any, Final, TypeVar
+    from collections.abc import Sequence
+    from typing import IO, Any, Final
 
     from typing_extensions import NotRequired, TypedDict
 
     from .aur import AURPackageInfo
 
     IOStream = IO[bytes] | int | None
-    SudoLoopResultT = TypeVar("SudoLoopResultT")
 
     class SpawnArgs(TypedDict):
         stdout: NotRequired["IOStream"]
@@ -176,11 +173,6 @@ def sudo(cmd: list[str]) -> list[str]:
     return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), *cmd]
 
 
-def get_sudo_refresh_command() -> list[str]:
-    pacman_path = PikaurConfig().misc.PacmanPath.get_str()
-    return sudo([pacman_path, "-T"])
-
-
 class InteractiveSpawn(subprocess.Popen[bytes]):
 
     stdout_text: str | None
@@ -193,7 +185,6 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
         if (
                 parse_args().print_commands
                 and not self._terminated
-                and self.args != get_sudo_refresh_command()
         ):
             print_stderr(
                 color_line("=> ", ColorsHighlight.cyan) +
@@ -397,37 +388,6 @@ def get_editor() -> list[str] | None:
 
 def dirname(path: str | Path) -> Path:
     return Path(path).parent if path else Path(".")
-
-
-def sudo_loop(*, once: bool = False) -> None:
-    """Get sudo for further questions."""
-    sudo_loop_interval = PikaurConfig().misc.SudoLoopInterval.get_int()
-    if sudo_loop_interval == -1:
-        return
-    while True:
-        interactive_spawn(get_sudo_refresh_command())
-        if once:
-            break
-        sleep(sudo_loop_interval)
-
-
-def run_with_sudo_loop(function: "Callable[..., SudoLoopResultT]") -> "SudoLoopResultT | None":
-    sudo_loop(once=True)
-    with ThreadPool(processes=2) as pool:
-        main_thread = pool.apply_async(function, ())
-        pool.apply_async(sudo_loop)
-        pool.close()
-        catched_exc: Exception | None = None
-        result: "SudoLoopResultT | None" = None
-        try:
-            result = main_thread.get()
-        except Exception as exc:
-            catched_exc = exc
-        finally:
-            pool.terminate()
-        if catched_exc:
-            raise catched_exc
-        return result
 
 
 def check_systemd_dynamic_users() -> bool:  # pragma: no cover

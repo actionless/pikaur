@@ -8,7 +8,6 @@ import select
 import shutil
 import signal
 import struct
-import subprocess  # nosec B404
 import sys
 import termios
 import tty
@@ -27,8 +26,7 @@ from tty import setraw, tcgetattr, tcsetattr  # type: ignore[attr-defined]
 from typing import TYPE_CHECKING
 
 from .args import parse_args
-from .config import PikaurConfig
-from .core import DEFAULT_INPUT_ENCODING, get_sudo_refresh_command
+from .core import DEFAULT_INPUT_ENCODING
 from .i18n import translate
 from .logging import create_logger
 from .pacman_i18n import _p
@@ -366,14 +364,6 @@ class PikspectPopen:
         try:
             with NestedTerminal() as real_term_geometry:
                 self.real_term_geometry = real_term_geometry
-                if (
-                        PikaurConfig().misc.PrivilegeEscalationTool.get_str() in self.args
-                ):  # pragma: no cover
-                    subprocess.run(  # nosec B603
-                        get_sudo_refresh_command(),  # noqa: S603
-                        check=True,
-                    )
-
                 result = spawn(
                     self.args,
                     master_read=self.cmd_output_reader,

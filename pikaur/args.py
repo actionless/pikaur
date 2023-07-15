@@ -223,30 +223,41 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
     if action in ("sync", "pkgbuild"):
         result += [
             (
-                None, "mflags", None,
+                None, "mflags",
+                None,
                 translate("cli args to pass to makepkg"),
             ),
             (
-                None, "makepkg-config", None,
+                None, "makepkg-config",
+                None,
                 translate("path to custom makepkg config"),
             ),
             (
-                None, "makepkg-path", None,
+                None, "makepkg-path",
+                None,
                 translate("override path to makepkg executable"),
             ),
             (
-                None, "pikaur-config", None,
+                None, "pikaur-config",
+                None,
                 translate("path to custom pikaur config"),
             ),
             (
-                None, "build-gpgdir", PikaurConfig().build.GpgDir.get_str(),
+                None, "build-gpgdir",
+                PikaurConfig().build.GpgDir.get_str(),
                 translate("set GnuPG home directory used when validating package sources"),
+            ),
+            (
+                None, "privilege-escalation-target",
+                PikaurConfig().misc.PrivilegeEscalationTarget.get_str(),
+                None,
             ),
         ]
     if action == "getpkgbuild":
         result += [
             (
-                "o", "output-dir", None,
+                "o", "output-dir",
+                None,
                 translate("path where to clone PKGBUILDs"),
             ),
         ]

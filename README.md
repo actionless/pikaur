@@ -213,6 +213,10 @@ permit persist :wheel
 ```
 Currently supported options are `sudo` and `doas`.
 
+##### PrivilegeEscalationTarget (default: pikaur)
+Choices: pikaur, pacman.
+In case of elevating privilege for pacman - pikaur would ask for password every time pacman runs.
+
 ##### UserId (default: 0)
 User ID to run makepkg if pikaur started from root.
 0 - means disabled, not that it will use uid=0.

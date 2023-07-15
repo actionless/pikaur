@@ -287,14 +287,6 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
     },
     "misc": {
-        "PacmanPath": {
-            "data_type": STR,
-            "default": "pacman",
-        },
-        "PrivilegeEscalationTool": {
-            "data_type": STR,
-            "default": "sudo",
-        },
         "AurHost": {
             "data_type": STR,
             "deprecated": {
@@ -309,6 +301,18 @@ CONFIG_SCHEMA: ConfigSchemaT = {
                 "section": "network",
                 "option": "NewsUrl",
             },
+        },
+        "PacmanPath": {
+            "data_type": STR,
+            "default": "pacman",
+        },
+        "PrivilegeEscalationTool": {
+            "data_type": STR,
+            "default": "sudo",
+        },
+        "PrivilegeEscalationTarget": {
+            "data_type": STR,
+            "default": "pikaur",
         },
         "UserId": {
             "data_type": INT,

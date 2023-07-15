@@ -189,7 +189,7 @@ def pikaur(
 
     PackageDB.discard_local_cache()
 
-    new_args = ["pikaur", *cmd.split(" ")]
+    new_args = ["pikaur", "--privilege-escalation-target=pacman", *cmd.split(" ")]
     mflags = []
 
     if "-S " in cmd:

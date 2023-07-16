@@ -234,11 +234,13 @@ class PromptLockPath(PathSingleton):
         )
 
 
-def get_config_path() -> Path:
-    config_overridden = pre_arg_parser("--pikaur-config", "")
-    if config_overridden:
-        return Path(config_overridden)
-    return ConfigRoot()() / "pikaur.conf"
+class ConfigPath(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        config_overridden = pre_arg_parser("--pikaur-config", "")
+        if config_overridden:
+            return Path(config_overridden)
+        return ConfigRoot()() / "pikaur.conf"
 
 
 class UpgradeSortingValues:
@@ -516,14 +518,15 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
     if need_write:
         CustomUserId.update_fallback(int(config["misc"]["UserId"]))
         config_root = ConfigRoot()()
+        config_path = ConfigPath()()
         if not config_root.exists():
             config_root.mkdir(parents=True)
-        with get_config_path().open("w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
+        with config_path.open("w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
         if custom_user_id := CustomUserId()():
             for path in (
                 config_root,
-                get_config_path(),
+                config_path,
             ):
                 os.chown(path, custom_user_id, custom_user_id)
 
@@ -590,7 +593,7 @@ class PikaurConfig:
     @classmethod
     def get_config(cls) -> configparser.ConfigParser:
         if not getattr(cls, "_config", None):
-            config_path = get_config_path()
+            config_path = ConfigPath()()
             cls._config = configparser.ConfigParser()
             if not config_path.exists():
                 write_config()

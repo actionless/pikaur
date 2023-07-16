@@ -19,11 +19,11 @@ from .args import parse_args
 from .config import (
     AurReposCachePath,
     CacheRoot,
+    ConfigPath,
     DataRoot,
     PikaurConfig,
     _OldAurReposCachePath,
     _UserCacheRoot,
-    get_config_path,
 )
 from .core import (
     DEFAULT_INPUT_ENCODING,
@@ -253,7 +253,7 @@ def execute_pikaur_operation(
         # Restart pikaur with sudo to use systemd dynamic users or current user id
         restart_args = sys.argv[:]
         extra_args = [
-            ("--pikaur-config", str(get_config_path())),
+            ("--pikaur-config", str(ConfigPath()())),
         ]
         if not need_dynamic_users():
             extra_args.append(

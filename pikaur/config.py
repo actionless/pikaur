@@ -104,14 +104,6 @@ class FixedPathSingleton(PathSingleton):
         return cls.value
 
 
-VERSION: "Final" = "1.16.1-dev"
-
-DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
-BOOL: "Final" = "bool"
-INT: "Final" = "int"
-STR: "Final" = "str"
-
-
 def pre_arg_parser(key: str, fallback: str) -> str:
     if key in sys.argv:
         return sys.argv[
@@ -128,6 +120,14 @@ def pre_arg_parser(key: str, fallback: str) -> str:
     if found:
         return found[0]
     return fallback
+
+
+VERSION: "Final" = "1.16.1-dev"
+
+DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
+BOOL: "Final" = "bool"
+INT: "Final" = "int"
+STR: "Final" = "str"
 
 
 class CustomUserId(IntOrBoolSingleton):
@@ -199,10 +199,14 @@ class PackageCachePath(PathSingleton):
         return CacheRoot()() / "pkg"
 
 
-CONFIG_ROOT: "Final" = Path(os.environ.get(
-    "XDG_CONFIG_HOME",
-    Home()() / ".config/",
-))
+class ConfigRoot(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return Path(os.environ.get(
+            "XDG_CONFIG_HOME",
+            Home()() / ".config/",
+        ))
+
 
 DATA_ROOT: "Final" = (
     Path(os.environ.get(
@@ -234,7 +238,7 @@ def get_config_path() -> Path:
     config_overridden = pre_arg_parser("--pikaur-config", "")
     if config_overridden:
         return Path(config_overridden)
-    return CONFIG_ROOT / "pikaur.conf"
+    return ConfigRoot()() / "pikaur.conf"
 
 
 class UpgradeSortingValues:
@@ -511,13 +515,14 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
                 need_write = True
     if need_write:
         update_custom_user_id(int(config["misc"]["UserId"]))
-        if not CONFIG_ROOT.exists():
-            CONFIG_ROOT.mkdir(parents=True)
+        config_root = ConfigRoot()()
+        if not config_root.exists():
+            config_root.mkdir(parents=True)
         with get_config_path().open("w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
         if custom_user_id := CustomUserId()():
             for path in (
-                CONFIG_ROOT,
+                config_root,
                 get_config_path(),
             ):
                 os.chown(path, custom_user_id, custom_user_id)

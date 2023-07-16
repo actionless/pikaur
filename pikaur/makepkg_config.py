@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .args import parse_args
-from .config import CONFIG_ROOT, _UserTempRoot
+from .config import ConfigRoot, _UserTempRoot
 from .core import open_file
 from .privilege import using_dynamic_users
 
@@ -96,7 +96,7 @@ class MakepkgConfig:
         if cls._user_makepkg_path is cls._UNSET:
             possible_paths = [
                 Path("~/.makepkg.conf").expanduser(),
-                CONFIG_ROOT / "pacman/makepkg.conf",
+                ConfigRoot()() / "pacman/makepkg.conf",
             ]
             config_path: Path | None = None
             for path in possible_paths:

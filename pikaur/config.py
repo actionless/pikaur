@@ -120,7 +120,10 @@ def pre_arg_parser(key: str, fallback: str) -> str:
     found = [
         arg.split("=", maxsplit=1)[1]
         for arg in sys.argv
-        if arg.startswith(key)
+        if (
+            "=" in arg
+            and arg.startswith(key)
+        )
     ]
     if found:
         return found[0]

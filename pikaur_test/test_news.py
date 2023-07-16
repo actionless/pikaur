@@ -11,12 +11,13 @@ from pikaur_test.helpers import InterceptSysOutput
 class NewsTest(TestCase):
 
     def test_news(self):
-        if News.cache_file.exists():
-            News.cache_file.unlink()
+        cache_file = News().cache_file
+        if cache_file.exists():
+            cache_file.unlink()
         news = News()
         news.fetch_latest()
 
-        with open_file(News.cache_file, "w") as news_fd:
+        with open_file(cache_file, "w") as news_fd:
             news_fd.write("Fri, 03 May 2018 20:27:33 +0000")
 
         with InterceptSysOutput() as intercepted:

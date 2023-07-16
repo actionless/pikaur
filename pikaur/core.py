@@ -393,3 +393,14 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
                 translate("executable not found"),
             ))
             sys.exit(2)
+
+
+def mkdir(path: Path) -> None:
+    if not path.exists():
+        path.mkdir(parents=True)
+        args = parse_args()
+        user_id = args.user_id
+        if not isinstance(user_id, int):
+            raise TypeError
+        if user_id:
+            os.chown(path, user_id, user_id)

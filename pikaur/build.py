@@ -22,6 +22,7 @@ from .core import (
     dirname,
     interactive_spawn,
     joined_spawn,
+    mkdir,
     open_file,
     remove_dir,
     replace_file,
@@ -80,7 +81,7 @@ def _shell(cmds: list[str]) -> "InteractiveSpawn":
     return interactive_spawn(isolate_root_cmd(wrap_proxy_env(cmds)))
 
 
-def _mkdir(to_path: Path) -> None:
+def isolated_mkdir(to_path: Path) -> None:
     mkdir_result = spawn(isolate_root_cmd(["mkdir", "-p", str(to_path)]))
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
@@ -92,7 +93,7 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
     from_path = from_path.resolve()
     to_path = to_path.resolve()
     if not to_path.exists():
-        _mkdir(to_path)
+        isolated_mkdir(to_path)
 
     from_paths = []
     for src_path_str in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):
@@ -107,7 +108,7 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
     if result.returncode != 0:
         if to_path.exists():
             remove_dir(to_path)
-            _mkdir(to_path)
+            isolated_mkdir(to_path)
         result = interactive_spawn(cmd_args)
         if result.returncode != 0:
             raise RuntimeError(translate(f"Can't copy '{from_path}' to '{to_path}'."))
@@ -201,7 +202,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             else:
                 self.clone = True
         else:
-            self.repo_path.mkdir(parents=True)
+            isolated_mkdir(self.repo_path)
             self.clone = True
 
         self.reviewed = self.current_hash == self.last_installed_hash
@@ -482,8 +483,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 new_package_sig_path = new_package_path.parent / (
                     new_package_path.name + ".sig"
                 )
-                if not PACKAGE_CACHE_PATH.exists():
-                    PACKAGE_CACHE_PATH.mkdir(parents=True)
+                mkdir(PACKAGE_CACHE_PATH)
                 replace_file(pkg_path, new_package_path)
                 replace_file(pkg_sig_path, new_package_sig_path)
             pkg_path = new_package_path

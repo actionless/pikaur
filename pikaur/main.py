@@ -29,6 +29,7 @@ from .core import (
     DEFAULT_INPUT_ENCODING,
     check_runtime_deps,
     interactive_spawn,
+    mkdir,
     spawn,
     sudo,
 )
@@ -351,8 +352,7 @@ def migrate_old_aur_repos_dir() -> None:
             _OLD_AUR_REPOS_CACHE_PATH.exists() and not AUR_REPOS_CACHE_PATH.exists()
     ):
         return
-    if not DATA_ROOT.exists():
-        DATA_ROOT.mkdir(parents=True)
+    mkdir(DATA_ROOT)
     shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
 
     print_stderr()
@@ -377,13 +377,10 @@ def create_dirs() -> None:
         # Chown the private CacheDirectory to root to signal systemd that
         # it needs to recursively chown it to the correct user
         os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
-        if not _USER_CACHE_ROOT.exists():
-            _USER_CACHE_ROOT.mkdir(parents=True)
-    if not CACHE_ROOT.exists():
-        CACHE_ROOT.mkdir(parents=True)
+        mkdir(_USER_CACHE_ROOT)
+    mkdir(CACHE_ROOT)
     migrate_old_aur_repos_dir()
-    if not AUR_REPOS_CACHE_PATH.exists():
-        AUR_REPOS_CACHE_PATH.mkdir(parents=True)
+    mkdir(AUR_REPOS_CACHE_PATH)
 
 
 def restore_tty() -> None:

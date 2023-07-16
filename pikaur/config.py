@@ -368,8 +368,8 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
                 config[section_name][option_name] = option_schema["default"]
                 need_write = True
     if need_write:
-        if not CONFIG_ROOT.exists():
-            CONFIG_ROOT.mkdir(parents=True)
+        from .core import mkdir  # pylint: disable=import-outside-toplevel
+        mkdir(CONFIG_ROOT)
         with get_config_path().open("w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
 

@@ -51,28 +51,6 @@ class IntOrBoolSingleton:
         return self.get_value()
 
 
-# class StringSingleton:
-
-#     value: str
-
-#     @classmethod
-#     def set_value(cls, value: str) -> None:
-#         cls.value = value
-
-#     @classmethod
-#     def init_value(cls) -> str:
-#         return ""
-
-#     @classmethod
-#     def get_value(cls) -> str:
-#         if getattr(cls, "value", None) is None:
-#             cls.value = cls.init_value()
-#         return cls.value
-
-#     def __call__(self) -> str:
-#         return self.get_value()
-
-
 class PathSingleton(metaclass=ABCMeta):
 
     value: Path

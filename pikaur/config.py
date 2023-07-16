@@ -226,11 +226,15 @@ class _OldAurReposCachePath(PathSingleton):
         return CacheRoot()() / "aur_repos"
 
 
-AUR_REPOS_CACHE_PATH: "Final" = (
-    (CacheRoot()() / "aur_repos")
-    if UsingDynamicUsers()() else
-    (DataRoot()() / "aur_repos")
-)
+class AurReposCachePath(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return (
+            (CacheRoot()() / "aur_repos")
+            if UsingDynamicUsers()() else
+            (DataRoot()() / "aur_repos")
+        )
+
 
 BUILD_DEPS_LOCK: "Final" = (
     (

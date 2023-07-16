@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING, ClassVar
 from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
 from .config import (
-    AUR_REPOS_CACHE_PATH,
     BUILD_DEPS_LOCK,
+    AurReposCachePath,
     BuildCachePath,
     PackageCachePath,
     PikaurConfig,
@@ -176,7 +176,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         elif package_names:
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
-            self.repo_path = AUR_REPOS_CACHE_PATH / self.package_base
+            self.repo_path = AurReposCachePath()() / self.package_base
             self.pkgbuild_path = self.repo_path / DEFAULT_PKGBUILD_BASENAME
         else:
             missing_property_error = translate(

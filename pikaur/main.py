@@ -17,7 +17,7 @@ import pyalpm
 
 from .args import parse_args
 from .config import (
-    AUR_REPOS_CACHE_PATH,
+    AurReposCachePath,
     CacheRoot,
     DataRoot,
     PikaurConfig,
@@ -349,12 +349,13 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
 
 def migrate_old_aur_repos_dir() -> None:
     old_aur_repos_cache_path = _OldAurReposCachePath()()
+    new_aur_repos_cache_path = AurReposCachePath()()
     if not (
-            old_aur_repos_cache_path.exists() and not AUR_REPOS_CACHE_PATH.exists()
+            old_aur_repos_cache_path.exists() and not new_aur_repos_cache_path.exists()
     ):
         return
     mkdir(DataRoot()())
-    shutil.move(old_aur_repos_cache_path, AUR_REPOS_CACHE_PATH)
+    shutil.move(old_aur_repos_cache_path, new_aur_repos_cache_path)
 
     print_stderr()
     print_warning(
@@ -362,7 +363,7 @@ def migrate_old_aur_repos_dir() -> None:
             "AUR repos dir has been moved from '{old}' to '{new}'.",
         ).format(
             old=old_aur_repos_cache_path,
-            new=AUR_REPOS_CACHE_PATH,
+            new=new_aur_repos_cache_path,
         ),
     )
     print_stderr()
@@ -381,7 +382,7 @@ def create_dirs() -> None:
         mkdir(_UserCacheRoot()())
     mkdir(CacheRoot()())
     migrate_old_aur_repos_dir()
-    mkdir(AUR_REPOS_CACHE_PATH)
+    mkdir(AurReposCachePath()())
 
 
 def restore_tty() -> None:

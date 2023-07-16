@@ -19,8 +19,8 @@ from .args import parse_args
 from .config import (
     _OLD_AUR_REPOS_CACHE_PATH,
     AUR_REPOS_CACHE_PATH,
-    DATA_ROOT,
     CacheRoot,
+    DataRoot,
     PikaurConfig,
     _UserCacheRoot,
     get_config_path,
@@ -352,7 +352,7 @@ def migrate_old_aur_repos_dir() -> None:
             _OLD_AUR_REPOS_CACHE_PATH.exists() and not AUR_REPOS_CACHE_PATH.exists()
     ):
         return
-    mkdir(DATA_ROOT)
+    mkdir(DataRoot()())
     shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
 
     print_stderr()

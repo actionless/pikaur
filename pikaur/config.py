@@ -208,18 +208,22 @@ class ConfigRoot(PathSingleton):
         ))
 
 
-DATA_ROOT: "Final" = (
-    Path(os.environ.get(
-        "XDG_DATA_HOME",
-        Home()() / ".local/share/",
-    )) / "pikaur"
-)
+class DataRoot(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return (
+            Path(os.environ.get(
+                "XDG_DATA_HOME",
+                Home()() / ".local/share/",
+            )) / "pikaur"
+        )
+
 
 _OLD_AUR_REPOS_CACHE_PATH: "Final" = CacheRoot()() / "aur_repos"
 AUR_REPOS_CACHE_PATH: "Final" = (
     (CacheRoot()() / "aur_repos")
     if UsingDynamicUsers()() else
-    (DATA_ROOT / "aur_repos")
+    (DataRoot()() / "aur_repos")
 )
 
 BUILD_DEPS_LOCK: "Final" = (

@@ -219,7 +219,13 @@ class DataRoot(PathSingleton):
         )
 
 
-_OLD_AUR_REPOS_CACHE_PATH: "Final" = CacheRoot()() / "aur_repos"
+class _OldAurReposCachePath(PathSingleton):
+    # @TODO: remove this migration thing?
+    @classmethod
+    def get_value(cls) -> Path:
+        return CacheRoot()() / "aur_repos"
+
+
 AUR_REPOS_CACHE_PATH: "Final" = (
     (CacheRoot()() / "aur_repos")
     if UsingDynamicUsers()() else

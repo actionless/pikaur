@@ -17,11 +17,11 @@ import pyalpm
 
 from .args import parse_args
 from .config import (
-    _OLD_AUR_REPOS_CACHE_PATH,
     AUR_REPOS_CACHE_PATH,
     CacheRoot,
     DataRoot,
     PikaurConfig,
+    _OldAurReposCachePath,
     _UserCacheRoot,
     get_config_path,
 )
@@ -348,19 +348,20 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
 
 
 def migrate_old_aur_repos_dir() -> None:
+    old_aur_repos_cache_path = _OldAurReposCachePath()()
     if not (
-            _OLD_AUR_REPOS_CACHE_PATH.exists() and not AUR_REPOS_CACHE_PATH.exists()
+            old_aur_repos_cache_path.exists() and not AUR_REPOS_CACHE_PATH.exists()
     ):
         return
     mkdir(DataRoot()())
-    shutil.move(_OLD_AUR_REPOS_CACHE_PATH, AUR_REPOS_CACHE_PATH)
+    shutil.move(old_aur_repos_cache_path, AUR_REPOS_CACHE_PATH)
 
     print_stderr()
     print_warning(
         translate(
             "AUR repos dir has been moved from '{old}' to '{new}'.",
         ).format(
-            old=_OLD_AUR_REPOS_CACHE_PATH,
+            old=old_aur_repos_cache_path,
             new=AUR_REPOS_CACHE_PATH,
         ),
     )

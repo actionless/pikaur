@@ -1,5 +1,5 @@
 from .args import parse_args, reconstruct_args
-from .config import PACKAGE_CACHE_PATH, BuildCachePath, PikaurConfig
+from .config import BuildCachePath, PackageCachePath, PikaurConfig
 from .core import interactive_spawn, remove_dir, sudo
 from .exceptions import SysExit
 from .i18n import translate
@@ -15,7 +15,7 @@ def clean_aur_cache() -> None:
     args = parse_args()
     for directory, message, minimal_clean_level in (
             (BuildCachePath()(), translate("Build directory"), 1),
-            (PACKAGE_CACHE_PATH, translate("Packages directory"), 2),
+            (PackageCachePath()(), translate("Packages directory"), 2),
     ):
         print_stdout(f"\n{message}: {directory}")
         if minimal_clean_level > args.clean:

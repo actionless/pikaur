@@ -165,14 +165,14 @@ class InstallTest(PikaurDbTestCase):
 
     def test_cache_clean(self):
         # pylint:disable=import-outside-toplevel
-        from pikaur.config import PACKAGE_CACHE_PATH, BuildCachePath
+        from pikaur.config import BuildCachePath, PackageCachePath
 
         pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
             len(os.listdir(BuildCachePath()())), 1,
         )
         self.assertGreaterEqual(
-            len(os.listdir(PACKAGE_CACHE_PATH)), 1,
+            len(os.listdir(PackageCachePath()())), 1,
         )
 
         pikaur("-Sc --noconfirm")
@@ -180,19 +180,19 @@ class InstallTest(PikaurDbTestCase):
             BuildCachePath()().exists(),
         )
         self.assertGreaterEqual(
-            len(os.listdir(PACKAGE_CACHE_PATH)), 1,
+            len(os.listdir(PackageCachePath()())), 1,
         )
 
     def test_cache_full_clean(self):
         # pylint:disable=import-outside-toplevel
-        from pikaur.config import PACKAGE_CACHE_PATH, BuildCachePath
+        from pikaur.config import BuildCachePath, PackageCachePath
 
         pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
             len(os.listdir(BuildCachePath()())), 1,
         )
         self.assertGreaterEqual(
-            len(os.listdir(PACKAGE_CACHE_PATH)), 1,
+            len(os.listdir(PackageCachePath()())), 1,
         )
 
         pikaur("-Scc --noconfirm")
@@ -200,7 +200,7 @@ class InstallTest(PikaurDbTestCase):
             BuildCachePath()().exists(),
         )
         self.assertFalse(
-            PACKAGE_CACHE_PATH.exists(),
+            PackageCachePath()().exists(),
         )
 
     def test_print_commands_and_needed(self):

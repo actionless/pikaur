@@ -182,7 +182,11 @@ class BuildCachePath(PathSingleton):
         return CacheRoot()() / "build"
 
 
-PACKAGE_CACHE_PATH: "Final" = CacheRoot()() / "pkg"
+class PackageCachePath(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return CacheRoot()() / "pkg"
+
 
 CONFIG_ROOT: "Final" = Path(os.environ.get(
     "XDG_CONFIG_HOME",

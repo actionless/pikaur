@@ -12,8 +12,8 @@ from .aur import find_aur_packages, get_repo_url
 from .config import (
     AUR_REPOS_CACHE_PATH,
     BUILD_DEPS_LOCK,
-    PACKAGE_CACHE_PATH,
     BuildCachePath,
+    PackageCachePath,
     PikaurConfig,
 )
 from .core import (
@@ -475,7 +475,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 pkg_path = (Path(pkg_dest) if pkg_dest else self.build_dir) / pkg_path
                 logger.debug("Resolving full path: {} from base path: {}", pkg_path, pkg_basename)
             new_package_path = (
-                Path(pkg_dest) if pkg_dest else PACKAGE_CACHE_PATH
+                Path(pkg_dest) if pkg_dest else PackageCachePath()()
             ) / pkg_basename
             logger.debug("New package path: {}", new_package_path)
             if not pkg_dest or MakePkgCommand.pkgdest_skipped:
@@ -483,7 +483,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 new_package_sig_path = new_package_path.parent / (
                     new_package_path.name + ".sig"
                 )
-                mkdir(PACKAGE_CACHE_PATH)
+                mkdir(PackageCachePath()())
                 replace_file(pkg_path, new_package_path)
                 replace_file(pkg_sig_path, new_package_sig_path)
             pkg_path = new_package_path

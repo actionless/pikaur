@@ -10,9 +10,9 @@ from typing import TYPE_CHECKING, ClassVar
 from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
 from .config import (
-    BUILD_DEPS_LOCK,
     AurReposCachePath,
     BuildCachePath,
+    BuildDepsLockPath,
     PackageCachePath,
     PikaurConfig,
 )
@@ -596,7 +596,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self._local_provided_pkgs_with_build_deps = PackageDB.get_local_provided_dict()
 
     def install_all_deps(self, all_package_builds: dict[str, "PackageBuild"]) -> None:
-        with FileLock(BUILD_DEPS_LOCK):
+        with FileLock(BuildDepsLockPath()()):
             self.get_deps(all_package_builds)
             if self.all_deps_to_install or self.built_deps_to_install:
                 PackageDB.discard_local_cache()

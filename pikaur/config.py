@@ -236,16 +236,24 @@ class AurReposCachePath(PathSingleton):
         )
 
 
-BUILD_DEPS_LOCK: "Final" = (
-    (
-        _UserCacheRoot()() if UsingDynamicUsers()() else _UserTempRoot()())
-    / "pikaur_build_deps.lock"
-)
-PROMPT_LOCK: "Final" = (
-    (
-        _UserCacheRoot()() if UsingDynamicUsers()() else _UserTempRoot()()
-    ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
-)
+class BuildDepsLockPath(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return (
+            (
+                _UserCacheRoot()() if UsingDynamicUsers()() else _UserTempRoot()())
+            / "pikaur_build_deps.lock"
+        )
+
+
+class PromptLockPath(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return (
+            (
+                _UserCacheRoot()() if UsingDynamicUsers()() else _UserTempRoot()()
+            ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
+        )
 
 
 def get_config_path() -> Path:

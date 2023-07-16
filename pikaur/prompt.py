@@ -5,7 +5,7 @@ import tty
 from typing import TYPE_CHECKING
 
 from .args import LiteralArgs, parse_args
-from .config import PROMPT_LOCK, PikaurConfig
+from .config import PikaurConfig, PromptLockPath
 from .core import InteractiveSpawn, get_editor, interactive_spawn
 from .exceptions import SysExit
 from .filelock import FileLock
@@ -116,7 +116,7 @@ def get_input(
     logger.debug("Gonna get input from user...")
     answer = ""
     with (
-            FileLock(PROMPT_LOCK),
+            FileLock(PromptLockPath()()),
             TTYInputWrapper(),
     ):
         if not (

@@ -35,10 +35,39 @@ INT: "Final" = "int"
 STR: "Final" = "str"
 
 RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
-CUSTOM_USER_ID: "Final" = max(arg.startswith("--user-id") for arg in sys.argv)
-USING_DYNAMIC_USERS: "Final" = RUNNING_AS_ROOT and not CUSTOM_USER_ID
 
-HOME: "Final" = Path(os.environ["HOME"]) if (RUNNING_AS_ROOT and CUSTOM_USER_ID) else Path.home()
+
+class CustomUserId:
+
+    user_id: int
+
+    @classmethod
+    def set_id(cls, user_id: int) -> None:
+        cls.user_id = user_id
+
+    @classmethod
+    def get_id(cls) -> int:
+        return cls.user_id
+
+    def __call__(self) -> int:
+        return self.get_id()
+
+
+CustomUserId.set_id(
+    (
+        [(arg.startswith("--user-id") and int(arg.split("=", maxsplit=1)[1])) for arg in sys.argv]
+        or [0]
+    )[0],
+)
+
+
+def update_custom_user_id(new_id: int) -> None:
+    CustomUserId.set_id(CustomUserId()() or new_id)
+
+
+USING_DYNAMIC_USERS: "Final" = RUNNING_AS_ROOT and not CustomUserId()()
+
+HOME: "Final" = Path(os.environ["HOME"]) if (RUNNING_AS_ROOT and CustomUserId()()) else Path.home()
 
 _USER_TEMP_ROOT: "Final" = Path(gettempdir())
 _USER_CACHE_ROOT: "Final" = Path(os.environ.get(
@@ -368,11 +397,17 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
                 config[section_name][option_name] = option_schema["default"]
                 need_write = True
     if need_write:
-        from .core import chown_to_current, mkdir  # pylint: disable=import-outside-toplevel
-        mkdir(CONFIG_ROOT)
+        update_custom_user_id(int(config["misc"]["UserId"]))
+        if not CONFIG_ROOT.exists():
+            CONFIG_ROOT.mkdir(parents=True)
         with get_config_path().open("w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
-        chown_to_current(get_config_path())
+        if custom_user_id := CustomUserId()():
+            for path in (
+                CONFIG_ROOT,
+                get_config_path(),
+            ):
+                os.chown(path, custom_user_id, custom_user_id)
 
 
 def str_to_bool(value: str) -> bool:
@@ -445,6 +480,7 @@ class PikaurConfig:
             cls.migrate_config()
             write_config(config=cls._config)
             cls.validate_config()
+            update_custom_user_id(int(cls._config["misc"]["UserId"]))
         return cls._config
 
     @classmethod

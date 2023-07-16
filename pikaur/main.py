@@ -265,7 +265,7 @@ def execute_pikaur_operation(
                 for arg in restart_args
             )
             if not config_overridden:
-                restart_args += [flag, fallback]
+                restart_args += [f"{flag}={fallback}"]
         sys.exit(interactive_spawn(
             sudo(restart_args),
         ).returncode)

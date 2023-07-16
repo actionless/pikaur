@@ -34,31 +34,35 @@ BOOL: "Final" = "bool"
 INT: "Final" = "int"
 STR: "Final" = "str"
 
-RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
 
+class IntOrBoolSingleton:
 
-class CustomUserId:
-
-    user_id: int
+    value: int
 
     @classmethod
-    def set_id(cls, user_id: int) -> None:
-        cls.user_id = user_id
+    def set_id(cls, value: int) -> None:
+        cls.value = value
 
     @classmethod
     def get_id(cls) -> int:
-        return cls.user_id
+        return cls.value
 
     def __call__(self) -> int:
         return self.get_id()
 
 
-CustomUserId.set_id(
-    (
-        [(arg.startswith("--user-id") and int(arg.split("=", maxsplit=1)[1])) for arg in sys.argv]
+class CustomUserId(IntOrBoolSingleton):
+    value = (
+        [(int(arg.split("=", maxsplit=1)[1])) for arg in sys.argv if arg.startswith("--user-id")]
         or [0]
-    )[0],
-)
+    )[0]
+
+
+RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
+
+
+class RunningAsRoot(IntOrBoolSingleton):
+    value = os.geteuid() == 0
 
 
 def update_custom_user_id(new_id: int) -> None:

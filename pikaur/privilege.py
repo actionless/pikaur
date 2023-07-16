@@ -3,10 +3,10 @@ from pathlib import Path
 
 from .args import parse_args
 from .config import (
-    _USER_TEMP_ROOT,
     PikaurConfig,
     RunningAsRoot,
     UsingDynamicUsers,
+    _UserTempRoot,
 )
 from .core import sudo as _sudo
 
@@ -62,7 +62,7 @@ def isolate_root_cmd(
             "--pipe", "--wait", "--pty",
             "-p", "DynamicUser=yes",
             "-p", "CacheDirectory=pikaur",
-            "-E", f"HOME={_USER_TEMP_ROOT}",
+            "-E", f"HOME={_UserTempRoot()()}",
         ]
         if env is not None:
             for env_var_name, env_var_value in env.items():

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .args import parse_args
-from .config import _USER_TEMP_ROOT, CONFIG_ROOT
+from .config import CONFIG_ROOT, _UserTempRoot
 from .core import open_file
 from .privilege import using_dynamic_users
 
@@ -147,7 +147,7 @@ class MakePkgCommand:
         pkgdest = str(get_pkgdest())
         if pkgdest and (
                 pkgdest.startswith(
-                    (str(_USER_TEMP_ROOT), "/tmp", "/var/tmp"),  # nosec B108  # noqa: S108
+                    (str(_UserTempRoot()()), "/tmp", "/var/tmp"),  # nosec B108  # noqa: S108
                 )
         ):
             if not cls._cmd:

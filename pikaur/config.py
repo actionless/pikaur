@@ -90,6 +90,20 @@ class PathSingleton(metaclass=ABCMeta):
         return self.get_value()
 
 
+class FixedPathSingleton(PathSingleton):
+
+    @classmethod
+    @abstractmethod
+    def init_value(cls) -> Path:
+        pass
+
+    @classmethod
+    def get_value(cls) -> Path:
+        if getattr(cls, "value", None) is None:
+            cls.value = cls.init_value()
+        return cls.value
+
+
 VERSION: "Final" = "1.16.1-dev"
 
 DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
@@ -137,7 +151,10 @@ class Home(PathSingleton):
         )
 
 
-_USER_TEMP_ROOT: "Final" = Path(gettempdir())
+class _UserTempRoot(FixedPathSingleton):
+    @classmethod
+    def init_value(cls) -> Path:
+        return Path(gettempdir())
 
 
 class _UserCacheRoot(PathSingleton):
@@ -183,12 +200,12 @@ AUR_REPOS_CACHE_PATH: "Final" = (
 
 BUILD_DEPS_LOCK: "Final" = (
     (
-        _UserCacheRoot()() if UsingDynamicUsers()() else _USER_TEMP_ROOT)
+        _UserCacheRoot()() if UsingDynamicUsers()() else _UserTempRoot()())
     / "pikaur_build_deps.lock"
 )
 PROMPT_LOCK: "Final" = (
     (
-        _UserCacheRoot()() if UsingDynamicUsers()() else _USER_TEMP_ROOT
+        _UserCacheRoot()() if UsingDynamicUsers()() else _UserTempRoot()()
     ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
 )
 

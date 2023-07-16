@@ -19,8 +19,8 @@ from .args import parse_args
 from .config import (
     _OLD_AUR_REPOS_CACHE_PATH,
     AUR_REPOS_CACHE_PATH,
-    CACHE_ROOT,
     DATA_ROOT,
+    CacheRoot,
     PikaurConfig,
     _UserCacheRoot,
     get_config_path,
@@ -376,9 +376,9 @@ def create_dirs() -> None:
             raise RuntimeError(result)
         # Chown the private CacheDirectory to root to signal systemd that
         # it needs to recursively chown it to the correct user
-        os.chown(os.path.realpath(CACHE_ROOT), 0, 0)
+        os.chown(os.path.realpath(CacheRoot()()), 0, 0)
         mkdir(_UserCacheRoot()())
-    mkdir(CACHE_ROOT)
+    mkdir(CacheRoot()())
     migrate_old_aur_repos_dir()
     mkdir(AUR_REPOS_CACHE_PATH)
 

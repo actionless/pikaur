@@ -3,7 +3,7 @@
 import shutil
 from pathlib import Path
 
-from .config import BUILD_CACHE_PATH, CACHE_ROOT
+from .config import BUILD_CACHE_PATH, CacheRoot
 from .core import open_file, spawn
 from .exceptions import SysExit
 from .i18n import translate
@@ -127,7 +127,7 @@ class SrcInfo:
 
     def regenerate(self) -> None:
         working_directory = self.repo_path
-        if using_dynamic_users() and not str(self.repo_path).startswith(str(CACHE_ROOT)):
+        if using_dynamic_users() and not str(self.repo_path).startswith(str(CacheRoot()())):
             working_directory = BUILD_CACHE_PATH / (
                 "_info_" + (self.get_value("pkgbase") or "unknown")
             )

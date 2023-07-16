@@ -51,26 +51,26 @@ class IntOrBoolSingleton:
         return self.get_value()
 
 
-class StringSingleton:
+# class StringSingleton:
 
-    value: str
+#     value: str
 
-    @classmethod
-    def set_value(cls, value: str) -> None:
-        cls.value = value
+#     @classmethod
+#     def set_value(cls, value: str) -> None:
+#         cls.value = value
 
-    @classmethod
-    def init_value(cls) -> str:
-        return ""
+#     @classmethod
+#     def init_value(cls) -> str:
+#         return ""
 
-    @classmethod
-    def get_value(cls) -> str:
-        if getattr(cls, "value", None) is None:
-            cls.value = cls.init_value()
-        return cls.value
+#     @classmethod
+#     def get_value(cls) -> str:
+#         if getattr(cls, "value", None) is None:
+#             cls.value = cls.init_value()
+#         return cls.value
 
-    def __call__(self) -> str:
-        return self.get_value()
+#     def __call__(self) -> str:
+#         return self.get_value()
 
 
 class PathSingleton(metaclass=ABCMeta):
@@ -149,14 +149,18 @@ class _UserCacheRoot(PathSingleton):
         ))
 
 
-CACHE_ROOT: "Final" = (
-    Path("/var/cache/pikaur")
-    if UsingDynamicUsers()() else
-    _UserCacheRoot()() / "pikaur/"
-)
+class CacheRoot(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return (
+            Path("/var/cache/pikaur")
+            if UsingDynamicUsers()() else
+            _UserCacheRoot()() / "pikaur/"
+        )
 
-BUILD_CACHE_PATH: "Final" = CACHE_ROOT / "build"
-PACKAGE_CACHE_PATH: "Final" = CACHE_ROOT / "pkg"
+
+BUILD_CACHE_PATH: "Final" = CacheRoot()() / "build"
+PACKAGE_CACHE_PATH: "Final" = CacheRoot()() / "pkg"
 
 CONFIG_ROOT: "Final" = Path(os.environ.get(
     "XDG_CONFIG_HOME",
@@ -170,9 +174,9 @@ DATA_ROOT: "Final" = (
     )) / "pikaur"
 )
 
-_OLD_AUR_REPOS_CACHE_PATH: "Final" = CACHE_ROOT / "aur_repos"
+_OLD_AUR_REPOS_CACHE_PATH: "Final" = CacheRoot()() / "aur_repos"
 AUR_REPOS_CACHE_PATH: "Final" = (
-    (CACHE_ROOT / "aur_repos")
+    (CacheRoot()() / "aur_repos")
     if UsingDynamicUsers()() else
     (DATA_ROOT / "aur_repos")
 )

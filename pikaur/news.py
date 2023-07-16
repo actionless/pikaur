@@ -9,7 +9,7 @@ try:
 except ModuleNotFoundError:
     from xml.etree.ElementTree import fromstring  # nosec B405
 
-from .config import CACHE_ROOT, PikaurConfig
+from .config import CacheRoot, PikaurConfig
 from .core import DEFAULT_TIMEZONE, open_file
 from .i18n import translate
 from .logging import create_logger
@@ -25,6 +25,7 @@ from .pprint import (
 from .urllib_helper import get_unicode_from_url
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Final, TextIO
     from xml.etree.ElementTree import Element  # nosec B405
 
@@ -41,11 +42,13 @@ class ArchNewsMarkup:
 
 
 class News:
-    URL = PikaurConfig().network.NewsUrl.get_str()
-    CACHE_FILE = CACHE_ROOT / "last_seen_news.dat"
+    url: str
+    cache_file: "Path"
     _news_feed: "Element | None"
 
     def __init__(self) -> None:
+        self.url = PikaurConfig().network.NewsUrl.get_str()
+        self.cache_file = CacheRoot()() / "last_seen_news.dat"
         self._news_feed = None
         logger.debug("init")
 
@@ -88,7 +91,7 @@ class News:
 
     def fetch_latest(self) -> None:
         logger.debug("fetch_latest")
-        str_response = get_unicode_from_url(self.URL, optional=True)
+        str_response = get_unicode_from_url(self.url, optional=True)
         if not str_response:
             print_error(translate("Could not fetch archlinux.org news"))
             return
@@ -97,8 +100,8 @@ class News:
     def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: "TextIO"
         try:
-            logger.debug("loading date from {}", self.CACHE_FILE)
-            with open_file(self.CACHE_FILE) as last_seen_fd:
+            logger.debug("loading date from {}", self.cache_file)
+            with open_file(self.cache_file) as last_seen_fd:
                 file_data = last_seen_fd.readline().strip()
                 parsed_date = datetime.datetime.strptime(  # noqa: DTZ007
                     file_data, DT_FORMAT,
@@ -115,10 +118,10 @@ class News:
             )
             time_formatted: str = last_pkg_date.strftime(DT_FORMAT)
             try:
-                with open_file(self.CACHE_FILE, "w") as last_seen_fd:
+                with open_file(self.cache_file, "w") as last_seen_fd:
                     last_seen_fd.write(time_formatted)
             except OSError:
-                print_error(translate("Could not initialize {}").format(self.CACHE_FILE))
+                print_error(translate("Could not initialize {}").format(self.cache_file))
             return last_pkg_date
 
     def _is_new(self, last_online_news: str) -> bool:
@@ -161,10 +164,10 @@ class News:
                 pub_date = str(child.text)
                 break
         try:
-            with open_file(self.CACHE_FILE, "w") as last_seen_fd:
+            with open_file(self.cache_file, "w") as last_seen_fd:
                 last_seen_fd.write(pub_date)
         except OSError:
-            print_error(translate("Could not update {}").format(self.CACHE_FILE))
+            print_error(translate("Could not update {}").format(self.cache_file))
 
 
 class MLStripper(HTMLParser):

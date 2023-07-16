@@ -113,15 +113,15 @@ class CustomUserId(IntOrBoolSingleton):
     def init_value(cls) -> int:
         return int(pre_arg_parser("--user-id", "0"))
 
+    @classmethod
+    def update_fallback(cls, new_id: int) -> None:
+        cls.set_value(cls()() or new_id)
+
 
 class RunningAsRoot(IntOrBoolSingleton):
     @classmethod
     def init_value(cls) -> int:
         return os.geteuid() == 0
-
-
-def update_custom_user_id(new_id: int) -> None:
-    CustomUserId.set_value(CustomUserId()() or new_id)
 
 
 class UsingDynamicUsers(IntOrBoolSingleton):
@@ -514,7 +514,7 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
                 config[section_name][option_name] = option_schema["default"]
                 need_write = True
     if need_write:
-        update_custom_user_id(int(config["misc"]["UserId"]))
+        CustomUserId.update_fallback(int(config["misc"]["UserId"]))
         config_root = ConfigRoot()()
         if not config_root.exists():
             config_root.mkdir(parents=True)
@@ -598,7 +598,7 @@ class PikaurConfig:
             cls.migrate_config()
             write_config(config=cls._config)
             cls.validate_config()
-            update_custom_user_id(int(cls._config["misc"]["UserId"]))
+            CustomUserId.update_fallback(int(cls._config["misc"]["UserId"]))
         return cls._config
 
     @classmethod

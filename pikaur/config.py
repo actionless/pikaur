@@ -40,38 +40,60 @@ class IntOrBoolSingleton:
     value: int
 
     @classmethod
-    def set_id(cls, value: int) -> None:
+    def set_value(cls, value: int) -> None:
         cls.value = value
 
     @classmethod
-    def get_id(cls) -> int:
+    def init_value(cls) -> int:
+        return 0
+
+    @classmethod
+    def get_value(cls) -> int:
+        if getattr(cls, "value", None) is None:
+            cls.value = cls.init_value()
         return cls.value
 
     def __call__(self) -> int:
-        return self.get_id()
+        return self.get_value()
 
 
 class CustomUserId(IntOrBoolSingleton):
-    value = (
-        [(int(arg.split("=", maxsplit=1)[1])) for arg in sys.argv if arg.startswith("--user-id")]
-        or [0]
-    )[0]
-
-
-RUNNING_AS_ROOT: "Final" = os.geteuid() == 0  # @TODO: could global var be avoided here?
+    @classmethod
+    def init_value(cls) -> int:
+        return (
+            [
+                int(arg.split("=", maxsplit=1)[1])
+                for arg in sys.argv
+                if arg.startswith("--user-id")
+            ]
+            or [0]
+        )[0]
 
 
 class RunningAsRoot(IntOrBoolSingleton):
-    value = os.geteuid() == 0
+    @classmethod
+    def init_value(cls) -> int:
+        return os.geteuid() == 0
 
 
 def update_custom_user_id(new_id: int) -> None:
-    CustomUserId.set_id(CustomUserId()() or new_id)
+    CustomUserId.set_value(CustomUserId()() or new_id)
 
 
-USING_DYNAMIC_USERS: "Final" = RUNNING_AS_ROOT and not CustomUserId()()
+USING_DYNAMIC_USERS: "Final" = RunningAsRoot()() and not CustomUserId()()
 
-HOME: "Final" = Path(os.environ["HOME"]) if (RUNNING_AS_ROOT and CustomUserId()()) else Path.home()
+
+class UsingDynamicUsers(IntOrBoolSingleton):
+    @classmethod
+    def get_value(cls) -> int:
+        return RunningAsRoot()() and not CustomUserId()()
+
+
+HOME: "Final" = (
+    Path(os.environ["HOME"])
+    if (RunningAsRoot()() and CustomUserId()())
+    else Path.home()
+)
 
 _USER_TEMP_ROOT: "Final" = Path(gettempdir())
 _USER_CACHE_ROOT: "Final" = Path(os.environ.get(
@@ -190,7 +212,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "GpgDir": {
             "data_type": STR,
-            "default": ("/etc/pacman.d/gnupg/" if RUNNING_AS_ROOT else ""),
+            "default": ("/etc/pacman.d/gnupg/" if RunningAsRoot()() else ""),
         },
         "SkipFailedBuild": {
             "data_type": BOOL,

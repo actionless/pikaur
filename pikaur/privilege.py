@@ -4,9 +4,9 @@ from pathlib import Path
 from .args import parse_args
 from .config import (
     _USER_TEMP_ROOT,
-    RUNNING_AS_ROOT,
-    USING_DYNAMIC_USERS,
     PikaurConfig,
+    RunningAsRoot,
+    UsingDynamicUsers,
 )
 from .core import sudo as _sudo
 
@@ -27,12 +27,12 @@ def need_dynamic_users() -> bool:
     return False
 
 
-def using_dynamic_users() -> bool:
-    return USING_DYNAMIC_USERS
+def using_dynamic_users() -> int:
+    return UsingDynamicUsers()()
 
 
-def running_as_root() -> bool:
-    return RUNNING_AS_ROOT
+def running_as_root() -> int:
+    return RunningAsRoot()()
 
 
 def isolate_root_cmd(

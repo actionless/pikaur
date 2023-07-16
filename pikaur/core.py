@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 from .args import parse_args
-from .config import RUNNING_AS_ROOT, USING_DYNAMIC_USERS, PikaurConfig
+from .config import USING_DYNAMIC_USERS, PikaurConfig, RunningAsRoot
 from .i18n import translate
 from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 
@@ -168,7 +168,7 @@ class AURInstallInfo(InstallInfo):
 
 
 def sudo(cmd: list[str]) -> list[str]:
-    if RUNNING_AS_ROOT:
+    if RunningAsRoot()():
         return cmd
     return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), "--preserve-env", *cmd]
 
@@ -383,7 +383,7 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
     if not dep_names:
         privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
         dep_names = ["fakeroot"] + (
-            [privilege_escalation_tool] if not RUNNING_AS_ROOT else []
+            [privilege_escalation_tool] if not RunningAsRoot()() else []
         )
 
     for dep_bin in dep_names:

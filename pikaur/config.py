@@ -112,17 +112,25 @@ INT: "Final" = "int"
 STR: "Final" = "str"
 
 
+def pre_arg_parser(key: str, fallback: str) -> str:
+    if key in sys.argv:
+        return sys.argv[
+            sys.argv.index(key) + 1
+        ]
+    found = [
+        arg.split("=", maxsplit=1)[1]
+        for arg in sys.argv
+        if arg.startswith(key)
+    ]
+    if found:
+        return found[0]
+    return fallback
+
+
 class CustomUserId(IntOrBoolSingleton):
     @classmethod
     def init_value(cls) -> int:
-        return (
-            [
-                int(arg.split("=", maxsplit=1)[1])
-                for arg in sys.argv
-                if arg.startswith("--user-id")
-            ]
-            or [0]
-        )[0]
+        return int(pre_arg_parser("--user-id", "0"))
 
 
 class RunningAsRoot(IntOrBoolSingleton):
@@ -220,11 +228,9 @@ PROMPT_LOCK: "Final" = (
 
 
 def get_config_path() -> Path:
-    config_flag = "--pikaur-config"
-    if config_flag in sys.argv:
-        return Path(sys.argv[
-            sys.argv.index(config_flag) + 1
-        ])
+    config_overridden = pre_arg_parser("--pikaur-config", "")
+    if config_overridden:
+        return Path(config_overridden)
     return CONFIG_ROOT / "pikaur.conf"
 
 

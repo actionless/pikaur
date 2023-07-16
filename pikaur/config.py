@@ -51,7 +51,7 @@ class IntOrBoolSingleton:
         return self.get_value()
 
 
-class PathSingleton(metaclass=ABCMeta):
+class PathConfig(metaclass=ABCMeta):
 
     value: Path
 
@@ -68,7 +68,7 @@ class PathSingleton(metaclass=ABCMeta):
         return self.get_value()
 
 
-class FixedPathSingleton(PathSingleton):
+class FixedPathSingleton(PathConfig):
 
     @classmethod
     @abstractmethod
@@ -130,7 +130,7 @@ class UsingDynamicUsers(IntOrBoolSingleton):
         return RunningAsRoot()() and not CustomUserId()()
 
 
-class Home(PathSingleton):
+class Home(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return (
@@ -146,7 +146,7 @@ class _UserTempRoot(FixedPathSingleton):
         return Path(gettempdir())
 
 
-class _UserCacheRoot(PathSingleton):
+class _UserCacheRoot(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return Path(os.environ.get(
@@ -155,7 +155,7 @@ class _UserCacheRoot(PathSingleton):
         ))
 
 
-class CacheRoot(PathSingleton):
+class CacheRoot(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return (
@@ -165,19 +165,19 @@ class CacheRoot(PathSingleton):
         )
 
 
-class BuildCachePath(PathSingleton):
+class BuildCachePath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return CacheRoot()() / "build"
 
 
-class PackageCachePath(PathSingleton):
+class PackageCachePath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return CacheRoot()() / "pkg"
 
 
-class ConfigRoot(PathSingleton):
+class ConfigRoot(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return Path(os.environ.get(
@@ -186,7 +186,7 @@ class ConfigRoot(PathSingleton):
         ))
 
 
-class DataRoot(PathSingleton):
+class DataRoot(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return (
@@ -197,14 +197,14 @@ class DataRoot(PathSingleton):
         )
 
 
-class _OldAurReposCachePath(PathSingleton):
+class _OldAurReposCachePath(PathConfig):
     # @TODO: remove this migration thing?
     @classmethod
     def get_value(cls) -> Path:
         return CacheRoot()() / "aur_repos"
 
 
-class AurReposCachePath(PathSingleton):
+class AurReposCachePath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return (
@@ -214,7 +214,7 @@ class AurReposCachePath(PathSingleton):
         )
 
 
-class BuildDepsLockPath(PathSingleton):
+class BuildDepsLockPath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return (
@@ -224,7 +224,7 @@ class BuildDepsLockPath(PathSingleton):
         )
 
 
-class PromptLockPath(PathSingleton):
+class PromptLockPath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return (
@@ -234,7 +234,7 @@ class PromptLockPath(PathSingleton):
         )
 
 
-class ConfigPath(PathSingleton):
+class ConfigPath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         config_overridden = pre_arg_parser("--pikaur-config", "")

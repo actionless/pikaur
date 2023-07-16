@@ -4,6 +4,7 @@ import configparser
 import os
 import random
 import sys
+from abc import ABCMeta, abstractmethod
 from pathlib import Path
 from tempfile import gettempdir
 from typing import TYPE_CHECKING
@@ -27,13 +28,6 @@ if TYPE_CHECKING:
         deprecated: NotRequired[DeprecatedConfigValue]
         migrated: NotRequired[bool]
 
-VERSION: "Final" = "1.16.1-dev"
-
-DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
-BOOL: "Final" = "bool"
-INT: "Final" = "int"
-STR: "Final" = "str"
-
 
 class IntOrBoolSingleton:
 
@@ -55,6 +49,53 @@ class IntOrBoolSingleton:
 
     def __call__(self) -> int:
         return self.get_value()
+
+
+class StringSingleton:
+
+    value: str
+
+    @classmethod
+    def set_value(cls, value: str) -> None:
+        cls.value = value
+
+    @classmethod
+    def init_value(cls) -> str:
+        return ""
+
+    @classmethod
+    def get_value(cls) -> str:
+        if getattr(cls, "value", None) is None:
+            cls.value = cls.init_value()
+        return cls.value
+
+    def __call__(self) -> str:
+        return self.get_value()
+
+
+class PathSingleton(metaclass=ABCMeta):
+
+    value: Path
+
+    @classmethod
+    def set_value(cls, value: Path) -> None:
+        cls.value = value
+
+    @classmethod
+    @abstractmethod
+    def get_value(cls) -> Path:
+        pass
+
+    def __call__(self) -> Path:
+        return self.get_value()
+
+
+VERSION: "Final" = "1.16.1-dev"
+
+DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
+BOOL: "Final" = "bool"
+INT: "Final" = "int"
+STR: "Final" = "str"
 
 
 class CustomUserId(IntOrBoolSingleton):
@@ -86,22 +127,32 @@ class UsingDynamicUsers(IntOrBoolSingleton):
         return RunningAsRoot()() and not CustomUserId()()
 
 
-HOME: "Final" = (
-    Path(os.environ["HOME"])
-    if (RunningAsRoot()() and CustomUserId()())
-    else Path.home()
-)
+class Home(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return (
+            Path(os.environ["HOME"])
+            if (RunningAsRoot()() and CustomUserId()())
+            else Path.home()
+        )
+
 
 _USER_TEMP_ROOT: "Final" = Path(gettempdir())
-_USER_CACHE_ROOT: "Final" = Path(os.environ.get(
-    "XDG_CACHE_HOME",
-    HOME / ".cache/",
-))
+
+
+class _UserCacheRoot(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return Path(os.environ.get(
+            "XDG_CACHE_HOME",
+            Home()() / ".cache/",
+        ))
+
 
 CACHE_ROOT: "Final" = (
     Path("/var/cache/pikaur")
     if UsingDynamicUsers()() else
-    _USER_CACHE_ROOT / "pikaur/"
+    _UserCacheRoot()() / "pikaur/"
 )
 
 BUILD_CACHE_PATH: "Final" = CACHE_ROOT / "build"
@@ -109,13 +160,13 @@ PACKAGE_CACHE_PATH: "Final" = CACHE_ROOT / "pkg"
 
 CONFIG_ROOT: "Final" = Path(os.environ.get(
     "XDG_CONFIG_HOME",
-    HOME / ".config/",
+    Home()() / ".config/",
 ))
 
 DATA_ROOT: "Final" = (
     Path(os.environ.get(
         "XDG_DATA_HOME",
-        HOME / ".local/share/",
+        Home()() / ".local/share/",
     )) / "pikaur"
 )
 
@@ -128,12 +179,12 @@ AUR_REPOS_CACHE_PATH: "Final" = (
 
 BUILD_DEPS_LOCK: "Final" = (
     (
-        _USER_CACHE_ROOT if UsingDynamicUsers()() else _USER_TEMP_ROOT)
+        _UserCacheRoot()() if UsingDynamicUsers()() else _USER_TEMP_ROOT)
     / "pikaur_build_deps.lock"
 )
 PROMPT_LOCK: "Final" = (
     (
-        _USER_CACHE_ROOT if UsingDynamicUsers()() else _USER_TEMP_ROOT
+        _UserCacheRoot()() if UsingDynamicUsers()() else _USER_TEMP_ROOT
     ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
 )
 

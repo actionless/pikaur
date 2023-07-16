@@ -80,9 +80,6 @@ def update_custom_user_id(new_id: int) -> None:
     CustomUserId.set_value(CustomUserId()() or new_id)
 
 
-USING_DYNAMIC_USERS: "Final" = RunningAsRoot()() and not CustomUserId()()
-
-
 class UsingDynamicUsers(IntOrBoolSingleton):
     @classmethod
     def get_value(cls) -> int:
@@ -103,7 +100,7 @@ _USER_CACHE_ROOT: "Final" = Path(os.environ.get(
 
 CACHE_ROOT: "Final" = (
     Path("/var/cache/pikaur")
-    if USING_DYNAMIC_USERS else
+    if UsingDynamicUsers()() else
     _USER_CACHE_ROOT / "pikaur/"
 )
 
@@ -125,18 +122,18 @@ DATA_ROOT: "Final" = (
 _OLD_AUR_REPOS_CACHE_PATH: "Final" = CACHE_ROOT / "aur_repos"
 AUR_REPOS_CACHE_PATH: "Final" = (
     (CACHE_ROOT / "aur_repos")
-    if USING_DYNAMIC_USERS else
+    if UsingDynamicUsers()() else
     (DATA_ROOT / "aur_repos")
 )
 
 BUILD_DEPS_LOCK: "Final" = (
     (
-        _USER_CACHE_ROOT if USING_DYNAMIC_USERS else _USER_TEMP_ROOT)
+        _USER_CACHE_ROOT if UsingDynamicUsers()() else _USER_TEMP_ROOT)
     / "pikaur_build_deps.lock"
 )
 PROMPT_LOCK: "Final" = (
     (
-        _USER_CACHE_ROOT if USING_DYNAMIC_USERS else _USER_TEMP_ROOT
+        _USER_CACHE_ROOT if UsingDynamicUsers()() else _USER_TEMP_ROOT
     ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
 )
 

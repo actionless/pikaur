@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 from .args import parse_args
-from .config import USING_DYNAMIC_USERS, PikaurConfig, RunningAsRoot
+from .config import PikaurConfig, RunningAsRoot, UsingDynamicUsers
 from .i18n import translate
 from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 
@@ -375,7 +375,7 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
             translate("pikaur requires Python >= 3.7 to run."),
         )
         sys.exit(65)
-    if USING_DYNAMIC_USERS and not check_systemd_dynamic_users_version():
+    if UsingDynamicUsers()() and not check_systemd_dynamic_users_version():
         print_error(
             translate("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         )

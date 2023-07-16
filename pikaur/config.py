@@ -176,7 +176,12 @@ class CacheRoot(PathSingleton):
         )
 
 
-BUILD_CACHE_PATH: "Final" = CacheRoot()() / "build"
+class BuildCachePath(PathSingleton):
+    @classmethod
+    def get_value(cls) -> Path:
+        return CacheRoot()() / "build"
+
+
 PACKAGE_CACHE_PATH: "Final" = CacheRoot()() / "pkg"
 
 CONFIG_ROOT: "Final" = Path(os.environ.get(

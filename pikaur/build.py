@@ -11,9 +11,9 @@ from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
 from .config import (
     AUR_REPOS_CACHE_PATH,
-    BUILD_CACHE_PATH,
     BUILD_DEPS_LOCK,
     PACKAGE_CACHE_PATH,
+    BuildCachePath,
     PikaurConfig,
 )
 from .core import (
@@ -187,7 +187,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             )
             raise NotImplementedError(missing_property_error)
 
-        self.build_dir = BUILD_CACHE_PATH / self.package_base
+        self.build_dir = BuildCachePath()() / self.package_base
         logger.debug("Build dir: {}", self.build_dir)
         self.build_gpgdir = self.args.build_gpgdir
         self.built_packages_paths = {}

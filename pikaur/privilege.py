@@ -49,6 +49,11 @@ def isolate_root_cmd(
     user_id = args.user_id
     base_root_isolator: list[str]
     if user_id:
+        if PikaurConfig().misc.PrivilegeEscalationTool.get_str() == "doas":
+            base_root_isolator = [
+                PikaurConfig().misc.PrivilegeEscalationTool.get_str(),
+                "-u", f"{user_id}",
+            ]
         base_root_isolator = [
             PikaurConfig().misc.PrivilegeEscalationTool.get_str(),
             f"--user=#{user_id}",

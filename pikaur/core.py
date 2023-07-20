@@ -170,7 +170,9 @@ class AURInstallInfo(InstallInfo):
 def sudo(cmd: list[str]) -> list[str]:
     if RunningAsRoot()():
         return cmd
-    return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), "--preserve-env", *cmd]
+    if PikaurConfig().misc.PrivilegeEscalationTool.get_str() == "doas":
+        return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), *cmd]
+    return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), "--preserve-env", "--", *cmd]
 
 
 class InteractiveSpawn(subprocess.Popen[bytes]):

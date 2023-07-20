@@ -54,12 +54,13 @@ def isolate_root_cmd(
                 PikaurConfig().misc.PrivilegeEscalationTool.get_str(),
                 "-u", f"{user_id}",
             ]
-        base_root_isolator = [
-            PikaurConfig().misc.PrivilegeEscalationTool.get_str(),
-            f"--user=#{user_id}",
-            "--preserve-env",
-            "--",
-        ]
+        else:
+            base_root_isolator = [
+                PikaurConfig().misc.PrivilegeEscalationTool.get_str(),
+                f"--user=#{user_id}",
+                "--preserve-env",
+                "--",
+            ]
     else:
         base_root_isolator = [
             "/usr/sbin/systemd-run",

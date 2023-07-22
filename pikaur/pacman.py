@@ -433,6 +433,16 @@ class PackageDB(PackageDBCommon):
         return results
 
     @classmethod
+    def get_sync_print_format_output(
+            cls, pkg_names: list[str], *, check_deps: bool = True, package_only: bool = False,
+    ) -> list[PacmanPrint]:
+        return cls.get_print_format_output(
+            [*get_pacman_command(), "--sync", *pkg_names],
+            check_deps=check_deps,
+            package_only=package_only,
+        )
+
+    @classmethod
     def get_pacman_test_output(cls, cmd_args: list[str]) -> list[VersionMatcher]:
         if not cmd_args:
             return []
@@ -515,8 +525,8 @@ class PackageDB(PackageDBCommon):
             raise PackagesNotFoundInRepoError(packages=[pkg_name])
         all_repo_pkgs = PackageDB.get_repo_dict()
         try:
-            results = cls.get_print_format_output(
-                [*get_pacman_command(), "--sync", *pkg_name.split(",")],
+            results = cls.get_sync_print_format_output(
+                pkg_names=pkg_name.split(","),
                 package_only=True,
             )
         except DependencyError as exc:
@@ -557,18 +567,14 @@ def find_upgradeable_packages() -> list[pyalpm.Package]:
     all_local_pkgs = PackageDB.get_local_dict()
     results: list[PacmanPrint] = []
     try:
-        results = PackageDB.get_print_format_output([
-            *get_pacman_command(), "--sync", *pkg_names,
-        ])
+        results = PackageDB.get_sync_print_format_output(pkg_names=pkg_names)
     except DependencyError as exc:
         print_error(translate("Dependencies can't be satisfied for the following packages:"))
         print_stderr(" " * 12 + " ".join(pkg_names))
         print_stderr(str(exc))
         for pkg_name in pkg_names:
             try:
-                results += PackageDB.get_print_format_output([
-                    *get_pacman_command(), "--sync", pkg_name,
-                ])
+                results += PackageDB.get_sync_print_format_output([pkg_name])
             except DependencyError as exc2:
                 print_error(translate("Because of:"))
                 print_stderr(str(exc2))

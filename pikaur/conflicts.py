@@ -122,7 +122,7 @@ def find_aur_conflicts(
         aur_pkgs_install_infos: "Sequence[AURInstallInfo]",
         repo_packages_names: list[str],
 ) -> dict[str, list[str]]:
-    aur_pkgs: "list[AURPackageInfo]" = [ii.package for ii in aur_pkgs_install_infos]
+    aur_pkgs: list[AURPackageInfo] = [ii.package for ii in aur_pkgs_install_infos]
     aur_packages_names = [ii.name for ii in aur_pkgs_install_infos]
     repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(aur_pkgs)
     repo_deps_names = [vm.pkg_name for vm in repo_deps_version_matchers]

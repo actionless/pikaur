@@ -493,7 +493,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
 
 
 def get_key_type(section_name: str, key_name: str) -> str | None:
-    config_value: "ConfigValueType" | None = CONFIG_SCHEMA.get(section_name, {}).get(key_name, None)
+    config_value: ConfigValueType | None = CONFIG_SCHEMA.get(section_name, {}).get(key_name, None)
     if not config_value:
         return None
     return config_value.get("data_type")
@@ -613,9 +613,9 @@ class PikaurConfig:
 
                 new_section_name: str = option_schema["deprecated"]["section"]
                 new_option_name: str = option_schema["deprecated"]["option"]
-                transform: """Callable[
+                transform: Callable[
                     [str, configparser.ConfigParser], str,
-                ] | None""" = option_schema["deprecated"].get("transform")
+                ] | None = option_schema["deprecated"].get("transform")
 
                 old_value_was_migrated = False
                 value_to_migrate = None

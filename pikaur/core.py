@@ -223,7 +223,7 @@ def interactive_spawn(
         cwd: str | Path | None = None,
         env: dict[str, str] | None = None,
 ) -> InteractiveSpawn:
-    kwargs: "SpawnArgs" = {}
+    kwargs: SpawnArgs = {}
     if stdout:
         kwargs["stdout"] = stdout
     if stderr:
@@ -355,7 +355,7 @@ def get_editor() -> list[str] | None:
 
 
 def dirname(path: str | Path) -> Path:
-    return Path(path).parent if path else Path(".")
+    return Path(path).parent if path else Path()
 
 
 def check_systemd_dynamic_users_version() -> bool:  # pragma: no cover

@@ -101,17 +101,16 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                     pkg for pkg in subresult
                     if subindex in pkg.name
                 ]
+    elif args.quiet:
+        result = {"all": [
+            AURPackageInfo(
+                name=name,
+                packagebase=name,
+                version="0",
+            ) for name in get_all_aur_names()
+        ]}
     else:
-        if args.quiet:  # noqa: PLR5501
-            result = {"all": [
-                AURPackageInfo(
-                    name=name,
-                    packagebase=name,
-                    version="0",
-                ) for name in get_all_aur_names()
-            ]}
-        else:
-            result = {"all": get_all_aur_packages()}
+        result = {"all": get_all_aur_packages()}
     if not args.quiet:
         sys.stderr.write("#")
     return list(join_search_results(list(result.values())))
@@ -174,7 +173,7 @@ def search_packages(  # pylint: disable=too-many-locals
         pool.close()
 
         result_local = request_local.get()
-        result_repo: "list[list[pyalpm.Package]]" = []
+        result_repo: list[list[pyalpm.Package]] = []
         for request_repo in requests_repo:
             pkgs_found = request_repo.get()
             if pkgs_found:
@@ -191,10 +190,10 @@ def search_packages(  # pylint: disable=too-many-locals
     if not args.quiet:
         sys.stderr.write("\n")
 
-    joined_repo_results: "Iterable[pyalpm.Package]" = []
+    joined_repo_results: Iterable[pyalpm.Package] = []
     if result_repo:
         joined_repo_results = join_search_results(result_repo)
-    joined_aur_results: "Iterable[AURPackageInfo]" = result_aur or []
+    joined_aur_results: Iterable[AURPackageInfo] = result_aur or []
 
     return print_package_search_results(
         repo_packages=joined_repo_results,

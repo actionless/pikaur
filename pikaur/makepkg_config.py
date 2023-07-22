@@ -113,7 +113,7 @@ class MakepkgConfig:
             config_path: str | None = None,
     ) -> "ConfigValueType | FallbackValueT":
         arg_path: str | None = parse_args().makepkg_config
-        value: "ConfigValueType | FallbackValueT" = ConfigReader.get(
+        value: ConfigValueType | FallbackValueT = ConfigReader.get(
             key, fallback, config_path="/etc/makepkg.conf",
         )
         if cls.get_user_makepkg_path():

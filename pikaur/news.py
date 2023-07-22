@@ -57,12 +57,12 @@ class News:
         if self._news_feed is None:
             print_error(translate("Could not fetch archlinux.org news"))
             return
-        news_entry: "Element"
+        news_entry: Element
         first_news = True
         news_entry_to_update_last_seen_date = None
         try:  # pylint: disable=too-many-nested-blocks
             for news_entry in self._news_feed.iter("item"):
-                child: "Element"
+                child: Element
                 for child in news_entry:
                     if ArchNewsMarkup.PUBLICATION_DATE in child.tag:
                         if self._is_new(str(child.text)):
@@ -98,7 +98,7 @@ class News:
         self._news_feed = fromstring(str_response)  # nosec B314  # noqa: S314
 
     def _get_last_seen_news_date(self) -> datetime.datetime:
-        last_seen_fd: "TextIO"
+        last_seen_fd: TextIO
         try:
             logger.debug("loading date from {}", self.cache_file)
             with open_file(self.cache_file) as last_seen_fd:
@@ -140,7 +140,7 @@ class News:
 
     @staticmethod
     def _print_one_entry(news_entry: "Element") -> None:
-        child: "Element"
+        child: Element
         for child in news_entry:
             if ArchNewsMarkup.TITLE in child.tag:
                 title = str(child.text)
@@ -158,7 +158,7 @@ class News:
         print_stdout()
 
     def _update_last_seen_news(self, news_entry: "Element") -> None:
-        child: "Element"
+        child: Element
         for child in news_entry:
             if ArchNewsMarkup.PUBLICATION_DATE in child.tag:
                 pub_date = str(child.text)

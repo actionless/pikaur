@@ -288,7 +288,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # specified both operations, like `pikaur -QS smth`
 
     args = parse_args()
-    pikaur_operation: "Callable[[], None] | None" = None
+    pikaur_operation: Callable[[], None] | None = None
     require_sudo = False
 
     if args.help:

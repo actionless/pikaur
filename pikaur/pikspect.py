@@ -514,7 +514,7 @@ def pikspect(
         capture_output: bool | None = None,
 ) -> PikspectPopen:
 
-    questions_proceed: "Final[list[str]]" = [
+    questions_proceed: Final[list[str]] = [
         format_pacman_question("Proceed with installation?"),
         format_pacman_question("Proceed with download?"),
     ]

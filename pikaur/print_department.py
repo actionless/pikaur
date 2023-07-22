@@ -348,22 +348,22 @@ class SysupgradePrettyFormatter:
         self.install_info = install_info
         self.verbose = verbose
 
-        self.repo_packages_updates: "list[RepoInstallInfo]" = \
+        self.repo_packages_updates: list[RepoInstallInfo] = \
             install_info.repo_packages_install_info[::]
         self.thirdparty_repo_packages_updates: list[RepoInstallInfo] = \
             install_info.thirdparty_repo_packages_install_info[::]
-        self.aur_updates: "list[AURInstallInfo]" = \
+        self.aur_updates: list[AURInstallInfo] = \
             install_info.aur_updates_install_info[::]
-        self.repo_replacements: "list[RepoInstallInfo]" = \
+        self.repo_replacements: list[RepoInstallInfo] = \
             install_info.repo_replacements_install_info[::]
         self.thirdparty_repo_replacements: list[RepoInstallInfo] = \
             install_info.thirdparty_repo_replacements_install_info[::]
 
-        self.new_repo_deps: "list[RepoInstallInfo]" = \
+        self.new_repo_deps: list[RepoInstallInfo] = \
             install_info.new_repo_deps_install_info[::]
         self.new_thirdparty_repo_deps: list[RepoInstallInfo] = \
             install_info.new_thirdparty_repo_deps_install_info[::]
-        self.new_aur_deps: "list[AURInstallInfo]" = \
+        self.new_aur_deps: list[AURInstallInfo] = \
             install_info.aur_deps_install_info[::]
 
         if manual_package_selection:
@@ -372,9 +372,9 @@ class SysupgradePrettyFormatter:
             self.new_thirdparty_repo_deps = []
             self.new_aur_deps = []
 
-        self.all_install_info_lists: """Sequence[
+        self.all_install_info_lists: Sequence[
             list[AURInstallInfo] | list[RepoInstallInfo]
-        ]""" = [
+        ] = [
             self.repo_packages_updates,
             self.thirdparty_repo_packages_updates,
             self.aur_updates,
@@ -411,7 +411,7 @@ class SysupgradePrettyFormatter:
         warn_about_packages_list: list[InstallInfo] = []
 
         def remove_globs_from_pkg_list(pkg_list: "list[InstallInfoT]") -> None:
-            pkg_install_info: "InstallInfoT"
+            pkg_install_info: InstallInfoT
             for pkg_install_info in pkg_list[::]:
                 for glob in globs_and_names:
                     if fnmatch(pkg_install_info.name, glob):
@@ -420,7 +420,7 @@ class SysupgradePrettyFormatter:
 
         if warn_about_packages_str:
             globs_and_names = warn_about_packages_str.split(",")
-            pkg_list: "list[RepoInstallInfo] | list[AURInstallInfo]"
+            pkg_list: list[RepoInstallInfo] | list[AURInstallInfo]
             for pkg_list in self.all_install_info_lists:
                 remove_globs_from_pkg_list(pkg_list)  # type: ignore[misc]
 
@@ -712,15 +712,15 @@ def print_package_search_results(
     args = parse_args()
     local_pkgs_names = local_pkgs_versions.keys()
 
-    sorted_repo_pkgs: "list[pyalpm.Package]" = sorted(
+    sorted_repo_pkgs: list[pyalpm.Package] = sorted(
         repo_packages,
         key=get_repo_sort_key,
     )
-    sorted_aur_pkgs: "list[AURPackageInfo]" = sorted(
+    sorted_aur_pkgs: list[AURPackageInfo] = sorted(
         aur_packages,
         key=get_aur_sort_key,
     )
-    sorted_packages: "list[AnyPackage]" = [*sorted_repo_pkgs, *sorted_aur_pkgs]
+    sorted_packages: list[AnyPackage] = [*sorted_repo_pkgs, *sorted_aur_pkgs]
     # mypy is always funny ^^ https://github.com/python/mypy/issues/5492#issuecomment-545992992
 
     enumerated_packages = list(enumerate(sorted_packages))

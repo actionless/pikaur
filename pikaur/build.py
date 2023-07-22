@@ -258,7 +258,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 get_repo_url(self.package_base),
                 str(self.repo_path),
             ]
-        result: "InteractiveSpawn | None" = None
+        result: InteractiveSpawn | None = None
         if cmd_args:
             result = spawn(isolate_root_cmd(wrap_proxy_env(cmd_args)))
         self.reviewed = self.current_hash == self.last_installed_hash
@@ -779,7 +779,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             env["GNUPGHOME"] = self.build_gpgdir
 
         cmd_args = isolate_root_cmd(cmd_args, cwd=self.build_dir, env=env)
-        spawn_kwargs: "SpawnArgs" = {
+        spawn_kwargs: SpawnArgs = {
             "cwd": str(self.build_dir),
             "env": {**os.environ, **env},
         }

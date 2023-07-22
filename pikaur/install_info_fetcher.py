@@ -611,7 +611,7 @@ Gonna fetch install info for:
         """Update packages' install info to show deps in prompt."""
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
         all_local_pkgnames = PackageDB.get_local_pkgnames()
-        all_deps_install_infos: "Sequence[InstallInfo]" = (
+        all_deps_install_infos: Sequence[InstallInfo] = (
             self.new_repo_deps_install_info +
             self.new_thirdparty_repo_deps_install_info +
             self.aur_deps_install_info  # type: ignore[operator]
@@ -641,10 +641,10 @@ Gonna fetch install info for:
             ):
                 providing_for = [
                     pkg_name for pkg_name in sum([
-                        [
+                        next(
                             [vm.line, vm.pkg_name]
                             for vm in (VersionMatcher(prov), )
-                        ][0]
+                        )
                         for prov in provides
                     ], [])
                     if pkg_name in all_requested_pkg_names

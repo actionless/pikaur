@@ -26,7 +26,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
         # map all mutually exclusive arguments to the other arguments
         # they can't occur with
-        action_conflicts: "dict[Action, list[Action]]" = {}
+        action_conflicts: dict[Action, list[Action]] = {}
         for mutex_group in self._mutually_exclusive_groups:
             group_actions = mutex_group._group_actions
             for i, mutex_action in enumerate(mutex_group._group_actions):
@@ -103,7 +103,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             # identify additional optionals in the same arg string
             # (e.g. -xyz is the same as -x -y -z if no args are required)
             match_argument = self._match_argument
-            action_tuples: "list[tuple[Action, list[str], str]]" = []
+            action_tuples: list[tuple[Action, list[str], str]] = []
             while True:
 
                 # if we found no optional action, skip it

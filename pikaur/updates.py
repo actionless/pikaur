@@ -176,7 +176,7 @@ def print_upgradeable(
         ignored_only: bool = False,
 ) -> None:
     args = parse_args()
-    updates: "list[InstallInfo]" = []
+    updates: list[InstallInfo] = []
     if aur_install_infos is not None:
         updates += aur_install_infos
     elif not args.repo:

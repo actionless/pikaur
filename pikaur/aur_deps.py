@@ -52,7 +52,7 @@ def find_dep_graph_to(
         to_pkgs: "list[AURPackageInfo]",
         all_pkgs: "list[AURPackageInfo]",
 ) -> "list[AURPackageInfo]":
-    result: "list[AURPackageInfo]" = []
+    result: list[AURPackageInfo] = []
     if len(to_pkgs) == 1:
         possible_end_pkg = to_pkgs[0]
         possible_end_pkgs_deps = (

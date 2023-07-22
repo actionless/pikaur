@@ -93,6 +93,13 @@ def get_pacman_command(ignore_args: list[str] | None = None) -> list[str]:
     return pacman_cmd
 
 
+class RawPrintFormat(DataType):
+
+    returncode: int
+    stdout_text: str
+    stderr_text: str
+
+
 class PacmanPrint(DataType):
 
     full_name: str
@@ -265,7 +272,7 @@ class PackageDB(PackageDBCommon):
 
     _alpm_handle: pyalpm.Handle | None = None
 
-    _pacman_find_cache: ClassVar[dict[str, list[PacmanPrint]]] = {}
+    _pacman_pformat_cache: ClassVar[dict[str, RawPrintFormat]] = {}
     _pacman_test_cache: ClassVar[dict[str, list[VersionMatcher]]] = {}
     _pacman_repo_pkg_present_cache: ClassVar[dict[str, bool]] = {}
 
@@ -288,7 +295,7 @@ class PackageDB(PackageDBCommon):
     def discard_repo_cache(cls) -> None:
         super().discard_repo_cache()
         cls._alpm_handle = None
-        cls._pacman_find_cache = {}
+        cls._pacman_pformat_cache = {}
         cls._pacman_repo_pkg_present_cache = {}
 
     @classmethod
@@ -377,23 +384,39 @@ class PackageDB(PackageDBCommon):
         return int(packages_by_date[0].installdate)
 
     @classmethod
-    def get_print_format_output(
+    def _get_print_format_output_raw(
             cls, cmd_args: list[str], *, check_deps: bool = True, package_only: bool = False,
-    ) -> list[PacmanPrint]:
-        cache_index = " ".join(sorted(cmd_args))
-        cached_pkg = cls._pacman_find_cache.get(cache_index)
-        if cached_pkg is not None:
-            return cached_pkg
-        results: list[PacmanPrint] = []
+    ) -> RawPrintFormat:
         final_args = [*cmd_args, "--print-format", "%r/%n"]
         if not check_deps and not package_only:
             final_args.append("--nodeps")
         if package_only:
             final_args += ["--nodeps", "--nodeps"]
-        proc = spawn(final_args)
-        if proc.returncode != 0:
-            raise DependencyError((proc.stderr_text or "") + (proc.stdout_text or ""))
-        found_packages_output = proc.stdout_text
+        cache_index = " ".join(sorted(final_args))
+        if cls._pacman_pformat_cache.get(cache_index) is None:
+            proc = spawn(final_args)
+            cls._pacman_pformat_cache[cache_index] = RawPrintFormat(
+                returncode=proc.returncode,
+                stdout_text=proc.stdout_text,
+                stderr_text=proc.stderr_text,
+            )
+        else:
+            logger.debug("cached pformat {}", final_args)
+        return cls._pacman_pformat_cache[cache_index]
+
+    @classmethod
+    def get_print_format_output(
+            cls, cmd_args: list[str], *, check_deps: bool = True, package_only: bool = False,
+    ) -> list[PacmanPrint]:
+        results: list[PacmanPrint] = []
+        raw_result = cls._get_print_format_output_raw(
+            cmd_args=cmd_args,
+            check_deps=check_deps,
+            package_only=package_only,
+        )
+        if raw_result.returncode != 0:
+            raise DependencyError((raw_result.stderr_text or "") + (raw_result.stdout_text or ""))
+        found_packages_output = raw_result.stdout_text
         if found_packages_output:
             for line in found_packages_output.splitlines():
                 try:
@@ -407,7 +430,6 @@ class PackageDB(PackageDBCommon):
                         repo=repo_name,
                         name=pkg_name,
                     ))
-        cls._pacman_find_cache[cache_index] = results
         return results
 
     @classmethod
@@ -417,6 +439,7 @@ class PackageDB(PackageDBCommon):
         cache_index = " ".join(sorted(cmd_args))
         cached_pkgs = cls._pacman_test_cache.get(cache_index)
         if cached_pkgs is not None:
+            # logger.debug("cached deptest {}", cmd_args)
             return cached_pkgs
         results: list[VersionMatcher] = []
         not_found_packages_output = spawn([
@@ -456,13 +479,11 @@ class PackageDB(PackageDBCommon):
         if not pkg_names_to_check:
             return not_found_pkg_names
 
-        results = (
-            spawn([
-                *get_pacman_command(),
-                "--sync", "--print-format=%%", "--nodeps",
-                *pkg_names_to_check,
-            ]).stderr_text or ""
-        ).splitlines()
+        results = (cls._get_print_format_output_raw(
+            cmd_args=[*get_pacman_command(), "--sync", *pkg_names_to_check],
+            check_deps=False,
+            package_only=False,
+        ).stderr_text or "").splitlines()
         new_not_found_pkg_names = []
         for result in results:
             for pattern in (pattern_notfound, pattern_db_notfound):

@@ -29,7 +29,13 @@ from .core import (
     spawn,
     sudo,
 )
-from .exceptions import BuildError, CloneError, DependencyError, DependencyNotBuiltYetError, SysExit
+from .exceptions import (
+    BuildError,
+    CloneError,
+    DependencyError,
+    DependencyNotBuiltYetError,
+    SysExit,
+)
 from .filelock import FileLock
 from .i18n import translate, translate_many
 from .logging import create_logger
@@ -322,12 +328,63 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             print_stderr()
             print_error(error_text)
             print_stderr(pkgver_result.stdout_text)
-            if (
-                    not self.args.skip_failed_build
-            ) and (
-                not ask_to_continue(default_yes=False)
-            ):
-                raise BuildError(error_text)
+
+            if self.args.skip_failed_build:
+                answer = translate("s")
+            elif self.args.noconfirm:
+                answer = translate("a")
+            else:  # pragma: no cover
+                prompt = "{} {}\n{}\n> ".format(
+                    color_line("::", ColorsHighlight.yellow),
+                    translate("Try recovering?"),
+                    "\n".join((
+                        translate("[R] retry clone"),
+                        translate("[d] delete build dir and try again"),
+                        translate("[e] edit PKGBUILD"),
+                        translate("[i] ignore the error"),
+                        "-" * 24,
+                        translate("[s] skip building this package"),
+                        translate("[a] abort building all the packages"),
+                    )),
+                )
+                answer = get_input(
+                    prompt,
+                    translate("r").upper() +
+                    translate("d") +
+                    translate("e") +
+                    translate("i") +
+                    translate("s") +
+                    translate("a"),
+                )
+
+            answer = answer.lower()[0]
+            if answer == translate("r"):  # pragma: no cover
+                self.get_latest_dev_sources(check_dev_pkgs=check_dev_pkgs)
+                return
+            if answer == translate("d"):  # pragma: no cover
+                self.prepare_build_destination(flush=True)
+                self.get_latest_dev_sources(check_dev_pkgs=check_dev_pkgs)
+                return
+            if answer == translate("e"):  # pragma: no cover
+                editor_cmd = get_editor_or_exit()
+                if editor_cmd:
+                    interactive_spawn(
+                        [*editor_cmd, str(self.pkgbuild_path)],
+                    )
+                    interactive_spawn(isolate_root_cmd([
+                        "cp",
+                        str(self.pkgbuild_path),
+                        str(self.build_dir / DEFAULT_PKGBUILD_BASENAME),
+                    ]))
+                    raise PkgbuildChanged
+                self.get_latest_dev_sources(check_dev_pkgs=check_dev_pkgs)
+                return
+            if answer == translate("i"):
+                return
+            if answer == translate("a"):
+                raise SysExit(125)
+            # "s"kip
+            raise BuildError(error_text)
         SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True
 

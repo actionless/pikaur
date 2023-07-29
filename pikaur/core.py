@@ -343,21 +343,6 @@ def remove_dir(dir_path: str | Path) -> None:
         interactive_spawn(sudo(["rm", "-rf", str(dir_path)]))
 
 
-def get_editor() -> list[str] | None:
-    editor_line = os.environ.get("VISUAL") or os.environ.get("EDITOR")
-    if editor_line:
-        return editor_line.split(" ")
-    for editor in (
-            "vim", "nano", "mcedit", "edit", "emacs", "nvim", "kak",
-            "e3", "atom", "adie", "dedit", "gedit", "jedit", "kate", "kwrite", "leafpad",
-            "mousepad", "notepadqq", "pluma", "code", "xed", "nvim-qt", "geany",
-    ):
-        path = shutil.which(editor)
-        if path:
-            return [path]
-    return None
-
-
 def dirname(path: str | Path) -> Path:
     return Path(path).parent if path else Path()
 

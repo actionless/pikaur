@@ -1,12 +1,14 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
+import os
+import shutil
 import sys
 import tty
 from typing import TYPE_CHECKING
 
 from .args import LiteralArgs, parse_args
 from .config import PikaurConfig, PromptLockPath
-from .core import InteractiveSpawn, get_editor, interactive_spawn
+from .core import InteractiveSpawn, interactive_spawn
 from .exceptions import SysExit
 from .filelock import FileLock
 from .i18n import translate
@@ -21,6 +23,7 @@ from .pprint import (
     print_warning,
     range_printable,
 )
+from .privilege import isolate_root_cmd
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -266,6 +269,21 @@ def retry_interactive_command_or_exit(
         raise SysExit(125)
 
 
+def get_editor() -> list[str] | None:
+    editor_line = os.environ.get("VISUAL") or os.environ.get("EDITOR")
+    if editor_line:
+        return editor_line.split(" ")
+    for editor in (
+            "vim", "nano", "mcedit", "edit", "emacs", "nvim", "kak",
+            "e3", "atom", "adie", "dedit", "gedit", "jedit", "kate", "kwrite", "leafpad",
+            "mousepad", "notepadqq", "pluma", "code", "xed", "nvim-qt", "geany",
+    ):
+        path = shutil.which(editor)
+        if path:
+            return [path]
+    return None
+
+
 def get_editor_or_exit() -> list[str] | None:
     editor = get_editor()
     if not editor:
@@ -274,4 +292,6 @@ def get_editor_or_exit() -> list[str] | None:
                 translate("Do you want to proceed without editing?"),
         ):  # pragma: no cover
             raise SysExit(125)
-    return editor
+    if not isinstance(editor, list):  # mypy 🙄
+        raise TypeError
+    return isolate_root_cmd(editor) if parse_args().user_id else editor

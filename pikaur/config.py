@@ -130,14 +130,11 @@ class UsingDynamicUsers(IntOrBoolSingleton):
         return RunningAsRoot()() and not CustomUserId()()
 
 
-class Home(PathConfig):
+class Home(FixedPathSingleton):
     @classmethod
-    def get_value(cls) -> Path:
-        return (
-            Path(os.environ["HOME"])
-            if (RunningAsRoot()() and CustomUserId()())
-            else Path.home()
-        )
+    def init_value(cls) -> Path:
+        home_dir_set = pre_arg_parser("--home-dir", "")
+        return Path(home_dir_set) if home_dir_set else Path.home()
 
 
 class _UserTempRoot(FixedPathSingleton):
@@ -146,13 +143,16 @@ class _UserTempRoot(FixedPathSingleton):
         return Path(gettempdir())
 
 
-class _UserCacheRoot(PathConfig):
+class _UserCacheRoot(FixedPathSingleton):
     @classmethod
-    def get_value(cls) -> Path:
-        return Path(os.environ.get(
-            "XDG_CACHE_HOME",
-            Home()() / ".cache/",
-        ))
+    def init_value(cls) -> Path:
+        return Path(
+            pre_arg_parser("--xdg-cache-home", "")
+            or os.environ.get(
+                "XDG_CACHE_HOME",
+            )
+            or Home()() / ".cache/",
+        )
 
 
 class CacheRoot(PathConfig):
@@ -177,23 +177,29 @@ class PackageCachePath(PathConfig):
         return CacheRoot()() / "pkg"
 
 
-class ConfigRoot(PathConfig):
+class ConfigRoot(FixedPathSingleton):
     @classmethod
-    def get_value(cls) -> Path:
-        return Path(os.environ.get(
-            "XDG_CONFIG_HOME",
-            Home()() / ".config/",
-        ))
+    def init_value(cls) -> Path:
+        return Path(
+            pre_arg_parser("--xdg-config-home", "")
+            or os.environ.get(
+                "XDG_CONFIG_HOME",
+            )
+            or Home()() / ".config/",
+        )
 
 
-class DataRoot(PathConfig):
+class DataRoot(FixedPathSingleton):
     @classmethod
-    def get_value(cls) -> Path:
+    def init_value(cls) -> Path:
         return (
-            Path(os.environ.get(
-                "XDG_DATA_HOME",
-                Home()() / ".local/share/",
-            )) / "pikaur"
+            Path(
+                pre_arg_parser("--xdg-data-home", "")
+                or os.environ.get(
+                    "XDG_DATA_HOME",
+                )
+                or Home()() / ".local/share/",
+            ) / "pikaur"
         )
 
 

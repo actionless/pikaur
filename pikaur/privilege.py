@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
+from typing import Final
 
 from .args import parse_args
 from .config import (
+    ConfigPath,
     PikaurConfig,
     RunningAsRoot,
     UsingDynamicUsers,
@@ -11,6 +13,27 @@ from .config import (
 from .core import sudo as _sudo
 
 sudo = _sudo
+
+
+PRESERVE_ENV: Final = [
+    "PKGDEST",
+    "VISUAL",
+    "EDITOR",
+    "http_proxy",
+    "https_proxy",
+    "ftp_proxy",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "FTP_PROXY",
+]
+
+
+def get_envs_to_preserve() -> list[str]:
+    return [
+        env_var_name
+        for env_var_name in PRESERVE_ENV
+        if os.environ.get(env_var_name) is not None
+    ]
 
 
 def need_dynamic_users() -> bool:
@@ -45,10 +68,13 @@ def isolate_root_cmd(
         return cmd
     if isinstance(cwd, str):
         cwd = Path(cwd)
+    env = env or {}
     args = parse_args()
     user_id = args.user_id
     base_root_isolator: list[str]
+    preserve_envs = get_envs_to_preserve()
     if user_id:
+        preserve_envs += list(env.keys())
         if PikaurConfig().misc.PrivilegeEscalationTool.get_str() == "doas":
             base_root_isolator = [
                 PikaurConfig().misc.PrivilegeEscalationTool.get_str(),
@@ -58,9 +84,14 @@ def isolate_root_cmd(
             base_root_isolator = [
                 PikaurConfig().misc.PrivilegeEscalationTool.get_str(),
                 f"--user=#{user_id}",
-                "--preserve-env",
-                "--",
             ]
+            if preserve_envs:
+                base_root_isolator.append(
+                    "--preserve-env=" + ",".join(preserve_envs),
+                )
+            base_root_isolator.append(
+                "--",
+            )
     else:
         base_root_isolator = [
             "/usr/sbin/systemd-run",
@@ -70,14 +101,41 @@ def isolate_root_cmd(
             "-p", "CacheDirectory=pikaur",
             "-E", f"HOME={_UserTempRoot()()}",
         ]
-        if env is not None:
-            for env_var_name, env_var_value in env.items():
-                base_root_isolator += ["-E", f"{env_var_name}={env_var_value}"]
         if cwd is not None:
             base_root_isolator += ["-p", "WorkingDirectory=" + str(cwd.resolve())]
-        for env_var_name in (
-                "http_proxy", "https_proxy", "ftp_proxy",
-        ):
-            if os.environ.get(env_var_name) is not None:
-                base_root_isolator += ["-E", f"{env_var_name}={os.environ[env_var_name]}"]
+        for env_var_name in preserve_envs:
+            base_root_isolator += ["-E", f"{env_var_name}={os.environ[env_var_name]}"]
+        for env_var_name, env_var_value in env.items():
+            base_root_isolator += ["-E", f"{env_var_name}={env_var_value}"]
     return base_root_isolator + cmd
+
+
+def get_args_to_elevate_pikaur(original_args: list[str]) -> list[str]:
+    args = parse_args()
+    restart_args = original_args[:]
+    extra_args = [
+        ("--pikaur-config", str(ConfigPath()())),
+    ]
+    if not need_dynamic_users():
+        extra_args += [
+            ("--user-id", str(args.user_id or os.getuid())),
+            ("--home-dir", str(args.home_dir or "") or Path.home().as_posix()),
+        ]
+        for flag, arg_key, env_key in (
+            ("--xdg-cache-home", "xdg_cache_home", "XDG_CACHE_HOME"),
+            ("--xdg-config-home", "xdg_config_home", "XDG_CONFIG_HOME"),
+            ("--xdg-data-home", "xdg_data_home", "XDG_DATA_HOME"),
+        ):
+            arg_value = str(getattr(args, arg_key, None) or "")
+            if value := (arg_value or os.environ.get(env_key)):
+                extra_args += [
+                    (flag, value),
+                ]
+    for flag, fallback in extra_args:
+        config_overridden = max(
+            arg.startswith(flag)
+            for arg in restart_args
+        )
+        if not config_overridden:
+            restart_args += [f"{flag}={fallback}"]
+    return sudo(restart_args, preserve_env=get_envs_to_preserve())

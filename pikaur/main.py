@@ -19,7 +19,6 @@ from .args import parse_args
 from .config import (
     AurReposCachePath,
     CacheRoot,
-    ConfigPath,
     DataRoot,
     PikaurConfig,
     _OldAurReposCachePath,
@@ -45,6 +44,7 @@ from .pkg_cache_cli import cli_clean_packages_cache
 from .pprint import print_error, print_stderr, print_warning
 from .print_department import print_version
 from .privilege import (
+    get_args_to_elevate_pikaur,
     isolate_root_cmd,
     need_dynamic_users,
     running_as_root,
@@ -251,23 +251,8 @@ def execute_pikaur_operation(
             )
     ):
         # Restart pikaur with sudo to use systemd dynamic users or current user id
-        restart_args = sys.argv[:]
-        extra_args = [
-            ("--pikaur-config", str(ConfigPath()())),
-        ]
-        if not need_dynamic_users():
-            extra_args.append(
-                ("--user-id", str(args.user_id or os.getuid())),
-            )
-        for flag, fallback in extra_args:
-            config_overridden = max(
-                arg.startswith(flag)
-                for arg in restart_args
-            )
-            if not config_overridden:
-                restart_args += [f"{flag}={fallback}"]
         sys.exit(interactive_spawn(
-            sudo(restart_args),
+            get_args_to_elevate_pikaur(sys.argv),
         ).returncode)
     else:
         # Just run the operation normally

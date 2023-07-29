@@ -215,7 +215,28 @@ class ColorFlagValues:
 
 
 def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
-    result = []
+    result: ArgSchema = [
+        (
+            None, "home-dir",
+            None,
+            None,
+        ),
+        (
+            None, "xdg-cache-home",
+            None,
+            None,
+        ),
+        (
+            None, "xdg-config-home",
+            None,
+            None,
+        ),
+        (
+            None, "xdg-data-home",
+            None,
+            None,
+        ),
+    ]
     if not action:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_str_opts(each_action)

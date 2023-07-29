@@ -217,6 +217,13 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         self._local_pkgs_with_build_deps = set()
         self._local_provided_pkgs_with_build_deps = {}
 
+    def git_diff(self) -> "InteractiveSpawn":
+        return _shell([
+            "git",
+            "-C", str(self.repo_path),
+            "diff",
+        ])
+
     def git_reset_changed(self) -> "InteractiveSpawn":
         return _shell([
             "git",

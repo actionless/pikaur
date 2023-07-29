@@ -593,6 +593,7 @@ class InstallPackagesCLI:
                         "\n".join((
                             translate("Try recovering?"),
                             translate("[T] try again"),
+                            translate("[d] git diff"),
                             translate("[c] git checkout -- '*'"),
                             # translate("[c] git checkout -- '*' ; git clean -f -d -x"),
                             translate("[r] remove dir and clone again"),
@@ -603,11 +604,16 @@ class InstallPackagesCLI:
                     )
                     answer = get_input(
                         prompt,
-                        translate("t").upper() + translate("c") + translate("r")
+                        translate("t").upper() + translate("d")
+                        + translate("c") + translate("r")
                         + translate("s") + translate("a"),
                     )
 
                 answer = answer.lower()[0]
+                if answer == translate("d"):  # pragma: no cover
+                    print_stdout()
+                    package_build.git_diff()
+                    print_stdout()
                 if answer == translate("c"):  # pragma: no cover
                     package_build.git_reset_changed()
                 elif answer == translate("p"):  # pragma: no cover

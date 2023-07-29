@@ -15,6 +15,7 @@ from .config import DiffPagerValues, PikaurConfig
 from .conflicts import find_aur_conflicts
 from .core import (
     PackageSource,
+    chown_to_current,
     interactive_spawn,
     open_file,
     remove_dir,
@@ -424,6 +425,7 @@ class InstallPackagesCLI:
         with NamedTemporaryFile() as tmp_file:
             with open_file(tmp_file.name, "w") as write_file:
                 write_file.write(text_before)
+            chown_to_current(Path(tmp_file.name))
             edit_file(tmp_file.name)
             with open_file(tmp_file.name, "r") as read_file:
                 selected_packages = parse_pkg_names(read_file.read())

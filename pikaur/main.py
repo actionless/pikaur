@@ -30,7 +30,6 @@ from .core import (
     interactive_spawn,
     mkdir,
     spawn,
-    sudo,
 )
 from .exceptions import SysExit
 from .getpkgbuild_cli import cli_getpkgbuild
@@ -48,6 +47,7 @@ from .privilege import (
     isolate_root_cmd,
     need_dynamic_users,
     running_as_root,
+    sudo,
     using_dynamic_users,
 )
 from .prompt import NotANumberInputError, get_multiple_numbers_input

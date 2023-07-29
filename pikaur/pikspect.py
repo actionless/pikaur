@@ -229,6 +229,10 @@ class TTYRestore:  # pragma: no cover
         cls._restore(cls.old_tcattrs, cls.old_tcattrs_out, cls.old_tcattrs_err)
 
     def __init__(self) -> None:
+        if self.sub_tty_old_tcattrs or self.sub_tty_old_tcattrs_out or self.sub_tty_old_tcattrs_err:
+            logger.debug("TTYRestore: not saving - already saved")
+            return
+        logger.debug("TTYRestore: saving tty states...")
         with contextlib.suppress(termios.error, ValueError):
             self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
         with contextlib.suppress(termios.error):

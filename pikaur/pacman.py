@@ -10,13 +10,14 @@ from pycman.config import PacmanConfig as PycmanConfig
 
 from .args import PACMAN_APPEND_OPTS, PACMAN_STR_OPTS, parse_args, reconstruct_args
 from .config import PikaurConfig
-from .core import DataType, PackageSource, spawn, sudo
+from .core import DataType, PackageSource, spawn
 from .exceptions import DependencyError, PackagesNotFoundInRepoError
 from .i18n import translate
 from .lock import FancyLock
 from .logging import create_logger
 from .pacman_i18n import _p
 from .pprint import color_enabled, print_error, print_stderr
+from .privilege import sudo
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .version import VersionMatcher
 

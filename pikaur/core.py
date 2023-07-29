@@ -17,6 +17,7 @@ from .args import parse_args
 from .config import PikaurConfig, RunningAsRoot, UsingDynamicUsers
 from .i18n import translate
 from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
+from .privilege import sudo
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
@@ -165,18 +166,6 @@ class RepoInstallInfo(InstallInfo):
 
 class AURInstallInfo(InstallInfo):
     package: "AURPackageInfo"
-
-
-def sudo(cmd: list[str], preserve_env: list[str] | None = None) -> list[str]:
-    if RunningAsRoot()():
-        return cmd
-    if PikaurConfig().misc.PrivilegeEscalationTool.get_str() == "doas":
-        return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), *cmd]
-    result = [PikaurConfig().misc.PrivilegeEscalationTool.get_str()]
-    if preserve_env:
-        result.append("--preserve-env=" + ",".join(preserve_env))
-    result += ["--", *cmd]
-    return result
 
 
 class InteractiveSpawn(subprocess.Popen[bytes]):

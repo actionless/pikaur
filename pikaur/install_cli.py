@@ -18,7 +18,6 @@ from .core import (
     interactive_spawn,
     open_file,
     remove_dir,
-    sudo,
 )
 from .exceptions import (
     BuildError,
@@ -59,6 +58,7 @@ from .print_department import (
 )
 from .privilege import (
     isolate_root_cmd,
+    sudo,
     using_dynamic_users,
 )
 from .prompt import (

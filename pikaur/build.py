@@ -27,7 +27,6 @@ from .core import (
     remove_dir,
     replace_file,
     spawn,
-    sudo,
 )
 from .exceptions import (
     BuildError,
@@ -52,6 +51,7 @@ from .pprint import (
 )
 from .privilege import (
     isolate_root_cmd,
+    sudo,
     using_dynamic_users,
 )
 from .prompt import (

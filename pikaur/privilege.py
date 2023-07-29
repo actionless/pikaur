@@ -10,10 +10,6 @@ from .config import (
     UsingDynamicUsers,
     _UserTempRoot,
 )
-from .core import sudo as _sudo
-
-sudo = _sudo
-
 
 PRESERVE_ENV: Final = [
     "PKGDEST",
@@ -56,6 +52,18 @@ def using_dynamic_users() -> int:
 
 def running_as_root() -> int:
     return RunningAsRoot()()
+
+
+def sudo(cmd: list[str], preserve_env: list[str] | None = None) -> list[str]:
+    if RunningAsRoot()():
+        return cmd
+    if PikaurConfig().misc.PrivilegeEscalationTool.get_str() == "doas":
+        return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), *cmd]
+    result = [PikaurConfig().misc.PrivilegeEscalationTool.get_str()]
+    if preserve_env:
+        result.append("--preserve-env=" + ",".join(preserve_env))
+    result += ["--", *cmd]
+    return result
 
 
 def isolate_root_cmd(

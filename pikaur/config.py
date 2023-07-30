@@ -100,7 +100,7 @@ def pre_arg_parser(key: str, fallback: str) -> str:
     return fallback
 
 
-VERSION: "Final" = "1.18-dev"
+VERSION: "Final" = "1.18.1-dev"
 
 DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
 BOOL: "Final" = "bool"

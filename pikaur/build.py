@@ -40,6 +40,7 @@ from .i18n import translate, translate_many
 from .logging import create_logger
 from .makepkg_config import MakePkgCommand, MakepkgConfig, get_pkgdest
 from .pacman import PackageDB, get_pacman_command, install_built_deps
+from .pikspect import TTYRestore
 from .pprint import (
     ColorsHighlight,
     bold_line,
@@ -984,6 +985,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
                 )
             else:
                 AlreadyClonedRepos.add(package_base)
+    TTYRestore.restore()
     if exc:
         raise exc
     all_package_builds_by_base = {

@@ -73,7 +73,7 @@ def init_readline() -> None:
 
 init_readline()
 
-logger = create_logger("main")
+logger = create_logger(f"main_{os.getuid()}")
 
 
 # @TODO: use arg to enable it

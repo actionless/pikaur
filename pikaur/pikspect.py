@@ -219,9 +219,6 @@ class TTYRestore:  # pragma: no cover
         cls._restore(cls.old_tcattrs, cls.old_tcattrs_out, cls.old_tcattrs_err)
 
 
-TTYRestore.save()
-
-
 def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
     term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
     fcntl.ioctl(

@@ -403,6 +403,7 @@ class EmptyWrapper:
 
 def main(*, embed: bool = False) -> None:
     wrapper: type[AbstractContextManager[None]] = OutputEncodingWrapper
+    TTYRestore.save()
     if embed:
         wrapper = EmptyWrapper
     with wrapper():

@@ -42,7 +42,7 @@ from .pacman import (
 )
 from .pprint import (
     ColorsHighlight,
-    TTYRestore,
+    TTYRestoreContext,
     bold_line,
     color_line,
     print_error,
@@ -100,11 +100,10 @@ def edit_file(filename: str | Path) -> bool:  # pragma: no cover
     if not editor_cmd:
         return False
     old_hash = hash_file(filename)
-    TTYRestore.restore()
-    interactive_spawn([
-        *editor_cmd, str(filename),
-    ])
-    TTYRestore.restore()
+    with TTYRestoreContext(before=True, after=True):
+        interactive_spawn([
+            *editor_cmd, str(filename),
+        ])
     new_hash = hash_file(filename)
     return old_hash != new_hash
 
@@ -179,7 +178,10 @@ class InstallPackagesCLI:
     def _handle_refresh(self) -> None:
         if not self.args.aur and (self.args.sysupgrade or self.args.refresh):
 
-            with ThreadPool() as pool:
+            with (
+                    ThreadPool() as pool,
+                    TTYRestoreContext(),
+            ):
                 threads = []
                 if self.args.sysupgrade:
                     self.news = News()
@@ -191,12 +193,9 @@ class InstallPackagesCLI:
                         pool.apply_async(refresh_pkg_db_if_needed, ()),
                     )
                 pool.close()
-                try:
-                    for thread in threads:
-                        thread.get()
-                    pool.join()
-                finally:
-                    TTYRestore.restore()
+                for thread in threads:
+                    thread.get()
+                pool.join()
 
             if not (self.install_package_names or self.args.sysupgrade):
                 raise self.ExitMainSequence
@@ -733,7 +732,7 @@ class InstallPackagesCLI:
         full_filename = package_build.repo_path / filename
         return edit_file(full_filename)
 
-    def _get_installed_status(self) -> None:  # pylint: disable=too-many-branches
+    def _get_installed_status(self) -> None:
         all_package_builds = set(self.package_builds_by_name.values())
 
         # if running as root get sources for dev packages synchronously
@@ -745,7 +744,10 @@ class InstallPackagesCLI:
         # check if pkgs versions already installed
         # (use threads because devel packages require downloading
         # latest sources for quite a long time)
-        with ThreadPool(processes=num_threads) as pool:
+        with (
+                ThreadPool(processes=num_threads) as pool,
+                TTYRestoreContext(),
+        ):
             threads = []
             for pkg_build in all_package_builds:
                 def callback(pkg_build_inner: PackageBuild) -> None:
@@ -756,13 +758,10 @@ class InstallPackagesCLI:
                 threads.append(
                     pool.apply_async(callback, (pkg_build, )),
                 )
-            try:
-                for thread in threads:
-                    thread.get()
-                pool.close()
-                pool.join()
-            finally:
-                TTYRestore.restore()
+            for thread in threads:
+                thread.get()
+            pool.close()
+            pool.join()
 
         # handle if version is already installed
         if not self.args.needed:

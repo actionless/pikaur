@@ -19,7 +19,7 @@ TcAttrsType = list[int | list[bytes | int]]
 PADDING: "Final" = 4
 
 
-class TTYRestore:  # pragma: no cover
+class TTYRestore:
 
     old_tcattrs = None
     old_tcattrs_out = None
@@ -60,6 +60,21 @@ class TTYRestore:  # pragma: no cover
     @classmethod
     def restore(cls, *_whatever: "Any") -> None:
         cls._restore(cls.old_tcattrs, cls.old_tcattrs_out, cls.old_tcattrs_err)
+
+
+class TTYRestoreContext:
+
+    def __init__(self, *, before: bool = False, after: bool = True) -> None:
+        self.before = before
+        self.after = after
+
+    def __enter__(self) -> None:
+        if self.before:
+            TTYRestore.restore()
+
+    def __exit__(self, *exc_details: "Any") -> None:
+        if self.after:
+            TTYRestore.restore()
 
 
 def color_enabled() -> bool:

@@ -43,7 +43,7 @@ from .makepkg_config import MakePkgCommand, MakepkgConfig, get_pkgdest
 from .pacman import PackageDB, get_pacman_command, install_built_deps
 from .pprint import (
     ColorsHighlight,
-    TTYRestore,
+    TTYRestoreContext,
     bold_line,
     color_enabled,
     color_line,
@@ -966,13 +966,17 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         for pkgbase, pkg_names in packages_bases.items()
         if not AlreadyClonedRepos.get(pkgbase)
     }
+
     pool_size: int | None = None
     if clone_c := parse_args().aur_clone_concurrency:
         pool_size = clone_c
     elif using_dynamic_users():
         pool_size = 1
     exc: CloneError | None = None
-    with ThreadPool(processes=pool_size) as pool:
+    with (
+            TTYRestoreContext(),
+            ThreadPool(processes=pool_size) as pool,
+    ):
         requests = {
             key: pool.apply_async(repo_status.update_aur_repo, ())
             for key, repo_status in package_builds_by_base.items()
@@ -988,9 +992,9 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
                 )
             else:
                 AlreadyClonedRepos.add(package_base)
-    TTYRestore.restore()
     if exc:
         raise exc
+
     all_package_builds_by_base = {
         pkgbase: PackageBuild(pkg_names)
         for pkgbase, pkg_names in packages_bases.items()

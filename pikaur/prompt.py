@@ -17,7 +17,7 @@ from .pikspect import PikspectPopen, ReadlineKeycodes, TTYInputWrapper
 from .pikspect import pikspect as pikspect_spawn
 from .pprint import (
     ColorsHighlight,
-    TTYRestore,
+    TTYRestoreContext,
     color_line,
     get_term_width,
     print_stderr,
@@ -122,6 +122,7 @@ def get_input(
     with (
             FileLock(PromptLockPath()()),
             TTYInputWrapper(),
+            TTYRestoreContext(before=True, after=True),
     ):
         if not (
                 require_confirm or PikaurConfig().ui.RequireEnterConfirm.get_bool()
@@ -130,16 +131,12 @@ def get_input(
             answer = read_answer_from_tty(prompt, answers=answers)
         else:
             logger_no_lock.debug("Restoring TTY...")
-            TTYRestore.restore()
             try:
                 logger_no_lock.debug("Using standard input reader...")
                 answer = input(split_last_line(prompt)).lower()
             except EOFError as exc:
                 logger_no_lock.debug(exc)
                 raise SysExit(125) from exc
-            finally:
-                logger_no_lock.debug("Reverting to prev TTY state...")
-                TTYRestore.restore()
 
     if not answer:
         for choice in answers:

@@ -1,4 +1,5 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
+# pylint: disable=too-many-lines
 
 import os
 import shutil
@@ -303,7 +304,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         with open_file(git_hash_path) as current_hash_file:
             return current_hash_file.readlines()[0].strip()
 
-    def get_latest_dev_sources(self, *, check_dev_pkgs: bool = True) -> None:
+    def get_latest_dev_sources(
+            self, *, check_dev_pkgs: bool = True, tty_restore: bool = False,
+    ) -> None:
         if not self.reviewed:
             return
         self.prepare_build_destination()
@@ -322,7 +325,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             ).format(
                 bold_line(", ".join(self.package_names)),
             ),
-        ))
+        ), tty_restore=tty_restore)
         pkgver_result = joined_spawn(
             isolate_root_cmd(
                 [*MakePkgCommand.get(), "--nobuild", "--nocheck", "--nodeps"],
@@ -332,10 +335,10 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
         )
         if pkgver_result.returncode != 0:
             error_text = translate("failed to retrieve latest dev sources:")
-            print_stderr()
-            print_stderr()
-            print_error(error_text)
-            print_stderr(pkgver_result.stdout_text)
+            print_stderr(tty_restore=tty_restore)
+            print_stderr(tty_restore=tty_restore)
+            print_error(error_text, tty_restore=tty_restore)
+            print_stderr(pkgver_result.stdout_text, tty_restore=tty_restore)
 
             if self.args.skip_failed_build:
                 answer = translate("s")

@@ -180,8 +180,6 @@ class InstallPackagesCLI:
         if not self.args.aur and (self.args.sysupgrade or self.args.refresh):
 
             with ThreadPool() as pool:
-                TTYRestore.restore()
-
                 threads = []
                 if self.args.sysupgrade:
                     self.news = News()
@@ -193,11 +191,12 @@ class InstallPackagesCLI:
                         pool.apply_async(refresh_pkg_db_if_needed, ()),
                     )
                 pool.close()
-                for thread in threads:
-                    thread.get()
-                pool.join()
-
-                TTYRestore.restore()
+                try:
+                    for thread in threads:
+                        thread.get()
+                    pool.join()
+                finally:
+                    TTYRestore.restore()
 
             if not (self.install_package_names or self.args.sysupgrade):
                 raise self.ExitMainSequence
@@ -734,7 +733,7 @@ class InstallPackagesCLI:
         full_filename = package_build.repo_path / filename
         return edit_file(full_filename)
 
-    def _get_installed_status(self) -> None:
+    def _get_installed_status(self) -> None:  # pylint: disable=too-many-branches
         all_package_builds = set(self.package_builds_by_name.values())
 
         # if running as root get sources for dev packages synchronously
@@ -749,13 +748,21 @@ class InstallPackagesCLI:
         with ThreadPool(processes=num_threads) as pool:
             threads = []
             for pkg_build in all_package_builds:
+                def callback(pkg_build_inner: PackageBuild) -> None:
+                    pkg_build_inner.get_latest_dev_sources(
+                        check_dev_pkgs=self.args.needed,
+                        tty_restore=True,
+                    )
                 threads.append(
-                    pool.apply_async(getattr, (pkg_build, "version_already_installed")),
+                    pool.apply_async(callback, (pkg_build, )),
                 )
-            for thread in threads:
-                thread.get()
-            pool.close()
-            pool.join()
+            try:
+                for thread in threads:
+                    thread.get()
+                pool.close()
+                pool.join()
+            finally:
+                TTYRestore.restore()
 
         # handle if version is already installed
         if not self.args.needed:

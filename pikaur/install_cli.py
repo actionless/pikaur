@@ -40,9 +40,9 @@ from .pacman import (
     refresh_pkg_db_if_needed,
     strip_repo_name,
 )
-from .pikspect import TTYRestore
 from .pprint import (
     ColorsHighlight,
+    TTYRestore,
     bold_line,
     color_line,
     print_error,

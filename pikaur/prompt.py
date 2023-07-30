@@ -13,10 +13,11 @@ from .exceptions import SysExit
 from .filelock import FileLock
 from .i18n import translate
 from .logging import create_logger
-from .pikspect import PikspectPopen, ReadlineKeycodes, TTYInputWrapper, TTYRestore
+from .pikspect import PikspectPopen, ReadlineKeycodes, TTYInputWrapper
 from .pikspect import pikspect as pikspect_spawn
 from .pprint import (
     ColorsHighlight,
+    TTYRestore,
     color_line,
     get_term_width,
     print_stderr,

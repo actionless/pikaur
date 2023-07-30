@@ -2,6 +2,7 @@
 
 import shutil
 import sys
+import termios
 from string import printable
 from typing import TYPE_CHECKING
 
@@ -12,8 +13,53 @@ from .lock import FancyLock
 if TYPE_CHECKING:
     from typing import Any, Final, TextIO
 
+TcAttrsType = list[int | list[bytes | int]]
+
 
 PADDING: "Final" = 4
+
+
+class TTYRestore:  # pragma: no cover
+
+    old_tcattrs = None
+    old_tcattrs_out = None
+    old_tcattrs_err = None
+
+    @classmethod
+    def save(cls) -> None:
+        if sys.stdin.isatty():
+            cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
+        if sys.stdout.isatty():
+            cls.old_tcattrs_out = termios.tcgetattr(sys.stdout.fileno())
+        if sys.stderr.isatty():
+            cls.old_tcattrs_err = termios.tcgetattr(sys.stderr.fileno())
+
+    @classmethod
+    def _restore(
+            cls,
+            what: TcAttrsType | None = None,
+            what_out: TcAttrsType | None = None,
+            what_err: TcAttrsType | None = None,
+    ) -> None:
+        if what:
+            try:
+                termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
+            except termios.error as exc:
+                print_error(",".join(str(arg) for arg in exc.args), lock=False)
+        if what_out:
+            try:
+                termios.tcsetattr(sys.stdout.fileno(), termios.TCSANOW, what_out)
+            except termios.error as exc:
+                print_error(",".join(str(arg) for arg in exc.args), lock=False)
+        if what_err:
+            try:
+                termios.tcsetattr(sys.stderr.fileno(), termios.TCSANOW, what_err)
+            except termios.error as exc:
+                print_error(",".join(str(arg) for arg in exc.args), lock=False)
+
+    @classmethod
+    def restore(cls, *_whatever: "Any") -> None:
+        cls._restore(cls.old_tcattrs, cls.old_tcattrs_out, cls.old_tcattrs_err)
 
 
 def color_enabled() -> bool:

@@ -40,9 +40,9 @@ from .i18n import translate, translate_many
 from .logging import create_logger
 from .makepkg_config import MakePkgCommand, MakepkgConfig, get_pkgdest
 from .pacman import PackageDB, get_pacman_command, install_built_deps
-from .pikspect import TTYRestore
 from .pprint import (
     ColorsHighlight,
+    TTYRestore,
     bold_line,
     color_enabled,
     color_line,

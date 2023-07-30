@@ -31,6 +31,7 @@ from .pacman_i18n import _p
 from .pprint import (
     ColorsHighlight,
     PrintLock,
+    TTYRestore,
     color_line,
     get_term_width,
     print_stderr,
@@ -174,49 +175,6 @@ class ReadlineKeycodes:
     CTRL_W: "Final" = 23
     ENTER: "Final" = 13
     BACKSPACE: "Final" = 127
-
-
-class TTYRestore:  # pragma: no cover
-
-    old_tcattrs = None
-    old_tcattrs_out = None
-    old_tcattrs_err = None
-
-    @classmethod
-    def save(cls) -> None:
-        if sys.stdin.isatty():
-            cls.old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
-        if sys.stdout.isatty():
-            cls.old_tcattrs_out = termios.tcgetattr(sys.stdout.fileno())
-        if sys.stderr.isatty():
-            cls.old_tcattrs_err = termios.tcgetattr(sys.stderr.fileno())
-
-    @classmethod
-    def _restore(
-            cls,
-            what: TcAttrsType | None = None,
-            what_out: TcAttrsType | None = None,
-            what_err: TcAttrsType | None = None,
-    ) -> None:
-        if what:
-            try:
-                termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
-            except termios.error as exc:
-                logger.debug(",".join(str(arg) for arg in exc.args))
-        if what_out:
-            try:
-                termios.tcsetattr(sys.stdout.fileno(), termios.TCSANOW, what_out)
-            except termios.error as exc:
-                logger.debug(",".join(str(arg) for arg in exc.args))
-        if what_err:
-            try:
-                termios.tcsetattr(sys.stderr.fileno(), termios.TCSANOW, what_err)
-            except termios.error as exc:
-                logger.debug(",".join(str(arg) for arg in exc.args))
-
-    @classmethod
-    def restore(cls, *_whatever: "Any") -> None:
-        cls._restore(cls.old_tcattrs, cls.old_tcattrs_out, cls.old_tcattrs_err)
 
 
 def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:

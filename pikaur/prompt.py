@@ -129,7 +129,6 @@ def get_input(
             answer = read_answer_from_tty(prompt, answers=answers)
         else:
             logger_no_lock.debug("Restoring TTY...")
-            sub_tty = TTYRestore()
             TTYRestore.restore()
             try:
                 logger_no_lock.debug("Using standard input reader...")
@@ -139,7 +138,7 @@ def get_input(
                 raise SysExit(125) from exc
             finally:
                 logger_no_lock.debug("Reverting to prev TTY state...")
-                sub_tty.restore_new()
+                TTYRestore.restore()
 
     if not answer:
         for choice in answers:

@@ -100,12 +100,11 @@ def edit_file(filename: str | Path) -> bool:  # pragma: no cover
     if not editor_cmd:
         return False
     old_hash = hash_file(filename)
-    sub_tty = TTYRestore()
     TTYRestore.restore()
     interactive_spawn([
         *editor_cmd, str(filename),
     ])
-    sub_tty.restore_new()
+    TTYRestore.restore()
     new_hash = hash_file(filename)
     return old_hash != new_hash
 
@@ -181,7 +180,6 @@ class InstallPackagesCLI:
         if not self.args.aur and (self.args.sysupgrade or self.args.refresh):
 
             with ThreadPool() as pool:
-                sub_tty = TTYRestore()
                 TTYRestore.restore()
 
                 threads = []
@@ -199,7 +197,7 @@ class InstallPackagesCLI:
                     thread.get()
                 pool.join()
 
-                sub_tty.restore_new()
+                TTYRestore.restore()
 
             if not (self.install_package_names or self.args.sysupgrade):
                 raise self.ExitMainSequence

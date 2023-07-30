@@ -1,6 +1,5 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import contextlib
 import fcntl
 import os
 import re
@@ -182,9 +181,6 @@ class TTYRestore:  # pragma: no cover
     old_tcattrs = None
     old_tcattrs_out = None
     old_tcattrs_err = None
-    sub_tty_old_tcattrs = None
-    sub_tty_old_tcattrs_out = None
-    sub_tty_old_tcattrs_err = None
 
     @classmethod
     def save(cls) -> None:
@@ -202,12 +198,6 @@ class TTYRestore:  # pragma: no cover
             what_out: TcAttrsType | None = None,
             what_err: TcAttrsType | None = None,
     ) -> None:
-        # if sys.stdout.isatty():
-        #     termios.tcdrain(sys.stdout.fileno())
-        # if sys.stderr.isatty():
-        #     termios.tcdrain(sys.stderr.fileno())
-        # if sys.stdin.isatty():
-        #     termios.tcflush(sys.stdin.fileno(), termios.TCIOFLUSH)
         if what:
             try:
                 termios.tcsetattr(sys.stdin.fileno(), termios.TCSANOW, what)
@@ -227,23 +217,6 @@ class TTYRestore:  # pragma: no cover
     @classmethod
     def restore(cls, *_whatever: "Any") -> None:
         cls._restore(cls.old_tcattrs, cls.old_tcattrs_out, cls.old_tcattrs_err)
-
-    def __init__(self) -> None:
-        if self.sub_tty_old_tcattrs or self.sub_tty_old_tcattrs_out or self.sub_tty_old_tcattrs_err:
-            logger.debug("TTYRestore: not saving - already saved")
-            return
-        logger.debug("TTYRestore: saving tty states...")
-        with contextlib.suppress(termios.error, ValueError):
-            self.sub_tty_old_tcattrs = termios.tcgetattr(sys.stdin.fileno())
-        with contextlib.suppress(termios.error):
-            self.sub_tty_old_tcattrs_out = termios.tcgetattr(sys.stdout.fileno())
-        with contextlib.suppress(termios.error):
-            self.sub_tty_old_tcattrs_err = termios.tcgetattr(sys.stderr.fileno())
-
-    def restore_new(self, *_whatever: "Any") -> None:
-        self._restore(
-            self.sub_tty_old_tcattrs, self.sub_tty_old_tcattrs_out, self.sub_tty_old_tcattrs_err,
-        )
 
 
 TTYRestore.save()

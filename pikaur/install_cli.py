@@ -732,7 +732,7 @@ class InstallPackagesCLI:
         full_filename = package_build.repo_path / filename
         return edit_file(full_filename)
 
-    def _get_installed_status(self) -> None:
+    def _get_installed_status(self) -> None:  # pylint: disable=too-many-branches
         all_package_builds = set(self.package_builds_by_name.values())
 
         # if running as root get sources for dev packages synchronously
@@ -758,10 +758,15 @@ class InstallPackagesCLI:
                 threads.append(
                     pool.apply_async(callback, (pkg_build, )),
                 )
-            for thread in threads:
-                thread.get()
-            pool.close()
-            pool.join()
+            try:
+                for thread in threads:
+                    thread.get()
+                pool.close()
+                pool.join()
+            except BuildError as exc:
+                all_package_builds.remove(exc.build)
+                for pkg_name in exc.build.package_names:
+                    self.discard_install_info(pkg_name)
 
         # handle if version is already installed
         if not self.args.needed:
@@ -775,7 +780,12 @@ class InstallPackagesCLI:
             for package_name in pkg_build.package_names:
                 if package_name not in local_db:
                     continue
-                if pkg_build.version_already_installed:
+                try:
+                    already_installed = pkg_build.version_already_installed
+                except BuildError:
+                    self.discard_install_info(package_name)
+                    continue
+                if already_installed:
                     print_package_uptodate(package_name, PackageSource.AUR)
                     self.discard_install_info(package_name)
                 elif (

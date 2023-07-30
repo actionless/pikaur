@@ -35,8 +35,9 @@ class PackagesNotFoundInAURError(PackagesNotFoundError):
     packages: list[str]
 
 
-class BuildError(Exception):
-    pass
+class BuildError(DataType, Exception):
+    message: str
+    build: "PackageBuild"
 
 
 class CloneError(DataType, Exception):

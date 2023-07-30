@@ -180,7 +180,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 self.package_base = pkgbase
             else:
                 no_pkgname_error = translate("Can't get package name from PKGBUILD")
-                raise BuildError(no_pkgname_error)
+                raise BuildError(message=no_pkgname_error, build=self)
         elif package_names:
             self.package_names = package_names
             self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
@@ -395,7 +395,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             if answer == translate("a"):
                 raise SysExit(125)
             # "s"kip
-            raise BuildError(error_text)
+            raise BuildError(message=error_text, build=self)
         SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True
 
@@ -761,7 +761,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             ) and (
                 not ask_to_continue(default_yes=False)
             ):
-                raise BuildError(error_text)
+                raise BuildError(message=error_text, build=self)
             self.skip_carch_check = True
 
     def _run_makepkg_cmd(
@@ -939,7 +939,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
 
         if not build_succeeded:
             self.failed = True
-            raise BuildError
+            raise BuildError(message="failed to build", build=self)
         self._set_built_package_path()
 
 

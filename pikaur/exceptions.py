@@ -40,6 +40,10 @@ class BuildError(DataType, Exception):
     build: "PackageBuild"
 
 
+class SkipBuildError(BuildError):
+    pass
+
+
 class CloneError(DataType, Exception):
     build: "PackageBuild"
     result: "InteractiveSpawn"

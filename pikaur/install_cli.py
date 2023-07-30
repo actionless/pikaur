@@ -27,6 +27,7 @@ from .exceptions import (
     DependencyNotBuiltYetError,
     DependencyVersionMismatchError,
     PackagesNotFoundInAURError,
+    SkipBuildError,
     SysExit,
 )
 from .i18n import translate
@@ -763,7 +764,7 @@ class InstallPackagesCLI:
                     thread.get()
                 pool.close()
                 pool.join()
-            except BuildError as exc:
+            except SkipBuildError as exc:
                 all_package_builds.remove(exc.build)
                 for pkg_name in exc.build.package_names:
                     self.discard_install_info(pkg_name)
@@ -782,7 +783,7 @@ class InstallPackagesCLI:
                     continue
                 try:
                     already_installed = pkg_build.version_already_installed
-                except BuildError:
+                except SkipBuildError:
                     self.discard_install_info(package_name)
                     continue
                 if already_installed:

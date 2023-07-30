@@ -34,6 +34,7 @@ from .exceptions import (
     CloneError,
     DependencyError,
     DependencyNotBuiltYetError,
+    SkipBuildError,
     SysExit,
 )
 from .filelock import FileLock
@@ -395,7 +396,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
             if answer == translate("a"):
                 raise SysExit(125)
             # "s"kip
-            raise BuildError(message=error_text, build=self)
+            raise SkipBuildError(message=error_text, build=self)
         SrcInfo(self.build_dir).regenerate()
         self._source_repo_updated = True
 

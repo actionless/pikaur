@@ -87,12 +87,15 @@ def _print(
         *,
         flush: bool = False,
         lock: bool = True,
+        tty_restore: bool = False,
 ) -> None:
     # pylint: disable=unnecessary-dunder-call
     if not isinstance(message, str):
         message = str(message)
     if lock:
         PrintLock().__enter__()
+    if tty_restore:
+        TTYRestore.restore()
     destination.write(f"{message}{end}")
     if flush:
         destination.flush()
@@ -106,8 +109,9 @@ def print_stdout(
         *,
         flush: bool = False,
         lock: bool = True,
+        tty_restore: bool = False,
 ) -> None:
-    _print(sys.stdout, message=message, end=end, flush=flush, lock=lock)
+    _print(sys.stdout, message=message, end=end, flush=flush, lock=lock, tty_restore=tty_restore)
 
 
 def print_stderr(
@@ -116,8 +120,9 @@ def print_stderr(
         *,
         flush: bool = False,
         lock: bool = True,
+        tty_restore: bool = False,
 ) -> None:
-    _print(sys.stderr, message=message, end=end, flush=flush, lock=lock)
+    _print(sys.stderr, message=message, end=end, flush=flush, lock=lock, tty_restore=tty_restore)
 
 
 class Colors:
@@ -164,18 +169,40 @@ def bold_line(line: str) -> str:
     return f"\033[0;1m{line}\033[0m"
 
 
-def print_warning(message: str = "") -> None:
-    print_stderr(" ".join([
-        color_line(":: " + translate("warning:"), ColorsHighlight.yellow),
-        message,
-    ]))
+def print_warning(
+        message: str = "",
+        *,
+        flush: bool = False,
+        lock: bool = True,
+        tty_restore: bool = False,
+) -> None:
+    print_stderr(
+        " ".join([
+            color_line(":: " + translate("warning:"), ColorsHighlight.yellow),
+            message,
+        ]),
+        lock=lock,
+        flush=flush,
+        tty_restore=tty_restore,
+    )
 
 
-def print_error(message: str) -> None:
-    print_stderr(" ".join([
-        color_line(":: " + translate("error:"), ColorsHighlight.red),
-        message,
-    ]))
+def print_error(
+        message: str = "",
+        *,
+        flush: bool = False,
+        lock: bool = True,
+        tty_restore: bool = False,
+) -> None:
+    print_stderr(
+        " ".join([
+            color_line(":: " + translate("error:"), ColorsHighlight.red),
+            message,
+        ]),
+        lock=lock,
+        flush=flush,
+        tty_restore=tty_restore,
+    )
 
 
 def get_term_width() -> int:

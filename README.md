@@ -322,7 +322,7 @@ find ~/.local/share/pikaur/aur_repos -mindepth 1 -maxdepth 1 -type d | xargs -r 
 
 ##### How to downgrade a package?
 
-This will show a list of commits to choose one to downgarade to.
+This will show a list of commits to choose one to downgrade to.
 
 ```sh
 pikaur -G <package>  # retrieve package sources

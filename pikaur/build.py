@@ -3,7 +3,6 @@
 
 import os
 import shutil
-from glob import glob
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -105,8 +104,7 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
         isolated_mkdir(to_path)
 
     from_paths = []
-    for src_path_str in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):
-        src_path = Path(src_path_str)
+    for src_path in list(Path().glob(f"{from_path}/*")) + list(Path().glob(f"{from_path}/.*")):
         if src_path.name not in IGNORE_PATHS_WHEN_COPYING:
             from_paths.append(src_path)
     to_path = to_path.parent / f"{to_path.name}/"

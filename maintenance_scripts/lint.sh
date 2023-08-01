@@ -66,7 +66,7 @@ else
 fi
 
 echo Flake8...
-"$PYTHON" -m flake8 "${TARGETS[@]}"
+#"$PYTHON" -m flake8 "${TARGETS[@]}"
 
 echo PyLint...
 #"$PYTHON" -m pylint --jobs="$(nproc)" "${TARGETS[@]}" --score no

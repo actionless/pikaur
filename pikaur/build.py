@@ -105,7 +105,7 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
         isolated_mkdir(to_path)
 
     from_paths = []
-    for src_path_str in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):
+    for src_path_str in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):  # noqa: PTH207
         src_path = Path(src_path_str)
         if src_path.name not in IGNORE_PATHS_WHEN_COPYING:
             from_paths.append(src_path)

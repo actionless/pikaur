@@ -387,4 +387,4 @@ def chown_to_current(path: Path) -> None:
 def mkdir(path: Path) -> None:
     if not path.exists():
         path.mkdir(parents=True)
-        chown_to_current(path)
+    chown_to_current(path)

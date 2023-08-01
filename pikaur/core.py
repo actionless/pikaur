@@ -378,9 +378,9 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
 def chown_to_current(path: Path) -> None:
     args = parse_args()
     user_id = args.user_id
-    if not isinstance(user_id, int):
-        raise TypeError
     if user_id:
+        if not isinstance(user_id, int):
+            raise TypeError
         os.chown(path, user_id, user_id)
 
 

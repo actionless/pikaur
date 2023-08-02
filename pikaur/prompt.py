@@ -268,6 +268,7 @@ def retry_interactive_command_or_exit(
 
 def get_editor() -> list[str] | None:
     editor_line = os.environ.get("VISUAL") or os.environ.get("EDITOR")
+    logger.debug("Found editor: {}", editor_line)
     if editor_line:
         return editor_line.split(" ")
     for editor in (
@@ -276,8 +277,10 @@ def get_editor() -> list[str] | None:
             "mousepad", "notepadqq", "pluma", "code", "xed", "nvim-qt", "geany",
     ):
         path = shutil.which(editor)
+        logger.debug("Editor not set, defaulting to: {} ({})", editor, path)
         if path:
             return [path]
+    logger.debug("No editor found!")
     return None
 
 

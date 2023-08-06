@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 from .config import BuildCachePath, CacheRoot
-from .core import open_file, spawn
+from .core import chown_to_current, open_file, spawn
 from .exceptions import SysExit
 from .i18n import translate
 from .makepkg_config import MakePkgCommand, MakepkgConfig
@@ -153,4 +153,5 @@ class SrcInfo:
             raise SysExit(5)
         with open_file(self.path, "w") as srcinfo_file:
             srcinfo_file.write(result.stdout_text)
+        chown_to_current(self.path)
         self.load_config()

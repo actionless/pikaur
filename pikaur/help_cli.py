@@ -23,7 +23,7 @@ FIRST_COLUMN_WIDTH: "Final" = 16
 
 def _format_options_help(options: list[HelpMessage]) -> str:
     return "\n".join([
-        "{:>{first_column_margin}} {:<{first_column_width}} {}".format(
+        "{:>{first_column_margin}} {:<{first_column_width}} {}".format(  # noqa: PLE1300
             short_opt and ("-" + short_opt + ",") or "",
             long_opt and ("--" + long_opt) or "",
             descr if (

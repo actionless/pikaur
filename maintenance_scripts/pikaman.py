@@ -250,7 +250,7 @@ class NroffRenderer(  # pylint: disable=too-many-public-methods
         return text.startswith(("http://", "https://"))
 
     def document_open(self) -> str:
-        date = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%B %Y")
+        date = datetime.datetime.now(tz=datetime.UTC).strftime("%B %Y")
         return rf""".\" generated with Pikaman
 .
 .TH "{self.name.upper()}" "{self.section}" "{date}" "" "{self.name.capitalize()} manual"

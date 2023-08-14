@@ -1,8 +1,4 @@
 from threading import Lock
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Any
 
 
 class FancyLock:
@@ -22,7 +18,7 @@ class FancyLock:
     def __enter__(self) -> None:
         self.fancy_lock.acquire()
 
-    def __exit__(self, *_exc_details: "Any") -> None:
+    def __exit__(self, *_exc_details: object) -> None:
         if self.fancy_lock.locked():
             self.fancy_lock.release()
 

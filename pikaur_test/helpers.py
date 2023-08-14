@@ -157,7 +157,7 @@ class InterceptSysOutput:
                 patcher.start()
         return self
 
-    def __exit__(self, *_exc_details: "Any") -> None:
+    def __exit__(self, *_exc_details: object) -> None:
         if self._exited:
             return
         for patcher in self.patchers or []:

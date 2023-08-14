@@ -7,7 +7,7 @@ from .core import DEFAULT_INPUT_ENCODING
 from .logging import create_logger
 
 if TYPE_CHECKING:
-    from typing import Any, Final, TextIO
+    from typing import Final, TextIO
 
 
 logger_no_lock = create_logger("FileLock", lock=False)
@@ -50,7 +50,7 @@ class FileLock:
             lock_file=self.lock_file_path,
         )
 
-    def __exit__(self, *_exc_details: "Any") -> None:
+    def __exit__(self, *_exc_details: object) -> None:
         if self.lock_file:
             logger_no_lock.debug(
                 "Releasing {lock_file}",

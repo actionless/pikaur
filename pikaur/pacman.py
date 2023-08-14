@@ -140,7 +140,7 @@ class DbLockLocal(FancyLock):
     pass
 
 
-def get_db_lock(package_source: PackageSource) -> type[DbLockRepo] | type[DbLockLocal]:
+def get_db_lock(package_source: PackageSource) -> type[DbLockRepo | DbLockLocal]:
     return DbLockRepo if package_source is PackageSource.REPO else DbLockLocal
 
 
@@ -180,9 +180,9 @@ class PackageDBCommon(metaclass=ABCMeta):
     def get_repo_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:  # pragma: no cover
         pass
         # if not cls._packages_list_cache.get(PackageSource.REPO):
-            # cls._packages_list_cache[PackageSource.REPO] = list(
-                # cls.get_repo_dict(quiet=quiet).values()
-            # )
+        #     cls._packages_list_cache[PackageSource.REPO] = list(
+        #         cls.get_repo_dict(quiet=quiet).values()
+        #     )
         # return cls._packages_list_cache[PackageSource.REPO]
 
     @classmethod
@@ -190,9 +190,9 @@ class PackageDBCommon(metaclass=ABCMeta):
     def get_local_list(cls, *, quiet: bool = False) -> list[pyalpm.Package]:  # pragma: no cover
         pass
         # if not cls._packages_list_cache.get(PackageSource.LOCAL):
-            # cls._packages_list_cache[PackageSource.LOCAL] = list(
-                # cls.get_local_dict(quiet=quiet).values()
-            # )
+        #     cls._packages_list_cache[PackageSource.LOCAL] = list(
+        #         cls.get_local_dict(quiet=quiet).values()
+        #     )
         # return cls._packages_list_cache[PackageSource.LOCAL]
 
     @classmethod

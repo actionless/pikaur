@@ -72,7 +72,7 @@ class TTYRestoreContext:
         if self.before:
             TTYRestore.restore()
 
-    def __exit__(self, *exc_details: "Any") -> None:
+    def __exit__(self, *exc_details: object) -> None:
         if self.after:
             TTYRestore.restore()
 

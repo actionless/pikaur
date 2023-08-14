@@ -22,9 +22,9 @@ from .privilege import sudo
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
     from collections.abc import Sequence
-    from typing import IO, Any, Final
+    from typing import IO, Any, Final, NotRequired
 
-    from typing_extensions import NotRequired, TypedDict
+    from typing_extensions import TypedDict
 
     from .aur import AURPackageInfo
 

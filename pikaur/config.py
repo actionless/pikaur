@@ -13,9 +13,9 @@ from .i18n import PIKAUR_NAME, translate
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any, Final
+    from typing import Any, Final, NotRequired
 
-    from typing_extensions import NotRequired, TypedDict
+    from typing_extensions import TypedDict
 
     class DeprecatedConfigValue(TypedDict):
         section: str

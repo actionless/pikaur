@@ -201,7 +201,7 @@ class TTYInputWrapper:  # pragma: no cover
             except Exception as exc:
                 logger.debug(exc)
 
-    def __exit__(self, *_exc_details: "Any") -> None:
+    def __exit__(self, *_exc_details: object) -> None:
         if self.is_pipe and self.tty_opened:
             logger.debug("Restoring stdin...", lock=False)
             sys.stdin.close()
@@ -226,7 +226,7 @@ class NestedTerminal:
                 tty.setcbreak(stream.fileno())
         return real_term_geometry
 
-    def __exit__(self, *exc_details: "Any") -> None:
+    def __exit__(self, *exc_details: object) -> None:
         self.tty_wrapper.__exit__(*exc_details)
         TTYRestore.restore()
 
@@ -281,7 +281,7 @@ class PikspectPopen:
     def __enter__(self) -> "PikspectPopen":
         return self
 
-    def __exit__(self, *exc_details: "Any") -> None:
+    def __exit__(self, *exc_details: object) -> None:
         logger.debug("Exit details: {}", exc_details)
 
     def __init__(

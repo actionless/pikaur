@@ -8,7 +8,7 @@ from .pprint import color_enabled, get_term_width
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any, Final
+    from typing import Final
 
 
 class ProgressBar:
@@ -42,7 +42,7 @@ class ProgressBar:
     def __enter__(self) -> "Callable[[], None]":
         return self.update
 
-    def __exit__(self, *_exc_details: "Any") -> None:
+    def __exit__(self, *_exc_details: object) -> None:
         sys.stderr.write("\n")
 
 

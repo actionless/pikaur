@@ -11,6 +11,7 @@ import traceback
 from argparse import ArgumentError
 from contextlib import AbstractContextManager
 from pathlib import Path
+from types import TracebackType
 from typing import TYPE_CHECKING
 
 import pyalpm
@@ -57,7 +58,7 @@ from .urllib_helper import ProxyInitSocks5Error, init_proxy
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from types import FrameType, TracebackType
+    from types import FrameType
     from typing import Any, Final
 
 
@@ -125,9 +126,9 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
 
     def __exit__(
             self,
-            exc_class: type | None,
+            exc_class: type[BaseException] | None,
             exc_instance: BaseException | None,
-            exc_tb: "TracebackType | None",
+            exc_tb: TracebackType | None,
     ) -> None:
         try:
             # @TODO: replace all SysExit-s to SystemExit-s eventually :3
@@ -397,7 +398,7 @@ class EmptyWrapper:
     def __enter__(self) -> None:
         pass
 
-    def __exit__(self, *_exc_details: "Any") -> None:
+    def __exit__(self, *_exc_details: object) -> None:
         pass
 
 

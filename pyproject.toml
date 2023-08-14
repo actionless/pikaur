@@ -5,6 +5,7 @@ description = 'AUR helper with minimal dependencies'
 authors = [
   {name = 'Yauheni Kirylau', email = 'actionless.loveless@gmail.com'},
 ]
+requires-python = ">=3.11"
 classifiers = [
   'Development Status :: 5 - Production/Stable',
   'Environment :: Console',
@@ -15,8 +16,7 @@ classifiers = [
   'Intended Audience :: System Administrators',
   'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
   'Operating System :: POSIX :: Linux',
-  'Programming Language :: Python :: 3.7',
-  'Programming Language :: Python :: 3.8',
+  'Programming Language :: Python :: 3.11',
   'Topic :: Software Development :: Build Tools',
   'Topic :: System :: Archiving :: Packaging',
   'Topic :: System :: Installation/Setup',

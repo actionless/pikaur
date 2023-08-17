@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
 Token = markdown_it.token.Token
 OptionsDict = markdown_it.utils.OptionsDict
+OptionsType = markdown_it.utils.OptionsType
 
 
 class TokenType:
@@ -280,7 +281,7 @@ with (
             markdown_it.MarkdownIt().parse(
                 input_fobj.read(),
             ),
-            options=OptionsDict(),
+            options=OptionsDict(options=OptionsType()),  # type: ignore[typeddict-item]
             env={},
         ),
     )

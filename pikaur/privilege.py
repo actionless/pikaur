@@ -21,7 +21,7 @@ PRESERVE_ENV: Final = [
     "HTTP_PROXY",
     "HTTPS_PROXY",
     "FTP_PROXY",
-    "ALL_PROXY"
+    "ALL_PROXY",
 ]
 
 

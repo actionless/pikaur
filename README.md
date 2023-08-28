@@ -333,9 +333,7 @@ pikaur -G <package>  # retrieve package sources
 cd <package>
 git log  # choose <commit> from the list
 git checkout <commit>
-pikaur -Rns <package>  # Uninstal current version
 pikaur -Pi  # build and install older version
-cd .. && rm -rf <package>  # Remove the temp directory
 ```
 
 ##### How to add additional trusted keys when building with systemd dynamic users?

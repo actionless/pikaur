@@ -632,11 +632,11 @@ class PikaurConfig:
 
                 old_value_was_migrated = False
                 value_to_migrate = None
-                if (
+                if (section_name in cls._config) and ((
                         new_section_name not in cls._config
                 ) or (
                     cls._config[new_section_name].get(new_option_name) is None
-                ):
+                )):
                     value_to_migrate = cls._config[section_name].get(option_name)
                     if value_to_migrate is not None:
                         if transform:
@@ -650,7 +650,11 @@ class PikaurConfig:
                         old_value_was_migrated = True
 
                 old_value_was_removed = False
-                if option_name in cls._config[section_name]:
+                if (
+                        section_name in cls._config
+                ) and (
+                    option_name in cls._config[section_name]
+                ):
                     del cls._config[section_name][option_name]
                     CONFIG_SCHEMA[section_name][option_name]["migrated"] = True
                     old_value_was_removed = True

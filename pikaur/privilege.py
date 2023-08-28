@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import Final
 
 from .args import parse_args
 from .config import (
@@ -11,24 +10,11 @@ from .config import (
     _UserTempRoot,
 )
 
-PRESERVE_ENV: Final = [
-    "PKGDEST",
-    "VISUAL",
-    "EDITOR",
-    "http_proxy",
-    "https_proxy",
-    "ftp_proxy",
-    "HTTP_PROXY",
-    "HTTPS_PROXY",
-    "FTP_PROXY",
-    "ALL_PROXY",
-]
-
 
 def get_envs_to_preserve() -> list[str]:
     return [
         env_var_name
-        for env_var_name in PRESERVE_ENV
+        for env_var_name in parse_args().preserve_env.split(",")
         if os.environ.get(env_var_name) is not None
     ]
 

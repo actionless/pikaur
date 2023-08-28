@@ -236,6 +236,11 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
             None,
             None,
         ),
+        (
+            None, "preserve-env",
+            PikaurConfig().misc.PreserveEnv.get_str(),
+            translate("preserve environment variables (comma-separated)"),
+        ),
     ]
     if not action:
         for each_action in ALL_ACTIONS:
@@ -432,6 +437,7 @@ class PikaurArgs(Namespace):
     skip_aur_pull: bool | None
     positional: list[str]
     read_stdin: bool = False
+    preserve_env: str
 
     def __getattr__(self, name: str) -> PossibleArgValuesTypes:
         transformed_name = name.replace("-", "_")

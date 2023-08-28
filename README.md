@@ -206,6 +206,10 @@ Comma-separated list of packages names or globs, which upgrade should have addit
 ##### PacmanPath (default: pacman)
 Path to pacman executable.
 
+##### PreserveEnv (default: `PKGDEST,VISUAL,EDITOR,http_proxy,https_proxy,ftp_proxy,HTTP_PROXY,HTTPS_PROXY,FTP_PROXY,ALL_PROXY`)
+Preserve environment variables of current user when running pikaur as root (comma-separated).
+Will be overriden by `--preserve-env` flag.
+
 ##### PrivilegeEscalationTool (default: sudo)
 A tool used to escalate user privileges. Currently supported options are `sudo` and `doas`.
 

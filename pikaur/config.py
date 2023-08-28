@@ -472,6 +472,13 @@ CONFIG_SCHEMA: ConfigSchemaT = {
             "data_type": INT,
             "default": "0",
         },
+        "PreserveEnv": {
+            "data_type": STR,
+            "default": (
+                "PKGDEST,VISUAL,EDITOR,http_proxy,https_proxy,ftp_proxy"
+                ",HTTP_PROXY,HTTPS_PROXY,FTP_PROXY,ALL_PROXY"
+            ),
+        },
     },
     "network": {
         "AurUrl": {

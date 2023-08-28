@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-27 13:30+0200\n"
+"POT-Creation-Date: 2023-08-28 17:42+0200\n"
 "PO-Revision-Date: 2023-08-27 17:14+0200\n"
 "Last-Translator: Fredrik Magnusson (fredrikmagnusson3@gmail.com)\n"
 "Language-Team: none\n"
@@ -31,9 +31,12 @@ msgstr "'{class_name}' har inte det obligatoriska attributet '{key}' angivet."
 #: pikaur/replacements.py:41
 #, python-brace-format
 msgid "'{packages}' package is available in the repo but can't be installed"
-msgid_plural "'{packages}' packages are available in the repo but can't be installed"
-msgstr[0] "Paketet '{packages}' är tillgängligt i förrådet men kan inte installeras"
-msgstr[1] "Paketen '{packages}' är tillgängliga i förrådet men kan inte installeras"
+msgid_plural ""
+"'{packages}' packages are available in the repo but can't be installed"
+msgstr[0] ""
+"Paketet '{packages}' är tillgängligt i förrådet men kan inte installeras"
+msgstr[1] ""
+"Paketen '{packages}' är tillgängliga i förrådet men kan inte installeras"
 
 #: pikaur/updates.py:204
 msgid "(ignored in Pacman config)"
@@ -43,13 +46,13 @@ msgstr "(ignoreras i Pacman konfigurationen)"
 msgid "({} days old)"
 msgstr "({} dagar gammal)"
 
-#: pikaur/args.py:680
+#: pikaur/args.py:686
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
 msgstr[0] ":: fel: alternativet {} kan inte användas utan {}."
 msgstr[1] ":: fel: alternativen {} kan inte användas utan {}."
 
-#: pikaur/args.py:673
+#: pikaur/args.py:679
 msgid ":: error: options {} can't be used together."
 msgstr ":: fel: alternativen {} kan inte användas tillsammans."
 
@@ -79,8 +82,12 @@ msgid "AUR: Too many package results for '{query}'"
 msgstr "AUR: För många paketresultat för '{query}'"
 
 #: pikaur/help_cli.py:67
-msgid "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -Uh`."
-msgstr "Alla vanliga pacman-alternativ som när du gör `pacman U <pkg_file>`. Se `pacman -Uh`."
+msgid ""
+"All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
+"Uh`."
+msgstr ""
+"Alla vanliga pacman-alternativ som när du gör `pacman U <pkg_file>`. Se "
+"`pacman -Uh`."
 
 #: pikaur/pacman.py:580
 msgid "Because of:"
@@ -222,10 +229,14 @@ msgstr[0] "Hämtar de senaste källorna för ett devel-paket {}"
 msgstr[1] "Hämtar de senaste källorna för devel-paket {}"
 
 #: pikaur/main.py:241
-msgid "Either SystemD Dynamic Users must be enabled or User ID should be set if running as root."
-msgstr "Antigen måste SystemD Dynamic Users vara aktiverat eller så måste User ID anges om du kör som root."
+msgid ""
+"Either SystemD Dynamic Users must be enabled or User ID should be set if "
+"running as root."
+msgstr ""
+"Antigen måste SystemD Dynamic Users vara aktiverat eller så måste User ID "
+"anges om du kör som root."
 
-#: pikaur/build.py:192 pikaur/print_department.py:590 pikaur/srcinfo.py:56
+#: pikaur/print_department.py:590 pikaur/build.py:192 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr "Antingen `{prop1}` eller `{prop2}` ska anges"
@@ -236,7 +247,8 @@ msgstr "Följande paket kunde inte byggas:"
 
 #: pikaur/build.py:711
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
-msgstr "Det gick inte att ta bort installerade beroende, paket är inkonsekventa: {}"
+msgstr ""
+"Det gick inte att ta bort installerade beroende, paket är inkonsekventa: {}"
 
 #: pikaur/info_cli.py:47
 msgid "First Submitted"
@@ -269,7 +281,8 @@ msgstr "Ignorerar paket {}"
 #: pikaur/install_cli.py:920 pikaur/install_cli.py:936
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
-msgstr "Installationsinfo ändrad (eller nya beroende hittade) för paketet {pkg}"
+msgstr ""
+"Installationsinfo ändrad (eller nya beroende hittade) för paketet {pkg}"
 
 #: pikaur/build.py:489
 msgid "Installing already built dependencies for {}"
@@ -299,9 +312,10 @@ msgstr "Underhållare"
 msgid "Make Deps"
 msgstr "Make-beroende"
 
-#: pikaur/config.py:655
+#: pikaur/config.py:662
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
-msgstr "Migrering av konfigurationsalternativet [{}]{}=\"{}\" till [{}]{}=\"{}\"..."
+msgstr ""
+"Migrering av konfigurationsalternativet [{}]{}=\"{}\" till [{}]{}=\"{}\"..."
 
 #. "aur_id": translate("id"),
 #: pikaur/info_cli.py:26
@@ -377,10 +391,16 @@ msgstr "Paketbas"
 
 #: pikaur/build.py:572
 #, python-brace-format
-msgid "Package {pkg} is already built. Pass '--rebuild' flag to force the build."
-msgid_plural "Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
-msgstr[0] "Paketet {pkg} är redan byggt. Ange flaggan '--rebuild' för att tvinga fram byggandet."
-msgstr[1] "Paketen {pkg} är redan byggda. Ange flaggan '--rebuild' för att tvinga fram byggandet."
+msgid ""
+"Package {pkg} is already built. Pass '--rebuild' flag to force the build."
+msgid_plural ""
+"Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
+msgstr[0] ""
+"Paketet {pkg} är redan byggt. Ange flaggan '--rebuild' för att tvinga fram "
+"byggandet."
+msgstr[1] ""
+"Paketen {pkg} är redan byggda. Ange flaggan '--rebuild' för att tvinga fram "
+"byggandet."
 
 #: pikaur/pkg_cache_cli.py:19
 msgid "Packages directory"
@@ -391,8 +411,12 @@ msgid "Pikaur-specific options:"
 msgstr "Pikaur-specifika alternativ:"
 
 #: pikaur/main.py:193
-msgid "Please enter the number of the package(s) you want to install and press [Enter] (default={}):"
-msgstr "Ange numret på paketet(en) du vill installera och tryck på [Enter] (standard={}):"
+msgid ""
+"Please enter the number of the package(s) you want to install and press "
+"[Enter] (default={}):"
+msgstr ""
+"Ange numret på paketet(en) du vill installera och tryck på [Enter] "
+"(standard={}):"
 
 #: pikaur/info_cli.py:46
 msgid "Popularity"
@@ -539,7 +563,7 @@ msgid_plural "WARNING about packages installation:"
 msgstr[0] "VARNING om installation av paket:"
 msgstr[1] "VARNING om installation av paket:"
 
-#: pikaur/args.py:480
+#: pikaur/args.py:486
 msgid "WARNING, unknown args: {}"
 msgstr "VARNING, okända argument: {}"
 
@@ -666,7 +690,7 @@ msgstr "isolera alltid med systemd dynamic users"
 msgid "always rebuild AUR packages"
 msgstr "bygg alltid om AUR-paket"
 
-#: pikaur/args.py:347
+#: pikaur/args.py:352
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sysupgrade alltid '-git', '-svn' och andra dev-paket"
 
@@ -675,7 +699,7 @@ msgstr "sysupgrade alltid '-git', '-svn' och andra dev-paket"
 msgid "c"
 msgstr "c"
 
-#: pikaur/args.py:249
+#: pikaur/args.py:254
 msgid "cli args to pass to makepkg"
 msgstr "cli argument för att skicka till makepkg"
 
@@ -755,7 +779,7 @@ msgstr "för {pkg}"
 msgid "hide build log"
 msgstr "dölj byggloggen"
 
-#: pikaur/args.py:298
+#: pikaur/args.py:303
 msgid "how many git-clones/pulls to do from AUR"
 msgstr "hur många git-clones/pulls som ska göras från AUR"
 
@@ -797,8 +821,8 @@ msgstr "letar efter motstridiga AUR-paket..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:458 pikaur/build.py:877 pikaur/build.py:897
-#: pikaur/main.py:211 pikaur/prompt.py:50
+#: pikaur/main.py:211 pikaur/install_cli.py:458 pikaur/build.py:877
+#: pikaur/build.py:897 pikaur/prompt.py:50
 msgid "n"
 msgstr "n"
 
@@ -821,7 +845,7 @@ msgstr "ett av argumenten %s krävs"
 msgid "outofdate"
 msgstr "föråldrad"
 
-#: pikaur/args.py:259
+#: pikaur/args.py:264
 msgid "override path to makepkg executable"
 msgstr "skriv över sökvägen till makepkg"
 
@@ -829,15 +853,15 @@ msgstr "skriv över sökvägen till makepkg"
 msgid "p"
 msgstr "p"
 
-#: pikaur/args.py:254
+#: pikaur/args.py:259
 msgid "path to custom makepkg config"
 msgstr "sökväg till anpassad makepkg-konfiguration"
 
-#: pikaur/args.py:264
+#: pikaur/args.py:269
 msgid "path to custom pikaur config"
 msgstr "sökväg till anpassad pikaur-konfiguration"
 
-#: pikaur/args.py:282
+#: pikaur/args.py:287
 msgid "path where to clone PKGBUILDs"
 msgstr "sökväg för kloning av PKGBUILDs"
 
@@ -869,6 +893,10 @@ msgstr "pikaur {-P --pkgbuild}    [alternativ] [fil(er)]"
 #: pikaur/help_cli.py:59
 msgid "pikaur-specific operations:"
 msgstr "pikaur-specifika operationer:"
+
+#: pikaur/args.py:242
+msgid "preserve environment variables (comma-separated)"
+msgstr ""
 
 #: pikaur/args.py:186
 msgid "print spawned by pikaur subshell commands"
@@ -905,7 +933,7 @@ msgstr "s"
 msgid "search only in package names"
 msgstr "sök endast i paketnamn"
 
-#: pikaur/args.py:269
+#: pikaur/args.py:274
 msgid "set GnuPG home directory used when validating package sources"
 msgstr "ange GnuPG-hemkatalog som används vid validering av paketkällor"
 
@@ -934,7 +962,7 @@ msgstr "användning: pikaur {-G --getpkgbuild} [alternativ] <paket(er)>"
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "användning: pikaur {-P --pkgbuild} [alternativ] <fil(er)>"
 
-#: pikaur/args.py:302
+#: pikaur/args.py:307
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr "user ID för att köra makepkg om pikaur startades från root"
 
@@ -942,7 +970,7 @@ msgstr "user ID för att köra makepkg om pikaur startades från root"
 msgid "v"
 msgstr "v"
 
-#: pikaur/config.py:654 pikaur/pprint.py:196
+#: pikaur/config.py:661 pikaur/pprint.py:196
 msgid "warning:"
 msgstr "varning:"
 
@@ -958,15 +986,18 @@ msgid_plural "{grp} groups"
 msgstr[0] "{grp} grupp"
 msgstr[1] "{grp} grupper"
 
-#: pikaur/config.py:551
+#: pikaur/config.py:558
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr "{key} är inte '{typeof}'"
 
 #: pikaur/build.py:752
 #, python-brace-format
-msgid "{name} can't be built on the current arch ({arch}). Supported: {suparch}"
-msgstr "{name} kan inte byggas på den nuvarande arkitekturen ({arch}). Stöds är: {suparch}"
+msgid ""
+"{name} can't be built on the current arch ({arch}). Supported: {suparch}"
+msgstr ""
+"{name} kan inte byggas på den nuvarande arkitekturen ({arch}). Stöds är: "
+"{suparch}"
 
 #: pikaur/print_department.py:663
 #, python-brace-format
@@ -975,8 +1006,11 @@ msgstr "{name} {version} AUR-paket markerat som 'föråldrad' - hoppar över"
 
 #: pikaur/print_department.py:642
 #, python-brace-format
-msgid "{name} {version} local package is newer than in AUR ({aur_version}) - skipping"
-msgstr "{name} {version} lokalt paket är nyare än i AUR ({aur_version}) - hoppar över"
+msgid ""
+"{name} {version} local package is newer than in AUR ({aur_version}) - "
+"skipping"
+msgstr ""
+"{name} {version} lokalt paket är nyare än i AUR ({aur_version}) - hoppar över"
 
 #: pikaur/print_department.py:631
 #, python-brace-format

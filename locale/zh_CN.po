@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-27 13:30+0200\n"
+"POT-Creation-Date: 2023-08-28 17:42+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -43,13 +43,13 @@ msgstr ""
 msgid "({} days old)"
 msgstr "({} 天之前)"
 
-#: pikaur/args.py:680
+#: pikaur/args.py:686
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
 msgstr[0] ":: 错误: 选项 {} 不能脱离 {} 使用."
 msgstr[1] ":: 错误: 选项 {} 不能脱离 {} 使用."
 
-#: pikaur/args.py:673
+#: pikaur/args.py:679
 msgid ":: error: options {} can't be used together."
 msgstr ":: 错误: 选项 {} 不能一起使用."
 
@@ -230,7 +230,7 @@ msgid ""
 "running as root."
 msgstr ""
 
-#: pikaur/build.py:192 pikaur/print_department.py:590 pikaur/srcinfo.py:56
+#: pikaur/print_department.py:590 pikaur/build.py:192 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr ""
@@ -305,7 +305,7 @@ msgstr ""
 msgid "Make Deps"
 msgstr ""
 
-#: pikaur/config.py:655
+#: pikaur/config.py:662
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr ""
 
@@ -552,7 +552,7 @@ msgid_plural "WARNING about packages installation:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/args.py:480
+#: pikaur/args.py:486
 msgid "WARNING, unknown args: {}"
 msgstr ""
 
@@ -682,7 +682,7 @@ msgstr "始终与 systemd 动态用户隔离"
 msgid "always rebuild AUR packages"
 msgstr "始终重新构建 AUR 包"
 
-#: pikaur/args.py:347
+#: pikaur/args.py:352
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "始终全面更新 '-git', '-svn' 和其他 dev 包"
 
@@ -691,7 +691,7 @@ msgstr "始终全面更新 '-git', '-svn' 和其他 dev 包"
 msgid "c"
 msgstr "c"
 
-#: pikaur/args.py:249
+#: pikaur/args.py:254
 msgid "cli args to pass to makepkg"
 msgstr "传递给 makepkg 的命令行参数"
 
@@ -772,7 +772,7 @@ msgstr ""
 msgid "hide build log"
 msgstr ""
 
-#: pikaur/args.py:298
+#: pikaur/args.py:303
 msgid "how many git-clones/pulls to do from AUR"
 msgstr ""
 
@@ -814,8 +814,8 @@ msgstr "查找冲突的 AUR 包..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:458 pikaur/build.py:877 pikaur/build.py:897
-#: pikaur/main.py:211 pikaur/prompt.py:50
+#: pikaur/main.py:211 pikaur/install_cli.py:458 pikaur/build.py:877
+#: pikaur/build.py:897 pikaur/prompt.py:50
 msgid "n"
 msgstr "n"
 
@@ -838,7 +838,7 @@ msgstr "需要下列参数之一 %s "
 msgid "outofdate"
 msgstr "过期"
 
-#: pikaur/args.py:259
+#: pikaur/args.py:264
 msgid "override path to makepkg executable"
 msgstr "覆盖 makepkg 可执行程序的路径"
 
@@ -846,16 +846,16 @@ msgstr "覆盖 makepkg 可执行程序的路径"
 msgid "p"
 msgstr "p"
 
-#: pikaur/args.py:254
+#: pikaur/args.py:259
 msgid "path to custom makepkg config"
 msgstr "自定义 makepkg 配置文件的路径"
 
-#: pikaur/args.py:264
+#: pikaur/args.py:269
 #, fuzzy
 msgid "path to custom pikaur config"
 msgstr "自定义 makepkg 配置文件的路径"
 
-#: pikaur/args.py:282
+#: pikaur/args.py:287
 msgid "path where to clone PKGBUILDs"
 msgstr ""
 
@@ -889,6 +889,10 @@ msgstr "pikaur {-P --pkgbuild}    [options] <file(s)>"
 #: pikaur/help_cli.py:59
 msgid "pikaur-specific operations:"
 msgstr "pikaur 的独立选项:"
+
+#: pikaur/args.py:242
+msgid "preserve environment variables (comma-separated)"
+msgstr ""
 
 #: pikaur/args.py:186
 msgid "print spawned by pikaur subshell commands"
@@ -925,7 +929,7 @@ msgstr "s"
 msgid "search only in package names"
 msgstr "只搜索包名"
 
-#: pikaur/args.py:269
+#: pikaur/args.py:274
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 
@@ -954,7 +958,7 @@ msgstr "用法:  pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "用法:  pikaur {-P --pkgbuild} [options] <file(s)>"
 
-#: pikaur/args.py:302
+#: pikaur/args.py:307
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr ""
 
@@ -962,7 +966,7 @@ msgstr ""
 msgid "v"
 msgstr "v"
 
-#: pikaur/config.py:654 pikaur/pprint.py:196
+#: pikaur/config.py:661 pikaur/pprint.py:196
 msgid "warning:"
 msgstr "警告:"
 
@@ -978,7 +982,7 @@ msgid_plural "{grp} groups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/config.py:551
+#: pikaur/config.py:558
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr ""

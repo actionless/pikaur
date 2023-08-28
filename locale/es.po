@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-27 13:30+0200\n"
+"POT-Creation-Date: 2023-08-28 17:42+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -47,13 +47,13 @@ msgstr "(ignorado en la configuración de Pacman)"
 msgid "({} days old)"
 msgstr "({} días de edad)"
 
-#: pikaur/args.py:680
+#: pikaur/args.py:686
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
 msgstr[0] ":: error: opción {} no puede ser usada sin {}."
 msgstr[1] ":: error: las opciones {} no se pueden usar sin {}."
 
-#: pikaur/args.py:673
+#: pikaur/args.py:679
 msgid ":: error: options {} can't be used together."
 msgstr ":: error: las opciones {} no se pueden usar juntas."
 
@@ -238,7 +238,7 @@ msgstr ""
 "Los usuarios dinámicos de SystemD deben estar habilitados, o el ID de "
 "usuario debe estar configurado sise ejecuta como root."
 
-#: pikaur/build.py:192 pikaur/print_department.py:590 pikaur/srcinfo.py:56
+#: pikaur/print_department.py:590 pikaur/build.py:192 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr "Debe definirse `{prop1}` o `{prop2}`"
@@ -315,7 +315,7 @@ msgstr "Mantenedor"
 msgid "Make Deps"
 msgstr "Dependencias de construcción"
 
-#: pikaur/config.py:655
+#: pikaur/config.py:662
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr ""
 "Migración de la opción de configuración [{}]{}=\"{}\" a [{}]{}=\"{}\"..."
@@ -573,7 +573,7 @@ msgid_plural "WARNING about packages installation:"
 msgstr[0] "ADVERTENCIA sobre la instalación del paquete:"
 msgstr[1] "ADVERTENCIA sobre la instalación de paquetes:"
 
-#: pikaur/args.py:480
+#: pikaur/args.py:486
 msgid "WARNING, unknown args: {}"
 msgstr "ADVERTENCIA, args desconocidos: {}"
 
@@ -700,7 +700,7 @@ msgstr "siempre aísle a los usuarios dinámicos con systemd"
 msgid "always rebuild AUR packages"
 msgstr "siempre reconstruir los paquetes AUR"
 
-#: pikaur/args.py:347
+#: pikaur/args.py:352
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "siempre sysupgrade '-git', '-svn' y otros paquetes dev"
 
@@ -709,7 +709,7 @@ msgstr "siempre sysupgrade '-git', '-svn' y otros paquetes dev"
 msgid "c"
 msgstr "c"
 
-#: pikaur/args.py:249
+#: pikaur/args.py:254
 msgid "cli args to pass to makepkg"
 msgstr "argumentos cli para pasar a makepkg"
 
@@ -790,7 +790,7 @@ msgstr "por {pkg}"
 msgid "hide build log"
 msgstr "ocultar el registro de compilación"
 
-#: pikaur/args.py:298
+#: pikaur/args.py:303
 msgid "how many git-clones/pulls to do from AUR"
 msgstr "cuántos git-clones/pulls hacer desde el AUR"
 
@@ -834,8 +834,8 @@ msgstr "buscando paquetes AUR conflictivos..."
 msgid "m"
 msgstr "m"
 
-#: pikaur/install_cli.py:458 pikaur/build.py:877 pikaur/build.py:897
-#: pikaur/main.py:211 pikaur/prompt.py:50
+#: pikaur/main.py:211 pikaur/install_cli.py:458 pikaur/build.py:877
+#: pikaur/build.py:897 pikaur/prompt.py:50
 msgid "n"
 msgstr "n"
 
@@ -858,7 +858,7 @@ msgstr "uno de los argumentos %s es necesario"
 msgid "outofdate"
 msgstr "obsoleto"
 
-#: pikaur/args.py:259
+#: pikaur/args.py:264
 msgid "override path to makepkg executable"
 msgstr "reemplazar la ruta del ejecutable makepkg"
 
@@ -866,15 +866,15 @@ msgstr "reemplazar la ruta del ejecutable makepkg"
 msgid "p"
 msgstr "p"
 
-#: pikaur/args.py:254
+#: pikaur/args.py:259
 msgid "path to custom makepkg config"
 msgstr "ruta a la configuración personalizada de makepkg"
 
-#: pikaur/args.py:264
+#: pikaur/args.py:269
 msgid "path to custom pikaur config"
 msgstr "ruta a la configuración personalizada de pikaur"
 
-#: pikaur/args.py:282
+#: pikaur/args.py:287
 msgid "path where to clone PKGBUILDs"
 msgstr "directorio donde clonar PKGBUILDs"
 
@@ -907,6 +907,10 @@ msgstr "pikaur {-P --pkgbuild}    [opciones] [archivo(s)]"
 #: pikaur/help_cli.py:59
 msgid "pikaur-specific operations:"
 msgstr "operaciones específicas de pikaur:"
+
+#: pikaur/args.py:242
+msgid "preserve environment variables (comma-separated)"
+msgstr ""
 
 #: pikaur/args.py:186
 msgid "print spawned by pikaur subshell commands"
@@ -943,7 +947,7 @@ msgstr "s"
 msgid "search only in package names"
 msgstr "buscar sólo en los nombres de paquetes"
 
-#: pikaur/args.py:269
+#: pikaur/args.py:274
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 "definir el directorio personal de GnuPG utilizado al validar las fuentes del "
@@ -974,7 +978,7 @@ msgstr "uso:  pikaur {-G --getpkgbuild} [opciones] <paquete(s)>"
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "uso:  pikaur {-P --pkgbuild} [opciones] <archivo(s)>"
 
-#: pikaur/args.py:302
+#: pikaur/args.py:307
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr "ID de usuario para ejecutar makepkg si pikaur se inicia como root"
 
@@ -982,7 +986,7 @@ msgstr "ID de usuario para ejecutar makepkg si pikaur se inicia como root"
 msgid "v"
 msgstr "v"
 
-#: pikaur/config.py:654 pikaur/pprint.py:196
+#: pikaur/config.py:661 pikaur/pprint.py:196
 msgid "warning:"
 msgstr "advertencia:"
 
@@ -998,7 +1002,7 @@ msgid_plural "{grp} groups"
 msgstr[0] "groupo {grp}"
 msgstr[1] "groupos {grp}"
 
-#: pikaur/config.py:551
+#: pikaur/config.py:558
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr "{key} no es '{typeof}'"

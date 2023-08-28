@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-27 13:30+0200\n"
+"POT-Creation-Date: 2023-08-28 17:42+0200\n"
 "PO-Revision-Date: 2022-11-29 09:34+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -45,13 +45,13 @@ msgstr "(Pacman yapılandırmasında dışlandı)"
 msgid "({} days old)"
 msgstr "({} gün eski)"
 
-#: pikaur/args.py:680
+#: pikaur/args.py:686
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
 msgstr[0] ":: hata: {} seçeneği {} olmadan kullanılamaz."
 msgstr[1] ":: hata: {} seçenekleri {} olmadan kullanılamaz."
 
-#: pikaur/args.py:673
+#: pikaur/args.py:679
 msgid ":: error: options {} can't be used together."
 msgstr ":: hata: {} seçenekleri birlikte kullanılamaz."
 
@@ -238,7 +238,7 @@ msgid ""
 "running as root."
 msgstr ""
 
-#: pikaur/build.py:192 pikaur/print_department.py:590 pikaur/srcinfo.py:56
+#: pikaur/print_department.py:590 pikaur/build.py:192 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr ""
@@ -313,7 +313,7 @@ msgstr "Sürdürücü"
 msgid "Make Deps"
 msgstr "İnşa Bağımlılıkları"
 
-#: pikaur/config.py:655
+#: pikaur/config.py:662
 #, fuzzy
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr "[{}]{} yapılandırması [{}]{} olarak taşınıyor = \"{}\"..."
@@ -566,7 +566,7 @@ msgid_plural "WARNING about packages installation:"
 msgstr[0] "Paket kurulumu hakkında UYARI:"
 msgstr[1] "Paketlerin kurulumu hakkında UYARI:"
 
-#: pikaur/args.py:480
+#: pikaur/args.py:486
 msgid "WARNING, unknown args: {}"
 msgstr ""
 
@@ -696,7 +696,7 @@ msgstr "daima systemd dinamik kullanıcı ile yalıt"
 msgid "always rebuild AUR packages"
 msgstr "daima AUR paketlerini tekrar inşa et"
 
-#: pikaur/args.py:347
+#: pikaur/args.py:352
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "her zaman sysupgrade '-git' ve diğer geliştirici paketleri"
 
@@ -705,7 +705,7 @@ msgstr "her zaman sysupgrade '-git' ve diğer geliştirici paketleri"
 msgid "c"
 msgstr "c"
 
-#: pikaur/args.py:249
+#: pikaur/args.py:254
 msgid "cli args to pass to makepkg"
 msgstr "makepkg için komut satırı argümanları"
 
@@ -786,7 +786,7 @@ msgstr "{pkg} için"
 msgid "hide build log"
 msgstr ""
 
-#: pikaur/args.py:298
+#: pikaur/args.py:303
 msgid "how many git-clones/pulls to do from AUR"
 msgstr ""
 
@@ -828,8 +828,8 @@ msgstr "çakışan paketlere bakılıyor..."
 msgid "m"
 msgstr "ç"
 
-#: pikaur/install_cli.py:458 pikaur/build.py:877 pikaur/build.py:897
-#: pikaur/main.py:211 pikaur/prompt.py:50
+#: pikaur/main.py:211 pikaur/install_cli.py:458 pikaur/build.py:877
+#: pikaur/build.py:897 pikaur/prompt.py:50
 msgid "n"
 msgstr "h"
 
@@ -852,7 +852,7 @@ msgstr "argümanlardan biri %s gerekli"
 msgid "outofdate"
 msgstr "eski"
 
-#: pikaur/args.py:259
+#: pikaur/args.py:264
 msgid "override path to makepkg executable"
 msgstr "makepkg yolunu değiştir"
 
@@ -860,15 +860,15 @@ msgstr "makepkg yolunu değiştir"
 msgid "p"
 msgstr "p"
 
-#: pikaur/args.py:254
+#: pikaur/args.py:259
 msgid "path to custom makepkg config"
 msgstr "özel makepkg yapılandırması yolu"
 
-#: pikaur/args.py:264
+#: pikaur/args.py:269
 msgid "path to custom pikaur config"
 msgstr "özel pikaur yapılandırması yolu"
 
-#: pikaur/args.py:282
+#: pikaur/args.py:287
 msgid "path where to clone PKGBUILDs"
 msgstr ""
 
@@ -903,6 +903,10 @@ msgstr "pikaur {-P --pkgbuild}    [seçenekler] <dosya(lar)>"
 #: pikaur/help_cli.py:59
 msgid "pikaur-specific operations:"
 msgstr "pikaur-özel işlemler:"
+
+#: pikaur/args.py:242
+msgid "preserve environment variables (comma-separated)"
+msgstr ""
 
 #: pikaur/args.py:186
 msgid "print spawned by pikaur subshell commands"
@@ -939,7 +943,7 @@ msgstr "a"
 msgid "search only in package names"
 msgstr "sadece paket adlarında ara"
 
-#: pikaur/args.py:269
+#: pikaur/args.py:274
 msgid "set GnuPG home directory used when validating package sources"
 msgstr "paket kaynakları doğrulanırken kullanılacak GnuPG ev dizinini ayarla"
 
@@ -968,7 +972,7 @@ msgstr "kullanım:  pikaur {-G --getpkgbuild} [seçenekler] <paket(ler)>"
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "kullanım:  pikaur {-P --pkgbuild} [seçenekler] <dosya(lar)>"
 
-#: pikaur/args.py:302
+#: pikaur/args.py:307
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr ""
 
@@ -976,7 +980,7 @@ msgstr ""
 msgid "v"
 msgstr "g"
 
-#: pikaur/config.py:654 pikaur/pprint.py:196
+#: pikaur/config.py:661 pikaur/pprint.py:196
 msgid "warning:"
 msgstr "uyarı:"
 
@@ -992,7 +996,7 @@ msgid_plural "{grp} groups"
 msgstr[0] "{grp} grup"
 msgstr[1] "{grp} gruplar"
 
-#: pikaur/config.py:551
+#: pikaur/config.py:558
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr ""

@@ -20,6 +20,7 @@ from .config import (
 from .core import (
     PIPE,
     DataType,
+    chown_to_current,
     dirname,
     interactive_spawn,
     joined_spawn,
@@ -295,6 +296,7 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 git_hash_path,
                 self.last_installed_file_path,
             )
+            chown_to_current(self.last_installed_file_path)
 
     @property
     def current_hash(self) -> str | None:

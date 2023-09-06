@@ -58,7 +58,6 @@ def isolate_root_cmd(
         cwd: str | Path | None = None,
         env: dict[str, str] | None = None,
 ) -> list[str]:
-    # @TODO: move to privilege module
     if not running_as_root():
         return cmd
     if isinstance(cwd, str):

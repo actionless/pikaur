@@ -276,7 +276,7 @@ def get_editor() -> list[str] | None:
         for editor in (
                 "vim", "nano", "mcedit", "edit", "emacs", "nvim", "kak",
                 "e3", "atom", "adie", "dedit", "gedit", "jedit", "kate", "kwrite", "leafpad",
-                "mousepad", "notepadqq", "pluma", "code", "xed", "nvim-qt", "geany",
+                "mousepad", "notepadqq", "pluma", "code", "xed", "geany",
         ):
             path = shutil.which(editor)
             logger.debug("Editor not set, defaulting to: {} ({})", editor, path)

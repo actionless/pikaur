@@ -268,20 +268,26 @@ def retry_interactive_command_or_exit(
 
 def get_editor() -> list[str] | None:
     editor_line = os.environ.get("VISUAL") or os.environ.get("EDITOR")
+    editor_cmd: list[str] | None = None
     logger.debug("Found editor: {}", editor_line)
     if editor_line:
-        return editor_line.split(" ")
-    for editor in (
-            "vim", "nano", "mcedit", "edit", "emacs", "nvim", "kak",
-            "e3", "atom", "adie", "dedit", "gedit", "jedit", "kate", "kwrite", "leafpad",
-            "mousepad", "notepadqq", "pluma", "code", "xed", "nvim-qt", "geany",
-    ):
-        path = shutil.which(editor)
-        logger.debug("Editor not set, defaulting to: {} ({})", editor, path)
-        if path:
-            return [path]
-    logger.debug("No editor found!")
-    return None
+        editor_cmd = editor_line.split(" ")
+    else:
+        for editor in (
+                "vim", "nano", "mcedit", "edit", "emacs", "nvim", "kak",
+                "e3", "atom", "adie", "dedit", "gedit", "jedit", "kate", "kwrite", "leafpad",
+                "mousepad", "notepadqq", "pluma", "code", "xed", "nvim-qt", "geany",
+        ):
+            path = shutil.which(editor)
+            logger.debug("Editor not set, defaulting to: {} ({})", editor, path)
+            if path:
+                editor_cmd = [path]
+                break
+    if not editor_cmd:
+        logger.debug("No editor found!")
+    elif parse_args().user_id:
+        editor_cmd = isolate_root_cmd(editor_cmd)
+    return editor_cmd
 
 
 def get_editor_or_exit() -> list[str] | None:

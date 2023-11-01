@@ -32,7 +32,7 @@ def read_bytes_from_url(
         print_stderr(
             color_line("=> ", ColorsHighlight.cyan) + f"GET {url}",
         )
-    req = request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    req = request.Request(url, headers={"User-Agent": "Mozilla/5.0"})  # noqa: S310
     try:
         with request.urlopen(req) as response:  # nosec B310  # noqa: S310
             result_bytes: bytes = response.read()

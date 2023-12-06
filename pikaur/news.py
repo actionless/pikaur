@@ -5,7 +5,7 @@ from html.parser import HTMLParser
 from typing import TYPE_CHECKING
 
 try:
-    from defusedxml.ElementTree import fromstring  # type: ignore[import]
+    from defusedxml.ElementTree import fromstring  # type: ignore[import-not-found]
 except ModuleNotFoundError:
     from xml.etree.ElementTree import fromstring  # nosec B405
 

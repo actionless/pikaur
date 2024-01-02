@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-28 17:42+0200\n"
+"POT-Creation-Date: 2023-12-08 15:15+0100\n"
 "PO-Revision-Date: 2019-10-05 15:30+0200\n"
 "Last-Translator: Mattia Bertoni <mattia.b89@gmail.com>\n"
 "Language-Team: Italian <none>\n"
@@ -111,17 +111,17 @@ msgstr "Non è possibile compilare '{name}'."
 msgid "Can't clone '{name}' in '{path}' from AUR:"
 msgstr "Impossibile clonare '{name}' in '{path}' da AUR:"
 
-#: pikaur/build.py:123
+#: pikaur/build.py:124
 #, python-brace-format
 msgid "Can't copy '{from_path}' to '{to_path}'."
 msgstr "Impossibile copiare '{from_path}' a '{to_path}'."
 
-#: pikaur/build.py:98
+#: pikaur/build.py:99
 #, python-brace-format
 msgid "Can't create destination directory '{to_path}'."
 msgstr "Impossibile creare la directory di destinazione '{to_path}'."
 
-#: pikaur/build.py:183
+#: pikaur/build.py:184
 msgid "Can't get package name from PKGBUILD"
 msgstr "Impossibile ottenere il nome del pacchetto dal PKGBUILD"
 
@@ -151,7 +151,7 @@ msgstr "Controllo Dipendenze"
 msgid "Co-maintainers"
 msgstr "Maintainer"
 
-#: pikaur/build.py:841 pikaur/prompt.py:243
+#: pikaur/build.py:843 pikaur/prompt.py:243
 msgid "Command '{}' failed to execute."
 msgstr "L'esecuzione del comando '{}' è fallita."
 
@@ -211,7 +211,7 @@ msgstr "Vuoi procedere?"
 msgid "Do you want to remove all files?"
 msgstr "Vuoi rimuovere tutti i file?"
 
-#: pikaur/prompt.py:249 pikaur/urllib_helper.py:43 pikaur/urllib_helper.py:73
+#: pikaur/urllib_helper.py:43 pikaur/urllib_helper.py:73 pikaur/prompt.py:249
 msgid "Do you want to retry?"
 msgstr "Vuoi riprovare?"
 
@@ -230,7 +230,7 @@ msgstr "Vuoi {edit} {file} per il pacchetto {name}?"
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr ""
 
-#: pikaur/build.py:323
+#: pikaur/build.py:325
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Sto scaricando gli ultimi sorgenti per un pacchetto devel {}"
@@ -242,7 +242,7 @@ msgid ""
 "running as root."
 msgstr ""
 
-#: pikaur/print_department.py:590 pikaur/build.py:192 pikaur/srcinfo.py:56
+#: pikaur/build.py:193 pikaur/print_department.py:590 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr ""
@@ -251,7 +251,7 @@ msgstr ""
 msgid "Failed to build following packages:"
 msgstr "Impossibile creare i seguenti pacchetti:"
 
-#: pikaur/build.py:711
+#: pikaur/build.py:713
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr ""
 "Impossibile rimuovere le dipendenze installate, incongruenza tra i "
@@ -291,11 +291,11 @@ msgid "Installation info changed (or new deps found) for {pkg} package"
 msgstr ""
 
 # in this case I can translate "built" with "compile"
-#: pikaur/build.py:489
+#: pikaur/build.py:491
 msgid "Installing already built dependencies for {}"
 msgstr "Installazione delle dipendenze già compilate per {}"
 
-#: pikaur/build.py:649
+#: pikaur/build.py:651
 msgid "Installing repository dependencies for {}"
 msgstr "Installazione delle dipendenze da repository per {}"
 
@@ -319,7 +319,7 @@ msgstr "Maintainer"
 msgid "Make Deps"
 msgstr "Dipendenze Make"
 
-#: pikaur/config.py:662
+#: pikaur/config.py:666
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr ""
 
@@ -397,7 +397,7 @@ msgstr ""
 msgid "Package Base"
 msgstr "Pacchetto Base"
 
-#: pikaur/build.py:572
+#: pikaur/build.py:574
 #, python-brace-format
 msgid ""
 "Package {pkg} is already built. Pass '--rebuild' flag to force the build."
@@ -453,7 +453,7 @@ msgstr "Sto leggendo il database locale dei pacchetti..."
 msgid "Reading repository package databases..."
 msgstr "Sto leggendo i database dei pacchetti nel repository..."
 
-#: pikaur/build.py:723
+#: pikaur/build.py:725
 msgid "Removing already installed dependencies for {}"
 msgstr "Rimozione delle dipendenze già installate per {}"
 
@@ -507,7 +507,7 @@ msgstr "Nuove dipendenze AUR trovate per il pacchetto {pkg}: {deps}"
 msgid "Starting full AUR upgrade..."
 msgstr "Inizio un aggiornamento completo di AUR..."
 
-#: pikaur/build.py:820
+#: pikaur/build.py:822
 msgid "Starting the build"
 msgstr "Sto iniziando la creazione del pacchetto"
 
@@ -549,7 +549,7 @@ msgstr ""
 msgid "Try recovering {pkg_name}?"
 msgstr "Provare a ripristinare?"
 
-#: pikaur/install_cli.py:593 pikaur/build.py:351 pikaur/build.py:856
+#: pikaur/build.py:353 pikaur/build.py:858 pikaur/install_cli.py:593
 msgid "Try recovering?"
 msgstr "Provare a ripristinare?"
 
@@ -586,12 +586,12 @@ msgid "[A] abort"
 msgstr "[a] annulla"
 
 # 'R' stands for "Riprova"
-#: pikaur/build.py:858
+#: pikaur/build.py:860
 msgid "[R] retry build"
 msgstr "[R] riprova"
 
 # 'R' stands for "Riprova"
-#: pikaur/build.py:353
+#: pikaur/build.py:355
 #, fuzzy
 msgid "[R] retry clone"
 msgstr "[R] riprova"
@@ -611,12 +611,12 @@ msgid "[a] abort"
 msgstr "[a] annulla"
 
 # 'a' stands for "annulla"
-#: pikaur/build.py:359 pikaur/build.py:868
+#: pikaur/build.py:361 pikaur/build.py:870
 msgid "[a] abort building all the packages"
 msgstr "[a] annulla la creazione di tutti i pacchetti"
 
 # 'c' stands for "controlla"
-#: pikaur/build.py:860
+#: pikaur/build.py:862
 msgid "[c] checksums skip"
 msgstr "[c] salta il controllo hash"
 
@@ -625,7 +625,7 @@ msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
 # 'c' stands for "cancella"
-#: pikaur/build.py:354 pikaur/build.py:864
+#: pikaur/build.py:356 pikaur/build.py:866
 msgid "[d] delete build dir and try again"
 msgstr "[c] cancella la cartella di compilazione e riprova"
 
@@ -634,19 +634,19 @@ msgid "[d] git diff"
 msgstr ""
 
 # 'm' stands for "modifica"
-#: pikaur/install_cli.py:251 pikaur/build.py:355 pikaur/build.py:865
+#: pikaur/build.py:357 pikaur/build.py:867 pikaur/install_cli.py:251
 msgid "[e] edit PKGBUILD"
 msgstr "[m] modifica PKGBUILD"
 
-#: pikaur/build.py:861
+#: pikaur/build.py:863
 msgid "[f] skip 'check()' function of PKGBUILD"
 msgstr ""
 
-#: pikaur/build.py:863
+#: pikaur/build.py:865
 msgid "[i] ignore architecture"
 msgstr "[i] ignora architettura"
 
-#: pikaur/build.py:356
+#: pikaur/build.py:358
 #, fuzzy
 msgid "[i] ignore the error"
 msgstr "[i] ignora architettura"
@@ -662,11 +662,11 @@ msgstr "[installato: {version}]"
 msgid "[installed]"
 msgstr "[installato]"
 
-#: pikaur/build.py:862
+#: pikaur/build.py:864
 msgid "[n] skip 'prepare()' function of PKGBUILD"
 msgstr ""
 
-#: pikaur/build.py:859
+#: pikaur/build.py:861
 msgid "[p] PGP check skip"
 msgstr "[p] salta controllo PGP"
 
@@ -679,7 +679,7 @@ msgstr ""
 msgid "[r] remove dir and clone again"
 msgstr "[r] rimuovere la cartella e clonare di nuovo"
 
-#: pikaur/build.py:358 pikaur/build.py:867
+#: pikaur/build.py:360 pikaur/build.py:869
 msgid "[s] skip building this package"
 msgstr "[s] salta la compilazione di questo pacchetto"
 
@@ -699,10 +699,10 @@ msgid "`{var_name}` should be list."
 msgstr ""
 
 # 'a' stands for "annulla"
+#: pikaur/build.py:349 pikaur/build.py:371 pikaur/build.py:398
+#: pikaur/build.py:854 pikaur/build.py:884 pikaur/build.py:921
 #: pikaur/install_cli.py:255 pikaur/install_cli.py:588
-#: pikaur/install_cli.py:608 pikaur/install_cli.py:628 pikaur/build.py:347
-#: pikaur/build.py:369 pikaur/build.py:396 pikaur/build.py:852
-#: pikaur/build.py:882 pikaur/build.py:919
+#: pikaur/install_cli.py:608 pikaur/install_cli.py:628
 msgid "a"
 msgstr "a"
 
@@ -724,8 +724,8 @@ msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "aggiorna sempre i pacchetti '-git, '-svn' e gli altri pacchetti devel"
 
 # 'c' stands for "controlla"
-#: pikaur/install_cli.py:607 pikaur/install_cli.py:616 pikaur/build.py:875
-#: pikaur/build.py:891
+#: pikaur/build.py:877 pikaur/build.py:893 pikaur/install_cli.py:607
+#: pikaur/install_cli.py:616
 msgid "c"
 msgstr "c"
 
@@ -736,8 +736,8 @@ msgid "cli args to pass to makepkg"
 msgstr "argomenti cli da passare a makepkg"
 
 # 'd' stands for "diff"
-#: pikaur/install_cli.py:606 pikaur/install_cli.py:612 pikaur/build.py:365
-#: pikaur/build.py:376 pikaur/build.py:879 pikaur/build.py:903
+#: pikaur/build.py:367 pikaur/build.py:378 pikaur/build.py:881
+#: pikaur/build.py:905 pikaur/install_cli.py:606 pikaur/install_cli.py:612
 msgid "d"
 msgstr "d"
 
@@ -777,8 +777,8 @@ msgid "download also AUR dependencies"
 msgstr "scarica anche le dipendenze AUR"
 
 # 'm' stands for "modifica"
-#: pikaur/install_cli.py:255 pikaur/install_cli.py:258 pikaur/build.py:366
-#: pikaur/build.py:380 pikaur/build.py:880 pikaur/build.py:906
+#: pikaur/build.py:368 pikaur/build.py:382 pikaur/build.py:882
+#: pikaur/build.py:908 pikaur/install_cli.py:255 pikaur/install_cli.py:258
 msgid "e"
 msgstr "m"
 
@@ -794,7 +794,7 @@ msgstr "errore:"
 msgid "executable not found"
 msgstr ""
 
-#: pikaur/build.py:876 pikaur/build.py:894
+#: pikaur/build.py:878 pikaur/build.py:896
 msgid "f"
 msgstr ""
 
@@ -802,7 +802,7 @@ msgstr ""
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "impossibile generare il file .SRCINFO da {}:"
 
-#: pikaur/build.py:338
+#: pikaur/build.py:340
 msgid "failed to retrieve latest dev sources:"
 msgstr "impossibile recuperare i sorgenti aggiornati:"
 
@@ -821,8 +821,8 @@ msgid "how many git-clones/pulls to do from AUR"
 msgstr ""
 
 # 'i' stands for "ignora"
-#: pikaur/build.py:367 pikaur/build.py:394 pikaur/build.py:878
-#: pikaur/build.py:900
+#: pikaur/build.py:369 pikaur/build.py:396 pikaur/build.py:880
+#: pikaur/build.py:902
 msgid "i"
 msgstr "i"
 
@@ -862,8 +862,8 @@ msgid "m"
 msgstr "m"
 
 # 'n' stands for "no"
-#: pikaur/main.py:211 pikaur/install_cli.py:458 pikaur/build.py:877
-#: pikaur/build.py:897 pikaur/prompt.py:50
+#: pikaur/build.py:879 pikaur/build.py:899 pikaur/main.py:211
+#: pikaur/prompt.py:50 pikaur/install_cli.py:458
 msgid "n"
 msgstr "n"
 
@@ -892,7 +892,7 @@ msgid "override path to makepkg executable"
 msgstr "dare la precedenza al percorso dell'eseguibile makepkg"
 
 # 'p' stands for "PGP"
-#: pikaur/install_cli.py:618 pikaur/build.py:874 pikaur/build.py:888
+#: pikaur/build.py:876 pikaur/build.py:890 pikaur/install_cli.py:618
 msgid "p"
 msgstr "p"
 
@@ -963,8 +963,8 @@ msgid "query packages from repository only"
 msgstr "ricerca pacchetti solo dal repository"
 
 # 'r' stands for "rimuovi"
-#: pikaur/install_cli.py:607 pikaur/install_cli.py:621 pikaur/build.py:364
-#: pikaur/build.py:373 pikaur/build.py:873 pikaur/build.py:886
+#: pikaur/build.py:366 pikaur/build.py:375 pikaur/build.py:875
+#: pikaur/build.py:888 pikaur/install_cli.py:607 pikaur/install_cli.py:621
 msgid "r"
 msgstr "r"
 
@@ -973,9 +973,9 @@ msgid "removing all files from cache..."
 msgstr ""
 
 # 's' stands for "salta"
-#: pikaur/install_cli.py:255 pikaur/install_cli.py:273
-#: pikaur/install_cli.py:608 pikaur/install_cli.py:623 pikaur/build.py:345
-#: pikaur/build.py:368 pikaur/build.py:850 pikaur/build.py:881
+#: pikaur/build.py:347 pikaur/build.py:370 pikaur/build.py:852
+#: pikaur/build.py:883 pikaur/install_cli.py:255 pikaur/install_cli.py:273
+#: pikaur/install_cli.py:608 pikaur/install_cli.py:623
 msgid "s"
 msgstr "s"
 
@@ -1021,12 +1021,12 @@ msgstr ""
 msgid "v"
 msgstr "v"
 
-#: pikaur/config.py:661 pikaur/pprint.py:196
+#: pikaur/pprint.py:196 pikaur/config.py:665
 msgid "warning:"
 msgstr "attenzione:"
 
 # 's' stands for "sì"
-#: pikaur/install_cli.py:458 pikaur/install_cli.py:470 pikaur/prompt.py:49
+#: pikaur/prompt.py:49 pikaur/install_cli.py:458 pikaur/install_cli.py:470
 msgid "y"
 msgstr "s"
 
@@ -1044,7 +1044,7 @@ msgid "{key} is not '{typeof}'"
 msgstr ""
 
 # I guess {suparch} has only one item
-#: pikaur/build.py:752
+#: pikaur/build.py:754
 #, python-brace-format
 msgid ""
 "{name} can't be built on the current arch ({arch}). Supported: {suparch}"

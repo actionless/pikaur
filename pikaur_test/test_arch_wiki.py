@@ -36,8 +36,8 @@ class ArchWikiTest(PikaurDbTestCase):
         # Split packages 3:
         # Split packages independently,
         # such as nxproxy and nxagent
-        pkg_name_1 = "python-pyalsaaudio"
-        pkg_name_2 = "python2-pyalsaaudio"
+        pkg_name_1 = "nxproxy"
+        pkg_name_2 = "nxagent"
 
         fake_pikaur(f"-S {pkg_name_1} --mflags=--skippgpcheck")
         self.assertInstalled(pkg_name_1)

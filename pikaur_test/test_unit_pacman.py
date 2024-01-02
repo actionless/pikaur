@@ -13,4 +13,4 @@ class PacmanTestCase(PikaurTestCase):
 
     def test_find_repo_package_multiple_providers(self):
         found_pkg = PackageDB.find_repo_package("java-runtime")
-        self.assertIn("jre-openjdk", found_pkg.name)
+        self.assertIn("jdk-openjdk", found_pkg.name)

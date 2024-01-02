@@ -12,6 +12,12 @@ class ArchWikiTest(PikaurDbTestCase):
         pikaur("-S aws-cli-git")
         self.assertInstalled("aws-cli-git")
 
+    def test_reliable_solver(self):
+        # Arch Wiki: Reliable solver
+        fake_pikaur("-S ros-melodic-desktop")
+        self.assertInstalled("ros-melodic-desktop")
+        # it's slow as hell even with mocked makepkg :(
+
     def test_split_packages_1(self):
         # Split packages 1:
         # Multiple packages from the same package base,
@@ -22,42 +28,38 @@ class ArchWikiTest(PikaurDbTestCase):
     def test_split_packages_2(self):
         # Split packages 2:
         # Split packages which depend on a package from the same package base,
-        # such as jellyfin
-        fake_pikaur("-S jellyfin --mflags=--skippgpcheck")
-        self.assertInstalled("jellyfin")
-
-    # def test_split_packages_3(self):
-    #     # Split packages 3:
-    #     # Split packages independently,
-    #     # such as python-pyalsaaudio and python2-pyalsaaudio.
-    #     fake_pikaur("-S python-pyalsaaudio --mflags=--skippgpcheck")
-    #     self.assertInstalled("python-pyalsaaudio")
-    #     self.assertNotInstalled("python2-pyalsaaudio")
-
-    #     self.remove_packages("python-pyalsaaudio")
-
-    #     # Split packages 3: 2 split packages
-    #     fake_pikaur("-S python2-pyalsaaudio python-pyalsaaudio --mflags=--skippgpcheck")
-    #     self.assertInstalled("python2-pyalsaaudio")
-    #     self.assertInstalled("python-pyalsaaudio")
+        # such as samsung-unified-driver
+        fake_pikaur("-S samsung-unified-driver --mflags=--skippgpcheck")
+        self.assertInstalled("samsung-unified-driver")
 
     def test_split_packages_3(self):
         # Split packages 3:
         # Split packages independently,
-        # such as python-pyalsaaudio and python2-pyalsaaudio.
-        fake_pikaur("-S lua51-xmlrpc --mflags=--skippgpcheck")
-        self.assertInstalled("lua51-xmlrpc")
-        self.assertNotInstalled("lua52-xmlrpc")
+        # such as nxproxy and nxagent
+        pkg_name_1 = "python-pyalsaaudio"
+        pkg_name_2 = "python2-pyalsaaudio"
 
-        self.remove_packages("lua51-xmlrpc")
+        fake_pikaur(f"-S {pkg_name_1} --mflags=--skippgpcheck")
+        self.assertInstalled(pkg_name_1)
+        self.assertNotInstalled(pkg_name_2)
 
+        self.remove_packages(pkg_name_1)
         # Split packages 3: 2 split packages
-        fake_pikaur("-S lua51-xmlrpc lua52-xmlrpc --mflags=--skippgpcheck")
-        self.assertInstalled("lua51-xmlrpc")
-        self.assertInstalled("lua52-xmlrpc")
+        fake_pikaur("-S {pkg_name_1} {pkg_name_2} --mflags=--skippgpcheck")
+        self.assertInstalled(pkg_name_1)
+        self.assertInstalled(pkg_name_2)
 
-    # def test_reliable_solver(self):
-        # # Arch Wiki: Reliable solver
-        # fake_pikaur("-S ros-lunar-desktop")
-        # self.assertInstalled("ros-lunar-desktop")
-        # it's slow as hell even with mocked makepkg :(
+    # def test_split_packages_3(self):
+    #     # Split packages 3:
+    #     # Split packages independently,
+    #     # such as nxproxy and nxagent
+    #     fake_pikaur("-S lua51-xmlrpc --mflags=--skippgpcheck")
+    #     self.assertInstalled("lua51-xmlrpc")
+    #     self.assertNotInstalled("lua52-xmlrpc")
+
+    #     self.remove_packages("lua51-xmlrpc")
+
+    #     # Split packages 3: 2 split packages
+    #     fake_pikaur("-S lua51-xmlrpc lua52-xmlrpc --mflags=--skippgpcheck")
+    #     self.assertInstalled("lua51-xmlrpc")
+    #     self.assertInstalled("lua52-xmlrpc")

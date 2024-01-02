@@ -47,7 +47,7 @@ class ArchWikiTest(PikaurDbTestCase):
 
         self.remove_packages(pkg_name_1)
         # Split packages 3: 2 split packages
-        fake_pikaur("-S {pkg_name_1} {pkg_name_2} --mflags=--skippgpcheck")
+        fake_pikaur(f"-S {pkg_name_1} {pkg_name_2} --mflags=--skippgpcheck")
         self.assertInstalled(pkg_name_1)
         self.assertInstalled(pkg_name_2)
 

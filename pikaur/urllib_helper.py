@@ -100,7 +100,7 @@ def init_proxy() -> None:
             socks_proxy_addr = socks_proxy_addr[:idx]
 
         try:
-            import socks  # type: ignore[import-not-found]  # pylint: disable=import-outside-toplevel
+            import socks  # type: ignore[import-untyped]  # pylint: disable=import-outside-toplevel
         except ImportError as exc:
             raise ProxyInitSocks5Error(
                 translate("pikaur requires python-pysocks to use a socks5 proxy."),

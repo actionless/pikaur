@@ -129,8 +129,8 @@ class InstallTest(PikaurDbTestCase):
         self.remove_if_installed(pkg_name)
 
     def test_conflicting_aur_packages(self):
-        conflicting_aur_package1 = "resvg"
-        conflicting_aur_package2 = "resvg-git"
+        conflicting_aur_package1 = "2bwm"
+        conflicting_aur_package2 = "2bwm-git"
         self.remove_if_installed(
             conflicting_aur_package1,
             conflicting_aur_package2,

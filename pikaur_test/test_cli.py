@@ -69,13 +69,17 @@ class CliTest(PikaurTestCase):
         self.assertEqual(len(result_aur_too_many), 0)
 
     def test_search_multiword_too_filter(self):
-        result_for_one_query = pikaur("-Ssq --aur mailman").stdout.splitlines()
-        self.assertIn("mailman-rss", result_for_one_query)
-        self.assertIn("mailman", result_for_one_query)
+        common_query = "mailman"
+        specific_query = "w"
+        common_result = "mailman-core-git"
+        specific_result = "mailman-rss"
+        result_for_one_query = pikaur(f"-Ssq --aur {common_query}").stdout.splitlines()
+        self.assertIn(specific_result, result_for_one_query)
+        self.assertIn(common_result, result_for_one_query)
 
-        result_all = pikaur("-Ssq --aur mailman w").stdout.splitlines()
-        self.assertIn("mailman-rss", result_all)
-        self.assertNotIn("mailman", result_all)
+        result_all = pikaur(f"-Ssq --aur {common_query} {specific_query}").stdout.splitlines()
+        self.assertIn(specific_result, result_all)
+        self.assertNotIn(common_result, result_all)
 
     def test_search_multiword_too_filter_namesonly(self):
         result_all = pikaur("-Ssq --aur mailman w").stdout.splitlines()

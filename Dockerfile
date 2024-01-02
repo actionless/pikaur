@@ -32,7 +32,7 @@ COPY ./locale/. /opt/app-build/locale
 COPY ./PKGBUILD ./Makefile ./README.md ./pyproject.toml ./LICENSE /opt/app-build/
 COPY ./pikaur/. /opt/app-build/pikaur
 RUN echo ">>>> Installing opt deps:" && \
-	pacman -Sy devtools python-pysocks --noconfirm --needed && \
+	pacman -Sy devtools python-pysocks python-defusedxml --noconfirm --needed && \
 	echo ">>>> Preparing build directory:" && \
 	chown -R user /opt/app-build/ && \
 	echo ">>>> Fetching git tags:" && \

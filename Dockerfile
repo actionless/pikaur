@@ -56,8 +56,10 @@ COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
 COPY .flake8 /opt/app-build/
 RUN echo ">>>> Starting CI linting:" && \
 	chown -R user /opt/app-build/pikaur_test && \
-	if [[ "$SKIP_LINTING" -eq 0 ]] ; then sudo -u user env \
-	./maintenance_scripts/lint.sh ; fi
+	if [[ "$SKIP_LINTING" -eq 0 ]] ; then \
+		sudo -u user env \
+		./maintenance_scripts/lint.sh ; \
+	fi
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
 	GITHUB_ACTIONS=1 \

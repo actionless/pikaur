@@ -14,6 +14,7 @@ class ArchWikiTest(PikaurDbTestCase):
 
     def test_reliable_solver(self):
         # Arch Wiki: Reliable solver
+        self.remove_if_installed("gmock")
         fake_pikaur("-S ros-melodic-desktop")
         self.assertInstalled("ros-melodic-desktop")
         # it's slow as hell even with mocked makepkg :(

@@ -20,12 +20,12 @@ msgstr ""
 #: pikaur/core.py:116
 #, python-brace-format
 msgid "'{class_name}' does not have attribute '{key}' defined."
-msgstr ""
+msgstr "'{class_name}' 没有定义属性 '{key}'"
 
 #: pikaur/core.py:103
 #, python-brace-format
 msgid "'{class_name}' does not have required attribute '{key}' set."
-msgstr ""
+msgstr "'{class_name}' 没有设置必填属性 '{key}'"
 
 #: pikaur/replacements.py:41
 #, python-brace-format
@@ -37,7 +37,7 @@ msgstr[1] "'{packages}' 在库中但无法被安装"
 
 #: pikaur/updates.py:204
 msgid "(ignored in Pacman config)"
-msgstr ""
+msgstr "(在 Pacman 配置中被忽略)"
 
 #: pikaur/print_department.py:255
 msgid "({} days old)"
@@ -55,7 +55,7 @@ msgstr ":: 错误: 选项 {} 不能一起使用."
 
 #: pikaur/info_cli.py:24
 msgid "AUR Git URL"
-msgstr ""
+msgstr "AUR Git 地址"
 
 #: pikaur/print_department.py:523
 msgid "AUR package will be installed:"
@@ -66,7 +66,7 @@ msgstr[1] "将被安装的 AUR 软件包:"
 #: pikaur/main.py:349
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
-msgstr ""
+msgstr "AUR 仓库目录已从 '{old}' 移动至 '{new}'."
 
 #: pikaur/search_cli.py:88
 #, python-brace-format
@@ -76,7 +76,7 @@ msgstr ""
 #: pikaur/search_cli.py:81
 #, python-brace-format
 msgid "AUR: Too many package results for '{query}'"
-msgstr ""
+msgstr "AUR: '{query}' 的软件包结果过多"
 
 #: pikaur/help_cli.py:67
 msgid ""
@@ -86,7 +86,7 @@ msgstr "执行 `pacman -U <pkg_file>` 时所有常见的选项. 参见 `pacman -
 
 #: pikaur/pacman.py:580
 msgid "Because of:"
-msgstr ""
+msgstr "因为:"
 
 #: pikaur/pkg_cache_cli.py:18
 msgid "Build directory"
@@ -124,20 +124,20 @@ msgstr "无法在 '{path}' 处从 AUR 拉取（pull） '{name}':"
 #: pikaur/aur_deps.py:300
 #, python-brace-format
 msgid "Can't resolve dependencies for AUR package '{pkg}':"
-msgstr ""
+msgstr "无法解决 AUR 软件包 '{pkg}' 的依赖关系:"
 
 #: pikaur/pacman.py:285
 #, fuzzy
 msgid "Cannot initialize ALPM"
-msgstr "无法初始化 {}"
+msgstr "无法初始化 ALPM"
 
 #: pikaur/info_cli.py:39
 msgid "Check Deps"
-msgstr ""
+msgstr "检查依赖"
 
 #: pikaur/info_cli.py:44
 msgid "Co-maintainers"
-msgstr ""
+msgstr "共同维护者"
 
 #: pikaur/build.py:843 pikaur/prompt.py:243
 msgid "Command '{}' failed to execute."
@@ -149,7 +149,7 @@ msgstr "常见 pacman 选项:"
 
 #: pikaur/info_cli.py:40
 msgid "Conflicts With"
-msgstr ""
+msgstr "与它冲突"
 
 #: pikaur/news.py:58 pikaur/news.py:96
 msgid "Could not fetch archlinux.org news"
@@ -165,7 +165,7 @@ msgstr "无法更新 {}"
 
 #: pikaur/pacman.py:573
 msgid "Dependencies can't be satisfied for the following packages:"
-msgstr ""
+msgstr "以下软件包的依赖关系无法满足:"
 
 #: pikaur/install_cli.py:302
 msgid "Dependencies missing for {}"
@@ -177,15 +177,15 @@ msgstr "检测到 {} 之间存在循环依赖"
 
 #: pikaur/info_cli.py:36
 msgid "Depends On"
-msgstr ""
+msgstr "依赖于"
 
 #: pikaur/info_cli.py:30
 msgid "Description"
-msgstr ""
+msgstr "描述"
 
 #: pikaur/pkg_cache_cli.py:25
 msgid "Directory is empty."
-msgstr ""
+msgstr "目录为空."
 
 #: pikaur/prompt.py:292
 msgid "Do you want to proceed without editing?"
@@ -233,7 +233,7 @@ msgstr ""
 #: pikaur/build.py:193 pikaur/print_department.py:590 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
-msgstr ""
+msgstr "必须设置 `{prop1}` 或 `{prop2}`"
 
 #: pikaur/install_cli.py:1152
 msgid "Failed to build following packages:"
@@ -245,7 +245,7 @@ msgstr "移除已安装的依赖包失败, 软件包矛盾: {}"
 
 #: pikaur/info_cli.py:47
 msgid "First Submitted"
-msgstr ""
+msgstr "首次提交"
 
 #: pikaur/print_department.py:78
 msgid "Following package cannot be found in AUR:"
@@ -261,7 +261,7 @@ msgstr[1] "下列包无法在软件仓库中找到:"
 
 #: pikaur/info_cli.py:34
 msgid "Groups"
-msgstr ""
+msgstr "组"
 
 #: pikaur/print_department.py:604
 #, fuzzy
@@ -275,7 +275,7 @@ msgstr "忽略包 {}"
 #: pikaur/install_cli.py:920 pikaur/install_cli.py:936
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
-msgstr ""
+msgstr "{pkg} 软件包的安装信息已更改 (或发现了新的依赖)"
 
 #: pikaur/build.py:491
 msgid "Installing already built dependencies for {}"
@@ -287,23 +287,23 @@ msgstr "为 {} 安装软件仓库中的依赖"
 
 #: pikaur/info_cli.py:32
 msgid "Keywords"
-msgstr ""
+msgstr "关键字"
 
 #: pikaur/info_cli.py:48
 msgid "Last Updated"
-msgstr ""
+msgstr "最后更新"
 
 #: pikaur/info_cli.py:33
 msgid "Licenses"
-msgstr ""
+msgstr "软件许可"
 
 #: pikaur/info_cli.py:43
 msgid "Maintainer"
-msgstr ""
+msgstr "维护者"
 
 #: pikaur/info_cli.py:38
 msgid "Make Deps"
-msgstr ""
+msgstr "生成依赖"
 
 #: pikaur/config.py:666
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
@@ -312,12 +312,12 @@ msgstr ""
 #. "aur_id": translate("id"),
 #: pikaur/info_cli.py:26
 msgid "Name"
-msgstr ""
+msgstr "名称"
 
 #: pikaur/install_cli.py:545
 #, python-brace-format
 msgid "New build deps found for {pkg} package: {deps}"
-msgstr ""
+msgstr "{pkg} 软件包发现新的生成依赖: {deps}"
 
 #: pikaur/print_department.py:536
 msgid "New dependency will be installed from AUR:"
@@ -344,11 +344,11 @@ msgstr "新的软件包 '{new}' 与 '{other}' 冲突."
 
 #: pikaur/help_cli.py:48
 msgid "No response from Pacman"
-msgstr ""
+msgstr "Pacman 没有响应"
 
 #: pikaur/info_cli.py:61 pikaur/info_cli.py:92
 msgid "None"
-msgstr ""
+msgstr "没有"
 
 #: pikaur/install_cli.py:815
 #, python-brace-format
@@ -361,7 +361,7 @@ msgstr "无事可做."
 
 #: pikaur/info_cli.py:37
 msgid "Optional Deps"
-msgstr ""
+msgstr "可选依赖"
 
 #: pikaur/info_cli.py:49
 #, fuzzy
@@ -370,7 +370,7 @@ msgstr "过期"
 
 #: pikaur/install_cli.py:267
 msgid "PKGBUILD appears unchanged after editing"
-msgstr ""
+msgstr "编辑后的 PKGBUILD 保持不变"
 
 #: pikaur/getpkgbuild_cli.py:57
 #, python-brace-format
@@ -405,10 +405,11 @@ msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
 msgstr ""
+"请输入您想安装的软件包的编号, 然后按 [Enter] 键(默认={}):"
 
 #: pikaur/info_cli.py:46
 msgid "Popularity"
-msgstr ""
+msgstr "受欢迎度"
 
 #: pikaur/install_cli.py:452
 msgid "Proceed with installation? [Y/n] "
@@ -416,7 +417,7 @@ msgstr "继续安装吗? [Y/n] "
 
 #: pikaur/info_cli.py:35
 msgid "Provides"
-msgstr ""
+msgstr "提供"
 
 #: pikaur/updates.py:132
 msgid "Reading AUR package info..."
@@ -439,7 +440,7 @@ msgstr "移除为 {} 安装的来自仓库的依赖"
 
 #: pikaur/info_cli.py:41
 msgid "Replaces"
-msgstr ""
+msgstr "取代"
 
 #: pikaur/print_department.py:447
 msgid "Repository package suggested as a replacement:"
@@ -474,12 +475,12 @@ msgstr "跳过对包 {name} 中 {file} 的审查 ({flag})"
 
 #: pikaur/urllib_helper.py:46 pikaur/urllib_helper.py:77
 msgid "Sleeping for {} seconds..."
-msgstr ""
+msgstr "等待 {} 秒"
 
 #: pikaur/install_cli.py:552
 #, python-brace-format
 msgid "Some build deps removed for {pkg} package: {deps}"
-msgstr ""
+msgstr "{pkg} 软件包的一些生成依赖已移除: {deps}"
 
 #: pikaur/install_cli.py:169
 msgid "Starting full AUR upgrade..."
@@ -491,11 +492,11 @@ msgstr "开始构建"
 
 #: pikaur/info_cli.py:42
 msgid "Submitter"
-msgstr ""
+msgstr "提交者"
 
 #: pikaur/news.py:129
 msgid "The news feed could not be received or parsed."
-msgstr ""
+msgstr "无法接收或解析新闻源。"
 
 #: pikaur/news.py:73
 msgid "There is news from archlinux.org!"
@@ -515,11 +516,11 @@ msgstr[1] "将被安装的第三方仓库软件包:"
 
 #: pikaur/print_department.py:550
 msgid "Total Download Size:"
-msgstr ""
+msgstr "总下载大小"
 
 #: pikaur/print_department.py:553
 msgid "Total Installed Size:"
-msgstr ""
+msgstr "总安装大小"
 
 #: pikaur/install_cli.py:250
 #, fuzzy, python-brace-format
@@ -536,7 +537,7 @@ msgstr ""
 
 #: pikaur/info_cli.py:29
 msgid "Version"
-msgstr ""
+msgstr "版本"
 
 #: pikaur/install_cli.py:312
 msgid "Version mismatch:"
@@ -544,7 +545,7 @@ msgstr "版本不对应:"
 
 #: pikaur/info_cli.py:45
 msgid "Votes"
-msgstr ""
+msgstr "得票"
 
 #: pikaur/print_department.py:433
 msgid "WARNING about package installation:"
@@ -554,7 +555,7 @@ msgstr[1] ""
 
 #: pikaur/args.py:486
 msgid "WARNING, unknown args: {}"
-msgstr ""
+msgstr "警告, 未知参数: {}"
 
 #: pikaur/install_cli.py:253
 #, fuzzy
@@ -605,11 +606,11 @@ msgstr ""
 
 #: pikaur/build.py:357 pikaur/build.py:867 pikaur/install_cli.py:251
 msgid "[e] edit PKGBUILD"
-msgstr ""
+msgstr "[e] 编辑 PKGBUILD"
 
 #: pikaur/build.py:863
 msgid "[f] skip 'check()' function of PKGBUILD"
-msgstr ""
+msgstr "[f] 跳过 PKGBUILD 中的 'check()' 函数"
 
 #: pikaur/build.py:865
 msgid "[i] ignore architecture"
@@ -631,7 +632,7 @@ msgstr "[已安装]"
 
 #: pikaur/build.py:864
 msgid "[n] skip 'prepare()' function of PKGBUILD"
-msgstr ""
+msgstr "[n] 跳过 PKGBUILD 中的 'prepare()' 函数"
 
 #: pikaur/build.py:861
 msgid "[p] PGP check skip"
@@ -748,7 +749,7 @@ msgstr "错误:"
 
 #: pikaur/core.py:373
 msgid "executable not found"
-msgstr ""
+msgstr "未找到可执行文件"
 
 #: pikaur/build.py:878 pikaur/build.py:896
 msgid "f"
@@ -770,7 +771,7 @@ msgstr ""
 
 #: pikaur/args.py:141
 msgid "hide build log"
-msgstr ""
+msgstr "隐藏构建日志"
 
 #: pikaur/args.py:303
 msgid "how many git-clones/pulls to do from AUR"
@@ -783,7 +784,7 @@ msgstr "i"
 
 #: pikaur/args.py:160
 msgid "ignore AUR packages' updates which marked 'outofdate'"
-msgstr ""
+msgstr "忽略标记为 'outofdate' 的 AUR 软件包的更新"
 
 #: pikaur/argparse.py:154
 #, python-format
@@ -796,15 +797,15 @@ msgstr "安装已构建的包"
 
 #: pikaur/install_cli.py:878
 msgid "installing for the first time"
-msgstr ""
+msgstr "首次安装"
 
 #: pikaur/main.py:213
 msgid "invalid number: {}"
-msgstr ""
+msgstr "无效数字: {}"
 
 #: pikaur/main.py:203
 msgid "invalid value: {} is not between {} and {}"
-msgstr ""
+msgstr "无效值: {} 不在 {} 和 {} 之间"
 
 #: pikaur/install_cli.py:675
 msgid "looking for conflicting AUR packages..."
@@ -853,11 +854,11 @@ msgstr "自定义 makepkg 配置文件的路径"
 #: pikaur/args.py:269
 #, fuzzy
 msgid "path to custom pikaur config"
-msgstr "自定义 makepkg 配置文件的路径"
+msgstr "自定义 pikaur 配置文件的路径"
 
 #: pikaur/args.py:287
 msgid "path where to clone PKGBUILDs"
-msgstr ""
+msgstr "自定义 PKGBUILDs 的下载路径"
 
 #. to avoid mixing together with pacman's debug messages:
 #: pikaur/logging.py:52
@@ -892,7 +893,7 @@ msgstr "pikaur 的独立选项:"
 
 #: pikaur/args.py:242
 msgid "preserve environment variables (comma-separated)"
-msgstr ""
+msgstr "保留环境变量 (逗号隔开)"
 
 #: pikaur/args.py:186
 msgid "print spawned by pikaur subshell commands"
@@ -917,7 +918,7 @@ msgstr "r"
 
 #: pikaur/pkg_cache_cli.py:30
 msgid "removing all files from cache..."
-msgstr ""
+msgstr "从缓存中删除所有文件..."
 
 #: pikaur/build.py:347 pikaur/build.py:370 pikaur/build.py:852
 #: pikaur/build.py:883 pikaur/install_cli.py:255 pikaur/install_cli.py:273
@@ -931,7 +932,7 @@ msgstr "只搜索包名"
 
 #: pikaur/args.py:274
 msgid "set GnuPG home directory used when validating package sources"
-msgstr ""
+msgstr "设置验证软件包源时使用的 GnuPG 主目录"
 
 #: pikaur/args.py:190
 msgid "show only debug messages specific to pikaur"

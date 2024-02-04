@@ -22,19 +22,7 @@ def clone_aur_pkgs(aur_pkgs: list[AURPackageInfo], pwd: Path) -> None:
         name = aur_pkg.name
         repo_path = pwd / name
         print_stdout()
-        action = "clone"
         if repo_path.exists():
-            action = "update"
-        if action == "clone":
-            interactive_spawn(
-                wrap_proxy_env([
-                    "git",
-                    "clone",
-                    get_repo_url(aur_pkg.packagebase),
-                    str(repo_path),
-                ]),
-            )
-        elif action == "update":
             interactive_spawn([
                 "git",
                 "-C", repo_path.as_posix(),
@@ -43,19 +31,31 @@ def clone_aur_pkgs(aur_pkgs: list[AURPackageInfo], pwd: Path) -> None:
                 "master",
             ])
         else:
-            raise NotImplementedError
+            interactive_spawn(
+                wrap_proxy_env([
+                    "git",
+                    "clone",
+                    get_repo_url(aur_pkg.packagebase),
+                    str(repo_path),
+                ]),
+            )
 
 
 def clone_repo_pkgs(repo_pkgs: list["pyalpm.Package"], pwd: Path) -> None:
     for repo_pkg in repo_pkgs:
         name = repo_pkg.name
         repo_path = pwd / name
-        action = "clone"
-        if repo_path.exists():
-            action = "update"
         print_stdout()
         print_stdout(translate(f"Package '{name}' going to be cloned into '{repo_path}'..."))
-        if action == "clone":
+        if repo_path.exists():
+            interactive_spawn([
+                "git",
+                "-C", repo_path.as_posix(),
+                "pull",
+                "origin",
+                "main",
+            ])
+        else:
             interactive_spawn(
                 [
                     "pkgctl",
@@ -66,16 +66,6 @@ def clone_repo_pkgs(repo_pkgs: list["pyalpm.Package"], pwd: Path) -> None:
                 ],
                 cwd=pwd,
             )
-        elif action == "update":
-            interactive_spawn([
-                "git",
-                "-C", repo_path.as_posix(),
-                "pull",
-                "origin",
-                "main",
-            ])
-        else:
-            raise NotImplementedError
 
 
 def cli_getpkgbuild() -> None:

@@ -612,6 +612,7 @@ Gonna fetch install info for:
 
     def mark_dependent(self) -> None:
         """Update packages' install info to show deps in prompt."""
+        logger.debug(":: marking dependant pkgs...")
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
         all_local_pkgnames = PackageDB.get_local_pkgnames()
         all_deps_install_infos: Sequence[InstallInfo] = (
@@ -632,6 +633,8 @@ Gonna fetch install info for:
         # iterate each package metadata
         for pkg_install_info in self.all_install_info:
 
+            logger.debug(" - {}", pkg_install_info.name)
+
             # process providers
             provides = pkg_install_info.package.provides
             providing_for: list[str] = []
@@ -643,15 +646,23 @@ Gonna fetch install info for:
                 pkg_install_info.name not in all_local_pkgnames
             ):
                 providing_for = [
-                    pkg_name for pkg_name in functools.reduce(operator.iadd, [
-                        next(
-                            [vm.line, vm.pkg_name]
-                            for vm in (VersionMatcher(prov), )
-                        )
-                        for prov in provides
-                    ], )
+                    pkg_name for pkg_name in functools.reduce(
+                        operator.iadd,
+                        [
+                            next(
+                                [vm.line, vm.pkg_name]
+                                for vm in (VersionMatcher(prov), )
+                            )
+                            for prov in provides
+                        ],
+                    )
                     if pkg_name in all_requested_pkg_names
                 ]
+                logger.debug(
+                    "provides={}, all_requested_pkg_names={}",
+                    provides, all_requested_pkg_names,
+                )
+            logger.debug("providing_for={}", providing_for)
             for provided_name in providing_for:
                 if provided_name in all_provided_pkgs:
                     pkg_install_info.name = provided_name
@@ -696,6 +707,7 @@ Gonna fetch install info for:
                             dep_install_info.provided_by = None
                             dep_install_info.name = name
                             dep_install_info.new_version = dep_install_info.package.version
+        logger.debug("== marked dependant pkgs.")
 
     def get_total_download_size(self) -> float:
         total_download_size = 0.0

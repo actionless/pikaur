@@ -628,9 +628,9 @@ Gonna fetch install info for:
             )
             for ii in self.all_install_info
         ], [])
-        logger.debug("all_requested_pkg_names={}", all_requested_pkg_names,)
+        logger.debug("all_requested_pkg_names={}", all_requested_pkg_names)
         explicit_aur_pkg_names = [ii.name for ii in self.aur_updates_install_info]
-        logger.debug("explicit_aur_pkg_names={}", explicit_aur_pkg_names,)
+        logger.debug("explicit_aur_pkg_names={}", explicit_aur_pkg_names)
 
         # iterate each package metadata
         for pkg_install_info in self.all_install_info:

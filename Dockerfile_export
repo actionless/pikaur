@@ -37,6 +37,6 @@ RUN	echo ">>>> Starting the build:" && \
 	rm -fr ./src/ ./pkg/ && \
 	sleep 0.1 && \
 	echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -S --noconfirm --color=always python-coveralls
+	sudo -u user pikaur -S --noconfirm --mflags=--skippgpcheck --color=always python-coveralls
 
 # vim: set ft=dockerfile :

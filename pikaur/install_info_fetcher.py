@@ -649,7 +649,7 @@ Gonna fetch install info for:
                             for vm in (VersionMatcher(prov), )
                         )
                         for prov in provides
-                    ], [])
+                    ], )
                     if pkg_name in all_requested_pkg_names
                 ]
             for provided_name in providing_for:

@@ -613,7 +613,7 @@ class InstallPackagesCLI:
                     print_stdout()
                     package_build.git_diff()
                     print_stdout()
-                if answer == translate("c"):  # pragma: no cover
+                elif answer == translate("c"):  # pragma: no cover
                     package_build.git_reset_changed()
                 elif answer == translate("p"):  # pragma: no cover
                     package_build.git_stash()

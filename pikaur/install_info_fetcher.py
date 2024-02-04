@@ -1,4 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
+import functools
+import operator
 from itertools import chain
 from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING
@@ -617,7 +619,7 @@ Gonna fetch install info for:
             self.new_thirdparty_repo_deps_install_info +
             self.aur_deps_install_info  # type: ignore[operator]
         )
-        all_requested_pkg_names = self.install_package_names + sum([
+        all_requested_pkg_names = self.install_package_names + functools.reduce(operator.iadd, [
             (
                 ii.package.depends + ii.package.makedepends + ii.package.checkdepends
             ) if isinstance(ii.package, AURPackageInfo) else (
@@ -641,7 +643,7 @@ Gonna fetch install info for:
                 pkg_install_info.name not in all_local_pkgnames
             ):
                 providing_for = [
-                    pkg_name for pkg_name in sum([
+                    pkg_name for pkg_name in functools.reduce(operator.iadd, [
                         next(
                             [vm.line, vm.pkg_name]
                             for vm in (VersionMatcher(prov), )

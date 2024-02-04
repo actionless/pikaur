@@ -65,11 +65,15 @@ class PikaurLogger(Logger):  # we inherit `Logger` class only for pylint warning
         self.parent_lock = lock
 
     def debug(
-        self, msg: "Any", *args: "Any", lock: bool | None = None, **kwargs: "Any",
+        self,
+        msg: "Any",
+        *args: "Any",
+        lock: bool | None = None, indent: int = 0,
+        **kwargs: "Any",
     ) -> None:
         lock = lock if (lock is not None) else self.parent_lock
         str_message = msg.format(*args, **kwargs) if isinstance(msg, str) else str(msg)
-        msg = f"{color_line(self.module_name, self.color)}: {str_message}"
+        msg = f"{color_line(self.module_name, self.color)}: {' ' * indent}{str_message}"
         if lock is not None:
             print_debug(msg, lock=lock)
         else:

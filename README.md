@@ -288,8 +288,9 @@ Use `paccache(8)` with the `--cachedir` option.
 To clean them up automatically, you may:
 
 - use a pacman hook.  Start with the provided
-  `/usr/share/pikaur/examples/pikaur-cache.hook`, remember to update the
-  cache's path.
+  Copy `/usr/share/pikaur/examples/pikaur-cache.hook` to
+  `/usr/share/libalpm/hooks/pikaur-cache-cleanup.hook`,
+  remember to update the cache's path.
 
 - use a systemd service & timer (provided `pikaur-cache.service` and
   `pikaur-cache.timer`).  Configure it with `systemctl --user edit

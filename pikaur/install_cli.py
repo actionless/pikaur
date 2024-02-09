@@ -131,6 +131,8 @@ class InstallPackagesCLI:
     # Packages' install info
     install_info: InstallInfoFetcher
 
+    built_package_bases: list[str]
+
     # Installation results
     # transactions by PackageSource(AUR/repo), direction(removed/installed):
     transactions: dict[str, dict[str, list[str]]]
@@ -156,6 +158,7 @@ class InstallPackagesCLI:
 
         self.found_conflicts = {}
         self.transactions = {}
+        self.built_package_bases = []
         self.failed_to_build_package_names = []
 
         try:
@@ -955,7 +958,13 @@ class InstallPackagesCLI:
 
             pkg_name = packages_to_be_built[index]
             pkg_build = self.package_builds_by_name[pkg_name]
-            if self.args.needed and pkg_build.version_already_installed:
+            pkg_base = pkg_build.package_base
+            if (
+                pkg_base in self.built_package_bases
+            ) or (
+                    self.args.needed and pkg_build.version_already_installed
+            ):
+                logger.debug("Already built: {}", pkg_base)
                 packages_to_be_built.remove(pkg_name)
                 continue
 
@@ -1002,6 +1011,7 @@ class InstallPackagesCLI:
                     "Build done for packages {}, removing from queue",
                     pkg_build.package_names,
                 )
+                self.built_package_bases.append(pkg_base)
                 for _pkg_name in pkg_build.package_names:
                     if _pkg_name not in self.manually_excluded_packages_names:
                         packages_to_be_built.remove(_pkg_name)

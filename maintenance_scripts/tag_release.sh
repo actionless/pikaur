@@ -81,7 +81,7 @@ echo
 if [[ "${answer}" = "y" ]] ; then
 	git add PKGBUILD .SRCINFO CHANGELOG
 	git commit -m "update to ${new_version}"
-	git push origin HEAD
+	GIT_SSH_COMMAND="ssh -i ~/.ssh/aur" git push origin HEAD
 fi
 answer=
 
@@ -115,7 +115,7 @@ echo
 if [[ "${answer}" = "y" ]] ; then
 	git add PKGBUILD .SRCINFO CHANGELOG
 	git commit -m "update to ${new_version}"
-	git push origin HEAD
+	GIT_SSH_COMMAND="ssh -i ~/.ssh/aur" git push origin HEAD
 fi
 answer=
 

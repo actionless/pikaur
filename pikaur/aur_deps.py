@@ -65,7 +65,11 @@ def find_dep_graph_to(
                 break
         for pkg in all_pkgs:
             for name in [pkg.name, *pkg.provides]:
-                if name in possible_end_pkgs_deps:
+                if (
+                        name in possible_end_pkgs_deps
+                ) and (
+                        from_pkg != pkg
+                ):
                     result += find_dep_graph_to(
                         from_pkg=from_pkg,
                         to_pkgs=[pkg],

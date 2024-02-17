@@ -70,7 +70,11 @@ line-length = 100
 [tool.ruff.lint.mccabe]
 max-complexity = 19
 
+[tool.ruff.format]
+preview = true
+
 [tool.ruff.lint]
+#preview = true
 select = [
   "F",
   "E", "W",
@@ -82,12 +86,14 @@ select = [
   "YTT",
   "ANN",
   "ASYNC",
+  "TRIO",
   "S",
   "BLE",
   "FBT",
   "B",
   "A",
   "COM",
+  #"CPY",  # copyrights
   "C4",
   "DTZ",
   "T10",
@@ -107,6 +113,7 @@ select = [
   "RSE",
   "RET",
   "SLF",
+  "SLOT",
   "SIM",
   "TID",
   "TCH",
@@ -114,6 +121,7 @@ select = [
   "ARG",
   "PTH",
   "TD",
+  "FIX",
   "ERA",
   #"PD",  # pandas
   "PGH",

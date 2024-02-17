@@ -118,6 +118,7 @@ class InstallPackagesCLI:
     manually_excluded_packages_names: list[str]
     resolved_conflicts: list[list[str]]
     reviewed_package_bases: list[str]
+    skip_checkfunc_for_pkgnames: list[str]  # skip check() and checkdeps for this pkgs
     # pkgbuild_path: [pkg_name, ...]  -- needed for split pkgs to install only some of them
     pkgbuilds_packagelists: dict[str, list[str]]
 
@@ -151,6 +152,7 @@ class InstallPackagesCLI:
         self.manually_excluded_packages_names = []
         self.resolved_conflicts = []
         self.reviewed_package_bases = []
+        self.skip_checkfunc_for_pkgnames = []
 
         self.not_found_repo_pkgs_names = []
         self.repo_packages_by_name = {}
@@ -248,14 +250,18 @@ class InstallPackagesCLI:
         }
 
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
-        prompt = "{} {}\n{}\n{}\n{}\n> ".format(  # pylint: disable=consider-using-f-string
+        prompt = "{} {}\n{}\n{}\n{}\n{}\n> ".format(  # pylint: disable=consider-using-f-string
             color_line("::", ColorsHighlight.yellow),
             translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
             translate("[e] edit PKGBUILD"),
+            translate("[f] skip 'check()' function of PKGBUILD"),
             translate("[s] skip this package"),
             translate("[A] abort"),
         )
-        answer = get_input(prompt, translate("e") + translate("s") + translate("a").upper())
+        answer = get_input(
+            prompt,
+            translate("e") + translate("f") + translate("s") + translate("a").upper(),
+        )
 
         answer = answer.lower()[0]
         if answer == translate("e"):
@@ -273,9 +279,12 @@ class InstallPackagesCLI:
             self._ignore_package(pkg_name)
             self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
             self.main_sequence()
+        elif answer == translate("f"):
+            self.skip_checkfunc_for_pkgnames.append(pkg_name)
+            self.main_sequence()
         elif answer == translate("s"):
             self._ignore_package(pkg_name)
-        else:
+        else:  # "A"
             raise SysExit(125)
 
     def get_all_packages_info(self) -> None:  # pylint:disable=too-many-branches,too-many-statements
@@ -298,6 +307,7 @@ class InstallPackagesCLI:
                 manually_excluded_packages_names=(
                     self.manually_excluded_packages_names + self.args.ignore
                 ),
+                skip_checkdeps_for_pkgnames=self.skip_checkfunc_for_pkgnames,
             )
         except PackagesNotFoundInAURError as exc:
             if exc.wanted_by:
@@ -521,7 +531,7 @@ class InstallPackagesCLI:
                 for matcher in (
                     pkg.depends +
                     pkg.makedepends +
-                    pkg.checkdepends
+                    (pkg.checkdepends if (pkg.name not in self.skip_checkfunc_for_pkgnames) else [])
                 )
                 for dep_line in matcher.split(",")
             }
@@ -536,7 +546,11 @@ class InstallPackagesCLI:
                     for matcher in
                     list(src_info.get_depends().values()) +
                     list(src_info.get_build_makedepends().values()) +
-                    list(src_info.get_build_checkdepends().values())
+                    (
+                        list(src_info.get_build_checkdepends().values())
+                        if (package_name not in self.skip_checkfunc_for_pkgnames)
+                        else []
+                    )
                     for dep_line in matcher.line.split(",")
                 })
 
@@ -680,6 +694,7 @@ class InstallPackagesCLI:
                 find_aur_conflicts(
                     self.install_info.aur_install_info,
                     self.install_package_names,
+                    skip_checkdeps_for_pkgnames=self.skip_checkfunc_for_pkgnames,
                 ),
             )
         if not self.found_conflicts:
@@ -973,6 +988,7 @@ class InstallPackagesCLI:
                 pkg_build.build(
                     all_package_builds=self.package_builds_by_name,
                     resolved_conflicts=self.resolved_conflicts,
+                    skip_checkfunc_for_pkgnames=self.skip_checkfunc_for_pkgnames,
                 )
             except PkgbuildChanged:
                 self.handle_pkgbuild_changed(pkg_build)

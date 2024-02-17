@@ -121,10 +121,13 @@ def find_conflicting_with_local_pkgs(
 def find_aur_conflicts(
         aur_pkgs_install_infos: "Sequence[AURInstallInfo]",
         repo_packages_names: list[str],
+        skip_checkdeps_for_pkgnames: list[str],
 ) -> dict[str, list[str]]:
     aur_pkgs: list[AURPackageInfo] = [ii.package for ii in aur_pkgs_install_infos]
     aur_packages_names = [ii.name for ii in aur_pkgs_install_infos]
-    repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(aur_pkgs)
+    repo_deps_version_matchers = find_repo_deps_of_aur_pkgs(
+        aur_pkgs, skip_checkdeps_for_pkgnames=skip_checkdeps_for_pkgnames,
+    )
     repo_deps_names = [vm.pkg_name for vm in repo_deps_version_matchers]
     all_pkgs_to_be_installed = aur_packages_names + repo_deps_names
 

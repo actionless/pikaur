@@ -54,15 +54,17 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
     args: "PikaurArgs"
     aur_deps_relations: dict[str, list[str]]
     replacements: dict[str, list[str]]
+    skip_checkdeps_for_pkgnames: list[str]
 
     __ignore_in_eq__ = ("args", )
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
             self,
             install_package_names: list[str],
             not_found_repo_pkgs_names: list[str],
             manually_excluded_packages_names: list[str],
             pkgbuilds_packagelists: dict[str, list[str]],
+            skip_checkdeps_for_pkgnames: list[str] | None = None,
     ) -> None:
         logger.debug(
             """
@@ -71,11 +73,13 @@ Gonna fetch install info for:
     not_found_repo_pkgs_names={}
     pkgbuilds_packagelists={}
     manually_excluded_packages_names={}
+    skip_checkdeps_for_pkgnames={}
 """,
             install_package_names,
             not_found_repo_pkgs_names,
             pkgbuilds_packagelists,
             manually_excluded_packages_names,
+            skip_checkdeps_for_pkgnames,
         )
         self.args = parse_args()
         self.install_package_names = install_package_names
@@ -83,6 +87,7 @@ Gonna fetch install info for:
         self.manually_excluded_packages_names = manually_excluded_packages_names
         self.pkgbuilds_packagelists = pkgbuilds_packagelists
         self.replacements = find_replacements() if self.args.sysupgrade else {}
+        self.skip_checkdeps_for_pkgnames = skip_checkdeps_for_pkgnames or []
 
         self.get_all_packages_info()
         if self.args.sysupgrade:
@@ -445,7 +450,9 @@ Gonna fetch install info for:
             pkg_info.package
             for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
         ]
-        new_dep_version_matchers = find_repo_deps_of_aur_pkgs(all_aur_pkgs)
+        new_dep_version_matchers = find_repo_deps_of_aur_pkgs(
+            all_aur_pkgs, skip_checkdeps_for_pkgnames=self.skip_checkdeps_for_pkgnames,
+        )
         new_dep_lines = [
             vm.line for vm in new_dep_version_matchers
         ]
@@ -577,7 +584,9 @@ Gonna fetch install info for:
         if all_aur_pkgs:
             print_stdout(translate("Resolving AUR dependencies..."))
         try:
-            self.aur_deps_relations = find_aur_deps(all_aur_pkgs)
+            self.aur_deps_relations = find_aur_deps(
+                all_aur_pkgs, skip_checkdeps_for_pkgnames=self.skip_checkdeps_for_pkgnames,
+            )
         except DependencyVersionMismatchError as exc:
             if exc.location is not PackageSource.LOCAL:
                 raise
@@ -622,7 +631,11 @@ Gonna fetch install info for:
         )
         all_requested_pkg_names = self.install_package_names + functools.reduce(operator.iadd, [
             (
-                ii.package.depends + ii.package.makedepends + ii.package.checkdepends
+                ii.package.depends + ii.package.makedepends + (
+                    ii.package.checkdepends
+                    if (ii.name not in self.skip_checkdeps_for_pkgnames)
+                    else []
+                )
             ) if isinstance(ii.package, AURPackageInfo) else (
                 ii.package.depends
             )
@@ -676,7 +689,11 @@ Gonna fetch install info for:
                 (
                     pkg_install_info.package.depends +
                     pkg_install_info.package.makedepends +
-                    pkg_install_info.package.checkdepends
+                    (
+                        pkg_install_info.package.checkdepends
+                        if (pkg_install_info.name not in self.skip_checkdeps_for_pkgnames)
+                        else []
+                    )
                 ) if (
                     isinstance(pkg_install_info.package, AURPackageInfo)
                 ) else pkg_install_info.package.depends

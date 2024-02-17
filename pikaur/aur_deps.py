@@ -95,7 +95,7 @@ def find_dep_graph_to(
     return result
 
 
-def handle_not_found_aur_pkgs(  # pylint: disable=too-many-locals
+def handle_not_found_aur_pkgs(
         aur_pkg_name: str,
         aur_pkgs_info: "list[AURPackageInfo]",
         not_found_aur_deps: list[str],
@@ -147,12 +147,14 @@ def handle_not_found_aur_pkgs(  # pylint: disable=too-many-locals
                     )
 
                 problem_packages_names.append(aur_pkg.name)
-                for dependant_pkg in find_dep_graph_to(
+                problem_packages_names.extend(
+                    dependant_pkg.name
+                    for dependant_pkg in find_dep_graph_to(
                         from_pkg=aur_pkg,
                         to_pkgs=requested_aur_pkgs_info,
                         all_pkgs=aur_pkgs_info,
-                ):
-                    problem_packages_names.append(dependant_pkg.name)
+                    )
+                )
                 break
 
     raise PackagesNotFoundInAURError(

@@ -45,8 +45,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             # all args after -- are non-options
             if arg_string == LONG_ARG_PREFIX:
                 arg_string_pattern_parts.append("-")
-                for _arg_string in arg_strings_iter:
-                    arg_string_pattern_parts.append("A")
+                arg_string_pattern_parts.extend("A" for _arg_string in arg_strings_iter)
 
             # otherwise, add the arg to the arg strings
             # and note the index if it was an option
@@ -270,14 +269,15 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
                 # if no actions were used, report the error
                 else:
-                    names: list[str] = []
-                    for action in group._group_actions:
+                    names: list[str] = [
+                        name
+                        for action in group._group_actions
                         if (
-                                action.help is not SUPPRESS
+                            action.help is not SUPPRESS
                         ) and (
                             name := _get_action_name(action)
-                        ):
-                            names.append(name)
+                        )
+                    ]
                     msg = _("one of the arguments %s is required")
                     self.error(msg % " ".join(names))
 

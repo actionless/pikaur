@@ -65,13 +65,13 @@ class SrcInfo:
 
     def get_values(self, field: str, lines: list[str] | None = None) -> list[str]:
         prefix = field + " = "
-        values = []
         if lines is None:
             lines = self._common_lines + self._package_lines
-        for line in lines:
-            if line.strip().startswith(prefix):
-                values.append(line.strip().split(prefix)[1])
-        return values
+        return [
+            line.strip().split(prefix)[1]
+            for line in lines
+            if line.strip().startswith(prefix)
+        ]
 
     def get_value(self, field: str, fallback: str | None = None) -> str | None:
         values = self.get_values(field)

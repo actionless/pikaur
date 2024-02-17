@@ -210,8 +210,10 @@ def pikaur(
     if "--mflags" in cmd:
         for arg in new_args[::]:
             if arg.startswith("--mflags"):
-                for mflag in arg.split("=", maxsplit=1)[1].split(","):
-                    mflags.append(mflag)
+                mflags.extend(
+                    mflag
+                    for mflag in arg.split("=", maxsplit=1)[1].split(",")
+                )
                 new_args.remove(arg)
                 break
     if mflags:

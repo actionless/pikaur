@@ -2,7 +2,7 @@
 # Original author: Steven J. Bethard <steven.bethard@gmail.com>.
 # pylint: disable=too-many-statements,too-many-locals,too-many-branches,protected-access
 
-from argparse import SUPPRESS, ArgumentError, ArgumentParser, _get_action_name
+from argparse import SUPPRESS, ArgumentError, ArgumentParser, _get_action_name  # noqa: PLC2701
 from typing import TYPE_CHECKING
 
 from .i18n import translate as _
@@ -17,7 +17,7 @@ LONG_ARG_PREFIX: "Final" = "--"
 
 class ArgumentParserWithUnknowns(ArgumentParser):
 
-    def _parse_known_args(  # noqa: C901
+    def _parse_known_args(  # noqa: C901,PLR0914
             self, arg_strings: list[str], namespace: "Namespace",
     ) -> "tuple[Namespace, list[str]]":
         # replace arg strings that are file references
@@ -135,7 +135,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                             unknown_args.append(option_string)
                             start_index += 1
                             explicit_arg = "".join(explicit_arg[1:])
-                            if explicit_arg == "":
+                            if explicit_arg == "":  # noqa: PLC1901
                                 stop = start_index
                                 break
 

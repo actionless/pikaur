@@ -74,7 +74,7 @@ max-complexity = 19
 preview = true
 
 [tool.ruff.lint]
-#preview = true
+preview = true
 select = [
   "F",
   "E", "W",
@@ -179,20 +179,27 @@ ignore = [
 ]
 "pikaur_test/*.py" = [
   "SLF001",
+  "S404",
 ]
 "pikaur_test/test_*.py" = [
   "ANN201",
   "ANN206",
   "PLR2004",
+  "PLR6301",
+  "PLC0415",
   "T201",
 ]
 "maintenance_scripts/*.py" = [
   "INP001",
   "S301",
+  "S403",
+  "S404",
   "T201",
 ]
 "maintenance_scripts/pikaman.py" = [
   "ARG002",
+  "PLR6301",
+  "PLR0904",
 ]
 "maintenance_scripts/vulture_whitelist.py" = [
   "B018",
@@ -219,7 +226,7 @@ accept-no-yields-doc = 'no'
 
 [tool.pylint.'MESSAGES CONTROL']
 confidence = ''
-disable = 'too-few-public-methods,missing-docstring,duplicate-code,missing-return-doc,missing-param-doc,missing-yield-doc,missing-raises-doc'
+disable = 'too-few-public-methods,missing-docstring,duplicate-code,missing-return-doc,missing-param-doc,missing-yield-doc,missing-raises-doc,,too-many-nested-blocks,too-many-public-methods,too-many-arguments,too-many-locals'
 enable = 'useless-suppression'
 
 [tool.pylint.REPORTS]

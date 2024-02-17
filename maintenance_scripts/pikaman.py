@@ -41,7 +41,7 @@ OUTPUT_PATH: "Final" = Path(sys.argv[2])
 ENCODING: "Final" = "utf-8"
 
 
-class NroffRenderer(  # pylint: disable=too-many-public-methods
+class NroffRenderer(
         markdown_it.renderer.RendererProtocol,
 ):
     # pylint: disable=unused-argument

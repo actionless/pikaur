@@ -108,7 +108,7 @@ def _print(
     if not isinstance(message, str):
         message = str(message)
     if lock:
-        PrintLock().__enter__()
+        PrintLock().__enter__()  # noqa: PLC2801
     if tty_restore:
         TTYRestore.restore()
     destination.write(f"{message}{end}")

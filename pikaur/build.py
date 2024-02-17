@@ -124,7 +124,7 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
             raise RuntimeError(translate(f"Can't copy '{from_path}' to '{to_path}'."))
 
 
-class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
+class PackageBuild(DataType):  # noqa: PLR0904
     # pylint: disable=too-many-instance-attributes
     clone = False
     pull = False
@@ -446,11 +446,9 @@ class PackageBuild(DataType):  # pylint: disable=too-many-public-methods
                 srcinfo = SrcInfo(
                     pkgbuild_path=pkg_build.pkgbuild_path, package_name=pkg_name,
                 )
-                all_provided_pkgnames.update({
-                    provided_name: pkg_name
-                    for provided_name in
-                    [pkg_name, *srcinfo.get_values("provides")]
-                })
+                all_provided_pkgnames.update(
+                    dict.fromkeys([pkg_name, *srcinfo.get_values("provides")], pkg_name),
+                )
 
         self.built_deps_to_install = {}
 

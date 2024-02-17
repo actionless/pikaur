@@ -4,7 +4,7 @@ import configparser
 import os
 import random
 import sys
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from pathlib import Path
 from tempfile import gettempdir
 from typing import TYPE_CHECKING
@@ -51,7 +51,7 @@ class IntOrBoolSingleton:
         return self.get_value()
 
 
-class PathConfig(metaclass=ABCMeta):
+class PathConfig(ABC):
 
     value: Path
 
@@ -580,9 +580,11 @@ class PikaurConfigItem:
     def __str__(self) -> str:
         return self.get_str()
 
+    def __hash__(self) -> int:
+        return hash(self.get_str())
+
     def __eq__(self, item: "Any") -> bool:
-        result: bool = self.get_str() == item
-        return result
+        return hash(self) == hash(item)
 
 
 class PikaurConfigSection:
@@ -675,7 +677,7 @@ class PikaurConfig:
     @classmethod
     def validate_config(cls) -> None:
         pacman_path = cls._config["misc"]["PacmanPath"]
-        if pacman_path in (PIKAUR_NAME, sys.argv[0]) or pacman_path.endswith(f"/{PIKAUR_NAME}"):
+        if pacman_path in {PIKAUR_NAME, sys.argv[0]} or pacman_path.endswith(f"/{PIKAUR_NAME}"):
             print("BAM! I am a shell bomb.")  # noqa: T201
             sys.exit(1)
 

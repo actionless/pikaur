@@ -106,7 +106,7 @@ def isolate_root_cmd(
 
 def get_args_to_elevate_pikaur(original_args: list[str]) -> list[str]:
     args = parse_args()
-    restart_args = original_args[:]
+    restart_args = original_args.copy()
     extra_args = [
         ("--pikaur-config", str(ConfigPath()())),
     ]

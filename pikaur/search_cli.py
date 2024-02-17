@@ -146,7 +146,7 @@ def join_search_results(
     }.values()
 
 
-def search_packages(  # pylint: disable=too-many-locals
+def search_packages(
         *, enumerated: bool = False,
 ) -> "list[AnyPackage]":
     refresh_pkg_db_if_needed()

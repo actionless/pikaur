@@ -24,8 +24,8 @@ FIRST_COLUMN_WIDTH: "Final" = 16
 def _format_options_help(options: list[HelpMessage]) -> str:
     return "\n".join([
         "{:>{first_column_margin}} {:<{first_column_width}} {}".format(
-            short_opt and ("-" + short_opt + ",") or "",
-            long_opt and ("--" + long_opt) or "",
+            (short_opt and ("-" + short_opt + ",")) or "",
+            (long_opt and ("--" + long_opt)) or "",
             descr if (
                 (len(short_opt or "") + 1 + len(long_opt) + 2) < FIRST_COLUMN_WIDTH
             ) else f"\n{(FIRST_COLUMN_MARGIN + FIRST_COLUMN_WIDTH + 2) * ' '}{descr}",

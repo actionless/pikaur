@@ -58,7 +58,11 @@ def print_debug(message: "Any", *, lock: bool = True) -> None:
 
 class PikaurLogger(Logger):  # we inherit `Logger` class only for pylint warnings to catch up on it
     def __init__(  # pylint: disable=super-init-not-called
-            self, module_name: str, color: int, lock: bool | None = None,
+            self,
+            module_name: str,
+            color: int,
+            *,
+            lock: bool | None = None,
     ) -> None:
         self.module_name = module_name
         self.color = color

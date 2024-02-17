@@ -5,7 +5,7 @@ import datetime
 import enum
 import os
 import shutil
-import subprocess  # nosec B404
+import subprocess  # nosec B404  # noqa: S404
 import sys
 import tempfile
 from pathlib import Path
@@ -44,7 +44,7 @@ SYSTEMD_MIN_VERSION: "Final" = 235
 READ_MODE: "Final" = "r"
 
 
-class ComparableType:
+class ComparableType:  # noqa: PLW1641
 
     __ignore_in_eq__: tuple[str, ...] = ()
 
@@ -84,7 +84,7 @@ class DataType(ComparableType):
     ignore_extra_properties: bool
 
     @property
-    def __all_annotations__(self) -> dict[str, type]:
+    def __all_annotations__(self) -> dict[str, type]:  # noqa: PLW3201
         annotations: dict[str, type] = {}
         for parent_class in reversed(self.__class__.mro()):
             annotations.update(**getattr(parent_class, "__annotations__", {}))

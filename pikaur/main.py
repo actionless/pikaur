@@ -132,7 +132,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
     ) -> None:
         try:
             # @TODO: replace all SysExit-s to SystemExit-s eventually :3
-            if exc_instance and exc_class and (exc_class not in (SysExit, SystemExit)):
+            if exc_instance and exc_class and (exc_class not in {SysExit, SystemExit}):
                 # handling exception in context manager's __exit__ is not recommended
                 # but otherwise stderr would be closed before exception is printed...
                 if exc_tb:
@@ -144,7 +144,7 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                 logger.debug("Restoring {}...", attr, lock=False)
                 stream = getattr(sys, attr)
                 orig_stream = getattr(self, f"original_{attr}", None)
-                if orig_stream in (None, stream):
+                if orig_stream in {None, stream}:
                     logger.debug("nothing to do", lock=False)
                     continue
                 stream.flush()

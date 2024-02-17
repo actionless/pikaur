@@ -2,7 +2,7 @@
 
 import fnmatch
 import re
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar
 
 import pyalpm
@@ -75,7 +75,7 @@ def get_pacman_command(ignore_args: list[str] | None = None) -> list[str]:
         pacman_cmd += ["--color=never"]
 
     for _short, arg, _default, _help in PACMAN_STR_OPTS:
-        if arg in ["color"]:  # we force it anyway
+        if arg == "color":  # we force it anyway
             continue
         if arg in ignore_args:
             continue
@@ -84,7 +84,7 @@ def get_pacman_command(ignore_args: list[str] | None = None) -> list[str]:
             pacman_cmd += ["--" + arg, value]
 
     for _short, arg, _default, _help in PACMAN_APPEND_OPTS:
-        if arg in ["ignore"]:  # we reprocess it anyway
+        if arg == "ignore":  # we reprocess it anyway
             continue
         if arg in ignore_args:
             continue
@@ -144,7 +144,7 @@ def get_db_lock(package_source: PackageSource) -> type[DbLockRepo | DbLockLocal]
     return DbLockRepo if package_source is PackageSource.REPO else DbLockLocal
 
 
-class PackageDBCommon(metaclass=ABCMeta):
+class PackageDBCommon(ABC):
 
     _packages_list_cache: ClassVar[dict[PackageSource, list[pyalpm.Package]]] = {}
     _packages_dict_cache: ClassVar[dict[PackageSource, dict[str, pyalpm.Package]]] = {}
@@ -356,7 +356,7 @@ class PackageDB(PackageDBCommon):
                 (
                     not names_only or search_query in pkg.name
                 ) and (
-                    not exact_match or search_query in ([pkg.name, *pkg.groups])
+                    not exact_match or search_query in ({pkg.name, *pkg.groups})
                 )
             )
         ]))
@@ -595,9 +595,8 @@ def find_sysupgrade_packages(
 
     extra_args: list[str] = []
     for excluded_pkg_name in ignore_pkgs or []:
-        extra_args.append("--ignore")
         # pacman's --ignore doesn't work with repo name:
-        extra_args.append(strip_repo_name(excluded_pkg_name))
+        extra_args.extend(("--ignore", strip_repo_name(excluded_pkg_name)))
     extra_args.extend(
         added_pkg_name
         for added_pkg_name in install_pkgs or []

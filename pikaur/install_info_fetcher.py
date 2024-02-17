@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 logger = create_logger("install_info_fetcher")
 
 
-class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-methods
+class InstallInfoFetcher(ComparableType):  # noqa: PLR0904
 
     repo_packages_install_info: list[RepoInstallInfo]
     new_repo_deps_install_info: list[RepoInstallInfo]
@@ -58,7 +58,7 @@ class InstallInfoFetcher(ComparableType):  # pylint: disable=too-many-public-met
 
     __ignore_in_eq__ = ("args", )
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
             self,
             install_package_names: list[str],
             not_found_repo_pkgs_names: list[str],
@@ -118,7 +118,7 @@ Gonna fetch install info for:
             print_packages: bool = True,
     ) -> None:
         ignored_packages = []
-        for pkg_name in package_names[:]:
+        for pkg_name in package_names.copy():
             if self.package_is_ignored(pkg_name):
                 package_names.remove(pkg_name)
                 ignored_packages.append(pkg_name)
@@ -321,7 +321,7 @@ Gonna fetch install info for:
         all_results = {}
         with ThreadPool() as pool:
             pkg_exists_requests = {}
-            for pkg_name in pkg_lines[:]:
+            for pkg_name in pkg_lines.copy():
                 logger.debug("Checking if '{}' exists in the repo:", pkg_name)
                 pkg_exists_requests[pkg_name] = pool.apply_async(
                     PackageDB.get_print_format_output,

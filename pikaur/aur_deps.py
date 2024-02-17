@@ -267,11 +267,10 @@ def find_missing_deps_for_aur_pkg(
     return not_found_repo_pkgs
 
 
-def find_aur_deps(
+def find_aur_deps(  # pylint: disable=too-many-branches
         aur_pkgs_infos: "list[AURPackageInfo]",
         skip_checkdeps_for_pkgnames: list[str] | None = None,
 ) -> dict[str, list[str]]:
-    # pylint: disable=too-many-locals,too-many-branches
     new_aur_deps: list[str] = []
     package_names = [
         aur_pkg.name

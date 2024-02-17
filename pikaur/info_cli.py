@@ -62,7 +62,7 @@ def _decorate_aur_info_output(output: str) -> str:
     )
 
 
-def cli_info_packages() -> None:  # pylint: disable=too-many-locals
+def cli_info_packages() -> None:
     refresh_pkg_db_if_needed()
 
     args = parse_args()
@@ -86,7 +86,7 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
         pkg_info_lines = []
         for key, display_name in info_fields.items():
             value = getattr(aur_pkg, key, None)
-            if key in ["firstsubmitted", "lastmodified", "outofdate"] and value:
+            if key in {"firstsubmitted", "lastmodified", "outofdate"} and value:
                 value = datetime.fromtimestamp(value, tz=DEFAULT_TIMEZONE).strftime("%c")
             elif isinstance(value, list):
                 value = ", ".join(value) or translate("None")
@@ -101,7 +101,7 @@ def cli_info_packages() -> None:  # pylint: disable=too-many-locals
 def _rightpad(text: str, num: int) -> str:
     space = num
     for i in text:
-        if east_asian_width(i) in ["F", "W"]:
+        if east_asian_width(i) in {"F", "W"}:
             space -= 2
         else:
             space -= 1

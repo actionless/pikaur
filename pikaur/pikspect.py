@@ -17,7 +17,7 @@ from pty import (  # type: ignore[attr-defined]
     CHILD,
     STDIN_FILENO,
     STDOUT_FILENO,
-    _read,
+    _read,  # noqa: PLC2701
     fork,
 )
 from tty import setraw, tcgetattr, tcsetattr  # type: ignore[attr-defined]

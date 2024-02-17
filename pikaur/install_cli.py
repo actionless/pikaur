@@ -109,7 +109,18 @@ def edit_file(filename: str | Path) -> bool:  # pragma: no cover
     return old_hash != new_hash
 
 
-class InstallPackagesCLI:
+def _remove_packages(packages_to_be_removed: list[str]) -> None:
+    if packages_to_be_removed:
+        retry_interactive_command_or_exit(
+            sudo([
+                *get_pacman_command(), "-Rs", *packages_to_be_removed,
+            ]),
+            pikspect=True,
+        )
+        PackageDB.discard_local_cache()
+
+
+class InstallPackagesCLI:  # noqa: PLR0904
 
     # User input
     args: "PikaurArgs"
@@ -809,9 +820,11 @@ class InstallPackagesCLI:
                     self.discard_install_info(package_name)
                 elif (
                     (
-                        self.args.sysupgrade > 1
-                    ) or (
-                        is_devel_pkg(pkg_build.package_base) and (self.args.devel > 1)
+                        (
+                            self.args.sysupgrade > 1
+                        ) or (
+                            is_devel_pkg(pkg_build.package_base) and (self.args.devel > 1)
+                        )
                     ) and not pkg_build.version_is_upgradeable
                 ):
                     print_package_downgrading(
@@ -841,16 +854,19 @@ class InstallPackagesCLI:
                 ))
                 continue
 
-            if (
-                    pkg_build.last_installed_hash != pkg_build.current_hash
-            ) and (
-                pkg_build.last_installed_hash
-            ) and (
-                pkg_build.current_hash
+            review_needed = (
+                pkg_build.last_installed_hash != pkg_build.current_hash
             ) and (
                 not self.args.noconfirm
             ) and (
                 not self.args.nodiff
+            )
+            if (
+                review_needed
+            ) and (
+                pkg_build.last_installed_hash
+            ) and (
+                pkg_build.current_hash
             ) and ask_to_continue(
                     translate(
                         "Do you want to see build files {diff} for {name} package?",
@@ -1034,16 +1050,6 @@ class InstallPackagesCLI:
 
         self.failed_to_build_package_names = failed_to_build_package_names
 
-    def _remove_packages(self, packages_to_be_removed: list[str]) -> None:
-        if packages_to_be_removed:
-            retry_interactive_command_or_exit(
-                sudo([
-                    *get_pacman_command(), "-Rs", *packages_to_be_removed,
-                ]),
-                pikspect=True,
-            )
-            PackageDB.discard_local_cache()
-
     def _save_transaction(
             self,
             target: PackageSource,
@@ -1072,17 +1078,16 @@ class InstallPackagesCLI:
         if removed:
             pass  # install back
         if installed:
-            self._remove_packages(installed)
+            _remove_packages(installed)
 
     def install_repo_packages(self) -> None:
         print_stdout()
-        extra_args = []
+        extra_args: list[str] = []
         if not (self.install_package_names or self.args.sysupgrade):
             return
         for excluded_pkg_name in self.manually_excluded_packages_names + self.args.ignore:
-            extra_args.append("--ignore")
             # pacman's --ignore doesn't work with repo name:
-            extra_args.append(strip_repo_name(excluded_pkg_name))
+            extra_args.extend(("--ignore", strip_repo_name(excluded_pkg_name)))
         if not retry_interactive_command(
                 sudo([
                     *get_pacman_command(),

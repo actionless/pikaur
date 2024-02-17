@@ -61,7 +61,7 @@ class DependencyVersionMismatchError(DataType, Exception):
     location: "PackageSource"
     version_matcher: "VersionMatcher | None" = None
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(  # noqa: PLR0917
             self,
             version_found: dict[str, str] | str,
             dependency_line: str,

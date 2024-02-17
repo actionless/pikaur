@@ -78,12 +78,12 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
         (None, "noconfirm", None, None),
         (None, "needed", False, None),
     ]
-    if action in ("query", ):
+    if action == "query":
         result += [
             ("u", "upgrades", None, None),
             ("o", "owns", None, None),
         ]
-    if action in ("sync", "query"):
+    if action in {"sync", "query"}:
         result += [
             ("l", "list", None, None),  # @TODO
         ]
@@ -96,14 +96,14 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_bool_opts(each_action)
         return list(set(result))
-    if action in ("sync", "pkgbuild", "query"):
+    if action in {"sync", "pkgbuild", "query"}:
         result += [
             (
                 "a", "aur", None,
                 translate("query packages from AUR only"),
             ),
         ]
-    if action in ("sync", "pkgbuild"):
+    if action in {"sync", "pkgbuild"}:
         result += [
             (
                 "k", "keepbuild", PikaurConfig().build.KeepBuildDir.get_bool(),
@@ -145,7 +145,7 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
                 translate("don't pull already cloned PKGBUILD"),
             ),
         ]
-    if action in ("sync", ):
+    if action == "sync":
         result += [
             (
                 None, "namesonly", False,
@@ -160,7 +160,7 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
                 translate("ignore AUR packages' updates which marked 'outofdate'"),
             ),
         ]
-    if action in ("query", ):
+    if action == "query":
         result += [
             (
                 None, "repo", None,
@@ -246,7 +246,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_str_opts(each_action)
         return list(set(result))
-    if action in ("sync", "pkgbuild"):
+    if action in {"sync", "pkgbuild"}:
         result += [
             (
                 None, "mflags",
@@ -296,7 +296,7 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_int_opts(each_action)
         return list(set(result))
-    if action in ("sync", "pkgbuild"):
+    if action in {"sync", "pkgbuild"}:
         result += [
             (
                 None, "aur-clone-concurrency", None,
@@ -320,15 +320,15 @@ def get_pacman_count_opts(action: str | None = None) -> ArgSchema:
         ("y", "refresh", 0, None),
         ("c", "clean", 0, None),
     ]
-    if action in ("sync", ):
+    if action == "sync":
         result += [
             ("u", "sysupgrade", 0, None),
         ]
-    if action in ("sync", "query"):
+    if action in {"sync", "query"}:
         result += [
             ("i", "info", 0, None),
         ]
-    if action in ("database", "query"):
+    if action in {"database", "query"}:
         result += [
             ("k", "check", 0, None),
         ]
@@ -345,7 +345,7 @@ def get_pikaur_count_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_count_opts(each_action)
         return list(set(result))
-    if action in ("sync", ):
+    if action == "sync":
         result += [
             (
                 None, "devel", 0,
@@ -462,8 +462,7 @@ class PikaurArgs(Namespace):
             self.print_commands = True
 
     def validate(self) -> None:
-        # pylint: disable=too-many-nested-blocks
-        for operation, operation_depends in ARG_DEPENDS.items():
+        for operation, operation_depends in ARG_DEPENDS.items():  # noqa: PLR1702
             if getattr(self, operation):
                 for arg_depend_on, dependant_args in operation_depends.items():
                     if not getattr(self, arg_depend_on):
@@ -518,7 +517,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             raw_args=raw_args,
         )
 
-    def add_letter_andor_opt(  # pylint: disable=too-many-arguments
+    def add_letter_andor_opt(
             self,
             action: str | None = None,
             letter: str | None = None,
@@ -605,7 +604,7 @@ def debug_args(args: list[str], parsed_args: PikaurArgs) -> "NoReturn":  # pragm
     sys.exit(0)
 
 
-def get_parser_for_action(  # pylint: disable=too-many-locals
+def get_parser_for_action(
         app: str,
         args: list[str],
 ) -> tuple[PikaurArgumentParser, list[HelpMessage]]:

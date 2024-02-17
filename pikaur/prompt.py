@@ -83,7 +83,7 @@ def read_answer_from_tty(question: str, answers: "Sequence[str] | None" = None) 
     except Exception:
         return " "
     else:
-        if ord(answer) in (ReadlineKeycodes.CTRL_C, ReadlineKeycodes.CTRL_D):
+        if ord(answer) in {ReadlineKeycodes.CTRL_C, ReadlineKeycodes.CTRL_D}:
             raise SysExit(1)
         if ord(answer) == ReadlineKeycodes.ENTER:
             answer = default

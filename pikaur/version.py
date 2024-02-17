@@ -64,7 +64,7 @@ class VersionMatcher:
         elif version_matcher.version:
             self.version += "," + version_matcher.version
 
-    def _set_version_matcher_func(  # pylint: disable=too-many-locals
+    def _set_version_matcher_func(
             self, *, is_pkg_deps: bool = False,
     ) -> None:
         # pylint: disable=invalid-name
@@ -139,12 +139,11 @@ class VersionMatcher:
 
 def split_version(version: str) -> list[str]:
     """Split version, e.g. `"1.2+3"` to `["1", "2", "3"]`."""
-    splitted_version = []
+    splitted_version: list[str] = []
     block = ""
     for char in version:
         if char in VERSION_SEPARATORS:
-            splitted_version.append(block)
-            splitted_version.append(char)
+            splitted_version.extend((block, char))
             block = ""
         else:
             block += char
@@ -198,7 +197,7 @@ def get_common_version(version1: str, version2: str) -> tuple[str, int]:
     common_string = ""
     diff_weight = 0
     diff_found = False
-    if "" in (version1, version2):
+    if "" in {version1, version2}:
         return common_string, diff_weight
     for initial_weight, version_chunk1, version_chunk2 in (
             (

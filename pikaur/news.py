@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 try:
     from defusedxml.ElementTree import fromstring  # type: ignore[import-untyped]
 except ModuleNotFoundError:
-    from xml.etree.ElementTree import fromstring  # nosec B405
+    from xml.etree.ElementTree import fromstring  # nosec B405  # noqa: S405
 
 from .config import CacheRoot, PikaurConfig
 from .core import DEFAULT_TIMEZONE, open_file
@@ -27,7 +27,7 @@ from .urllib_helper import get_unicode_from_url
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import Final, TextIO
-    from xml.etree.ElementTree import Element  # nosec B405
+    from xml.etree.ElementTree import Element  # nosec B405  # noqa: S405
 
 
 DT_FORMAT: "Final" = "%a, %d %b %Y %H:%M:%S %z"
@@ -60,7 +60,7 @@ class News:
         news_entry: Element
         first_news = True
         news_entry_to_update_last_seen_date = None
-        try:  # pylint: disable=too-many-nested-blocks
+        try:  # noqa: PLR1702
             for news_entry in self._news_feed.iter("item"):
                 child: Element
                 for child in news_entry:

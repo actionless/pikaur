@@ -16,7 +16,9 @@ do
    esac
 done
 shift $((OPTIND - 1))
-printf "Remaining arguments are: %s\n$*"
+if [[ -n "$*" ]] ; then
+	printf "Remaining arguments are: %s\n$*"
+fi
 
 
 TARGETS=(
@@ -55,6 +57,18 @@ else
 	echo Checking for unreasonable global vars...
 	./maintenance_scripts/get_global_expressions.sh
 
+	echo Ruff rules up-to-date...
+	diff --color -u \
+		<(awk '/select = \[/,/]/' pyproject.toml \
+			| sed -e 's|", "|/|g' \
+			| head -n -1 \
+			| tail -n +2 \
+			| tr -d '",#' \
+			| awk '{print $1;}' \
+			| sort) \
+		<("${APP_DIR}/env/bin/ruff" linter \
+			| awk '{print $1;}' \
+			| sort)
 	echo Ruff...
 	if [[ ! -f "${APP_DIR}/env/bin/activate" ]] ; then
 		"$PYTHON" -m venv "${APP_DIR}/env" --system-site-packages

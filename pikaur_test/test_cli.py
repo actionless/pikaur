@@ -71,8 +71,9 @@ class CliTest(PikaurTestCase):
     def test_search_multiword_too_filter(self):
         common_query = "mailman"
         specific_query = "w"
-        common_result = "mailman-core-git"
+        common_result = "listadmin"
         specific_result = "mailman-rss"
+
         result_for_one_query = pikaur(f"-Ssq --aur {common_query}").stdout.splitlines()
         self.assertIn(specific_result, result_for_one_query)
         self.assertIn(common_result, result_for_one_query)
@@ -82,13 +83,27 @@ class CliTest(PikaurTestCase):
         self.assertNotIn(common_result, result_all)
 
     def test_search_multiword_too_filter_namesonly(self):
-        result_all = pikaur("-Ssq --aur mailman w").stdout.splitlines()
-        self.assertIn("mailman-rss", result_all)
-        result_namesonly_w = pikaur("-Ssq --aur mailman w --namesonly").stdout.splitlines()
+        common_query = "mailman"
+        specific_query = "w"
+        specific_query_names_only = "x"
+        specific_result = "mailman-rss"
+        specific_result_names_only = "mailman3-public-inbox"
+
+        result_all = pikaur(
+            f"-Ssq --aur {common_query} {specific_query}",
+        ).stdout.splitlines()
+        self.assertIn(specific_result, result_all)
+
+        result_namesonly_w = pikaur(
+            f"-Ssq --aur {common_query} {specific_query} --namesonly",
+        ).stdout.splitlines()
         self.assertEqual(len(result_namesonly_w), 0)
-        result_namesonly_x = pikaur("-Ssq --aur mailman x --namesonly").stdout.splitlines()
-        self.assertNotIn("mailman-rss", result_namesonly_x)
-        self.assertIn("mailman3-public-inbox", result_namesonly_x)
+
+        result_namesonly_x = pikaur(
+            f"-Ssq --aur {common_query} {specific_query_names_only} --namesonly",
+        ).stdout.splitlines()
+        self.assertNotIn(specific_result, result_namesonly_x)
+        self.assertIn(specific_result_names_only, result_namesonly_x)
 
     def test_list(self):
         result_all = pikaur("-Ssq").stdout.splitlines()

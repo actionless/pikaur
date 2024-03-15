@@ -69,6 +69,7 @@ else
 	echo Checking for unreasonable global vars...
 	./maintenance_scripts/get_global_expressions.sh
 
+	install_ruff
 	echo Ruff rules up-to-date...
 	diff --color -u \
 		<(awk '/select = \[/,/]/' pyproject.toml \
@@ -82,7 +83,6 @@ else
 			| awk '{print $1;}' \
 			| sort)
 	echo Ruff...
-	install_ruff
 	"$RUFF" check "${TARGETS[@]}"
 
 	echo Flake8...

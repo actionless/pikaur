@@ -34,6 +34,7 @@ fi
 
 script_dir=$(readlink -e "$(dirname "${0}")")
 APP_DIR="$(readlink -e "${script_dir}"/..)"
+RUFF="${APP_DIR}/env/bin/ruff"
 
 export PYTHONWARNINGS='ignore,error:::pikaur[.*],error:::pikaur_test[.*]'
 
@@ -48,7 +49,7 @@ echo Python import...
 "$PYTHON" -c "import pikaur.main"
 
 if [[ "$FIX_MODE" -eq 1 ]] ; then
-	"${APP_DIR}/env/bin/ruff" check --unsafe-fixes --fix "${TARGETS[@]}"
+	"$RUFF" check --unsafe-fixes --fix "${TARGETS[@]}"
 else
 
 	echo Checking for non-Final globals...
@@ -66,7 +67,7 @@ else
 			| tr -d '",#' \
 			| awk '{print $1;}' \
 			| sort) \
-		<("${APP_DIR}/env/bin/ruff" linter \
+		<("$RUFF" linter \
 			| awk '{print $1;}' \
 			| sort)
 	echo Ruff...
@@ -77,7 +78,7 @@ else
 		"$PYTHON" -m pip install ruff --upgrade
 		deactivate
 	fi
-	"${APP_DIR}/env/bin/ruff" check "${TARGETS[@]}"
+	"$RUFF" check "${TARGETS[@]}"
 
 	echo Flake8...
 	#"$PYTHON" -m flake8 "${TARGETS[@]}"

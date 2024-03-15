@@ -7,13 +7,13 @@ PYTHON=python3
 FIX_MODE=0
 while getopts f name
 do
-   case $name in
-   f)   FIX_MODE=1;;
-   ?)   printf "Usage: %s: [-f] [TARGETS]\n" "$0"
-	   echo "Arguments:"
-	   echo "  -f	run in fix mode"
-		 exit 2;;
-   esac
+	case $name in
+	f)	FIX_MODE=1;;
+	?)	printf "Usage: %s: [-f] [TARGETS]\n" "$0"
+		echo "Arguments:"
+		echo "	-f	run in fix mode"
+		exit 2;;
+	esac
 done
 shift $((OPTIND - 1))
 if [[ -n "$*" ]] ; then

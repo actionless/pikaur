@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PYTHON=python3
+script_dir=$(readlink -e "$(dirname "${0}")")
+APP_DIR="$(readlink -e "${script_dir}"/..)"
 
 
 FIX_MODE=0
@@ -21,6 +22,8 @@ if [[ -n "$*" ]] ; then
 fi
 
 
+PYTHON=python3
+
 TARGETS=(
 	'pikaur'
 	'pikaur_test'
@@ -32,25 +35,33 @@ if [[ -n "${1:-}" ]] ; then
 fi
 
 
-script_dir=$(readlink -e "$(dirname "${0}")")
-APP_DIR="$(readlink -e "${script_dir}"/..)"
+install_ruff() {
+	if [[ ! -f "${APP_DIR}/env/bin/activate" ]] ; then
+		"$PYTHON" -m venv "${APP_DIR}/env" --system-site-packages
+		# shellcheck disable=SC1091
+		. "${APP_DIR}/env/bin/activate"
+		"$PYTHON" -m pip install ruff --upgrade
+		deactivate
+	fi
+}
 RUFF="${APP_DIR}/env/bin/ruff"
 
-export PYTHONWARNINGS='ignore,error:::pikaur[.*],error:::pikaur_test[.*]'
-
-echo Python compile...
-"$PYTHON" -O -m compileall "${TARGETS[@]}" \
-| (\
-	grep -v -e '^Listing' -e '^Compiling' || true \
-)
-
-echo Python import...
-#"$PYTHON" -c "import pikaur"
-"$PYTHON" -c "import pikaur.main"
 
 if [[ "$FIX_MODE" -eq 1 ]] ; then
 	"$RUFF" check --unsafe-fixes --fix "${TARGETS[@]}"
 else
+	export PYTHONWARNINGS='ignore,error:::pikaur[.*],error:::pikaur_test[.*]'
+
+
+	echo Python compile...
+	"$PYTHON" -O -m compileall "${TARGETS[@]}" \
+	| (\
+		grep -v -e '^Listing' -e '^Compiling' || true \
+	)
+
+	echo Python import...
+	#"$PYTHON" -c "import pikaur"
+	"$PYTHON" -c "import pikaur.main"
 
 	echo Checking for non-Final globals...
 	./maintenance_scripts/get_non_final_expressions.sh
@@ -71,13 +82,7 @@ else
 			| awk '{print $1;}' \
 			| sort)
 	echo Ruff...
-	if [[ ! -f "${APP_DIR}/env/bin/activate" ]] ; then
-		"$PYTHON" -m venv "${APP_DIR}/env" --system-site-packages
-		# shellcheck disable=SC1091
-		. "${APP_DIR}/env/bin/activate"
-		"$PYTHON" -m pip install ruff --upgrade
-		deactivate
-	fi
+	install_ruff
 	"$RUFF" check "${TARGETS[@]}"
 
 	echo Flake8...

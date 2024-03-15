@@ -814,15 +814,10 @@ def print_package_search_results(  # noqa: PLR0914
                     ColorsHighlight.black,
                 )
 
-            print_stdout("{}{}{} {} {}{}{}{}".format(  # pylint: disable=consider-using-f-string
-                idx,
-                repo,
-                bold_line(pkg_name),
-                color_line(version, version_color),
-                groups,
-                installed,
-                rating,
-                last_updated,
-            ))
+            print_stdout(
+                f"{idx}{repo}{bold_line(pkg_name)}"
+                f" {color_line(version, version_color)}"
+                f" {groups}{installed}{rating}{last_updated}",
+            )
             print_stdout(format_paragraph(f"{package.desc}"))
     return sorted_packages

@@ -46,7 +46,7 @@ echo Python import...
 "$PYTHON" -c "import pikaur.main"
 
 if [[ "$FIX_MODE" -eq 1 ]] ; then
-	"${APP_DIR}/env/bin/ruff" --unsafe-fixes --fix "${TARGETS[@]}"
+	"${APP_DIR}/env/bin/ruff" check --unsafe-fixes --fix "${TARGETS[@]}"
 else
 
 	echo Checking for non-Final globals...
@@ -63,7 +63,7 @@ else
 		"$PYTHON" -m pip install ruff --upgrade
 		deactivate
 	fi
-	"${APP_DIR}/env/bin/ruff" "${TARGETS[@]}"
+	"${APP_DIR}/env/bin/ruff" check "${TARGETS[@]}"
 
 	echo Flake8...
 	#"$PYTHON" -m flake8 "${TARGETS[@]}"

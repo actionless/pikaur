@@ -18,7 +18,7 @@ do
 done
 shift $((OPTIND - 1))
 if [[ -n "$*" ]] ; then
-	printf "Remaining arguments are: %s\n$*"
+	printf "\nRemaining arguments are: %s\n$*\n\n"
 fi
 
 

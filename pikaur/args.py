@@ -437,7 +437,7 @@ class PikaurArgs(Namespace):
     skip_aur_pull: bool | None
     positional: list[str]
     read_stdin: bool = False
-    preserve_env: str
+    preserve_env: str = ""
 
     def __getattr__(self, name: str) -> PossibleArgValuesTypes:
         transformed_name = name.replace("-", "_")

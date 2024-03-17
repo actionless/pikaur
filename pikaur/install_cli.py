@@ -1126,10 +1126,13 @@ class InstallPackagesCLI:  # noqa: PLR0904
             )
 
     def install_aur_packages(self) -> None:
-        aur_packages_to_install = {
-            pkg_name: self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
-            for pkg_name in self.aur_packages_names
-        }
+        aur_packages_to_install = {}
+        for pkg_name in self.aur_packages_names:
+            pkg_build = self.package_builds_by_name.get(pkg_name)
+            if pkg_build:
+                path = pkg_build.built_packages_paths.get(pkg_name)
+                if path:
+                    aur_packages_to_install[pkg_name] = path
         if aur_packages_to_install:
             if not retry_interactive_command(
                     sudo([

@@ -260,6 +260,21 @@ class InstallPackagesCLI:  # noqa: PLR0904
             self.args.positional or ["PKGBUILD"]
         }
 
+    def edit_pkgbuild_during_the_build(self, pkg_name: str) -> None:
+        updated_pkgbuilds = self._clone_aur_repos([pkg_name])
+        if not updated_pkgbuilds:
+            return
+        self.package_builds_by_name.update(updated_pkgbuilds)
+        pkg_build = self.package_builds_by_name[pkg_name]
+        if not edit_file(
+                pkg_build.pkgbuild_path,
+        ):
+            print_warning(translate("PKGBUILD appears unchanged after editing"))
+        else:
+            self.handle_pkgbuild_changed(pkg_build)
+        self._ignore_package(pkg_name)
+        self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
+
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
         prompt = "{} {}\n{}\n{}\n{}\n{}\n> ".format(  # pylint: disable=consider-using-f-string
             color_line("::", ColorsHighlight.yellow),
@@ -276,22 +291,32 @@ class InstallPackagesCLI:  # noqa: PLR0904
 
         answer = answer.lower()[0]
         if answer == translate("e"):
-            updated_pkgbuilds = self._clone_aur_repos([pkg_name])
-            if not updated_pkgbuilds:
-                return
-            self.package_builds_by_name.update(updated_pkgbuilds)
-            pkg_build = self.package_builds_by_name[pkg_name]
-            if not edit_file(
-                    pkg_build.pkgbuild_path,
-            ):
-                print_warning(translate("PKGBUILD appears unchanged after editing"))
-            else:
-                self.handle_pkgbuild_changed(pkg_build)
-            self._ignore_package(pkg_name)
-            self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
+            self.edit_pkgbuild_during_the_build(pkg_name)
             self.main_sequence()
         elif answer == translate("f"):
             self.skip_checkfunc_for_pkgnames.append(pkg_name)
+            self.main_sequence()
+        elif answer == translate("s"):
+            self._ignore_package(pkg_name)
+        else:  # "A"
+            raise SysExit(125)
+
+    def prompt_dependency_cycle(self, pkg_name: str) -> None:  # pragma: no cover
+        prompt = "{} {}\n{}\n{}\n{}\n> ".format(  # pylint: disable=consider-using-f-string
+            color_line("::", ColorsHighlight.yellow),
+            translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
+            translate("[e] edit PKGBUILD"),
+            translate("[s] skip this package"),
+            translate("[A] abort"),
+        )
+        answer = get_input(
+            prompt,
+            translate("e") + translate("s") + translate("a").upper(),
+        )
+
+        answer = answer.lower()[0]
+        if answer == translate("e"):
+            self.edit_pkgbuild_during_the_build(pkg_name)
             self.main_sequence()
         elif answer == translate("s"):
             self._ignore_package(pkg_name)
@@ -1026,7 +1051,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     for remaining_aur_pkg_name in packages_to_be_built[:]:
                         if remaining_aur_pkg_name not in self.all_aur_packages_names:
                             packages_to_be_built.remove(remaining_aur_pkg_name)
-            except DependencyNotBuiltYetError as exc:
+            except DependencyNotBuiltYetError:
                 index += 1
                 for _pkg_name in pkg_build.package_names:
                     deps_fails_counter.setdefault(_pkg_name, 0)
@@ -1037,7 +1062,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                                 "Dependency cycle detected between {}",
                             ).format(deps_fails_counter),
                         )
-                        raise SysExit(131) from exc
+                        self.prompt_dependency_cycle(_pkg_name)
             else:
                 logger.debug(
                     "Build done for packages {}, removing from queue",

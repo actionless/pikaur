@@ -10,7 +10,7 @@ RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pac
 	\
 	echo '[multilib]' >> /etc/pacman.conf ; \
 	echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
-RUN echo "last updated on 2024-02-17" && \
+RUN echo "last updated on 2024-03-19" && \
 	pacman -Syu --noconfirm --needed sudo base-devel git && \
 	useradd -m user && \
 	echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
@@ -35,9 +35,9 @@ RUN git clone https://github.com/actionless/pikaur.git /opt/app-build/
 
 RUN	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
-	rm -fr ./src/ ./pkg/ && \
-	sleep 0.1 && \
-	echo ">>>> Installing test deps using Pikaur itself:" && \
+	rm -fr ./src/ ./pkg/
+RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '6.5.0-5'
+RUN echo ">>>> Installing test deps using Pikaur itself:" && \
 	sudo -u user pikaur -S --noconfirm --mflags=--skippgpcheck --color=always python-coveralls
 
 # vim: set ft=dockerfile :

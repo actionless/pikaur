@@ -7,6 +7,8 @@ ARG GITHUB_TOKEN
 ARG GITHUB_RUN_ID
 ARG GITHUB_REF
 ARG MODE=--local
+ARG TESTSUITE=all
+ARG SKIP_LINTING=0
 
 RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://archlinux.mirror.pcextreme.nl/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
@@ -42,15 +44,12 @@ RUN echo ">>>> Installing opt deps:" && \
 	sudo -u user sed -i 's/"$pkgname::.*"/"pikaur-git.tar.gz"/' PKGBUILD && \
 	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
-	rm -fr ./src/ ./pkg/ && \
-	sleep 0.1 && \
-	echo ">>>> Installing test deps using Pikaur itself:" && \
+	rm -fr ./src/ ./pkg/
+RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '6.5.0-5'
+RUN echo ">>>> Installing test deps using Pikaur itself:" && \
 	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv \
 		flake8 python-pylint mypy vulture bandit shellcheck python-coveralls
-#RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-pycodestyle '2.9.1-2' # @TODO: remove it when it fixed
 
-ARG TESTSUITE=all
-ARG SKIP_LINTING=0
 COPY ./pikaur_test /opt/app-build/pikaur_test
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
 COPY .flake8 /opt/app-build/

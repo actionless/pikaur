@@ -43,7 +43,7 @@ def clone_aur_pkgs(aur_pkgs: list[AURPackageInfo], pwd: Path) -> None:
 
 def clone_repo_pkgs(repo_pkgs: list["pyalpm.Package"], pwd: Path) -> None:
     for repo_pkg in repo_pkgs:
-        name = repo_pkg.name
+        name = repo_pkg.base
         repo_path = pwd / name
         print_stdout()
         print_stdout(translate(f"Package '{name}' going to be cloned into '{repo_path}'..."))

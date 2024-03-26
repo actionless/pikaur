@@ -98,18 +98,15 @@ Gonna fetch install info for:
             )
 
     def package_is_ignored(self, package_name: str) -> bool:
-        ignored_pkg_names = get_ignored_pkgnames_from_patterns(
-            [package_name],
-            self.args.ignore + PacmanConfig().options.get("IgnorePkg", []),
+        return bool(
+            package_name in get_ignored_pkgnames_from_patterns(
+                [package_name],
+                self.args.ignore + PacmanConfig().options.get("IgnorePkg", []),
+            )
+            and not (
+                package_name in self.install_package_names
+                or package_name in self.not_found_repo_pkgs_names),
         )
-        if (
-                package_name in ignored_pkg_names
-        ) and not (
-            package_name in self.install_package_names or
-            package_name in self.not_found_repo_pkgs_names
-        ):
-            return True
-        return False
 
     def exclude_ignored_packages(
             self,

@@ -731,7 +731,7 @@ def print_package_search_results(  # noqa: PLR0914
 
     enumerated_packages = list(enumerate(sorted_packages))
     if user_config.ui.ReverseSearchSorting.get_bool():
-        enumerated_packages = list(reversed(enumerated_packages))
+        enumerated_packages.reverse()
 
     for pkg_idx, package in enumerated_packages:
         # @TODO: return only packages for the current architecture

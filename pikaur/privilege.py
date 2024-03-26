@@ -28,9 +28,7 @@ def need_dynamic_users() -> bool:
         return True
     if dynamic_users == "never":
         return False
-    if running_as_root() and dynamic_users == "root":
-        return True
-    return False
+    return bool(running_as_root() and dynamic_users == "root")
 
 
 def using_dynamic_users() -> int:

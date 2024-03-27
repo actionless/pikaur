@@ -785,7 +785,7 @@ msgstr "для пакета {pkg}"
 
 #: pikaur/args.py:141
 msgid "hide build log"
-msgstr "приховати журнал побудови"
+msgstr "приховати журнал збірки"
 
 #: pikaur/args.py:303
 msgid "how many git-clones/pulls to do from AUR"

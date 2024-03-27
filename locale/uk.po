@@ -2,7 +2,7 @@
 # Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2018.
-# Drommer <drommer@github.com>, 2022.
+# Drommer <drommer@github.com>, 2024.
 #
 msgid ""
 msgstr ""
@@ -22,12 +22,12 @@ msgstr ""
 #: pikaur/core.py:116
 #, python-brace-format
 msgid "'{class_name}' does not have attribute '{key}' defined."
-msgstr ""
+msgstr "'{class_name}' не має встановленого атрибуту '{key}'."
 
 #: pikaur/core.py:103
 #, python-brace-format
 msgid "'{class_name}' does not have required attribute '{key}' set."
-msgstr ""
+msgstr "'{class_name}' не має необхідного атрибуту '{key}'."
 
 #: pikaur/replacements.py:41
 #, python-brace-format
@@ -41,7 +41,7 @@ msgstr[1] ""
 
 #: pikaur/updates.py:204
 msgid "(ignored in Pacman config)"
-msgstr ""
+msgstr "(ігнорується в налаштуваннях Pacman)"
 
 #: pikaur/print_department.py:255
 msgid "({} days old)"
@@ -92,7 +92,7 @@ msgstr ""
 
 #: pikaur/pacman.py:580
 msgid "Because of:"
-msgstr ""
+msgstr "Через:"
 
 #: pikaur/pkg_cache_cli.py:18
 msgid "Build directory"
@@ -106,7 +106,7 @@ msgstr "Неможливо зібрати '{name}'."
 #: pikaur/install_cli.py:576
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
-msgstr "Неможливо клонувати пакет '{name}' з AUR за адресою '{path}':"
+msgstr "Неможливо клонувати пакет '{name}' за посиланням '{path}' з AUR:"
 
 #: pikaur/build.py:124
 #, python-brace-format
@@ -125,7 +125,7 @@ msgstr "Неможливо отримати назву пакета з PKGBUILD"
 #: pikaur/install_cli.py:578
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
-msgstr "Неможливо отримати '{name}' за адресою '{path}' з AUR:"
+msgstr "Неможливо отримати '{name}' за посиланням '{path}' з AUR:"
 
 #: pikaur/aur_deps.py:300
 #, python-brace-format
@@ -135,7 +135,7 @@ msgstr "Неможливо вирішити залежності для паке
 #: pikaur/pacman.py:285
 #, fuzzy
 msgid "Cannot initialize ALPM"
-msgstr "Не вдалося ініціалізувати {}"
+msgstr "Не вдалося ініціалізувати ALPM"
 
 #: pikaur/info_cli.py:39
 msgid "Check Deps"
@@ -144,7 +144,7 @@ msgstr "Залежності для перевірки"
 #: pikaur/info_cli.py:44
 #, fuzzy
 msgid "Co-maintainers"
-msgstr "Супроводжуючий"
+msgstr "Супроводжуючі"
 
 #: pikaur/build.py:843 pikaur/prompt.py:243
 msgid "Command '{}' failed to execute."
@@ -172,7 +172,7 @@ msgstr "Не вдалося оновити {}"
 
 #: pikaur/pacman.py:573
 msgid "Dependencies can't be satisfied for the following packages:"
-msgstr ""
+msgstr "Неможливо встановити залежності для наступних пакунків:"
 
 #: pikaur/install_cli.py:302
 msgid "Dependencies missing for {}"
@@ -192,7 +192,7 @@ msgstr "Опис"
 
 #: pikaur/pkg_cache_cli.py:25
 msgid "Directory is empty."
-msgstr ""
+msgstr "Каталог порожній."
 
 #: pikaur/prompt.py:292
 msgid "Do you want to proceed without editing?"
@@ -237,11 +237,13 @@ msgid ""
 "Either SystemD Dynamic Users must be enabled or User ID should be set if "
 "running as root."
 msgstr ""
+"Необхідно увімкнути Systemd Dynamic Users або встановити ідентифікатор користувача,"
+"якщо ви працюєте від імені root."
 
 #: pikaur/build.py:193 pikaur/print_department.py:590 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
-msgstr ""
+msgstr "Необхідно задати або `{prop1}`, або `{prop2}`"
 
 #: pikaur/install_cli.py:1152
 msgid "Failed to build following packages:"
@@ -316,7 +318,7 @@ msgstr "Залежності для збирання"
 #: pikaur/config.py:666
 #, fuzzy
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
-msgstr "Перенесення конфігурації [{}]{} до [{}]{} = \"{}\"..."
+msgstr "Перенесення конфігурації [{}]{}=\"{}\" до [{}]{} = \"{}\"..."
 
 #. "aur_id": translate("id"),
 #: pikaur/info_cli.py:26
@@ -353,7 +355,7 @@ msgstr "Нові пакети '{new}' та '{other}' конфліктують."
 
 #: pikaur/help_cli.py:48
 msgid "No response from Pacman"
-msgstr ""
+msgstr "Немає відповіді від Pacman"
 
 #: pikaur/info_cli.py:61 pikaur/info_cli.py:92
 msgid "None"
@@ -485,7 +487,7 @@ msgstr "Пропускати перегляд {file} для пакета {name} 
 
 #: pikaur/urllib_helper.py:46 pikaur/urllib_helper.py:77
 msgid "Sleeping for {} seconds..."
-msgstr ""
+msgstr "Очікування впродовж {} секунд..."
 
 #: pikaur/install_cli.py:552
 #, fuzzy, python-brace-format
@@ -527,11 +529,11 @@ msgstr[1] "Будуть встановлені пакети зі сторонн�
 
 #: pikaur/print_department.py:550
 msgid "Total Download Size:"
-msgstr ""
+msgstr "Загальний обсяг для завантаження:"
 
 #: pikaur/print_department.py:553
 msgid "Total Installed Size:"
-msgstr ""
+msgstr "Загальний обсяг після встановлення:"
 
 #: pikaur/install_cli.py:250
 #, fuzzy, python-brace-format
@@ -561,12 +563,12 @@ msgstr "Оцінки"
 #: pikaur/print_department.py:433
 msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "ПОПЕРЕДЖЕННЯ щодо встановлення пакета:"
+msgstr[1] "ПОПЕРЕДЖЕННЯ щодо встановлення пакетів:"
 
 #: pikaur/args.py:486
 msgid "WARNING, unknown args: {}"
-msgstr ""
+msgstr "УВАГА! Невідомі аргументи: {}"
 
 #: pikaur/install_cli.py:253
 #, fuzzy
@@ -584,12 +586,12 @@ msgstr "[R] повторити збирання"
 
 #: pikaur/install_cli.py:594
 msgid "[T] try again"
-msgstr ""
+msgstr "[T] спробувати ще раз"
 
 #: pikaur/prompt.py:200
 #, python-brace-format
 msgid "[Y]es ({reason})"
-msgstr ""
+msgstr "[Y] Так ({reason})"
 
 #: pikaur/install_cli.py:601
 msgid "[a] abort"
@@ -613,7 +615,7 @@ msgstr "[d] видалити каталог збирання та спробув
 
 #: pikaur/install_cli.py:595
 msgid "[d] git diff"
-msgstr ""
+msgstr "[d] git diff"
 
 #: pikaur/build.py:357 pikaur/build.py:867 pikaur/install_cli.py:251
 msgid "[e] edit PKGBUILD"
@@ -652,9 +654,7 @@ msgstr "[p] пропустити перевірку PGP-підпису"
 
 #: pikaur/install_cli.py:599
 msgid "[p] git stash && ... && git stash pop"
-msgstr ""
-"[p] відкласти та застосувати відстрочені зміни (git stash && ... && git "
-"stash pop)"
+msgstr "[p] git stash && ... && git stash pop"
 
 #. translate("[c] git checkout -- '*' ; git clean -f -d -x"),
 #: pikaur/install_cli.py:598
@@ -676,7 +676,7 @@ msgstr "[v] переглянути опис пакетів   [m] вибрати 
 #: pikaur/pikspect.py:331
 #, python-brace-format
 msgid "`{var_name}` should be list."
-msgstr ""
+msgstr "`{var_name}` повинно бути вказано"
 
 #: pikaur/build.py:349 pikaur/build.py:371 pikaur/build.py:398
 #: pikaur/build.py:854 pikaur/build.py:884 pikaur/build.py:921
@@ -733,7 +733,7 @@ msgstr "не пропонувати відображення відміннос�
 
 #: pikaur/args.py:145
 msgid "don't pull already cloned PKGBUILD"
-msgstr ""
+msgstr "не оновлювати вже завантажений PKGBUILD"
 
 #: pikaur/args.py:114
 #, fuzzy
@@ -763,7 +763,7 @@ msgstr "помилка:"
 
 #: pikaur/core.py:373
 msgid "executable not found"
-msgstr ""
+msgstr "виконуваний файл не знайдено"
 
 #: pikaur/build.py:878 pikaur/build.py:896
 msgid "f"
@@ -785,11 +785,11 @@ msgstr "для пакета {pkg}"
 
 #: pikaur/args.py:141
 msgid "hide build log"
-msgstr ""
+msgstr "приховати журнал збірки"
 
 #: pikaur/args.py:303
 msgid "how many git-clones/pulls to do from AUR"
-msgstr ""
+msgstr "скільки git-clones/pulls робити з AUR"
 
 #: pikaur/build.py:369 pikaur/build.py:396 pikaur/build.py:880
 #: pikaur/build.py:902
@@ -873,7 +873,7 @@ msgstr "шлях до користувацьких налаштувань pikaur
 
 #: pikaur/args.py:287
 msgid "path where to clone PKGBUILDs"
-msgstr ""
+msgstr "шлях для завантаження файлів PKGBUILD"
 
 #. to avoid mixing together with pacman's debug messages:
 #: pikaur/logging.py:52
@@ -909,11 +909,11 @@ msgstr "власні операції pikaur:"
 
 #: pikaur/args.py:242
 msgid "preserve environment variables (comma-separated)"
-msgstr ""
+msgstr "зберігати змінні середовища (через кому)"
 
 #: pikaur/args.py:186
 msgid "print spawned by pikaur subshell commands"
-msgstr ""
+msgstr "відображати команди, що викликані підоболонкою pikaur"
 
 #: pikaur/args.py:125
 msgid "prompt to edit PKGBUILDs and other build files"
@@ -934,7 +934,7 @@ msgstr ""
 
 #: pikaur/pkg_cache_cli.py:30
 msgid "removing all files from cache..."
-msgstr ""
+msgstr "видалення усіх файлів із кешу"
 
 #: pikaur/build.py:347 pikaur/build.py:370 pikaur/build.py:852
 #: pikaur/build.py:883 pikaur/install_cli.py:255 pikaur/install_cli.py:273
@@ -948,7 +948,7 @@ msgstr "шукати тільки в іменах пакетів"
 
 #: pikaur/args.py:274
 msgid "set GnuPG home directory used when validating package sources"
-msgstr ""
+msgstr "встановити домашній каталог GnuPG, який буде використано під час перевірки вихідного коду"
 
 #: pikaur/args.py:190
 msgid "show only debug messages specific to pikaur"
@@ -956,7 +956,7 @@ msgstr "показувати відлагоджувальні повідомле
 
 #: pikaur/args.py:133
 msgid "skip failed builds"
-msgstr ""
+msgstr "пропускати невдалі збірки"
 
 #: pikaur/install_cli.py:606
 msgid "t"
@@ -977,7 +977,7 @@ msgstr "використання: pikaur {-P --pkgbuild} [параметри] <�
 
 #: pikaur/args.py:307
 msgid "user ID to run makepkg if pikaur started from root"
-msgstr ""
+msgstr "ID користувача для запуску makepkg, якщо pikaur запущено від імені root"
 
 #: pikaur/install_cli.py:458 pikaur/install_cli.py:472
 msgid "v"
@@ -1002,7 +1002,7 @@ msgstr[1] "Групи {grp}"
 #: pikaur/config.py:558
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
-msgstr ""
+msgstr "{key} не відповідає '{typeof}'"
 
 #: pikaur/build.py:754
 #, python-brace-format

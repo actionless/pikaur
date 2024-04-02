@@ -44,7 +44,7 @@ SYSTEMD_MIN_VERSION: "Final" = 235
 READ_MODE: "Final" = "r"
 
 
-class ComparableType:  # noqa: PLW1641
+class ComparableType:
 
     __ignore_in_eq__: tuple[str, ...] = ()
 

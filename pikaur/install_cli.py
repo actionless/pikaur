@@ -494,14 +494,21 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 verbose=verbose,
             ))
 
-        def _confirm_sysupgrade(*, verbose: bool = False) -> str:
-            _print_sysupgrade(verbose=verbose)
-            prompt = "{} {}\n{} {}\n>> ".format(  # pylint: disable=consider-using-f-string
-                color_line("::", ColorsHighlight.blue),
-                bold_line(translate("Proceed with installation? [Y/n] ")),
-                color_line("::", ColorsHighlight.blue),
-                bold_line(translate("[v]iew package details   [m]anually select packages")),
+        def _confirm_sysupgrade(*, verbose: bool = False, print_pkgs: bool = True) -> str:
+            if print_pkgs:
+                _print_sysupgrade(verbose=verbose)
+            prompt = (
+                f"{color_line('::', ColorsHighlight.blue)}"
+                f" {bold_line(translate('Proceed with installation? [Y/n] '))}"
+                f"\n{color_line('::', ColorsHighlight.blue)}"
+                f" {bold_line(translate('[v]iew package details   [m]anually select packages'))}"
             )
+            if self.news and self.news.any_news:
+                prompt += (
+                    f"\n{color_line('::', ColorsHighlight.blue)}"
+                    f" {bold_line(translate('[c]onfirm Arch NEWS as read'))}"
+                )
+            prompt += "\n>> "
             return get_input(
                 prompt,
                 translate("y").upper() + translate("n") + translate("v") + translate("m"),
@@ -527,6 +534,11 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     self.get_all_packages_info()
                     self.install_prompt()
                     break
+                if letter == translate("c"):
+                    if self.news:
+                        self.news.mark_as_read()
+                    answer = _confirm_sysupgrade(print_pkgs=False)
+                    continue
                 raise SysExit(125)
             break
 

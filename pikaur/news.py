@@ -45,49 +45,53 @@ class News:
     url: str
     cache_file: "Path"
     _news_feed: "Element | None"
+    _news_entry_to_update_last_seen_date: "Element | None"
+    any_news: bool = False
 
     def __init__(self) -> None:
         self.url = PikaurConfig().network.NewsUrl.get_str()
         self.cache_file = CacheRoot()() / "last_seen_news.dat"
         self._news_feed = None
+        self._news_entry_to_update_last_seen_date = None
         logger.debug("init")
 
     def print_news(self) -> None:
         logger.debug("print")
+        news_entry: Element
         if self._news_feed is None:
             print_error(translate("Could not fetch archlinux.org news"))
             return
-        news_entry: Element
         first_news = True
-        news_entry_to_update_last_seen_date = None
-        try:  # noqa: PLR1702
-            for news_entry in self._news_feed.iter("item"):
-                child: Element
-                for child in news_entry:
-                    if ArchNewsMarkup.PUBLICATION_DATE in child.tag:
-                        if self._is_new(str(child.text)):
-                            if first_news:
-                                print_stdout(
-                                    "\n" +
-                                    color_line(
-                                        translate("There is news from archlinux.org!"),
-                                        ColorsHighlight.red,
-                                    ) +
-                                    "\n",
-                                )
-                            self._print_one_entry(news_entry)
-                            # news are in inverse chronological order (newest first).
-                            # if there is something to print, we save this date
-                            # in our cache
-                            if first_news:
-                                first_news = False
-                                news_entry_to_update_last_seen_date = news_entry
-                        else:
-                            # no more news
-                            return
-        finally:
-            if news_entry_to_update_last_seen_date:
-                self._update_last_seen_news(news_entry_to_update_last_seen_date)
+        for news_entry in self._news_feed.iter("item"):
+            child: Element
+            for child in news_entry:
+                if ArchNewsMarkup.PUBLICATION_DATE in child.tag:
+                    if self._is_new(str(child.text)):
+                        if first_news:
+                            print_stdout(
+                                "\n" +
+                                color_line(
+                                    translate("There is news from archlinux.org!"),
+                                    ColorsHighlight.red,
+                                ) +
+                                "\n",
+                            )
+                        self._print_one_entry(news_entry)
+                        # news are in inverse chronological order (newest first).
+                        # if there is something to print, we save this date
+                        # in our cache
+                        if first_news:
+                            first_news = False
+                            self._news_entry_to_update_last_seen_date = news_entry
+                            self.any_news = True
+                    else:
+                        # no more news
+                        return
+
+    def mark_as_read(self) -> None:
+        if self._news_entry_to_update_last_seen_date:
+            self._update_last_seen_news(self._news_entry_to_update_last_seen_date)
+        self.any_news = False
 
     def fetch_latest(self) -> None:
         logger.debug("fetch_latest")

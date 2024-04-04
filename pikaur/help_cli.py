@@ -27,7 +27,7 @@ def _format_options_help(options: list[HelpMessage]) -> str:
             (short_opt and ("-" + short_opt + ",")) or "",
             (long_opt and ("--" + long_opt)) or "",
             descr if (
-                (len(short_opt or "") + 1 + len(long_opt) + 2) < FIRST_COLUMN_WIDTH
+                (len(short_opt or "") + 1 + len(long_opt or "") + 2) < FIRST_COLUMN_WIDTH
             ) else f"\n{(FIRST_COLUMN_MARGIN + FIRST_COLUMN_WIDTH + 2) * ' '}{descr}",
             first_column_margin=FIRST_COLUMN_MARGIN,
             first_column_width=FIRST_COLUMN_WIDTH,

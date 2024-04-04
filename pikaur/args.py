@@ -14,9 +14,14 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Any, Final, NoReturn
 
-ArgSchema = list[tuple[str | None, str, None | bool | str | int, str | None]]
+ArgValue = None | bool | str | int
+ArgSchema = list[
+    tuple[str, str, ArgValue, str | None]
+    | tuple[None, str, ArgValue, str | None]
+    | tuple[str, None, ArgValue, str | None]
+]
 PossibleArgValuesTypes = list[str] | str | bool | int | None
-HelpMessage = tuple[str | None, str, str | None]
+HelpMessage = tuple[str | None, str | None, str | None]
 
 
 PACMAN_ACTIONS: "Final[ArgSchema]" = [
@@ -38,8 +43,14 @@ def get_pikaur_actions() -> ArgSchema:
     ]
 
 
-ALL_PACMAN_ACTIONS: "Final[list[str]]" = [schema[1] for schema in PACMAN_ACTIONS]
-ALL_PIKAUR_ACTIONS: "Final[list[str]]" = [schema[1] for schema in get_pikaur_actions()]
+ALL_PACMAN_ACTIONS: "Final[list[str]]" = [
+    schema[1] for schema in PACMAN_ACTIONS
+    if schema[1] is not None
+]
+ALL_PIKAUR_ACTIONS: "Final[list[str]]" = [
+    schema[1] for schema in get_pikaur_actions()
+    if schema[1] is not None
+]
 ALL_ACTIONS: "Final[list[str]]" = ALL_PACMAN_ACTIONS + ALL_PIKAUR_ACTIONS
 
 
@@ -85,7 +96,7 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
         ]
     if action in {"sync", "query"}:
         result += [
-            ("l", "list", None, None),  # @TODO
+            ("l", None, None, None),  # --list
         ]
     return result
 
@@ -195,18 +206,29 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
     return result
 
 
-PACMAN_STR_OPTS: "Final[ArgSchema]" = [
-    (None, "color", None, None),
-    ("b", "dbpath", None, None),  # @TODO: pyalpm?
-    ("r", "root", None, None),
-    (None, "arch", None, None),  # @TODO
-    (None, "cachedir", None, None),  # @TODO
-    (None, "config", None, None),
-    (None, "gpgdir", None, None),
-    (None, "hookdir", None, None),
-    (None, "logfile", None, None),
-    (None, "print-format", None, None),  # @TODO
-]
+def get_pacman_str_opts(action: str | None = None) -> ArgSchema:
+    if not action:
+        result = []
+        for each_action in ALL_PACMAN_ACTIONS:
+            result += get_pacman_str_opts(each_action)
+        return list(set(result))
+    result = [
+        (None, "color", None, None),
+        ("b", "dbpath", None, None),  # @TODO: pyalpm?
+        ("r", "root", None, None),
+        (None, "arch", None, None),  # @TODO
+        (None, "cachedir", None, None),  # @TODO
+        (None, "config", None, None),
+        (None, "gpgdir", None, None),
+        (None, "hookdir", None, None),
+        (None, "logfile", None, None),
+        (None, "print-format", None, None),  # @TODO
+    ]
+    if action in {"sync", "query"}:
+        result += [
+            (None, "list", None, None),
+        ]
+    return result
 
 
 class ColorFlagValues:
@@ -369,6 +391,12 @@ ARG_DEPENDS: "Final[dict[str, dict[str, list[str]]]]" = {
     },
 }
 
+ARG_CONFLICTS: "Final[dict[str, dict[str, list[str]]]]" = {
+    "sync": {
+        "search": ["list", "l"],
+    },
+}
+
 
 def get_all_pikaur_options() -> ArgSchema:
     return (
@@ -384,6 +412,7 @@ def get_pikaur_long_opts() -> list[str]:
     return [
         long_opt.replace("-", "_")
         for _short_opt, long_opt, _default, _help in get_all_pikaur_options()
+        if long_opt is not None
     ]
 
 
@@ -394,10 +423,11 @@ def get_pacman_long_opts() -> list[str]:  # pragma: no cover
         in (
             PACMAN_ACTIONS +
             get_pacman_bool_opts() +
-            PACMAN_STR_OPTS +
+            get_pacman_str_opts() +
             PACMAN_APPEND_OPTS +
             get_pacman_count_opts()
         )
+        if long_opt is not None
     ]
 
 
@@ -469,6 +499,13 @@ class PikaurArgs(Namespace):
                         for arg_name in dependant_args:
                             if getattr(self, arg_name):
                                 raise MissingArgumentError(arg_depend_on, arg_name)
+        for operation, operation_conflicts in ARG_CONFLICTS.items():  # noqa: PLR1702
+            if getattr(self, operation):
+                for args_conflicts, conflicting_args in operation_conflicts.items():
+                    if getattr(self, args_conflicts):
+                        for arg_name in conflicting_args:
+                            if getattr(self, arg_name):
+                                raise IncompatibleArgumentsError(args_conflicts, arg_name)
 
     @classmethod
     def from_namespace(
@@ -635,7 +672,7 @@ def get_parser_for_action(
             ("count", get_pacman_count_opts(action=pikaur_action), False, None),
             ("count", get_pikaur_count_opts(action=pikaur_action), True, None),
             ("append", PACMAN_APPEND_OPTS, False, None),
-            (None, PACMAN_STR_OPTS, False, None),
+            (None, get_pacman_str_opts(action=pikaur_action), False, None),
             (None, get_pikaur_str_opts(action=pikaur_action), True, None),
             (None, get_pikaur_int_opts(action=pikaur_action), True, int),
     ):
@@ -729,17 +766,29 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
             "raw", "unknown_args", "positional", "read_stdin",  # computed members
         ] + [
             long_arg
-            for _short_arg, long_arg, default, _help in PACMAN_STR_OPTS + PACMAN_APPEND_OPTS
+            for _short_arg, long_arg, default, _help in get_pacman_str_opts() + PACMAN_APPEND_OPTS
+            if long_arg
         ]
     }
     result = list(set(
         list(reconstructed_args.keys()) + parsed_args.unknown_args,
     ))
     for args_key, value in vars(parsed_args).items():
-        for letter, _opt, _default, _help in (
+        for letter, long, _default, _help in (
                 get_pacman_count_opts()
         ):
-            opt = _opt.replace("-", "_")
-            if value and opt == args_key and opt not in ignore_args and letter not in ignore_args:
+            if not long:
+                continue
+            opt = long.replace("-", "_")
+            if (
+                    value
+                    and (
+                        opt == args_key
+                    ) and (
+                        opt not in ignore_args
+                    ) and (
+                        letter not in ignore_args
+                    )
+            ):
                 result += ["--" + opt] * value
     return result

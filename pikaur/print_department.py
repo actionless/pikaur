@@ -123,8 +123,10 @@ class RepoColorGenerator:
         return cls._cache[color_type][_id]
 
 
-def pretty_format_repo_name(repo_name: str, *, color: bool = True) -> str:
-    result = f"{repo_name}/"
+def pretty_format_repo_name(
+        repo_name: str, repo_separator: str = "/", *, color: bool = True,
+) -> str:
+    result = f"{repo_name}{repo_separator}"
     if not color:
         return result
     return color_line(result, RepoColorGenerator.get_next("repo", repo_name))
@@ -674,12 +676,13 @@ def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
 
 
 # pylint:disable=too-many-statements,too-many-branches
-def print_package_search_results(  # noqa: PLR0914
+def print_package_search_results(  # noqa: PLR0914,C901
         repo_packages: "Iterable[pyalpm.Package]",
         aur_packages: "Iterable[AURPackageInfo]",
         local_pkgs_versions: dict[str, str],
         *,
         enumerated: bool = False,
+        list_mode: bool = False,
 ) -> "list[AnyPackage]":
 
     repos = [db.name for db in PackageDB.get_alpm_handle().get_syncdbs()]
@@ -744,9 +747,10 @@ def print_package_search_results(  # noqa: PLR0914
             print_stdout(f"{idx}{pkg_name}")
         else:
 
-            repo = color_line("aur/", ColorsHighlight.red)
+            repo_separator = " " if list_mode else "/"
+            repo = color_line(f"aur{repo_separator}", ColorsHighlight.red)
             if isinstance(package, pyalpm.Package):
-                repo = pretty_format_repo_name(package.db.name)
+                repo = pretty_format_repo_name(package.db.name, repo_separator=repo_separator)
 
             groups = ""
             if getattr(package, "groups", None):
@@ -819,5 +823,6 @@ def print_package_search_results(  # noqa: PLR0914
                 f" {color_line(version, version_color)}"
                 f" {groups}{installed}{rating}{last_updated}",
             )
-            print_stdout(format_paragraph(f"{package.desc}"))
+            if not list_mode:
+                print_stdout(format_paragraph(f"{package.desc}"))
     return sorted_packages

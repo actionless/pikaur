@@ -260,7 +260,7 @@ def execute_pikaur_operation(
         pikaur_operation()
 
 
-def cli_entry_point() -> None:  # pylint: disable=too-many-statements
+def cli_entry_point() -> None:  # pylint: disable=too-many-statements  # noqa: C901
     # pylint: disable=too-many-branches
 
     try:
@@ -306,7 +306,9 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             if not args.aur:
                 require_sudo = True
             pikaur_operation = cli_clean_packages_cache
-        elif args.groups or args.list:   # @TODO: implement -l/--list
+        elif args.list or args.l:
+            pikaur_operation = cli_search_packages
+        elif args.groups:
             require_sudo = False
         else:
             require_sudo = True

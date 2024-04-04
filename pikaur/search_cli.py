@@ -101,7 +101,7 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                     pkg for pkg in subresult
                     if subindex in pkg.name
                 ]
-    elif args.quiet:
+    elif args.quiet or (args.list or args.l):
         result = {"all": [
             AURPackageInfo(
                 name=name,
@@ -154,7 +154,7 @@ def search_packages(
     args = parse_args()
     search_query = args.positional or []
     repo_only = args.repo
-    aur_only = args.aur
+    aur_only = args.aur or (args.list == "aur")
 
     if not args.quiet:
         progressbar_length = max(len(search_query), 1) + (not repo_only) + (not aur_only)
@@ -200,6 +200,7 @@ def search_packages(
         aur_packages=joined_aur_results,
         local_pkgs_versions=result_local,
         enumerated=enumerated,
+        list_mode=bool(args.list or args.l),
     )
 
 

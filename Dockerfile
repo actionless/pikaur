@@ -45,7 +45,7 @@ RUN echo ">>>> Installing opt deps:" && \
 	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	rm -fr ./src/ ./pkg/
-RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '6.5.0-5'
+#RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '6.5.0-5'
 RUN echo ">>>> Installing test deps using Pikaur itself:" && \
 	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv \
 		flake8 python-pylint mypy vulture bandit shellcheck python-coveralls

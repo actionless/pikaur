@@ -96,7 +96,7 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
         ]
     if action in {"sync", "query"}:
         result += [
-            ("l", None, None, None),  # --list
+            ("l", "list", None, None),
         ]
     return result
 
@@ -212,7 +212,7 @@ def get_pacman_str_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_PACMAN_ACTIONS:
             result += get_pacman_str_opts(each_action)
         return list(set(result))
-    result = [
+    return [
         (None, "color", None, None),
         ("b", "dbpath", None, None),  # @TODO: pyalpm?
         ("r", "root", None, None),
@@ -224,11 +224,6 @@ def get_pacman_str_opts(action: str | None = None) -> ArgSchema:
         (None, "logfile", None, None),
         (None, "print-format", None, None),  # @TODO
     ]
-    if action in {"sync", "query"}:
-        result += [
-            (None, "list", None, None),
-        ]
-    return result
 
 
 class ColorFlagValues:

@@ -354,17 +354,18 @@ class PackageDB(PackageDBCommon):
     def search_repo(
             cls,
             search_query: str,
-            db_name: str | None = None,
+            db_names: list[str] | None = None,
             *,
             names_only: bool = False,
             exact_match: bool = False,
     ) -> list[pyalpm.Package]:
         if REPO_NAME_DELIMITER in search_query:
             db_name, search_query = search_query.split(REPO_NAME_DELIMITER)
+            db_names = [db_name]
         return list(reversed([
             pkg
             for sync_db in reversed(cls.get_alpm_handle().get_syncdbs())
-            if not db_name or db_name == sync_db.name
+            if not db_names or (sync_db.name in db_names)
             for pkg in sync_db.search(search_query)
             if (
                 (

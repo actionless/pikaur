@@ -33,12 +33,14 @@ PACMAN_ACTIONS: "Final[ArgSchema]" = [
     ("T", "deptest", None, None),
     ("U", "upgrade", None, None),
     ("V", "version", None, None),
+    ("h", "help", None, None),
 ]
 
 
 PIKAUR_ACTIONS: "Final[ArgSchema]" = [
     ("P", "pkgbuild", None, None),
     ("G", "getpkgbuild", None, None),
+    (None, "interactive_pkg_select", None, None),
 ]
 
 
@@ -82,7 +84,6 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
         ("q", "quiet", False, None),
         ("s", "search", None, None),
         # universal options
-        ("h", "help", None, None),
         ("v", "verbose", None, None),
         (None, "debug", None, None),
         (None, "noconfirm", None, None),
@@ -93,7 +94,7 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
             ("u", "upgrades", None, None),
             ("o", "owns", None, None),
         ]
-    if action in {"sync", "query"}:
+    if action in {"sync", "query", "interactive_pkg_select"}:
         result += [
             ("l", "list", None, None),
         ]
@@ -106,14 +107,14 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_bool_opts(each_action)
         return list(set(result))
-    if action in {"sync", "pkgbuild", "query"}:
+    if action in {"sync", "pkgbuild", "query", "interactive_pkg_select"}:
         result += [
             (
                 "a", "aur", None,
                 translate("query packages from AUR only"),
             ),
         ]
-    if action in {"sync", "pkgbuild"}:
+    if action in {"sync", "pkgbuild", "interactive_pkg_select"}:
         result += [
             (
                 "k", "keepbuild", PikaurConfig().build.KeepBuildDir.get_bool(),
@@ -155,7 +156,7 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
                 translate("don't pull already cloned PKGBUILD"),
             ),
         ]
-    if action == "sync":
+    if action in {"sync", "interactive_pkg_select"}:
         result += [
             (
                 None, "namesonly", False,
@@ -262,7 +263,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_str_opts(each_action)
         return list(set(result))
-    if action in {"sync", "pkgbuild"}:
+    if action in {"sync", "pkgbuild", "interactive_pkg_select"}:
         result += [
             (
                 None, "mflags",
@@ -312,7 +313,7 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_int_opts(each_action)
         return list(set(result))
-    if action in {"sync", "pkgbuild"}:
+    if action in {"sync", "pkgbuild", "interactive_pkg_select"}:
         result += [
             (
                 None, "aur-clone-concurrency", None,
@@ -336,11 +337,11 @@ def get_pacman_count_opts(action: str | None = None) -> ArgSchema:
         ("y", "refresh", 0, None),
         ("c", "clean", 0, None),
     ]
-    if action == "sync":
+    if action in {"sync", "interactive_pkg_select"}:
         result += [
             ("u", "sysupgrade", 0, None),
         ]
-    if action in {"sync", "query"}:
+    if action in {"sync", "query", "interactive_pkg_select"}:
         result += [
             ("i", "info", 0, None),
         ]
@@ -361,7 +362,7 @@ def get_pikaur_count_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_count_opts(each_action)
         return list(set(result))
-    if action == "sync":
+    if action in {"sync", "interactive_pkg_select"}:
         result += [
             (
                 None, "devel", 0,
@@ -462,6 +463,7 @@ class PikaurArgs(Namespace):
     positional: list[str]
     read_stdin: bool = False
     preserve_env: str = ""
+    interactive_pkg_select: bool = False
 
     def __getattr__(self, name: str) -> PossibleArgValuesTypes:
         transformed_name = name.replace("-", "_")
@@ -484,6 +486,13 @@ class PikaurArgs(Namespace):
 
         if self.pikaur_debug or self.verbose:
             self.print_commands = True
+
+        action_found = False
+        for action_name in [*ALL_ACTIONS, "help", "version"]:
+            if getattr(self, action_name):
+                action_found = True
+        if not action_found and self.positional:
+            self.interactive_pkg_select = True
 
     def validate(self) -> None:
         for operation, operation_depends in ARG_DEPENDS.items():  # noqa: PLR1702
@@ -653,10 +662,7 @@ def get_parser_for_action(
     for action_name in ALL_ACTIONS:
         if getattr(parsed_action, action_name):
             pikaur_action = action_name
-    if not pikaur_action:
-        parser.add_letter_andor_opt(
-            action="store_true", letter="h", opt="help",
-        )
+    if pikaur_action in {"help", None}:
         return parser, []
 
     help_msgs: list[HelpMessage] = []

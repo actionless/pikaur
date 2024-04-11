@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-08 15:15+0100\n"
-"PO-Revision-Date: 2022-11-29 09:34+0300\n"
+"PO-Revision-Date: 2024-04-07 22:34+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.1\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: pikaur/core.py:116
 #, python-brace-format
 msgid "'{class_name}' does not have attribute '{key}' defined."
-msgstr ""
+msgstr "'{class_name}' tanımlanmış '{key}' özelliğine sahip değil."
 
 #: pikaur/core.py:103
 #, python-brace-format
 msgid "'{class_name}' does not have required attribute '{key}' set."
-msgstr ""
+msgstr "'{class_name}' gerekli olan '{key}' özelliğine sahip değil."
 
 #: pikaur/replacements.py:41
 #, python-brace-format
@@ -131,18 +131,16 @@ msgid "Can't resolve dependencies for AUR package '{pkg}':"
 msgstr "AUR paketi '{pkg}' için bağımlılıklar çözülemedi:"
 
 #: pikaur/pacman.py:285
-#, fuzzy
 msgid "Cannot initialize ALPM"
-msgstr "{} başlatılamadı"
+msgstr "ALPM başlatılamadı"
 
 #: pikaur/info_cli.py:39
 msgid "Check Deps"
 msgstr "Bağımlılıkları Kontrol Et"
 
 #: pikaur/info_cli.py:44
-#, fuzzy
 msgid "Co-maintainers"
-msgstr "Sürdürücü"
+msgstr "Eş-sürdürücü"
 
 #: pikaur/build.py:843 pikaur/prompt.py:243
 msgid "Command '{}' failed to execute."
@@ -189,9 +187,8 @@ msgid "Description"
 msgstr "Özet"
 
 #: pikaur/pkg_cache_cli.py:25
-#, fuzzy
 msgid "Directory is empty."
-msgstr "Dizin boş:"
+msgstr "Dizin boş."
 
 #: pikaur/prompt.py:292
 msgid "Do you want to proceed without editing?"
@@ -237,11 +234,13 @@ msgid ""
 "Either SystemD Dynamic Users must be enabled or User ID should be set if "
 "running as root."
 msgstr ""
+"Root olarak çalıştırılıyorsa SystemD Dinamik Kullanıcılar etkinleştirilmeli "
+"veya Kullanıcı Kimliği tanımlanmalı."
 
 #: pikaur/build.py:193 pikaur/print_department.py:590 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
-msgstr ""
+msgstr "`{prop1}` veya `{prop2}` tanımlanmalı"
 
 #: pikaur/install_cli.py:1152
 msgid "Failed to build following packages:"
@@ -314,9 +313,8 @@ msgid "Make Deps"
 msgstr "İnşa Bağımlılıkları"
 
 #: pikaur/config.py:666
-#, fuzzy
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
-msgstr "[{}]{} yapılandırması [{}]{} olarak taşınıyor = \"{}\"..."
+msgstr "[{}]{}=\"{}\" yapılandırması [{}]{}=\"{}\" olarak taşınıyor..."
 
 #. "aur_id": translate("id"),
 #: pikaur/info_cli.py:26
@@ -353,7 +351,7 @@ msgstr "Yeni '{new}' paketleri ile '{other}' çakışıyor."
 
 #: pikaur/help_cli.py:48
 msgid "No response from Pacman"
-msgstr ""
+msgstr "Pacman cevap vermiyor"
 
 #: pikaur/info_cli.py:61 pikaur/info_cli.py:92
 msgid "None"
@@ -503,9 +501,8 @@ msgid "Starting the build"
 msgstr "İnşa başlatılıyor"
 
 #: pikaur/info_cli.py:42
-#, fuzzy
 msgid "Submitter"
-msgstr "İlk Gönderim"
+msgstr "Gönderici"
 
 #: pikaur/news.py:129
 msgid "The news feed could not be received or parsed."
@@ -568,7 +565,7 @@ msgstr[1] "Paketlerin kurulumu hakkında UYARI:"
 
 #: pikaur/args.py:486
 msgid "WARNING, unknown args: {}"
-msgstr ""
+msgstr "UYARI: bilinmeyen argümanlar: {}"
 
 #: pikaur/install_cli.py:253
 msgid "[A] abort"
@@ -579,23 +576,21 @@ msgid "[R] retry build"
 msgstr "[R] tekrar inşa etmeyi dene"
 
 #: pikaur/build.py:355
-#, fuzzy
 msgid "[R] retry clone"
-msgstr "[R] tekrar inşa etmeyi dene"
+msgstr "[R] tekrar kolanlamayı dene"
 
 #: pikaur/install_cli.py:594
 msgid "[T] try again"
-msgstr ""
+msgstr "[T] tekrar dene"
 
 #: pikaur/prompt.py:200
 #, python-brace-format
 msgid "[Y]es ({reason})"
-msgstr ""
+msgstr "[E]vet ({reason})"
 
 #: pikaur/install_cli.py:601
-#, fuzzy
 msgid "[a] abort"
-msgstr "[V] vazgeç"
+msgstr "[v] vazgeç"
 
 #: pikaur/build.py:361 pikaur/build.py:870
 msgid "[a] abort building all the packages"
@@ -615,7 +610,7 @@ msgstr "[s] inşa dizinini sil ve tekrar dene"
 
 #: pikaur/install_cli.py:595
 msgid "[d] git diff"
-msgstr ""
+msgstr "[d] git fark"
 
 #: pikaur/build.py:357 pikaur/build.py:867 pikaur/install_cli.py:251
 msgid "[e] edit PKGBUILD"
@@ -630,9 +625,8 @@ msgid "[i] ignore architecture"
 msgstr "[m] mimariyi dışla"
 
 #: pikaur/build.py:358
-#, fuzzy
 msgid "[i] ignore the error"
-msgstr "[m] mimariyi dışla"
+msgstr "[m] hatayı dışla"
 
 #: pikaur/print_department.py:754
 #, python-brace-format
@@ -675,7 +669,7 @@ msgstr "paket detaylarını [g]öster   paketleri elle se[ç]"
 #: pikaur/pikspect.py:331
 #, python-brace-format
 msgid "`{var_name}` should be list."
-msgstr ""
+msgstr "`{var_name}` liste olmalı."
 
 #: pikaur/build.py:349 pikaur/build.py:371 pikaur/build.py:398
 #: pikaur/build.py:854 pikaur/build.py:884 pikaur/build.py:921
@@ -732,12 +726,11 @@ msgstr "inşa dosyalarının farklarını göstermeyi sorma"
 
 #: pikaur/args.py:145
 msgid "don't pull already cloned PKGBUILD"
-msgstr ""
+msgstr "klonlanmış PKGBUILD varsa çekme"
 
 #: pikaur/args.py:114
-#, fuzzy
 msgid "don't remove build dependencies between and after the builds"
-msgstr "inşa ettikten sonra inşa dizinini silme"
+msgstr "inşa ederken ve ettikten sonra bağımlılık inşalarını silme"
 
 #: pikaur/args.py:110
 msgid "don't remove build dir after the build"
@@ -784,11 +777,11 @@ msgstr "{pkg} için"
 
 #: pikaur/args.py:141
 msgid "hide build log"
-msgstr ""
+msgstr "inşa kayıtlarını gizle"
 
 #: pikaur/args.py:303
 msgid "how many git-clones/pulls to do from AUR"
-msgstr ""
+msgstr "AUR'dan kaç tane git-klon/çekme işlemi yapılacak"
 
 #: pikaur/build.py:369 pikaur/build.py:396 pikaur/build.py:880
 #: pikaur/build.py:902
@@ -870,7 +863,7 @@ msgstr "özel pikaur yapılandırması yolu"
 
 #: pikaur/args.py:287
 msgid "path where to clone PKGBUILDs"
-msgstr ""
+msgstr "PKGBUILD dosyalarının klonlanacağı konum"
 
 #. to avoid mixing together with pacman's debug messages:
 #: pikaur/logging.py:52
@@ -896,7 +889,6 @@ msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr "pikaur {-G --getpkgbuild} [seçenekler] <paket(ler)>"
 
 #: pikaur/help_cli.py:60
-#, fuzzy
 msgid "pikaur {-P --pkgbuild}    [options] [file(s)]"
 msgstr "pikaur {-P --pkgbuild}    [seçenekler] <dosya(lar)>"
 
@@ -906,7 +898,7 @@ msgstr "pikaur-özel işlemler:"
 
 #: pikaur/args.py:242
 msgid "preserve environment variables (comma-separated)"
-msgstr ""
+msgstr "ortam değişkenlerini koru (virgülle-ayrılmış)"
 
 #: pikaur/args.py:186
 msgid "print spawned by pikaur subshell commands"
@@ -953,11 +945,11 @@ msgstr "sadece pikaur'a özel hata mesajlarını göster"
 
 #: pikaur/args.py:133
 msgid "skip failed builds"
-msgstr ""
+msgstr "başarısız inşaları atla"
 
 #: pikaur/install_cli.py:606
 msgid "t"
-msgstr ""
+msgstr "t"
 
 #: pikaur/argparse.py:261
 #, python-format
@@ -975,6 +967,7 @@ msgstr "kullanım:  pikaur {-P --pkgbuild} [seçenekler] <dosya(lar)>"
 #: pikaur/args.py:307
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr ""
+"pikaur root olarak başlatılmışsa makepkg'i çalıştırmak için kullanıcı kimliği"
 
 #: pikaur/install_cli.py:458 pikaur/install_cli.py:472
 msgid "v"
@@ -999,7 +992,7 @@ msgstr[1] "{grp} gruplar"
 #: pikaur/config.py:558
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
-msgstr ""
+msgstr "{key} '{typeof}' türünde değil"
 
 #: pikaur/build.py:754
 #, python-brace-format
@@ -1043,17 +1036,3 @@ msgid ""
 msgstr ""
 "{what} bağımlılığı: '{dep}'\n"
 "'{location}' konumunda: '{version}'"
-
-#, python-brace-format
-#~ msgid "Can't lock {lock_file}: {reason}"
-#~ msgstr "{lock_file} kilitlenemedi: {reason}"
-
-#~ msgid "[N]o (--noconfirm)"
-#~ msgstr "[H]ayır (--noconfirm)"
-
-#, fuzzy
-#~ msgid "[f] check() skip"
-#~ msgstr "[c] sağlamayı atla"
-
-#~ msgid "[Y]es (--noconfirm)"
-#~ msgstr "[E]vet (--noconfirm)"

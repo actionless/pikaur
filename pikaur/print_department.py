@@ -1,5 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
+import operator
 import sys
 from datetime import datetime
 from fnmatch import fnmatch
@@ -337,7 +338,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 pretty_format(pkg_update)
                 for pkg_update in packages_updates
             ],
-            key=lambda x: x[1],
+            key=operator.itemgetter(1),
         )
     ])
 

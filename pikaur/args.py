@@ -660,9 +660,9 @@ def get_parser_for_action(
     parsed_action = parser.parse_pikaur_args(args)
     pikaur_action: str | None = None
     for action_name in ALL_ACTIONS:
-        if getattr(parsed_action, action_name):
+        if getattr(parsed_action, action_name) and action_name != "help":
             pikaur_action = action_name
-    if pikaur_action in {"help", None}:
+    if (pikaur_action is None):
         return parser, []
 
     help_msgs: list[HelpMessage] = []

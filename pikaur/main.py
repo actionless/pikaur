@@ -312,7 +312,7 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             require_sudo = True
             pikaur_operation = cli_install_packages
 
-    elif args.interactive_pkg_select:
+    elif args.interactive_package_select:
         require_sudo = True
         pikaur_operation = cli_dynamic_select
 

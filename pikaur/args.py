@@ -36,11 +36,10 @@ PACMAN_ACTIONS: "Final[ArgSchema]" = [
 ]
 
 
-def get_pikaur_actions() -> ArgSchema:
-    return [
-        ("P", "pkgbuild", None, None),
-        ("G", "getpkgbuild", None, None),
-    ]
+PIKAUR_ACTIONS: "Final[ArgSchema]" = [
+    ("P", "pkgbuild", None, None),
+    ("G", "getpkgbuild", None, None),
+]
 
 
 ALL_PACMAN_ACTIONS: "Final[list[str]]" = [
@@ -48,7 +47,7 @@ ALL_PACMAN_ACTIONS: "Final[list[str]]" = [
     if schema[1] is not None
 ]
 ALL_PIKAUR_ACTIONS: "Final[list[str]]" = [
-    schema[1] for schema in get_pikaur_actions()
+    schema[1] for schema in PIKAUR_ACTIONS
     if schema[1] is not None
 ]
 ALL_ACTIONS: "Final[list[str]]" = ALL_PACMAN_ACTIONS + ALL_PIKAUR_ACTIONS
@@ -395,7 +394,7 @@ ARG_CONFLICTS: "Final[dict[str, dict[str, list[str]]]]" = {
 
 def get_all_pikaur_options() -> ArgSchema:
     return (
-        get_pikaur_actions() +
+        PIKAUR_ACTIONS +
         get_pikaur_bool_opts() +
         get_pikaur_str_opts() +
         get_pikaur_count_opts() +
@@ -644,7 +643,7 @@ def get_parser_for_action(
     parser = PikaurArgumentParser(prog=app, add_help=False)
     parser.add_argument("positional", nargs="*")
     for letter, opt, default, _help in (
-            PACMAN_ACTIONS + get_pikaur_actions()
+            PACMAN_ACTIONS + PIKAUR_ACTIONS
     ):
         parser.add_letter_andor_opt(
             action="store_true", letter=letter, opt=opt, default=default,

@@ -488,7 +488,7 @@ class PikaurArgs(Namespace):
             self.print_commands = True
 
         action_found = False
-        for action_name in [*ALL_ACTIONS, "help", "version"]:
+        for action_name in ALL_ACTIONS:
             if getattr(self, action_name):
                 action_found = True
         if not action_found and self.positional:

@@ -662,7 +662,7 @@ def get_parser_for_action(
     for action_name in ALL_ACTIONS:
         if getattr(parsed_action, action_name) and action_name != "help":
             pikaur_action = action_name
-    if (pikaur_action is None):
+    if pikaur_action is None:
         return parser, []
 
     help_msgs: list[HelpMessage] = []

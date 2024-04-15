@@ -319,16 +319,17 @@ class PackageBuild(DataType):  # noqa: PLR0904
             not (is_devel_pkg(self.package_base) and check_dev_pkgs)
         ):
             return
-        print_stdout("{} {}...".format(  # pylint: disable=consider-using-f-string
-            color_line("::", ColorsHighlight.white),
-            translate_many(
-                "Downloading the latest sources for a devel package {}",
-                "Downloading the latest sources for devel packages {}",
-                len(self.package_names),
-            ).format(
-                bold_line(", ".join(self.package_names)),
-            ),
-        ), tty_restore=tty_restore)
+        message = translate_many(
+            "Downloading the latest sources for a devel package {}",
+            "Downloading the latest sources for devel packages {}",
+            len(self.package_names),
+        ).format(
+            bold_line(", ".join(self.package_names)),
+        )
+        print_stdout(
+            f"{color_line('::', ColorsHighlight.white)} {message}...",
+            tty_restore=tty_restore,
+        )
         pkgver_result = joined_spawn(
             isolate_root_cmd(
                 [*MakePkgCommand.get(), "--nobuild", "--nocheck", "--nodeps"],
@@ -484,11 +485,10 @@ class PackageBuild(DataType):  # noqa: PLR0904
         if not self.built_deps_to_install:
             return
 
-        print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
-            color_line("::", ColorsHighlight.purple),
-            translate("Installing already built dependencies for {}").format(
-                bold_line(", ".join(self.package_names))),
-        ))
+        message = translate("Installing already built dependencies for {}").format(
+            bold_line(", ".join(self.package_names)),
+        )
+        print_stderr(f"{color_line('::', ColorsHighlight.purple)} {message}:")
 
         try:
             update_self_deps = False
@@ -568,16 +568,14 @@ class PackageBuild(DataType):  # noqa: PLR0904
                 not self.args.rebuild and
                 len(self.built_packages_paths) == len(self.package_names)
         ):
-            print_stderr("{} {}\n".format(  # pylint: disable=consider-using-f-string
-                color_line("::", ColorsHighlight.green),
-                translate_many(
-                    "Package {pkg} is already built. Pass '--rebuild' flag to force the build.",
-                    "Packages {pkg} are already built. Pass '--rebuild' flag to force the build.",
-                    len(self.package_names),
-                ).format(
-                    pkg=bold_line(", ".join(self.package_names)),
-                ),
-            ))
+            message = translate_many(
+                "Package {pkg} is already built. Pass '--rebuild' flag to force the build.",
+                "Packages {pkg} are already built. Pass '--rebuild' flag to force the build.",
+                len(self.package_names),
+            ).format(
+                pkg=bold_line(", ".join(self.package_names)),
+            )
+            print_stderr(f"{color_line('::', ColorsHighlight.green)} {message}\n")
             return True
         return False
 
@@ -646,11 +644,10 @@ class PackageBuild(DataType):  # noqa: PLR0904
         if not self.all_deps_to_install:
             return
 
-        print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
-            color_line("::", ColorsHighlight.purple),
-            translate("Installing repository dependencies for {}").format(
-                bold_line(", ".join(self.package_names))),
-        ))
+        message = translate("Installing repository dependencies for {}").format(
+            bold_line(", ".join(self.package_names)),
+        )
+        print_stderr(f"{color_line('::', ColorsHighlight.purple)} {message}:")
 
         # @TODO: add support for --skip-failed-build here:
         retry_interactive_command_or_exit(
@@ -720,11 +717,10 @@ class PackageBuild(DataType):  # noqa: PLR0904
         if not deps_packages_installed or self.args.keepbuilddeps:
             return
 
-        print_stderr("{} {}:".format(  # pylint: disable=consider-using-f-string
-            color_line("::", ColorsHighlight.purple),
-            translate("Removing already installed dependencies for {}").format(
-                bold_line(", ".join(self.package_names))),
-        ))
+        message = translate("Removing already installed dependencies for {}").format(
+            bold_line(", ".join(self.package_names)),
+        )
+        print_stderr(f"{color_line('::', ColorsHighlight.purple)} {message}:")
         retry_interactive_command_or_exit(
             sudo(
                 # pacman --remove flag conflicts with some --sync options:
@@ -821,10 +817,9 @@ class PackageBuild(DataType):  # noqa: PLR0904
         if not color_enabled():
             makepkg_args.append("--nocolor")
 
-        print_stderr("\n{} {}:".format(  # pylint: disable=consider-using-f-string
-            color_line("::", ColorsHighlight.purple),
-            translate("Starting the build"),
-        ))
+        print_stderr(
+            f"\n{color_line('::', ColorsHighlight.purple)} {translate('Starting the build')}:",
+        )
         build_succeeded = False
         skip_pgp_check = False
         skip_file_checksums = False

@@ -91,7 +91,7 @@ def cli_getpkgbuild() -> None:
         print_not_found_packages(not_found_repo_pkgs)
 
     if args.deps:
-        aur_pkgs = aur_pkgs + get_aur_deps_list(aur_pkgs)
+        aur_pkgs += get_aur_deps_list(aur_pkgs)
 
     clone_aur_pkgs(aur_pkgs=aur_pkgs, pwd=pwd)
     clone_repo_pkgs(repo_pkgs=repo_pkgs, pwd=pwd)

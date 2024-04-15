@@ -23,10 +23,12 @@ def clean_aur_cache() -> None:
             continue
         if not directory.exists():
             print_stdout(translate("Directory is empty."))
-        elif ask_to_continue(text="{} {}".format(  # pylint: disable=consider-using-f-string
-                color_line("::", ColorsHighlight.blue),
-                bold_line(translate("Do you want to remove all files?")),
-        )):
+        elif ask_to_continue(
+            text=(
+                f"{color_line('::', ColorsHighlight.blue)}"
+                f" {bold_line(translate('Do you want to remove all files?'))}"
+            ),
+        ):
             print_stdout(translate("removing all files from cache..."))
             remove_dir(directory)
 

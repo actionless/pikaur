@@ -201,7 +201,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
             for idx in selected_pkgs_idx:
                 if not 0 <= idx < len(packages):
                     print_error(translate("invalid value: {} is not between {} and {}").format(
-                        idx + 1, 1, len(packages) + 1,
+                        idx + 1, 1, len(packages),
                     ))
                     restart_prompt = True
             if restart_prompt:

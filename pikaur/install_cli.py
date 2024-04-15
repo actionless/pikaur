@@ -180,10 +180,10 @@ class InstallPackagesCLI:  # noqa: PLR0904
             return
 
         if self.args.sysupgrade and not self.args.repo:
-            print_stderr("{} {}".format(  # pylint: disable=consider-using-f-string
-                color_line("::", ColorsHighlight.blue),
-                bold_line(translate("Starting full AUR upgrade...")),
-            ))
+            print_stderr(
+                f"{color_line('::', ColorsHighlight.blue)}"
+                f" {bold_line(translate('Starting full AUR upgrade...'))}",
+            )
         if self.args.aur:
             self.not_found_repo_pkgs_names = self.install_package_names
             self.install_package_names = []
@@ -276,20 +276,18 @@ class InstallPackagesCLI:  # noqa: PLR0904
         self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
 
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
-        prompt = "{} {}\n{}\n{}\n{}\n{}\n> ".format(  # pylint: disable=consider-using-f-string
-            color_line("::", ColorsHighlight.yellow),
-            translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
-            translate("[e] edit PKGBUILD"),
-            translate("[f] skip 'check()' function of PKGBUILD"),
-            translate("[s] skip this package"),
-            translate("[A] abort"),
-        )
+        quote = "'"
         answer = get_input(
-            prompt,
+            (
+                f"{color_line('::', ColorsHighlight.yellow)}"
+                f" {translate('Try recovering {pkg_name}?').format(pkg_name=bold_line(pkg_name))}\n"
+                f"{translate('[e] edit PKGBUILD')}\n"
+                f"{translate(f'[f] skip {quote}check(){quote} function of PKGBUILD')}\n"
+                f"{translate('[s] skip this package')}\n"
+                f"{translate('[A] abort')}\n> "
+            ),
             translate("e") + translate("f") + translate("s") + translate("a").upper(),
-        )
-
-        answer = answer.lower()[0]
+        ).lower()[0]
         if answer == translate("e"):
             self.edit_pkgbuild_during_the_build(pkg_name)
             self.main_sequence()
@@ -302,19 +300,16 @@ class InstallPackagesCLI:  # noqa: PLR0904
             raise SysExit(125)
 
     def prompt_dependency_cycle(self, pkg_name: str) -> None:  # pragma: no cover
-        prompt = "{} {}\n{}\n{}\n{}\n> ".format(  # pylint: disable=consider-using-f-string
-            color_line("::", ColorsHighlight.yellow),
-            translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name)),
-            translate("[e] edit PKGBUILD"),
-            translate("[s] skip this package"),
-            translate("[A] abort"),
-        )
         answer = get_input(
-            prompt,
+            (
+                f"{color_line('::', ColorsHighlight.yellow)}"
+                f" {translate('Try recovering {pkg_name}?').format(pkg_name=bold_line(pkg_name))}\n"
+                f"{translate('[e] edit PKGBUILD')}\n"
+                f"{translate('[s] skip this package')}\n"
+                f"{translate('[A] abort')}\n> "
+            ),
             translate("e") + translate("s") + translate("a").upper(),
-        )
-
-        answer = answer.lower()[0]
+        ).lower()[0]
         if answer == translate("e"):
             self.edit_pkgbuild_during_the_build(pkg_name)
             self.main_sequence()
@@ -758,14 +753,15 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     raise SysExit(131)
         for new_pkg_name, new_pkg_conflicts in self.found_conflicts.items():
             for pkg_conflict in new_pkg_conflicts:
-                answer = ask_to_continue("{} {}".format(  # pylint: disable=consider-using-f-string
-                    color_line("::", ColorsHighlight.yellow),
-                    bold_line(translate(
-                        "{new} and {installed} are in conflict. Remove {installed}?",
-                    ).format(
-                        new=new_pkg_name, installed=pkg_conflict,
-                    )),
-                ), default_yes=False)
+                question = translate(
+                    "{new} and {installed} are in conflict. Remove {installed}?",
+                ).format(
+                    new=new_pkg_name, installed=pkg_conflict,
+                )
+                answer = ask_to_continue(
+                    f"{color_line('::', ColorsHighlight.yellow)} {bold_line(question)}",
+                    default_yes=False,
+                )
                 if not answer:
                     raise SysExit(131)
                 self.resolved_conflicts.append([new_pkg_name, pkg_conflict])
@@ -777,14 +773,12 @@ class InstallPackagesCLI:  # noqa: PLR0904
             self.args.noedit
         )
         if noedit or self.args.noconfirm:
-            print_stderr("{} {}".format(  # pylint: disable=consider-using-f-string
-                color_line("::", ColorsHighlight.yellow),
-                translate("Skipping review of {file} for {name} package ({flag})").format(
-                    file=filename,
-                    name=", ".join(package_build.package_names),
-                    flag=(noedit and "--noedit") or
-                    (self.args.noconfirm and "--noconfirm")),
-            ))
+            message = translate("Skipping review of {file} for {name} package ({flag})").format(
+                file=filename,
+                name=", ".join(package_build.package_names),
+                flag=(noedit and "--noedit") or (self.args.noconfirm and "--noconfirm"),
+            )
+            print_stderr(f"{color_line('::', ColorsHighlight.yellow)} {message}")
             return False
         if not ask_to_continue(
                 translate("Do you want to {edit} {file} for {name} package?").format(

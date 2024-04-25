@@ -88,16 +88,23 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 action(self, namespace, argument_values, option_string)
 
         # function to convert arg_strings into an optional action
-        def consume_optional(start_index: int) -> tuple[int, list[str]]:
+        def consume_optional(start_index: int) -> tuple[int, list[str]]:  # noqa: PLR0914
 
             unknown_args: list[str] = []
 
             # get the optional identified at this index
             option_tuple = option_string_indices[start_index]
+            option_tuple_length_before_3_12_3 = 3
+            option_tuple_length_3_12_3_onwards = 4
             action: Action | None
             option_string: str
             explicit_arg: str | None
-            action, option_string, explicit_arg = option_tuple
+            if len(option_tuple) == option_tuple_length_before_3_12_3:
+                action, option_string, explicit_arg = option_tuple
+            elif len(option_tuple) == option_tuple_length_3_12_3_onwards:
+                action, option_string, _, explicit_arg = option_tuple  # type: ignore[misc]
+            else:
+                raise NotImplementedError
 
             # identify additional optionals in the same arg string
             # (e.g. -xyz is the same as -x -y -z if no args are required)

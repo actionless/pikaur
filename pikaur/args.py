@@ -792,3 +792,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
             ):
                 result += ["--" + opt] * value
     return result
+
+
+if __name__ == "__main__":
+    parse_args()

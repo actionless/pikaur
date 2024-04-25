@@ -541,7 +541,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
             pkg_basename = Path(pkg_path).name
             logger.debug("Full path: {}, base path: {}", pkg_path, pkg_basename)
             if pkg_path == Path(pkg_basename):
-                pkg_path = (  # noqa: PLR6104
+                pkg_path = (
                     Path(pkg_dest) if pkg_dest else self.build_dir
                 ) / pkg_path
                 logger.debug("Resolving full path: {} from base path: {}", pkg_path, pkg_basename)

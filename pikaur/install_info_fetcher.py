@@ -582,7 +582,9 @@ Gonna fetch install info for:
             print_stdout(translate("Resolving AUR dependencies..."))
         try:
             self.aur_deps_relations = find_aur_deps(
-                all_aur_pkgs, skip_checkdeps_for_pkgnames=self.skip_checkdeps_for_pkgnames,
+                all_aur_pkgs,
+                skip_checkdeps_for_pkgnames=self.skip_checkdeps_for_pkgnames,
+                skip_runtime_deps=bool(self.args.pkgbuild and (not self.args.install)),
             )
         except DependencyVersionMismatchError as exc:
             if exc.location is not PackageSource.LOCAL:

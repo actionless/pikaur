@@ -47,6 +47,7 @@ class AURPackageInfo(DataType):
     makedepends: list[str]
     optdepends: list[str]
     checkdepends: list[str]
+    runtimedepends: list[str]
     conflicts: list[str]
     replaces: list[str]
     provides: list[str]
@@ -82,6 +83,7 @@ class AURPackageInfo(DataType):
             "makedepends",
             "optdepends",
             "checkdepends",
+            "runtimedepends",
             "conflicts",
             "replaces",
             "provides",
@@ -99,9 +101,10 @@ class AURPackageInfo(DataType):
             version=(srcinfo.get_value("pkgver") or "") + "-" + (srcinfo.get_value("pkgrel") or ""),
             desc=srcinfo.get_value("pkgdesc"),
             packagebase=srcinfo.get_value("pkgbase"),
-            depends=[dep.line for dep in srcinfo.get_depends().values()],
+            depends=[dep.line for dep in srcinfo.get_build_depends().values()],
             makedepends=[dep.line for dep in srcinfo.get_build_makedepends().values()],
             checkdepends=[dep.line for dep in srcinfo.get_build_checkdepends().values()],
+            runtimedepends=[dep.line for dep in srcinfo.get_runtime_depends().values()],
             **{
                 key: srcinfo.get_values(key)
                 for key in [

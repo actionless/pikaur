@@ -587,11 +587,16 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 srcinfo_deps.update({
                     dep_line
                     for matcher in
-                    list(src_info.get_depends().values()) +
+                    list(src_info.get_build_depends().values()) +
                     list(src_info.get_build_makedepends().values()) +
                     (
                         list(src_info.get_build_checkdepends().values())
                         if (package_name not in self.skip_checkfunc_for_pkgnames)
+                        else []
+                    ) +
+                    (
+                        list(src_info.get_runtime_depends().values())
+                        if (not (self.args.pkgbuild and (not self.args.install)))
                         else []
                     )
                     for dep_line in matcher.line.split(",")

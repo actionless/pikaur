@@ -59,6 +59,24 @@ class FailureTest(PikaurDbTestCase):
         )
         self.assertNotInstalled(pkg_name)
 
+    def test_pkgbuild_runtime_deps_install(self):
+        """Runtime dependency package can't be found in AUR."""
+        pkg_name = "samplepkg_runtime_deps"
+        not_existing_dep_name = "a_runtime_dependency_23478937892"
+        result = pikaur(
+            "-Pi --noconfirm ./pikaur_test/PKGBUILD_runtime_deps",
+            capture_stderr=True,
+        )
+        self.assertEqual(result.returncode, 125)
+        self.assertIn(MSG_DEPS_MISSING, result.stderr)
+        self.assertIn(pkg_name, result.stderr)
+        self.assertIn(MSG_CANNOT_BE_FOUND, result.stderr)
+        self.assertEqual(
+            result.stderr.splitlines()[-1].strip(),
+            not_existing_dep_name,
+        )
+        self.assertNotInstalled(pkg_name)
+
     def test_version_mismatch_aur(self):
         """Dependency AUR package version not satisfied."""
         pkg_name = "pikaur-test-version-mismatch-aur"

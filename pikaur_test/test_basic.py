@@ -87,6 +87,15 @@ class InstallTest(PikaurDbTestCase):
         pikaur("-P --noconfirm --install")
         self.assertInstalled(pkg_name)
 
+    def test_pkgbuild_runtime_deps(self):
+        pkg_name = "samplepkg_runtime_deps"
+        result = pikaur(
+            "-P ./pikaur_test/PKGBUILD_runtime_deps",
+            capture_stderr=True,
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertNotInstalled(pkg_name)
+
     def test_pkgbuild_split_packages(self):
         # pkg_base = "lua-xmlrpc"
         pkg_name1 = "lua51-xmlrpc"

@@ -37,11 +37,13 @@ def get_aur_pkg_deps_and_version_matchers(
         aur_pkg: "AURPackageInfo",
         *,
         skip_check_depends: bool = False,
+        skip_runtime_deps: bool = False,
 ) -> dict[str, VersionMatcher]:
     deps: dict[str, VersionMatcher] = {}
     for dep_line in (
             (aur_pkg.depends or [])
             + (aur_pkg.makedepends or [])
+            + (aur_pkg.runtimedepends if (not skip_runtime_deps and aur_pkg.runtimedepends) else [])
             + (aur_pkg.checkdepends if (not skip_check_depends and aur_pkg.checkdepends) else [])
     ):
         version_matcher = VersionMatcher(dep_line, is_pkg_deps=True)
@@ -270,6 +272,8 @@ def find_missing_deps_for_aur_pkg(
 def find_aur_deps(  # pylint: disable=too-many-branches
         aur_pkgs_infos: "list[AURPackageInfo]",
         skip_checkdeps_for_pkgnames: list[str] | None = None,
+        *,
+        skip_runtime_deps: bool = False,
 ) -> dict[str, list[str]]:
     new_aur_deps: list[str] = []
     package_names = [
@@ -294,6 +298,7 @@ def find_aur_deps(  # pylint: disable=too-many-branches
             aur_pkg_deps = get_aur_pkg_deps_and_version_matchers(
                 aur_pkg,
                 skip_check_depends=aur_pkg.name in (skip_checkdeps_for_pkgnames or []),
+                skip_runtime_deps=skip_runtime_deps,
             )
             if aur_pkg_deps:
                 all_deps_for_aur_packages[aur_pkg.name] = aur_pkg_deps

@@ -106,7 +106,7 @@ class SrcInfo:
     def _get_build_depends(self, field: str) -> dict[str, VersionMatcher]:
         return self._get_depends(field=field, lines=self._common_lines)
 
-    def get_depends(self) -> dict[str, VersionMatcher]:
+    def get_runtime_depends(self) -> dict[str, VersionMatcher]:
         return self._get_depends("depends")
 
     def get_build_depends(self) -> dict[str, VersionMatcher]:

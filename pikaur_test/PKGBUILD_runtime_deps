@@ -1,0 +1,23 @@
+pkgname=samplepkg_runtime_deps
+pkgver=1.0.0
+pkgrel=2
+pkgdesc="Sample PKG"
+arch=('x86_64')
+url="https://example.com"
+license=('MIT')
+
+# Dependencies shoud be installed at both build time and runtime
+depends=('curl')
+
+# Dependencies should be installed at build time
+makedepends=('bash')
+checkdepends=('wget')
+
+package() {
+    # Dependencies should be installed at runtime
+    depends=('a_runtime_dependency_23478937892')
+    
+    bash -c "echo test"
+}
+
+# vim: set ft=PKGBUILD:

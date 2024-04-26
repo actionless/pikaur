@@ -1,0 +1,48 @@
+# Maintainer: Luis Martinez <luis dot martinez at disroot dot org>
+# Contributor: GI_Jack <GI_Jack@hackermail.com>
+
+pkgname=python-coveralls
+pkgver=3.3.1
+pkgrel=99
+_commit=8fb36645bf5f06466e1950a0656d86c533db1573
+pkgdesc="Python integration with coveralls.io"
+url="https://github.com/thekevjames/coveralls-python"
+arch=('any')
+license=('MIT')
+depends=('python-coverage' 'python-docopt' 'python-requests')
+optdepends=('python-yaml')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel' 'python-poetry')
+checkdepends=('git' 'python-mock' 'python-pytest' 'python-responses')
+source=(
+	"$pkgname::git+$url#commit=$_commit"
+)
+	#"https://patch-diff.githubusercontent.com/raw/TheKevJames/coveralls-python/pull/340.patch"
+sha256sums=(
+	'SKIP'
+)
+	#'2f1e835253a9e9d2b515b8c139a844cacf53b38b0009a3c2b09bbfa50f4c1581'
+
+prepare() {
+	cd "$pkgname"
+	#patch -p1 < "$srcdir/340.patch"
+}
+
+build() {
+	cd "$pkgname"
+	python -m build --wheel --no-isolation
+}
+
+#check() {
+#    cd "$pkgname"
+#    pytest -x
+#}
+
+package() {
+	cd "$pkgname"
+	PYTHONHASHSEED=0 python -m installer --destdir="$pkgdir" dist/*.whl
+	local _site="$(python -c 'import site; print(site.getsitepackages()[0])')"
+	install -d "$pkgdir/usr/share/licenses/$pkgname/"
+	ln -s "$_site/$_pkg-$pkgver.dist-info/LICENSE.txt" "$pkgdir/usr/share/licenses/$pkgname/"
+}
+
+# vim: set ft=PKGBUILD:

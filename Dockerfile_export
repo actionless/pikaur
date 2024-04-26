@@ -36,8 +36,11 @@ RUN git clone https://github.com/actionless/pikaur.git /opt/app-build/
 RUN	echo ">>>> Starting the build:" && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	rm -fr ./src/ ./pkg/
-#RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '6.5.0-5'
-RUN echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -S --noconfirm --mflags=--skippgpcheck --color=always python-coveralls
+#RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '7.4.1-1'  # up to 7.4.4
+#RUN echo ">>>> Installing test deps using Pikaur itself:" && \
+#    sudo -u user pikaur -S --noconfirm --mflags=--skippgpcheck --color=always python-coveralls
+# Workaround for broken coveralls:
+ADD ./maintenance_scripts/coveralls_PKGBUILD ./coveralls_PKGBUILD
+RUN sudo -u user pikaur -Pi --noconfirm --color=always coveralls_PKGBUILD
 
 # vim: set ft=dockerfile :

@@ -817,8 +817,9 @@ class PackageBuild(DataType):  # noqa: PLR0904
         if not color_enabled():
             makepkg_args.append("--nocolor")
 
+        message = translate("Starting the build")
         print_stderr(
-            f"\n{color_line('::', ColorsHighlight.purple)} {translate('Starting the build')}:",
+            f"\n{color_line('::', ColorsHighlight.purple)} {message}:",
         )
         build_succeeded = False
         skip_pgp_check = False

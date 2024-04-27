@@ -368,8 +368,9 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
 
     for dep_bin in dep_names:
         if not shutil.which(dep_bin):
+            message = translate("executable not found")
             print_error(
-                f"'{bold_line(dep_bin)}' {translate('executable not found')}.",
+                f"'{bold_line(dep_bin)}' {message}.",
             )
             sys.exit(2)
 

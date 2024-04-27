@@ -180,9 +180,10 @@ class InstallPackagesCLI:  # noqa: PLR0904
             return
 
         if self.args.sysupgrade and not self.args.repo:
+            message = translate("Starting full AUR upgrade...")
             print_stderr(
                 f"{color_line('::', ColorsHighlight.blue)}"
-                f" {bold_line(translate('Starting full AUR upgrade...'))}",
+                f" {bold_line(message)}",
             )
         if self.args.aur:
             self.not_found_repo_pkgs_names = self.install_package_names
@@ -277,14 +278,18 @@ class InstallPackagesCLI:  # noqa: PLR0904
 
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
         quote = "'"
+        question = translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name))
+        options = [
+            translate("[e] edit PKGBUILD"),
+            translate(f"[f] skip {quote}check(){quote} function of PKGBUILD"),
+            translate("[s] skip this package"),
+            translate("[A] abort"),
+        ]
         answer = get_input(
             (
                 f"{color_line('::', ColorsHighlight.yellow)}"
-                f" {translate('Try recovering {pkg_name}?').format(pkg_name=bold_line(pkg_name))}\n"
-                f"{translate('[e] edit PKGBUILD')}\n"
-                f"{translate(f'[f] skip {quote}check(){quote} function of PKGBUILD')}\n"
-                f"{translate('[s] skip this package')}\n"
-                f"{translate('[A] abort')}\n> "
+                f" {question}\n"
+                f"{'\n'.join(options)}\n> "
             ),
             translate("e") + translate("f") + translate("s") + translate("a").upper(),
         ).lower()[0]
@@ -300,13 +305,17 @@ class InstallPackagesCLI:  # noqa: PLR0904
             raise SysExit(125)
 
     def prompt_dependency_cycle(self, pkg_name: str) -> None:  # pragma: no cover
+        question = translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name))
+        options = [
+            translate("[e] edit PKGBUILD"),
+            translate("[s] skip this package"),
+            translate("[A] abort"),
+        ]
         answer = get_input(
             (
                 f"{color_line('::', ColorsHighlight.yellow)}"
-                f" {translate('Try recovering {pkg_name}?').format(pkg_name=bold_line(pkg_name))}\n"
-                f"{translate('[e] edit PKGBUILD')}\n"
-                f"{translate('[s] skip this package')}\n"
-                f"{translate('[A] abort')}\n> "
+                f" {question}\n"
+                f"{'\n'.join(options)}\n> "
             ),
             translate("e") + translate("s") + translate("a").upper(),
         ).lower()[0]
@@ -492,16 +501,19 @@ class InstallPackagesCLI:  # noqa: PLR0904
         def _confirm_sysupgrade(*, verbose: bool = False, print_pkgs: bool = True) -> str:
             if print_pkgs:
                 _print_sysupgrade(verbose=verbose)
+            question = translate("Proceed with installation? [Y/n] ")
+            options_line1 = translate("[v]iew package details   [m]anually select packages")
             prompt = (
                 f"{color_line('::', ColorsHighlight.blue)}"
-                f" {bold_line(translate('Proceed with installation? [Y/n] '))}"
+                f" {bold_line(question)}"
                 f"\n{color_line('::', ColorsHighlight.blue)}"
-                f" {bold_line(translate('[v]iew package details   [m]anually select packages'))}"
+                f" {bold_line(options_line1)}"
             )
             if self.news and self.news.any_news:
+                options_news = translate("[c]onfirm Arch NEWS as read")
                 prompt += (
                     f"\n{color_line('::', ColorsHighlight.blue)}"
-                    f" {bold_line(translate('[c]onfirm Arch NEWS as read'))}"
+                    f" {bold_line(options_news)}"
                 )
             prompt += "\n>> "
             return get_input(

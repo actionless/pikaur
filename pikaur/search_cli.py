@@ -148,7 +148,7 @@ def join_search_results(
     }.values()
 
 
-def search_packages(
+def search_packages(  # noqa: PLR0914
         *, enumerated: bool = False,
 ) -> "list[AnyPackage]":
     refresh_pkg_db_if_needed()
@@ -200,7 +200,8 @@ def search_packages(
             try:
                 result_aur = request_aur.get()
             except AURError as exc:
-                print_stderr(f"{translate('AUR returned error:')} {exc}")
+                message = translate("AUR returned error:")
+                print_stderr(f"{message} {exc}")
                 raise SysExit(121) from exc
         pool.join()
 

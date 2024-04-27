@@ -19,6 +19,7 @@ def clean_aur_cache() -> None:
             (PackageCachePath()(), translate("Packages directory"), 2),
     ):
         print_stdout(f"\n{message}: {directory}")
+        question = translate("Do you want to remove all files?")
         if minimal_clean_level > args.clean:
             continue
         if not directory.exists():
@@ -26,7 +27,7 @@ def clean_aur_cache() -> None:
         elif ask_to_continue(
             text=(
                 f"{color_line('::', ColorsHighlight.blue)}"
-                f" {bold_line(translate('Do you want to remove all files?'))}"
+                f" {bold_line(question)}"
             ),
         ):
             print_stdout(translate("removing all files from cache..."))

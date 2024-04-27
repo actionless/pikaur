@@ -258,7 +258,8 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 isinstance(pkg_update.package, AURPackageInfo) and
                 pkg_update.maintainer is None
         ):
-            orphaned = f" [{translate('orphaned')}]"
+            orphaned_text = translate("orphaned")
+            orphaned = f" [{orphaned_text}]"
             pkg_len += len(orphaned)
             pkg_name += _color_line(orphaned, ORPHANED_COLOR)
 
@@ -271,8 +272,9 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
                 pkg_update.package.outofdate,
                 tz=DEFAULT_TIMEZONE,
             ).strftime("%Y/%m/%d")
+            out_of_date_text = translate("outofdate")
             out_of_date = _color_line(
-                f" [{translate('outofdate')}: {formatted_date}]",
+                f" [{out_of_date_text}: {formatted_date}]",
                 color_config.VersionDiffOld.get_int(),
             )
 
@@ -793,7 +795,8 @@ def print_package_search_results(  # noqa: PLR0914,C901
                     package.outofdate,
                     tz=DEFAULT_TIMEZONE,
                 ).strftime("%Y/%m/%d")
-                version = f"{package.version} [{translate('outofdate')}: {date_formatted}]"
+                out_of_date_text = translate("outofdate")
+                version = f"{package.version} [{out_of_date_text}: {date_formatted}]"
 
             last_updated = ""
             if user_config.ui.DisplayLastUpdated.get_bool():

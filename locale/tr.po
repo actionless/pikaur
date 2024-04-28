@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-04-28 01:57+0200\n"
-"PO-Revision-Date: 2024-04-07 22:34+0300\n"
+"PO-Revision-Date: 2024-04-28 11:16+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
 "Language: tr\n"
@@ -72,7 +72,7 @@ msgstr "AUR depo dizini '{old}'dan '{new}'a taşındı."
 
 #: pikaur/search_cli.py:203
 msgid "AUR returned error:"
-msgstr ""
+msgstr "AUR hata döndü:"
 
 #: pikaur/search_cli.py:90
 #, python-brace-format
@@ -611,7 +611,7 @@ msgstr "[c] git checkout -- '*'"
 
 #: pikaur/install_cli.py:513
 msgid "[c]onfirm Arch NEWS as read"
-msgstr ""
+msgstr "Ar[c]h haberlerini okundu işaretle"
 
 #: pikaur/build.py:357 pikaur/build.py:865
 msgid "[d] delete build dir and try again"
@@ -631,9 +631,9 @@ msgid "[f] skip 'check()' function of PKGBUILD"
 msgstr "[f] PKGBUILD'deki 'check()' fonksiyonunu atla"
 
 #: pikaur/install_cli.py:284
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "[f] skip {quote}check(){quote} function of PKGBUILD"
-msgstr "[f] PKGBUILD'deki 'check()' fonksiyonunu atla"
+msgstr "[f] PKGBUILD'deki {quote}check(){quote} fonksiyonunu atla"
 
 #: pikaur/build.py:864
 msgid "[i] ignore architecture"
@@ -860,7 +860,7 @@ msgstr "argümanlardan biri %s gerekli"
 
 #: pikaur/print_department.py:261
 msgid "orphaned"
-msgstr ""
+msgstr "sahipsiz"
 
 #: pikaur/print_department.py:275 pikaur/print_department.py:798
 msgid "outofdate"

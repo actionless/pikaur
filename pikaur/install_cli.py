@@ -277,11 +277,10 @@ class InstallPackagesCLI:  # noqa: PLR0904
         self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
 
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
-        quote = "'"
         question = translate("Try recovering {pkg_name}?").format(pkg_name=bold_line(pkg_name))
         options = [
             translate("[e] edit PKGBUILD"),
-            translate(f"[f] skip {quote}check(){quote} function of PKGBUILD"),
+            translate("[f] skip 'check()' function of PKGBUILD"),
             translate("[s] skip this package"),
             translate("[A] abort"),
         ]

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-28 01:57+0200\n"
+"POT-Creation-Date: 2024-04-28 13:43+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -96,12 +96,12 @@ msgstr "因为:"
 msgid "Build directory"
 msgstr "Build 目录"
 
-#: pikaur/install_cli.py:1063
+#: pikaur/install_cli.py:1062
 #, python-brace-format
 msgid "Can't build '{name}'."
 msgstr "无法构建 '{name}'."
 
-#: pikaur/install_cli.py:653
+#: pikaur/install_cli.py:652
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
 msgstr "无法在 '{path}' 处从 AUR 获取（clone） '{name}':"
@@ -120,7 +120,7 @@ msgstr "无法创建目标目录 '{to_path}'."
 msgid "Can't get package name from PKGBUILD"
 msgstr "无法从 PKGBUILD 中获取包名"
 
-#: pikaur/install_cli.py:655
+#: pikaur/install_cli.py:654
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
 msgstr "无法在 '{path}' 处从 AUR 拉取（pull） '{name}':"
@@ -171,11 +171,11 @@ msgstr "无法更新 {}"
 msgid "Dependencies can't be satisfied for the following packages:"
 msgstr "以下软件包的依赖关系无法满足:"
 
-#: pikaur/install_cli.py:355
+#: pikaur/install_cli.py:354
 msgid "Dependencies missing for {}"
 msgstr "{} 缺失依赖"
 
-#: pikaur/install_cli.py:1085
+#: pikaur/install_cli.py:1084
 msgid "Dependency cycle detected between {}"
 msgstr "检测到 {} 之间存在循环依赖"
 
@@ -207,12 +207,12 @@ msgstr "您想要删除所有文件吗?"
 msgid "Do you want to retry?"
 msgstr "您想要重试吗?"
 
-#: pikaur/install_cli.py:920
+#: pikaur/install_cli.py:919
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
 msgstr "您想要查看包 {name} 的build files的 {diff} 吗?"
 
-#: pikaur/install_cli.py:801
+#: pikaur/install_cli.py:800
 #, python-brace-format
 msgid "Do you want to {edit} {file} for {name} package?"
 msgstr "您想要 {edit} 包 {name} 的 {file} 吗?"
@@ -239,7 +239,7 @@ msgstr ""
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr "必须设置 `{prop1}` 或 `{prop2}`"
 
-#: pikaur/install_cli.py:1234
+#: pikaur/install_cli.py:1233
 msgid "Failed to build following packages:"
 msgstr "构建下列包失败:"
 
@@ -276,7 +276,7 @@ msgstr "忽略包 {}"
 msgid "Ignoring package {}"
 msgstr "忽略包 {}"
 
-#: pikaur/install_cli.py:1002 pikaur/install_cli.py:1018
+#: pikaur/install_cli.py:1001 pikaur/install_cli.py:1017
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
 msgstr "{pkg} 软件包的安装信息已更改 (或发现了新的依赖)"
@@ -318,7 +318,7 @@ msgstr ""
 msgid "Name"
 msgstr "名称"
 
-#: pikaur/install_cli.py:622
+#: pikaur/install_cli.py:621
 #, python-brace-format
 msgid "New build deps found for {pkg} package: {deps}"
 msgstr "{pkg} 软件包发现新的生成依赖: {deps}"
@@ -341,7 +341,7 @@ msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "将从第三方软件仓库安装新的依赖:"
 msgstr[1] "将从第三方软件仓库安装新的依赖:"
 
-#: pikaur/install_cli.py:767
+#: pikaur/install_cli.py:766
 #, python-brace-format
 msgid "New packages '{new}' and '{other}' are in conflict."
 msgstr "新的软件包 '{new}' 与 '{other}' 冲突."
@@ -354,12 +354,12 @@ msgstr "Pacman 没有响应"
 msgid "None"
 msgstr "没有"
 
-#: pikaur/install_cli.py:894
+#: pikaur/install_cli.py:893
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
 msgstr ""
 
-#: pikaur/install_cli.py:443
+#: pikaur/install_cli.py:442
 msgid "Nothing to do."
 msgstr "无事可做."
 
@@ -414,7 +414,7 @@ msgstr "请输入您想安装的软件包的编号, 然后按 [Enter] 键(默认
 msgid "Popularity"
 msgstr "受欢迎度"
 
-#: pikaur/install_cli.py:504
+#: pikaur/install_cli.py:503
 msgid "Proceed with installation? [Y/n] "
 msgstr "继续安装吗? [Y/n] "
 
@@ -461,7 +461,7 @@ msgstr[1] "将被安装的仓库软件包:"
 msgid "Resolving AUR dependencies..."
 msgstr "解析 AUR 依赖..."
 
-#: pikaur/install_cli.py:1122
+#: pikaur/install_cli.py:1121
 #, python-brace-format
 msgid "Reverting {target} transaction..."
 msgstr "还原 {target} 更改..."
@@ -471,7 +471,7 @@ msgstr "还原 {target} 更改..."
 msgid "Searching... [{bar}]"
 msgstr "搜索中... [{bar}]"
 
-#: pikaur/install_cli.py:793
+#: pikaur/install_cli.py:792
 #, python-brace-format
 msgid "Skipping review of {file} for {name} package ({flag})"
 msgstr "跳过对包 {name} 中 {file} 的审查 ({flag})"
@@ -480,7 +480,7 @@ msgstr "跳过对包 {name} 中 {file} 的审查 ({flag})"
 msgid "Sleeping for {} seconds..."
 msgstr "等待 {} 秒"
 
-#: pikaur/install_cli.py:629
+#: pikaur/install_cli.py:628
 #, python-brace-format
 msgid "Some build deps removed for {pkg} package: {deps}"
 msgstr "{pkg} 软件包的一些生成依赖已移除: {deps}"
@@ -526,12 +526,12 @@ msgid "Total Installed Size:"
 msgstr "总安装大小"
 
 #. pragma: no cover
-#: pikaur/install_cli.py:281 pikaur/install_cli.py:308
+#: pikaur/install_cli.py:280 pikaur/install_cli.py:307
 #, fuzzy, python-brace-format
 msgid "Try recovering {pkg_name}?"
 msgstr "尝试恢复?"
 
-#: pikaur/install_cli.py:670 pikaur/build.py:354 pikaur/build.py:857
+#: pikaur/install_cli.py:669 pikaur/build.py:354 pikaur/build.py:857
 msgid "Try recovering?"
 msgstr "尝试恢复?"
 
@@ -543,7 +543,7 @@ msgstr ""
 msgid "Version"
 msgstr "版本"
 
-#: pikaur/install_cli.py:365
+#: pikaur/install_cli.py:364
 msgid "Version mismatch:"
 msgstr "版本不对应:"
 
@@ -561,7 +561,7 @@ msgstr[1] ""
 msgid "WARNING, unknown args: {}"
 msgstr "警告, 未知参数: {}"
 
-#: pikaur/install_cli.py:286 pikaur/install_cli.py:312
+#: pikaur/install_cli.py:285 pikaur/install_cli.py:311
 #, fuzzy
 msgid "[A] abort"
 msgstr "[a] 取消"
@@ -575,7 +575,7 @@ msgstr "[R] 重新构建"
 msgid "[R] retry clone"
 msgstr "[R] 重新构建"
 
-#: pikaur/install_cli.py:671
+#: pikaur/install_cli.py:670
 msgid "[T] try again"
 msgstr ""
 
@@ -584,7 +584,7 @@ msgstr ""
 msgid "[Y]es ({reason})"
 msgstr ""
 
-#: pikaur/install_cli.py:678
+#: pikaur/install_cli.py:677
 msgid "[a] abort"
 msgstr "[a] 取消"
 
@@ -596,11 +596,11 @@ msgstr "[a] 取消构建所有软件包"
 msgid "[c] checksums skip"
 msgstr "[c] 跳过 checksum 检查"
 
-#: pikaur/install_cli.py:673
+#: pikaur/install_cli.py:672
 msgid "[c] git checkout -- '*'"
 msgstr "[c] git checkout -- '*'"
 
-#: pikaur/install_cli.py:513
+#: pikaur/install_cli.py:512
 msgid "[c]onfirm Arch NEWS as read"
 msgstr ""
 
@@ -608,22 +608,17 @@ msgstr ""
 msgid "[d] delete build dir and try again"
 msgstr "[d] 删除构建目录并重试"
 
-#: pikaur/install_cli.py:672
+#: pikaur/install_cli.py:671
 msgid "[d] git diff"
 msgstr ""
 
-#: pikaur/install_cli.py:283 pikaur/install_cli.py:310 pikaur/build.py:358
+#: pikaur/install_cli.py:282 pikaur/install_cli.py:309 pikaur/build.py:358
 #: pikaur/build.py:866
 msgid "[e] edit PKGBUILD"
 msgstr "[e] 编辑 PKGBUILD"
 
-#: pikaur/build.py:862
+#: pikaur/install_cli.py:283 pikaur/build.py:862
 msgid "[f] skip 'check()' function of PKGBUILD"
-msgstr "[f] 跳过 PKGBUILD 中的 'check()' 函数"
-
-#: pikaur/install_cli.py:284
-#, fuzzy, python-brace-format
-msgid "[f] skip {quote}check(){quote} function of PKGBUILD"
 msgstr "[f] 跳过 PKGBUILD 中的 'check()' 函数"
 
 #: pikaur/build.py:864
@@ -652,12 +647,12 @@ msgstr "[n] 跳过 PKGBUILD 中的 'prepare()' 函数"
 msgid "[p] PGP check skip"
 msgstr "[p] 跳过 PGP 检查"
 
-#: pikaur/install_cli.py:676
+#: pikaur/install_cli.py:675
 msgid "[p] git stash && ... && git stash pop"
 msgstr ""
 
 #. translate("[c] git checkout -- '*' ; git clean -f -d -x"),
-#: pikaur/install_cli.py:675
+#: pikaur/install_cli.py:674
 msgid "[r] remove dir and clone again"
 msgstr "[r] 删除目录并重新 clone"
 
@@ -665,12 +660,12 @@ msgstr "[r] 删除目录并重新 clone"
 msgid "[s] skip building this package"
 msgstr "[s] 跳过此软件包的构建"
 
-#: pikaur/install_cli.py:285 pikaur/install_cli.py:311
-#: pikaur/install_cli.py:677
+#: pikaur/install_cli.py:284 pikaur/install_cli.py:310
+#: pikaur/install_cli.py:676
 msgid "[s] skip this package"
 msgstr "[s] 跳过此包"
 
-#: pikaur/install_cli.py:505
+#: pikaur/install_cli.py:504
 msgid "[v]iew package details   [m]anually select packages"
 msgstr "[v] 查看软件包细节   [m] 手动选择软件包"
 
@@ -679,15 +674,15 @@ msgstr "[v] 查看软件包细节   [m] 手动选择软件包"
 msgid "`{var_name}` should be list."
 msgstr ""
 
-#: pikaur/install_cli.py:294 pikaur/install_cli.py:320
-#: pikaur/install_cli.py:665 pikaur/install_cli.py:685
-#: pikaur/install_cli.py:705 pikaur/build.py:350 pikaur/build.py:372
+#: pikaur/install_cli.py:293 pikaur/install_cli.py:319
+#: pikaur/install_cli.py:664 pikaur/install_cli.py:684
+#: pikaur/install_cli.py:704 pikaur/build.py:350 pikaur/build.py:372
 #: pikaur/build.py:399 pikaur/build.py:853 pikaur/build.py:883
 #: pikaur/build.py:920
 msgid "a"
 msgstr "a"
 
-#: pikaur/install_cli.py:901 pikaur/install_cli.py:965
+#: pikaur/install_cli.py:900 pikaur/install_cli.py:964
 msgid "already reviewed"
 msgstr ""
 
@@ -703,8 +698,8 @@ msgstr "始终重新构建 AUR 包"
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "始终全面更新 '-git', '-svn' 和其他 dev 包"
 
-#: pikaur/install_cli.py:544 pikaur/install_cli.py:684
-#: pikaur/install_cli.py:693 pikaur/build.py:876 pikaur/build.py:892
+#: pikaur/install_cli.py:543 pikaur/install_cli.py:683
+#: pikaur/install_cli.py:692 pikaur/build.py:876 pikaur/build.py:892
 msgid "c"
 msgstr "c"
 
@@ -712,7 +707,7 @@ msgstr "c"
 msgid "cli args to pass to makepkg"
 msgstr "传递给 makepkg 的命令行参数"
 
-#: pikaur/install_cli.py:683 pikaur/install_cli.py:689 pikaur/build.py:368
+#: pikaur/install_cli.py:682 pikaur/install_cli.py:688 pikaur/build.py:368
 #: pikaur/build.py:379 pikaur/build.py:880 pikaur/build.py:904
 msgid "d"
 msgstr "d"
@@ -721,7 +716,7 @@ msgstr "d"
 msgid "debug:"
 msgstr ""
 
-#: pikaur/install_cli.py:922
+#: pikaur/install_cli.py:921
 msgid "diff"
 msgstr "diff"
 
@@ -750,13 +745,13 @@ msgstr "完成构建后不删除构建目录"
 msgid "download also AUR dependencies"
 msgstr "下载 AUR 中的依赖"
 
-#: pikaur/install_cli.py:294 pikaur/install_cli.py:296
-#: pikaur/install_cli.py:320 pikaur/install_cli.py:322 pikaur/build.py:369
+#: pikaur/install_cli.py:293 pikaur/install_cli.py:295
+#: pikaur/install_cli.py:319 pikaur/install_cli.py:321 pikaur/build.py:369
 #: pikaur/build.py:383 pikaur/build.py:881 pikaur/build.py:907
 msgid "e"
 msgstr ""
 
-#: pikaur/install_cli.py:802
+#: pikaur/install_cli.py:801
 msgid "edit"
 msgstr "编辑"
 
@@ -768,7 +763,7 @@ msgstr "错误:"
 msgid "executable not found"
 msgstr "未找到可执行文件"
 
-#: pikaur/install_cli.py:294 pikaur/install_cli.py:299 pikaur/build.py:877
+#: pikaur/install_cli.py:293 pikaur/install_cli.py:298 pikaur/build.py:877
 #: pikaur/build.py:895
 msgid "f"
 msgstr ""
@@ -812,7 +807,7 @@ msgstr "忽略明确的参数 %r"
 msgid "install built package"
 msgstr "安装已构建的包"
 
-#: pikaur/install_cli.py:960
+#: pikaur/install_cli.py:959
 msgid "installing for the first time"
 msgstr "首次安装"
 
@@ -824,15 +819,15 @@ msgstr "无效数字: {}"
 msgid "invalid value: {} is not between {} and {}"
 msgstr "无效值: {} 不在 {} 和 {} 之间"
 
-#: pikaur/install_cli.py:752
+#: pikaur/install_cli.py:751
 msgid "looking for conflicting AUR packages..."
 msgstr "查找冲突的 AUR 包..."
 
-#: pikaur/install_cli.py:521 pikaur/install_cli.py:538
+#: pikaur/install_cli.py:520 pikaur/install_cli.py:537
 msgid "m"
 msgstr "m"
 
-#: pikaur/main.py:211 pikaur/install_cli.py:521 pikaur/build.py:878
+#: pikaur/main.py:211 pikaur/install_cli.py:520 pikaur/build.py:878
 #: pikaur/build.py:898 pikaur/prompt.py:50
 msgid "n"
 msgstr "n"
@@ -863,7 +858,7 @@ msgstr "过期"
 msgid "override path to makepkg executable"
 msgstr "覆盖 makepkg 可执行程序的路径"
 
-#: pikaur/install_cli.py:695 pikaur/build.py:875 pikaur/build.py:889
+#: pikaur/install_cli.py:694 pikaur/build.py:875 pikaur/build.py:889
 msgid "p"
 msgstr "p"
 
@@ -931,7 +926,7 @@ msgstr "只从 AUR 查找软件包"
 msgid "query packages from repository only"
 msgstr "只从软件仓库查找软件包"
 
-#: pikaur/install_cli.py:684 pikaur/install_cli.py:698 pikaur/build.py:367
+#: pikaur/install_cli.py:683 pikaur/install_cli.py:697 pikaur/build.py:367
 #: pikaur/build.py:376 pikaur/build.py:874 pikaur/build.py:887
 msgid "r"
 msgstr "r"
@@ -940,9 +935,9 @@ msgstr "r"
 msgid "removing all files from cache..."
 msgstr "从缓存中删除所有文件..."
 
-#: pikaur/install_cli.py:294 pikaur/install_cli.py:302
-#: pikaur/install_cli.py:320 pikaur/install_cli.py:325
-#: pikaur/install_cli.py:685 pikaur/install_cli.py:700 pikaur/build.py:348
+#: pikaur/install_cli.py:293 pikaur/install_cli.py:301
+#: pikaur/install_cli.py:319 pikaur/install_cli.py:324
+#: pikaur/install_cli.py:684 pikaur/install_cli.py:699 pikaur/build.py:348
 #: pikaur/build.py:371 pikaur/build.py:851 pikaur/build.py:882
 msgid "s"
 msgstr "s"
@@ -963,7 +958,7 @@ msgstr ""
 msgid "skip failed builds"
 msgstr ""
 
-#: pikaur/install_cli.py:683
+#: pikaur/install_cli.py:682
 msgid "t"
 msgstr ""
 
@@ -984,7 +979,7 @@ msgstr "用法:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr ""
 
-#: pikaur/install_cli.py:521 pikaur/install_cli.py:535
+#: pikaur/install_cli.py:520 pikaur/install_cli.py:534
 msgid "v"
 msgstr "v"
 
@@ -992,7 +987,7 @@ msgstr "v"
 msgid "warning:"
 msgstr "警告:"
 
-#: pikaur/install_cli.py:521 pikaur/install_cli.py:533 pikaur/prompt.py:49
+#: pikaur/install_cli.py:520 pikaur/install_cli.py:532 pikaur/prompt.py:49
 msgid "y"
 msgstr "y"
 
@@ -1031,7 +1026,7 @@ msgstr "{name} {version} {package_source} 包是最新的 - 跳过"
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "{name} {version} {package_source} 包是最新的 - 跳过"
 
-#: pikaur/install_cli.py:774
+#: pikaur/install_cli.py:773
 #, python-brace-format
 msgid "{new} and {installed} are in conflict. Remove {installed}?"
 msgstr "{new} 与 {installed} 冲突. 移除 {installed}?"
@@ -1041,7 +1036,7 @@ msgstr "{new} 与 {installed} 冲突. 移除 {installed}?"
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} 已在列表中"
 
-#: pikaur/install_cli.py:367
+#: pikaur/install_cli.py:366
 #, python-brace-format
 msgid ""
 "{what} depends on: '{dep}'\n"
@@ -1049,6 +1044,10 @@ msgid ""
 msgstr ""
 "{what} 依赖: '{dep}'\n"
 " 在 '{location}' 处找到: '{version}'"
+
+#, fuzzy, python-brace-format
+#~ msgid "[f] skip {quote}check(){quote} function of PKGBUILD"
+#~ msgstr "[f] 跳过 PKGBUILD 中的 'check()' 函数"
 
 #~ msgid "[N]o (--noconfirm)"
 #~ msgstr "[N]o (--noconfirm)"

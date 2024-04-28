@@ -630,11 +630,6 @@ msgstr "[d] PKGBUILD'i düzenle"
 msgid "[f] skip 'check()' function of PKGBUILD"
 msgstr "[f] PKGBUILD'deki 'check()' fonksiyonunu atla"
 
-#: pikaur/install_cli.py:284
-#, python-brace-format
-msgid "[f] skip {quote}check(){quote} function of PKGBUILD"
-msgstr "[f] PKGBUILD'deki {quote}check(){quote} fonksiyonunu atla"
-
 #: pikaur/build.py:864
 msgid "[i] ignore architecture"
 msgstr "[m] mimariyi dışla"

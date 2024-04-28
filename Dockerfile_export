@@ -10,7 +10,7 @@ RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pac
 	\
 	echo '[multilib]' >> /etc/pacman.conf ; \
 	echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
-RUN echo "last updated on 2024-03-19" && \
+RUN echo "last updated on 2024-04-28" && \
 	pacman -Syu --noconfirm --needed sudo base-devel git && \
 	useradd -m user && \
 	echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \

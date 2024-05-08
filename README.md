@@ -39,6 +39,7 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
 * [File locations](#file-locations "")
+* [Options](#options "")
 * [Config file](#configuration "")
 * [FAQ](#faq "")
 * [Contributing](#contributing "")
@@ -70,8 +71,6 @@ cd pikaur
 python3 ./pikaur.py -S AUR_PACKAGE_NAME
 ```
 
-
-
 ## File locations
 
 ```sh
@@ -84,6 +83,23 @@ python3 ./pikaur.py -S AUR_PACKAGE_NAME
     └── last_installed.txt  # aur repo hash of last successfully installed package
 ```
 
+
+## Options
+
+  --home-dir <dir>
+    Specify an alternative home directory location (the default is ~).
+
+  --xdg-cache-home <dir>
+    Specify an alternative package cache location (the default is ~/.cache).
+
+  --xdg-config-home <dir>
+    Specify an alternative configuration file location (the default is ~/.config).
+
+  --xdg-data-home <dir>
+    Specify an alternative database location (the default is ~/.local/share).
+
+  --pikaur-config <file>
+    Specify an alternate configuration file.
 
 
 ## Configuration

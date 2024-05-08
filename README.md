@@ -86,19 +86,19 @@ python3 ./pikaur.py -S AUR_PACKAGE_NAME
 
 ## Options
 
-  --home-dir <dir>
+* `--home-dir <dir>`
     Specify an alternative home directory location (the default is ~).
 
-  --xdg-cache-home <dir>
+* `--xdg-cache-home <dir>`
     Specify an alternative package cache location (the default is ~/.cache).
 
-  --xdg-config-home <dir>
+* `--xdg-config-home <dir>`
     Specify an alternative configuration file location (the default is ~/.config).
 
-  --xdg-data-home <dir>
+* `--xdg-data-home <dir>`
     Specify an alternative database location (the default is ~/.local/share).
 
-  --pikaur-config <file>
+* `--pikaur-config <file>`
     Specify an alternate configuration file.
 
 

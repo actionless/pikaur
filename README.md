@@ -239,6 +239,13 @@ User ID to run makepkg if pikaur started from root.
 Setting this option would override DynamicUsers settings and force changing to this UID instead of a dynamic one.
 
 
+##### CachePath (default: ~/.cache)
+Path to package cache location.
+
+##### DataPath (default: ~/.local/share)
+Path to database location.
+
+
 #### [network]
 
 ##### AurUrl (default: https://aur.archlinux.org)

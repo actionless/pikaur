@@ -415,9 +415,10 @@ def main(*, embed: bool = False) -> None:
             sys.exit(22)
         check_runtime_deps()
 
-        create_dirs()
         # initialize config to avoid race condition in threads:
         PikaurConfig.get_config()
+
+        create_dirs()
 
         atexit.register(restore_tty)
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)

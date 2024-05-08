@@ -151,7 +151,7 @@ class _UserCacheRoot(FixedPathSingleton):
             or os.environ.get(
                 "XDG_CACHE_HOME",
             )
-            or Home()() / ".cache/",
+            or Path(PikaurConfig().misc.CachePath.get_str()),
         )
 
 
@@ -198,7 +198,7 @@ class DataRoot(FixedPathSingleton):
                 or os.environ.get(
                     "XDG_DATA_HOME",
                 )
-                or Home()() / ".local/share/",
+                or PikaurConfig().misc.DataPath.get_str(),
             ) / "pikaur"
         )
 
@@ -455,6 +455,14 @@ CONFIG_SCHEMA: ConfigSchemaT = {
                 "section": "network",
                 "option": "NewsUrl",
             },
+        },
+        "CachePath": {
+            "data_type": STR,
+            "default": str(Home()() / ".cache/"),
+        },
+        "DataPath": {
+            "data_type": STR,
+            "default": str(Home()() / ".local/share/"),
         },
         "PacmanPath": {
             "data_type": STR,

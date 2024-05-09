@@ -236,22 +236,22 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
         (
             None, "home-dir",
             None,
-            None,
+            translate("alternative home directory location"),
         ),
         (
             None, "xdg-cache-home",
-            None,
-            None,
+            PikaurConfig().misc.CachePath.get_str(),
+            translate("alternative package cache directory location"),
         ),
         (
             None, "xdg-config-home",
             None,
-            None,
+            translate("alternative configuration file directory location"),
         ),
         (
             None, "xdg-data-home",
-            None,
-            None,
+            PikaurConfig().misc.DataPath.get_str(),
+            translate("alternative database directory location"),
         ),
         (
             None, "preserve-env",

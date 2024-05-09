@@ -222,12 +222,13 @@ Setting this option would override DynamicUsers settings and force changing to t
 
 ##### CachePath (default: ~/.cache)
 Path to package cache location.
-Will be overridden by `--xdg-cache-home` argument.
+Will be overridden by `--xdg-cache-home` argument
+or environment variable `XDG_CACHE_HOME`, if set.
 
 ##### DataPath (default: ~/.local/share)
 Path to database location.
-Will be overridden by `--xdg-data-home` argument.
-
+Will be overridden by `--xdg-data-home` argument
+or environment variable `XDG_DATA_HOME`, if set.
 
 #### [network]
 

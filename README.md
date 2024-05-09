@@ -31,22 +31,17 @@ The following pacman operations are extended with AUR capabilities:
 * `-Sc` / `-Scc` (build dir/built packages cache clean)
 * `-Qu` (query upgradeable, `-q` supported)
 
+Pikaur also provides the following additional command line arguments:
+
+* `--home-dir <dir>` Specify an alternative home directory location (the default is ~).
+* `--xdg-cache-home <dir>` Specify an alternative package cache location (the default is ~/.cache).
+* `--xdg-config-home <dir>` Specify an alternative configuration file location (the default is ~/.config).
+* `--xdg-data-home <dir>` Specify an alternative database location (the default is ~/.local/share).
+* `--pikaur-config <file>` Specify an alternate configuration file.
+
 Also see `pikaur -Sh`, `-Qh`, `-Ph` and `-Gh` for pikaur-specific flags.
 
 Pikaur wraps all the pacman options accurately except for `-Syu` which is being split into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or altered it via [M]anual package selection).
-
-Pikaur also provides the following additional command line arguments:
-
-* `--home-dir <dir>`
-    Specify an alternative home directory location (the default is ~).
-* `--xdg-cache-home <dir>`
-    Specify an alternative package cache location (the default is ~/.cache).
-* `--xdg-config-home <dir>`
-    Specify an alternative configuration file location (the default is ~/.config).
-* `--xdg-data-home <dir>`
-    Specify an alternative database location (the default is ~/.local/share).
-* `--pikaur-config <file>`
-    Specify an alternate configuration file.
 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")

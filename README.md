@@ -35,11 +35,22 @@ Also see `pikaur -Sh`, `-Qh`, `-Ph` and `-Gh` for pikaur-specific flags.
 
 Pikaur wraps all the pacman options accurately except for `-Syu` which is being split into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or altered it via [M]anual package selection).
 
+Pikaur also provides the following additional command line arguments:
+
+* `--home-dir <dir>`
+    Specify an alternative home directory location (the default is ~).
+* `--xdg-cache-home <dir>`
+    Specify an alternative package cache location (the default is ~/.cache).
+* `--xdg-config-home <dir>`
+    Specify an alternative configuration file location (the default is ~/.config).
+* `--xdg-data-home <dir>`
+    Specify an alternative database location (the default is ~/.local/share).
+* `--pikaur-config <file>`
+    Specify an alternate configuration file.
 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
 * [File locations](#file-locations "")
-* [Options](#options "")
 * [Config file](#configuration "")
 * [FAQ](#faq "")
 * [Contributing](#contributing "")
@@ -83,23 +94,6 @@ python3 ./pikaur.py -S AUR_PACKAGE_NAME
     └── last_installed.txt  # aur repo hash of last successfully installed package
 ```
 
-
-## Options
-
-* `--home-dir <dir>`
-    Specify an alternative home directory location (the default is ~).
-
-* `--xdg-cache-home <dir>`
-    Specify an alternative package cache location (the default is ~/.cache).
-
-* `--xdg-config-home <dir>`
-    Specify an alternative configuration file location (the default is ~/.config).
-
-* `--xdg-data-home <dir>`
-    Specify an alternative database location (the default is ~/.local/share).
-
-* `--pikaur-config <file>`
-    Specify an alternate configuration file.
 
 
 ## Configuration
@@ -241,9 +235,11 @@ Setting this option would override DynamicUsers settings and force changing to t
 
 ##### CachePath (default: ~/.cache)
 Path to package cache location.
+Will be overridden by `--xdg-cache-home` argument.
 
 ##### DataPath (default: ~/.local/share)
 Path to database location.
+Will be overridden by `--xdg-data-home` argument.
 
 
 #### [network]

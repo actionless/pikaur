@@ -223,6 +223,16 @@ User ID to run makepkg if pikaur started from root.
 Setting this option would override DynamicUsers settings and force changing to this UID instead of a dynamic one.
 
 
+##### CachePath (default: ~/.cache)
+Path to package cache location.
+Will be overridden by `--xdg-cache-home` argument
+or environment variable `XDG_CACHE_HOME`, if set.
+
+##### DataPath (default: ~/.local/share)
+Path to database location.
+Will be overridden by `--xdg-data-home` argument
+or environment variable `XDG_DATA_HOME`, if set.
+
 #### [network]
 
 ##### AurUrl (default: https://aur.archlinux.org)

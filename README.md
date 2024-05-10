@@ -35,6 +35,7 @@ Also see `pikaur -Sh`, `-Qh`, `-Ph` and `-Gh` for pikaur-specific flags.
 
 Pikaur wraps all the pacman options accurately except for `-Syu` which is being split into `-Sy` (to refresh package list first) and `-Su` (to install upgrades after user confirmed the package list or altered it via [M]anual package selection).
 
+
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
 * [File locations](#file-locations "")
@@ -68,6 +69,8 @@ git clone https://github.com/actionless/pikaur.git
 cd pikaur
 python3 ./pikaur.py -S AUR_PACKAGE_NAME
 ```
+
+
 
 ## File locations
 

@@ -32,14 +32,14 @@ $(POTFILE):
 	# find pikaur -type f -name '*.py' -not -name 'argparse.py' \
 		#
 	find pikaur -type f -name '*.py' -print0 \
-		| xargs --null xgettext --language=python --add-comments --sort-output \
+		| xargs --null xgettext --language=python --add-comments --sort-by-file \
 			--default-domain=pikaur --from-code=UTF-8 \
 			--keyword='translate' --keyword='translate_many:1,2' \
 			--output=$@
 
 $(LOCALEDIR)/%.po: $(POTFILE)
 	test -f $@ || msginit --locale=$* --no-translator --input=$< --output=$@
-	msgmerge --update $@ $<
+	msgmerge --sort-by-file --update $@ $<
 
 %.mo: %.po
 	msgfmt -o $@ $<

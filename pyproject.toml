@@ -195,6 +195,7 @@ ignore = [
   "S403",
   "S404",
   "T201",
+  "T203",
 ]
 "maintenance_scripts/pikaman.py" = [
   "ARG002",

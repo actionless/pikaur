@@ -51,7 +51,7 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 ## Installation
 
 ```sh
-sudo pacman -S --needed base-devel git
+sudo pacman -Sy --needed base-devel git
 git clone https://aur.archlinux.org/pikaur.git
 cd pikaur
 makepkg -fsri

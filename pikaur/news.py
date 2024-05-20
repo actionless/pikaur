@@ -145,6 +145,7 @@ class News:
     @staticmethod
     def _print_one_entry(news_entry: "Element") -> None:
         child: Element
+        title = pub_date = description = ""
         for child in news_entry:
             if ArchNewsMarkup.TITLE in child.tag:
                 title = str(child.text)

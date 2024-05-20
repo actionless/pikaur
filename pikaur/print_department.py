@@ -411,16 +411,17 @@ class SysupgradePrettyFormatter:
         warn_about_packages_str = self.config.ui.WarnAboutPackageUpdates.get_str()
         warn_about_packages_list: list[InstallInfo] = []
 
-        def remove_globs_from_pkg_list(pkg_list: "list[InstallInfoT]") -> None:
-            pkg_install_info: InstallInfoT
-            for pkg_install_info in pkg_list[::]:
-                for glob in globs_and_names:
-                    if fnmatch(pkg_install_info.name, glob):
-                        pkg_list.remove(pkg_install_info)
-                        warn_about_packages_list.append(pkg_install_info)
-
         if warn_about_packages_str:
             globs_and_names = warn_about_packages_str.split(",")
+
+            def remove_globs_from_pkg_list(pkg_list: "list[InstallInfoT]") -> None:
+                pkg_install_info: InstallInfoT
+                for pkg_install_info in pkg_list[::]:
+                    for glob in globs_and_names:
+                        if fnmatch(pkg_install_info.name, glob):
+                            pkg_list.remove(pkg_install_info)
+                            warn_about_packages_list.append(pkg_install_info)
+
             pkg_list: list[RepoInstallInfo] | list[AURInstallInfo]
             for pkg_list in self.all_install_info_lists:
                 remove_globs_from_pkg_list(pkg_list)  # type: ignore[misc]

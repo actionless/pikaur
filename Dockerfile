@@ -47,7 +47,7 @@ RUN echo ">>>> Installing opt deps:" && \
 	rm -fr ./src/ ./pkg/
 #RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '6.5.0-5'
 RUN echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv \
+	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv python-tqdm \
 		flake8 python-pylint mypy vulture bandit shellcheck # @TODO: python-coveralls is temporary broken
 #RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-pycodestyle '2.9.1-2' # @TODO: remove it when it fixed
 

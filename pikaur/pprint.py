@@ -18,6 +18,10 @@ TcAttrsType = list[int | list[bytes | int]]
 
 PADDING: "Final" = 4
 
+BOLD_START: "Final" = "\033[0;1m"
+BOLD_RESET: "Final" = "\033[0m"
+COLOR_RESET: "Final" = "\033[0;0m"
+
 
 class TTYRestore:
 
@@ -162,26 +166,33 @@ class ColorsHighlight:
     white = 15
 
 
+def color_start(
+        color_number: int,
+) -> str:
+    result = ""
+    if color_number >= ColorsHighlight.black:
+        result += "\033[0;1m"
+        color_number -= ColorsHighlight.black
+    result += f"\033[03{color_number}m"
+    return result
+
+
 def color_line(
         line: str, color_number: int, *, reset: bool = True, force: bool = False,
 ) -> str:
     if not color_enabled() and not force:
         return line
-    result = ""
-    if color_number >= ColorsHighlight.black:
-        result += "\033[0;1m"
-        color_number -= ColorsHighlight.black
-    result += f"\033[03{color_number}m{line}"
+    result = f"{color_start(color_number)}{line}"
     # reset font:
     if reset:
-        result += "\033[0;0m"
+        result += COLOR_RESET
     return result
 
 
 def bold_line(line: str) -> str:
     if not color_enabled():
         return line
-    return f"\033[0;1m{line}\033[0m"
+    return f"{BOLD_START}{line}{BOLD_RESET}"
 
 
 def print_warning(

@@ -23,11 +23,12 @@ class RegressionTest(PikaurDbTestCase):
 
     def test_double_requirements_aur(self):
         # with doubled aur dep
-        # python-xdis>=5.0.4, python-xdis<5.1.0
-        pkg_name = "python-uncompyle6"
+        # python-tabledata>=1.1.1, python-tabledata<2
+        # maintenance_scripts/find_aur_pkgs_with_double_requirements.py
+        pkg_name = "python-tblfaker"
 
-        fake_pikaur(f"-S {pkg_name}")
-        # pikaur(f"-S {pkg_name}")
+        # fake_pikaur(f"-S {pkg_name}")
+        pikaur(f"-S {pkg_name}")
         self.assertInstalled(pkg_name)
 
     def test_aur_pkg_with_versioned_virtual_deps(self):

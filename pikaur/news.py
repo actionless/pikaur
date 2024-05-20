@@ -15,10 +15,16 @@ from .i18n import translate
 from .logging import create_logger
 from .pacman import PackageDB
 from .pprint import (
+    BOLD_RESET,
+    BOLD_START,
+    COLOR_RESET,
+    PADDING,
     ColorsHighlight,
     bold_line,
     color_line,
+    color_start,
     format_paragraph,
+    get_term_width,
     print_error,
     print_stdout,
 )
@@ -158,7 +164,7 @@ class News:
             " (" + bold_line(pub_date) + ")",
         )
         print_stdout(
-            format_paragraph(strip_tags(description)),
+            "\n".join(format_paragraph(line) for line in strip_tags(description).splitlines()),
         )
         print_stdout()
 
@@ -178,6 +184,8 @@ class News:
 class MLStripper(HTMLParser):
     """HTMLParser that only removes HTML statements."""
 
+    last_href: str | None = None
+
     def error(self, message: object) -> None:
         pass
 
@@ -187,6 +195,42 @@ class MLStripper(HTMLParser):
         self.strict = False
         self.convert_charrefs = True
         self.fed: list[str] = []
+
+    def handle_starttag(
+            self, tag: str, attrs: list[tuple[str, str | None]],
+    ) -> None:
+        if tag in {"strong", "em"}:
+            self.fed.append(BOLD_START)
+        elif tag == "h2":
+            self.fed.append("\n")
+        elif tag == "hr":
+            self.fed.append("-" * (get_term_width() - PADDING * 2))
+        elif tag == "a":
+            self.last_href = dict(attrs).get("href")
+        elif tag == "li":
+            self.fed.append("- ")
+
+        color = None
+        if tag == "code":
+            color = ColorsHighlight.green
+        elif tag == "blockquote":
+            color = ColorsHighlight.yellow
+        elif tag == "a":
+            color = ColorsHighlight.cyan
+        elif tag == "h2":
+            color = ColorsHighlight.purple
+        elif tag not in {"strong", "em", "h2", "hr", "li", "ul", "p"}:
+            logger.debug("Encountered unknown start tag: {}", tag)
+        if color is not None:
+            self.fed.append(color_start(color))
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in {"code", "blockquote", "a", "h2"}:
+            self.fed.append(COLOR_RESET)
+        elif tag in {"strong", "em"}:
+            self.fed.append(BOLD_RESET)
+        if (tag == "a") and self.last_href:
+            self.fed.append(f": {color_line(self.last_href, ColorsHighlight.blue)} ")
 
     def handle_data(self, data: str) -> None:
         self.fed.append(data)

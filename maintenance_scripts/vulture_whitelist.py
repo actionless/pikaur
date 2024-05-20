@@ -59,6 +59,8 @@ whitelist.makepkg_config.FallbackValueT
 whitelist.news.Element
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
+whitelist.news.MLStripper.handle_endtag
+whitelist.news.MLStripper.handle_starttag
 whitelist.news.MLStripper.strict
 
 whitelist.print_department.InstallInfoT

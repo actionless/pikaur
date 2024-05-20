@@ -24,7 +24,6 @@ else:
         pickle.dump(aur_pkgs, fobj)
 
 print("Filtering...\n")
-all_repo_pkgnames = PackageDB.get_repo_pkgnames()
 all_aur_pkgnames = [pkg.name for pkg in aur_pkgs]
 all_local_pkgs = PackageDB.get_local_dict()
 matching_packages: dict[str, list[VersionMatcher]] = {}

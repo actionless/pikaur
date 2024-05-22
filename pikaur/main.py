@@ -236,12 +236,14 @@ def execute_pikaur_operation(
     if args.read_stdin:
         logger.debug("Handling stdin as positional args:")
         logger.debug("    {}", args.positional)
-        args.positional += [
+        add_args = [
             word
             for line in sys.stdin.readlines()
             for word in line.split()
         ]
-        logger.debug("    {}", args.positional)
+        logger.debug("    {}", add_args)
+        args.positional += add_args
+        cli_args += add_args
     if (
             running_as_root()
             and (PikaurConfig().build.DynamicUsers.get_str() == "never" and not args.user_id)

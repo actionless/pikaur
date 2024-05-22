@@ -212,17 +212,27 @@ def cli_dynamic_select() -> None:  # pragma: no cover
                 raise SysExit(128) from exc
             print_error(translate("invalid number: {}").format(exc.character))
 
-    parse_args().positional = [packages[idx].name for idx in selected_pkgs_idx]
-    cli_install_packages()
+    args = parse_args()
+    new_args = [*sys.argv]
+    for positional in args.positional:
+        new_args.remove(positional)
+    new_args += ["--sync"] + [packages[idx].name for idx in selected_pkgs_idx]
+    execute_pikaur_operation(
+        pikaur_operation=cli_install_packages,
+        require_sudo=True,
+        replace_args=new_args,
+    )
 
 
 def execute_pikaur_operation(
         pikaur_operation: "Callable[[], None]",
         *,
         require_sudo: bool,
+        replace_args: None | list[str] = None,
 ) -> None:
     args = parse_args()
-    logger.debug("Pikaur operation found for args {}: {}", sys.argv, pikaur_operation.__name__)
+    cli_args = replace_args or sys.argv
+    logger.debug("Pikaur operation found for args {}: {}", cli_args, pikaur_operation.__name__)
     if args.read_stdin:
         logger.debug("Handling stdin as positional args:")
         logger.debug("    {}", args.positional)
@@ -253,7 +263,7 @@ def execute_pikaur_operation(
     ):
         # Restart pikaur with sudo to use systemd dynamic users or current user id
         sys.exit(interactive_spawn(
-            get_args_to_elevate_pikaur(sys.argv),
+            get_args_to_elevate_pikaur(cli_args),
         ).returncode)
     else:
         # Just run the operation normally
@@ -313,7 +323,6 @@ def cli_entry_point() -> None:  # pylint: disable=too-many-statements
             pikaur_operation = cli_install_packages
 
     elif args.interactive_package_select:
-        require_sudo = True
         pikaur_operation = cli_dynamic_select
 
     else:

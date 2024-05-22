@@ -465,6 +465,10 @@ class PikaurArgs(Namespace):
     preserve_env: str = ""
     interactive_package_select: bool = False
 
+    def __init__(self) -> None:
+        self.positional = []
+        super().__init__()
+
     def __getattr__(self, name: str) -> PossibleArgValuesTypes:
         transformed_name = name.replace("-", "_")
         result: PossibleArgValuesTypes = getattr(

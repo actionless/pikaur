@@ -212,9 +212,8 @@ def cli_dynamic_select() -> None:  # pragma: no cover
                 raise SysExit(128) from exc
             print_error(translate("invalid number: {}").format(exc.character))
 
-    args = parse_args()
     new_args = [*sys.argv]
-    for positional in args.positional:
+    for positional in parse_args().positional:
         new_args.remove(positional)
     new_args += ["--sync"] + [packages[idx].name for idx in selected_pkgs_idx]
     execute_pikaur_operation(
@@ -272,7 +271,7 @@ def execute_pikaur_operation(
         pikaur_operation()
 
 
-def cli_entry_point() -> None:  # pylint: disable=too-many-statements
+def cli_entry_point() -> None:
     # pylint: disable=too-many-branches
 
     try:

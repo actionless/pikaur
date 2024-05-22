@@ -155,7 +155,7 @@ def search_packages(  # noqa: PLR0914
 
     args = parse_args()
     search_query = ((not args.list) and args.positional) or []
-    repo_query = (args.list and args.positional) or None
+    repo_query = args.positional if args.list else None
     repo_only = (
         args.repo
         or (

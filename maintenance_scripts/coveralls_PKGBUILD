@@ -2,9 +2,9 @@
 # Contributor: GI_Jack <GI_Jack@hackermail.com>
 
 pkgname=python-coveralls
-pkgver=3.3.1
+pkgver=4.0.1
 pkgrel=99
-_commit=8fb36645bf5f06466e1950a0656d86c533db1573
+_commit=e20a8c8c119b7be9ee33026376a836522dd2c971
 pkgdesc="Python integration with coveralls.io"
 url="https://github.com/thekevjames/coveralls-python"
 arch=('any')

@@ -238,7 +238,7 @@ or environment variable `XDG_DATA_HOME`, if set.
 ##### AurUrl (default: https://aur.archlinux.org)
 AUR Host.
 
-##### NewsUrl (default: https://www.archlinux.org/feeds/news/)
+##### NewsUrl (default: https://archlinux.org/feeds/news/)
 Arch Linux News URL, useful for users of Parabola or other Arch derivatives.
 
 ##### Socks5Proxy (default: )

@@ -196,7 +196,7 @@ class TTYInputWrapper:  # pragma: no cover
             self.old_stdin = sys.stdin
             try:
                 logger.debug("Attaching to TTY manually...")
-                sys.stdin = Path("/dev/tty").open(encoding=DEFAULT_INPUT_ENCODING)  # noqa: SIM115
+                sys.stdin = Path("/dev/tty").open(encoding=DEFAULT_INPUT_ENCODING)
                 self.tty_opened = True
             except Exception as exc:
                 logger.debug(exc)

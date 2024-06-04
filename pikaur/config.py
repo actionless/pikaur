@@ -628,7 +628,7 @@ class PikaurConfig:
         return cls._config
 
     @classmethod
-    def _migrate_deprecated_config_value(
+    def _migrate_deprecated_config_key(
             cls,
             option_schema: "ConfigValueType",
             section_name: str,
@@ -692,7 +692,7 @@ class PikaurConfig:
                     if cls._config[section_name][option_name] == old_default:
                         cls._config[section_name][option_name] = option_schema["default"]
                 elif option_schema.get("deprecated"):
-                    cls._migrate_deprecated_config_value(option_schema, section_name, option_name)
+                    cls._migrate_deprecated_config_key(option_schema, section_name, option_name)
 
     @classmethod
     def validate_config(cls) -> None:

@@ -689,8 +689,21 @@ class PikaurConfig:
         for section_name, section in CONFIG_SCHEMA.items():
             for option_name, option_schema in section.items():
                 if old_default := option_schema.get("old_default"):
-                    if cls._config[section_name][option_name] == old_default:
-                        cls._config[section_name][option_name] = option_schema["default"]
+                    current_value = cls._config[section_name][option_name]
+                    if current_value == old_default:
+                        new_default_value = option_schema["default"]
+                        cls._config[section_name][option_name] = new_default_value
+                        print(" ".join([  # noqa: T201
+                            "::",
+                            translate("warning:"),
+                            translate(
+                                'Migrating [{}]{}="{}" config option to ="{}"...',
+                            ).format(
+                                section_name, option_name, current_value,
+                                new_default_value,
+                            ),
+                            "\n",
+                        ]))
                 elif option_schema.get("deprecated"):
                     cls._migrate_deprecated_config_key(option_schema, section_name, option_name)
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-10 17:05+0200\n"
+"POT-Creation-Date: 2024-06-05 02:30+0200\n"
 "PO-Revision-Date: 2018-08-19 19:16-0300\n"
 "Last-Translator: Alexandre Lopes <lopes.tamt@gmail.com>\n"
 "Language-Team: pt\n"
@@ -111,6 +111,22 @@ msgstr ""
 msgid "show only debug messages specific to pikaur"
 msgstr ""
 
+#: pikaur/args.py:239
+msgid "alternative home directory location"
+msgstr ""
+
+#: pikaur/args.py:244
+msgid "alternative package cache directory location"
+msgstr ""
+
+#: pikaur/args.py:249
+msgid "alternative configuration file directory location"
+msgstr ""
+
+#: pikaur/args.py:254
+msgid "alternative database directory location"
+msgstr ""
+
 #: pikaur/args.py:259
 msgid "preserve environment variables (comma-separated)"
 msgstr ""
@@ -152,15 +168,15 @@ msgstr ""
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sempre sysupgrade '-git', '-svn' e outros pacotes dev"
 
-#: pikaur/args.py:525
+#: pikaur/args.py:529
 msgid "WARNING, unknown args: {}"
 msgstr ""
 
-#: pikaur/args.py:715
+#: pikaur/args.py:719
 msgid ":: error: options {} can't be used together."
 msgstr ":: erro: opções {} não podem ser usadas juntas."
 
-#: pikaur/args.py:722
+#: pikaur/args.py:726
 msgid ":: error: option {} can't be used without {}."
 msgid_plural ":: error: options {} can't be used without {}."
 msgstr[0] ":: erro: a opção {} não pode ser usada sem {}."
@@ -185,7 +201,7 @@ msgstr "Não é possível copiar '{from_path}' para '{to_path}'."
 msgid "Can't get package name from PKGBUILD"
 msgstr "Não é possível obter o nome do pacote do PKGBUILD"
 
-#: pikaur/build.py:193 pikaur/print_department.py:603 pikaur/srcinfo.py:56
+#: pikaur/build.py:193 pikaur/print_department.py:604 pikaur/srcinfo.py:56
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr ""
@@ -356,17 +372,21 @@ msgstr ""
 msgid "n"
 msgstr "n"
 
-#: pikaur/config.py:558
+#: pikaur/config.py:567
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr ""
 
-#: pikaur/config.py:667 pikaur/pprint.py:196
+#: pikaur/config.py:676 pikaur/config.py:702 pikaur/pprint.py:207
 msgid "warning:"
 msgstr "atenção:"
 
-#: pikaur/config.py:668
+#: pikaur/config.py:678
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
+msgstr ""
+
+#: pikaur/config.py:704
+msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
 msgstr ""
 
 #: pikaur/core.py:103
@@ -766,34 +786,34 @@ msgstr ""
 msgid "invalid number: {}"
 msgstr ""
 
-#: pikaur/main.py:241
+#: pikaur/main.py:252
 msgid ""
 "Either SystemD Dynamic Users must be enabled or User ID should be set if "
 "running as root."
 msgstr ""
 
-#: pikaur/main.py:349
+#: pikaur/main.py:359
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr ""
 
-#: pikaur/news.py:62 pikaur/news.py:100
+#: pikaur/news.py:68 pikaur/news.py:106
 msgid "Could not fetch archlinux.org news"
 msgstr "Não foi possível buscar as notícias do archlinux.org"
 
-#: pikaur/news.py:74
+#: pikaur/news.py:80
 msgid "There is news from archlinux.org!"
 msgstr "Há notícias do archlinux.org!"
 
-#: pikaur/news.py:128
+#: pikaur/news.py:134
 msgid "Could not initialize {}"
 msgstr "Não foi possível inicializar {}"
 
-#: pikaur/news.py:133
+#: pikaur/news.py:139
 msgid "The news feed could not be received or parsed."
 msgstr ""
 
-#: pikaur/news.py:174
+#: pikaur/news.py:181
 msgid "Could not update {}"
 msgstr "Não foi possível atualizar {}"
 
@@ -843,7 +863,7 @@ msgstr ""
 msgid "removing all files from cache..."
 msgstr ""
 
-#: pikaur/pprint.py:214
+#: pikaur/pprint.py:225
 msgid "error:"
 msgstr "erro:"
 
@@ -879,47 +899,47 @@ msgstr "({} dias de idade)"
 msgid "orphaned"
 msgstr ""
 
-#: pikaur/print_department.py:275 pikaur/print_department.py:798
+#: pikaur/print_department.py:275 pikaur/print_department.py:799
 msgid "outofdate"
 msgstr "desatualizado"
 
-#: pikaur/print_department.py:430
+#: pikaur/print_department.py:431
 msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/print_department.py:447
+#: pikaur/print_department.py:448
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "Pacote de repositório sugerido como um substituto:"
 msgstr[1] "Pacotes de repositório sugeridos como substitutos:"
 
-#: pikaur/print_department.py:460
+#: pikaur/print_department.py:461
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "Pacote de repositório de terceiros sugerido como substituto:"
 msgstr[1] "Pacotes de repositórios de terceiros sugeridos como substitutos:"
 
-#: pikaur/print_department.py:475
+#: pikaur/print_department.py:476
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "O pacote do repositório será instalado:"
 msgstr[1] "Pacotes de repositório serão instalados:"
 
-#: pikaur/print_department.py:488
+#: pikaur/print_department.py:489
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "Nova dependência será instalada a partir do repositório:"
 msgstr[1] "Novas dependências serão instaladas a partir do repositório:"
 
-#: pikaur/print_department.py:503
+#: pikaur/print_department.py:504
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "O pacote de repositórios de terceiros será instalado:"
 msgstr[1] "Pacotes de repositórios de terceiros serão instalados:"
 
-#: pikaur/print_department.py:517
+#: pikaur/print_department.py:518
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] ""
@@ -927,63 +947,63 @@ msgstr[0] ""
 msgstr[1] ""
 "Novas dependências serão instaladas a partir do repositório de terceiros:"
 
-#: pikaur/print_department.py:532
+#: pikaur/print_department.py:533
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "Pacote AUR será instalado:"
 msgstr[1] "Pacotes AUR serão instalados:"
 
-#: pikaur/print_department.py:546
+#: pikaur/print_department.py:547
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "Nova dependência será instalada a partir do AUR:"
 msgstr[1] "Novas dependências serão instaladas a partir do AUR:"
 
-#: pikaur/print_department.py:563
+#: pikaur/print_department.py:564
 msgid "Total Download Size:"
 msgstr ""
 
-#: pikaur/print_department.py:566
+#: pikaur/print_department.py:567
 msgid "Total Installed Size:"
 msgstr ""
 
-#: pikaur/print_department.py:617
+#: pikaur/print_department.py:618
 #, fuzzy
 msgid "Ignoring package update {}"
 msgstr "Ignorando o pacote {}"
 
-#: pikaur/print_department.py:623
+#: pikaur/print_department.py:624
 msgid "Ignoring package {}"
 msgstr "Ignorando o pacote {}"
 
-#: pikaur/print_department.py:644
+#: pikaur/print_department.py:645
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr "Pacote {name} {version} {package_source} está atualizado - ignorando"
 
-#: pikaur/print_department.py:655
+#: pikaur/print_department.py:656
 #, fuzzy, python-brace-format
 msgid ""
 "{name} {version} local package is newer than in AUR ({aur_version}) - "
 "skipping"
 msgstr "Pacote {name} {version} {package_source} está atualizado - ignorando"
 
-#: pikaur/print_department.py:666
+#: pikaur/print_department.py:667
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr ""
 
-#: pikaur/print_department.py:676
+#: pikaur/print_department.py:677
 #, fuzzy, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr "Pacote {name} {version} {package_source} está atualizado - ignorando"
 
-#: pikaur/print_department.py:767
+#: pikaur/print_department.py:768
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[instalado: {version}]"
 
-#: pikaur/print_department.py:771
+#: pikaur/print_department.py:772
 msgid "[installed]"
 msgstr "[instalado]"
 

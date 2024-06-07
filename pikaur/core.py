@@ -361,7 +361,7 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
         sys.exit(65)
     if not dep_names:
         privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
-        dep_names = ["fakeroot"] + (
+        dep_names = ["base-devel"] + (
             [privilege_escalation_tool] if not RunningAsRoot()() else []
         )
 

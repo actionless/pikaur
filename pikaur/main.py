@@ -446,9 +446,12 @@ def check_runtime_deps() -> None:
         sys.exit(65)
     if not get_local_pkg("base-devel"):
         print_error(
-            translate(
-                "Read damn arch-wiki before borking your computer",
-            ),
+            "\n".join([
+                translate(
+                    "Read damn arch-wiki before borking your computer",
+                ),
+                "https://wiki.archlinux.org/title/Arch_User_Repository",
+            ]),
         )
         sys.exit(65)
     if not RunningAsRoot()():

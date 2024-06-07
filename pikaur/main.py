@@ -22,12 +22,14 @@ from .config import (
     CacheRoot,
     DataRoot,
     PikaurConfig,
+    RunningAsRoot,
+    UsingDynamicUsers,
     _OldAurReposCachePath,
     _UserCacheRoot,
 )
 from .core import (
     DEFAULT_INPUT_ENCODING,
-    check_runtime_deps,
+    check_executables,
     interactive_spawn,
     mkdir,
     spawn,
@@ -39,6 +41,7 @@ from .i18n import translate
 from .info_cli import cli_info_packages
 from .install_cli import InstallPackagesCLI
 from .logging import create_logger
+from .pacman import PackageDB
 from .pikspect import PikspectSignalHandler
 from .pkg_cache_cli import cli_clean_packages_cache
 from .pprint import TTYRestore, print_error, print_stderr, print_warning
@@ -55,6 +58,7 @@ from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .search_cli import cli_search_packages, search_packages
 from .updates import print_upgradeable
 from .urllib_helper import ProxyInitSocks5Error, init_proxy
+from .version import split_version
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -74,6 +78,7 @@ def init_readline() -> None:
 
 init_readline()
 
+SYSTEMD_MIN_VERSION: "Final" = 235
 logger = create_logger(f"main_{os.getuid()}")
 
 
@@ -410,6 +415,45 @@ class EmptyWrapper:
 
     def __exit__(self, *_exc_details: object) -> None:
         pass
+
+
+def get_local_pkg(pkg_name: str) -> pyalpm.Package | None:
+    return PackageDB.get_local_pkg_uncached(pkg_name)
+
+
+def check_systemd_dynamic_users_version() -> bool:  # pragma: no cover
+    # @TODO: remove this check later as systemd v 235 is quite OLD already
+    pkg = get_local_pkg("systemd")
+    if not pkg:
+        return False
+    version = int(split_version(pkg.version)[0])
+    return version >= SYSTEMD_MIN_VERSION
+
+
+def check_runtime_deps() -> None:
+    if sys.version_info < (3, 7):
+        print_error(
+            translate("pikaur requires Python >= 3.7 to run."),
+        )
+        sys.exit(65)
+    if (
+        (PikaurConfig().build.DynamicUsers.get_str() != "never" and not parse_args().user_id)
+        and (UsingDynamicUsers()() and not check_systemd_dynamic_users_version())
+    ):
+        print_error(
+            translate("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
+        )
+        sys.exit(65)
+    if not get_local_pkg("base-devel"):
+        print_error(
+            translate(
+                "Read damn arch-wiki before borking your computer",
+            ),
+        )
+        sys.exit(65)
+    if not RunningAsRoot()():
+        privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
+        check_executables([privilege_escalation_tool])
 
 
 def main(*, embed: bool = False) -> None:

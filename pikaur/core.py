@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 from .args import parse_args
-from .config import PikaurConfig, RunningAsRoot, UsingDynamicUsers
 from .i18n import translate
 from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 from .privilege import sudo
@@ -40,7 +39,6 @@ if TYPE_CHECKING:
 DEFAULT_INPUT_ENCODING: "Final" = "utf-8"
 DEFAULT_TIMEZONE: "Final" = datetime.datetime.now().astimezone().tzinfo
 PIPE: "Final" = subprocess.PIPE
-SYSTEMD_MIN_VERSION: "Final" = 235
 READ_MODE: "Final" = "r"
 
 
@@ -336,50 +334,7 @@ def dirname(path: str | Path) -> Path:
     return Path(path).parent if path else Path()
 
 
-def get_local_pkg(pkg_name: str) -> pyalpm.Package | None:
-    # pylint: disable=import-outside-toplevel
-    from .pacman import PackageDB  # noqa: PLC0415
-    return PackageDB.get_local_pkg_uncached(pkg_name)
-
-
-def check_systemd_dynamic_users_version() -> bool:  # pragma: no cover
-    # @TODO: remove this check later as systemd v 235 is quite OLD already
-    # pylint: disable=import-outside-toplevel
-    from .version import split_version  # noqa: PLC0415
-    pkg = get_local_pkg("systemd")
-    if not pkg:
-        return False
-    version = int(split_version(pkg.version)[0])
-    return version >= SYSTEMD_MIN_VERSION
-
-
-def check_runtime_deps(dep_names: list[str] | None = None) -> None:
-    if sys.version_info < (3, 7):
-        print_error(
-            translate("pikaur requires Python >= 3.7 to run."),
-        )
-        sys.exit(65)
-    if (
-        (PikaurConfig().build.DynamicUsers.get_str() != "never" and not parse_args().user_id)
-        and (UsingDynamicUsers()() and not check_systemd_dynamic_users_version())
-    ):
-        print_error(
-            translate("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
-        )
-        sys.exit(65)
-    if not dep_names:
-        privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
-        dep_names = (
-            [privilege_escalation_tool] if not RunningAsRoot()() else []
-        )
-        if not get_local_pkg("base-devel"):
-            print_error(
-                translate(
-                    "Read damn arch-wiki before borking your computer",
-                ),
-            )
-            sys.exit(65)
-
+def check_executables(dep_names: list[str]) -> None:
     for dep_bin in dep_names:
         if not shutil.which(dep_bin):
             message = translate("executable not found")

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from .args import parse_args
 from .aur import AURPackageInfo, find_aur_packages, get_repo_url
 from .aur_deps import get_aur_deps_list
-from .core import check_runtime_deps, interactive_spawn
+from .core import check_executables, interactive_spawn
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate
 from .pacman import PackageDB
@@ -85,7 +85,7 @@ def cli_getpkgbuild() -> None:
             repo_pkgs.append(repo_pkg)
 
     if repo_pkgs:
-        check_runtime_deps(["pkgctl"])
+        check_executables(["pkgctl"])
 
     if not_found_repo_pkgs:
         print_not_found_packages(not_found_repo_pkgs)

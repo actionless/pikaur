@@ -422,6 +422,7 @@ def check_systemd_dynamic_users_version() -> bool:  # pragma: no cover
     pkg = PackageDB.get_local_pkg_uncached("systemd")
     if not pkg:
         return False
+    check_executables(["systemd-run"])
     version = int(split_version(pkg.version)[0])
     return version >= SYSTEMD_MIN_VERSION
 

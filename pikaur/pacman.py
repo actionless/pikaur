@@ -565,6 +565,10 @@ class PackageDB(PackageDBCommon):
                         return pkg
         raise PackagesNotFoundInRepoError(packages=[pkg_name])
 
+    @classmethod
+    def get_local_pkg_uncached(cls, name: str) -> pyalpm.Package:
+        return cls.get_alpm_handle().get_localdb().get_pkg(name)
+
 
 def get_upgradeable_package_names() -> list[str]:
     upgradeable_packages_output = spawn([

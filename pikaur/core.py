@@ -341,7 +341,10 @@ def check_systemd_dynamic_users_version() -> bool:  # pragma: no cover
     # pylint: disable=import-outside-toplevel
     from .pacman import PackageDB  # noqa: PLC0415
     from .version import split_version  # noqa: PLC0415
-    version = int(split_version(PackageDB.get_local_pkg_uncached("systemd").version)[0])
+    pkg = PackageDB.get_local_pkg_uncached("systemd")
+    if not pkg:
+        return False
+    version = int(split_version(pkg.version)[0])
     return version >= SYSTEMD_MIN_VERSION
 
 

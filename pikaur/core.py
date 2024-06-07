@@ -355,7 +355,10 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
             translate("pikaur requires Python >= 3.7 to run."),
         )
         sys.exit(65)
-    if UsingDynamicUsers()() and not check_systemd_dynamic_users_version():
+    if (
+        (PikaurConfig().build.DynamicUsers.get_str() != "never" and not parse_args().user_id)
+        and (UsingDynamicUsers()() and not check_systemd_dynamic_users_version())
+    ):
         print_error(
             translate("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
         )

@@ -336,12 +336,17 @@ def dirname(path: str | Path) -> Path:
     return Path(path).parent if path else Path()
 
 
+def get_local_pkg(pkg_name: str) -> pyalpm.Package | None:
+    # pylint: disable=import-outside-toplevel
+    from .pacman import PackageDB  # noqa: PLC0415
+    return PackageDB.get_local_pkg_uncached(pkg_name)
+
+
 def check_systemd_dynamic_users_version() -> bool:  # pragma: no cover
     # @TODO: remove this check later as systemd v 235 is quite OLD already
     # pylint: disable=import-outside-toplevel
-    from .pacman import PackageDB  # noqa: PLC0415
     from .version import split_version  # noqa: PLC0415
-    pkg = PackageDB.get_local_pkg_uncached("systemd")
+    pkg = get_local_pkg("systemd")
     if not pkg:
         return False
     version = int(split_version(pkg.version)[0])
@@ -364,9 +369,16 @@ def check_runtime_deps(dep_names: list[str] | None = None) -> None:
         sys.exit(65)
     if not dep_names:
         privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
-        dep_names = ["fakeroot"] + (
+        dep_names = (
             [privilege_escalation_tool] if not RunningAsRoot()() else []
         )
+        if not get_local_pkg("base-devel"):
+            print_error(
+                translate(
+                    "Read damn arch-wiki before borking your computer",
+                ),
+            )
+            sys.exit(65)
 
     for dep_bin in dep_names:
         if not shutil.which(dep_bin):

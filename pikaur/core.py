@@ -337,15 +337,11 @@ def dirname(path: str | Path) -> Path:
 
 
 def check_systemd_dynamic_users_version() -> bool:  # pragma: no cover
-    try:
-        out = subprocess.check_output(
-            ["/usr/sbin/systemd-run", "--version"],  # nosec B603  # noqa: S603
-            universal_newlines=True,
-        )
-    except FileNotFoundError:
-        return False
-    first_line = out.split("\n", maxsplit=1)[0]
-    version = int(first_line.split(maxsplit=2)[1])
+    # @TODO: remove this check later as systemd v 235 is quite OLD already
+    # pylint: disable=import-outside-toplevel
+    from .pacman import PackageDB  # noqa: PLC0415
+    from .version import split_version  # noqa: PLC0415
+    version = int(split_version(PackageDB.get_local_pkg_uncached("systemd").version)[0])
     return version >= SYSTEMD_MIN_VERSION
 
 

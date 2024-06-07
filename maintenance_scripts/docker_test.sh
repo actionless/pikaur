@@ -33,7 +33,8 @@ sudo docker build ./ \
 	--build-arg MODE="${1:---local}" \
 	--build-arg SKIP_LINTING="${2:-0}" \
 	--build-arg TESTSUITE="${3:-all}" \
-	-t pikaur -f ./Dockerfile \
+	-t pikaur \
+	-f ./Dockerfile \
 	|| return_code=$?
 
 echo "Exited with $return_code"

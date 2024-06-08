@@ -442,15 +442,17 @@ def check_runtime_deps() -> None:
         )
         sys.exit(65)
     if not PackageDB.get_local_pkg_uncached("base-devel"):
-        print_error(
+        print_stderr()
+        print_warning(
             "\n".join([
+                "",
                 translate(
                     "Read damn arch-wiki before borking your computer",
                 ),
                 "https://wiki.archlinux.org/title/Arch_User_Repository",
+                "",
             ]),
         )
-        sys.exit(65)
     if not RunningAsRoot()():
         privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
         check_executables([privilege_escalation_tool])

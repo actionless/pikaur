@@ -3,7 +3,7 @@
 from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING
 
-from .aur import find_aur_packages
+from .aur import find_aur_packages, find_aur_provided_deps
 from .core import PackageSource
 from .exceptions import (
     DependencyVersionMismatchError,
@@ -11,12 +11,16 @@ from .exceptions import (
     PackagesNotFoundInRepoError,
 )
 from .i18n import translate
+from .logging import create_logger
 from .pacman import PackageDB
 from .pprint import print_error
 from .version import VersionMatcher
 
 if TYPE_CHECKING:
     from .aur import AURPackageInfo
+
+
+logger = create_logger("aur_deps")
 
 
 def check_deps_versions(
@@ -245,7 +249,11 @@ def find_missing_deps_for_aur_pkg(
     aur_deps_info, not_found_aur_deps = find_aur_packages(
         not_found_repo_pkgs,
     )
-    # @TODO: find packages Provided by AUR packages
+    provided_aur_deps_info, not_found_aur_deps = find_aur_provided_deps(
+        not_found_aur_deps,
+    )
+    aur_deps_info += provided_aur_deps_info
+
     handle_not_found_aur_pkgs(
         aur_pkg_name=aur_pkg_name,
         aur_pkgs_info=aur_pkgs_info,
@@ -254,17 +262,31 @@ def find_missing_deps_for_aur_pkg(
     )
 
     # check versions of found AUR packages:
+    logger.debug("version_matchers={}", version_matchers)
     for aur_dep_info in aur_deps_info:
         aur_dep_name = aur_dep_info.name
-        version_matcher = version_matchers[aur_dep_name]
-        if not version_matcher(aur_dep_info.version):
-            raise DependencyVersionMismatchError(
-                version_found=aur_dep_info.version,
-                dependency_line=version_matcher.line,
-                who_depends=aur_pkg_name,
-                depends_on=aur_dep_name,
-                location=PackageSource.AUR,
-            )
+        version_matcher = version_matchers.get(
+            aur_dep_name,
+        )
+        pkg_version_matchers: list[VersionMatcher] = []
+        if version_matcher:
+            pkg_version_matchers = [version_matcher]
+        else:
+            for provide in aur_dep_info.provides:
+                version_matcher = version_matchers.get(VersionMatcher(provide).pkg_name)
+                if version_matcher is not None:
+                    pkg_version_matchers.append(version_matcher)
+        logger.debug("{} pkg version_matchers={}", aur_dep_name, pkg_version_matchers)
+        for version_matcher in pkg_version_matchers:
+            if not version_matcher(aur_dep_info.version):
+                raise DependencyVersionMismatchError(
+                    version_found=aur_dep_info.version,
+                    dependency_line=version_matcher.line,
+                    who_depends=aur_pkg_name,
+                    depends_on=aur_dep_name,
+                    location=PackageSource.AUR,
+                )
+            # not_found_repo_pkgs.remove(version_matcher.pkg_name)
 
     return not_found_repo_pkgs
 
@@ -280,6 +302,7 @@ def find_aur_deps(  # pylint: disable=too-many-branches
         aur_pkg.name
         for aur_pkg in aur_pkgs_infos
     ]
+    logger.debug("find_aur_deps: package_names={}", package_names)
     result_aur_deps: dict[str, list[str]] = {}
 
     initial_pkg_infos = initial_pkg_infos2_todo = aur_pkgs_infos[:]  # @TODO: var name
@@ -292,7 +315,12 @@ def find_aur_deps(  # pylint: disable=too-many-branches
             initial_pkg_infos = []
         else:
             aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(iter_package_names)
+            provided_aur_deps_info, not_found_aur_pkgs = find_aur_provided_deps(
+                not_found_aur_pkgs,
+            )
+            aur_pkgs_info += provided_aur_deps_info
         if not_found_aur_pkgs:
+            logger.debug("not_found_aur_pkgs={}", not_found_aur_pkgs)
             raise PackagesNotFoundInAURError(packages=not_found_aur_pkgs)
         for aur_pkg in aur_pkgs_info:
             aur_pkg_deps = get_aur_pkg_deps_and_version_matchers(
@@ -320,7 +348,11 @@ def find_aur_deps(  # pylint: disable=too-many-branches
             for aur_pkg_name, request in all_requests.items():
                 try:
                     results = request.get()
-                except Exception:
+                except Exception as exc:
+                    logger.debug(
+                        "exception during aur search: {}: {}",
+                        exc.__class__.__name__, exc,
+                    )
                     print_error(translate(
                         "Can't resolve dependencies for AUR package '{pkg}':",
                     ).format(pkg=aur_pkg_name))
@@ -336,6 +368,7 @@ def find_aur_deps(  # pylint: disable=too-many-branches
                 new_aur_deps.append(pkg_name)
                 iter_package_names.append(pkg_name)
 
+    logger.debug("find_aur_deps: result_aur_deps={}", result_aur_deps)
     return result_aur_deps
 
 

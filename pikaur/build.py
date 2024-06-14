@@ -131,6 +131,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
 
     package_base: str
     package_names: list[str]
+    provides: list[str]
 
     repo_path: Path
     pkgbuild_path: Path
@@ -180,12 +181,15 @@ class PackageBuild(DataType):  # noqa: PLR0904
             if pkgbase and srcinfo.pkgnames:
                 self.package_names = package_names or srcinfo.pkgnames
                 self.package_base = pkgbase
+                self.provides = srcinfo.get_values("provides")
             else:
                 no_pkgname_error = translate("Can't get package name from PKGBUILD")
                 raise BuildError(message=no_pkgname_error, build=self)
         elif package_names:
             self.package_names = package_names
-            self.package_base = find_aur_packages([package_names[0]])[0][0].packagebase
+            aur_pkg = find_aur_packages([package_names[0]])[0][0]
+            self.package_base = aur_pkg.packagebase
+            self.provides = aur_pkg.provides
             self.repo_path = AurReposCachePath()() / self.package_base
             self.pkgbuild_path = self.repo_path / DEFAULT_PKGBUILD_BASENAME
         else:
@@ -436,6 +440,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
     ) -> None:
 
         def _mark_dep_resolved(dep: str) -> None:
+            logger.debug("_mark_dep_resolved: {}", dep)
             if dep in self.new_make_deps_to_install:
                 self.new_make_deps_to_install.remove(dep)
             if dep in self.new_deps_to_install:
@@ -447,12 +452,21 @@ class PackageBuild(DataType):  # noqa: PLR0904
                 srcinfo = SrcInfo(
                     pkgbuild_path=pkg_build.pkgbuild_path, package_name=pkg_name,
                 )
+                stripped_pkg_name = VersionMatcher(pkg_name).pkg_name
                 all_provided_pkgnames.update(
-                    dict.fromkeys([pkg_name, *srcinfo.get_values("provides")], pkg_name),
+                    dict.fromkeys(
+                        [stripped_pkg_name, *(
+                            VersionMatcher(name).pkg_name
+                            for name in srcinfo.get_values("provides")
+                        )],
+                        stripped_pkg_name,
+                    ),
                 )
 
         self.built_deps_to_install = {}
 
+        logger.debug("self.all_deps_to_install={}", self.all_deps_to_install)
+        logger.debug("all_provided_pkgnames={}", all_provided_pkgnames)
         for dep in self.all_deps_to_install:
             dep_name = VersionMatcher(dep).pkg_name
             if dep_name not in all_provided_pkgnames:

@@ -6,7 +6,7 @@ from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING
 
 from .args import parse_args, reconstruct_args
-from .aur import AURPackageInfo, find_aur_packages, strip_aur_repo_name
+from .aur import AURPackageInfo, find_aur_packages, find_aur_provided_deps, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
 from .core import AURInstallInfo, ComparableType, PackageSource, RepoInstallInfo
 from .exceptions import DependencyError, DependencyVersionMismatchError, SysExit
@@ -502,6 +502,7 @@ Gonna fetch install info for:
             else:
                 not_found_aur_pkgs.append(aur_packages_names_to_versions[aur_pkg.name].line)
         if not_found_aur_pkgs:
+            logger.debug("error code: 3fh7n834fh7n")
             print_not_found_packages(sorted(not_found_aur_pkgs))
             raise SysExit(6)
         aur_updates_install_info_by_name: dict[str, AURInstallInfo] = {}
@@ -509,6 +510,7 @@ Gonna fetch install info for:
             self._all_aur_updates_raw, not_found_aur_pkgs = find_aur_updates()
             self.exclude_ignored_packages(not_found_aur_pkgs, print_packages=False)
             if not_found_aur_pkgs:
+                logger.debug("error code: 789sdfgh789sd6")
                 print_not_found_packages(sorted(not_found_aur_pkgs))
             aur_updates_install_info_by_name = {
                 upd.name: upd for upd in self._all_aur_updates_raw
@@ -599,24 +601,42 @@ Gonna fetch install info for:
             self.install_package_names.append(pkg_name)
             self.get_all_packages_info()
             return
+
         # prepare install info (InstallInfo objects)
         # for all the AUR packages which gonna be built:
-        aur_pkgs = {
-            aur_pkg.name: aur_pkg
-            for aur_pkg in find_aur_packages(self.aur_deps_names)[0]
-        }
+        # aur_pkgs = {
+        #     aur_pkg.name: aur_pkg
+        #     for aur_pkg in find_aur_packages(self.aur_deps_names)[0]
+        # }
+        aur_pkgs = {}
+        aur_pkgs_infos, not_found_aur_pkgs = find_aur_packages(self.aur_deps_names)
+        provided_aur_deps_infos, not_found_aur_pkgs = find_aur_provided_deps(
+            not_found_aur_pkgs,
+        )
+        for aur_pkg_info in aur_pkgs_infos:
+            aur_pkgs[aur_pkg_info.name] = aur_pkg_info
+        for aur_pkg_info in provided_aur_deps_infos:
+            for provided_pkg_name in aur_pkg_info.provides:
+                aur_pkgs[VersionMatcher(provided_pkg_name).pkg_name] = aur_pkg_info
+        logger.debug("get_aur_deps_info: aur_pkgs={}", aur_pkgs)
+
         local_pkgs = PackageDB.get_local_dict()
+
+        added_pkg_names: list[str] = []
         for pkg_name in self.aur_deps_names:
             aur_pkg = aur_pkgs[pkg_name]
+            if aur_pkg.name in added_pkg_names:
+                continue
             local_pkg = local_pkgs.get(pkg_name)
             self.aur_deps_install_info.append(AURInstallInfo(
-                name=pkg_name,
+                name=aur_pkg.name,
                 current_version=local_pkg.version if local_pkg else " ",
                 new_version=aur_pkg.version,
                 description=aur_pkg.desc,
                 maintainer=aur_pkg.maintainer,
                 package=aur_pkg,
             ))
+            added_pkg_names.append(aur_pkg.name)
 
     def mark_dependent(self) -> None:
         """Update packages' install info to show deps in prompt."""

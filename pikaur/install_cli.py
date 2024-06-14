@@ -72,7 +72,7 @@ from .prompt import (
 )
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
-from .version import compare_versions
+from .version import VersionMatcher, compare_versions
 
 if TYPE_CHECKING:
     import pyalpm
@@ -167,7 +167,8 @@ class InstallPackagesCLI:  # noqa: PLR0904
 
         self.not_found_repo_pkgs_names = []
         self.repo_packages_by_name = {}
-        self.package_builds_by_name = {}
+        self.package_builds_by_name: dict[str, PackageBuild] = {}
+        self.package_builds_by_provides: dict[str, PackageBuild] = {}
 
         self.found_conflicts = {}
         self.transactions = {}
@@ -261,12 +262,18 @@ class InstallPackagesCLI:  # noqa: PLR0904
             self.args.positional or ["PKGBUILD"]
         }
 
+    def _get_pkgbuild_for_name_or_provided(self, pkg_name: str) -> PackageBuild:
+        return (
+            self.package_builds_by_name.get(pkg_name)
+            or self.package_builds_by_provides[pkg_name]
+        )
+
     def edit_pkgbuild_during_the_build(self, pkg_name: str) -> None:
         updated_pkgbuilds = self._clone_aur_repos([pkg_name])
         if not updated_pkgbuilds:
             return
         self.package_builds_by_name.update(updated_pkgbuilds)
-        pkg_build = self.package_builds_by_name[pkg_name]
+        pkg_build = self._get_pkgbuild_for_name_or_provided(pkg_name)
         if not edit_file(
                 pkg_build.pkgbuild_path,
         ):
@@ -349,6 +356,10 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 skip_checkdeps_for_pkgnames=self.skip_checkfunc_for_pkgnames,
             )
         except PackagesNotFoundInAURError as exc:
+            logger.debug(
+                "exception during install info fetch: {}: {}",
+                exc.__class__.__name__, exc,
+            )
             if exc.wanted_by:
                 print_error(bold_line(
                     translate("Dependencies missing for {}").format(", ".join(exc.wanted_by)),
@@ -711,9 +722,10 @@ class InstallPackagesCLI:  # noqa: PLR0904
 
     def get_package_builds(self) -> None:
         while self.all_aur_packages_names:
-            clone_names = []
+            clone_infos = []
             pkgbuilds_by_base: dict[str, PackageBuild] = {}
             pkgbuilds_by_name = {}
+            pkgbuilds_by_provides = {}
             for info in self.install_info.aur_install_info:
                 if info.pkgbuild_path:
                     if not isinstance(info.package, AURPackageInfo):
@@ -730,11 +742,19 @@ class InstallPackagesCLI:  # noqa: PLR0904
                             package_names=package_names,
                         )
                     pkgbuilds_by_name[info.name] = pkgbuilds_by_base[pkg_base]
+                    for provided_str in info.package.provides:
+                        provided_name = VersionMatcher(provided_str).pkg_name
+                        pkgbuilds_by_provides[provided_name] = pkgbuilds_by_base[pkg_base]
                 else:
-                    clone_names.append(info.name)
-            cloned_pkgbuilds = self._clone_aur_repos(clone_names)
+                    clone_infos.append(info)
+            cloned_pkgbuilds = self._clone_aur_repos([info.name for info in clone_infos])
             if cloned_pkgbuilds:
+                logger.debug("cloned_pkgbuilds={}", cloned_pkgbuilds)
                 pkgbuilds_by_name.update(cloned_pkgbuilds)
+                for info in clone_infos:
+                    for provided_str in info.package.provides:
+                        provided_name = VersionMatcher(provided_str).pkg_name
+                        pkgbuilds_by_provides[provided_name] = cloned_pkgbuilds[info.package.name]
             for pkg_list in (self.aur_packages_names, self.aur_deps_names):
                 self._find_extra_aur_build_deps(
                     all_package_builds={
@@ -744,7 +764,10 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     },
                 )
             self.package_builds_by_name = pkgbuilds_by_name
+            self.package_builds_by_provides = pkgbuilds_by_provides
             break
+        logger.debug("self.package_builds_by_name={}", self.package_builds_by_name)
+        logger.debug("self.package_builds_by_provides={}", self.package_builds_by_provides)
 
     def ask_about_package_conflicts(self) -> None:
         if self.aur_packages_names or self.aur_deps_names:
@@ -1035,7 +1058,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 index = 0
 
             pkg_name = packages_to_be_built[index]
-            pkg_build = self.package_builds_by_name[pkg_name]
+            pkg_build = self._get_pkgbuild_for_name_or_provided(pkg_name)
             pkg_base = pkg_build.package_base
             if (
                 pkg_base in self.built_package_bases
@@ -1087,12 +1110,16 @@ class InstallPackagesCLI:  # noqa: PLR0904
                         self.prompt_dependency_cycle(_pkg_name)
             else:
                 logger.debug(
-                    "Build done for packages {}, removing from queue",
+                    "Build done for packages {}, removing from queue {}",
                     pkg_build.package_names,
+                    packages_to_be_built,
                 )
                 self.built_package_bases.append(pkg_base)
-                for _pkg_name in pkg_build.package_names:
-                    if _pkg_name not in self.manually_excluded_packages_names:
+                for _pkg_name in pkg_build.package_names + pkg_build.provides:
+                    if (
+                            (_pkg_name not in self.manually_excluded_packages_names)
+                            and (_pkg_name in packages_to_be_built)
+                    ):
                         packages_to_be_built.remove(_pkg_name)
 
         self.failed_to_build_package_names = failed_to_build_package_names
@@ -1154,10 +1181,11 @@ class InstallPackagesCLI:  # noqa: PLR0904
         )
 
     def install_new_aur_deps(self) -> None:
-        new_aur_deps_to_install = {
-            pkg_name: self.package_builds_by_name[pkg_name].built_packages_paths[pkg_name]
-            for pkg_name in self.aur_deps_names
-        }
+        new_aur_deps_to_install = {}
+        for pkg_name in self.aur_deps_names:
+            pkg_build = self._get_pkgbuild_for_name_or_provided(pkg_name)
+            for name in pkg_build.package_names:
+                new_aur_deps_to_install[name] = pkg_build.built_packages_paths[name]
         try:
             install_built_deps(
                 deps_names_and_paths=new_aur_deps_to_install,
@@ -1175,7 +1203,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
     def install_aur_packages(self) -> None:
         aur_packages_to_install = {}
         for pkg_name in self.aur_packages_names:
-            pkg_build = self.package_builds_by_name.get(pkg_name)
+            pkg_build = self._get_pkgbuild_for_name_or_provided(pkg_name)
             if pkg_build:
                 path = pkg_build.built_packages_paths.get(pkg_name)
                 if path:

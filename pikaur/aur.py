@@ -8,6 +8,7 @@ from urllib.parse import quote
 from .config import PikaurConfig
 from .core import DataType
 from .exceptions import AURError
+from .logging import create_logger
 from .progressbar import ThreadSafeProgressBar
 from .urllib_helper import get_gzip_from_url, get_json_from_url
 
@@ -18,6 +19,16 @@ if TYPE_CHECKING:
 
 
 MAX_URL_LENGTH: "Final" = 8177  # default value in many web servers
+
+
+logger = create_logger("aur_module")
+
+
+class NotFound:
+    pass
+
+
+NOT_FOUND: "Final[NotFound]" = NotFound()
 
 
 class AurRPCErrors:
@@ -137,12 +148,14 @@ def strip_aur_repo_name(pkg_name: str) -> str:
     return pkg_name
 
 
-def aur_rpc_search_name_desc(search_query: str) -> list[AURPackageInfo]:
+def aur_rpc_search(
+        search_query: str, search_by: str = "name-desc",
+) -> list[AURPackageInfo]:
     url = construct_aur_rpc_url_from_params({
         "v": 5,
         "type": "search",
         "arg": strip_aur_repo_name(search_query),
-        "by": "name-desc",
+        "by": search_by,
     })
     result_json = get_json_from_url(url)
     if AurRPCErrors.ERROR_KEY in result_json:
@@ -154,6 +167,10 @@ def aur_rpc_search_name_desc(search_query: str) -> list[AURPackageInfo]:
         )
         for aur_json in result_json.get("results", [])
     ]
+
+
+def aur_rpc_search_provider(package_name: str) -> tuple[str, list[AURPackageInfo]]:
+    return package_name, aur_rpc_search(search_query=package_name, search_by="provides")
 
 
 def _get_aur_rpc_info_url(search_queries: list[str]) -> str:
@@ -181,13 +198,28 @@ def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
 
 
 def aur_rpc_info_with_progress(
-        search_queries: list[str], *, progressbar_length: int, with_progressbar: bool,
+        search_queries: list[str],
+        *, progressbar_length: int, with_progressbar: bool,
 ) -> list[AURPackageInfo]:
     result = aur_rpc_info(search_queries)
     if with_progressbar:
         progressbar = ThreadSafeProgressBar.get(
             progressbar_length=progressbar_length,
             progressbar_id="aur_search",
+        )
+        progressbar.update()
+    return result
+
+
+def aur_rpc_search_provider_with_progress(
+        package_name: str,
+        *, progressbar_length: int, with_progressbar: bool,
+) -> tuple[str, list[AURPackageInfo]]:
+    result = aur_rpc_search_provider(package_name=package_name)
+    if with_progressbar:
+        progressbar = ThreadSafeProgressBar.get(
+            progressbar_length=progressbar_length,
+            progressbar_id="aur_provides_search",
         )
         progressbar.update()
     return result
@@ -206,15 +238,32 @@ class AurPackageListCache:
 
 class AurPackageSearchCache:
 
-    cache: ClassVar[dict[str, AURPackageInfo]] = {}
+    cache: ClassVar[dict[str, AURPackageInfo | NotFound]] = {}
 
     @classmethod
     def put(cls, pkg: AURPackageInfo) -> None:
         cls.cache[pkg.name] = pkg
 
     @classmethod
-    def get(cls, pkg_name: str) -> AURPackageInfo | None:
+    def put_not_found(cls, pkg_name: str) -> None:
+        cls.cache[pkg_name] = NOT_FOUND
+
+    @classmethod
+    def get(cls, pkg_name: str) -> AURPackageInfo | NotFound | None:
         return cls.cache.get(pkg_name)
+
+
+class AurProvidedPackageSearchCache:
+
+    cache: ClassVar[dict[str, list[AURPackageInfo]]] = {}
+
+    @classmethod
+    def put(cls, provides: str, pkgs: list[AURPackageInfo]) -> None:
+        cls.cache[provides] = pkgs
+
+    @classmethod
+    def get(cls, provides: str) -> list[AURPackageInfo] | None:
+        return cls.cache.get(provides)
 
 
 def get_all_aur_names() -> list[str]:
@@ -243,12 +292,20 @@ def find_aur_packages(
     # @TODO: return only packages for the current architecture
     package_names = [strip_aur_repo_name(name) for name in package_names]
     num_packages = len(package_names)
-    json_results = []
+    json_results: list[AURPackageInfo] = []
+    cached_not_found_pkgs: list[str] = []
     for package_name in package_names[:]:
         aur_pkg = AurPackageSearchCache.get(package_name)
-        if aur_pkg:
+        if aur_pkg is NOT_FOUND:
+            package_names.remove(package_name)
+            cached_not_found_pkgs.append(package_name)
+            logger.debug("find_aur_packages: {} cached as not found", package_name)
+        elif isinstance(aur_pkg, AURPackageInfo):
             json_results.append(aur_pkg)
             package_names.remove(package_name)
+            logger.debug("find_aur_packages: {} cached", package_name)
+        else:
+            logger.debug("find_aur_packages: {} uncached", package_name)
 
     if package_names:
         with ThreadPool() as pool:
@@ -272,6 +329,7 @@ def find_aur_packages(
 
     found_aur_packages = [
         result.name for result in json_results
+        if isinstance(result, AURPackageInfo)
     ]
     not_found_packages: list[str] = (
         [] if num_packages == len(found_aur_packages)
@@ -280,7 +338,72 @@ def find_aur_packages(
             if package not in found_aur_packages
         ]
     )
+    for not_found_pkgname in not_found_packages:
+        AurPackageSearchCache.put_not_found(not_found_pkgname)
+    not_found_packages += cached_not_found_pkgs
     return json_results, not_found_packages
+
+
+def find_aur_provided_deps(
+        package_names: list[str], *, with_progressbar: bool = False,
+) -> tuple[list[AURPackageInfo], list[str]]:
+
+    # @TODO: return only packages for the current architecture
+    package_names = [strip_aur_repo_name(name) for name in package_names]
+    num_packages = len(package_names)
+    json_results = []
+    cached_not_found_pkgs: list[str] = []
+    for package_name in package_names[:]:
+        aur_pkgs = AurProvidedPackageSearchCache.get(package_name)
+        if aur_pkgs is None:
+            logger.debug("find_aur_provided_deps: {} not cached", package_name)
+        elif len(aur_pkgs) == 0:
+            package_names.remove(package_name)
+            cached_not_found_pkgs.append(package_name)
+            logger.debug("find_aur_provided_deps: {} cached as not found", package_name)
+        else:
+            # @TODO: dynamicly select package provider
+            json_results.append(aur_pkgs[0])
+            package_names.remove(package_name)
+            logger.debug("find_aur_provided_deps: {} cached", package_name)
+
+    if package_names:
+        with ThreadPool() as pool:
+            requests = [
+                pool.apply_async(aur_rpc_search_provider_with_progress, [], {
+                    "package_name": package_name,
+                    "progressbar_length": len(package_names),
+                    "with_progressbar": with_progressbar,
+                })
+                for package_name in package_names
+            ]
+            pool.close()
+            results = [request.get() for request in requests]
+            pool.join()
+            for provided_pkg_name, aur_pkgs in results:
+                if not aur_pkgs:
+                    continue
+                AurProvidedPackageSearchCache.put(pkgs=aur_pkgs, provides=provided_pkg_name)
+                for aur_pkg in aur_pkgs:
+                    if provided_pkg_name in package_names:
+                        # @TODO: dynamicly select package provider
+                        json_results += [aur_pkg]
+                        break
+
+    found_aur_packages = [
+        result.name for result in json_results
+    ]
+    not_found_packages: list[str] = (
+        [] if num_packages == len(found_aur_packages)
+        else [
+            package for package in package_names
+            if package not in found_aur_packages
+        ]
+    )
+    result_names = list({pkg.name for pkg in json_results})
+    full_pkg_infos, _ = find_aur_packages(result_names)
+    not_found_packages += cached_not_found_pkgs
+    return full_pkg_infos, not_found_packages
 
 
 def get_repo_url(package_base_name: str) -> str:

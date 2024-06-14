@@ -8,7 +8,7 @@ from .args import parse_args
 from .aur import (
     AURPackageInfo,
     AurRPCErrors,
-    aur_rpc_search_name_desc,
+    aur_rpc_search,
     get_all_aur_names,
     get_all_aur_packages,
 )
@@ -72,7 +72,7 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
         with ThreadPool() as pool:
             requests = {}
             for query in queries:
-                requests[query] = pool.apply_async(aur_rpc_search_name_desc, (query, ))
+                requests[query] = pool.apply_async(aur_rpc_search, (query, ))
             pool.close()
             for query, request in requests.items():
                 try:

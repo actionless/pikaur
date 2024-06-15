@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 from .args import parse_args
+from .aur import AURPackageInfo
 from .config import (
     AurReposCachePath,
     CacheRoot,
@@ -220,7 +221,11 @@ def cli_dynamic_select() -> None:  # pragma: no cover
     new_args = [*sys.argv]
     for positional in parse_args().positional:
         new_args.remove(positional)
-    new_args += ["--sync"] + [packages[idx].name for idx in selected_pkgs_idx]
+    new_args += ["--sync"]
+    for idx in selected_pkgs_idx:
+        pkg = packages[idx]
+        repo = "aur" if isinstance(pkg, AURPackageInfo) else pkg.db.name
+        new_args += [f"{repo}/{pkg.name}"]
     execute_pikaur_operation(
         pikaur_operation=cli_install_packages,
         require_sudo=True,

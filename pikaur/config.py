@@ -144,6 +144,18 @@ class _UserTempRoot(FixedPathSingleton):
         return Path(gettempdir())
 
 
+class _CachePathDefault(FixedPathSingleton):
+    @classmethod
+    def init_value(cls) -> Path:
+        return Path(
+            pre_arg_parser("--xdg-cache-home", "")
+            or os.environ.get(
+                "XDG_CACHE_HOME",
+            )
+            or Home()() / ".cache/",
+        )
+
+
 class _UserCacheRoot(FixedPathSingleton):
     @classmethod
     def init_value(cls) -> Path:
@@ -187,6 +199,18 @@ class ConfigRoot(FixedPathSingleton):
                 "XDG_CONFIG_HOME",
             )
             or Home()() / ".config/",
+        )
+
+
+class _DataPathDefault(FixedPathSingleton):
+    @classmethod
+    def init_value(cls) -> Path:
+        return Path(
+            pre_arg_parser("--xdg-data-home", "")
+            or os.environ.get(
+                "XDG_DATA_HOME",
+            )
+            or Home()() / ".local/share/",
         )
 
 
@@ -459,11 +483,11 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "CachePath": {
             "data_type": STR,
-            "default": str(Home()() / ".cache/"),
+            "default": str(_CachePathDefault()()),
         },
         "DataPath": {
             "data_type": STR,
-            "default": str(Home()() / ".local/share/"),
+            "default": str(_DataPathDefault()()),
         },
         "PacmanPath": {
             "data_type": STR,

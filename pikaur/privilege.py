@@ -119,7 +119,7 @@ def get_args_to_elevate_pikaur(original_args: list[str]) -> list[str]:
             ("--xdg-data-home", "xdg_data_home", "XDG_DATA_HOME"),
         ):
             arg_value = str(getattr(args, arg_key, None) or "")
-            if value := (arg_value or os.environ.get(env_key)):
+            if value := (os.environ.get(env_key) or arg_value):
                 extra_args += [
                     (flag, value),
                 ]

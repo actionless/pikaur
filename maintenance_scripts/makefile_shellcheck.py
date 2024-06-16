@@ -4,19 +4,20 @@ import os
 import subprocess  # nosec B404
 import sys
 import tempfile
+from typing import Final
 
-MAKEFILE = "./Makefile"
+MAKEFILE: str = "./Makefile"
 if len(sys.argv) > 1:
     MAKEFILE = sys.argv[1]
 
-DEFAULT_ENCODING = "utf-8"
-MAKE_SHELL = os.environ.get("MAKE_SHELL", "sh")
+DEFAULT_ENCODING: Final = "utf-8"
+MAKE_SHELL: Final = os.environ.get("MAKE_SHELL", "sh")
 # SKIP_TARGETS_WITH_CHARS = ("%", )
-SKIP_TARGETS_WITH_CHARS = ("%", "/")
-SKIP_TARGETS = (".PHONY", ".PRECIOUS")
+SKIP_TARGETS_WITH_CHARS: Final = ("%", "/")
+SKIP_TARGETS: Final = (".PHONY", ".PRECIOUS")
 
 
-_ALL = "all"
+_ALL: Final = "all"
 
 
 def get_targets() -> list[str]:

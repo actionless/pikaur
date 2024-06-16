@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from unittest import TestResult
 
 
-WRITE_DB = bool(os.environ.get("WRITE_DB"))
+WRITE_DB: bool = bool(os.environ.get("WRITE_DB"))
 
 
 if WRITE_DB:
@@ -50,7 +50,7 @@ if TYPE_CHECKING:
     from mypy_extensions import DefaultArg
 
 
-TEST_DIR = Path(os.path.realpath(__file__)).parent
+TEST_DIR: Path = Path(os.path.realpath(__file__)).parent
 
 
 def spawn(cmd: str | list[str], env: dict[str, str] | None = None) -> InteractiveSpawn:

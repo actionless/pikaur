@@ -5,7 +5,7 @@
 # pylint: disable=import-error,no-name-in-module
 from vulture.whitelist_utils import Whitelist  # type: ignore[import-untyped]
 
-whitelist = Whitelist()
+whitelist: Whitelist = Whitelist()  # type: ignore[no-any-unimported]
 
 whitelist.Any
 whitelist.BinaryIO

@@ -1,13 +1,15 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
 
+from typing import Final
+
 from pikaur_test.helpers import PikaurDbTestCase, pikaur
 
-MSG_CANNOT_BE_FOUND = "cannot be found"
-MSG_DEPS_MISSING = "Dependencies missing"
-MSG_VERSION_MISMATCH = "Version mismatch"
-MSG_MAKEPKG_FAILED_TO_EXECUTE = "Command 'makepkg --force --nocolor' failed to execute."
-MSG_FAILED_TO_BUILD_PKGS = "Failed to build following packages:"
+MSG_CANNOT_BE_FOUND: Final = "cannot be found"
+MSG_DEPS_MISSING: Final = "Dependencies missing"
+MSG_VERSION_MISMATCH: Final = "Version mismatch"
+MSG_MAKEPKG_FAILED_TO_EXECUTE: Final = "Command 'makepkg --force --nocolor' failed to execute."
+MSG_FAILED_TO_BUILD_PKGS: Final = "Failed to build following packages:"
 
 
 class FailureTest(PikaurDbTestCase):

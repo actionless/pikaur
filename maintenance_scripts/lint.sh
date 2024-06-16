@@ -23,12 +23,12 @@ fi
 
 
 PYTHON=python3
-
+TARGET_MODULE='pikaur'
 TARGETS=(
-	'pikaur'
-	'pikaur_test'
+	'./pikaur/'
+	'./pikaur_test/'
 	./maintenance_scripts/*.py
-	packaging/usr/bin/pikaur
+	'./packaging/usr/bin/pikaur'
 )
 if [[ -n "${1:-}" ]] ; then
 	TARGETS=("$@")
@@ -50,27 +50,29 @@ RUFF="${APP_DIR}/env/bin/ruff"
 if [[ "$FIX_MODE" -eq 1 ]] ; then
 	"$RUFF" check --unsafe-fixes --fix "${TARGETS[@]}"
 else
-	export PYTHONWARNINGS='ignore,error:::pikaur[.*],error:::pikaur_test[.*]'
+	export PYTHONWARNINGS='ignore,error:::'"$TARGET_MODULE"'[.*],error:::pikaur_test[.*]'
 
-
-	echo Python compile...
+	echo -e "\n== Running python compile:"
 	"$PYTHON" -O -m compileall "${TARGETS[@]}" \
 	| (\
 		grep -v -e '^Listing' -e '^Compiling' || true \
 	)
+	echo ':: python compile passed ::'
 
-	echo Python import...
-	#"$PYTHON" -c "import pikaur"
+	echo -e "\n== Running python import:"
 	"$PYTHON" -c "import pikaur.main"
+	echo ':: python import passed ::'
 
-	echo Checking for non-Final globals...
-	./maintenance_scripts/get_non_final_expressions.sh
+	echo -e "\n== Checking for non-Final globals:"
+	./maintenance_scripts/get_non_final_expressions.sh "${TARGETS[@]}"
+	echo ':: check passed ::'
 
-	echo Checking for unreasonable global vars...
-	./maintenance_scripts/get_global_expressions.sh
+	echo -e "\n== Checking for unreasonable global vars:"
+	./maintenance_scripts/get_global_expressions.sh "${TARGETS[@]}"
+	echo ':: check passed ::'
 
 	install_ruff
-	echo Ruff rules up-to-date...
+	echo -e "\n== Checking Ruff rules up-to-date:"
 	diff --color -u \
 		<(awk '/select = \[/,/]/' pyproject.toml \
 			| sed -e 's|", "|/|g' \
@@ -82,30 +84,35 @@ else
 		<("$RUFF" linter \
 			| awk '{print $1;}' \
 			| sort)
-	echo Ruff...
+	echo -e "\n== Ruff..."
 	"$RUFF" check "${TARGETS[@]}"
+	echo ':: ruff passed ::'
 
-	echo Flake8...
+	echo -e "\n== Running flake8:"
 	"$PYTHON" -m flake8 "${TARGETS[@]}"
+	echo ':: flake8 passed ::'
 
-	echo PyLint...
+	echo -e "\n== Running pylint:"
 	"$PYTHON" -m pylint "${TARGETS[@]}" --score no
+	echo ':: pylint passed ::'
 
-	echo MyPy...
+	echo -e "\n== Running mypy:"
 	"$PYTHON" -m mypy "${TARGETS[@]}" --no-error-summary
+	echo ':: mypy passed ::'
 
-	echo Vulture...
+	echo -e "\n== Running vulture:"
 		#--exclude argparse.py \
 	"$PYTHON" -m vulture "${TARGETS[@]}" \
 		./maintenance_scripts/vulture_whitelist.py \
 		--min-confidence=1 \
 		--sort-by-size
+	echo ':: vulture passed ::'
 
 	echo Bandit...
 	# if `grep -R nosec pikaur | grep -v noqa` would start returning nothing - bandit check might be removed safely
 	"$PYTHON" -m bandit "${TARGETS[@]}" --recursive --silent
 
-	echo Shellcheck...
+	echo -e "\n== Running shellcheck:"
 	(
 		cd "${APP_DIR}"
 		# shellcheck disable=SC2046
@@ -113,13 +120,15 @@ else
 			-name '*.sh' \
 		)
 	)
-	echo Shellcheck Makefile...
+	echo ':: shellcheck passed ::'
+	echo -e "\n== Running shellcheck on Makefile..."
 	(
 		cd "${APP_DIR}"
 		"$PYTHON" ./maintenance_scripts/makefile_shellcheck.py
 	)
+	echo ':: shellcheck makefile passed ::'
 
-	echo Validate pyproject file...
+	echo -e "\n== Validate pyproject file..."
 	(
 		exit_code=0
 		result=$(validate-pyproject pyproject.toml 2>&1) || exit_code=$?
@@ -128,7 +137,8 @@ else
 			exit $exit_code
 		fi
 	)
+	echo ':: pyproject validation passed ::'
 
 fi
 
-echo '== GOOD!'
+echo -e '\n== GOOD!'

@@ -2,9 +2,10 @@
 set -ue
 
 result=$(
-	grep -REn "^[a-zA-Z_]+ = " pikaur --color=always \
+	grep -REn "^[a-zA-Z_]+ = " "$@" --color=always \
 	| grep -Ev \
 		-e ': Final' \
+		-e ' # nonfinal-ignore' \
 		\
 		-e '=.*\|' \
 		-e '=.*(dict|list|Callable)\[' \
@@ -12,6 +13,9 @@ result=$(
 		-e namedtuple \
 		\
 		-e 'create_logger\(|running_as_root|sudo' \
+		\
+		-e './maintenance_scripts/find_.*.py.*:.*:' \
+		-e '.SRCINFO' \
 	| sort
 )
 echo -n "$result"

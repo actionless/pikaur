@@ -27,9 +27,9 @@ if TYPE_CHECKING:
     from collections.abc import MutableMapping, Sequence
     from typing import Any, Final
 
-Token = markdown_it.token.Token
-OptionsDict = markdown_it.utils.OptionsDict
-OptionsType = markdown_it.utils.OptionsType
+Token = markdown_it.token.Token  # nonfinal-ignore
+OptionsDict = markdown_it.utils.OptionsDict  # nonfinal-ignore
+OptionsType = markdown_it.utils.OptionsType  # nonfinal-ignore
 
 
 class TokenType:

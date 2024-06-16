@@ -7,8 +7,8 @@ import os
 import sys
 from pathlib import Path
 
-SCRIPT_DIR = Path(os.path.realpath(__file__)).parent
-PARENT_DIR = os.path.realpath(
+SCRIPT_DIR: Path = Path(os.path.realpath(__file__)).parent
+PARENT_DIR: str = os.path.realpath(
     SCRIPT_DIR / "../",
 )
 sys.path.insert(1, PARENT_DIR)

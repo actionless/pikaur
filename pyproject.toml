@@ -5,7 +5,7 @@ description = 'AUR helper with minimal dependencies'
 authors = [
   {name = 'Yauheni Kirylau', email = 'actionless.loveless@gmail.com'},
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 classifiers = [
   'Development Status :: 5 - Production/Stable',
   'Environment :: Console',

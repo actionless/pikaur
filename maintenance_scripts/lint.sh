@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -ueo pipefail
 
 script_dir=$(readlink -e "$(dirname "${0}")")
 APP_DIR="$(readlink -e "${script_dir}"/..)"
@@ -60,7 +60,7 @@ else
 	echo ':: python compile passed ::'
 
 	echo -e "\n== Running python import:"
-	"$PYTHON" -c "import pikaur.main"
+	"$PYTHON" -c "import ${TARGET_MODULE}.main"
 	echo ':: python import passed ::'
 
 	echo -e "\n== Checking for non-Final globals:"

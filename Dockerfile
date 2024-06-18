@@ -43,6 +43,7 @@ RUN echo ">>>> Installing opt deps:" && \
 	sudo -u user tar --transform 's,^,pikaur-git/,' -cf pikaur-git.tar.gz . && \
 	sudo -u user sed -i 's/"$pkgname::.*"/"pikaur-git.tar.gz"/' PKGBUILD && \
 	echo ">>>> Starting the build:" && \
+	./maintenance_scripts/changelog.sh > CHANGELOG && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	rm -fr ./src/ ./pkg/
 #RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '7.4.1-1'  # up to 7.4.4

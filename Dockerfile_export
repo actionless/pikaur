@@ -34,6 +34,7 @@ ADD "https://api.github.com/repos/actionless/pikaur/commits?per_page=1" /home/us
 RUN git clone https://github.com/actionless/pikaur.git /opt/app-build/
 
 RUN	echo ">>>> Starting the build:" && \
+	./maintenance_scripts/changelog.sh > CHANGELOG && \
 	sudo -u user makepkg -fsi --noconfirm && \
 	rm -fr ./src/ ./pkg/
 #RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-coverage '7.4.1-1'  # up to 7.4.4

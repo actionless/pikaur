@@ -35,6 +35,7 @@ optdepends=(
 )
 conflicts=('pikaur')
 provides=('pikaur')
+changelog="CHANGELOG"
 
 pkgver() {
 	cd "${srcdir}/${pkgname}" || exit 2

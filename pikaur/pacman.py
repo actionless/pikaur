@@ -502,8 +502,12 @@ class PackageDB(PackageDBCommon):
             if pkg_name not in cls._pacman_repo_pkg_present_cache:
                 pkg_names_to_check += pkg_name.split(",")
             elif not cls._pacman_repo_pkg_present_cache[pkg_name]:
-                not_found_pkg_names.append(pkg_name)
+                not_found_pkg_names.append(VersionMatcher(pkg_name).pkg_name)
 
+        logger.debug(
+            "get_not_found_repo_packages: pkg_names_to_check={} not_found_pkg_names={}",
+            pkg_names_to_check, not_found_pkg_names,
+        )
         if not pkg_names_to_check:
             return not_found_pkg_names
 
@@ -520,10 +524,13 @@ class PackageDB(PackageDBCommon):
                     pkg_name = VersionMatcher(groups[0]).pkg_name
                     new_not_found_pkg_names.append(pkg_name)
 
+        end_result = not_found_pkg_names + new_not_found_pkg_names
         for pkg_name in pkg_names_to_check:
-            cls._pacman_repo_pkg_present_cache[pkg_name] = pkg_name not in new_not_found_pkg_names
+            cls._pacman_repo_pkg_present_cache[pkg_name] = (
+                VersionMatcher(pkg_name).pkg_name not in end_result
+            )
 
-        return not_found_pkg_names + new_not_found_pkg_names
+        return end_result
 
     @classmethod
     def get_not_found_local_packages(cls, pkg_lines: list[str]) -> list[str]:

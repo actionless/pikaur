@@ -225,6 +225,7 @@ def find_missing_deps_for_aur_pkg(
         aur_pkgs_info=aur_pkgs_info,
     )
     if not not_found_in_requested_pkgs:
+        logger.debug("find_missing_deps_for_aur_pkg: NOT not_found_in_requested_pkgs")
         return []
 
     # check among local pkgs:
@@ -234,6 +235,7 @@ def find_missing_deps_for_aur_pkg(
         source=PackageSource.LOCAL,
     )
     if not not_found_local_pkgs:
+        logger.debug("find_missing_deps_for_aur_pkg: NOT not_found_local_pkgs")
         return []
 
     # repo pkgs:
@@ -243,6 +245,7 @@ def find_missing_deps_for_aur_pkg(
         source=PackageSource.REPO,
     )
     if not not_found_repo_pkgs:
+        logger.debug("find_missing_deps_for_aur_pkg: NOT not_found_repo_pkgs")
         return []
 
     # try finding those packages in AUR
@@ -262,7 +265,7 @@ def find_missing_deps_for_aur_pkg(
     )
 
     # check versions of found AUR packages:
-    logger.debug("version_matchers={}", version_matchers)
+    logger.debug("find_missing_deps_for_aur_pkg: version_matchers={}", version_matchers)
     for aur_dep_info in aur_deps_info:
         aur_dep_name = aur_dep_info.name
         version_matcher = version_matchers.get(
@@ -276,7 +279,10 @@ def find_missing_deps_for_aur_pkg(
                 version_matcher = version_matchers.get(VersionMatcher(provide).pkg_name)
                 if version_matcher is not None:
                     pkg_version_matchers.append(version_matcher)
-        logger.debug("{} pkg version_matchers={}", aur_dep_name, pkg_version_matchers)
+        logger.debug(
+            "find_missing_deps_for_aur_pkg: {} pkg version_matchers={}",
+            aur_dep_name, pkg_version_matchers,
+        )
         for version_matcher in pkg_version_matchers:
             if not version_matcher(aur_dep_info.version):
                 raise DependencyVersionMismatchError(

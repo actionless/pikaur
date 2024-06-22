@@ -66,6 +66,7 @@ mypy_path = './maintenance_scripts/mypy_stubs'
 
 [tool.ruff]
 line-length = 100
+unsafe-fixes = true
 
 [tool.ruff.lint.mccabe]
 max-complexity = 19

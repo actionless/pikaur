@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
-# pylint: disable=bare-except,ungrouped-imports, unused-import
+# pylint: disable=bare-except,ungrouped-imports,unused-import
 
 try:
     from pikaur.main import main

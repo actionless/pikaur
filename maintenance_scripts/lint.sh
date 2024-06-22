@@ -48,7 +48,7 @@ RUFF="${APP_DIR}/env/bin/ruff"
 
 
 if [[ "$FIX_MODE" -eq 1 ]] ; then
-	"$RUFF" check --unsafe-fixes --fix "${TARGETS[@]}"
+	"$RUFF" check --fix "${TARGETS[@]}"
 else
 	export PYTHONWARNINGS='ignore,error:::'"$TARGET_MODULE"'[.*],error:::pikaur_test[.*]'
 

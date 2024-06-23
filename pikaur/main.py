@@ -45,7 +45,7 @@ from .logging import create_logger
 from .pacman import PackageDB
 from .pikspect import PikspectSignalHandler
 from .pkg_cache_cli import cli_clean_packages_cache
-from .pprint import TTYRestore, print_error, print_stderr, print_warning
+from .pprint import TTYRestore, bold_line, print_error, print_stderr, print_warning
 from .print_department import print_version
 from .privilege import (
     get_args_to_elevate_pikaur,
@@ -452,9 +452,24 @@ def check_runtime_deps() -> None:
             "\n".join([
                 "",
                 translate(
-                    "Read damn arch-wiki before borking your computer",
+                    "".join([  # grep -v grep 😸
+                        chr(ord(c) - 1)
+                        for c in
+                        "Sfbe!ebno!bsdi.xjlj!cfgpsf!cpsljoh!zpvs!dpnqvufs;"
+                    ]),
                 ),
-                "https://wiki.archlinux.org/title/Arch_User_Repository",
+                bold_line("".join([
+                    chr(ord(c) - 1)
+                    for c in
+                    "iuuqt;00xjlj/bsdimjovy/psh0ujumf0Bsdi`Vtfs`Sfqptjupsz"
+                ])),
+                translate(
+                    "".join([
+                        chr(ord(c) - 1)
+                        for c in
+                        ")Bmtp-!epo(u!sfqpsu!boz!jttvft!up!qjlbvs-!jg!vsf!tffjoh!uijt!nfttbhf*"
+                    ]),
+                ),
                 "",
             ]),
         )

@@ -475,7 +475,7 @@ def check_runtime_deps() -> None:
                         ]),
                     ),
                     "",
-                ]) if priv_tool == "sudo" else "\n".join([
+                ] if priv_tool == "sudo" else [
                     "",
                     translate(
                         "{priv_tool} is not part of minimal arch default setup,"

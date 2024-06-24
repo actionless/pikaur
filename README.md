@@ -200,6 +200,9 @@ Reverse search results of the commands like `pikaur -Ss <query>` or `pikaur <que
 ##### WarnAboutPackageUpdates (default: )
 Comma-separated list of packages names or globs, which upgrade should have additional warning message in the UI.
 
+##### WarnAboutNonDefaultPrivilegeEscalationTool (default: yes)
+Print warning when using privilege escalation tool other than `sudo`.
+
 
 #### [misc]
 

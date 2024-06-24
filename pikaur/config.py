@@ -464,6 +464,10 @@ CONFIG_SCHEMA: ConfigSchemaT = {
             "data_type": STR,
             "default": "",
         },
+        "WarnAboutNonDefaultPrivilegeEscalationTool": {
+            "data_type": BOOL,
+            "default": "yes",
+        },
     },
     "misc": {
         "AurHost": {

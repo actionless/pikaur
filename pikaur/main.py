@@ -447,32 +447,44 @@ def check_runtime_deps() -> None:
         )
         sys.exit(65)
     if not PackageDB.get_local_pkg_uncached("base-devel"):
-        print_stderr()
-        print_warning(
-            "\n".join([
-                "",
-                translate(
-                    "".join([  # grep -v grep 😸
+        warn_about_non_sudo \
+            = PikaurConfig().ui.WarnAboutNonDefaultPrivilegeEscalationTool.get_bool()
+        priv_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
+        if warn_about_non_sudo or priv_tool == "sudo":
+            print_stderr()
+            print_warning(
+                "\n".join([
+                    "",
+                    translate(
+                        "".join([  # grep -v grep 😸
+                            chr(ord(c) - 1)
+                            for c in
+                            "Sfbe!ebno!bsdi.xjlj!cfgpsf!cpsljoh!zpvs!dpnqvufs;"
+                        ]),
+                    ),
+                    bold_line("".join([
                         chr(ord(c) - 1)
                         for c in
-                        "Sfbe!ebno!bsdi.xjlj!cfgpsf!cpsljoh!zpvs!dpnqvufs;"
-                    ]),
-                ),
-                bold_line("".join([
-                    chr(ord(c) - 1)
-                    for c in
-                    "iuuqt;00xjlj/bsdimjovy/psh0ujumf0Bsdi`Vtfs`Sfqptjupsz"
-                ])),
-                translate(
-                    "".join([
-                        chr(ord(c) - 1)
-                        for c in
-                        ")Bmtp-!epo(u!sfqpsu!boz!jttvft!up!qjlbvs-!jg!vsf!tffjoh!uijt!nfttbhf*"
-                    ]),
-                ),
-                "",
-            ]),
-        )
+                        "iuuqt;00xjlj/bsdimjovy/psh0ujumf0Bsdi`Vtfs`Sfqptjupsz"
+                    ])),
+                    translate(
+                        "".join([
+                            chr(ord(c) - 1)
+                            for c in
+                            ")Bmtp-!epo(u!sfqpsu!boz!jttvft!up!qjlbvs-!jg!vsf!tffjoh!uijt!nfttbhf*"
+                        ]),
+                    ),
+                    "",
+                ]) if priv_tool == "sudo" else "\n".join([
+                    "",
+                    translate(
+                        "{priv_tool} is not part of minimal arch default setup,"
+                        " be aware that you could run into potential problems.",
+                    ).format(priv_tool=priv_tool),
+
+                    "",
+                ]),
+            )
     if not RunningAsRoot()():
         privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
         check_executables([privilege_escalation_tool])

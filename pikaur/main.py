@@ -462,11 +462,13 @@ def check_runtime_deps() -> None:
                             "Sfbe!ebno!bsdi.xjlj!cfgpsf!cpsljoh!zpvs!dpnqvufs;"
                         ]),
                     ),
-                    bold_line("".join([
-                        chr(ord(c) - 1)
-                        for c in
-                        "iuuqt;00xjlj/bsdimjovy/psh0ujumf0Bsdi`Vtfs`Sfqptjupsz"
-                    ])),
+                    bold_line(
+                        "".join([
+                            chr(ord(c) - 1)
+                            for c in
+                            "iuuqt;00xjlj/bsdimjovy/psh0ujumf0Bsdi`Vtfs`Sfqptjupsz"
+                        ]),
+                    ),
                     translate(
                         "".join([
                             chr(ord(c) - 1)
@@ -481,7 +483,6 @@ def check_runtime_deps() -> None:
                         "{priv_tool} is not part of minimal arch default setup,"
                         " be aware that you could run into potential problems.",
                     ).format(priv_tool=priv_tool),
-
                     "",
                 ]),
             )

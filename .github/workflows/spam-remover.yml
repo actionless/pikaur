@@ -1,0 +1,200 @@
+name: Spam issues handler
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled]
+    
+jobs:
+  check-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v4
+        timeout-minutes: 3
+        with:
+          script: |
+            /* https://octokit.github.io/rest.js/v20/#issues */
+
+            /* console.log(context); */
+            
+            const config = {
+              labelsToAbort: ['no-bot'],
+              commonSpamSentences: [
+                'Read damn arch-wiki before borking your computer',
+              ],
+              labelViolation: 'spambot',
+              commentsIdentification: {
+                startToken: '<!-- Do not change! SpamRemoverBot identifier -->',
+                userLogins: [ 'github-actions[bot]' ],
+                ignoreCommentsOlderThanDays: 60
+              }
+            };
+                                    
+            const issueTitle = context.payload.issue.title;
+            const issueLabels = context.payload.issue.labels.map(i => i.name);
+            const issueBody = context.payload.issue.body;
+            const issueLocked = context.payload.issue.locked;
+            
+            console.log('--- Issue Info ---');
+            console.log('Title', issueTitle);
+            console.log('Labels', issueLabels);
+            /*
+            console.log('Body', issueBody);
+            */
+            console.log('---------');
+            
+            // Check for immediate abort
+            if (config.labelsToAbort.some(label => issueLabels.includes(label))) {
+              console.log('Detected a abort label, will abort workflow');
+              return;
+            }
+            
+            if (issueLocked) {
+              console.log('*** Issue is already locked ***');
+            } else {
+              const validationResult = isIssueValid(issueTitle, issueLabels, issueBody, config);
+              
+              console.log('*** Manage label ***');
+              manageLabel(config, issueLabels, validationResult);
+              
+              console.log('*** Manage comments ***');
+              manageComments(config, config.commentsIdentification, validationResult);
+            }
+            
+
+            function isIssueValid(issueTitle, issueLabels, issueBody, config) {
+              console.log('Performing checks...');
+              
+              let failedChecks = [];
+
+              for(const spamSentence of config.commonSpamSentences) {
+
+                console.log('Checking for ' + spamSentence + '...');
+                
+                if (issueTitle.includes(spamSentence) || issueBody.includes(spamSentence)) {
+                  console.log('FAILED');
+                  failedChecks.push(spamSentence);
+                } else {
+                  console.log('OK');
+                }
+
+              }
+              
+              return { 
+                valid: failedChecks.length == 0,
+                failedChecks: failedChecks
+              };
+            }
+            
+            
+            
+            function manageLabel(config, issueLabels, validationResult) {
+              if (validationResult.valid) {
+                /*
+                if (issueLabels.includes(config.labelViolation)) {
+                  console.log('Removing label')
+
+                  github.issues.removeLabel({
+                      issue_number: context.issue.number,
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      name: config.labelViolation
+                    })
+                } else {
+                  console.log('No label to remove')
+                }
+                */
+
+              } else {
+                if (!issueLabels.includes(config.labelViolation)) {
+                  console.log('Adding label');
+
+                  github.issues.addLabels({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    labels: [ config.labelViolation ]
+                  });
+                } else {
+                  console.log('Label already exists');
+                }
+              }
+            }
+
+
+            
+            async function manageComments(config, commentsIdentificationConfig, validationResult) {
+              console.log('Trying to remove the same existing comments')
+              
+              let since_date = new Date()
+              since_date.setDate(new Date().getDate() - commentsIdentificationConfig.ignoreCommentsOlderThanDays)
+              
+              const comments_payload = await github.issues.listComments({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  since: since_date.toISOString()
+                })
+              
+              console.log('Found ' + comments_payload.data.length + 'x comments')
+              
+              const commentsToDelete = comments_payload.data.filter(c => {
+                  let matchingComment =
+                    // Check if the user who commented is the expected one
+                    commentsIdentificationConfig.userLogins.includes(c.user.login) &&
+                    // Check if the comment body starts with the startToken
+                    c.body.startsWith(commentsIdentificationConfig.startToken);
+                  
+                  return matchingComment
+              })
+
+              console.log('The following comments will be deleted:', commentsToDelete)
+              
+              let counter = 0
+              
+              for(const commentToDelete of commentsToDelete) {
+                counter++
+                if (counter > 3) {
+                  core.warning('Detected potential malfunction: Deleting an unusual high amount of comments - Aborting')
+                  console.log('Aborting comment deletion')
+                  break
+                }
+                
+                console.log('Deleting comment with id', commentToDelete.id)
+
+                github.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: commentToDelete.id
+                })
+              }
+
+              if (!validationResult.valid) {
+                console.log('Creating new comment');
+                
+                github.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: 
+                    commentsIdentificationConfig.startToken + '\r\n'
+                    + '#### Spambot\r\n'
+                    + 'Spambot detected that this issue is spam.'
+                });
+                    /*+ validationResult.failedChecks.map(c => '* ' + c.errorMsg).join('\r\n')*/
+
+                console.log('Closing the ticket');
+                github.issues.update({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  state: 'closed',
+                });
+
+                console.log('Locking the ticket');
+                github.issues.lock({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                });
+              }
+            }

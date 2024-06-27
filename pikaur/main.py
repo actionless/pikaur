@@ -94,14 +94,15 @@ def file_debug(message: "Any") -> None:
 
 
 class OutputEncodingWrapper(AbstractContextManager[None]):
-
     original_stderr: int
     original_stdout: int
 
     def __enter__(self) -> None:
         for attr in ("stdout", "stderr"):
             logger.debug(
-                "Setting {} to {}...", attr, DEFAULT_INPUT_ENCODING,
+                "Setting {} to {}...",
+                attr,
+                DEFAULT_INPUT_ENCODING,
                 lock=False,
             )
             real_stream = getattr(sys, attr)
@@ -111,11 +112,13 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
             real_stream.flush()
             try:
                 setattr(
-                    self, f"original_{attr}",
+                    self,
+                    f"original_{attr}",
                     real_stream,
                 )
                 setattr(
-                    sys, attr,
+                    sys,
+                    attr,
                     open(
                         real_stream.fileno(),
                         mode="w",
@@ -126,15 +129,17 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
             except io.UnsupportedOperation as exc:
                 logger.debug(
                     "Can't set {} to {}:\n{}",
-                    attr, DEFAULT_INPUT_ENCODING, exc,
+                    attr,
+                    DEFAULT_INPUT_ENCODING,
+                    exc,
                     lock=False,
                 )
 
     def __exit__(
-            self,
-            exc_class: type[BaseException] | None,
-            exc_instance: BaseException | None,
-            exc_tb: TracebackType | None,
+        self,
+        exc_class: type[BaseException] | None,
+        exc_instance: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         try:
             # @TODO: replace all SysExit-s to SystemExit-s eventually :3
@@ -155,7 +160,8 @@ class OutputEncodingWrapper(AbstractContextManager[None]):
                     continue
                 stream.flush()
                 setattr(
-                    sys, attr,
+                    sys,
+                    attr,
                     orig_stream,
                 )
                 logger.debug("{} restored", attr, lock=False)
@@ -178,11 +184,13 @@ def cli_pkgbuild() -> None:
 def cli_print_version() -> None:
     args = parse_args()
     proc = spawn([
-        PikaurConfig().misc.PacmanPath.get_str(), "--version",
+        PikaurConfig().misc.PacmanPath.get_str(),
+        "--version",
     ])
     pacman_version = proc.stdout_text.splitlines()[1].strip(" .-") if proc.stdout_text else "N/A"
     print_version(
-        pacman_version=pacman_version, pyalpm_version=pyalpm.version(),
+        pacman_version=pacman_version,
+        pyalpm_version=pyalpm.version(),
         quiet=args.quiet,
     )
 
@@ -195,7 +203,8 @@ def cli_dynamic_select() -> None:  # pragma: no cover
     while True:
         try:
             print_stderr(
-                "\n" + translate(
+                "\n"
+                + translate(
                     "Please enter the number of the package(s) you want to install "
                     "and press [Enter] (default={}):",
                 ).format(1),
@@ -206,9 +215,13 @@ def cli_dynamic_select() -> None:  # pragma: no cover
             restart_prompt = False
             for idx in selected_pkgs_idx:
                 if not 0 <= idx < len(packages):
-                    print_error(translate("invalid value: {} is not between {} and {}").format(
-                        idx + 1, 1, len(packages),
-                    ))
+                    print_error(
+                        translate("invalid value: {} is not between {} and {}").format(
+                            idx + 1,
+                            1,
+                            len(packages),
+                        )
+                    )
                     restart_prompt = True
             if restart_prompt:
                 continue
@@ -234,10 +247,10 @@ def cli_dynamic_select() -> None:  # pragma: no cover
 
 
 def execute_pikaur_operation(
-        pikaur_operation: "Callable[[], None]",
-        *,
-        require_sudo: bool,
-        replace_args: None | list[str] = None,
+    pikaur_operation: "Callable[[], None]",
+    *,
+    require_sudo: bool,
+    replace_args: None | list[str] = None,
 ) -> None:
     args = parse_args()
     cli_args = replace_args or sys.argv
@@ -245,17 +258,12 @@ def execute_pikaur_operation(
     if args.read_stdin:
         logger.debug("Handling stdin as positional args:")
         logger.debug("    {}", args.positional)
-        add_args = [
-            word
-            for line in sys.stdin.readlines()
-            for word in line.split()
-        ]
+        add_args = [word for line in sys.stdin.readlines() for word in line.split()]
         logger.debug("    {}", add_args)
         args.positional += add_args
         cli_args += add_args
-    if (
-            running_as_root()
-            and (PikaurConfig().build.DynamicUsers.get_str() == "never" and not args.user_id)
+    if running_as_root() and (
+        PikaurConfig().build.DynamicUsers.get_str() == "never" and not args.user_id
     ):
         print_error(
             translate(
@@ -265,17 +273,16 @@ def execute_pikaur_operation(
         )
         sys.exit(1)
     elif (
-            require_sudo
-            and not running_as_root()
-            and (
-                args.privilege_escalation_target == "pikaur"
-                or need_dynamic_users()
-            )
+        require_sudo
+        and not running_as_root()
+        and (args.privilege_escalation_target == "pikaur" or need_dynamic_users())
     ):
         # Restart pikaur with sudo to use systemd dynamic users or current user id
-        sys.exit(interactive_spawn(
-            get_args_to_elevate_pikaur(cli_args),
-        ).returncode)
+        sys.exit(
+            interactive_spawn(
+                get_args_to_elevate_pikaur(cli_args),
+            ).returncode
+        )
     else:
         # Just run the operation normally
         pikaur_operation()
@@ -356,9 +363,7 @@ def cli_entry_point() -> None:
 def migrate_old_aur_repos_dir() -> None:
     old_aur_repos_cache_path = _OldAurReposCachePath()()
     new_aur_repos_cache_path = AurReposCachePath()()
-    if not (
-            old_aur_repos_cache_path.exists() and not new_aur_repos_cache_path.exists()
-    ):
+    if not (old_aur_repos_cache_path.exists() and not new_aur_repos_cache_path.exists()):
         return
     mkdir(DataRoot()())
     shutil.move(old_aur_repos_cache_path, new_aur_repos_cache_path)
@@ -410,11 +415,11 @@ def create_handle_stop(reason: str = "SIGINT") -> "Callable[[int, FrameType | No
             raise KeyboardInterrupt
         print_stderr(f"\n\nCanceled by user ({reason})", lock=False)
         raise SysExit(125)
+
     return handle_stop
 
 
 class EmptyWrapper:
-
     def __enter__(self) -> None:
         pass
 
@@ -438,9 +443,8 @@ def check_runtime_deps() -> None:
             translate("pikaur requires Python >= 3.7 to run."),
         )
         sys.exit(65)
-    if (
-        (PikaurConfig().build.DynamicUsers.get_str() != "never" and not parse_args().user_id)
-        and (UsingDynamicUsers()() and not check_systemd_dynamic_users_version())
+    if (PikaurConfig().build.DynamicUsers.get_str() != "never" and not parse_args().user_id) and (
+        UsingDynamicUsers()() and not check_systemd_dynamic_users_version()
     ):
         print_error(
             translate("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
@@ -448,43 +452,33 @@ def check_runtime_deps() -> None:
         sys.exit(65)
     privilege_escalation_tool = PikaurConfig().misc.PrivilegeEscalationTool.get_str()
     if not PackageDB.get_local_pkg_uncached("base-devel"):
-        warn_about_non_sudo \
-            = PikaurConfig().ui.WarnAboutNonDefaultPrivilegeEscalationTool.get_bool()
+        warn_about_non_sudo = (
+            PikaurConfig().ui.WarnAboutNonDefaultPrivilegeEscalationTool.get_bool()
+        )
         if warn_about_non_sudo or privilege_escalation_tool == "sudo":
             print_stderr()
             print_warning(
-                "\n".join([
-                    "",
-                    translate(
-                        "".join([  # grep -v grep 😸
-                            chr(ord(c) - 1)
-                            for c in
-                            "Sfbe!ebno!bsdi.xjlj!cfgpsf!cpsljoh!zpvs!dpnqvufs;"
-                        ]),
-                    ),
-                    bold_line(
-                        "".join([
-                            chr(ord(c) - 1)
-                            for c in
-                            "iuuqt;00xjlj/bsdimjovy/psh0ujumf0Bsdi`Vtfs`Sfqptjupsz"
-                        ]),
-                    ),
-                    translate(
-                        "".join([
-                            chr(ord(c) - 1)
-                            for c in
-                            ")Bmtp-!epo(u!sfqpsu!boz!jttvft!up!qjlbvs-!jg!vsf!tffjoh!uijt!nfttbhf*"
-                        ]),
-                    ),
-                    "",
-                ] if privilege_escalation_tool == "sudo" else [
-                    "",
-                    translate(
-                        "{privilege_escalation_tool} is not part of minimal arch default setup,"
-                        " be aware that you could run into potential problems.",
-                    ).format(privilege_escalation_tool=privilege_escalation_tool),
-                    "",
-                ]),
+                "\n".join(
+                    [
+                        "",
+                        translate(
+                            "Did you forget to install the group `base_devel`?",
+                        ),
+                        bold_line(
+                            "Please read <https://wiki.archlinux.org/title/Arch_User_Repository>",
+                        ),
+                        "",
+                    ]
+                    if privilege_escalation_tool == "sudo"
+                    else [
+                        "",
+                        translate(
+                            "{privilege_escalation_tool} is not part of minimal arch default setup,"
+                            " be aware that you could run into potential problems.",
+                        ).format(privilege_escalation_tool=privilege_escalation_tool),
+                        "",
+                    ],
+                ),
             )
     if not RunningAsRoot()():
         check_executables([privilege_escalation_tool])

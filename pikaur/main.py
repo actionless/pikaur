@@ -462,7 +462,7 @@ def check_runtime_deps() -> None:
                     [
                         "",
                         translate(
-                            "Did you forget to install the group `base_devel`?",
+                            "Did you forget to install the group `base-devel`?",
                         ),
                         bold_line(
                             "Please read <https://wiki.archlinux.org/title/Arch_User_Repository>",

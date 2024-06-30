@@ -280,7 +280,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             print_warning(translate("PKGBUILD appears unchanged after editing"))
         else:
             self.handle_pkgbuild_changed(pkg_build)
-        self._ignore_package(pkg_name)
+        self.discard_install_info(pkg_name, ignore=False)
         self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
 
     def aur_pkg_not_found_prompt(self, pkg_name: str) -> None:  # pragma: no cover
@@ -306,7 +306,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             self.skip_checkfunc_for_pkgnames.append(pkg_name)
             self.main_sequence()
         elif answer == translate("s"):
-            self._ignore_package(pkg_name)
+            self.discard_install_info(pkg_name)
         else:  # "A"
             raise SysExit(125)
 
@@ -329,7 +329,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             self.edit_pkgbuild_during_the_build(pkg_name)
             self.main_sequence()
         elif answer == translate("s"):
-            self._ignore_package(pkg_name)
+            self.discard_install_info(pkg_name)
         else:  # "A"
             raise SysExit(125)
 
@@ -454,14 +454,6 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 )))
             raise SysExit(0)
 
-    def _ignore_package(self, pkg_name: str) -> None:
-        self.manually_excluded_packages_names.append(pkg_name)
-        for name in (pkg_name, strip_repo_name(pkg_name)):
-            if name in self.install_package_names:
-                self.install_package_names.remove(name)
-            if name in self.not_found_repo_pkgs_names:
-                self.not_found_repo_pkgs_names.remove(name)
-
     def manual_package_selection(self) -> None:  # pragma: no cover
 
         def parse_pkg_names(text: str) -> set[str]:
@@ -498,7 +490,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 self.install_package_names.append(pkg_name)
 
         for pkg_name in pkg_names_before.difference(selected_packages):
-            self._ignore_package(pkg_name)
+            self.discard_install_info(pkg_name)
 
     def install_prompt(self) -> None:  # pragma: no cover
 

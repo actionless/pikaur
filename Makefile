@@ -7,6 +7,7 @@ POTFILE := $(LOCALEDIR)/pikaur.pot
 POFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po,$(LANGS)))
 POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
 MOFILES = $(POFILES:.po=.mo)
+
 DISTDIR := dist
 
 # A $(which python) is necessary here to avoid a bug in make
@@ -16,17 +17,23 @@ PYTHON := $(shell which python)
 ifeq (,$(PYTHON))
 $(error Can't find Python)
 endif
+MINIMAL_PYTHON_VERSION := (3, 12)
 
 PIKAMAN := $(PYTHON) ./maintenance_scripts/pikaman.py
 README_FILE := README.md
 MAN_FILE := pikaur.1
 
 
-all: locale man bin
+all: checkpython locale man bin
 
 locale: $(MOFILES)
 man: $(MAN_FILE)
 bin: $(DISTDIR)/usr/bin/pikaur
+
+
+checkpython:
+	# ensure python version is bigger or equal to $(MINIMAL_PYTHON_VERSION)
+	$(PYTHON) -c 'import sys ; sys.exit(sys.version_info < $(MINIMAL_PYTHON_VERSION))'
 
 $(POTFILE):
 	# find pikaur -type f -name '*.py' -not -name 'argparse.py' \
@@ -70,5 +77,5 @@ clean:
 	$(RM) $(MAN_FILE)
 	$(RM) -r $(DISTDIR)
 
-.PHONY: all clean $(POTFILE) man bin locale $(DISTDIR)/usr/bin/pikaur $(MAN_FILE)
+.PHONY: all clean $(POTFILE) man bin locale $(DISTDIR)/usr/bin/pikaur $(MAN_FILE) checkpython
 .PRECIOUS: $(LOCALEDIR)/%.po

@@ -15,7 +15,6 @@ b2sums=(
 	"SKIP"
 )
 depends=(
-	'python>=3.12'
 	'pyalpm'
 	'git'
 )

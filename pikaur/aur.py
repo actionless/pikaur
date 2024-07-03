@@ -81,6 +81,10 @@ class AURPackageInfo(DataType):
     def git_url(self) -> str:
         return f"{AurBaseUrl.get()}/{self.packagebase}.git"
 
+    @property
+    def web_url(self) -> str:
+        return f"{AurBaseUrl.get()}/packages/{self.name}"
+
     def __init__(self, **kwargs: "Any") -> None:
         for aur_api_name, pikaur_class_name in (
             ("description", "desc"),

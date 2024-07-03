@@ -37,6 +37,7 @@ whitelist.aur.AURPackageInfo.urlpath
 whitelist.aur.AURPackageInfo.pkg_license
 whitelist.aur.AURPackageInfo.keywords
 whitelist.aur.AURPackageInfo.git_url
+whitelist.aur.AURPackageInfo.web_url
 whitelist.aur.AURPackageInfo.submitter
 whitelist.aur.AURPackageInfo.comaintainers
 

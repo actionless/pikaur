@@ -22,6 +22,7 @@ def _info_packages_thread_repo() -> str | None:
 def get_info_fields() -> dict[str, str]:
     return {
         "git_url": translate("AUR Git URL"),
+        "web_url": translate("AUR Web URL"),
         # "aur_id": translate("id"),
         "name": translate("Name"),
         # packagebaseid=translate(""),

@@ -182,7 +182,7 @@ class News:
 
 
 class MLStripper(HTMLParser):
-    """HTMLParser that only removes HTML statements."""
+    """HTMLParser optimized for terminal output."""
 
     last_href: str | None = None
     last_data: str | None = None

@@ -185,6 +185,7 @@ class MLStripper(HTMLParser):
     """HTMLParser that only removes HTML statements."""
 
     last_href: str | None = None
+    last_data: str | None = None
 
     def error(self, message: object) -> None:
         pass
@@ -229,10 +230,11 @@ class MLStripper(HTMLParser):
             self.fed.append(COLOR_RESET)
         elif tag in {"strong", "em"}:
             self.fed.append(BOLD_RESET)
-        if (tag == "a") and self.last_href:
+        if ((tag == "a") and self.last_href) and (self.last_data != self.last_href):
             self.fed.append(f": {color_line(self.last_href, ColorsHighlight.blue)} ")
 
     def handle_data(self, data: str) -> None:
+        self.last_data = data
         self.fed.append(data)
 
     def get_data(self) -> str:

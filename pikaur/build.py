@@ -16,6 +16,7 @@ from .config import (
     BuildDepsLockPath,
     PackageCachePath,
     PikaurConfig,
+    UsingDynamicUsers,
 )
 from .core import (
     PIPE,
@@ -56,7 +57,6 @@ from .pprint import (
 from .privilege import (
     isolate_root_cmd,
     sudo,
-    using_dynamic_users,
 )
 from .prompt import (
     ask_to_continue,
@@ -995,7 +995,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
     pool_size: int | None = None
     if clone_c := parse_args().aur_clone_concurrency:
         pool_size = clone_c
-    elif using_dynamic_users():
+    elif UsingDynamicUsers():
         pool_size = 1
     exc: CloneError | None = None
     with (

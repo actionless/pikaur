@@ -51,9 +51,7 @@ from .privilege import (
     get_args_to_elevate_pikaur,
     isolate_root_cmd,
     need_dynamic_users,
-    running_as_root,
     sudo,
-    using_dynamic_users,
 )
 from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .search_cli import cli_search_packages, search_packages
@@ -254,7 +252,7 @@ def execute_pikaur_operation(
         args.positional += add_args
         cli_args += add_args
     if (
-            running_as_root()
+            RunningAsRoot()
             and (PikaurConfig().build.DynamicUsers.get_str() == "never" and not args.user_id)
     ):
         print_error(
@@ -266,7 +264,7 @@ def execute_pikaur_operation(
         sys.exit(1)
     elif (
             require_sudo
-            and not running_as_root()
+            and not RunningAsRoot()
             and (
                 args.privilege_escalation_target == "pikaur"
                 or need_dynamic_users()
@@ -376,7 +374,7 @@ def migrate_old_aur_repos_dir() -> None:
 
 
 def create_dirs() -> None:
-    if using_dynamic_users():
+    if UsingDynamicUsers():
         # Let systemd-run setup the directories and symlinks
         true_cmd = isolate_root_cmd(["true"])
         result = spawn(true_cmd)

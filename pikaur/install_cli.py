@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from .args import parse_args, reconstruct_args
 from .aur import AURPackageInfo
 from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
-from .config import DiffPagerValues, PikaurConfig
+from .config import DiffPagerValues, PikaurConfig, UsingDynamicUsers
 from .conflicts import find_aur_conflicts
 from .core import (
     PackageSource,
@@ -61,7 +61,6 @@ from .print_department import (
 from .privilege import (
     isolate_root_cmd,
     sudo,
-    using_dynamic_users,
 )
 from .prompt import (
     ask_to_continue,
@@ -830,7 +829,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
         # if running as root get sources for dev packages synchronously
         # (to prevent race condition in systemd dynamic users)
         num_threads: int | None = None
-        if using_dynamic_users():  # pragma: no cover
+        if UsingDynamicUsers():  # pragma: no cover
             num_threads = 1
 
         # check if pkgs versions already installed

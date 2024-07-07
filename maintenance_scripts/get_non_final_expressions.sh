@@ -12,7 +12,7 @@ result=$(
 		-e TypeVar \
 		-e namedtuple \
 		\
-		-e 'create_logger\(|running_as_root|sudo' \
+		-e 'create_logger\(|sudo' \
 		\
 		-e './maintenance_scripts/find_.*.py.*:.*:' \
 		-e '.SRCINFO' \

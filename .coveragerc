@@ -12,7 +12,7 @@ exclude_lines =
     NotImplemented
     if __name__ == .__main__.:
     if TYPE_CHECKING:
-    if running_as_root
+    if RunningAsRoot
     if not args.noconfirm
     if not self.args.noconfirm
     if args.debug

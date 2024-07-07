@@ -6,7 +6,6 @@ from .config import (
     ConfigPath,
     PikaurConfig,
     RunningAsRoot,
-    UsingDynamicUsers,
     _UserTempRoot,
 )
 
@@ -28,15 +27,7 @@ def need_dynamic_users() -> bool:
         return True
     if dynamic_users == "never":
         return False
-    return bool(running_as_root() and dynamic_users == "root")
-
-
-def using_dynamic_users() -> int:
-    return UsingDynamicUsers()
-
-
-def running_as_root() -> int:
-    return RunningAsRoot()
+    return bool(RunningAsRoot() and dynamic_users == "root")
 
 
 def sudo(cmd: list[str], preserve_env: list[str] | None = None) -> list[str]:
@@ -56,7 +47,7 @@ def isolate_root_cmd(
         cwd: str | Path | None = None,
         env: dict[str, str] | None = None,
 ) -> list[str]:
-    if not running_as_root():
+    if not RunningAsRoot():
         return cmd
     if isinstance(cwd, str):
         cwd = Path(cwd)

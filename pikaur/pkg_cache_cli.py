@@ -15,8 +15,8 @@ _debug = create_logger("pkg_cache_cli").debug
 def clean_aur_cache() -> None:
     args = parse_args()
     for directory, message, minimal_clean_level in (
-            (BuildCachePath()(), translate("Build directory"), 1),
-            (PackageCachePath()(), translate("Packages directory"), 2),
+            (BuildCachePath(), translate("Build directory"), 1),
+            (PackageCachePath(), translate("Packages directory"), 2),
     ):
         print_stdout(f"\n{message}: {directory}")
         question = translate("Do you want to remove all files?")

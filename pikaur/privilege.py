@@ -32,15 +32,15 @@ def need_dynamic_users() -> bool:
 
 
 def using_dynamic_users() -> int:
-    return UsingDynamicUsers()()
+    return UsingDynamicUsers()
 
 
 def running_as_root() -> int:
-    return RunningAsRoot()()
+    return RunningAsRoot()
 
 
 def sudo(cmd: list[str], preserve_env: list[str] | None = None) -> list[str]:
-    if RunningAsRoot()():
+    if RunningAsRoot():
         return cmd
     if PikaurConfig().misc.PrivilegeEscalationTool.get_str() == "doas":
         return [PikaurConfig().misc.PrivilegeEscalationTool.get_str(), *cmd]
@@ -91,7 +91,7 @@ def isolate_root_cmd(
             "--pipe", "--wait", "--pty",
             "-p", "DynamicUser=yes",
             "-p", "CacheDirectory=pikaur",
-            "-E", f"HOME={_UserTempRoot()()}",
+            "-E", f"HOME={_UserTempRoot()}",
         ]
         if cwd is not None:
             base_root_isolator += ["-p", "WorkingDirectory=" + str(cwd.resolve())]
@@ -106,7 +106,7 @@ def get_args_to_elevate_pikaur(original_args: list[str]) -> list[str]:
     args = parse_args()
     restart_args = original_args.copy()
     extra_args = [
-        ("--pikaur-config", str(ConfigPath()())),
+        ("--pikaur-config", str(ConfigPath())),
     ]
     if not need_dynamic_users():
         extra_args += [

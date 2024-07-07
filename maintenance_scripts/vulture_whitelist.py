@@ -7,6 +7,7 @@ from vulture.whitelist_utils import Whitelist  # type: ignore[import-untyped]
 
 whitelist: Whitelist = Whitelist()  # type: ignore[no-any-unimported]
 
+whitelist.__new__
 whitelist.Any
 whitelist.BinaryIO
 whitelist.Final

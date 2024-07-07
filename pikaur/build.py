@@ -190,7 +190,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
             aur_pkg = find_aur_packages([package_names[0]])[0][0]
             self.package_base = aur_pkg.packagebase
             self.provides = aur_pkg.provides
-            self.repo_path = AurReposCachePath()() / self.package_base
+            self.repo_path = AurReposCachePath() / self.package_base
             self.pkgbuild_path = self.repo_path / DEFAULT_PKGBUILD_BASENAME
         else:
             missing_property_error = translate(
@@ -201,7 +201,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
             )
             raise NotImplementedError(missing_property_error)
 
-        self.build_dir = BuildCachePath()() / self.package_base
+        self.build_dir = BuildCachePath() / self.package_base
         logger.debug("Build dir: {}", self.build_dir)
         self.build_gpgdir = self.args.build_gpgdir
         self.built_packages_paths = {}
@@ -560,7 +560,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
                 ) / pkg_path
                 logger.debug("Resolving full path: {} from base path: {}", pkg_path, pkg_basename)
             new_package_path = (
-                Path(pkg_dest) if pkg_dest else PackageCachePath()()
+                Path(pkg_dest) if pkg_dest else PackageCachePath()
             ) / pkg_basename
             logger.debug("New package path: {}", new_package_path)
             if not pkg_dest or MakePkgCommand.pkgdest_skipped:
@@ -568,7 +568,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
                 new_package_sig_path = new_package_path.parent / (
                     new_package_path.name + ".sig"
                 )
-                mkdir(PackageCachePath()())
+                mkdir(PackageCachePath())
                 replace_file(pkg_path, new_package_path)
                 replace_file(pkg_sig_path, new_package_sig_path)
             pkg_path = new_package_path
@@ -678,7 +678,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
         self._local_provided_pkgs_with_build_deps = PackageDB.get_local_provided_dict()
 
     def install_all_deps(self, all_package_builds: dict[str, "PackageBuild"]) -> None:
-        with FileLock(BuildDepsLockPath()()):
+        with FileLock(BuildDepsLockPath()):
             self.get_deps(all_package_builds)
             if self.all_deps_to_install or self.built_deps_to_install:
                 PackageDB.discard_local_cache()

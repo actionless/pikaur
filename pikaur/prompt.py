@@ -120,7 +120,7 @@ def get_input(
     logger.debug("Gonna get input from user...")
     answer = ""
     with (
-            FileLock(PromptLockPath()()),
+            FileLock(PromptLockPath()),
             TTYInputWrapper(),
             TTYRestoreContext(before=True, after=True),
     ):

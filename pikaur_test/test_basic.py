@@ -178,18 +178,18 @@ class InstallTest(PikaurDbTestCase):
 
         pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
-            len(os.listdir(BuildCachePath()())), 1,
+            len(os.listdir(BuildCachePath())), 1,
         )
         self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath()())), 1,
+            len(os.listdir(PackageCachePath())), 1,
         )
 
         pikaur("-Sc --noconfirm")
         self.assertFalse(
-            BuildCachePath()().exists(),
+            BuildCachePath().exists(),
         )
         self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath()())), 1,
+            len(os.listdir(PackageCachePath())), 1,
         )
 
     def test_cache_full_clean(self):
@@ -198,18 +198,18 @@ class InstallTest(PikaurDbTestCase):
 
         pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
-            len(os.listdir(BuildCachePath()())), 1,
+            len(os.listdir(BuildCachePath())), 1,
         )
         self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath()())), 1,
+            len(os.listdir(PackageCachePath())), 1,
         )
 
         pikaur("-Scc --noconfirm")
         self.assertFalse(
-            BuildCachePath()().exists(),
+            BuildCachePath().exists(),
         )
         self.assertFalse(
-            PackageCachePath()().exists(),
+            PackageCachePath().exists(),
         )
 
     def test_print_commands_and_needed(self):

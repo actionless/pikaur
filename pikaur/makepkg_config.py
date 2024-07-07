@@ -96,7 +96,7 @@ class MakepkgConfig:
         if cls._user_makepkg_path is cls._UNSET:
             possible_paths = [
                 Path("~/.makepkg.conf").expanduser(),
-                ConfigRoot()() / "pacman/makepkg.conf",
+                ConfigRoot() / "pacman/makepkg.conf",
             ]
             config_path: Path | None = None
             for path in possible_paths:
@@ -147,7 +147,7 @@ class MakePkgCommand:
         pkgdest = str(get_pkgdest())
         if pkgdest and (
                 pkgdest.startswith(
-                    (str(_UserTempRoot()()), "/tmp", "/var/tmp"),  # nosec B108  # noqa: S108
+                    (str(_UserTempRoot()), "/tmp", "/var/tmp"),  # nosec B108  # noqa: S108
                 )
         ):
             if not cls._cmd:

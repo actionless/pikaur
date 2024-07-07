@@ -30,7 +30,7 @@ if TYPE_CHECKING:
         migrated: NotRequired[bool]
 
 
-class IntOrBoolSingleton:
+class IntOrBoolSingleton(int):
 
     value: int
 
@@ -48,11 +48,11 @@ class IntOrBoolSingleton:
             cls.value = cls.init_value()
         return cls.value
 
-    def __call__(self) -> int:
-        return self.get_value()
+    def __new__(cls) -> int:  # type: ignore[misc]
+        return cls.get_value()
 
 
-class PathConfig(ABC):
+class PathConfig(Path, ABC):
 
     value: Path
 
@@ -65,8 +65,8 @@ class PathConfig(ABC):
     def get_value(cls) -> Path:
         pass
 
-    def __call__(self) -> Path:
-        return self.get_value()
+    def __new__(cls) -> Path:  # type: ignore[misc]
+        return cls.get_value()
 
 
 class FixedPathSingleton(PathConfig):
@@ -116,7 +116,7 @@ class CustomUserId(IntOrBoolSingleton):
 
     @classmethod
     def update_fallback(cls, new_id: int) -> None:
-        cls.set_value(cls()() or new_id)
+        cls.set_value(cls() or new_id)
 
 
 class RunningAsRoot(IntOrBoolSingleton):
@@ -128,7 +128,7 @@ class RunningAsRoot(IntOrBoolSingleton):
 class UsingDynamicUsers(IntOrBoolSingleton):
     @classmethod
     def get_value(cls) -> int:
-        return RunningAsRoot()() and not CustomUserId()()
+        return RunningAsRoot() and not CustomUserId()
 
 
 class Home(FixedPathSingleton):
@@ -152,7 +152,7 @@ class _CachePathDefault(FixedPathSingleton):
             or os.environ.get(
                 "XDG_CACHE_HOME",
             )
-            or Home()() / ".cache/",
+            or Home() / ".cache/",
         )
 
 
@@ -173,21 +173,21 @@ class CacheRoot(PathConfig):
     def get_value(cls) -> Path:
         return (
             Path("/var/cache/pikaur")
-            if UsingDynamicUsers()() else
-            _UserCacheRoot()() / "pikaur/"
+            if UsingDynamicUsers() else
+            _UserCacheRoot() / "pikaur/"
         )
 
 
 class BuildCachePath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
-        return CacheRoot()() / "build"
+        return CacheRoot() / "build"
 
 
 class PackageCachePath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
-        return CacheRoot()() / "pkg"
+        return CacheRoot() / "pkg"
 
 
 class ConfigRoot(FixedPathSingleton):
@@ -198,7 +198,7 @@ class ConfigRoot(FixedPathSingleton):
             or os.environ.get(
                 "XDG_CONFIG_HOME",
             )
-            or Home()() / ".config/",
+            or Home() / ".config/",
         )
 
 
@@ -210,7 +210,7 @@ class _DataPathDefault(FixedPathSingleton):
             or os.environ.get(
                 "XDG_DATA_HOME",
             )
-            or Home()() / ".local/share/",
+            or Home() / ".local/share/",
         )
 
 
@@ -232,16 +232,16 @@ class _OldAurReposCachePath(PathConfig):
     # @TODO: remove this migration thing?
     @classmethod
     def get_value(cls) -> Path:
-        return CacheRoot()() / "aur_repos"
+        return CacheRoot() / "aur_repos"
 
 
 class AurReposCachePath(PathConfig):
     @classmethod
     def get_value(cls) -> Path:
         return (
-            (CacheRoot()() / "aur_repos")
-            if UsingDynamicUsers()() else
-            (DataRoot()() / "aur_repos")
+            (CacheRoot() / "aur_repos")
+            if UsingDynamicUsers() else
+            (DataRoot() / "aur_repos")
         )
 
 
@@ -250,7 +250,7 @@ class BuildDepsLockPath(PathConfig):
     def get_value(cls) -> Path:
         return (
             (
-                _UserCacheRoot()() if UsingDynamicUsers()() else _UserTempRoot()())
+                _UserCacheRoot() if UsingDynamicUsers() else _UserTempRoot())
             / "pikaur_build_deps.lock"
         )
 
@@ -260,7 +260,7 @@ class PromptLockPath(PathConfig):
     def get_value(cls) -> Path:
         return (
             (
-                _UserCacheRoot()() if UsingDynamicUsers()() else _UserTempRoot()()
+                _UserCacheRoot() if UsingDynamicUsers() else _UserTempRoot()
             ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
         )
 
@@ -271,7 +271,7 @@ class ConfigPath(PathConfig):
         config_overridden = pre_arg_parser("--pikaur-config", "")
         if config_overridden:
             return Path(config_overridden)
-        return ConfigRoot()() / "pikaur.conf"
+        return ConfigRoot() / "pikaur.conf"
 
 
 class UpgradeSortingValues:
@@ -336,7 +336,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "GpgDir": {
             "data_type": STR,
-            "default": ("/etc/pacman.d/gnupg/" if RunningAsRoot()() else ""),
+            "default": ("/etc/pacman.d/gnupg/" if RunningAsRoot() else ""),
         },
         "SkipFailedBuild": {
             "data_type": BOOL,
@@ -487,11 +487,11 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         },
         "CachePath": {
             "data_type": STR,
-            "default": str(_CachePathDefault()()),
+            "default": str(_CachePathDefault()),
         },
         "DataPath": {
             "data_type": STR,
-            "default": str(_DataPathDefault()()),
+            "default": str(_DataPathDefault()),
         },
         "PacmanPath": {
             "data_type": STR,
@@ -567,13 +567,13 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
                 need_write = True
     if need_write:
         CustomUserId.update_fallback(int(config["misc"]["UserId"]))
-        config_root = ConfigRoot()()
-        config_path = ConfigPath()()
+        config_root = ConfigRoot()
+        config_path = ConfigPath()
         if not config_root.exists():
             config_root.mkdir(parents=True)
         with config_path.open("w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
-        if custom_user_id := CustomUserId()():
+        if custom_user_id := CustomUserId():
             for path in (
                 config_root,
                 config_path,
@@ -645,7 +645,7 @@ class PikaurConfig:
     @classmethod
     def get_config(cls) -> configparser.ConfigParser:
         if not getattr(cls, "_config", None):
-            config_path = ConfigPath()()
+            config_path = ConfigPath()
             cls._config = configparser.ConfigParser()
             if not config_path.exists():
                 write_config()

@@ -56,7 +56,7 @@ class News:
 
     def __init__(self) -> None:
         self.url = PikaurConfig().network.NewsUrl.get_str()
-        self.cache_file = CacheRoot()() / "last_seen_news.dat"
+        self.cache_file = CacheRoot() / "last_seen_news.dat"
         self._news_feed = None
         self._news_entry_to_update_last_seen_date = None
         logger.debug("init")

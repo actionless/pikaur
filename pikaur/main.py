@@ -354,13 +354,13 @@ def cli_entry_point() -> None:
 
 
 def migrate_old_aur_repos_dir() -> None:
-    old_aur_repos_cache_path = _OldAurReposCachePath()()
-    new_aur_repos_cache_path = AurReposCachePath()()
+    old_aur_repos_cache_path = _OldAurReposCachePath()
+    new_aur_repos_cache_path = AurReposCachePath()
     if not (
             old_aur_repos_cache_path.exists() and not new_aur_repos_cache_path.exists()
     ):
         return
-    mkdir(DataRoot()())
+    mkdir(DataRoot())
     shutil.move(old_aur_repos_cache_path, new_aur_repos_cache_path)
 
     print_stderr()
@@ -384,11 +384,11 @@ def create_dirs() -> None:
             raise RuntimeError(result)
         # Chown the private CacheDirectory to root to signal systemd that
         # it needs to recursively chown it to the correct user
-        os.chown(os.path.realpath(CacheRoot()()), 0, 0)
-        mkdir(_UserCacheRoot()())
-    mkdir(CacheRoot()())
+        os.chown(os.path.realpath(CacheRoot()), 0, 0)
+        mkdir(_UserCacheRoot())
+    mkdir(CacheRoot())
     migrate_old_aur_repos_dir()
-    mkdir(AurReposCachePath()())
+    mkdir(AurReposCachePath())
 
 
 def restore_tty() -> None:
@@ -440,7 +440,7 @@ def check_runtime_deps() -> None:
         sys.exit(65)
     if (
         (PikaurConfig().build.DynamicUsers.get_str() != "never" and not parse_args().user_id)
-        and (UsingDynamicUsers()() and not check_systemd_dynamic_users_version())
+        and (UsingDynamicUsers() and not check_systemd_dynamic_users_version())
     ):
         print_error(
             translate("pikaur requires systemd >= 235 (dynamic users) to be run as root."),
@@ -486,7 +486,7 @@ def check_runtime_deps() -> None:
                     "",
                 ]),
             )
-    if not RunningAsRoot()():
+    if not RunningAsRoot():
         check_executables([privilege_escalation_tool])
 
 

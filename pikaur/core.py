@@ -303,13 +303,19 @@ def open_file(
 ) -> codecs.StreamReaderWriter:
     if encoding is None and (mode and READ_MODE in mode):
         encoding = detect_bom_type(file_path)
-    if encoding:
+    try:
+        if encoding:
+            return codecs.open(
+                str(file_path), mode, errors="ignore", encoding=encoding,
+            )
         return codecs.open(
-            str(file_path), mode, errors="ignore", encoding=encoding,
+            str(file_path), mode, errors="ignore",
         )
-    return codecs.open(
-        str(file_path), mode, errors="ignore",
-    )
+    except PermissionError:
+        print_error()
+        print_error(translate("Error opening file: {file_path}").format(file_path=file_path))
+        print_error()
+        raise
 
 
 def replace_file(src: str | Path, dest: str | Path) -> None:

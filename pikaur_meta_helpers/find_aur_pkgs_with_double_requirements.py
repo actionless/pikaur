@@ -3,7 +3,7 @@ import os
 import pickle  # nosec B403
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from typing import TypedDict
+from typing import Final, TypedDict
 
 import tqdm  # type: ignore[import-untyped]
 
@@ -16,7 +16,7 @@ class Item(TypedDict):
     counter: int
 
 
-PICKLE_FILE = Path("aur_db.dump")
+PICKLE_FILE: Final = Path("aur_db.dump")
 
 
 def load_aur_dump() -> list[AURPackageInfo]:

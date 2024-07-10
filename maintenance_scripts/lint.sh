@@ -27,6 +27,7 @@ TARGET_MODULE='pikaur'
 TARGETS=(
 	'./pikaur/'
 	'./pikaur_test/'
+	'./pikaur_meta_helpers/'
 	./maintenance_scripts/*.py
 	'./packaging/usr/bin/pikaur'
 )

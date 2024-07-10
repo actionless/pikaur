@@ -42,7 +42,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.bandit]
-exclude_dirs = ["./dumpster/", "./maintenance_scripts/"]
+exclude_dirs = ["./dumpster/", "./maintenance_scripts/", "./pikaur_meta_helpers/"]
 
 [tool.mypy]
 check_untyped_defs = true
@@ -190,6 +190,14 @@ ignore = [
   "T201",
 ]
 "maintenance_scripts/*.py" = [
+  "INP001",
+  "S301",
+  "S403",
+  "S404",
+  "T201",
+  "T203",
+]
+"pikaur_meta_helpers/*.py" = [
   "INP001",
   "S301",
   "S403",

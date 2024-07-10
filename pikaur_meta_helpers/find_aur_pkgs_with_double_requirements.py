@@ -1,37 +1,18 @@
 import math
 import os
-import pickle  # nosec B403
 from multiprocessing.pool import ThreadPool
-from pathlib import Path
-from typing import Final, TypedDict
+from typing import TypedDict
 
 import tqdm  # type: ignore[import-untyped]
 
-from pikaur.aur import AURPackageInfo, get_all_aur_packages
+from pikaur.aur import AURPackageInfo
 from pikaur.version import VersionMatcher
+from pikaur_meta_helpers.util import load_aur_dump
 
 
 class Item(TypedDict):
     deps: list[VersionMatcher]
     counter: int
-
-
-PICKLE_FILE: Final = Path("aur_db.dump")
-
-
-def load_aur_dump() -> list[AURPackageInfo]:
-    aur_pkgs: list[AURPackageInfo]
-    if PICKLE_FILE.exists():
-        print(f"Opening db dump '{PICKLE_FILE}'...")
-        with PICKLE_FILE.open("rb") as fobj_read:
-            aur_pkgs = pickle.load(fobj_read)  # nosec B301
-    else:
-        print("Fetching...")
-        aur_pkgs = get_all_aur_packages()
-        print(f"Saving db dump to '{PICKLE_FILE}'...")
-        with PICKLE_FILE.open("wb") as fobj_write:
-            pickle.dump(aur_pkgs, fobj_write)
-    return aur_pkgs
 
 
 def filter_thread(

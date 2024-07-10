@@ -356,7 +356,16 @@ def chown_to_current(path: Path) -> None:
     if user_id:
         if not isinstance(user_id, int):
             raise TypeError
-        os.chown(path, user_id, user_id)
+        try:
+            os.chown(path, user_id, user_id)
+        except PermissionError as exc:
+            print_error()
+            print_error(
+                translate("Can't change owner to {user_id}: {exc}").format(
+                    user_id=user_id, exc=exc,
+                ),
+            )
+            print_error()
 
 
 def mkdir(path: Path) -> None:

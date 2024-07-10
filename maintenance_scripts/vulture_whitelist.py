@@ -52,6 +52,8 @@ whitelist.config.ConfigValueType.migrated
 whitelist.core.SpawnArgs
 whitelist.core.SudoLoopResultT
 
+whitelist.i18n.EXTRA_ERROR_MESSAGES
+
 whitelist.main.socket.socket
 whitelist.main.OutputEncodingWrapper.original_stdout
 whitelist.main.OutputEncodingWrapper.original_stderr

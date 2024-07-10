@@ -26,3 +26,9 @@ def translate(msg: str) -> str:
 
 def translate_many(singular: str, plural: str, count: int) -> str:
     return PikaurTranslation.get().ngettext(singular, plural, count)
+
+
+EXTRA_ERROR_MESSAGES = [
+    translate("Read damn arch-wiki before borking your computer:"),
+    translate("(Also, don't report any issues to pikaur, if ure seeing this message)"),
+]

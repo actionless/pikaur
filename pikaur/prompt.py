@@ -160,7 +160,7 @@ class NumberRangeInputSyntax:
     RANGES: "Final[Sequence[str]]" = ("-", "..")
 
 
-def get_multiple_numbers_input(prompt: str, answers: "Iterable[int]" = ()) -> list[int]:
+def get_multiple_numbers_input(prompt: str = "> ", answers: "Iterable[int]" = ()) -> list[int]:
     str_result = get_input(prompt, [str(answer) for answer in answers], require_confirm=True)
     if not str_result:
         return []

@@ -198,7 +198,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
                     "and press [Enter] (default={}):",
                 ).format(1),
             )
-            answers = get_multiple_numbers_input("> ", list(range(1, len(packages) + 1))) or [1]
+            answers = get_multiple_numbers_input(answers=list(range(1, len(packages) + 1))) or [1]
             print_stderr()
             selected_pkgs_idx = [idx - 1 for idx in answers]
             restart_prompt = False

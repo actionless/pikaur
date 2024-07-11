@@ -478,7 +478,7 @@ def check_runtime_deps() -> None:
                 ] if privilege_escalation_tool == "sudo" else [
                     "",
                     translate(
-                        "{privilege_escalation_tool} is not part of minimal arch default setup,"
+                        "{privilege_escalation_tool} is not part of minimal Arch default setup,"
                         " be aware that you could run into potential problems.",
                     ).format(privilege_escalation_tool=privilege_escalation_tool),
                     "",

@@ -823,7 +823,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-10 15:19+0200\n"
+"POT-Creation-Date: 2024-07-11 05:42+0200\n"
 "PO-Revision-Date: 2018-03-03 16:29+0100\n"
 "Last-Translator: Bundy01\n"
 "Language-Team: none\n"
@@ -834,11 +834,13 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: pikaur/main.py:481
-#, python-brace-format
+#, fuzzy, python-brace-format
 msgid ""
 "{privilege_escalation_tool} is not part of minimal arch default setup, be "
 "aware that you could run into potential problems."
-msgstr "{privilege_escalation_tool} ne fait pas partie de la configuration minimale par défaut d'arch, sachez que vous risquez de rencontrer des problèmes."
+msgstr ""
+"{privilege_escalation_tool} ne fait pas partie de la configuration minimale "
+"par défaut d'Arch, sachez que vous risquez de rencontrer des problèmes."
 
 #: pikaur/news.py:68 pikaur/news.py:106
 msgid "Could not fetch archlinux.org news"

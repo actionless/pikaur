@@ -820,7 +820,7 @@ msgstr ""
 #: pikaur/main.py:481
 #, python-brace-format
 msgid ""
-"{privilege_escalation_tool} is not part of minimal arch default setup, be "
+"{privilege_escalation_tool} is not part of minimal Arch default setup, be "
 "aware that you could run into potential problems."
 msgstr ""
 

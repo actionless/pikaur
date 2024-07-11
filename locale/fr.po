@@ -391,7 +391,7 @@ msgstr "'{class_name}' n'a pas d'attribut '{key}' défini."
 #: pikaur/core.py:316
 #, python-brace-format
 msgid "Error opening file: {file_path}"
-msgstr ""
+msgstr "Erreur à l'ouverture du fichier : {file_path}"
 
 #: pikaur/core.py:346
 msgid "executable not found"
@@ -400,7 +400,7 @@ msgstr "exécutable non trouvé"
 #: pikaur/core.py:364
 #, python-brace-format
 msgid "Can't change owner to {user_id}: {exc}"
-msgstr ""
+msgstr "Impossible de changer le propriétaire pour {user_id} : {exc}"
 
 #: pikaur/getpkgbuild_cli.py:49
 #, python-brace-format
@@ -449,20 +449,19 @@ msgstr "Options spécifiques à pikaur :"
 
 #: pikaur/i18n.py:32
 msgid "Read damn arch-wiki before borking your computer:"
-msgstr ""
+msgstr "Lisez ce foutu arch-wiki avant de planter votre ordinateur :"
 
 #: pikaur/i18n.py:33
 msgid "(Also, don't report any issues to pikaur, if ure seeing this message)"
-msgstr ""
+msgstr "(Ne signalez pas de problèmes à pikaur si vous voyez ce message)"
 
 #: pikaur/info_cli.py:24
 msgid "AUR Git URL"
 msgstr "URL Git de l'AUR"
 
 #: pikaur/info_cli.py:25
-#, fuzzy
 msgid "AUR Web URL"
-msgstr "URL Git de l'AUR"
+msgstr "URL Web de l'AUR"
 
 #. "aur_id": translate("id"),
 #: pikaur/info_cli.py:27
@@ -824,7 +823,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-10 15:19+0200\n"
+"POT-Creation-Date: 2024-07-11 05:53+0200\n"
 "PO-Revision-Date: 2018-03-03 16:29+0100\n"
 "Last-Translator: Bundy01\n"
 "Language-Team: none\n"
@@ -837,9 +836,12 @@ msgstr ""
 #: pikaur/main.py:481
 #, python-brace-format
 msgid ""
-"{privilege_escalation_tool} is not part of minimal arch default setup, be "
+"{privilege_escalation_tool} is not part of minimal Arch default setup, be "
 "aware that you could run into potential problems."
 msgstr ""
+"{privilege_escalation_tool} ne fait pas partie de la configuration minimale "
+"par défaut d'Arch, sachez que vous pourriez rencontrer des problèmes "
+"potentiels."
 
 #: pikaur/news.py:68 pikaur/news.py:106
 msgid "Could not fetch archlinux.org news"

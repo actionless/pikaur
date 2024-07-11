@@ -3,19 +3,10 @@ A POC for downgrade interface in future Pikaur versions.
 Or so.
 """
 
-import os
 import sys
-from pathlib import Path
 
-SCRIPT_DIR: Path = Path(os.path.realpath(__file__)).parent
-PARENT_DIR: str = os.path.realpath(
-    SCRIPT_DIR / "../",
-)
-sys.path.insert(1, PARENT_DIR)
-
-# pylint: disable=import-error,wrong-import-position,useless-suppression
-from pikaur.pacman import PackageDB  # noqa: E402
-from pikaur_test.helpers import PikaurDbTestCase  # noqa: E402
+from pikaur.pacman import PackageDB
+from pikaur_test.helpers import PikaurDbTestCase
 
 # BUILD_ROOT = "/tmp/"
 

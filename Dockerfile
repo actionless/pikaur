@@ -57,7 +57,7 @@ COPY ./pikaur_meta_helpers /opt/app-build/pikaur_meta_helpers
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
 COPY .flake8 /opt/app-build/
 RUN echo ">>>> Starting CI linting:" && \
-	chown -R user /opt/app-build/pikaur_test && \
+	chown -R user /opt/app-build/pikaur_{test,meta_helpers} && \
 	if [[ "$SKIP_LINTING" -eq 0 ]] ; then \
 		sudo -u user env \
 		./maintenance_scripts/lint.sh ; \

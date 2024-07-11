@@ -1,7 +1,7 @@
 import math
 import os
 from multiprocessing.pool import ThreadPool
-from typing import TypedDict
+from typing import Final, TypedDict
 
 import tqdm  # type: ignore[import-untyped]
 
@@ -9,8 +9,8 @@ from pikaur.aur import AURPackageInfo
 from pikaur.version import VersionMatcher
 from pikaur_meta_helpers.util import load_aur_dump
 
-QUERY = "python"
-UNQUERY = "python2"
+QUERY: Final = "python"
+UNQUERY: Final = "python2"
 
 
 class Item(TypedDict):

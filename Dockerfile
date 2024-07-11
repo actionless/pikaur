@@ -53,6 +53,7 @@ RUN echo ">>>> Installing test deps using Pikaur itself:" && \
 #RUN sudo -u user python -u maintenance_scripts/pidowngrade.py python-pycodestyle '2.9.1-2' # @TODO: remove it when it fixed
 
 COPY ./pikaur_test /opt/app-build/pikaur_test
+COPY ./pikaur_meta_helpers /opt/app-build/pikaur_meta_helpers
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
 COPY .flake8 /opt/app-build/
 RUN echo ">>>> Starting CI linting:" && \

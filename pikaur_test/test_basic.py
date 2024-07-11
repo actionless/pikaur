@@ -27,11 +27,9 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled("flac")
 
     def test_aur_package_with_aur_dep(self):
-        # pikaur -Qi (pikaur -Qdmq) | grep -i -e Name -e 'Required By' -e '^$'
-        # pkg_name = "python-gaphor"
-        # dep_name = "python-generic"
-        pkg_name = "python-guessit"
-        dep_name = "python-rebulk"
+        # python -m pikaur_meta_helpers.find_aur_pkgs_with_aur_deps
+        pkg_name = "python-yamk"
+        dep_name = "python-dj-settings"
         self.remove_if_installed(pkg_name, dep_name)
 
         pikaur(f"-S {pkg_name} --mflags=--skippgpcheck")

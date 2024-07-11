@@ -48,11 +48,6 @@ def main() -> None:
     nproc = len(os.sched_getaffinity(0))
     num_pkgs = len(aur_pkgs)
     pkgs_per_thread = math.ceil(num_pkgs / nproc)
-    print(f"{num_pkgs=}")
-    for proc_idx in range(nproc):
-        print(
-            (proc_idx, proc_idx * pkgs_per_thread, (proc_idx + 1) * pkgs_per_thread),
-        )
     with ThreadPool() as pool:
         threads = [
             pool.apply_async(

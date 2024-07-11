@@ -28,6 +28,8 @@ def filter_thread(
         if UNQUERY in pkg.name:
             continue
         for dep_name in pkg.depends:
+            if UNQUERY in dep_name:
+                break
             dep = VersionMatcher(dep_name)
             if all_aur_pkgnames.get(dep.pkg_name):
                 matching_packages.setdefault(
@@ -73,7 +75,7 @@ def main() -> None:
     for pkg_name, item in sorted(matching_packages.items(), key=lambda x: -x[1]["counter"]):
         deps = item["deps"]
         if len(deps) == 1:
-            print(item["counter"], pkg_name, deps)
+            print(item["counter"], pkg_name, [d.pkg_name for d in deps])
 
 
 if __name__ == "__main__":

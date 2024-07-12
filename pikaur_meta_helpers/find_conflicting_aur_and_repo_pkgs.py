@@ -1,9 +1,10 @@
 from pprint import pprint
+from typing import Final
 
 from pikaur.pacman import PackageDB
 from pikaur_meta_helpers.util import load_aur_dump
 
-MAX_REPO_PKG_SIZE_KB = 100
+MAX_REPO_PKG_SIZE_KB: Final = 100
 
 
 def main() -> None:

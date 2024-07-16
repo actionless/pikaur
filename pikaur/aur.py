@@ -266,6 +266,8 @@ def find_aur_provided_deps(
             cached_not_found_pkgs.append(package_name)
             logger.debug("find_aur_provided_deps: {} cached as not found", package_name)
         else:
+            if not aur_pkgs:
+                continue
             if len(aur_pkgs) == 1:
                 aur_pkg = aur_pkgs[0]
             else:
@@ -309,6 +311,8 @@ def find_aur_provided_deps(
                         )
                     )
                 ]
+                if not matching_aur_pkgs:
+                    continue
                 if len(matching_aur_pkgs) == 1:
                     aur_pkg = matching_aur_pkgs[0]
                 else:

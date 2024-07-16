@@ -11,6 +11,7 @@ from .exceptions import AURError
 from .logging import create_logger
 from .progressbar import ThreadSafeProgressBar
 from .urllib_helper import get_gzip_from_url, get_json_from_url
+from .version import VersionMatcher
 
 if TYPE_CHECKING:
     from typing import Any, Final
@@ -349,8 +350,13 @@ def find_aur_packages(
 
 
 def find_aur_provided_deps(
-        package_names: list[str], *, with_progressbar: bool = False,
+        package_names: list[str],
+        version_matchers: dict[str, VersionMatcher] | None = None,
+        *,
+        with_progressbar: bool = False,
 ) -> tuple[list[AURPackageInfo], list[str]]:
+    # @TODO: move AURPackageInfo into separate module
+    from .provider import Provider  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
 
     # @TODO: return only packages for the current architecture
     package_names = [strip_aur_repo_name(name) for name in package_names]
@@ -366,8 +372,18 @@ def find_aur_provided_deps(
             cached_not_found_pkgs.append(package_name)
             logger.debug("find_aur_provided_deps: {} cached as not found", package_name)
         else:
-            # @TODO: dynamicly select package provider
-            json_results.append(aur_pkgs[0])
+            if len(aur_pkgs) == 1:
+                aur_pkg = aur_pkgs[0]
+            else:
+                aur_pkg = aur_pkgs[Provider.choose(
+                    dependency=(
+                        version_matchers[package_name].line
+                        if version_matchers
+                        else package_name
+                    ),
+                    options=aur_pkgs,
+                )]
+            json_results.append(aur_pkg)
             package_names.remove(package_name)
             logger.debug("find_aur_provided_deps: {} cached", package_name)
 
@@ -388,11 +404,29 @@ def find_aur_provided_deps(
                 if not aur_pkgs:
                     continue
                 AurProvidedPackageSearchCache.put(pkgs=aur_pkgs, provides=provided_pkg_name)
-                for aur_pkg in aur_pkgs:
-                    if provided_pkg_name in package_names:
-                        # @TODO: dynamicly select package provider
-                        json_results += [aur_pkg]
-                        break
+                matching_aur_pkgs = [
+                    aur_pkg
+                    for aur_pkg in aur_pkgs
+                    if (
+                        (provided_pkg_name in package_names)
+                        and (
+                            (not version_matchers)
+                            or (version_matchers[provided_pkg_name](aur_pkg.version))
+                        )
+                    )
+                ]
+                if len(matching_aur_pkgs) == 1:
+                    aur_pkg = matching_aur_pkgs[0]
+                else:
+                    aur_pkg = matching_aur_pkgs[Provider.choose(
+                        dependency=(
+                            version_matchers[provided_pkg_name].line
+                            if version_matchers
+                            else provided_pkg_name
+                        ),
+                        options=matching_aur_pkgs,
+                    )]
+                json_results += [aur_pkg]
 
     found_aur_packages = [
         result.name for result in json_results

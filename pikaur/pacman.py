@@ -545,7 +545,9 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def find_repo_package(cls, pkg_name: str) -> pyalpm.Package:
-        # @TODO: interactively ask for multiple providers and save the answer?
+        # @TODO: move AURPackageInfo into separate module
+        from .provider import Provider  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
+
         if cls._pacman_repo_pkg_present_cache.get(pkg_name) is False:
             raise PackagesNotFoundInRepoError(packages=[pkg_name])
         all_repo_pkgs = PackageDB.get_repo_dict()
@@ -561,16 +563,22 @@ class PackageDB(PackageDBCommon):
             return found_pkgs[0]
 
         pkg_name = VersionMatcher(pkg_name).pkg_name
-        for pkg in found_pkgs:
-            if pkg.name == pkg_name:
-                return pkg
+        matching_pkgs: list[pyalpm.Package] = [
+            pkg
+            for pkg in found_pkgs
+            if pkg.name == pkg_name
+        ]
         for pkg in found_pkgs:
             if pkg.provides:
                 for provided_pkg_line in pkg.provides:
                     provided_name = VersionMatcher(provided_pkg_line).pkg_name
                     if provided_name == pkg_name:
-                        return pkg
-        raise PackagesNotFoundInRepoError(packages=[pkg_name])
+                        matching_pkgs.append(pkg)
+        if not matching_pkgs:
+            raise PackagesNotFoundInRepoError(packages=[pkg_name])
+        return matching_pkgs[Provider.choose(
+            dependency=pkg_name, options=matching_pkgs,
+        )]
 
     @classmethod
     def get_local_pkg_uncached(cls, name: str) -> pyalpm.Package:

@@ -254,6 +254,7 @@ def find_missing_deps_for_aur_pkg(
     )
     provided_aur_deps_info, not_found_aur_deps = find_aur_provided_deps(
         not_found_aur_deps,
+        version_matchers=version_matchers,
     )
     aur_deps_info += provided_aur_deps_info
 

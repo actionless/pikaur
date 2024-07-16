@@ -10,7 +10,7 @@ from .version import VersionMatcher
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from .aur import AURPackageInfo
+    from .aur_types import AURPackageInfo
     from .core import AURInstallInfo
 
 

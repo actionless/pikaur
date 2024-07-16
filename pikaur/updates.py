@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     import pyalpm
 
-    from .aur import AURPackageInfo
+    from .aur_types import AURPackageInfo
     from .core import InstallInfo
 
 

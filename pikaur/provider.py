@@ -2,8 +2,7 @@ from typing import ClassVar
 
 import pyalpm
 
-# from .exceptions import SysExit
-from .aur import AURPackageInfo
+from .aur_types import AURPackageInfo
 from .i18n import translate
 from .pprint import Colors, bold_line, color_line, print_error, print_stdout
 from .print_department import print_package_search_results
@@ -40,11 +39,11 @@ class Provider:
         aur_packages: list[AURPackageInfo]
         repo_packages: list[pyalpm.Package]
         if isinstance(options[0], AURPackageInfo):
-            aur_packages = options
+            aur_packages = options  # type: ignore[assignment]
             repo_packages = []
         else:
             aur_packages = []
-            repo_packages = options
+            repo_packages = options  # type: ignore[assignment]
         print_package_search_results(
             aur_packages=aur_packages,
             repo_packages=repo_packages,

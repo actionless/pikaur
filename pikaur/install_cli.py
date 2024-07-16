@@ -9,7 +9,7 @@ from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING
 
 from .args import parse_args, reconstruct_args
-from .aur import AURPackageInfo
+from .aur_types import AURPackageInfo
 from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
 from .config import DiffPagerValues, PikaurConfig, UsingDynamicUsers
 from .conflicts import find_aur_conflicts

@@ -17,7 +17,7 @@ from .pprint import print_error
 from .version import VersionMatcher
 
 if TYPE_CHECKING:
-    from .aur import AURPackageInfo
+    from .aur_types import AURPackageInfo
 
 
 logger = create_logger("aur_deps")

@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from re import Pattern
     from typing import Final
 
-    from .aur import AURPackageInfo
+    from .aur_types import AURPackageInfo
 
 
 OFFICIAL_REPOS: "Final" = (
@@ -545,7 +545,7 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def find_repo_package(cls, pkg_name: str) -> pyalpm.Package:
-        # @TODO: move AURPackageInfo into separate module
+        # @TODO: re-arrange modules to avoid this cyclic import
         from .provider import Provider  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
 
         if cls._pacman_repo_pkg_present_cache.get(pkg_name) is False:

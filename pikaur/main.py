@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 from .args import parse_args
-from .aur import AURPackageInfo
+from .aur_types import AURPackageInfo
 from .config import (
     AurReposCachePath,
     CacheRoot,

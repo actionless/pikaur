@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, ClassVar
 import pyalpm
 
 from .args import parse_args
-from .aur import AURPackageInfo
+from .aur_types import AURPackageInfo
 from .config import VERSION, AurSearchSortingValues, PikaurConfig, UpgradeSortingValues
 from .core import DEFAULT_TIMEZONE, InstallInfo
 from .i18n import translate, translate_many

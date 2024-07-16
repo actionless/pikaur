@@ -6,8 +6,9 @@ from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING
 
 from .args import parse_args, reconstruct_args
-from .aur import AURPackageInfo, find_aur_packages, find_aur_provided_deps, strip_aur_repo_name
+from .aur import find_aur_packages, find_aur_provided_deps, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
+from .aur_types import AURPackageInfo
 from .core import AURInstallInfo, ComparableType, PackageSource, RepoInstallInfo
 from .exceptions import DependencyError, DependencyVersionMismatchError, SysExit
 from .i18n import translate

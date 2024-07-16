@@ -246,7 +246,7 @@ def find_aur_packages(
     return json_results, not_found_packages
 
 
-def find_aur_provided_deps(
+def find_aur_provided_deps(  # pylint: disable=too-many-branches
         package_names: list[str],
         version_matchers: dict[str, VersionMatcher] | None = None,
         *,

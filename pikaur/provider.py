@@ -1,3 +1,5 @@
+"""Licensed under GPLv3, see https://www.gnu.org/licenses/"""
+
 from typing import ClassVar
 
 import pyalpm

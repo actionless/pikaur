@@ -235,9 +235,7 @@ accept-no-yields-doc = 'no'
 
 [tool.pylint.'MESSAGES CONTROL']
 confidence = ''
-#disable = 'too-few-public-methods,missing-docstring,duplicate-code,missing-return-doc,missing-param-doc,missing-yield-doc,missing-raises-doc,,too-many-nested-blocks,too-many-public-methods,too-many-arguments,too-many-locals'
-# @TODO: fix cyclic import between `provider` and `pacman` modules
-disable = 'too-few-public-methods,missing-docstring,duplicate-code,missing-return-doc,missing-param-doc,missing-yield-doc,missing-raises-doc,,too-many-nested-blocks,too-many-public-methods,too-many-arguments,too-many-locals,cyclic-import'
+disable = 'too-few-public-methods,missing-docstring,duplicate-code,missing-return-doc,missing-param-doc,missing-yield-doc,missing-raises-doc,,too-many-nested-blocks,too-many-public-methods,too-many-arguments,too-many-locals'
 enable = 'useless-suppression'
 
 [tool.pylint.REPORTS]

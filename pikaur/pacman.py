@@ -6,8 +6,8 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar
 
 import pyalpm
-from pycman.config import PacmanConfig as PycmanConfig
 
+from .alpm import PyAlpmWrapper
 from .args import PACMAN_APPEND_OPTS, get_pacman_str_opts, parse_args, reconstruct_args
 from .config import PikaurConfig
 from .core import DataType, PackageSource, spawn
@@ -19,6 +19,7 @@ from .pacman_i18n import _p
 from .pprint import color_enabled, print_error, print_stderr
 from .privilege import sudo
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
+from .provider import Provider
 from .version import VersionMatcher
 
 if TYPE_CHECKING:
@@ -28,18 +29,6 @@ if TYPE_CHECKING:
     from typing import Final
 
     from .aur_types import AURPackageInfo
-
-
-OFFICIAL_REPOS: "Final" = (
-    "core",
-    "extra",
-    "multilib",
-    "core-testing",
-    "extra-testing",
-    "multilib-testing",
-    "core-staging",
-    "extra-staging",
-)
 
 
 REPO_NAME_DELIMITER: "Final" = "/"
@@ -120,12 +109,6 @@ class PacmanPrint(DataType):
     full_name: str
     repo: str
     name: str
-
-
-class PacmanConfig(PycmanConfig):
-
-    def __init__(self) -> None:
-        super().__init__(conf=parse_args().config or "/etc/pacman.conf")
 
 
 class ProvidedDependency(DataType):
@@ -283,22 +266,11 @@ class RepositoryNotFoundError(Exception):
     pass
 
 
-class PackageDB(PackageDBCommon):
-
-    _alpm_handle: pyalpm.Handle | None = None
+class PackageDB(PackageDBCommon, PyAlpmWrapper):
 
     _pacman_pformat_cache: ClassVar[dict[str, RawPrintFormat]] = {}
     _pacman_test_cache: ClassVar[dict[str, list[VersionMatcher]]] = {}
     _pacman_repo_pkg_present_cache: ClassVar[dict[str, bool]] = {}
-
-    @classmethod
-    def get_alpm_handle(cls) -> pyalpm.Handle:
-        if not cls._alpm_handle:
-            cls._alpm_handle = PacmanConfig().initialize_alpm()
-        if not cls._alpm_handle:
-            cant_init_alpm = translate("Cannot initialize ALPM")
-            raise RuntimeError(cant_init_alpm)
-        return cls._alpm_handle
 
     @classmethod
     def discard_local_cache(cls) -> None:
@@ -545,8 +517,6 @@ class PackageDB(PackageDBCommon):
 
     @classmethod
     def find_repo_package(cls, pkg_name: str) -> pyalpm.Package:
-        # @TODO: re-arrange modules to avoid this cyclic import
-        from .provider import Provider  # pylint: disable=import-outside-toplevel  # noqa: PLC0415
 
         if cls._pacman_repo_pkg_present_cache.get(pkg_name) is False:
             raise PackagesNotFoundInRepoError(packages=[pkg_name])

@@ -3,6 +3,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from .alpm import PacmanConfig
 from .args import parse_args
 from .aur import find_aur_packages
 from .config import PikaurConfig
@@ -11,7 +12,6 @@ from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate, translate_many
 from .pacman import (
     PackageDB,
-    PacmanConfig,
     find_packages_not_from_repo,
     find_upgradeable_packages,
     get_ignored_pkgnames_from_patterns,

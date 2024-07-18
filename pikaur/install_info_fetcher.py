@@ -5,6 +5,7 @@ from itertools import chain
 from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING
 
+from .alpm import OFFICIAL_REPOS, PacmanConfig
 from .args import parse_args, reconstruct_args
 from .aur import find_aur_packages, find_aur_provided_deps, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
@@ -14,9 +15,7 @@ from .exceptions import DependencyError, DependencyVersionMismatchError, SysExit
 from .i18n import translate
 from .logging import create_logger
 from .pacman import (
-    OFFICIAL_REPOS,
     PackageDB,
-    PacmanConfig,
     find_sysupgrade_packages,
     get_ignored_pkgnames_from_patterns,
     get_pacman_command,

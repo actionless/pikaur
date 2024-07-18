@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING, ClassVar
 
 import pyalpm
 
+from .alpm import OFFICIAL_REPOS, PyAlpmWrapper
 from .args import parse_args
 from .aur_types import AURPackageInfo
 from .config import VERSION, AurSearchSortingValues, PikaurConfig, UpgradeSortingValues
 from .core import DEFAULT_TIMEZONE, InstallInfo
 from .i18n import translate, translate_many
-from .pacman import OFFICIAL_REPOS, PackageDB
 from .pprint import (
     Colors,
     ColorsHighlight,
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
     from typing import Final, TypeVar
 
-    from .core import AURInstallInfo, PackageSource, RepoInstallInfo
+    from .core import AURInstallInfo, RepoInstallInfo
     from .install_info_fetcher import InstallInfoFetcher
 
     AnyPackage = AURPackageInfo | pyalpm.Package
@@ -102,7 +102,7 @@ class RepoColorGenerator:
         cls._init_done = True
         for official_repo_name in OFFICIAL_REPOS:
             cls.get_next("repo", official_repo_name)
-        for repo in PackageDB.get_alpm_handle().get_syncdbs():
+        for repo in PyAlpmWrapper.get_alpm_handle().get_syncdbs():
             cls.get_next("repo", repo.name)
 
     @classmethod
@@ -636,42 +636,6 @@ def print_ignored_package(
     print_stderr(message)
 
 
-def _get_local_version(package_name: str) -> str:
-    return PackageDB.get_local_dict()[package_name].version
-
-
-def print_package_uptodate(package_name: str, package_source: "PackageSource") -> None:
-    print_warning(
-        translate("{name} {version} {package_source} package is up to date - skipping").format(
-            name=package_name,
-            version=bold_line(_get_local_version(package_name)),
-            package_source=package_source.name,
-        ),
-    )
-
-
-def print_local_package_newer(package_name: str, aur_version: str) -> None:
-    print_warning(
-        translate(
-            "{name} {version} local package is newer than in AUR ({aur_version}) - skipping",
-        ).format(
-            name=package_name,
-            version=bold_line(_get_local_version(package_name)),
-            aur_version=bold_line(aur_version),
-        ),
-    )
-
-
-def print_package_downgrading(package_name: str, downgrade_version: str) -> None:
-    print_warning(
-        translate("Downgrading AUR package {name} {version} to {downgrade_version}").format(
-            name=bold_line(package_name),
-            version=bold_line(_get_local_version(package_name)),
-            downgrade_version=bold_line(downgrade_version),
-        ),
-    )
-
-
 def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
     print_warning(
         translate("{name} {version} AUR package marked as 'outofdate' - skipping").format(
@@ -691,7 +655,7 @@ def print_package_search_results(  # noqa: PLR0914,C901
         list_mode: bool = False,
 ) -> "list[AnyPackage]":
 
-    repos = [db.name for db in PackageDB.get_alpm_handle().get_syncdbs()]
+    repos = [db.name for db in PyAlpmWrapper.get_alpm_handle().get_syncdbs()]
     user_config = PikaurConfig()
     group_by_repo = user_config.ui.GroupByRepository.get_bool()
 

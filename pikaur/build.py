@@ -673,9 +673,6 @@ class PackageBuild(DataType):  # noqa: PLR0904
             pikspect=True,
             conflicts=self.resolved_conflicts,
         )
-        PackageDB.discard_local_cache()
-        self._local_pkgs_with_build_deps = set(PackageDB.get_local_dict().keys())
-        self._local_provided_pkgs_with_build_deps = PackageDB.get_local_provided_dict()
 
     def install_all_deps(self, all_package_builds: dict[str, "PackageBuild"]) -> None:
         with FileLock(BuildDepsLockPath()):
@@ -685,8 +682,14 @@ class PackageBuild(DataType):  # noqa: PLR0904
                 self._local_pkgs_wo_build_deps = set(PackageDB.get_local_dict().keys())
             self.install_built_deps(all_package_builds)
             self._install_repo_deps()
+            PackageDB.discard_local_cache()
+            self._local_pkgs_with_build_deps = set(PackageDB.get_local_dict().keys())
+            self._local_provided_pkgs_with_build_deps = PackageDB.get_local_provided_dict()
 
     def _remove_installed_deps(self) -> None:
+        # logger.debug(
+        #     "Local pkgs before installing build deps: {}", self._local_pkgs_wo_build_deps,
+        # )
         if not self._local_pkgs_wo_build_deps:
             return
 

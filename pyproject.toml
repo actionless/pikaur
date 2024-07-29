@@ -83,6 +83,7 @@ select = [
   "I",
   "N",
   "D",
+  #"DOC", pydoclint
   "UP",
   "YTT",
   "ANN",
@@ -98,6 +99,7 @@ select = [
   "DTZ",
   "T10",
   #"DJ",  # django
+  #"FAST",  # fastapi
   "EM",
   "EXE",
   "FA",

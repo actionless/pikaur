@@ -10,7 +10,7 @@ ARG MODE=--local
 ARG TESTSUITE=all
 ARG SKIP_LINTING=0
 
-RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
+RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://archlinux.mirror.pcextreme.nl/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://archlinux.mirror.wearetriple.com/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://mirror.mijn.host/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \

@@ -394,7 +394,7 @@ See also `./maintenance_scripts/docker_test.sh --help` for more options.
 
 To start working on a new language, say `hi_IN` (Indian Hindi), add it to the
 `Makefile` `LANGS` variable and run `make`. Then translate `locale/hi_IN.po` using
-your favorite PO editor. Run `make` every time the Python code strings change
+your favorite PO editor (for example `gtranslator`). Run `make` every time the Python code strings change
 or the `.po` is modified.
 
 

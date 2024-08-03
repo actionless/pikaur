@@ -522,7 +522,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
         finally:
             PackageDB.discard_local_cache()
 
-    def _set_built_package_path(self) -> None:
+    def set_built_package_path(self) -> None:
         pkg_paths_spawn = spawn(
             isolate_root_cmd(
                 [*MakePkgCommand.get(), "--packagelist"],
@@ -577,7 +577,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
 
     def check_if_already_built(self) -> bool:
         self.get_latest_dev_sources()
-        self._set_built_package_path()
+        self.set_built_package_path()
         if (
                 not self.args.rebuild and
                 len(self.built_packages_paths) == len(self.package_names)
@@ -968,7 +968,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
         if not build_succeeded:
             self.failed = True
             raise BuildError(message="failed to build", build=self)
-        self._set_built_package_path()
+        self.set_built_package_path()
 
 
 class AlreadyClonedRepos:

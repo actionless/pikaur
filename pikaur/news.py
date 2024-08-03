@@ -12,9 +12,9 @@ except ModuleNotFoundError:
 from .config import CacheRoot, PikaurConfig
 from .core import DEFAULT_TIMEZONE, open_file
 from .i18n import translate
-from .logging import create_logger
+from .logging_extras import create_logger
 from .pacman import PackageDB
-from .pprint import (
+from .pikaprint import (
     BOLD_RESET,
     BOLD_START,
     COLOR_RESET,

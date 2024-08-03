@@ -6,7 +6,7 @@ import pyalpm
 
 from .aur_types import AURPackageInfo
 from .i18n import translate
-from .pprint import Colors, bold_line, color_line, print_error, print_stdout
+from .pikaprint import Colors, bold_line, color_line, print_error, print_stdout
 from .print_department import print_package_search_results
 from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .version import VersionMatcher

@@ -26,9 +26,9 @@ from typing import TYPE_CHECKING
 from .args import parse_args
 from .core import DEFAULT_INPUT_ENCODING
 from .i18n import translate
-from .logging import create_logger
+from .logging_extras import create_logger
 from .pacman_i18n import _p
-from .pprint import (
+from .pikaprint import (
     ColorsHighlight,
     PrintLock,
     TTYRestore,
@@ -56,7 +56,7 @@ FILE_DEBUG: "Final" = False
 
 
 def file_debug(message: "Any") -> None:
-    # @TODO: move it to the logging module
+    # @TODO: move it to the logging_extras module
     if FILE_DEBUG:
         with Path("./pikspect_debug.txt").open("a", encoding=DEFAULT_INPUT_ENCODING) as fobj:
             fobj.write(str(message) + "\n")

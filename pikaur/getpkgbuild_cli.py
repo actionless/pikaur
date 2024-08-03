@@ -10,7 +10,7 @@ from .core import check_executables, interactive_spawn
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate
 from .pacman import PackageDB
-from .pprint import print_stdout
+from .pikaprint import print_stdout
 from .print_department import print_not_found_packages
 from .urllib_helper import wrap_proxy_env
 

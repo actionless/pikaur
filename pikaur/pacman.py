@@ -14,9 +14,9 @@ from .core import DataType, PackageSource, spawn
 from .exceptions import DependencyError, PackagesNotFoundInRepoError
 from .i18n import translate
 from .lock import FancyLock
-from .logging import create_logger
+from .logging_extras import create_logger
 from .pacman_i18n import _p
-from .pprint import color_enabled, print_error, print_stderr
+from .pikaprint import color_enabled, print_error, print_stderr
 from .privilege import sudo
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .provider import Provider

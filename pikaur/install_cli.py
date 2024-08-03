@@ -32,7 +32,7 @@ from .exceptions import (
 )
 from .i18n import translate
 from .install_info_fetcher import InstallInfoFetcher
-from .logging import create_logger
+from .logging_extras import create_logger
 from .news import News
 from .pacman import (
     PackageDB,
@@ -41,7 +41,7 @@ from .pacman import (
     refresh_pkg_db_if_needed,
     strip_repo_name,
 )
-from .pprint import (
+from .pikaprint import (
     ColorsHighlight,
     TTYRestoreContext,
     bold_line,
@@ -1072,7 +1072,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             self.main_sequence()
             raise self.ExitMainSequence
 
-    def build_packages(self) -> None:  # pylint: disable=too-many-branches
+    def build_packages(self) -> None:  # pylint: disable=too-many-branches,too-many-statements
         logger.debug("<< BUILD PACKAGES")
         if self.args.needed or self.args.devel:
             self._get_installed_status()

@@ -12,10 +12,8 @@ from .core import InteractiveSpawn, interactive_spawn
 from .exceptions import SysExit
 from .filelock import FileLock
 from .i18n import translate
-from .logging import create_logger
-from .pikspect import PikspectPopen, ReadlineKeycodes, TTYInputWrapper
-from .pikspect import pikspect as pikspect_spawn
-from .pprint import (
+from .logging_extras import create_logger
+from .pikaprint import (
     ColorsHighlight,
     TTYRestoreContext,
     color_line,
@@ -24,6 +22,8 @@ from .pprint import (
     print_warning,
     range_printable,
 )
+from .pikspect import PikspectPopen, ReadlineKeycodes, TTYInputWrapper
+from .pikspect import pikspect as pikspect_spawn
 from .privilege import isolate_root_cmd
 
 if TYPE_CHECKING:

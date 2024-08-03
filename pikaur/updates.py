@@ -16,7 +16,7 @@ from .pacman import (
     find_upgradeable_packages,
     get_ignored_pkgnames_from_patterns,
 )
-from .pprint import print_stderr, print_stdout
+from .pikaprint import print_stderr, print_stdout
 from .print_department import (
     pretty_format_upgradeable,
     print_ignored_package,

@@ -11,9 +11,9 @@ from .exceptions import (
     PackagesNotFoundInRepoError,
 )
 from .i18n import translate
-from .logging import create_logger
+from .logging_extras import create_logger
 from .pacman import PackageDB
-from .pprint import print_error
+from .pikaprint import print_error
 from .version import VersionMatcher
 
 if TYPE_CHECKING:

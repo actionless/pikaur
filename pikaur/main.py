@@ -41,11 +41,11 @@ from .help_cli import cli_print_help
 from .i18n import translate
 from .info_cli import cli_info_packages
 from .install_cli import InstallPackagesCLI
-from .logging import create_logger
+from .logging_extras import create_logger
 from .pacman import PackageDB
+from .pikaprint import TTYRestore, bold_line, print_error, print_stderr, print_warning
 from .pikspect import PikspectSignalHandler
 from .pkg_cache_cli import cli_clean_packages_cache
-from .pprint import TTYRestore, bold_line, print_error, print_stderr, print_warning
 from .print_department import print_version
 from .privilege import (
     get_args_to_elevate_pikaur,

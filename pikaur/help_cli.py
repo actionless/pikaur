@@ -12,7 +12,7 @@ from .args import (
 from .config import PikaurConfig
 from .core import spawn
 from .i18n import PIKAUR_NAME, translate
-from .pprint import print_stdout
+from .pikaprint import print_stdout
 
 if TYPE_CHECKING:
     from typing import Final

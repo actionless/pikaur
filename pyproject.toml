@@ -174,7 +174,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"pikaur/argparse.py" = [
+"pikaur/argparse_extras.py" = [
   "PLR0912",
   "PLR0915",
   "SLF001",

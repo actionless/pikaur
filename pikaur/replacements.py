@@ -2,7 +2,7 @@
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate_many
 from .pacman import PackageDB
-from .pprint import print_warning
+from .pikaprint import print_warning
 
 
 def find_replacements() -> dict[str, list[str]]:

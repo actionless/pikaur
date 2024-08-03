@@ -14,7 +14,7 @@ from .aur_types import AURPackageInfo
 from .config import VERSION, AurSearchSortingValues, PikaurConfig, UpgradeSortingValues
 from .core import DEFAULT_TIMEZONE, InstallInfo
 from .i18n import translate, translate_many
-from .pprint import (
+from .pikaprint import (
     Colors,
     ColorsHighlight,
     bold_line,

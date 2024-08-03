@@ -8,7 +8,7 @@ from .core import chown_to_current, open_file, spawn
 from .exceptions import SysExit
 from .i18n import translate
 from .makepkg_config import MakePkgCommand, MakepkgConfig
-from .pprint import print_error, print_stderr
+from .pikaprint import print_error, print_stderr
 from .privilege import isolate_root_cmd
 from .version import VersionMatcher
 

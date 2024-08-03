@@ -19,7 +19,7 @@ from pikaur.core import spawn as core_spawn
 from pikaur.main import main
 from pikaur.makepkg_config import MakePkgCommand
 from pikaur.pacman import PackageDB
-from pikaur.pprint import color_line, get_term_width
+from pikaur.pikaprint import color_line, get_term_width
 from pikaur.srcinfo import SrcInfo
 
 if TYPE_CHECKING:

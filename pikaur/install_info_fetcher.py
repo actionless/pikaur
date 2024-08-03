@@ -13,7 +13,7 @@ from .aur_types import AURPackageInfo
 from .core import AURInstallInfo, ComparableType, PackageSource, RepoInstallInfo
 from .exceptions import DependencyError, DependencyVersionMismatchError, SysExit
 from .i18n import translate
-from .logging import create_logger
+from .logging_extras import create_logger
 from .pacman import (
     PackageDB,
     find_sysupgrade_packages,
@@ -21,7 +21,7 @@ from .pacman import (
     get_pacman_command,
     strip_repo_name,
 )
-from .pprint import print_error, print_stderr, print_stdout
+from .pikaprint import print_error, print_stderr, print_stdout
 from .print_department import print_ignored_package, print_not_found_packages
 from .prompt import ask_to_continue
 from .replacements import find_replacements

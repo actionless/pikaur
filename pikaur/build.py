@@ -41,10 +41,10 @@ from .exceptions import (
 )
 from .filelock import FileLock
 from .i18n import translate, translate_many
-from .logging import create_logger
+from .logging_extras import create_logger
 from .makepkg_config import MakePkgCommand, MakepkgConfig, get_pkgdest
 from .pacman import PackageDB, get_pacman_command, install_built_deps
-from .pprint import (
+from .pikaprint import (
     ColorsHighlight,
     TTYRestoreContext,
     bold_line,

@@ -4,7 +4,7 @@ import sys
 from threading import Lock
 from typing import TYPE_CHECKING, ClassVar
 
-from .pprint import color_enabled, get_term_width
+from .pikaprint import color_enabled, get_term_width
 
 if TYPE_CHECKING:
     from collections.abc import Callable

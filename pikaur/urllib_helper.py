@@ -10,7 +10,7 @@ from .args import parse_args
 from .config import PikaurConfig
 from .exceptions import SysExit
 from .i18n import translate
-from .pprint import ColorsHighlight, color_line, print_error, print_stderr
+from .pikaprint import ColorsHighlight, color_line, print_error, print_stderr
 from .prompt import ask_to_continue
 
 if TYPE_CHECKING:

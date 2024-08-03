@@ -18,7 +18,7 @@ except ModuleNotFoundError:
     try:
         from pikaur.i18n import translate
         from pikaur.main import main
-        from pikaur.pprint import print_warning
+        from pikaur.pikaprint import print_warning
     except:   # noqa: E722
         print("System Python had breaking version update. You need to rebuild Pikaur manually.")
         print()

@@ -5,7 +5,7 @@ from argparse import Namespace
 from pprint import pformat
 from typing import TYPE_CHECKING
 
-from .argparse import ArgumentParserWithUnknowns
+from .argparse_extras import ArgumentParserWithUnknowns
 from .config import PikaurConfig
 from .i18n import translate, translate_many
 

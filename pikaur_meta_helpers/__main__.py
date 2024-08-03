@@ -4,7 +4,7 @@ import pkgutil
 import sys
 
 from pikaur.exceptions import SysExit
-from pikaur.pprint import print_error, print_stdout
+from pikaur.pikaprint import print_error, print_stdout
 from pikaur.prompt import NotANumberInputError, get_multiple_numbers_input
 
 

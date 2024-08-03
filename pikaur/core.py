@@ -15,7 +15,7 @@ import pyalpm
 
 from .args import parse_args
 from .i18n import translate
-from .pprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
+from .pikaprint import ColorsHighlight, bold_line, color_line, print_error, print_stderr
 from .privilege import sudo
 
 if TYPE_CHECKING:

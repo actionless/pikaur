@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from .args import parse_args
 from .i18n import translate
-from .pprint import Colors, ColorsHighlight, color_line, print_stderr
+from .pikaprint import Colors, ColorsHighlight, color_line, print_stderr
 
 if TYPE_CHECKING:
     from typing import Any, Final

@@ -290,7 +290,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
         self.install_package_names = []
         self.not_found_repo_pkgs_names = []
         self.pkgbuilds_packagelists = {
-            path: [] for path in
+            Path(path).resolve().as_posix(): [] for path in
             self.args.positional or ["PKGBUILD"]
         }
 
@@ -1038,7 +1038,8 @@ class InstallPackagesCLI:  # noqa: PLR0904
         src_info.regenerate()
         new_srcinfo_hash = hash_file(src_info.path)
 
-        self.pkgbuilds_packagelists[str(pkg_build.pkgbuild_path)] = pkg_build.package_names
+        pkgbuild_path_str = pkg_build.pkgbuild_path.as_posix()
+        self.pkgbuilds_packagelists[pkgbuild_path_str] = pkg_build.package_names
         self.reviewed_package_bases.append(pkg_build.package_base)
 
         if not getattr(self, "install_info", None):  # @TODO: make it nicer?

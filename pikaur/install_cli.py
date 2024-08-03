@@ -745,6 +745,8 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 return pkgbuild_by_name
 
     def get_package_builds(self) -> None:
+        logger.debug("<< GET_PACKAGE_BUILD")
+        logger.debug("self.pkgbuilds_packagelists={}", self.pkgbuilds_packagelists)
         while self.all_aur_packages_names:
             clone_infos = []
             pkgbuilds_by_base: dict[str, PackageBuild] = {}
@@ -758,8 +760,8 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     if pkg_base not in pkgbuilds_by_base:
                         package_names = self.pkgbuilds_packagelists.get(info.pkgbuild_path)
                         logger.debug(
-                            "Initializing build info for {}({}): {}",
-                            pkg_base, package_names, info.pkgbuild_path,
+                            "Initializing build info for {} {}({}): {}",
+                            info, pkg_base, package_names, info.pkgbuild_path,
                         )
                         pkgbuilds_by_base[pkg_base] = PackageBuild(
                             pkgbuild_path=info.pkgbuild_path,
@@ -792,6 +794,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             break
         logger.debug("self.package_builds_by_name={}", self.package_builds_by_name)
         logger.debug("self.package_builds_by_provides={}", self.package_builds_by_provides)
+        logger.debug(">> GET_PACKAGE_BUILD")
 
     def ask_about_package_conflicts(self) -> None:
         if self.aur_packages_names or self.aur_deps_names:
@@ -1070,6 +1073,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             raise self.ExitMainSequence
 
     def build_packages(self) -> None:  # pylint: disable=too-many-branches
+        logger.debug("<< BUILD PACKAGES")
         if self.args.needed or self.args.devel:
             self._get_installed_status()
 
@@ -1078,7 +1082,8 @@ class InstallPackagesCLI:  # noqa: PLR0904
         packages_to_be_built = self.all_aur_packages_names[:]
         index = 0
         while packages_to_be_built:
-            logger.debug("Gonna build PKGBUILDS: {}", self.package_builds_by_name)
+            logger.debug("  Packages to be built: {}", packages_to_be_built)
+            logger.debug("  Gonna build PKGBUILDS: {}", self.package_builds_by_name)
             if index >= len(packages_to_be_built):
                 index = 0
 
@@ -1096,13 +1101,14 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 continue
 
             try:
-                logger.debug("Gonna build pkgnames: {}", pkg_build.package_names)
+                logger.debug("  Gonna build pkgnames: {}", pkg_build.package_names)
                 pkg_build.build(
                     all_package_builds=self.package_builds_by_name,
                     resolved_conflicts=self.resolved_conflicts,
                     skip_checkfunc_for_pkgnames=self.skip_checkfunc_for_pkgnames,
                 )
-            except PkgbuildChanged:
+            except PkgbuildChanged as exc:
+                logger.debug("  PKGBUILD changed: {}", exc)
                 self.handle_pkgbuild_changed(pkg_build)
             except (BuildError, DependencyError) as exc:
                 print_stderr(exc)
@@ -1122,7 +1128,8 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     for remaining_aur_pkg_name in packages_to_be_built[:]:
                         if remaining_aur_pkg_name not in self.all_aur_packages_names:
                             packages_to_be_built.remove(remaining_aur_pkg_name)
-            except DependencyNotBuiltYetError:
+            except DependencyNotBuiltYetError as exc:
+                logger.debug("  {} Dep not built yet: {}", index, exc)
                 index += 1
                 for _pkg_name in pkg_build.package_names:
                     deps_fails_counter.setdefault(_pkg_name, 0)
@@ -1136,7 +1143,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                         self.prompt_dependency_cycle(_pkg_name)
             else:
                 logger.debug(
-                    "Build done for packages {}, removing from queue {}",
+                    "  Build done for packages {}, removing from queue {}",
                     pkg_build.package_names,
                     packages_to_be_built,
                 )
@@ -1147,8 +1154,10 @@ class InstallPackagesCLI:  # noqa: PLR0904
                             and (_pkg_name in packages_to_be_built)
                     ):
                         packages_to_be_built.remove(_pkg_name)
+            logger.debug("")
 
         self.failed_to_build_package_names = failed_to_build_package_names
+        logger.debug(">> BUILD PACKAGES")
 
     def _save_transaction(
             self,

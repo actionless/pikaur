@@ -438,9 +438,10 @@ class PackageBuild(DataType):  # noqa: PLR0904
             self,
             all_package_builds: dict[str, "PackageBuild"],
     ) -> None:
+        logger.debug("<< _FILTER_BUILT_DEPS")
 
         def _mark_dep_resolved(dep: str) -> None:
-            logger.debug("_mark_dep_resolved: {}", dep)
+            logger.debug("  _mark_dep_resolved: {}", dep)
             if dep in self.new_make_deps_to_install:
                 self.new_make_deps_to_install.remove(dep)
             if dep in self.new_deps_to_install:
@@ -465,25 +466,31 @@ class PackageBuild(DataType):  # noqa: PLR0904
 
         self.built_deps_to_install = {}
 
-        logger.debug("self.all_deps_to_install={}", self.all_deps_to_install)
-        logger.debug("all_provided_pkgnames={}", all_provided_pkgnames)
+        logger.debug("  self.all_deps_to_install={}", self.all_deps_to_install)
+        logger.debug("  all_provided_pkgnames={}", all_provided_pkgnames)
         for dep in self.all_deps_to_install:
             dep_name = VersionMatcher(dep).pkg_name
+            logger.debug("    {} {}", dep, dep_name)
             if dep_name not in all_provided_pkgnames:
                 continue
             package_build = all_package_builds[all_provided_pkgnames[dep_name]]
+            logger.debug("    {} {}", package_build, all_provided_pkgnames[dep_name])
             if package_build == self:
                 _mark_dep_resolved(dep)
                 continue
             for pkg_name in package_build.package_names:
+                logger.debug("      {}", pkg_name)
                 if package_build.failed:
                     self.failed = True
+                    logger.debug("      FAILED")
                     raise DependencyError
                 if not package_build.built_packages_paths.get(pkg_name):
+                    logger.debug("      NOT_BUILT: {}", package_build.built_packages_paths)
                     raise DependencyNotBuiltYetError
                 self.built_deps_to_install[pkg_name] = \
                     package_build.built_packages_paths[pkg_name]
                 _mark_dep_resolved(dep)
+        logger.debug(">> _FILTER_BUILT_DEPS")
 
     def _get_pacman_command(self, ignore_args: list[str] | None = None) -> list[str]:
         return get_pacman_command(ignore_args=ignore_args) + (

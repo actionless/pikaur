@@ -544,7 +544,9 @@ Gonna fetch install info for:
         logger.debug("got AUR pkgs install info: {}", self.aur_updates_install_info)
 
     def get_info_from_pkgbuilds(self) -> None:
-        logger.debug("gonna get install info from PKGBUILDs: {}...", self.aur_updates_install_info)
+        logger.debug(
+            "<< gonna get install info from PKGBUILDs: {}...", self.aur_updates_install_info,
+        )
         aur_updates_install_info_by_name: dict[str, AURInstallInfo] = {}
         local_pkgs = PackageDB.get_local_dict()
         for path, pkg_names in self.pkgbuilds_packagelists.items():
@@ -553,15 +555,17 @@ Gonna fetch install info for:
             common_srcinfo.regenerate()
             if not found_pkg_names:
                 found_pkg_names = common_srcinfo.pkgnames
+            logger.debug("  1 {} {} {}", path, pkg_names, found_pkg_names)
             for pkg_name in found_pkg_names:
                 if pkg_name in self.manually_excluded_packages_names:
                     continue
                 srcinfo = SrcInfo(pkgbuild_path=path, package_name=pkg_name)
                 aur_pkg = AURPackageInfo.from_srcinfo(srcinfo)
+                logger.debug("  2 {} {} {}", pkg_name, aur_pkg, aur_pkg.packagebase)
                 if pkg_name in aur_updates_install_info_by_name:
                     raise RuntimeError(translate(f"{pkg_name} already added to the list"))
                 local_pkg = local_pkgs.get(pkg_name)
-                aur_updates_install_info_by_name[pkg_name] = AURInstallInfo(
+                info = AURInstallInfo(
                     name=pkg_name,
                     current_version=local_pkg.version if local_pkg else " ",
                     new_version=aur_pkg.version,
@@ -570,8 +574,10 @@ Gonna fetch install info for:
                     package=aur_pkg,
                     pkgbuild_path=path,
                 )
+                logger.debug("  3 {} {} {}", info, info.package, info.package.packagebase)
+                aur_updates_install_info_by_name[pkg_name] = info
         self.aur_updates_install_info += list(aur_updates_install_info_by_name.values())
-        logger.debug("got install info from PKGBUILDs: {}.", self.aur_updates_install_info)
+        logger.debug(">> got install info from PKGBUILDs: {}.", self.aur_updates_install_info)
 
     def get_aur_deps_info(self) -> None:
         all_aur_pkgs = []

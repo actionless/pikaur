@@ -1090,7 +1090,8 @@ class InstallPackagesCLI:  # noqa: PLR0904
             ) or (
                     self.args.needed and pkg_build.version_already_installed
             ):
-                logger.debug("Already built: {}", pkg_base)
+                logger.debug("  Already built: {}", pkg_base)
+                pkg_build._set_built_package_path()
                 packages_to_be_built.remove(pkg_name)
                 continue
 

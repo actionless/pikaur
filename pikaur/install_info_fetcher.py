@@ -549,9 +549,9 @@ Gonna fetch install info for:
         local_pkgs = PackageDB.get_local_dict()
         for path, pkg_names in self.pkgbuilds_packagelists.items():
             found_pkg_names = pkg_names
+            common_srcinfo = SrcInfo(pkgbuild_path=path)
+            common_srcinfo.regenerate()
             if not found_pkg_names:
-                common_srcinfo = SrcInfo(pkgbuild_path=path)
-                common_srcinfo.regenerate()
                 found_pkg_names = common_srcinfo.pkgnames
             for pkg_name in found_pkg_names:
                 if pkg_name in self.manually_excluded_packages_names:

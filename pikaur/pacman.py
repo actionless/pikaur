@@ -16,7 +16,7 @@ from .i18n import translate
 from .lock import FancyLock
 from .logging_extras import create_logger
 from .pacman_i18n import _p
-from .pikaprint import color_enabled, print_error, print_stderr
+from .pikaprint import color_enabled, print_stderr
 from .privilege import sudo
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .provider import Provider
@@ -576,15 +576,15 @@ def find_upgradeable_packages() -> list[pyalpm.Package]:
     try:
         results = PackageDB.get_sync_print_format_output(pkg_names=pkg_names)
     except DependencyError as exc:
-        print_error(translate("Dependencies can't be satisfied for the following packages:"))
-        print_stderr(" " * 12 + " ".join(pkg_names))
-        print_stderr(str(exc))
+        logger.debug(translate("Dependencies can't be satisfied for the following packages:"))
+        logger.debug("{}{}", " " * 12, " ".join(pkg_names))
+        logger.debug(str(exc))
         for pkg_name in pkg_names:
             try:
                 results += PackageDB.get_sync_print_format_output([pkg_name])
             except DependencyError as exc2:
-                print_error(translate("Because of:"))
-                print_stderr(str(exc2))
+                logger.debug(translate("Because of:"))
+                logger.debug(str(exc2))
     return [
         all_repo_pkgs[result.full_name] for result in results
         if result.name in all_local_pkgs

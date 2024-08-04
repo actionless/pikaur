@@ -726,6 +726,7 @@ class PikaurConfig:
         if current_value == old_default:
             new_default_value = option_schema["default"]
             cls._config[section_name][option_name] = new_default_value
+            CONFIG_SCHEMA[section_name][option_name]["migrated"] = True
             print(" ".join([  # noqa: T201
                 "::",
                 translate("warning:"),

@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     class ConfigValueType(TypedDict):
         data_type: str
         default: NotRequired[str]
+        old_default: NotRequired[str]
         deprecated: NotRequired[DeprecatedConfigValue]
         migrated: NotRequired[bool]
 

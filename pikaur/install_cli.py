@@ -543,17 +543,16 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 f"\n{color_line('::', ColorsHighlight.blue)}"
                 f" {bold_line(options_line1)}"
             )
+            answers = translate("y").upper() + translate("n") + translate("v") + translate("m")
             if self.news and self.news.any_news:
                 options_news = translate("[c]onfirm Arch NEWS as read")
                 prompt += (
                     f"\n{color_line('::', ColorsHighlight.blue)}"
                     f" {bold_line(options_news)}"
                 )
+                answers += translate("c")
             prompt += "\n>> "
-            return get_input(
-                prompt,
-                translate("y").upper() + translate("n") + translate("v") + translate("m"),
-            )
+            return get_input(prompt, answers)
 
         if self.args.noconfirm:
             _print_sysupgrade()

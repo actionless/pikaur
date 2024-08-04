@@ -496,6 +496,7 @@ CONFIG_SCHEMA: ConfigSchemaT = {
         "NewsUrl": {
             "data_type": STR,
             "default": "https://archlinux.org/feeds/news/",
+            "old_default": "https://www.archlinux.org/feeds/news/",
         },
         "Socks5Proxy": {
             "data_type": STR,

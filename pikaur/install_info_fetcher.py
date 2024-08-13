@@ -648,6 +648,7 @@ Gonna fetch install info for:
         """Update packages' install info to show deps in prompt."""
         logger.debug(":: marking dependant pkgs...")
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
+        all_local_pkgs = PackageDB.get_local_dict()
         all_local_pkgnames = PackageDB.get_local_pkgnames()
         all_deps_install_infos: Sequence[InstallInfo] = (
             self.new_repo_deps_install_info +
@@ -748,6 +749,15 @@ Gonna fetch install info for:
                             dep_install_info.provided_by = None
                             dep_install_info.name = name
                             dep_install_info.new_version = dep_install_info.package.version
+
+            # process deps for already installed pkgs:
+            if (
+                    local_pkg := all_local_pkgs.get(pkg_install_info.name)
+            ):
+                req = local_pkg.compute_requiredby()
+                opt = local_pkg.compute_optionalfor()
+                pkg_install_info.required_by_installed = (req or []) + (opt or [])
+
         logger.debug("== marked dependant pkgs.")
 
     def get_total_download_size(self) -> float:

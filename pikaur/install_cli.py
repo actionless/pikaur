@@ -526,24 +526,47 @@ class InstallPackagesCLI:  # noqa: PLR0904
 
     def install_prompt(self) -> None:  # pragma: no cover
 
-        def _print_sysupgrade(*, verbose: bool = False) -> None:
+        def _print_sysupgrade(
+                *, verbose: bool = False, required_by_installed: bool = False,
+        ) -> None:
             print_stdout(pretty_format_sysupgrade(
                 install_info=self.install_info,
                 verbose=verbose,
+                required_by_installed=required_by_installed,
             ))
 
-        def _confirm_sysupgrade(*, verbose: bool = False, print_pkgs: bool = True) -> str:
+        verbose = False
+        required_by_installed = False
+
+        def _confirm_sysupgrade(
+                *,
+                verbose: bool = False,
+                print_pkgs: bool = True,
+                required_by_installed: bool = False,
+        ) -> str:
             if print_pkgs:
-                _print_sysupgrade(verbose=verbose)
+                _print_sysupgrade(verbose=verbose, required_by_installed=required_by_installed)
             question = translate("Proceed with installation? [Y/n] ")
-            options_line1 = translate("[v]iew package details   [m]anually select packages")
-            prompt = (
-                f"{color_line('::', ColorsHighlight.blue)}"
-                f" {bold_line(question)}"
-                f"\n{color_line('::', ColorsHighlight.blue)}"
-                f" {bold_line(options_line1)}"
+            options_lines = (
+                translate("[v]iew package details   [m]anually select packages"),
+                translate("[r] show if packages are required by already installed packages"),
             )
-            answers = translate("y").upper() + translate("n") + translate("v") + translate("m")
+            prompt = "".join((
+                (
+                    f"{color_line('::', ColorsHighlight.blue)}"
+                    f" {bold_line(question)}"
+                ),
+                *(
+                    f"\n{color_line('::', ColorsHighlight.blue)}"
+                    f" {bold_line(options_line)}"
+                    for options_line
+                    in options_lines
+                ),
+            ))
+            answers = (
+                translate("y").upper() + translate("n") + translate("v") + translate("m")
+                + translate("r")
+            )
             if self.news and self.news.any_news:
                 options_news = translate("[c]onfirm Arch NEWS as read")
                 prompt += (
@@ -566,7 +589,16 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 if letter == translate("y"):
                     break
                 if letter == translate("v"):
-                    answer = _confirm_sysupgrade(verbose=True)
+                    verbose = not verbose
+                    answer = _confirm_sysupgrade(
+                        verbose=verbose, required_by_installed=required_by_installed,
+                    )
+                    continue
+                if letter == translate("r"):
+                    required_by_installed = not required_by_installed
+                    answer = _confirm_sysupgrade(
+                        verbose=verbose, required_by_installed=required_by_installed,
+                    )
                     continue
                 if letter == translate("m"):
                     print_stdout()

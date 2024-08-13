@@ -9,11 +9,9 @@ class DB:
     def search(self, query: str) -> list[Package]: ...
     def get_pkg(self, name: str) -> Package: ...
 
-
 class Handle:
     def get_localdb(self) -> DB: ...
     def get_syncdbs(self) -> list[DB]: ...
-
 
 class Package:
     db: DB
@@ -49,6 +47,7 @@ class Package:
   # /* miscellaneous information */
   # { "has_scriptlet", (getter)pyalpm_pkg_has_scriptlet, 0, "True if the package has an install script", NULL },
   # { "download_size", (getter)pyalpm_pkg_download_size, 0, "predicted download size for this package", NULL },
-
+    def compute_requiredby(self) -> list[str]: ...
+    def compute_optionalfor(self) -> list[str]: ...
 
 # vim: ft=python

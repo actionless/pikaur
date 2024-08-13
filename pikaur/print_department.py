@@ -133,10 +133,11 @@ def pretty_format_repo_name(
     return color_line(result, RepoColorGenerator.get_next("repo", repo_name))
 
 
-def pretty_format_upgradeable(  # pylint: disable=too-many-statements
+def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C901
         packages_updates: "Sequence[InstallInfo]",
         *,
         verbose: bool = False,
+        required_by_installed: bool = False,
         print_repo: bool = False,
         color: bool = True,
         template: str | None = None,
@@ -202,20 +203,28 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements
             pkg_name = f"{_color_line('aur/', ColorsHighlight.red)}{pkg_name}"
             pkg_len += len("aur/")
 
-        if pkg_update.required_by:
-            required_for = translate("for {pkg}").format(
-                pkg=", ".join([p.package.name for p in pkg_update.required_by]),
+        if pkg_update.required_by or required_by_installed:
+            required_by_names = (
+                [p.package.name for p in pkg_update.required_by] if pkg_update.required_by else []
+            ) + (
+                pkg_update.required_by_installed
+                if (required_by_installed and pkg_update.required_by_installed)
+                else []
             )
-            required_by = f" ({required_for})"
-            pkg_len += len(required_by)
-            dep_color = Colors.yellow
-            required_for_formatted = translate("for {pkg}").format(
-                pkg=_color_line(", ", dep_color).join([
-                    _color_line(p.package.name, dep_color + 8) for p in pkg_update.required_by
-                ]) + _color_line("", dep_color, reset=False),
-            )
-            required_by_formatted = _color_line(f" ({required_for_formatted})", dep_color)
-            pkg_name += required_by_formatted
+            if required_by_names:
+                required_for = translate("for {pkg}").format(
+                    pkg=", ".join(required_by_names),
+                )
+                required_by = f" ({required_for})"
+                pkg_len += len(required_by)
+                dep_color = Colors.yellow
+                required_for_formatted = translate("for {pkg}").format(
+                    pkg=_color_line(", ", dep_color).join([
+                        _color_line(name, dep_color + 8) for name in required_by_names
+                    ]) + _color_line("", dep_color, reset=False),
+                )
+                required_by_formatted = _color_line(f" ({required_for_formatted})", dep_color)
+                pkg_name += required_by_formatted
         if pkg_update.provided_by:
             provided_by = f" ({' # '.join([p.name for p in pkg_update.provided_by])})"
             pkg_len += len(provided_by)
@@ -342,11 +351,13 @@ class SysupgradePrettyFormatter:
         install_info: "InstallInfoFetcher",
         *,
         verbose: bool,
+        required_by_installed: bool,
         manual_package_selection: bool,
     ) -> None:
         self.color = True
         self.install_info = install_info
         self.verbose = verbose
+        self.required_by_installed = required_by_installed
 
         self.repo_packages_updates: list[RepoInstallInfo] = \
             install_info.repo_packages_install_info[::]
@@ -404,7 +415,8 @@ class SysupgradePrettyFormatter:
             print_repo = self.config.sync.AlwaysShowPkgOrigin.get_bool()
         return pretty_format_upgradeable(
             install_infos,
-            verbose=self.verbose, color=self.color, print_repo=print_repo,
+            verbose=self.verbose, required_by_installed=self.required_by_installed,
+            color=self.color, print_repo=print_repo,
         )
 
     def pformat_warned_packages(self) -> None:
@@ -585,11 +597,13 @@ def pretty_format_sysupgrade(
         install_info: "InstallInfoFetcher",
         *,
         verbose: bool = False,
+        required_by_installed: bool = False,
         manual_package_selection: bool = False,
 ) -> str:
     return SysupgradePrettyFormatter(
         install_info=install_info,
         verbose=verbose,
+        required_by_installed=required_by_installed,
         manual_package_selection=manual_package_selection,
     )()
 

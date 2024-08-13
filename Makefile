@@ -97,7 +97,7 @@ clean:
 ################################################################################
 
 lint_fix:
-	echo $(RUFF) check --fix $(TARGETS)
+	$(RUFF) check --fix $(TARGETS)
 
 compile_all:
 	export PYTHONWARNINGS='ignore,error:::$(TARGET_MODULE)[.*],error:::pikaur_test[.*]'

@@ -61,7 +61,7 @@ RUN echo ">>>> Starting CI linting:" && \
 	chown -R user /opt/app-build/pikaur_{test,meta_helpers} && \
 	if [[ "$SKIP_LINTING" -eq 0 ]] ; then \
 		sudo -u user env \
-		./maintenance_scripts/lint.sh ; \
+		make lint ; \
 	fi
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \

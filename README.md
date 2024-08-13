@@ -378,7 +378,7 @@ You can start from [this list of issues](https://github.com/actionless/pikaur/is
 ##### Linters (code quality check)
 
 ```sh
-./maintenance_scripts/lint.sh
+make -j $(nproc) lint
 ```
 
 ##### Tests

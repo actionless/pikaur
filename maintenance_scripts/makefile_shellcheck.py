@@ -20,7 +20,7 @@ SKIP_TARGETS: Final = (".PHONY", ".PRECIOUS")
 _ALL: Final = "all"
 
 
-def get_targets() -> list[str]:
+def get_targets() -> tuple[list[str], str | None]:
     lines = subprocess.check_output(  # nosec B603
         args=[
             "make",
@@ -34,8 +34,15 @@ def get_targets() -> list[str]:
     ).splitlines()
     not_a_target_comment = "# Not a target:"
 
+    make_shell: str | None = None
+
     targets = []
     for idx, line in enumerate(lines):
+        if not make_shell:
+            words = line.split(" ")
+            if (len(words) == 3) and (words[0] == "SHELL") and (words[1] == ":="):  # noqa: PLR2004:
+                make_shell = words[2]
+
         if lines[idx - 1] == not_a_target_comment:
             continue
 
@@ -60,7 +67,7 @@ def get_targets() -> list[str]:
     # check it last:
     targets.remove(_ALL)
     targets.append(_ALL)
-    return targets
+    return targets, make_shell
 
 
 def print_by_lines(text: str) -> None:
@@ -78,7 +85,7 @@ def print_error_in_target(target: str) -> None:
 
 def main() -> None:
     print("Starting the check...")
-    targets = get_targets()
+    targets, make_shell = get_targets()
     if _ALL not in targets:
         print(f"ERROR: `{_ALL}` target is not defined.")
         sys.exit(1)
@@ -101,6 +108,11 @@ def main() -> None:
             print_error_in_target(target)
             print_by_lines(err.output)
             sys.exit(1)
+        make_result = "\n".join(
+            line
+            for line in make_result.splitlines()
+            if not line.startswith("make[1]")
+        )
         with tempfile.NamedTemporaryFile("w", encoding=DEFAULT_ENCODING) as fobj:
             fobj.write(make_result)
             fobj.seek(0)
@@ -109,7 +121,7 @@ def main() -> None:
                     args=[
                         "shellcheck",
                         fobj.name,
-                        f"--shell={MAKE_SHELL}",
+                        f"--shell={make_shell or MAKE_SHELL}",
                         "--color=always",
                     ],
                     encoding=DEFAULT_ENCODING,

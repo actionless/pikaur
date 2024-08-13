@@ -23,6 +23,7 @@ fi
 
 
 PYTHON=python3
+RUFF=ruff
 TARGET_MODULE='pikaur'
 TARGETS=(
 	'./pikaur/'
@@ -36,16 +37,6 @@ if [[ -n "${1:-}" ]] ; then
 fi
 
 
-install_ruff() {
-	if [[ ! -f "${APP_DIR}/env/bin/activate" ]] ; then
-		"$PYTHON" -m venv "${APP_DIR}/env" --system-site-packages
-		# shellcheck disable=SC1091
-		. "${APP_DIR}/env/bin/activate"
-		"$PYTHON" -m pip install ruff --upgrade
-		deactivate
-	fi
-}
-RUFF="${APP_DIR}/env/bin/ruff"
 
 
 if [[ "$FIX_MODE" -eq 1 ]] ; then
@@ -72,7 +63,6 @@ else
 	./maintenance_scripts/get_global_expressions.sh "${TARGETS[@]}"
 	echo ':: check passed ::'
 
-	install_ruff
 	echo -e "\n== Checking Ruff rules up-to-date:"
 	diff --color -u \
 		<(awk '/select = \[/,/]/' pyproject.toml \

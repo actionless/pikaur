@@ -116,12 +116,12 @@ python_import:
 non_final_globals:
 	# Checking for non-Final globals:
 	./maintenance_scripts/get_non_final_expressions.sh $(TARGETS)
-	# :: check passed ::
+	# :: non-final globals check passed ::
 
 unreasonable_globals:
 	# Checking for unreasonable global vars:
 	./maintenance_scripts/get_global_expressions.sh $(TARGETS)
-	# :: check passed ::
+	# :: global vars check passed ::
 
 ruff:
 	# Checking Ruff rules up-to-date:

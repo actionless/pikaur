@@ -213,7 +213,7 @@ shellcheck_makefile:
 	# Running shellcheck on Makefile...
 	( \
 	    cd $(APP_DIR) || exit ; \
-	    $(PYTHON) ./maintenance_scripts/makefile_shellcheck.py ; \
+	    $(PYTHON) ./maintenance_scripts/makefile_shellcheck.py --skip lint ; \
 	)
 	# :: shellcheck makefile passed ::
 

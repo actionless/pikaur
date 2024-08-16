@@ -203,28 +203,29 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
             pkg_name = f"{_color_line('aur/', ColorsHighlight.red)}{pkg_name}"
             pkg_len += len("aur/")
 
-        if pkg_update.required_by or required_by_installed:
+        def pformat_deps(required_by_names: list[str], dep_color: int) -> str:
+            if not required_by_names:
+                return ""
+            required_for_formatted = translate("for {pkg}").format(
+                pkg=_color_line(", ", dep_color).join([
+                    _color_line(name, dep_color + 8) for name in required_by_names
+                ]) + _color_line("", dep_color, reset=False),
+            )
+            return _color_line(f"({required_for_formatted})", dep_color)
+
+        if pkg_update.required_by:
             required_by_names = (
                 [p.package.name for p in pkg_update.required_by] if pkg_update.required_by else []
-            ) + (
-                pkg_update.required_by_installed
-                if (required_by_installed and pkg_update.required_by_installed)
-                else []
             )
             if required_by_names:
                 required_for = translate("for {pkg}").format(
                     pkg=", ".join(required_by_names),
                 )
-                required_by = f" ({required_for})"
-                pkg_len += len(required_by)
-                dep_color = Colors.yellow
-                required_for_formatted = translate("for {pkg}").format(
-                    pkg=_color_line(", ", dep_color).join([
-                        _color_line(name, dep_color + 8) for name in required_by_names
-                    ]) + _color_line("", dep_color, reset=False),
+                pkg_len += len(f" ({required_for})")
+                required_for_formatted = pformat_deps(
+                    required_by_names=required_by_names, dep_color=Colors.yellow,
                 )
-                required_by_formatted = _color_line(f" ({required_for_formatted})", dep_color)
-                pkg_name += required_by_formatted
+                pkg_name += f" {required_for_formatted}"
         if pkg_update.provided_by:
             provided_by = f" ({' # '.join([p.name for p in pkg_update.provided_by])})"
             pkg_len += len(provided_by)
@@ -292,7 +293,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
                 " {pkg_name}{spacing}"
                 " {current_version}{spacing2}"
                 "{version_separator}{new_version}{spacing3}"
-                "{pkg_size}{days_old}{out_of_date}{verbose}"
+                "{pkg_size}{days_old}{out_of_date}{required_by_installed}{verbose}"
             )
         ).format(
             pkg_name=pkg_name,
@@ -330,6 +331,20 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
             verbose=(
                 "" if not (verbose and pkg_update.description)
                 else f"\n{format_paragraph(pkg_update.description)}"
+            ),
+            required_by_installed=(
+                "" if not (required_by_installed and pkg_update.required_by_installed)
+                else "".join(("\n", format_paragraph(
+                    pformat_deps(
+                        required_by_names=(
+                            pkg_update.required_by_installed
+                            if (required_by_installed and pkg_update.required_by_installed)
+                            else []
+                        ),
+                        dep_color=Colors.cyan,
+                    ),
+                    padding=2,
+                )))
             ),
         ), sort_by
 

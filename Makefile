@@ -1,17 +1,10 @@
 # Licensed under GPLv3, see https://www.gnu.org/licenses/
 
-SHELL := bash
-
+# installation:
 DISTDIR := dist
 
-# locales-related:
-LANGS := fr ru pt pt_BR de is tr da nl es zh_CN it ja uk sv
-LOCALEDIR := locale
-POTFILE := $(LOCALEDIR)/pikaur.pot
-POFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po,$(LANGS)))
-POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
-MOFILES = $(POFILES:.po=.mo)
-
+# environment:
+SHELL := bash
 # A $(which python) is necessary here to avoid a bug in make
 # that would try to execute a directory named "python".
 # See https://savannah.gnu.org/bugs/?57962
@@ -21,17 +14,37 @@ $(error Can't find Python)
 endif
 MINIMAL_PYTHON_VERSION := (3, 12)
 
-# man-related:
+# locales:
+LANGS := fr ru pt pt_BR de is tr da nl es zh_CN it ja uk sv
+LOCALEDIR := locale
+POTFILE := $(LOCALEDIR)/pikaur.pot
+POFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po,$(LANGS)))
+POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
+MOFILES = $(POFILES:.po=.mo)
+
+# man:
 PIKAMAN := $(PYTHON) ./maintenance_scripts/pikaman.py
 README_FILE := README.md
 MAN_FILE := pikaur.1
 
-# lint-related:
+# lint:
 RUFF := ruff
 script_dir := $(shell readlink -e .)
 APP_DIR := $(shell readlink -e "$(script_dir)")
 TARGET_MODULE := pikaur
 TARGETS := $(APP_DIR)/pikaur/ $(APP_DIR)/pikaur_test/ $(APP_DIR)/pikaur_meta_helpers/ $(APP_DIR)/packaging/usr/bin/pikaur $(shell ls $(APP_DIR)/maintenance_scripts/*.py)
+GLOBALS_IGNORES := \
+			-e ': Final' \
+			-e ' \# nonfinal-ignore' \
+			-e ' \# checkglobals-ignore' \
+			\
+			-e TypeVar \
+			-e namedtuple \
+			\
+			-e 'create_logger\(|sudo' \
+			\
+			-e './maintenance_scripts/find_.*.py.*:.*:' \
+			-e '.SRCINFO'
 
 ################################################################################
 
@@ -115,12 +128,35 @@ python_import:
 
 non_final_globals:
 	# Checking for non-Final globals:
-	./maintenance_scripts/get_non_final_expressions.sh $(TARGETS)
+	result=$$( \
+		grep -REn "^[a-zA-Z_]+ = " $(TARGETS) --color=always \
+		| grep -Ev \
+			\
+			-e '=.*\|' \
+			-e '=.*(dict|list|Callable)\[' \
+			\
+			$(GLOBALS_IGNORES) \
+		| sort \
+	) ; \
+	echo -n "$$result" ; \
+	exit "$$(test "$$result" = "" && echo 0 || echo 1)"
 	# :: non-final globals check passed ::
 
 unreasonable_globals:
 	# Checking for unreasonable global vars:
-	./maintenance_scripts/get_global_expressions.sh $(TARGETS)
+	result=$$( \
+		grep -REn "^[a-zA-Z_]+ = [^'\"].*" $(TARGETS) --color=always \
+		| grep -Ev \
+			\
+			-e ' =.*\|' \
+			-e ' = [a-zA-Z_]+\[' \
+			-e ' = str[^(]' \
+			\
+			$(GLOBALS_IGNORES) \
+		| sort \
+	) ; \
+	echo -n "$$result" ; \
+	exit "$$(test "$$result" = "" && echo 0 || echo 1)"
 	# :: global vars check passed ::
 
 ruff:
@@ -188,7 +224,7 @@ validate_pyproject:
 		result=$$(validate-pyproject pyproject.toml 2>&1) || exit_code=$$? ; \
 		if [[ $$exit_code -gt 0 ]] ; then \
 			echo "$$result" ; \
-			exit $$exit_code ; \
+			exit "$$exit_code" ; \
 		fi \
 	)
 	# :: pyproject validation passed ::

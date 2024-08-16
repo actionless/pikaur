@@ -1,17 +1,12 @@
 #!/usr/bin/python
 
 import argparse
-import os
 import subprocess  # nosec B404
 import sys
 import tempfile
 from typing import Final
 
-if len(sys.argv) > 1:
-    MAKEFILE = sys.argv[1]
-
 DEFAULT_ENCODING: Final = "utf-8"
-MAKE_SHELL: Final = os.environ.get("MAKE_SHELL", "sh")
 # SKIP_TARGETS_WITH_CHARS = ("%", )
 SKIP_TARGETS_WITH_CHARS: Final = ("%", "/")
 SKIP_TARGETS: Final = [".PHONY", ".PRECIOUS"]
@@ -25,14 +20,23 @@ def parse_args() -> argparse.Namespace:
         description="Makefile shellcheck",
     )
     parser.add_argument(
-        "-s", "--skip",
-        action="append",
-        default=[],
-    )
-    parser.add_argument(
         "makefile",
         nargs="?",
         default="./Makefile",
+        help="path to Makefile to check",
+    )
+    parser.add_argument(
+        "-s", "--skip",
+        action="append",
+        default=[],
+        help="make target to skip (arg could be used multiple times)",
+    )
+    parser.add_argument(
+        "--shell",
+        nargs="?",
+        const="sh",
+        default="sh",
+        help="make shell",
     )
     return parser.parse_args()
 
@@ -139,7 +143,7 @@ def main() -> None:
                     args=[
                         "shellcheck",
                         fobj.name,
-                        f"--shell={make_shell or MAKE_SHELL}",
+                        f"--shell={make_shell or args.shell}",
                         "--color=always",
                     ],
                     encoding=DEFAULT_ENCODING,

@@ -235,11 +235,11 @@ def get_term_width() -> int:
     return shutil.get_terminal_size((80, 80)).columns
 
 
-def format_paragraph(line: str) -> str:
+def format_paragraph(line: str, padding: int = PADDING) -> str:
     if not color_enabled():
-        return PADDING * " " + line
+        return padding * " " + line
     term_width = get_term_width()
-    max_line_width = term_width - PADDING * 2
+    max_line_width = term_width - padding * 2
 
     result = []
     current_line: list[str] = []
@@ -255,7 +255,7 @@ def format_paragraph(line: str) -> str:
 
     return "\n".join([
         " ".join([
-            (PADDING - 1) * " ", *words, (PADDING - 1) * " ",
+            (padding - 1) * " ", *words, (padding - 1) * " ",
         ])
         for words in result
     ])

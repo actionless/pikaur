@@ -24,6 +24,7 @@ from .pikaprint import (
     print_stderr,
     print_stdout,
     print_warning,
+    printable_length,
 )
 from .version import get_common_version, get_version_diff
 
@@ -192,16 +193,11 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
                 pkg_update.name,
             )
 
-        pkg_name = pkg_update.name
-        pkg_len = len(pkg_update.name)
-
-        pkg_name = _bold_line(pkg_name)
+        pkg_name = _bold_line(pkg_update.name)
         if (print_repo or verbose) and pkg_update.repository:
             pkg_name = f"{pretty_format_repo_name(pkg_update.repository, color=color)}{pkg_name}"
-            pkg_len += len(pkg_update.repository) + 1
         elif print_repo:
             pkg_name = f"{_color_line('aur/', ColorsHighlight.red)}{pkg_name}"
-            pkg_len += len("aur/")
 
         def pformat_deps(required_by_names: list[str], dep_color: int) -> str:
             if not required_by_names:
@@ -218,27 +214,17 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
                 [p.package.name for p in pkg_update.required_by] if pkg_update.required_by else []
             )
             if required_by_names:
-                required_for = translate("for {pkg}").format(
-                    pkg=", ".join(required_by_names),
-                )
-                pkg_len += len(f" ({required_for})")
-                required_for_formatted = pformat_deps(
+                required_for_formatted = " " + pformat_deps(
                     required_by_names=required_by_names, dep_color=Colors.yellow,
                 )
-                pkg_name += f" {required_for_formatted}"
+                pkg_name += required_for_formatted
         if pkg_update.provided_by:
             provided_by = f" ({' # '.join([p.name for p in pkg_update.provided_by])})"
-            pkg_len += len(provided_by)
             pkg_name += _color_line(provided_by, Colors.green)
         if pkg_update.members_of:
             members_template = translate_many(
                 "{grp} group", "{grp} groups", len(pkg_update.members_of),
             )
-            members_list_raw = members_template.format(
-                grp=", ".join(g for g in pkg_update.members_of),
-            )
-            members_of = f" ({members_list_raw})"
-            pkg_len += len(members_of)
             members_list_formatted = members_template.format(
                 grp=_color_line(", ", GROUP_COLOR).join(
                     [_color_line(g, GROUP_COLOR + 8) for g in pkg_update.members_of],
@@ -248,7 +234,6 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
             pkg_name += _color_line(members_of_formatted, GROUP_COLOR)
         if pkg_update.replaces:
             replaces = f" (replaces {', '.join(g for g in pkg_update.replaces)})"
-            pkg_len += len(replaces)
             pkg_name += _color_line(replaces, REPLACEMENTS_COLOR)
             if not color:
                 pkg_name = f"# {pkg_name}"
@@ -270,7 +255,6 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
         ):
             orphaned_text = translate("orphaned")
             orphaned = f" [{orphaned_text}]"
-            pkg_len += len(orphaned)
             pkg_name += _color_line(orphaned, ORPHANED_COLOR)
 
         out_of_date = ""
@@ -288,12 +272,16 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
                 color_config.VersionDiffOld.get_int(),
             )
 
+        pkg_len = printable_length(pkg_name)
+
         return (
             template or (
                 " {pkg_name}{spacing}"
                 " {current_version}{spacing2}"
                 "{version_separator}{new_version}{spacing3}"
-                "{pkg_size}{days_old}{out_of_date}{required_by_installed}{verbose}"
+                "{pkg_size}{days_old}{out_of_date}"
+                "{required_by_installed}"
+                "{verbose}"
             )
         ).format(
             pkg_name=pkg_name,

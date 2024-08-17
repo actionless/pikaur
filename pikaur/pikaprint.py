@@ -258,12 +258,12 @@ def format_paragraph(line: str, padding: int = PADDING) -> str:
     current_line: list[str] = []
     line_length = 0
     for word in line.split():
-        if len(word) + line_length > max_line_width:
+        if printable_length(word) + line_length > max_line_width:
             result.append(current_line)
             current_line = []
             line_length = 0
         current_line.append(word)
-        line_length += len(word) + 1
+        line_length += printable_length(word) + 1
     result.append(current_line)
 
     return "\n".join([

@@ -235,6 +235,19 @@ def get_term_width() -> int:
     return shutil.get_terminal_size((80, 80)).columns
 
 
+def printable_length(text: str) -> int:
+    counter = 0
+    escape_seq = False
+    for char in text:
+        if not escape_seq and char in printable:
+            counter += 1
+        elif escape_seq and char == "m":
+            escape_seq = False
+        else:
+            escape_seq = True
+    return counter
+
+
 def format_paragraph(line: str, padding: int = PADDING) -> str:
     if not color_enabled():
         return padding * " " + line

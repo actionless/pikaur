@@ -3,6 +3,7 @@
 # pylint: disable=too-many-lines
 import contextlib
 import hashlib
+import itertools
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -588,6 +589,16 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 letter = answer.lower()[0]
                 if letter == translate("y"):
                     break
+                if answer in (
+                        "".join(combo)
+                        for combo in itertools.permutations((translate("v"), translate("r")))
+                ):
+                    required_by_installed = not required_by_installed
+                    verbose = not verbose
+                    answer = _confirm_sysupgrade(
+                        verbose=verbose, required_by_installed=required_by_installed,
+                    )
+                    continue
                 if letter == translate("v"):
                     verbose = not verbose
                     answer = _confirm_sysupgrade(

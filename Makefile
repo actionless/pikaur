@@ -12,7 +12,7 @@ PYTHON := $(shell which python)
 ifeq (,$(PYTHON))
 $(error Can't find Python)
 endif
-MINIMAL_PYTHON_VERSION := (3, 12)
+MINIMAL_PYTHON_VERSION := (3, 12, 3)
 
 # locales:
 LANGS := fr ru pt pt_BR de is tr da nl es zh_CN it ja uk sv

@@ -6,7 +6,7 @@ set -x
 MODE="${1:---local}"
 shift
 if [[ "$MODE" == "--help" ]] ; then
-	echo "Usage: $0 SUBMIT_COVERAGE WRITE_DB"
+	echo "Usage: $0 [SUBMIT_COVERAGE=--local] [WRITE_DB=--write-db] [TESTSUITE=all]"
 	exit 0
 fi
 
@@ -26,6 +26,7 @@ shift
 #    exit 1
 #}
 
+echo > pikaur_test_times.txt
 if [[ "$TESTSUITE" = "all" ]] ; then
 	coverage run --source=pikaur -m unittest -v
 else
@@ -38,3 +39,10 @@ else
 	coverage report
 	coverage html
 fi
+
+echo
+echo
+echo
+echo
+echo " :: Top 50 of the slowest testcases:"
+sort -rn pikaur_test_times.txt | head -n 50

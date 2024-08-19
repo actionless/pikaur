@@ -28,8 +28,8 @@ class InstallTest(PikaurDbTestCase):
 
     def test_aur_package_with_aur_dep(self):
         # python -m pikaur_meta_helpers.find_aur_pkgs_with_aur_deps
-        pkg_name = "python-elmextensions"
-        dep_name = "python-efl"
+        pkg_name = "python-infi.unittest"
+        dep_name = "python-infi"
         self.remove_if_installed(pkg_name, dep_name)
 
         pikaur(f"-S {pkg_name} --mflags=--skippgpcheck")

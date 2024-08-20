@@ -50,9 +50,8 @@ RUN echo ">>>> Installing opt deps:" && \
 COPY ./pikaur_meta_helpers /opt/app-build/pikaur_meta_helpers
 #RUN sudo -u user python -um pikaur_meta_helpers.pidowngrade python-coverage '7.4.1-1'  # up to 7.4.4
 RUN echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -S --noconfirm --needed --color=always iputils python-virtualenv python-tqdm \
-		ruff flake8 python-pylint mypy vulture bandit shellcheck # @TODO: python-coveralls is temporary broken
-#RUN sudo -u user python -um pikaur_meta_helpers.pidowngrade python-pycodestyle '2.9.1-2'
+	sudo -u user pikaur -Syu --noconfirm --needed --color=always iputils python-virtualenv python-tqdm \
+		ruff flake8 python-pylint mypy vulture bandit shellcheck python-coveralls
 
 COPY ./pikaur_test /opt/app-build/pikaur_test
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/

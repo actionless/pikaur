@@ -326,17 +326,21 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
             ),
             required_by_installed=(
                 "".join((
-                    "".join(("\n", format_paragraph(
-                        pformat_deps(
-                            required_by_names=items or [],
-                            dep_color=color,
-                            template=template,
-                        ),
-                        padding=2,
-                    )))
+                    part
                     for template, color, items in (
                         ("required by {pkg}", Colors.cyan, pkg_update.required_by_installed),
                         ("optional for {pkg}", Colors.purple, pkg_update.optional_for_installed),
+                    )
+                    for part in (
+                        "\n",
+                        *format_paragraph(
+                            pformat_deps(
+                                required_by_names=items or [],
+                                dep_color=color,
+                                template=template,
+                            ),
+                            padding=2,
+                        ),
                     )
                     if (required_by_installed and items)
                 ))

@@ -756,7 +756,8 @@ Gonna fetch install info for:
             ):
                 req = local_pkg.compute_requiredby()
                 opt = local_pkg.compute_optionalfor()
-                pkg_install_info.required_by_installed = (req or []) + (opt or [])
+                pkg_install_info.required_by_installed = req or []
+                pkg_install_info.optional_for_installed = opt or []
 
         logger.debug("== marked dependant pkgs.")
 

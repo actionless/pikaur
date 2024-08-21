@@ -199,10 +199,14 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
         elif print_repo:
             pkg_name = f"{_color_line('aur/', ColorsHighlight.red)}{pkg_name}"
 
-        def pformat_deps(required_by_names: list[str], dep_color: int) -> str:
+        def pformat_deps(
+                required_by_names: list[str],
+                dep_color: int,
+                template: str = translate("for {pkg}"),
+        ) -> str:
             if not required_by_names:
                 return ""
-            required_for_formatted = translate("for {pkg}").format(
+            required_for_formatted = template.format(
                 pkg=_color_line(", ", dep_color).join([
                     _color_line(name, dep_color + 8) for name in required_by_names
                 ]) + _color_line("", dep_color, reset=False),
@@ -321,18 +325,21 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
                 else f"\n{format_paragraph(pkg_update.description)}"
             ),
             required_by_installed=(
-                "" if not (required_by_installed and pkg_update.required_by_installed)
-                else "".join(("\n", format_paragraph(
-                    pformat_deps(
-                        required_by_names=(
-                            pkg_update.required_by_installed
-                            if (required_by_installed and pkg_update.required_by_installed)
-                            else []
+                "".join((
+                    "".join(("\n", format_paragraph(
+                        pformat_deps(
+                            required_by_names=items or [],
+                            dep_color=color,
+                            template=template,
                         ),
-                        dep_color=Colors.cyan,
-                    ),
-                    padding=2,
-                )))
+                        padding=2,
+                    )))
+                    for template, color, items in (
+                        ("required by {pkg}", Colors.cyan, pkg_update.required_by_installed),
+                        ("optional for {pkg}", Colors.purple, pkg_update.optional_for_installed),
+                    )
+                    if (required_by_installed and items)
+                ))
             ),
         ), sort_by
 

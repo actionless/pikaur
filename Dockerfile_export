@@ -36,7 +36,7 @@ RUN git clone https://github.com/actionless/pikaur.git /opt/app-build/
 RUN	echo ">>>> Starting the build:" && \
 	./maintenance_scripts/changelog.sh > CHANGELOG && \
 	sudo -u user makepkg -fsi --noconfirm && \
-	rm -fr ./src/ ./pkg/
+	rm -fr /opt/app-build/pikaur
 # Workaround for broken coveralls v1:
 #COPY ./pikaur_meta_helpers /opt/app-build/pikaur_meta_helpers
 #RUN sudo -u user python -um pikaur_meta_helpers.pidowngrade python-coverage '7.4.1-1'  # up to 7.4.4

@@ -59,10 +59,10 @@ def open_file(
         encoding = detect_bom_type(file_path)
     try:
         if encoding:
-            return codecs.open(
+            return codecs.open(  # noqa: SIM115
                 str(file_path), mode, errors="ignore", encoding=encoding,
             )
-        return codecs.open(
+        return codecs.open(  # noqa: SIM115
             str(file_path), mode, errors="ignore",
         )
     except PermissionError:

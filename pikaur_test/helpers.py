@@ -124,8 +124,8 @@ class InterceptSysOutput:
         self.capture_stdout = capture_stdout
         self.capture_stderr = capture_stderr
 
-        self.out_file = out_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
-        self.err_file = err_file = tempfile.TemporaryFile("w+", encoding="UTF-8")
+        self.out_file = out_file = tempfile.TemporaryFile("w+", encoding="UTF-8")  # noqa: SIM115
+        self.err_file = err_file = tempfile.TemporaryFile("w+", encoding="UTF-8")  # noqa: SIM115
         self.out_file.isatty = lambda: False  # type: ignore[method-assign]
         self.err_file.isatty = lambda: False  # type: ignore[method-assign]
 

@@ -13,9 +13,6 @@ from .args import parse_args, reconstruct_args
 from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
 from .config import DiffPagerValues, PikaurConfig, UsingDynamicUsers
 from .conflicts import find_aur_conflicts
-from .core import (
-    interactive_spawn,
-)
 from .exceptions import (
     BuildError,
     CloneError,
@@ -67,6 +64,9 @@ from .prompt import (
     get_input,
     retry_interactive_command,
     retry_interactive_command_or_exit,
+)
+from .spawn import (
+    interactive_spawn,
 )
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg

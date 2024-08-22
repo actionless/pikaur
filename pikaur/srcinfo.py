@@ -4,13 +4,13 @@ import shutil
 from pathlib import Path
 
 from .config import BuildCachePath, CacheRoot, UsingDynamicUsers
-from .core import spawn
 from .exceptions import SysExit
 from .i18n import translate
 from .makepkg_config import MakePkgCommand, MakepkgConfig
 from .os_utils import chown_to_current, open_file
 from .pikaprint import print_error, print_stderr
 from .privilege import isolate_root_cmd
+from .spawn import spawn
 from .version import VersionMatcher
 
 

@@ -18,12 +18,6 @@ from .config import (
     PikaurConfig,
     UsingDynamicUsers,
 )
-from .core import (
-    PIPE,
-    interactive_spawn,
-    joined_spawn,
-    spawn,
-)
 from .exceptions import (
     BuildError,
     CloneError,
@@ -66,6 +60,12 @@ from .prompt import (
     get_input,
     retry_interactive_command_or_exit,
 )
+from .spawn import (
+    PIPE,
+    interactive_spawn,
+    joined_spawn,
+    spawn,
+)
 from .srcinfo import SrcInfo
 from .updates import is_devel_pkg
 from .urllib_helper import wrap_proxy_env
@@ -75,8 +75,8 @@ if TYPE_CHECKING:
     from typing import Final
 
     from .args import PikaurArgs
-    from .core import InteractiveSpawn, SpawnArgs
     from .pacman import ProvidedDependency
+    from .spawn import InteractiveSpawn, SpawnArgs
 
 logger = create_logger("build")
 

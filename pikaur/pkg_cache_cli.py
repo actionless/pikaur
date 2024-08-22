@@ -1,6 +1,5 @@
 from .args import parse_args, reconstruct_args
 from .config import BuildCachePath, PackageCachePath, PikaurConfig
-from .core import interactive_spawn
 from .exceptions import SysExit
 from .i18n import translate
 from .logging_extras import create_logger
@@ -9,6 +8,7 @@ from .pikaprint import ColorsHighlight, bold_line, color_line, print_stdout
 from .pikspect import YesNo, format_pacman_question, pikspect
 from .privilege import sudo
 from .prompt import ask_to_continue
+from .spawn import interactive_spawn
 
 _debug = create_logger("pkg_cache_cli").debug
 

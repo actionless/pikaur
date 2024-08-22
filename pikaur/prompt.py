@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 
 from .args import LiteralArgs, parse_args
 from .config import PikaurConfig, PromptLockPath
-from .core import InteractiveSpawn, interactive_spawn
 from .exceptions import SysExit
 from .filelock import FileLock
 from .i18n import translate
@@ -25,6 +24,7 @@ from .pikaprint import (
 from .pikspect import PikspectPopen, ReadlineKeycodes, TTYInputWrapper
 from .pikspect import pikspect as pikspect_spawn
 from .privilege import isolate_root_cmd
+from .spawn import InteractiveSpawn, interactive_spawn
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence

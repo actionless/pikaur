@@ -10,9 +10,9 @@ from .args import (
     reconstruct_args,
 )
 from .config import PikaurConfig
-from .core import spawn
 from .i18n import PIKAUR_NAME, translate
 from .pikaprint import print_stdout
+from .spawn import spawn
 
 if TYPE_CHECKING:
     from typing import Final

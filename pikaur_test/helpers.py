@@ -15,12 +15,12 @@ from pycman.config import PacmanConfig
 
 from pikaur.args import CachedArgs, parse_args
 from pikaur.config import DEFAULT_INPUT_ENCODING
-from pikaur.core import InteractiveSpawn
-from pikaur.core import spawn as core_spawn
 from pikaur.main import main
 from pikaur.makepkg_config import MakePkgCommand
 from pikaur.pacman import PackageDB
 from pikaur.pikaprint import color_line, get_term_width
+from pikaur.spawn import InteractiveSpawn
+from pikaur.spawn import spawn as core_spawn
 from pikaur.srcinfo import SrcInfo
 
 if TYPE_CHECKING:
@@ -140,7 +140,7 @@ class InterceptSysOutput:
         if self.capture_stderr:
             self._patcher_stderr = mock.patch("sys.stderr", new=self.err_file)
         self._patcher_exit = mock.patch("sys.exit", new=self._fake_exit)
-        self._patcher_spawn = mock.patch("pikaur.core.InteractiveSpawn", new=PrintInteractiveSpawn)
+        self._patcher_spawn = mock.patch("pikaur.spawn.InteractiveSpawn", new=PrintInteractiveSpawn)
 
         self.patchers = [
             self._patcher_stdout,

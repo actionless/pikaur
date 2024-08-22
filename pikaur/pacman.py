@@ -10,7 +10,6 @@ import pyalpm
 from .alpm import PyAlpmWrapper
 from .args import PACMAN_APPEND_OPTS, get_pacman_str_opts, parse_args, reconstruct_args
 from .config import PikaurConfig
-from .core import spawn
 from .exceptions import DependencyError, PackagesNotFoundInRepoError
 from .i18n import translate
 from .lock import FancyLock
@@ -21,6 +20,7 @@ from .pikatypes import DataType, PackageSource
 from .privilege import sudo
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .provider import Provider
+from .spawn import spawn
 from .version import VersionMatcher
 
 if TYPE_CHECKING:

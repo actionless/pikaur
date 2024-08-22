@@ -28,10 +28,6 @@ from .config import (
     _OldAurReposCachePath,
     _UserCacheRoot,
 )
-from .core import (
-    interactive_spawn,
-    spawn,
-)
 from .exceptions import SysExit
 from .getpkgbuild_cli import cli_getpkgbuild
 from .help_cli import cli_print_help
@@ -57,6 +53,10 @@ from .privilege import (
 )
 from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .search_cli import cli_search_packages, search_packages
+from .spawn import (
+    interactive_spawn,
+    spawn,
+)
 from .updates import print_upgradeable
 from .urllib_helper import ProxyInitSocks5Error, init_proxy
 from .version import split_version

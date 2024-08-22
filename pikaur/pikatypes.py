@@ -4,12 +4,93 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 from .config import PikaurConfig
-from .core import DataType
+from .i18n import translate
+from .pikaprint import print_error
 
 if TYPE_CHECKING:
     from typing import Any
 
     from .srcinfo import SrcInfo
+
+
+class ComparableType:
+
+    __ignore_in_eq__: tuple[str, ...] = ()
+
+    __hash__ = object.__hash__
+    __compare_stack__: list["ComparableType"] | None = None
+
+    @property
+    def public_values(self) -> dict[str, "Any"]:
+        return {
+            var: val for var, val in vars(self).items()
+            if not var.startswith("__")
+        }
+
+    def __eq__(self, other: "ComparableType") -> bool:  # type: ignore[override]
+        if not isinstance(other, self.__class__):
+            return False
+        if not self.__compare_stack__:
+            self.__compare_stack__ = []
+        elif other in self.__compare_stack__:
+            return super().__eq__(other)
+        self.__compare_stack__.append(other)
+        self_values = {}
+        self_values.update(self.public_values)
+        others_values = {}
+        others_values.update(other.public_values)
+        for values in (self_values, others_values):
+            for skip_prop in self.__ignore_in_eq__:
+                if skip_prop in values:
+                    del values[skip_prop]
+        result = self_values == others_values
+        self.__compare_stack__ = None
+        return result
+
+
+class DataType(ComparableType):
+
+    ignore_extra_properties: bool
+
+    @property
+    def __all_annotations__(self) -> dict[str, type]:  # noqa: PLW3201
+        annotations: dict[str, type] = {}
+        for parent_class in reversed(self.__class__.mro()):
+            annotations.update(**getattr(parent_class, "__annotations__", {}))
+        return annotations
+
+    def _key_exists(self, key: str) -> bool:
+        return key in dir(self)
+
+    def __init__(self, *, ignore_extra_properties: bool = False, **kwargs: "Any") -> None:
+        self.ignore_extra_properties = ignore_extra_properties
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        for key in self.__all_annotations__:
+            if not self._key_exists(key):
+                missing_required_attribute = translate(
+                    "'{class_name}' does not have required attribute '{key}' set.",
+                ).format(
+                    class_name=self.__class__.__name__, key=key,
+                )
+                raise TypeError(missing_required_attribute)
+
+    def __setattr__(self, key: str, value: "Any") -> None:
+        if not (
+            (
+                key in self.__all_annotations__
+            ) or self._key_exists(key)
+        ):
+            unknown_attribute = translate(
+                "'{class_name}' does not have attribute '{key}' defined.",
+            ).format(
+                class_name=self.__class__.__name__, key=key,
+            )
+            if self.ignore_extra_properties:
+                print_error(unknown_attribute)
+            else:
+                raise TypeError(unknown_attribute)
+        super().__setattr__(key, value)
 
 
 class AurBaseUrl:

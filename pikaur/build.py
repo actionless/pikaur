@@ -20,7 +20,6 @@ from .config import (
 )
 from .core import (
     PIPE,
-    DataType,
     chown_to_current,
     dirname,
     interactive_spawn,
@@ -54,6 +53,7 @@ from .pikaprint import (
     print_stderr,
     print_stdout,
 )
+from .pikatypes import DataType
 from .privilege import (
     isolate_root_cmd,
     sudo,

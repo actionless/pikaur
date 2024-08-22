@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING
 
-from .core import DataType
+from .pikatypes import DataType
 
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import

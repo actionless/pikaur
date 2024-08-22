@@ -17,7 +17,6 @@ from typing import TYPE_CHECKING
 import pyalpm
 
 from .args import parse_args
-from .aur_types import AURPackageInfo
 from .config import (
     AurReposCachePath,
     CacheRoot,
@@ -44,6 +43,7 @@ from .install_cli import InstallPackagesCLI
 from .logging_extras import create_logger
 from .pacman import PackageDB
 from .pikaprint import TTYRestore, bold_line, print_error, print_stderr, print_warning
+from .pikatypes import AURPackageInfo
 from .pikspect import PikspectSignalHandler
 from .pkg_cache_cli import cli_clean_packages_cache
 from .print_department import print_version

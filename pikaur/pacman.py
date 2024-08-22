@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from re import Pattern
     from typing import Final
 
-    from .aur_types import AURPackageInfo
+    from .pikatypes import AURPackageInfo
 
 
 REPO_NAME_DELIMITER: "Final" = "/"

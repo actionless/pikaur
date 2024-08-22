@@ -5,7 +5,7 @@ from typing import TypedDict
 
 import tqdm  # type: ignore[import-untyped]
 
-from pikaur.aur_types import AURPackageInfo
+from pikaur.pikatypes import AURPackageInfo
 from pikaur.version import VersionMatcher
 from pikaur_meta_helpers.util import load_aur_dump
 

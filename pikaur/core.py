@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import TypedDict
 
-    from .aur_types import AURPackageInfo
+    from .pikatypes import AURPackageInfo
 
     IOStream = IO[bytes] | int | None
 

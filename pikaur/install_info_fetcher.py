@@ -9,7 +9,6 @@ from .alpm import OFFICIAL_REPOS, PacmanConfig
 from .args import parse_args, reconstruct_args
 from .aur import find_aur_packages, find_aur_provided_deps, strip_aur_repo_name
 from .aur_deps import find_aur_deps, find_repo_deps_of_aur_pkgs
-from .aur_types import AURPackageInfo
 from .core import AURInstallInfo, ComparableType, PackageSource, RepoInstallInfo
 from .exceptions import DependencyError, DependencyVersionMismatchError, SysExit
 from .i18n import translate
@@ -22,6 +21,7 @@ from .pacman import (
     strip_repo_name,
 )
 from .pikaprint import print_error, print_stderr, print_stdout
+from .pikatypes import AURPackageInfo
 from .print_department import print_ignored_package, print_not_found_packages
 from .prompt import ask_to_continue
 from .replacements import find_replacements

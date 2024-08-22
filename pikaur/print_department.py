@@ -10,7 +10,6 @@ import pyalpm
 
 from .alpm import OFFICIAL_REPOS, PyAlpmWrapper
 from .args import parse_args
-from .aur_types import AURPackageInfo
 from .config import VERSION, AurSearchSortingValues, PikaurConfig, UpgradeSortingValues
 from .core import DEFAULT_TIMEZONE, InstallInfo
 from .i18n import translate, translate_many
@@ -26,6 +25,7 @@ from .pikaprint import (
     print_warning,
     printable_length,
 )
+from .pikatypes import AURPackageInfo
 from .version import get_common_version, get_version_diff
 
 if TYPE_CHECKING:

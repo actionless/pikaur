@@ -10,8 +10,8 @@ from .version import VersionMatcher
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from .aur_types import AURPackageInfo
     from .core import AURInstallInfo
+    from .pikatypes import AURPackageInfo
 
 
 def get_new_repo_pkgs_conflicts(repo_packages: list[str]) -> dict[str, list[str]]:

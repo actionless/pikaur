@@ -17,7 +17,7 @@ from .pikaprint import print_error
 from .version import VersionMatcher
 
 if TYPE_CHECKING:
-    from .aur_types import AURPackageInfo
+    from .pikatypes import AURPackageInfo
 
 
 logger = create_logger("aur_deps")

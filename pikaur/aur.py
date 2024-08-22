@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, ClassVar
 from urllib import parse
 from urllib.parse import quote
 
-from .aur_types import AurBaseUrl, AURPackageInfo
 from .exceptions import AURError
 from .logging_extras import create_logger
+from .pikatypes import AurBaseUrl, AURPackageInfo
 from .progressbar import ThreadSafeProgressBar
 from .provider import Provider
 from .urllib_helper import get_gzip_from_url, get_json_from_url

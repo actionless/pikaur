@@ -30,8 +30,8 @@ if TYPE_CHECKING:
 
     import pyalpm
 
-    from .aur_types import AURPackageInfo
     from .core import InstallInfo
+    from .pikatypes import AURPackageInfo
 
 
 DEVEL_PKGS_POSTFIXES: "Final" = (

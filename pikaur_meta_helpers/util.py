@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Final
 
 from pikaur.aur import get_all_aur_packages
-from pikaur.aur_types import AURPackageInfo
+from pikaur.pikatypes import AURPackageInfo
 
 PICKLE_FILE: Final = Path("aur_db.dump")
 

@@ -20,14 +20,8 @@ from .config import (
 )
 from .core import (
     PIPE,
-    chown_to_current,
-    dirname,
     interactive_spawn,
     joined_spawn,
-    mkdir,
-    open_file,
-    remove_dir,
-    replace_file,
     spawn,
 )
 from .exceptions import (
@@ -42,6 +36,14 @@ from .filelock import FileLock
 from .i18n import translate, translate_many
 from .logging_extras import create_logger
 from .makepkg_config import MakePkgCommand, MakepkgConfig, get_pkgdest
+from .os_utils import (
+    chown_to_current,
+    dirname,
+    mkdir,
+    open_file,
+    remove_dir,
+    replace_file,
+)
 from .pacman import PackageDB, get_pacman_command, install_built_deps
 from .pikaprint import (
     ColorsHighlight,

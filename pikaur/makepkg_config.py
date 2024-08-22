@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from .args import parse_args
 from .config import ConfigRoot, UsingDynamicUsers, _UserTempRoot
-from .core import open_file
+from .os_utils import open_file
 
 if TYPE_CHECKING:
     from typing import Final, TypeVar

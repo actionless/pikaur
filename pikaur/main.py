@@ -18,6 +18,7 @@ import pyalpm
 
 from .args import parse_args
 from .config import (
+    DEFAULT_INPUT_ENCODING,
     AurReposCachePath,
     CacheRoot,
     DataRoot,
@@ -28,10 +29,7 @@ from .config import (
     _UserCacheRoot,
 )
 from .core import (
-    DEFAULT_INPUT_ENCODING,
-    check_executables,
     interactive_spawn,
-    mkdir,
     spawn,
 )
 from .exceptions import SysExit
@@ -41,6 +39,10 @@ from .i18n import translate
 from .info_cli import cli_info_packages
 from .install_cli import InstallPackagesCLI
 from .logging_extras import create_logger
+from .os_utils import (
+    check_executables,
+    mkdir,
+)
 from .pacman import PackageDB
 from .pikaprint import TTYRestore, bold_line, print_error, print_stderr, print_warning
 from .pikatypes import AURPackageInfo

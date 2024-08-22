@@ -1,6 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import configparser
+import datetime
 import os
 import random
 import sys
@@ -28,6 +29,17 @@ if TYPE_CHECKING:
         old_default: NotRequired[str]
         deprecated: NotRequired[DeprecatedConfigValue]
         migrated: NotRequired[bool]
+
+
+VERSION: "Final" = "1.24-dev"
+
+DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
+DEFAULT_INPUT_ENCODING: "Final" = "utf-8"
+DEFAULT_TIMEZONE: "Final" = datetime.datetime.now().astimezone().tzinfo
+
+BOOL: "Final" = "bool"
+INT: "Final" = "int"
+STR: "Final" = "str"
 
 
 class IntOrBoolSingleton(int):
@@ -99,14 +111,6 @@ def pre_arg_parser(key: str, fallback: str) -> str:
     if found:
         return found[0]
     return fallback
-
-
-VERSION: "Final" = "1.24-dev"
-
-DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
-BOOL: "Final" = "bool"
-INT: "Final" = "int"
-STR: "Final" = "str"
 
 
 class CustomUserId(IntOrBoolSingleton):

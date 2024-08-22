@@ -9,10 +9,10 @@ try:
 except ModuleNotFoundError:
     from xml.etree.ElementTree import fromstring  # nosec B405  # noqa: S405
 
-from .config import CacheRoot, PikaurConfig
-from .core import DEFAULT_TIMEZONE, open_file
+from .config import DEFAULT_TIMEZONE, CacheRoot, PikaurConfig
 from .i18n import translate
 from .logging_extras import create_logger
+from .os_utils import open_file
 from .pacman import PackageDB
 from .pikaprint import (
     BOLD_RESET,

@@ -10,8 +10,13 @@ import pyalpm
 
 from .alpm import OFFICIAL_REPOS, PyAlpmWrapper
 from .args import parse_args
-from .config import VERSION, AurSearchSortingValues, PikaurConfig, UpgradeSortingValues
-from .core import DEFAULT_TIMEZONE
+from .config import (
+    DEFAULT_TIMEZONE,
+    VERSION,
+    AurSearchSortingValues,
+    PikaurConfig,
+    UpgradeSortingValues,
+)
 from .i18n import translate, translate_many
 from .pikaprint import (
     Colors,

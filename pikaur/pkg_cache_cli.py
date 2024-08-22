@@ -1,9 +1,10 @@
 from .args import parse_args, reconstruct_args
 from .config import BuildCachePath, PackageCachePath, PikaurConfig
-from .core import interactive_spawn, remove_dir
+from .core import interactive_spawn
 from .exceptions import SysExit
 from .i18n import translate
 from .logging_extras import create_logger
+from .os_utils import remove_dir
 from .pikaprint import ColorsHighlight, bold_line, color_line, print_stdout
 from .pikspect import YesNo, format_pacman_question, pikspect
 from .privilege import sudo

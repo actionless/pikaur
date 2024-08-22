@@ -14,7 +14,8 @@ from unittest.runner import TextTestResult
 from pycman.config import PacmanConfig
 
 from pikaur.args import CachedArgs, parse_args
-from pikaur.core import DEFAULT_INPUT_ENCODING, InteractiveSpawn
+from pikaur.config import DEFAULT_INPUT_ENCODING
+from pikaur.core import InteractiveSpawn
 from pikaur.core import spawn as core_spawn
 from pikaur.main import main
 from pikaur.makepkg_config import MakePkgCommand

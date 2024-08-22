@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING
 from .alpm import PacmanConfig
 from .args import parse_args
 from .aur import find_aur_packages
-from .config import PikaurConfig
-from .core import DEFAULT_TIMEZONE
+from .config import DEFAULT_TIMEZONE, PikaurConfig
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate, translate_many
 from .pacman import (

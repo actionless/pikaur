@@ -4,7 +4,8 @@ from unicodedata import east_asian_width
 
 from .args import parse_args, reconstruct_args
 from .aur import find_aur_packages, get_all_aur_names
-from .core import DEFAULT_TIMEZONE, spawn
+from .config import DEFAULT_TIMEZONE
+from .core import spawn
 from .i18n import translate
 from .pacman import get_pacman_command, refresh_pkg_db_if_needed
 from .pacman_i18n import _p

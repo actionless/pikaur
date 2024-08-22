@@ -24,7 +24,7 @@ from tty import setraw, tcgetattr, tcsetattr  # type: ignore[attr-defined]
 from typing import TYPE_CHECKING
 
 from .args import parse_args
-from .core import DEFAULT_INPUT_ENCODING
+from .config import DEFAULT_INPUT_ENCODING
 from .i18n import translate
 from .logging_extras import create_logger
 from .pacman_i18n import _p

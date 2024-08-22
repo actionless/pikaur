@@ -3,8 +3,8 @@
 
 from unittest import TestCase
 
-from pikaur.core import open_file
 from pikaur.news import News
+from pikaur.os_utils import open_file
 from pikaur_test.helpers import InterceptSysOutput
 
 

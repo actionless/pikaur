@@ -14,10 +14,7 @@ from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
 from .config import DiffPagerValues, PikaurConfig, UsingDynamicUsers
 from .conflicts import find_aur_conflicts
 from .core import (
-    chown_to_current,
     interactive_spawn,
-    open_file,
-    remove_dir,
 )
 from .exceptions import (
     BuildError,
@@ -33,6 +30,11 @@ from .i18n import translate
 from .install_info_fetcher import InstallInfoFetcher
 from .logging_extras import create_logger
 from .news import News
+from .os_utils import (
+    chown_to_current,
+    open_file,
+    remove_dir,
+)
 from .pacman import (
     PackageDB,
     get_pacman_command,

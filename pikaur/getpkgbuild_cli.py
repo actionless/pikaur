@@ -5,9 +5,10 @@ from typing import TYPE_CHECKING
 from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
 from .aur_deps import get_aur_deps_list
-from .core import check_executables, interactive_spawn
+from .core import interactive_spawn
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate
+from .os_utils import check_executables
 from .pacman import PackageDB
 from .pikaprint import print_stdout
 from .pikatypes import AURPackageInfo

@@ -14,7 +14,6 @@ from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
 from .config import DiffPagerValues, PikaurConfig, UsingDynamicUsers
 from .conflicts import find_aur_conflicts
 from .core import (
-    PackageSource,
     chown_to_current,
     interactive_spawn,
     open_file,
@@ -51,7 +50,7 @@ from .pikaprint import (
     print_stdout,
     print_warning,
 )
-from .pikatypes import AURPackageInfo
+from .pikatypes import AURPackageInfo, PackageSource
 from .print_department import (
     pretty_format_sysupgrade,
     print_not_found_packages,

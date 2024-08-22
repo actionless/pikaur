@@ -5,8 +5,9 @@
 from typing import TYPE_CHECKING
 
 from pikaur.aur import find_aur_packages
-from pikaur.core import ComparableType, DataType, InstallInfo, PackageSource
+from pikaur.core import ComparableType, DataType
 from pikaur.pacman import PackageDB
+from pikaur.pikatypes import InstallInfo, PackageSource
 from pikaur_test.helpers import InterceptSysOutput, PikaurTestCase
 
 if TYPE_CHECKING:

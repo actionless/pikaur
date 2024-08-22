@@ -4,7 +4,6 @@ from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING
 
 from .aur import find_aur_packages, find_aur_provided_deps
-from .core import PackageSource
 from .exceptions import (
     DependencyVersionMismatchError,
     PackagesNotFoundInAURError,
@@ -14,6 +13,7 @@ from .i18n import translate
 from .logging_extras import create_logger
 from .pacman import PackageDB
 from .pikaprint import print_error
+from .pikatypes import PackageSource
 from .version import VersionMatcher
 
 if TYPE_CHECKING:

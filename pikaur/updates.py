@@ -7,7 +7,7 @@ from .alpm import PacmanConfig
 from .args import parse_args
 from .aur import find_aur_packages
 from .config import PikaurConfig
-from .core import DEFAULT_TIMEZONE, AURInstallInfo, RepoInstallInfo
+from .core import DEFAULT_TIMEZONE
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate, translate_many
 from .pacman import (
@@ -17,6 +17,7 @@ from .pacman import (
     get_ignored_pkgnames_from_patterns,
 )
 from .pikaprint import print_stderr, print_stdout
+from .pikatypes import AURInstallInfo, RepoInstallInfo
 from .print_department import (
     pretty_format_upgradeable,
     print_ignored_package,
@@ -30,8 +31,7 @@ if TYPE_CHECKING:
 
     import pyalpm
 
-    from .core import InstallInfo
-    from .pikatypes import AURPackageInfo
+    from .pikatypes import AURPackageInfo, InstallInfo
 
 
 DEVEL_PKGS_POSTFIXES: "Final" = (

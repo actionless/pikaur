@@ -1,4 +1,7 @@
+import enum
 from typing import TYPE_CHECKING
+
+import pyalpm
 
 from .config import PikaurConfig
 from .core import DataType
@@ -17,6 +20,55 @@ class AurBaseUrl:
         if not cls.aur_base_url:
             cls.aur_base_url = PikaurConfig().network.AurUrl.get_str()
         return cls.aur_base_url
+
+
+class PackageSource(enum.Enum):
+    REPO = enum.auto()
+    AUR = enum.auto()
+    LOCAL = enum.auto()
+
+
+class InstallInfo(DataType):
+    name: str
+    current_version: str
+    new_version: str
+    description: str | None = None
+    maintainer: str | None = None
+    repository: str | None = None
+    devel_pkg_age_days: int | None = None
+    package: "pyalpm.Package | AURPackageInfo"
+    provided_by: list["pyalpm.Package | AURPackageInfo"] | None = None
+    required_by: list["InstallInfo"] | None = None
+    required_by_installed: list[str] | None = None
+    optional_for_installed: list[str] | None = None
+    members_of: list[str] | None = None
+    replaces: list[str] | None = None
+    pkgbuild_path: str | None = None
+
+    __ignore_in_eq__ = (
+        "package", "provided_by", "pkgbuild_path",
+        "required_by_installed", "optional_for_installed",
+    )
+
+    @property
+    def package_source(self) -> PackageSource:
+        if isinstance(self.package, pyalpm.Package):
+            return PackageSource.REPO
+        return PackageSource.AUR
+
+    def __repr__(self) -> str:
+        return (
+            f'<{self.__class__.__name__} "{self.name}" '
+            f"{self.current_version} -> {self.new_version}>"
+        )
+
+
+class RepoInstallInfo(InstallInfo):
+    package: "pyalpm.Package"
+
+
+class AURInstallInfo(InstallInfo):
+    package: "AURPackageInfo"
 
 
 class AURPackageInfo(DataType):

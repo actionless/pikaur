@@ -2,7 +2,6 @@
 
 import codecs
 import datetime
-import enum
 import os
 import shutil
 import subprocess  # nosec B404  # noqa: S404
@@ -10,8 +9,6 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
-
-import pyalpm
 
 from .args import parse_args
 from .i18n import translate
@@ -24,8 +21,6 @@ if TYPE_CHECKING:
     from typing import IO, Any, Final, NotRequired
 
     from typing_extensions import TypedDict
-
-    from .pikatypes import AURPackageInfo
 
     IOStream = IO[bytes] | int | None
 
@@ -120,55 +115,6 @@ class DataType(ComparableType):
             else:
                 raise TypeError(unknown_attribute)
         super().__setattr__(key, value)
-
-
-class PackageSource(enum.Enum):
-    REPO = enum.auto()
-    AUR = enum.auto()
-    LOCAL = enum.auto()
-
-
-class InstallInfo(DataType):
-    name: str
-    current_version: str
-    new_version: str
-    description: str | None = None
-    maintainer: str | None = None
-    repository: str | None = None
-    devel_pkg_age_days: int | None = None
-    package: "pyalpm.Package | AURPackageInfo"
-    provided_by: list["pyalpm.Package | AURPackageInfo"] | None = None
-    required_by: list["InstallInfo"] | None = None
-    required_by_installed: list[str] | None = None
-    optional_for_installed: list[str] | None = None
-    members_of: list[str] | None = None
-    replaces: list[str] | None = None
-    pkgbuild_path: str | None = None
-
-    __ignore_in_eq__ = (
-        "package", "provided_by", "pkgbuild_path",
-        "required_by_installed", "optional_for_installed",
-    )
-
-    @property
-    def package_source(self) -> PackageSource:
-        if isinstance(self.package, pyalpm.Package):
-            return PackageSource.REPO
-        return PackageSource.AUR
-
-    def __repr__(self) -> str:
-        return (
-            f'<{self.__class__.__name__} "{self.name}" '
-            f"{self.current_version} -> {self.new_version}>"
-        )
-
-
-class RepoInstallInfo(InstallInfo):
-    package: "pyalpm.Package"
-
-
-class AURInstallInfo(InstallInfo):
-    package: "AURPackageInfo"
 
 
 class InteractiveSpawn(subprocess.Popen[bytes]):

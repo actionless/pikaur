@@ -7,7 +7,8 @@ from .core import DataType
 if TYPE_CHECKING:
     # pylint: disable=cyclic-import
     from .build import PackageBuild
-    from .core import InteractiveSpawn, PackageSource
+    from .core import InteractiveSpawn
+    from .pikatypes import PackageSource
     from .version import VersionMatcher
 
 

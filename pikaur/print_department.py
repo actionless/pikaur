@@ -11,7 +11,7 @@ import pyalpm
 from .alpm import OFFICIAL_REPOS, PyAlpmWrapper
 from .args import parse_args
 from .config import VERSION, AurSearchSortingValues, PikaurConfig, UpgradeSortingValues
-from .core import DEFAULT_TIMEZONE, InstallInfo
+from .core import DEFAULT_TIMEZONE
 from .i18n import translate, translate_many
 from .pikaprint import (
     Colors,
@@ -25,7 +25,7 @@ from .pikaprint import (
     print_warning,
     printable_length,
 )
-from .pikatypes import AURPackageInfo
+from .pikatypes import AURPackageInfo, InstallInfo
 from .version import get_common_version, get_version_diff
 
 if TYPE_CHECKING:
@@ -33,8 +33,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
     from typing import Final, TypeVar
 
-    from .core import AURInstallInfo, RepoInstallInfo
     from .install_info_fetcher import InstallInfoFetcher
+    from .pikatypes import AURInstallInfo, RepoInstallInfo
 
     AnyPackage = AURPackageInfo | pyalpm.Package
     InstallInfoT = TypeVar("InstallInfoT", bound=InstallInfo)

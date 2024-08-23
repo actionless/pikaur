@@ -54,7 +54,7 @@ jobs:
 
     - name: Merge Results
       run: |
-        coverage combine coverage_*
+        pwd ; ls -laho ; coverage combine coverage_*
 
     - name: Upload Coverage
       run: |

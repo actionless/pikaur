@@ -8,6 +8,17 @@ from unittest import TestLoader
 RANDOM_SEED: Final = 123
 
 
+def get_chunks(total: int, num_workers: int) -> list[int]:
+    base_amount = int(total / num_workers)
+    result = [base_amount] * num_workers
+    remaining = total - base_amount * num_workers
+    remaining_per_worker = math.ceil(remaining / num_workers)
+    num_workers_to_add_remaning = remaining // remaining_per_worker
+    for i in range(num_workers_to_add_remaning):
+        result[i] += remaining_per_worker
+    return result
+
+
 def do_stuff(num_workers: int, worker_idx: int) -> None:
     if worker_idx >= num_workers:
         raise RuntimeError
@@ -20,7 +31,7 @@ def do_stuff(num_workers: int, worker_idx: int) -> None:
     ]
     random.seed(RANDOM_SEED)
     random.shuffle(tests)
-    per_worker = math.ceil(len(tests) / num_workers)
+    per_worker = get_chunks(len(tests), num_workers)[worker_idx]
     tests_start_idx = worker_idx * per_worker
     tests_end_idx = min(len(tests), tests_start_idx + per_worker)
 

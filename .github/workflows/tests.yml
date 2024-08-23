@@ -37,6 +37,12 @@ jobs:
         name: coverage_${{ matrix.worker_number }}
         path: coverage_${{ matrix.worker_number }}
 
+    - name: Upload test times
+      uses: actions/upload-artifact@v3
+      with:
+        name: pikaur_test_times_${{ matrix.worker_number }}
+        path: pikaur_test_times_${{ matrix.worker_number }}
+
   merge-results:
     name: Merge Coverage Results
     runs-on: ubuntu-latest

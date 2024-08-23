@@ -278,8 +278,6 @@ def pkg_is_installed(pkg_name: str) -> bool:
 class PikaurTestCase(TestCase):
     # pylint: disable=invalid-name
 
-    test_times_path = "./pikaur_test_times.txt"
-
     separator = color_line(f"\n{'-' * get_term_width()}", 12, force=True)
 
     def run(self, result: "TestResult | None" = None) -> "TestResult | None":
@@ -289,8 +287,9 @@ class PikaurTestCase(TestCase):
         # print(result and result.collectedDurations)
         time_spent = time() - time_started
         log_stderr(f":: Took {(time_spent):.2f} seconds")
-        with Path(self.test_times_path).open("a", encoding=DEFAULT_INPUT_ENCODING) as fobj:
-            fobj.write(f"{(time_spent):.2f} {self}\n")
+        if test_times_path := os.environ.get("TEST_TIMES_PATH"):
+            with Path(test_times_path).open("a", encoding=DEFAULT_INPUT_ENCODING) as fobj:
+                fobj.write(f"{(time_spent):.2f} {self}\n")
         return result
 
     def setUp(self) -> None:

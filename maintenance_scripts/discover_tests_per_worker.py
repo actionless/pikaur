@@ -1,7 +1,11 @@
 # pylint: disable=protected-access
 import math
+import random
 import sys
+from typing import Final
 from unittest import TestLoader
+
+RANDOM_SEED: Final = 123
 
 
 def do_stuff(num_workers: int, worker_idx: int) -> None:
@@ -14,6 +18,8 @@ def do_stuff(num_workers: int, worker_idx: int) -> None:
         for test in testcase._tests  # noqa: SLF001
         if testcase._tests  # noqa: SLF001
     ]
+    random.seed(RANDOM_SEED)
+    random.shuffle(tests)
     per_worker = math.ceil(len(tests) / num_workers)
     tests_start_idx = worker_idx * per_worker
     tests_end_idx = min(len(tests), tests_start_idx + per_worker)

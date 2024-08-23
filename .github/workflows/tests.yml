@@ -31,7 +31,7 @@ jobs:
           $(test ${NUM_WORKERS} -eq $((${{ matrix.worker_number }} + 1)) ; echo $?) \
           ${{ matrix.worker_number }},${NUM_WORKERS}
 
-    - name: Upload result_N.txt
+    - name: Upload coverage
       uses: actions/upload-artifact@v3
       with:
         name: coverage_${{ matrix.worker_number }}
@@ -54,15 +54,15 @@ jobs:
       with:
         path: .
 
-    - name: move files to container location
-      run: mkdir -p /opt/ ; cd .. ; mv pikaur /opt/app-build ; mkdir pikaur ; ls -la /opt/app-build
+    - name: Move files to container location
+      run: mkdir -p /opt/ ; cd .. ; mv pikaur /opt/app-build ; mkdir pikaur
 
     - name: Install Coveralls
       run: python3 -m pip install coveralls
 
     - name: Merge Results
       run: |
-        cd /opt/app-build/ ; ls -la ; coverage combine coverage_*/*
+        cd /opt/app-build/ ; coverage combine coverage_*/*
 
     - name: Upload Coverage
       run: |

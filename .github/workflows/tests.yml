@@ -46,6 +46,9 @@ jobs:
 
     - uses: actions/checkout@v2
 
+    - name: move sourcecode to coverage location
+      run: mkdir -p /opt/app-build/ ; mv pikaur /opt/app-build/
+
     - name: Download all results
       uses: actions/download-artifact@v3
       with:
@@ -56,7 +59,7 @@ jobs:
 
     - name: Merge Results
       run: |
-        ls -laho */ ; coverage combine coverage_*/*
+        coverage combine coverage_*/*
 
     - name: Upload Coverage
       run: |

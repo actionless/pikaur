@@ -69,3 +69,9 @@ jobs:
         cd /opt/app-build/ ; coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Show slowest tests
+      run: |
+        cd /opt/app-build/ ; \
+        echo " :: Top 50 of the slowest testcases:" ; \
+        cat pikaur_test_times_*/* | sort -rn | head -n 50

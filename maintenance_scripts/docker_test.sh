@@ -61,6 +61,7 @@ echo "Exited with $return_code"
 if [[ "$MODE" == "--worker" ]] ; then
 	id=$(docker create pikaur)
 	docker cp "$id":/opt/app-build/.coverage coverage_"$(cut -d, -f1 <<< "$TESTSUITE")"
+	docker cp "$id":/opt/app-build/pikaur_test_times.txt pikaur_test_times_"$(cut -d, -f1 <<< "$TESTSUITE")"
 	docker rm -v "$id"
 fi
 

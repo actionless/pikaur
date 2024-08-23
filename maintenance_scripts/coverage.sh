@@ -49,10 +49,3 @@ if [[ -n "${TESTSUITE-}" ]] ; then
 		coverage html
 	fi
 fi
-
-echo
-echo
-echo
-echo
-echo " :: Top 50 of the slowest testcases:"
-sort -rn pikaur_test_times.txt | head -n 50

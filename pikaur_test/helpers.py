@@ -182,7 +182,7 @@ def pikaur(
         *,
         capture_stdout: bool = True, capture_stderr: bool = False,
         fake_makepkg: bool = False, skippgpcheck: bool = False,
-        print_on_fails: bool = True,
+        print_on_fails: bool = True, fake_makepkg_noextract: bool = True,
 ) -> CmdResult:
 
     PackageDB.discard_local_cache()
@@ -202,7 +202,8 @@ def pikaur(
         new_args += [
             "--makepkg-path=" + str(TEST_DIR / "fake_makepkg"),
         ]
-        mflags.append("--noextract")
+        if fake_makepkg_noextract:
+            mflags.append("--noextract")
     if skippgpcheck:
         mflags.append("--skippgpcheck")
     if "--mflags" in cmd:

@@ -55,7 +55,7 @@ jobs:
         path: .
 
     - name: move files to container location
-      run: mkdir -p /opt/ ; cd .. ; mv pikaur /opt/app-build ; ls -la /opt/app-build
+      run: mkdir -p /opt/ ; cd .. ; mv pikaur /opt/app-build ; mkdir pikaur ; ls -la /opt/app-build
 
     - name: Install Coveralls
       run: python3 -m pip install coveralls

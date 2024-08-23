@@ -49,23 +49,23 @@ jobs:
 
     - uses: actions/checkout@v2
 
-    - name: move sourcecode to coverage location
-      run: mkdir -p /opt/app-build/ ; mv pikaur /opt/app-build/ ; ls -la /opt/app-build/pikaur
-
     - name: Download all results
       uses: actions/download-artifact@v3
       with:
         path: .
+
+    - name: move files to container location
+      run: mkdir -p /opt/ ; cd .. ; mv pikaur /opt/app-build ; ls -la /opt/app-build
 
     - name: Install Coveralls
       run: python3 -m pip install coveralls
 
     - name: Merge Results
       run: |
-        coverage combine coverage_*/* ; ls -la
+        cd /opt/app-build/ ; ls -la ; coverage combine coverage_*/*
 
     - name: Upload Coverage
       run: |
-        coveralls --service=github
+        cd /opt/app-build/ ; coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

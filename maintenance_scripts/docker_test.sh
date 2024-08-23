@@ -6,7 +6,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 if [[ "${1:-}" = "--help" ]] ; then
-	echo "Usage: $0 COVERAGE SKIP_LINTING TESTSUITE"
+	echo "Usage: $0 COVERAGE SKIP_LINTING TESTSUITE [TESTSUITE_2 ... TESTSUITE_N]"
 	echo "	COVERAGE: ['--local', '--coveralls']"
 	echo "	SKIP_LINTING: [0, 1]"
 	echo "	TESTSUITE: ['all', <TESTSUITE_NAME_OR_PATH>]"
@@ -25,6 +25,14 @@ fi
 
 set -x
 
+MODE="${1:---local}"
+shift
+SKIP_LINTING="${1:-0}"
+shift
+# shellcheck disable=SC2124
+TESTSUITE="${@:-all}"
+shift
+
 cd "$(readlink -e "$(dirname "${0}")")"/.. || exit 2
 
 echo "Github Token:"
@@ -41,9 +49,9 @@ sudo docker build ./ \
 	--build-arg GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
 	--build-arg GITHUB_RUN_ID="${GITHUB_RUN_ID:-}" \
 	--build-arg GITHUB_REF="${GITHUB_REF:-}" \
-	--build-arg MODE="${1:---local}" \
-	--build-arg SKIP_LINTING="${2:-0}" \
-	--build-arg TESTSUITE="${3:-all}" \
+	--build-arg MODE="$MODE" \
+	--build-arg SKIP_LINTING="$SKIP_LINTING" \
+	--build-arg TESTSUITE="$TESTSUITE" \
 	-t pikaur \
 	-f ./Dockerfile \
 	|| return_code=$?

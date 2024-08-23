@@ -26,11 +26,10 @@ shift
 #    exit 1
 #}
 
-echo > pikaur_test_times.txt
 if [[ "$TESTSUITE" = "all" ]] ; then
-	coverage run --source=pikaur -m unittest -v
+	coverage run --source=pikaur -m unittest -v --durations 50 "$@"
 else
-	coverage run --source=pikaur -m unittest -v "$TESTSUITE"
+	coverage run --source=pikaur -m unittest -v --durations 50 "$TESTSUITE" "$@"
 fi
 
 if [[ "$MODE" == "--coveralls" ]] ; then
@@ -39,10 +38,3 @@ else
 	coverage report
 	coverage html
 fi
-
-echo
-echo
-echo
-echo
-echo " :: Top 50 of the slowest testcases:"
-sort -rn pikaur_test_times.txt | head -n 50

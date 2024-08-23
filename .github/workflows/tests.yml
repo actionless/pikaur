@@ -7,14 +7,14 @@ on:
     branches: [ master ]
 
 env:
-  NUM_WORKERS: 8
+  NUM_WORKERS: 16
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        worker_number: [7, 6, 5, 4, 3, 2, 1, 0]
+        worker_number: [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 
     steps:
 

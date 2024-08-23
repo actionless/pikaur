@@ -57,4 +57,11 @@ sudo docker build ./ \
 	|| return_code=$?
 
 echo "Exited with $return_code"
+
+if [[ "$MODE" == "--worker" ]] ; then
+	id=$(docker create pikaur)
+	docker cp "$id":/opt/app-build/.coverage coverage_"$(cut -d, -f1 <<< "$TESTSUITE")"
+	docker rm -v "$id"
+fi
+
 exit ${return_code}

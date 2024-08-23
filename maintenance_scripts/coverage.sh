@@ -18,7 +18,14 @@ if [[ "$IS_WRITE_DB" == "--write-db" ]] ; then
 	echo "PKGEXT='.pkg.tar'" >> ~/.makepkg.conf
 fi
 
-TESTSUITE="${1:-all}"
+if [[ "$MODE" == "--worker" ]] ; then
+	WORKER_PARAMS="$1"
+	# shellcheck disable=SC2207
+	TESTSUITE=($(python ./maintenance_scripts/discover_tests_per_worker.py "$(cut -d, -f1 <<< "$WORKER_PARAMS")" "$(cut -d, -f2 <<< "$WORKER_PARAMS")"))
+else
+	# shellcheck disable=SC2178
+	TESTSUITE="${1:-all}"
+fi
 shift
 
 #ping 8.8.8.8 -c 1 || {
@@ -26,10 +33,11 @@ shift
 #    exit 1
 #}
 
+# shellcheck disable=SC2128
 if [[ "$TESTSUITE" = "all" ]] ; then
 	coverage run --source=pikaur -m unittest -v --durations 50 "$@"
 else
-	coverage run --source=pikaur -m unittest -v --durations 50 "$TESTSUITE" "$@"
+	coverage run --source=pikaur -m unittest -v --durations 50 "${TESTSUITE[@]}" "$@"
 fi
 
 if [[ "$MODE" == "--coveralls" ]] ; then

@@ -40,11 +40,11 @@ if [[ -n "${TESTSUITE-}" ]] ; then
 	else
 		coverage run --source=pikaur -m unittest -v --durations 50 "${TESTSUITE[@]}" "$@"
 	fi
-fi
 
-if [[ "$MODE" == "--coveralls" ]] ; then
-	coveralls --service=github
-else
-	coverage report
-	coverage html
+	if [[ "$MODE" == "--coveralls" ]] ; then
+		coveralls --service=github
+	else
+		coverage report
+		coverage html
+	fi
 fi

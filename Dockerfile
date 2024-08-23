@@ -28,10 +28,10 @@ ENV LANG=en_US.utf8 \
 	LANGUAGE=en_US.UTF-8 \
 	LC_ALL=en_US.UTF-8
 
-COPY ./maintenance_scripts/pikaman.py /opt/app-build/maintenance_scripts/pikaman.py
+COPY ./maintenance_scripts/pikaman.py ./maintenance_scripts/changelog.sh /opt/app-build/maintenance_scripts/
 COPY ./packaging/. /opt/app-build/packaging
 COPY ./locale/. /opt/app-build/locale
-COPY ./PKGBUILD ./Makefile ./README.md ./pyproject.toml ./LICENSE /opt/app-build/
+COPY ./PKGBUILD ./Makefile ./README.md ./pyproject.toml ./.flake8 ./LICENSE /opt/app-build/
 COPY ./pikaur/. /opt/app-build/pikaur
 RUN echo ">>>> Installing opt deps:" && \
 	pacman -Sy devtools python-pysocks python-defusedxml --noconfirm --needed && \
@@ -55,7 +55,6 @@ RUN echo ">>>> Installing test deps using Pikaur itself:" && \
 
 COPY ./pikaur_test /opt/app-build/pikaur_test
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
-COPY .flake8 /opt/app-build/
 RUN echo ">>>> Starting CI linting:" && \
 	chown -R user /opt/app-build/pikaur_{test,meta_helpers} && \
 	if [[ "$SKIP_LINTING" -eq 0 ]] ; then \

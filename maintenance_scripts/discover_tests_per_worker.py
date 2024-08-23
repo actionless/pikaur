@@ -10,12 +10,16 @@ RANDOM_SEED: Final = 123
 
 def get_chunks(total: int, num_workers: int) -> list[int]:
     base_amount = int(total / num_workers)
-    result = [base_amount] * num_workers
     remaining = total - base_amount * num_workers
     remaining_per_worker = math.ceil(remaining / num_workers)
+
     num_workers_to_add_remaning = remaining // remaining_per_worker
+    leftover = remaining % remaining_per_worker
+
+    result = [base_amount] * num_workers
     for i in range(num_workers_to_add_remaning):
         result[i] += remaining_per_worker
+    result[num_workers_to_add_remaning] += leftover
     return result
 
 

@@ -6,10 +6,20 @@ set -euo pipefail
 IFS=$'\n\t'
 
 if [[ "${1:-}" = "--help" ]] ; then
-	echo "Usage: $0 COVERAGE LINTING TESTS"
+	echo "Usage: $0 COVERAGE SKIP_LINTING TESTSUITE"
 	echo "	COVERAGE: ['--local', '--coveralls']"
 	echo "	SKIP_LINTING: [0, 1]"
 	echo "	TESTSUITE: ['all', <TESTSUITE_NAME_OR_PATH>]"
+	# shellcheck disable=SC2016
+	echo '
+and TESTSUITE could be specified in a same way as in `unittest`:
+
+```
+test_module               - run tests from test_module
+module.TestClass          - run tests from module.TestClass
+module.Class.test_method  - run specified test method
+path/to/test_file.py      - run tests from test_file.py
+```'
 	exit 1
 fi
 

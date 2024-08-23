@@ -389,6 +389,12 @@ make -j $(nproc) lint
 
 See also `./maintenance_scripts/docker_test.sh --help` for more options.
 
+For example to run a single test inside docker:
+
+```sh
+./maintenance_scripts/docker_test.sh --local 1 pikaur_test.test_sysupgrade.SysupgradeTest.test_devel_upgrade
+```
+
 
 ### Translations
 

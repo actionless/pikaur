@@ -6,9 +6,6 @@ WORKDIR /opt/app-build/
 ARG GITHUB_TOKEN
 ARG GITHUB_RUN_ID
 ARG GITHUB_REF
-ARG MODE=--local
-ARG TESTSUITE=all
-ARG SKIP_LINTING=0
 
 RUN echo 'Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist ; \
 	echo 'Server = https://archlinux.mirror.pcextreme.nl/$repo/os/$arch' >> /etc/pacman.d/mirrorlist ; \
@@ -28,14 +25,15 @@ ENV LANG=en_US.utf8 \
 	LANGUAGE=en_US.UTF-8 \
 	LC_ALL=en_US.UTF-8
 
+RUN echo ">>>> Installing optional pikaur deps:" && \
+	pacman -Sy devtools python-pysocks python-defusedxml --noconfirm --needed
+
 COPY ./maintenance_scripts/pikaman.py ./maintenance_scripts/changelog.sh /opt/app-build/maintenance_scripts/
 COPY ./packaging/. /opt/app-build/packaging
 COPY ./locale/. /opt/app-build/locale
 COPY ./PKGBUILD ./Makefile ./README.md ./pyproject.toml ./.flake8 ./LICENSE /opt/app-build/
 COPY ./pikaur/. /opt/app-build/pikaur
-RUN echo ">>>> Installing opt deps:" && \
-	pacman -Sy devtools python-pysocks python-defusedxml --noconfirm --needed && \
-	echo ">>>> Preparing build directory:" && \
+RUN echo ">>>> Preparing build directory:" && \
 	chown -R user /opt/app-build/ && \
 	echo ">>>> Fetching git tags:" && \
 	sudo -u user git fetch -t || true && \
@@ -55,12 +53,16 @@ RUN echo ">>>> Installing test deps using Pikaur itself:" && \
 
 COPY ./pikaur_test /opt/app-build/pikaur_test
 COPY ./maintenance_scripts /opt/app-build/maintenance_scripts/
+ARG SKIP_LINTING=0
 RUN echo ">>>> Starting CI linting:" && \
 	chown -R user /opt/app-build/pikaur_{test,meta_helpers} && \
 	if [[ "$SKIP_LINTING" -eq 0 ]] ; then \
 		sudo -u user env \
 		make lint ; \
 	fi
+
+ARG MODE=--local
+ARG TESTSUITE=all
 RUN echo ">>>> Starting CI testsuite:" && \
 	sudo -u user env \
 	GITHUB_ACTIONS=1 \

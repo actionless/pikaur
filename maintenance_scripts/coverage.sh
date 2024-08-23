@@ -33,11 +33,13 @@ shift
 #    exit 1
 #}
 
-# shellcheck disable=SC2128
-if [[ "$TESTSUITE" = "all" ]] ; then
-	coverage run --source=pikaur -m unittest -v --durations 50 "$@"
-else
-	coverage run --source=pikaur -m unittest -v --durations 50 "${TESTSUITE[@]}" "$@"
+if [[ -n "${TESTSUITE-}" ]] ; then
+	# shellcheck disable=SC2128
+	if [[ "$TESTSUITE" = "all" ]] ; then
+		coverage run --source=pikaur -m unittest -v --durations 50 "$@"
+	else
+		coverage run --source=pikaur -m unittest -v --durations 50 "${TESTSUITE[@]}" "$@"
+	fi
 fi
 
 if [[ "$MODE" == "--coveralls" ]] ; then

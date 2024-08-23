@@ -6,11 +6,7 @@ import os
 from pikaur_test.helpers import PikaurDbTestCase, pikaur
 
 
-class TestsToRunAfterAllOthers(PikaurDbTestCase):
-    """
-    Tests which need to run after all other tests
-    (not to download the pkgs again after cleaning the caches).
-    """
+class CacheCliTestcase(PikaurDbTestCase):
 
     def test_cache_clean(self):
         # pylint:disable=import-outside-toplevel

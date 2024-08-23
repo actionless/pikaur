@@ -6,9 +6,16 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  NUM_WORKERS: 20
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        worker_number: [19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+
     steps:
 
     - uses: actions/checkout@v2
@@ -17,6 +24,60 @@ jobs:
       run: sed -i -e 's|FROM archlinux:base-devel|FROM actionless/pikaur|' Dockerfile
 
     - name: run tests in docker
-      run: ./maintenance_scripts/docker_test.sh --coveralls
+      #run: ./maintenance_scripts/docker_test.sh --coveralls
+      run: |
+        ./maintenance_scripts/docker_test.sh \
+          --worker \
+          $(test ${NUM_WORKERS} -eq $((${{ matrix.worker_number }} + 1)) ; echo $?) \
+          ${{ matrix.worker_number }},${NUM_WORKERS}
+
+    - name: Upload coverage
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage_${{ matrix.worker_number }}
+        path: coverage_${{ matrix.worker_number }}
+
+    - name: Upload test times
+      uses: actions/upload-artifact@v3
+      with:
+        name: pikaur_test_times_${{ matrix.worker_number }}
+        path: pikaur_test_times_${{ matrix.worker_number }}
+
+  merge-results:
+    name: Merge Coverage Results
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v2
+
+    - uses: actions/checkout@v2
+
+    - name: Download all results
+      uses: actions/download-artifact@v3
+      with:
+        path: .
+
+    - name: Move files to container location
+      run: mkdir -p /opt/ ; cd .. ; mv pikaur /opt/app-build ; mkdir pikaur
+
+    - name: Install Coveralls
+      run: python3 -m pip install coveralls
+
+    - name: Merge Results
+      run: |
+        cd /opt/app-build/ ; coverage combine coverage_*/*
+
+    - name: Upload Coverage
+      run: |
+        cd /opt/app-build/ ; coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Show slowest tests
+      run: |
+        cd /opt/app-build/ ; \
+        echo " :: Top 50 of the slowest testcases:" ; \
+        cat pikaur_test_times_*/* | sort -rn | head -n 50

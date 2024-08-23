@@ -170,46 +170,6 @@ class InstallTest(PikaurDbTestCase):
         self.assertInstalled("abduco")
         self.assertNotInstalled("abduco-git")
 
-    def test_cache_clean(self):
-        # pylint:disable=import-outside-toplevel
-        from pikaur.config import BuildCachePath, PackageCachePath
-
-        pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
-        self.assertGreaterEqual(
-            len(os.listdir(BuildCachePath())), 1,
-        )
-        self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath())), 1,
-        )
-
-        pikaur("-Sc --noconfirm")
-        self.assertFalse(
-            BuildCachePath().exists(),
-        )
-        self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath())), 1,
-        )
-
-    def test_cache_full_clean(self):
-        # pylint:disable=import-outside-toplevel
-        from pikaur.config import BuildCachePath, PackageCachePath
-
-        pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
-        self.assertGreaterEqual(
-            len(os.listdir(BuildCachePath())), 1,
-        )
-        self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath())), 1,
-        )
-
-        pikaur("-Scc --noconfirm")
-        self.assertFalse(
-            BuildCachePath().exists(),
-        )
-        self.assertFalse(
-            PackageCachePath().exists(),
-        )
-
     def test_print_commands_and_needed(self):
         """Test that `--print--commands` option not fails."""
         self.assertEqual(

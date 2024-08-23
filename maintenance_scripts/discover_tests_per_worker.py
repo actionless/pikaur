@@ -13,8 +13,10 @@ def get_chunks(total: int, num_workers: int) -> list[int]:
     remaining = total - base_amount * num_workers
     remaining_per_worker = math.ceil(remaining / num_workers)
 
-    num_workers_to_add_remaning = remaining // remaining_per_worker
-    leftover = remaining % remaining_per_worker
+    num_workers_to_add_remaning = leftover = 0
+    if remaining_per_worker:
+        num_workers_to_add_remaning = remaining // remaining_per_worker
+        leftover = remaining % remaining_per_worker
 
     result = [base_amount] * num_workers
     for i in range(num_workers_to_add_remaning):

@@ -44,6 +44,8 @@ jobs:
 
     steps:
 
+    - uses: actions/checkout@v2
+
     - name: Download all results
       uses: actions/download-artifact@v3
       with:

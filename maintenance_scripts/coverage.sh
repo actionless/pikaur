@@ -34,6 +34,7 @@ shift
 #}
 
 if [[ -n "${TESTSUITE-}" ]] ; then
+	echo > pikaur_test_times.txt
 	# shellcheck disable=SC2128
 	if [[ "$TESTSUITE" = "all" ]] ; then
 		coverage run --source=pikaur -m unittest -v --durations 50 "$@"
@@ -48,3 +49,10 @@ if [[ -n "${TESTSUITE-}" ]] ; then
 		coverage html
 	fi
 fi
+
+echo
+echo
+echo
+echo
+echo " :: Top 50 of the slowest testcases:"
+sort -rn pikaur_test_times.txt | head -n 50

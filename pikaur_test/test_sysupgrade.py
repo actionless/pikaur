@@ -73,7 +73,10 @@ class SysupgradeTest(PikaurDbTestCase):
             f'source=("git+{dev_pkg_url}#branch=master~{self.dev_downgrade_amount}")'
             "/' PKGBUILD > PKGBUILD_prev",
         ])
-        pikaur(f"-P -i --noconfirm ./{self.dev_pkg_name}/PKGBUILD_prev")
+        pikaur(
+            f"-P -i --noconfirm ./{self.dev_pkg_name}/PKGBUILD_prev --print-commands",
+            fake_makepkg=True, fake_makepkg_noextract=False,
+        )
         self.assertInstalled(self.dev_pkg_name)
         self.dev_old_version = PackageDB.get_local_dict()[self.dev_pkg_name].version
 
@@ -81,13 +84,11 @@ class SysupgradeTest(PikaurDbTestCase):
         """Test upgrade of AUR dev package."""
         self.downgrade_dev_pkg()
 
-        # self.assertEqual(
-        #     self.upgradeable_pkgs_list, []
-        # )  # @TODO: not sure we need to check this at all
-
         # and finally test the sysupgrade itself
-        pikaur("-Su --noconfirm --devel --ignore pikaur-git")
-        # pikaur(f"-S {self.dev_pkg_name} --noconfirm --devel")
+        pikaur(
+            "-Su --noconfirm --devel --ignore pikaur-git",
+            fake_makepkg=True, fake_makepkg_noextract=False,
+        )
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.dev_pkg_name].version,
             self.dev_old_version,
@@ -130,7 +131,11 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
         # and finally test the sysupgrade itself
-        pikaur("-Su --noconfirm", skippgpcheck=True)
+        pikaur(
+            "-Su --noconfirm",
+            skippgpcheck=True,
+            fake_makepkg=True,
+        )
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version,
@@ -154,6 +159,7 @@ class SysupgradeTest(PikaurDbTestCase):
             f"--ignore {self.aur_pkg_name} "
             f"--ignore {self.repo2_pkg_name} "
             f"--ignore {self.aur2_pkg_name}",
+            fake_makepkg=True,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
@@ -177,6 +183,7 @@ class SysupgradeTest(PikaurDbTestCase):
             "-Su --noconfirm "
             f"--ignore {self.repo_pkg_name} "
             f"--ignore {self.aur_pkg_name}",
+            fake_makepkg=True,
         )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
@@ -196,8 +203,11 @@ class SysupgradeTest(PikaurDbTestCase):
         )
 
         # ignore the only remaining AUR package
-        pikaur("-Su --noconfirm "
-               f"--ignore {self.aur_pkg_name}")
+        pikaur(
+            "-Su --noconfirm "
+            f"--ignore {self.aur_pkg_name}",
+            fake_makepkg=True,
+        )
         self.assertNotEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version,
@@ -210,8 +220,11 @@ class SysupgradeTest(PikaurDbTestCase):
         self.downgrade_repo1_pkg()
 
         # ignore the only one remaining repo package
-        pikaur("-Su --noconfirm "
-               f"--ignore {self.repo_pkg_name}")
+        pikaur(
+            "-Su --noconfirm "
+            f"--ignore {self.repo_pkg_name}",
+            fake_makepkg=True,
+        )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version,
@@ -238,7 +251,10 @@ class SysupgradeTest(PikaurDbTestCase):
 
         self.downgrade_repo1_pkg()
 
-        pikaur("-Su --noconfirm --aur")
+        pikaur(
+            "-Su --noconfirm --aur",
+            fake_makepkg=True,
+        )
         self.assertEqual(
             PackageDB.get_local_dict()[self.repo_pkg_name].version,
             self.repo_old_version,

@@ -20,7 +20,7 @@ PIKAPIC = r"""
 def bubble_top(text: str, padding: int = 1) -> str:
     bubble_top_left = " _____/|"
     formatted_paragraph = make_equal_right_padding(
-        format_paragraph(text, padding=0, width=get_term_width() - 4 - padding * 2),
+        format_paragraph(text, padding=0, width=get_term_width() - 4 - padding * 2, force=True),
     )
     paragraph_width = len(formatted_paragraph.splitlines()[0])
     max_string_length = max(paragraph_width, len(bubble_top_left) + 1)

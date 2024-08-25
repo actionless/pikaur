@@ -249,8 +249,10 @@ def printable_length(text: str) -> int:
     return counter
 
 
-def format_paragraph(line: str, padding: int = PADDING, width: int | None = None) -> str:
-    if not color_enabled():
+def format_paragraph(
+        line: str, padding: int = PADDING, width: int | None = None, *, force: bool = False,
+) -> str:
+    if not (force or color_enabled()):
         return padding * " " + line
     term_width = width or get_term_width()
     max_line_width = term_width - padding * 2

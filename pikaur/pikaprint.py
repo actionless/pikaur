@@ -263,12 +263,24 @@ def format_paragraph(
     result = []
     current_line: list[str] = []
     line_length = 0
+
+    def create_linebreak() -> None:
+        nonlocal result, current_line, line_length
+        if current_line and current_line[-1] == " ":
+            del current_line[-1]
+        result.append(current_line)
+        current_line = []
+        line_length = 0
+
     for line in text.splitlines():
         if not line:
-            result.append(current_line)
-            current_line = []
-            line_length = 0
-        for word_raw in line.split():
+            create_linebreak()
+            continue
+        for word_raw in line.split(" "):
+            if not word_raw:
+                current_line.append(" ")
+                line_length += 1
+                continue
             if split_words:
                 words = [
                     word_raw[i * max_line_width:(i + 1) * max_line_width]
@@ -278,16 +290,17 @@ def format_paragraph(
                 words = [word_raw]
             for word in words:
                 if printable_length(word) + line_length > max_line_width:
-                    result.append(current_line)
-                    current_line = []
-                    line_length = 0
-                current_line.append(word)
+                    create_linebreak()
+                current_line.extend((word, " "))
                 line_length += printable_length(word) + 1
-    result.append(current_line)
+        if current_line:
+            create_linebreak()
+    if current_line:
+        result.append(current_line)
 
     return "\n".join([
-        " ".join([
-            (padding - 1) * " ", *words, (padding - 1) * " ",
+        "".join([
+            padding * " ", *words, padding * " ",
         ])
         for words in result
     ])

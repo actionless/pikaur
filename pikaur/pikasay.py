@@ -22,7 +22,7 @@ def bubble_top(text: str, padding: int = 1) -> str:
     bubble_top_left = " _____/|"
     formatted_paragraph = make_equal_right_padding(
         format_paragraph(
-            text, padding=0, width=get_term_width() - 4 - padding * 2,
+            text, padding=1, width=get_term_width() - 4 - padding * 2,
             force=True, split_words=True,
         ),
     )

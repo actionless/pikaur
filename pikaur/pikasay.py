@@ -1,8 +1,9 @@
 import sys
+from typing import Final
 
 from .pikaprint import format_paragraph, get_term_width, make_equal_right_padding
 
-PIKAPIC = r"""
+PIKAPIC: Final = r"""
       /:}               _
      /--1             / :}
     /   |           / `-/

@@ -265,7 +265,9 @@ def format_paragraph(
     line_length = 0
     for line in text.splitlines():
         if not line:
-            current_line.append("\n")
+            result.append(current_line)
+            current_line = []
+            line_length = 0
         for word_raw in line.split():
             if split_words:
                 words = [

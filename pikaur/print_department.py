@@ -25,11 +25,14 @@ from .pikaprint import (
     color_line,
     format_paragraph,
     get_term_width,
+    make_equal_right_padding,
     print_stderr,
     print_stdout,
     print_warning,
     printable_length,
+    sidejoin_multiline_paragraphs,
 )
+from .pikasay import PIKAPIC
 from .pikatypes import AURPackageInfo, InstallInfo
 from .version import get_common_version, get_version_diff
 
@@ -56,19 +59,23 @@ def print_version(pacman_version: str, pyalpm_version: str, *, quiet: bool = Fal
         print_stdout(f"{pacman_version} - pyalpm v{pyalpm_version}")
     else:
         year = str(datetime.now(tz=DEFAULT_TIMEZONE).year)
-        sys.stdout.write(r"""
-      /:}               _
-     /--1             / :}
-    /   |           / `-/
-   |  ,  --------  /   /     Pikaur v""" + VERSION + r"""
-   |'                 Y      (C) 2018-""" + year + r""" Pikaur development team
-  /                   l      Licensed under GPLv3
-  l  /       \        l
-  j  ●   .   ●        l      """ + pacman_version + r"""
- { )  ._,.__,   , -.  {      pyalpm v""" + pyalpm_version + r"""
-  Y    \  _/     ._/   \
+        sys.stdout.write(
+            sidejoin_multiline_paragraphs(
+                "   ",
+                make_equal_right_padding(PIKAPIC),
+                r"""
 
-""")
+
+
+Pikaur v""" + VERSION + r"""
+(C) 2018-""" + year + r""" Pikaur development team
+Licensed under GPLv3
+
+""" + pacman_version + r"""
+pyalpm v""" + pyalpm_version + r"""
+""",
+            ) + "\n",
+        )
 
 
 def print_not_found_packages(not_found_packages: list[str], *, repo: bool = False) -> None:

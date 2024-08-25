@@ -3,6 +3,7 @@
 import shutil
 import sys
 import termios
+from itertools import zip_longest
 from string import printable
 from typing import TYPE_CHECKING
 
@@ -248,10 +249,10 @@ def printable_length(text: str) -> int:
     return counter
 
 
-def format_paragraph(line: str, padding: int = PADDING) -> str:
+def format_paragraph(line: str, padding: int = PADDING, width: int | None = None) -> str:
     if not color_enabled():
         return padding * " " + line
-    term_width = get_term_width()
+    term_width = width or get_term_width()
     max_line_width = term_width - padding * 2
 
     result = []
@@ -293,3 +294,28 @@ def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
         if counter >= end:
             break
     return result
+
+
+def make_equal_right_padding(multiline_string: str, length: int | None = None) -> str:
+    lines = multiline_string.splitlines()
+    max_string_length = max(len(line) for line in lines)
+    if length:
+        if length < max_string_length:
+            message = f"{length=} < {max_string_length=}"
+            raise ValueError(message)
+        target_length = length
+    else:
+        target_length = max_string_length
+    return "\n".join(
+        "".join((line, *([" "] * (target_length - len(line)))))
+        for line in lines
+    )
+
+
+def sidejoin_multiline_paragraphs(join_separator: str, *multiline_strings: str) -> str:
+    return "\n".join(
+        join_separator.join(line or "" for line in lines)
+        for lines in zip_longest(
+            *(multiline_string.splitlines() for multiline_string in multiline_strings),
+        )
+    )

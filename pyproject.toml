@@ -33,6 +33,7 @@ repository = 'https://github.com/actionless/pikaur'
 
 [project.scripts]
 pikaur = "pikaur.main:main"
+pikasay = "pikaur.pikasay:pikasay_cli"
 
 [tool.setuptools.packages.find]
 include = ["pikaur"]

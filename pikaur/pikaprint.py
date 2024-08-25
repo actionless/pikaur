@@ -1,5 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
+import math
 import shutil
 import sys
 import termios
@@ -250,23 +251,36 @@ def printable_length(text: str) -> int:
 
 
 def format_paragraph(
-        line: str, padding: int = PADDING, width: int | None = None, *, force: bool = False,
+        text: str, padding: int = PADDING, width: int | None = None,
+        *,
+        force: bool = False, split_words: bool = False,
 ) -> str:
     if not (force or color_enabled()):
-        return padding * " " + line
+        return padding * " " + text
     term_width = width or get_term_width()
     max_line_width = term_width - padding * 2
 
     result = []
     current_line: list[str] = []
     line_length = 0
-    for word in line.split():
-        if printable_length(word) + line_length > max_line_width:
-            result.append(current_line)
-            current_line = []
-            line_length = 0
-        current_line.append(word)
-        line_length += printable_length(word) + 1
+    for line in text.splitlines():
+        if not line:
+            current_line.append("\n")
+        for word_raw in line.split():
+            if split_words:
+                words = [
+                    word_raw[i * max_line_width:(i + 1) * max_line_width]
+                    for i in range(math.ceil(len(word_raw) / max_line_width))
+                ]
+            else:
+                words = [word_raw]
+            for word in words:
+                if printable_length(word) + line_length > max_line_width:
+                    result.append(current_line)
+                    current_line = []
+                    line_length = 0
+                current_line.append(word)
+                line_length += printable_length(word) + 1
     result.append(current_line)
 
     return "\n".join([

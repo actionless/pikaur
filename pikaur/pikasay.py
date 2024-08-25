@@ -64,7 +64,11 @@ def pikasay(text: str) -> None:
 def pikasay_cli() -> None:
     text = " ".join(sys.argv[1:])
     if (text in {"-", ""}) or (not sys.stdin.isatty()):
-        text = "\n".join(sys.stdin.readlines())
+        if text in {"-", ""}:
+            text = ""
+        else:
+            text += "\n"
+        text += "\n".join(line.rstrip("\n") for line in sys.stdin.readlines())
     pikasay(text)
 
 

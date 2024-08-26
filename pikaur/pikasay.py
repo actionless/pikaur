@@ -23,11 +23,11 @@ PIKAPIC: Final = r"""
 """
 
 
-def bubble_top(text: str, padding: int = 1) -> str:
+def bubble_top(text: str, padding: int = 1, inner_padding: int = 1) -> str:
     bubble_top_left = " _____/|"
     formatted_paragraph = make_equal_right_padding(
         format_paragraph(
-            text, padding=1, width=get_term_width() - 4 - padding * 2,
+            text, padding=inner_padding, width=get_term_width() - padding * 2 - inner_padding * 2,
             force=True, split_words=True,
         ),
     )

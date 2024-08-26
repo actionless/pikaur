@@ -25,6 +25,8 @@ fi
 
 set -x
 
+OUTPUT_DIR="${OUTPUT_DIR:-.}"
+
 MODE="${1:---local}"
 shift
 SKIP_LINTING="${1:-0}"
@@ -42,6 +44,12 @@ else
 	echo " FOUND"
 fi
 
+DOCKER_TAG=pikaur
+if [[ "$MODE" == "--worker" ]] ; then
+	worker_id="$(cut -d, -f1 <<< "$TESTSUITE")"
+	DOCKER_TAG="pikaur_${worker_id}"
+fi
+
 return_code=0
 sudo docker build ./ \
 	--ulimit nofile=1024:524288 \
@@ -52,16 +60,16 @@ sudo docker build ./ \
 	--build-arg MODE="$MODE" \
 	--build-arg SKIP_LINTING="$SKIP_LINTING" \
 	--build-arg TESTSUITE="$TESTSUITE" \
-	-t pikaur \
+	-t "$DOCKER_TAG" \
 	-f ./Dockerfile \
 	|| return_code=$?
 
 echo "Exited with $return_code"
 
 if [[ "$MODE" == "--worker" ]] ; then
-	id=$(docker create pikaur)
-	docker cp "$id":/opt/app-build/.coverage coverage_"$(cut -d, -f1 <<< "$TESTSUITE")"
-	docker cp "$id":/opt/app-build/pikaur_test_times.txt pikaur_test_times_"$(cut -d, -f1 <<< "$TESTSUITE")"
+	id=$(docker create "$DOCKER_TAG")
+	docker cp "$id":/opt/app-build/.coverage "${OUTPUT_DIR}/coverage_${worker_id}"
+	docker cp "$id":/opt/app-build/pikaur_test_times.txt "${OUTPUT_DIR}/pikaur_test_times_${worker_id}"
 	docker rm -v "$id"
 fi
 

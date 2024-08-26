@@ -114,10 +114,13 @@ def pikasay_cli() -> None:
     args = parser.parse_args()
 
     text = " ".join(args.text)
-    if (not args.text) or args.stdin:
+    if args.stdin:
         if args.text:
             text += "\n"
         text += "\n".join(line.rstrip("\n") for line in sys.stdin.readlines())
+    elif not args.text:
+        pikasay(parser.format_help(), margin=args.margin, padding=args.padding, width=args.width)
+        sys.exit(0)
     pikasay(text, margin=args.margin, padding=args.padding, width=args.width)
 
 

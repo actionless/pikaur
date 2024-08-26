@@ -184,7 +184,7 @@ msgstr "'{from_path}' から '{to_path}' にコピーできません。"
 msgid "Can't get package name from PKGBUILD"
 msgstr "PKGBUILD からパッケージ名を取得できません"
 
-#: pikaur/build.py:199 pikaur/print_department.py:637 pikaur/srcinfo.py:57
+#: pikaur/build.py:199 pikaur/print_department.py:644 pikaur/srcinfo.py:57
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr ""
@@ -360,7 +360,7 @@ msgstr "n"
 msgid "{key} is not '{typeof}'"
 msgstr ""
 
-#: pikaur/config.py:709 pikaur/config.py:736 pikaur/pikaprint.py:207
+#: pikaur/config.py:709 pikaur/config.py:736 pikaur/pikaprint.py:211
 msgid "warning:"
 msgstr "警告:"
 
@@ -821,7 +821,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-23 16:12+0200\n"
+"POT-Creation-Date: 2024-08-26 05:50+0200\n"
 "PO-Revision-Date: 2020-05-31 11:23+0900\n"
 "Last-Translator: Kasmide <kasmide@zohomail.com>\n"
 "Language: ja\n"
@@ -888,7 +888,7 @@ msgstr ""
 msgid "Because of:"
 msgstr ""
 
-#: pikaur/pikaprint.py:225
+#: pikaur/pikaprint.py:229
 msgid "error:"
 msgstr "エラー:"
 
@@ -927,114 +927,114 @@ msgstr ""
 msgid "removing all files from cache..."
 msgstr ""
 
-#: pikaur/print_department.py:79
+#: pikaur/print_department.py:86
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
 msgstr[0] "次のパッケージはリポジトリに存在しません:"
 
-#: pikaur/print_department.py:85
+#: pikaur/print_department.py:92
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
 msgstr[0] "次のパッケージは AUR に存在しません:"
 
-#: pikaur/print_department.py:210
+#: pikaur/print_department.py:217
 #, python-brace-format
 msgid "for {pkg}"
 msgstr "{pkg} の依存関係"
 
-#: pikaur/print_department.py:235
+#: pikaur/print_department.py:242
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
 msgstr[0] "{grp} グループ"
 
-#: pikaur/print_department.py:259
+#: pikaur/print_department.py:266
 msgid "({} days old)"
 msgstr "({} 日前にビルド)"
 
-#: pikaur/print_department.py:265
+#: pikaur/print_department.py:272
 msgid "orphaned"
 msgstr ""
 
-#: pikaur/print_department.py:278 pikaur/print_department.py:796
+#: pikaur/print_department.py:285 pikaur/print_department.py:803
 msgid "outofdate"
 msgstr "outofdate"
 
-#: pikaur/print_department.py:462
+#: pikaur/print_department.py:469
 msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
 msgstr[0] ""
 
-#: pikaur/print_department.py:479
+#: pikaur/print_department.py:486
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "置換として提案されたリポジトリのパッケージ:"
 
-#: pikaur/print_department.py:492
+#: pikaur/print_department.py:499
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "置換として提案されたサードパーティのリポジトリのパッケージ:"
 
-#: pikaur/print_department.py:507
+#: pikaur/print_department.py:514
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "リポジトリから次のパッケージがインストールされます:"
 
-#: pikaur/print_department.py:520
+#: pikaur/print_department.py:527
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "リポジトリから次の新しい依存関係がインストールされます:"
 
-#: pikaur/print_department.py:535
+#: pikaur/print_department.py:542
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "サードパーティのリポジトリから次のパッケージがインストールされます:"
 
-#: pikaur/print_department.py:549
+#: pikaur/print_department.py:556
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] ""
 "サードパーティのリポジトリから次の新しい依存関係がインストールされます:"
 
-#: pikaur/print_department.py:564
+#: pikaur/print_department.py:571
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "AUR から次のパッケージがインストールされます:"
 
-#: pikaur/print_department.py:578
+#: pikaur/print_department.py:585
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "AUR から次の新しい依存関係がインストールされます:"
 
-#: pikaur/print_department.py:595
+#: pikaur/print_department.py:602
 msgid "Total Download Size:"
 msgstr ""
 
-#: pikaur/print_department.py:598
+#: pikaur/print_department.py:605
 msgid "Total Installed Size:"
 msgstr ""
 
-#: pikaur/print_department.py:651
+#: pikaur/print_department.py:658
 msgid "Ignoring package update {}"
 msgstr "パッケージ {} の更新を無視"
 
-#: pikaur/print_department.py:657
+#: pikaur/print_department.py:664
 msgid "Ignoring package {}"
 msgstr "パッケージ {} を無視"
 
-#: pikaur/print_department.py:674
+#: pikaur/print_department.py:681
 #, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr ""
 "AUR パッケージ {name} {version} は 'outofdate' とマークされています - スキッ"
 "プ"
 
-#: pikaur/print_department.py:765
+#: pikaur/print_department.py:772
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[インストール済: {version}]"
 
-#: pikaur/print_department.py:769
+#: pikaur/print_department.py:776
 msgid "[installed]"
 msgstr "[インストール済]"
 

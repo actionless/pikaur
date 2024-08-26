@@ -188,7 +188,7 @@ msgstr "Невозможно скопировать из '{from_path}' в '{to_p
 msgid "Can't get package name from PKGBUILD"
 msgstr "Невозможно получить название пакета из PKGBUILD"
 
-#: pikaur/build.py:199 pikaur/print_department.py:637 pikaur/srcinfo.py:57
+#: pikaur/build.py:199 pikaur/print_department.py:644 pikaur/srcinfo.py:57
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr "Необходимо задать либо `{prop1}`, либо `{prop2}`"
@@ -368,7 +368,7 @@ msgstr ""
 msgid "{key} is not '{typeof}'"
 msgstr "{key} не соответствует '{typeof}'"
 
-#: pikaur/config.py:709 pikaur/config.py:736 pikaur/pikaprint.py:207
+#: pikaur/config.py:709 pikaur/config.py:736 pikaur/pikaprint.py:211
 msgid "warning:"
 msgstr "предупреждение:"
 
@@ -831,7 +831,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-23 16:12+0200\n"
+"POT-Creation-Date: 2024-08-26 05:50+0200\n"
 "PO-Revision-Date: 2019-09-21 19:36+0200\n"
 "Last-Translator: Drommer <drommer@github.com>\n"
 "Language-Team: Russian <email@example.com>\n"
@@ -899,7 +899,7 @@ msgstr "Зависимости не могут быть удовлетворен
 msgid "Because of:"
 msgstr "По причине:"
 
-#: pikaur/pikaprint.py:225
+#: pikaur/pikaprint.py:229
 msgid "error:"
 msgstr "ошибка:"
 
@@ -938,123 +938,123 @@ msgstr "Каталог пуст"
 msgid "removing all files from cache..."
 msgstr "удаление всех файлов из кеша"
 
-#: pikaur/print_department.py:79
+#: pikaur/print_department.py:86
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
 msgstr[0] "Данный пакет не найден в репозиториях:"
 msgstr[1] "Данные пакеты не найдены в репозиториях:"
 
-#: pikaur/print_department.py:85
+#: pikaur/print_department.py:92
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
 msgstr[0] "Данный пакет не найден в AUR:"
 msgstr[1] "Данные пакеты не найдены в AUR:"
 
-#: pikaur/print_department.py:210
+#: pikaur/print_department.py:217
 #, python-brace-format
 msgid "for {pkg}"
 msgstr "для пакета {pkg}"
 
-#: pikaur/print_department.py:235
+#: pikaur/print_department.py:242
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
 msgstr[0] "Группа {grp}"
 msgstr[1] "Группы {grp}"
 
-#: pikaur/print_department.py:259
+#: pikaur/print_department.py:266
 msgid "({} days old)"
 msgstr "({} дней назад)"
 
-#: pikaur/print_department.py:265
+#: pikaur/print_department.py:272
 msgid "orphaned"
 msgstr ""
 
-#: pikaur/print_department.py:278 pikaur/print_department.py:796
+#: pikaur/print_department.py:285 pikaur/print_department.py:803
 msgid "outofdate"
 msgstr "устаревший"
 
-#: pikaur/print_department.py:462
+#: pikaur/print_department.py:469
 msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
 msgstr[0] "ПРЕДУПРЕЖДЕНИЕ об установке пакета:"
 msgstr[1] "ПРЕДУПРЕЖДЕНИЕ об установке пакетов:"
 
-#: pikaur/print_department.py:479
+#: pikaur/print_department.py:486
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "Пакет из официального репозитория предложен в качестве замены:"
 msgstr[1] "Пакеты из официальных репозиториев предложены в качестве замены:"
 
-#: pikaur/print_department.py:492
+#: pikaur/print_department.py:499
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "Пакет из стороннего репозитория предложен в качестве замены:"
 msgstr[1] "Пакеты из сторонних репозиториев предложены в качестве замены:"
 
-#: pikaur/print_department.py:507
+#: pikaur/print_department.py:514
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "Будет установлен пакет из официального репозитория:"
 msgstr[1] "Будут установлены пакеты из официальных репозиториев:"
 
-#: pikaur/print_department.py:520
+#: pikaur/print_department.py:527
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "Будет установлена новая зависимость из официального репозитория:"
 msgstr[1] "Будут установлены новые зависимости из официальных репозиториев:"
 
-#: pikaur/print_department.py:535
+#: pikaur/print_department.py:542
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "Будет установлен пакет из стороннего репозитория:"
 msgstr[1] "Будут установлены пакеты из сторонних репозиториев:"
 
-#: pikaur/print_department.py:549
+#: pikaur/print_department.py:556
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "Будет установлена новая зависимость из стороннего репозитория:"
 msgstr[1] "Будут установлены новые зависимости из сторонних репозиториев:"
 
-#: pikaur/print_department.py:564
+#: pikaur/print_department.py:571
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "Будет установлен пакет из AUR:"
 msgstr[1] "Будут установлены пакеты из AUR:"
 
-#: pikaur/print_department.py:578
+#: pikaur/print_department.py:585
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "Будет установлена новая зависимость из AUR:"
 msgstr[1] "Будут установлены новые зависимости из AUR:"
 
-#: pikaur/print_department.py:595
+#: pikaur/print_department.py:602
 msgid "Total Download Size:"
 msgstr "Общий размер загрузки:"
 
-#: pikaur/print_department.py:598
+#: pikaur/print_department.py:605
 msgid "Total Installed Size:"
 msgstr "Общий размер после установки:"
 
-#: pikaur/print_department.py:651
+#: pikaur/print_department.py:658
 msgid "Ignoring package update {}"
 msgstr "Пропуск обновления пакета {}"
 
-#: pikaur/print_department.py:657
+#: pikaur/print_department.py:664
 msgid "Ignoring package {}"
 msgstr "Пропуск пакета {}"
 
-#: pikaur/print_department.py:674
+#: pikaur/print_department.py:681
 #, fuzzy, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr "Пакет {name} {version} из AUR отмечен как устаревший - пропускается"
 
-#: pikaur/print_department.py:765
+#: pikaur/print_department.py:772
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[установлен: {version}]"
 
-#: pikaur/print_department.py:769
+#: pikaur/print_department.py:776
 msgid "[installed]"
 msgstr "[установлен]"
 

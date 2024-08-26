@@ -186,7 +186,7 @@ msgstr "无法复制 '{from_path}' 到 '{to_path}'."
 msgid "Can't get package name from PKGBUILD"
 msgstr "无法从 PKGBUILD 中获取包名"
 
-#: pikaur/build.py:199 pikaur/print_department.py:637 pikaur/srcinfo.py:57
+#: pikaur/build.py:199 pikaur/print_department.py:644 pikaur/srcinfo.py:57
 #, python-brace-format
 msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr "必须设置 `{prop1}` 或 `{prop2}`"
@@ -359,7 +359,7 @@ msgstr "n"
 msgid "{key} is not '{typeof}'"
 msgstr ""
 
-#: pikaur/config.py:709 pikaur/config.py:736 pikaur/pikaprint.py:207
+#: pikaur/config.py:709 pikaur/config.py:736 pikaur/pikaprint.py:211
 msgid "warning:"
 msgstr "警告:"
 
@@ -806,7 +806,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-23 16:12+0200\n"
+"POT-Creation-Date: 2024-08-26 05:50+0200\n"
 "PO-Revision-Date: 2018-09-04 17:36+0800\n"
 "Last-Translator: Amane <tobiichiamane@outlook.com>\n"
 "Language-Team: none\n"
@@ -873,7 +873,7 @@ msgstr "以下软件包的依赖关系无法满足:"
 msgid "Because of:"
 msgstr "因为:"
 
-#: pikaur/pikaprint.py:225
+#: pikaur/pikaprint.py:229
 msgid "error:"
 msgstr "错误:"
 
@@ -912,124 +912,124 @@ msgstr "目录为空."
 msgid "removing all files from cache..."
 msgstr "从缓存中删除所有文件..."
 
-#: pikaur/print_department.py:79
+#: pikaur/print_department.py:86
 msgid "Following package cannot be found in repositories:"
 msgid_plural "Following packages cannot be found in repositories:"
 msgstr[0] "下列包无法在软件仓库中找到:"
 msgstr[1] "下列包无法在软件仓库中找到:"
 
-#: pikaur/print_department.py:85
+#: pikaur/print_department.py:92
 msgid "Following package cannot be found in AUR:"
 msgid_plural "Following packages cannot be found in AUR:"
 msgstr[0] "下列包无法在 AUR 上找到:"
 msgstr[1] "下列包无法在 AUR 上找到:"
 
-#: pikaur/print_department.py:210
+#: pikaur/print_department.py:217
 #, python-brace-format
 msgid "for {pkg}"
 msgstr ""
 
-#: pikaur/print_department.py:235
+#: pikaur/print_department.py:242
 #, python-brace-format
 msgid "{grp} group"
 msgid_plural "{grp} groups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/print_department.py:259
+#: pikaur/print_department.py:266
 msgid "({} days old)"
 msgstr "({} 天之前)"
 
-#: pikaur/print_department.py:265
+#: pikaur/print_department.py:272
 msgid "orphaned"
 msgstr ""
 
-#: pikaur/print_department.py:278 pikaur/print_department.py:796
+#: pikaur/print_department.py:285 pikaur/print_department.py:803
 msgid "outofdate"
 msgstr "过期"
 
-#: pikaur/print_department.py:462
+#: pikaur/print_department.py:469
 msgid "WARNING about package installation:"
 msgid_plural "WARNING about packages installation:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: pikaur/print_department.py:479
+#: pikaur/print_department.py:486
 msgid "Repository package suggested as a replacement:"
 msgid_plural "Repository packages suggested as a replacement:"
 msgstr[0] "建议作替代的仓库软件包:"
 msgstr[1] "建议作替代的仓库软件包:"
 
-#: pikaur/print_department.py:492
+#: pikaur/print_department.py:499
 msgid "Third-party repository package suggested as a replacement:"
 msgid_plural "Third-party repository packages suggested as a replacement:"
 msgstr[0] "建议作替代的第三方仓库软件包:"
 msgstr[1] "建议作替代的第三方仓库软件包:"
 
-#: pikaur/print_department.py:507
+#: pikaur/print_department.py:514
 msgid "Repository package will be installed:"
 msgid_plural "Repository packages will be installed:"
 msgstr[0] "将被安装的仓库软件包:"
 msgstr[1] "将被安装的仓库软件包:"
 
-#: pikaur/print_department.py:520
+#: pikaur/print_department.py:527
 msgid "New dependency will be installed from repository:"
 msgid_plural "New dependencies will be installed from repository:"
 msgstr[0] "将从软件仓库安装新的依赖:"
 msgstr[1] "将从软件仓库安装新的依赖:"
 
-#: pikaur/print_department.py:535
+#: pikaur/print_department.py:542
 msgid "Third-party repository package will be installed:"
 msgid_plural "Third-party repository packages will be installed:"
 msgstr[0] "将被安装的第三方仓库软件包:"
 msgstr[1] "将被安装的第三方仓库软件包:"
 
-#: pikaur/print_department.py:549
+#: pikaur/print_department.py:556
 msgid "New dependency will be installed from third-party repository:"
 msgid_plural "New dependencies will be installed from third-party repository:"
 msgstr[0] "将从第三方软件仓库安装新的依赖:"
 msgstr[1] "将从第三方软件仓库安装新的依赖:"
 
-#: pikaur/print_department.py:564
+#: pikaur/print_department.py:571
 msgid "AUR package will be installed:"
 msgid_plural "AUR packages will be installed:"
 msgstr[0] "将被安装的 AUR 软件包:"
 msgstr[1] "将被安装的 AUR 软件包:"
 
-#: pikaur/print_department.py:578
+#: pikaur/print_department.py:585
 msgid "New dependency will be installed from AUR:"
 msgid_plural "New dependencies will be installed from AUR:"
 msgstr[0] "将从 AUR 安装新的依赖:"
 msgstr[1] "将从 AUR 安装新的依赖:"
 
-#: pikaur/print_department.py:595
+#: pikaur/print_department.py:602
 msgid "Total Download Size:"
 msgstr "总下载大小"
 
-#: pikaur/print_department.py:598
+#: pikaur/print_department.py:605
 msgid "Total Installed Size:"
 msgstr "总安装大小"
 
-#: pikaur/print_department.py:651
+#: pikaur/print_department.py:658
 #, fuzzy
 msgid "Ignoring package update {}"
 msgstr "忽略包 {}"
 
-#: pikaur/print_department.py:657
+#: pikaur/print_department.py:664
 msgid "Ignoring package {}"
 msgstr "忽略包 {}"
 
-#: pikaur/print_department.py:674
+#: pikaur/print_department.py:681
 #, fuzzy, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr "{name} {version} {package_source} 包是最新的 - 跳过"
 
-#: pikaur/print_department.py:765
+#: pikaur/print_department.py:772
 #, python-brace-format
 msgid "[installed: {version}]"
 msgstr "[已安装: {version}]"
 
-#: pikaur/print_department.py:769
+#: pikaur/print_department.py:776
 msgid "[installed]"
 msgstr "[已安装]"
 

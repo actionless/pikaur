@@ -29,7 +29,9 @@ def bubble_top(text: str, padding: int = 1) -> str:
     paragraph_width = len(formatted_paragraph.splitlines()[0])
     max_string_length = max(paragraph_width, len(bubble_top_left) + 1)
     if paragraph_width < max_string_length:
-        formatted_paragraph += " " * (max_string_length - paragraph_width)
+        formatted_paragraph = make_equal_right_padding(
+            formatted_paragraph, max_string_length,
+        )
     return "".join((
         " " * padding,
         bubble_top_left,

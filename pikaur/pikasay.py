@@ -1,7 +1,12 @@
 import sys
 from typing import Final
 
-from .pikaprint import format_paragraph, get_term_width, make_equal_right_padding
+from .pikaprint import (
+    format_paragraph,
+    get_term_width,
+    make_equal_right_padding,
+    printable_length,
+)
 
 PIKAPIC: Final = r"""
       /:}               _
@@ -26,7 +31,7 @@ def bubble_top(text: str, padding: int = 1) -> str:
             force=True, split_words=True,
         ),
     )
-    paragraph_width = len(formatted_paragraph.splitlines()[0])
+    paragraph_width = printable_length(formatted_paragraph.splitlines()[0])
     max_string_length = max(paragraph_width, len(bubble_top_left) + 1)
     if paragraph_width < max_string_length:
         formatted_paragraph = make_equal_right_padding(

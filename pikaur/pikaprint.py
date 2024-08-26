@@ -24,6 +24,8 @@ BOLD_START: "Final" = "\033[0;1m"
 BOLD_RESET: "Final" = "\033[0m"
 COLOR_RESET: "Final" = "\033[0;0m"
 
+PRINTABLE: "Final" = {"´", "‐", *printable}  # noqa: RUF001
+
 
 class TTYRestore:
 
@@ -241,13 +243,34 @@ def printable_length(text: str) -> int:
     counter = 0
     escape_seq = False
     for char in text:
-        if not escape_seq and char in printable:
+        if not escape_seq and (char in PRINTABLE):
             counter += 1
         elif escape_seq and char == "m":
             escape_seq = False
         else:
             escape_seq = True
     return counter
+
+
+def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
+    if not end:
+        end = len(text)
+
+    result = ""
+    counter = 0
+    escape_seq = False
+    for char in text:
+        if counter >= start:
+            result += char
+        if not escape_seq and (char in PRINTABLE):
+            counter += 1
+        elif escape_seq and char == "m":
+            escape_seq = False
+        else:
+            escape_seq = True
+        if counter >= end:
+            break
+    return result
 
 
 def format_paragraph(
@@ -266,7 +289,7 @@ def format_paragraph(
 
     def create_linebreak() -> None:
         nonlocal result, current_line, line_length
-        if current_line and current_line[-1] == " ":
+        while current_line and (current_line[-1] in {" ", "\t"}):
             del current_line[-1]
         result.append(current_line)
         current_line = []
@@ -278,13 +301,15 @@ def format_paragraph(
             continue
         for word_raw in line.split(" "):
             if not word_raw:
+                if line_length + 1 > max_line_width:
+                    create_linebreak()
                 current_line.append(" ")
                 line_length += 1
                 continue
             if split_words:
                 words = [
-                    word_raw[i * max_line_width:(i + 1) * max_line_width]
-                    for i in range(math.ceil(len(word_raw) / max_line_width))
+                    range_printable(word_raw, i * max_line_width, (i + 1) * max_line_width)
+                    for i in range(math.ceil(printable_length(word_raw) / max_line_width))
                 ]
             else:
                 words = [word_raw]
@@ -306,30 +331,9 @@ def format_paragraph(
     ])
 
 
-def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
-    if not end:
-        end = len(text)
-
-    result = ""
-    counter = 0
-    escape_seq = False
-    for char in text:
-        if counter >= start:
-            result += char
-        if not escape_seq and char in printable:
-            counter += 1
-        elif escape_seq and char == "m":
-            escape_seq = False
-        else:
-            escape_seq = True
-        if counter >= end:
-            break
-    return result
-
-
 def make_equal_right_padding(multiline_string: str, length: int | None = None) -> str:
     lines = multiline_string.splitlines()
-    max_string_length = max(len(line) for line in lines)
+    max_string_length = max(printable_length(line) for line in lines)
     if length:
         if length < max_string_length:
             message = f"{length=} < {max_string_length=}"
@@ -338,7 +342,7 @@ def make_equal_right_padding(multiline_string: str, length: int | None = None) -
     else:
         target_length = max_string_length
     return "\n".join(
-        "".join((line, *([" "] * (target_length - len(line)))))
+        "".join((line, *([" "] * (target_length - printable_length(line)))))
         for line in lines
     )
 

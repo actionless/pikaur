@@ -300,12 +300,6 @@ def format_paragraph(
             create_linebreak()
             continue
         for word_raw in line.split(" "):
-            if not word_raw:
-                if line_length + 1 > max_line_width:
-                    create_linebreak()
-                current_line.append(" ")
-                line_length += 1
-                continue
             if split_words:
                 words = [
                     range_printable(word_raw, i * max_line_width, (i + 1) * max_line_width)
@@ -313,6 +307,11 @@ def format_paragraph(
                 ]
             else:
                 words = [word_raw]
+            if not words:
+                if line_length + 1 > max_line_width:
+                    create_linebreak()
+                current_line.append(" ")
+                line_length += 1
             for word in words:
                 if printable_length(word) + line_length > max_line_width:
                     create_linebreak()

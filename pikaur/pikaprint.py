@@ -24,7 +24,7 @@ BOLD_START: "Final" = "\033[0;1m"
 BOLD_RESET: "Final" = "\033[0m"
 COLOR_RESET: "Final" = "\033[0;0m"
 
-PRINTABLE: "Final" = {"´", "‐", *printable}  # noqa: RUF001
+PRINTABLE: "Final" = {"´", "‐", "●", *printable}  # noqa: RUF001
 
 
 class TTYRestore:

@@ -19,7 +19,7 @@ TcAttrsType = list[int | list[bytes | int]]
 
 PADDING: "Final" = 4
 
-ESCAPE = "\033"
+ESCAPE: "Final" = "\033"
 BOLD_START: "Final" = f"{ESCAPE}[0;1m"
 BOLD_RESET: "Final" = f"{ESCAPE}[0m"
 COLOR_RESET: "Final" = f"{ESCAPE}[0;0m"

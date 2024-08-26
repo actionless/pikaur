@@ -5,7 +5,6 @@ import shutil
 import sys
 import termios
 from itertools import zip_longest
-from string import printable
 from typing import TYPE_CHECKING
 
 from .args import ColorFlagValues, parse_args
@@ -20,11 +19,12 @@ TcAttrsType = list[int | list[bytes | int]]
 
 PADDING: "Final" = 4
 
-BOLD_START: "Final" = "\033[0;1m"
-BOLD_RESET: "Final" = "\033[0m"
-COLOR_RESET: "Final" = "\033[0;0m"
+ESCAPE = "\033"
+BOLD_START: "Final" = f"{ESCAPE}[0;1m"
+BOLD_RESET: "Final" = f"{ESCAPE}[0m"
+COLOR_RESET: "Final" = f"{ESCAPE}[0;0m"
 
-PRINTABLE: "Final" = {"´", "‐", "●", *printable}  # noqa: RUF001
+NON_PRINTABLE: "Final" = {ESCAPE}
 
 
 class TTYRestore:
@@ -175,9 +175,9 @@ def color_start(
 ) -> str:
     result = ""
     if color_number >= ColorsHighlight.black:
-        result += "\033[0;1m"
+        result += BOLD_START
         color_number -= ColorsHighlight.black
-    result += f"\033[03{color_number}m"
+    result += f"{ESCAPE}[03{color_number}m"
     return result
 
 
@@ -243,7 +243,7 @@ def printable_length(text: str) -> int:
     counter = 0
     escape_seq = False
     for char in text:
-        if not escape_seq and (char in PRINTABLE):
+        if not escape_seq and (char not in NON_PRINTABLE):
             counter += 1
         elif escape_seq and char == "m":
             escape_seq = False
@@ -262,7 +262,7 @@ def range_printable(text: str, start: int = 0, end: int | None = None) -> str:
     for char in text:
         if counter >= start:
             result += char
-        if not escape_seq and (char in PRINTABLE):
+        if not escape_seq and (char not in NON_PRINTABLE):
             counter += 1
         elif escape_seq and char == "m":
             escape_seq = False

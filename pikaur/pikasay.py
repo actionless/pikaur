@@ -75,12 +75,15 @@ def bubble_right(
         text: str, margin: int = 1, padding: int = 1, width: int | None = None,
         mascot: str = PIKAPIC,
 ) -> str:
-    vert_padding = padding // 2
     enable_vertical_margin = False
     vert_margin = (margin // 2) if enable_vertical_margin else 0
+    vert_padding = padding // 2
+
+    bubble_handle = "_\n/"
+    bubble_handle_width = len(bubble_handle.splitlines()[0])
 
     mascot_lines = make_equal_right_padding(mascot).splitlines()
-    bubble_bottom_right = "_\n/"
+
     formatted_paragraph = make_equal_right_padding(
         format_paragraph(
             text,
@@ -90,14 +93,15 @@ def bubble_right(
                 - margin * 2
                 - padding * 2
                 - len(mascot_lines[0])
-                - len(bubble_bottom_right.splitlines()[0])
+                - bubble_handle_width
             ),
             force=True,
             split_words=True,
         ),
     )
-    paragraph_width = printable_length(formatted_paragraph.splitlines()[0])
-    paragraph_height = len(formatted_paragraph.splitlines())
+    paragraph_lines = formatted_paragraph.splitlines()
+    paragraph_width = printable_length(paragraph_lines[0])
+    paragraph_height = len(paragraph_lines)
 
     bubble_width = paragraph_width + 2  # formatted paragraph already includes horiz padding
     bubble_height = paragraph_height + 2 + vert_padding * 2
@@ -113,7 +117,7 @@ def bubble_right(
     )
 
     return (
-        f"{' ' * (bubble_width + margin * 2 + len(bubble_bottom_right.splitlines()[0]))}\n"
+        f"{' ' * (bubble_width + margin * 2 + bubble_handle_width)}\n"
         * height_compensating_margin
     ) + sidejoin_multiline_paragraphs(
         "",
@@ -146,7 +150,7 @@ def bubble_right(
         "\n".join((
             *([" "] * (vert_margin + 1)),
             *([" "] * (bubble_handle_position)),
-            bubble_bottom_right,
+            bubble_handle,
             *([" "] * (bubble_height - 2 - bubble_handle_position)),
         )),
         "\n".join(

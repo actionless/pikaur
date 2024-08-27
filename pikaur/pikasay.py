@@ -8,6 +8,7 @@ from .pikaprint import (
     make_equal_right_padding,
     print_stdout,
     printable_length,
+    sidejoin_multiline_paragraphs,
 )
 
 PIKAPIC: Final = r"""
@@ -70,12 +71,107 @@ def bubble_top(
     ))
 
 
-def pikasay(
+def bubble_right(
         text: str, margin: int = 1, padding: int = 1, width: int | None = None,
+        mascot: str = PIKAPIC,
+) -> str:
+    vert_padding = padding // 2
+    enable_vertical_margin = False
+    vert_margin = (margin // 2) if enable_vertical_margin else 0
+
+    mascot_lines = make_equal_right_padding(mascot).splitlines()
+    bubble_bottom_right = "_\n/"
+    formatted_paragraph = make_equal_right_padding(
+        format_paragraph(
+            text,
+            padding=padding,
+            width=(
+                (width or get_term_width())
+                - margin * 2
+                - padding * 2
+                - len(mascot_lines[0])
+                - len(bubble_bottom_right.splitlines()[0])
+            ),
+            force=True,
+            split_words=True,
+        ),
+    )
+    paragraph_width = printable_length(formatted_paragraph.splitlines()[0])
+    paragraph_height = len(formatted_paragraph.splitlines())
+
+    bubble_width = paragraph_width + 2  # formatted paragraph already includes horiz padding
+    bubble_height = paragraph_height + 2 + vert_padding * 2
+
+    height_compensating_margin = max(
+        0,
+        len(mascot_lines) - bubble_height - 2,
+    )
+    bubble_handle_position = (
+        len(mascot_lines)
+        + (-5 if bubble_height < len(mascot_lines) else -2)
+        - height_compensating_margin
+    )
+
+    return (
+        f"{' ' * (bubble_width + margin * 2 + len(bubble_bottom_right.splitlines()[0]))}\n"
+        * height_compensating_margin
+    ) + sidejoin_multiline_paragraphs(
+        "",
+        "\n".join(
+            [" " * margin] * (bubble_height + vert_margin - 1 + 2),
+        ),
+        "\n".join((
+            *([" "] * (vert_margin + 1)),
+            "/",
+            *(["|"] * (bubble_height - 2)),
+            "\\",
+        )),
+        "\n".join((
+            *([" " * (bubble_width - 2)] * vert_margin),
+            "_" * (bubble_width - 2),
+            *([" " * (bubble_width - 2)] * (vert_padding + 1)),
+            formatted_paragraph,
+            *([" " * (bubble_width - 2)] * (vert_padding)),
+            "_" * (bubble_width - 2),
+            *([" " * (bubble_width - 2)] * vert_margin),
+        )),
+        "\n".join((
+            *([" "] * (vert_margin + 1)),
+            "\\",
+            *(["|"] * (bubble_handle_position)),
+            " ",
+            *(["|"] * (bubble_height - 2 - bubble_handle_position - 1)),
+            "/",
+        )),
+        "\n".join((
+            *([" "] * (vert_margin + 1)),
+            *([" "] * (bubble_handle_position)),
+            bubble_bottom_right,
+            *([" "] * (bubble_height - 2 - bubble_handle_position)),
+        )),
+        "\n".join(
+            [" " * margin] * (bubble_height + vert_margin - 1 + 2),
+        ),
+    )
+
+
+def pikasay(  # noqa: PLR0917
+        text: str, margin: int = 1, padding: int = 1, width: int | None = None,
+        orientation: str = "horizontal", mascot_pic: str = PIKAPIC,
 ) -> None:
-    print_stdout("".join((
-        PIKAPIC, bubble_top(text=text, margin=margin, padding=padding, width=width),
-    )))
+    if orientation == "horizontal":
+        message = "".join((
+            mascot_pic, bubble_top(text=text, margin=margin, padding=padding, width=width),
+        ))
+    elif orientation == "vertical":
+        message = sidejoin_multiline_paragraphs(
+            "",
+            bubble_right(text=text, margin=margin, padding=padding, width=width, mascot=mascot_pic),
+            mascot_pic,
+        )
+    else:
+        raise ValueError(orientation)
+    print_stdout(message)
 
 
 def pikasay_cli() -> None:
@@ -111,6 +207,11 @@ def pikasay_cli() -> None:
         type=int,
         help="force terminal width",
     )
+    parser.add_argument(
+        "--orientation",
+        default="horizontal",
+        help="horizontal or vertical",
+    )
     args = parser.parse_args()
 
     text = " ".join(args.text)
@@ -119,9 +220,11 @@ def pikasay_cli() -> None:
             text += "\n"
         text += "\n".join(line.rstrip("\n") for line in sys.stdin.readlines())
     elif not args.text:
-        pikasay(parser.format_help(), margin=args.margin, padding=args.padding, width=args.width)
-        sys.exit(0)
-    pikasay(text, margin=args.margin, padding=args.padding, width=args.width)
+        text = parser.format_help()
+    pikasay(
+        text, margin=args.margin, padding=args.padding, width=args.width,
+        orientation=args.orientation,
+    )
 
 
 if __name__ == "__main__":

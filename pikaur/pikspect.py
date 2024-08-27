@@ -67,7 +67,11 @@ def _copy(  # pylint: disable=too-many-branches
         master_read: MasterReaderType = _read,
         stdin_read: StdinReaderType = _read,
 ) -> None:
-    """Fork of pty._copy from python's stdlib."""
+    """
+    Fork of pty._copy from python's stdlib.
+    It calls stdin_read even if real stdin is not ready,
+    giving the opportunity to inject pre-programmed input there.
+    """
     if os.get_blocking(master_fd):
         # If we write more than tty/ndisc is willing to buffer, we may block
         # indefinitely. So we set master_fd to non-blocking temporarily during
@@ -126,6 +130,7 @@ def _copy(  # pylint: disable=too-many-branches
                 stdin_avail = False
             else:
                 i_buf += data
+        # ---- added: ----
         else:
             data = stdin_read(None)
             if data:

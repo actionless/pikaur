@@ -377,7 +377,11 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
             ),
         ), sort_by
 
-    return "\n".join([
+    return (
+        "\n\n"
+        if (verbose and required_by_installed)
+        else "\n"
+    ).join([
         line for line, _ in sorted(
             [
                 pretty_format(pkg_update)

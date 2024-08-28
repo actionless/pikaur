@@ -308,253 +308,265 @@ CONFIG_YES_VALUES: "Final" = ("yes", "y", "true", "1")
 
 
 ConfigSchemaT = dict[str, dict[str, "ConfigValueType"]]
-CONFIG_SCHEMA: ConfigSchemaT = {
-    "sync": {
-        "AlwaysShowPkgOrigin": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "DevelPkgsExpiration": {
-            "data_type": INT,
-            "default": "-1",
-        },
-        "UpgradeSorting": {
-            "data_type": STR,
-            "default": UpgradeSortingValues.VERSIONDIFF,
-        },
-        "ShowDownloadSize": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "IgnoreOutofdateAURUpgrades": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-    },
-    "build": {
-        "KeepBuildDir": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "KeepDevBuildDir": {
-            "data_type": BOOL,
-            "default": "yes",
-        },
-        "KeepBuildDeps": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "GpgDir": {
-            "data_type": STR,
-            "default": ("/etc/pacman.d/gnupg/" if RunningAsRoot() else ""),
-        },
-        "SkipFailedBuild": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "DynamicUsers": {
-            "data_type": STR,
-            "default": "root",
-        },
-        "AlwaysUseDynamicUsers": {
-            "data_type": BOOL,
-            "default": "no",
-            "deprecated": {
-                "section": "build",
-                "option": "DynamicUsers",
-                "transform": lambda old_value, _config: "always" if old_value == "yes" else "root",
-            },
-        },
-        "NoEdit": {
-            "data_type": BOOL,
-            "deprecated": {
-                "section": "review",
-                "option": "NoEdit",
-            },
-        },
-        "DontEditByDefault": {
-            "data_type": BOOL,
-            "deprecated": {
-                "section": "review",
-                "option": "DontEditByDefault",
-            },
-        },
-        "NoDiff": {
-            "data_type": BOOL,
-            "deprecated": {
-                "section": "review",
-                "option": "NoDiff",
-            },
-        },
-        "GitDiffArgs": {
-            "data_type": STR,
-            "deprecated": {
-                "section": "review",
-                "option": "GitDiffArgs",
-            },
-        },
-        "IgnoreArch": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-    },
-    "review": {
-        "NoEdit": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "DontEditByDefault": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "NoDiff": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "GitDiffArgs": {
-            "data_type": STR,
-            "default": "--ignore-space-change,--ignore-all-space",
-        },
-        "DiffPager": {
-            "data_type": STR,
-            "default": DiffPagerValues.AUTO,
-        },
-        "HideDiffFiles": {
-            "data_type": STR,
-            "default": ".SRCINFO",
-        },
-    },
-    "colors": {
-        "Version": {
-            "data_type": INT,
-            "default": "10",
-        },
-        "VersionDiffOld": {
-            "data_type": INT,
-            "default": "11",
-        },
-        "VersionDiffNew": {
-            "data_type": INT,
-            "default": "9",
-        },
-    },
-    "ui": {
-        "RequireEnterConfirm": {
-            "data_type": BOOL,
-            "default": "yes",
-        },
-        "DiffPager": {
-            "data_type": STR,
-            "deprecated": {
-                "section": "review",
-                "option": "DiffPager",
-            },
-        },
-        "PrintCommands": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "AurSearchSorting": {
-            "data_type": STR,
-            "default": AurSearchSortingValues.HOTTEST,
-        },
-        "DisplayLastUpdated": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "GroupByRepository": {
-            "data_type": BOOL,
-            "default": "yes",
-        },
-        "ReverseSearchSorting": {
-            "data_type": BOOL,
-            "default": "no",
-        },
-        "WarnAboutPackageUpdates": {
-            "data_type": STR,
-            "default": "",
-        },
-        "WarnAboutNonDefaultPrivilegeEscalationTool": {
-            "data_type": BOOL,
-            "default": "yes",
-        },
-    },
-    "misc": {
-        "AurHost": {
-            "data_type": STR,
-            "deprecated": {
-                "section": "network",
-                "option": "AurUrl",
-                "transform": lambda old_value, _config: f"https://{old_value}",
-            },
-        },
-        "NewsUrl": {
-            "data_type": STR,
-            "deprecated": {
-                "section": "network",
-                "option": "NewsUrl",
-            },
-        },
-        "CachePath": {
-            "data_type": STR,
-            "default": str(_CachePathDefault()),
-        },
-        "DataPath": {
-            "data_type": STR,
-            "default": str(_DataPathDefault()),
-        },
-        "PacmanPath": {
-            "data_type": STR,
-            "default": "pacman",
-        },
-        "PrivilegeEscalationTool": {
-            "data_type": STR,
-            "default": "sudo",
-        },
-        "PrivilegeEscalationTarget": {
-            "data_type": STR,
-            "default": "pikaur",
-        },
-        "UserId": {
-            "data_type": INT,
-            "default": "0",
-        },
-        "PreserveEnv": {
-            "data_type": STR,
-            "default": (
-                "PKGDEST,VISUAL,EDITOR,http_proxy,https_proxy,ftp_proxy"
-                ",HTTP_PROXY,HTTPS_PROXY,FTP_PROXY,ALL_PROXY"
-            ),
-        },
-    },
-    "network": {
-        "AurUrl": {
-            "data_type": STR,
-            "default": "https://aur.archlinux.org",
-        },
-        "NewsUrl": {
-            "data_type": STR,
-            "default": "https://archlinux.org/feeds/news/",
-            "old_default": "https://www.archlinux.org/feeds/news/",
-        },
-        "Socks5Proxy": {
-            "data_type": STR,
-            "default": "",
-        },
-        "AurHttpProxy": {
-            "data_type": STR,
-            "default": "",
-        },
-        "AurHttpsProxy": {
-            "data_type": STR,
-            "default": "",
-        },
-    },
-}
+
+
+class ConfigSchema(ConfigSchemaT):
+
+    config_schema: ConfigSchemaT | None = None
+
+    def __new__(cls) -> "ConfigSchemaT":  # type: ignore[misc]
+        if not cls.config_schema:
+            cls.config_schema = {
+                "sync": {
+                    "AlwaysShowPkgOrigin": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "DevelPkgsExpiration": {
+                        "data_type": INT,
+                        "default": "-1",
+                    },
+                    "UpgradeSorting": {
+                        "data_type": STR,
+                        "default": UpgradeSortingValues.VERSIONDIFF,
+                    },
+                    "ShowDownloadSize": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "IgnoreOutofdateAURUpgrades": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                },
+                "build": {
+                    "KeepBuildDir": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "KeepDevBuildDir": {
+                        "data_type": BOOL,
+                        "default": "yes",
+                    },
+                    "KeepBuildDeps": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "GpgDir": {
+                        "data_type": STR,
+                        "default": ("/etc/pacman.d/gnupg/" if RunningAsRoot() else ""),
+                    },
+                    "SkipFailedBuild": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "DynamicUsers": {
+                        "data_type": STR,
+                        "default": "root",
+                    },
+                    "AlwaysUseDynamicUsers": {
+                        "data_type": BOOL,
+                        "default": "no",
+                        "deprecated": {
+                            "section": "build",
+                            "option": "DynamicUsers",
+                            "transform": (
+                                lambda old_value, _config:
+                                "always" if old_value == "yes" else "root"
+                            ),
+                        },
+                    },
+                    "NoEdit": {
+                        "data_type": BOOL,
+                        "deprecated": {
+                            "section": "review",
+                            "option": "NoEdit",
+                        },
+                    },
+                    "DontEditByDefault": {
+                        "data_type": BOOL,
+                        "deprecated": {
+                            "section": "review",
+                            "option": "DontEditByDefault",
+                        },
+                    },
+                    "NoDiff": {
+                        "data_type": BOOL,
+                        "deprecated": {
+                            "section": "review",
+                            "option": "NoDiff",
+                        },
+                    },
+                    "GitDiffArgs": {
+                        "data_type": STR,
+                        "deprecated": {
+                            "section": "review",
+                            "option": "GitDiffArgs",
+                        },
+                    },
+                    "IgnoreArch": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                },
+                "review": {
+                    "NoEdit": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "DontEditByDefault": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "NoDiff": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "GitDiffArgs": {
+                        "data_type": STR,
+                        "default": "--ignore-space-change,--ignore-all-space",
+                    },
+                    "DiffPager": {
+                        "data_type": STR,
+                        "default": DiffPagerValues.AUTO,
+                    },
+                    "HideDiffFiles": {
+                        "data_type": STR,
+                        "default": ".SRCINFO",
+                    },
+                },
+                "colors": {
+                    "Version": {
+                        "data_type": INT,
+                        "default": "10",
+                    },
+                    "VersionDiffOld": {
+                        "data_type": INT,
+                        "default": "11",
+                    },
+                    "VersionDiffNew": {
+                        "data_type": INT,
+                        "default": "9",
+                    },
+                },
+                "ui": {
+                    "RequireEnterConfirm": {
+                        "data_type": BOOL,
+                        "default": "yes",
+                    },
+                    "DiffPager": {
+                        "data_type": STR,
+                        "deprecated": {
+                            "section": "review",
+                            "option": "DiffPager",
+                        },
+                    },
+                    "PrintCommands": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "AurSearchSorting": {
+                        "data_type": STR,
+                        "default": AurSearchSortingValues.HOTTEST,
+                    },
+                    "DisplayLastUpdated": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "GroupByRepository": {
+                        "data_type": BOOL,
+                        "default": "yes",
+                    },
+                    "ReverseSearchSorting": {
+                        "data_type": BOOL,
+                        "default": "no",
+                    },
+                    "WarnAboutPackageUpdates": {
+                        "data_type": STR,
+                        "default": "",
+                    },
+                    "WarnAboutNonDefaultPrivilegeEscalationTool": {
+                        "data_type": BOOL,
+                        "default": "yes",
+                    },
+                },
+                "misc": {
+                    "AurHost": {
+                        "data_type": STR,
+                        "deprecated": {
+                            "section": "network",
+                            "option": "AurUrl",
+                            "transform": lambda old_value, _config: f"https://{old_value}",
+                        },
+                    },
+                    "NewsUrl": {
+                        "data_type": STR,
+                        "deprecated": {
+                            "section": "network",
+                            "option": "NewsUrl",
+                        },
+                    },
+                    "CachePath": {
+                        "data_type": STR,
+                        "default": str(_CachePathDefault()),
+                    },
+                    "DataPath": {
+                        "data_type": STR,
+                        "default": str(_DataPathDefault()),
+                    },
+                    "PacmanPath": {
+                        "data_type": STR,
+                        "default": "pacman",
+                    },
+                    "PrivilegeEscalationTool": {
+                        "data_type": STR,
+                        "default": "sudo",
+                    },
+                    "PrivilegeEscalationTarget": {
+                        "data_type": STR,
+                        "default": "pikaur",
+                    },
+                    "UserId": {
+                        "data_type": INT,
+                        "default": "0",
+                    },
+                    "PreserveEnv": {
+                        "data_type": STR,
+                        "default": (
+                            "PKGDEST,VISUAL,EDITOR,http_proxy,https_proxy,ftp_proxy"
+                            ",HTTP_PROXY,HTTPS_PROXY,FTP_PROXY,ALL_PROXY"
+                        ),
+                    },
+                },
+                "network": {
+                    "AurUrl": {
+                        "data_type": STR,
+                        "default": "https://aur.archlinux.org",
+                    },
+                    "NewsUrl": {
+                        "data_type": STR,
+                        "default": "https://archlinux.org/feeds/news/",
+                        "old_default": "https://www.archlinux.org/feeds/news/",
+                    },
+                    "Socks5Proxy": {
+                        "data_type": STR,
+                        "default": "",
+                    },
+                    "AurHttpProxy": {
+                        "data_type": STR,
+                        "default": "",
+                    },
+                    "AurHttpsProxy": {
+                        "data_type": STR,
+                        "default": "",
+                    },
+                },
+            }
+        return cls.config_schema
 
 
 def get_key_type(section_name: str, key_name: str) -> str | None:
-    config_value: ConfigValueType | None = CONFIG_SCHEMA.get(section_name, {}).get(key_name, None)
+    config_value: ConfigValueType | None = ConfigSchema().get(section_name, {}).get(key_name, None)
     if not config_value:
         return None
     return config_value.get("data_type")
@@ -564,7 +576,7 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
     if not config:
         config = configparser.ConfigParser()
     need_write = False
-    for section_name, section in CONFIG_SCHEMA.items():
+    for section_name, section in ConfigSchema().items():
         if section_name not in config:
             config[section_name] = {}
         for option_name, option_schema in section.items():
@@ -696,7 +708,7 @@ class PikaurConfig:
                 if new_section_name not in cls._config:
                     cls._config[new_section_name] = {}
                 cls._config[new_section_name][new_option_name] = new_value
-                CONFIG_SCHEMA[new_section_name][new_option_name]["migrated"] = True
+                ConfigSchema()[new_section_name][new_option_name]["migrated"] = True
                 old_value_was_migrated = True
 
         old_value_was_removed = False
@@ -706,7 +718,7 @@ class PikaurConfig:
             option_name in cls._config[section_name]
         ):
             del cls._config[section_name][option_name]
-            CONFIG_SCHEMA[section_name][option_name]["migrated"] = True
+            ConfigSchema()[section_name][option_name]["migrated"] = True
             old_value_was_removed = True
 
         if old_value_was_migrated or old_value_was_removed:
@@ -736,7 +748,7 @@ class PikaurConfig:
         if current_value == old_default:
             new_default_value = option_schema["default"]
             cls._config[section_name][option_name] = new_default_value
-            CONFIG_SCHEMA[section_name][option_name]["migrated"] = True
+            ConfigSchema()[section_name][option_name]["migrated"] = True
             print(" ".join([  # noqa: T201
                 DECORATION,
                 translate("warning:"),
@@ -751,7 +763,7 @@ class PikaurConfig:
 
     @classmethod
     def migrate_config(cls) -> None:
-        for section_name, section in CONFIG_SCHEMA.items():
+        for section_name, section in ConfigSchema().items():
             for option_name, option_schema in section.items():
                 if option_schema.get("old_default"):
                     cls._migrate_deprecated_config_value(option_schema, section_name, option_name)

@@ -90,6 +90,8 @@ whitelist.pikaman.NroffRenderer.paragraph_close
 whitelist.pikaman.NroffRenderer.image
 whitelist.pikaman.NroffRenderer.bullet_list_open
 whitelist.pikaman.NroffRenderer.bullet_list_close
+whitelist.pikaman.NroffRenderer.ordered_list_open
+whitelist.pikaman.NroffRenderer.ordered_list_close
 whitelist.pikaman.NroffRenderer.list_item_close
 whitelist.pikaman.NroffRenderer.link_open
 whitelist.pikaman.NroffRenderer.html_block

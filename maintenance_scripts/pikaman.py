@@ -36,6 +36,11 @@ class TokenType:
     INLINE: "Final[str]" = "inline"
 
 
+class ListType:
+    BULLET: "Final" = "bullet"
+    ORDERED: "Final" = "ordered"
+
+
 README_PATH: "Final" = Path(sys.argv[1])
 OUTPUT_PATH: "Final" = Path(sys.argv[2])
 ENCODING: "Final" = "utf-8"
@@ -49,6 +54,7 @@ class NroffRenderer(
     __output__ = "nroff"
     name: str
     section: int
+    list_types: list[str]
 
     def __init__(self, name: str = "test", section: int = 1) -> None:
         super().__init__()
@@ -59,6 +65,7 @@ class NroffRenderer(
             for k, v in inspect.getmembers(self, predicate=inspect.ismethod)
             if not (k.startswith(("render", "_")))
         }
+        self.list_types = []
 
     def render(
         self, tokens: "Sequence[Token]", options: OptionsDict, env: "MutableMapping[str, str]",
@@ -73,7 +80,7 @@ class NroffRenderer(
             elif token.type in self.rules:
                 result += self.rules[token.type](tokens, i, options, env)
             else:
-                raise NotImplementedError
+                raise NotImplementedError(token.type)
         return result
 
     def render_inline(
@@ -84,7 +91,7 @@ class NroffRenderer(
             if token.type in self.rules:
                 result += self.rules[token.type](tokens, i, options, env)
             else:
-                raise NotImplementedError
+                raise NotImplementedError(token.type)
         return result
 
     def text(
@@ -192,22 +199,49 @@ class NroffRenderer(
             self, tokens: "Sequence[Token]", idx: int,
             options: OptionsDict, env: "MutableMapping[str, str]",
     ) -> str:
+        self.list_types.append(ListType.BULLET)
         return ""
 
     def bullet_list_close(
             self, tokens: "Sequence[Token]", idx: int,
             options: OptionsDict, env: "MutableMapping[str, str]",
     ) -> str:
+        self.list_types.reverse()
+        self.list_types.remove(ListType.BULLET)
+        self.list_types.reverse()
+        return ""
+
+    def ordered_list_open(
+            self, tokens: "Sequence[Token]", idx: int,
+            options: OptionsDict, env: "MutableMapping[str, str]",
+    ) -> str:
+        self.list_types.append(ListType.ORDERED)
+        return ""
+
+    def ordered_list_close(
+            self, tokens: "Sequence[Token]", idx: int,
+            options: OptionsDict, env: "MutableMapping[str, str]",
+    ) -> str:
+        self.list_types.reverse()
+        self.list_types.remove(ListType.ORDERED)
+        self.list_types.reverse()
         return ""
 
     def list_item_open(
             self, tokens: "Sequence[Token]", idx: int,
             options: OptionsDict, env: "MutableMapping[str, str]",
     ) -> str:
-        list_deco = r"\(bu"  # bullet
-        # bullet_char = node.parent.list_data.get("bullet_char")
-        # if bullet_char not in (None, "*"):
-        #     list_deco = bullet_char
+        token = tokens[idx]
+        list_type = self.list_types[-1]
+        if list_type == ListType.BULLET:
+            list_deco = r"\(bu"  # bullet
+            # bullet_char = node.parent.list_data.get("bullet_char")
+            # if bullet_char not in (None, "*"):
+            #     list_deco = bullet_char
+        elif list_type == ListType.ORDERED:
+            list_deco = f"{token.info})"
+        else:
+            raise NotImplementedError(list_type)
         return rf'.IP "{list_deco}" 4'
 
     def list_item_close(
@@ -215,16 +249,6 @@ class NroffRenderer(
             options: OptionsDict, env: "MutableMapping[str, str]",
     ) -> str:
         return ".\n"
-
-    # def ordered_list_item(self, token):
-    #     list_deco = r"\(bu"  # bullet
-    #     # list_deco = node.parent.list_data["start"]
-    #     return (
-    #         rf'.IP "{list_deco}" 4' +
-    #         token.content +
-    #         "." +
-    #         "\n"
-    #     )
 
     def fence(
             self, tokens: "Sequence[Token]", idx: int,

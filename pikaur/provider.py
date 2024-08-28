@@ -46,7 +46,7 @@ class Provider:
         else:
             aur_packages = []
             repo_packages = options  # type: ignore[assignment]
-        print_package_search_results(
+        sorted_packages = print_package_search_results(
             aur_packages=aur_packages,
             repo_packages=repo_packages,
             local_pkgs_versions={},
@@ -60,7 +60,7 @@ class Provider:
             )
 
         try:
-            answers = get_multiple_numbers_input(answers=list(range(len(options))))
+            answers = get_multiple_numbers_input(answers=list(range(len(sorted_packages))))
         except NotANumberInputError as exc:
             if exc.character == "v":
                 return rerun(verbose=True)
@@ -76,8 +76,8 @@ class Provider:
         if len(answers) < 1:
             return rerun()
         answer = answers[0] - 1
-        if (answer >= len(options)) or (answer < 0):
-            print_error(translate("There are only {num} options").format(num=len(options)))
+        if (answer >= len(sorted_packages)) or (answer < 0):
+            print_error(translate("There are only {num} options").format(num=len(sorted_packages)))
             return rerun()
-        cls.saved_providers[dependency_name] = options[answer].name
+        cls.saved_providers[dependency_name] = sorted_packages[answer].name
         return answer

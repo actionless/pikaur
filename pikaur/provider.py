@@ -46,7 +46,7 @@ class Provider:
         else:
             aur_packages = []
             repo_packages = options  # type: ignore[assignment]
-        print_package_search_results(
+        sorted_options = print_package_search_results(
             aur_packages=aur_packages,
             repo_packages=repo_packages,
             local_pkgs_versions={},
@@ -79,5 +79,6 @@ class Provider:
         if (answer >= len(options)) or (answer < 0):
             print_error(translate("There are only {num} options").format(num=len(options)))
             return rerun()
-        cls.saved_providers[dependency_name] = options[answer].name
-        return answer
+        answer_alt = options.index(sorted_options[answer])  # type: ignore[arg-type]
+        cls.saved_providers[dependency_name] = options[answer_alt].name
+        return answer_alt

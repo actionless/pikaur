@@ -37,7 +37,7 @@ class PikaurConfigItemTestCase(PikaurTestCase):
     @classmethod
     def setUpClass(cls):
         cls.config_patcher = mock.patch(
-            "pikaur.config.CONFIG_SCHEMA", new=EXAMPLE_CONFIG_SCHEMA,
+            "pikaur.config.ConfigSchema.config_schema", new=EXAMPLE_CONFIG_SCHEMA,
         )
         cls.config_patcher.start()
         parser = configparser.RawConfigParser()

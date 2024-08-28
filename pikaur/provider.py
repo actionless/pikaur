@@ -1,6 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-from typing import ClassVar
+from typing import ClassVar, TypeVar, cast
 
 import pyalpm
 
@@ -12,6 +12,8 @@ from .print_department import print_package_search_results
 from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .version import VersionMatcher
 
+Package = TypeVar("Package", pyalpm.Package, AURPackageInfo)
+
 
 class Provider:
 
@@ -21,15 +23,17 @@ class Provider:
     def choose(  # pylint: disable=too-many-return-statements  # noqa: PLR0911
             cls,
             dependency: str,
-            options: list[pyalpm.Package] | list[AURPackageInfo],
+            options: list[Package],
             *,
             verbose: bool = False,
-    ) -> int:
+    ) -> Package:
         dependency_name = VersionMatcher(dependency).pkg_name
         if result := cls.saved_providers.get(dependency_name):
-            return [pkg.name for pkg in options].index(result)
+            for pkg in options:
+                if pkg.name == result:
+                    return pkg
 
-        def rerun(*, verbose: bool = verbose) -> int:
+        def rerun(*, verbose: bool = verbose) -> Package:
             return cls.choose(dependency=dependency, options=options, verbose=verbose)
 
         print_stdout(
@@ -42,17 +46,20 @@ class Provider:
         aur_packages: list[AURPackageInfo]
         repo_packages: list[pyalpm.Package]
         if isinstance(options[0], AURPackageInfo):
-            aur_packages = options  # type: ignore[assignment]
+            aur_packages = options
             repo_packages = []
         else:
             aur_packages = []
-            repo_packages = options  # type: ignore[assignment]
-        sorted_packages = print_package_search_results(
-            aur_packages=aur_packages,
-            repo_packages=repo_packages,
-            local_pkgs_versions={},
-            enumerated=True,
-            list_mode=not verbose,
+            repo_packages = options
+        sorted_packages = cast(
+            list[Package],
+            print_package_search_results(
+                aur_packages=aur_packages,
+                repo_packages=repo_packages,
+                local_pkgs_versions={},
+                enumerated=True,
+                list_mode=not verbose,
+            ),
         )
         if not verbose:
             print_stdout(
@@ -81,4 +88,4 @@ class Provider:
             print_error(translate("There are only {num} options").format(num=len(sorted_packages)))
             return rerun()
         cls.saved_providers[dependency_name] = sorted_packages[answer].name
-        return answer
+        return sorted_packages[answer]

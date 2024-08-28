@@ -547,9 +547,9 @@ class PackageDB(PackageDBCommon, PyAlpmWrapper):
                         matching_pkgs.append(pkg)
         if not matching_pkgs:
             raise PackagesNotFoundInRepoError(packages=[pkg_name])
-        return matching_pkgs[Provider.choose(
+        return Provider.choose(
             dependency=pkg_name, options=matching_pkgs,
-        )]
+        )
 
     @classmethod
     def get_local_pkg_uncached(cls, name: str) -> pyalpm.Package:

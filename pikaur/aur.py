@@ -271,14 +271,14 @@ def find_aur_provided_deps(  # pylint: disable=too-many-branches
             if len(aur_pkgs) == 1:
                 aur_pkg = aur_pkgs[0]
             else:
-                aur_pkg = aur_pkgs[Provider.choose(
+                aur_pkg = Provider.choose(
                     dependency=(
                         version_matchers[package_name].line
                         if version_matchers
                         else package_name
                     ),
                     options=aur_pkgs,
-                )]
+                )
             json_results.append(aur_pkg)
             package_names.remove(package_name)
             logger.debug("find_aur_provided_deps: {} cached", package_name)
@@ -316,14 +316,14 @@ def find_aur_provided_deps(  # pylint: disable=too-many-branches
                 if len(matching_aur_pkgs) == 1:
                     aur_pkg = matching_aur_pkgs[0]
                 else:
-                    aur_pkg = matching_aur_pkgs[Provider.choose(
+                    aur_pkg = Provider.choose(
                         dependency=(
                             version_matchers[provided_pkg_name].line
                             if version_matchers
                             else provided_pkg_name
                         ),
                         options=matching_aur_pkgs,
-                    )]
+                    )
                 json_results += [aur_pkg]
 
     found_aur_packages = [

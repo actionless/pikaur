@@ -111,7 +111,6 @@ class PackageSource(enum.Enum):
 
 class InstallInfo(DataType):
     name: str
-    current_version: str
     new_version: str
     description: str | None = None
     maintainer: str | None = None
@@ -124,13 +123,15 @@ class InstallInfo(DataType):
     replaces: list[str] | None = None
     pkgbuild_path: str | None = None
 
+    # if pkg is already installed:
+    current_version: str
     installed_as_dependency: bool | None = None
     required_by_installed: list[str] | None = None
     optional_for_installed: list[str] | None = None
 
     __ignore_in_eq__ = (
         "package", "provided_by", "pkgbuild_path",
-        "required_by_installed", "optional_for_installed",
+        "installed_as_dependency", "required_by_installed", "optional_for_installed",
     )
 
     @property

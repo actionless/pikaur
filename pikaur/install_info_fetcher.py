@@ -3,7 +3,7 @@ import functools
 import operator
 from itertools import chain
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from .alpm import OFFICIAL_REPOS, PacmanConfig
 from .args import parse_args, reconstruct_args
@@ -763,6 +763,7 @@ Gonna fetch install info for:
                 opt = local_pkg.compute_optionalfor()
                 pkg_install_info.required_by_installed = req or []
                 pkg_install_info.optional_for_installed = opt or []
+                pkg_install_info.installed_as_dependency = cast(bool, local_pkg.reason)
 
         logger.debug("== marked dependant pkgs.")
 

@@ -120,11 +120,13 @@ class InstallInfo(DataType):
     package: "pyalpm.Package | AURPackageInfo"
     provided_by: list["pyalpm.Package | AURPackageInfo"] | None = None
     required_by: list["InstallInfo"] | None = None
-    required_by_installed: list[str] | None = None
-    optional_for_installed: list[str] | None = None
     members_of: list[str] | None = None
     replaces: list[str] | None = None
     pkgbuild_path: str | None = None
+
+    installed_as_dependency: bool | None = None
+    required_by_installed: list[str] | None = None
+    optional_for_installed: list[str] | None = None
 
     __ignore_in_eq__ = (
         "package", "provided_by", "pkgbuild_path",

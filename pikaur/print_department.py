@@ -226,6 +226,23 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
             )
             return _color_line(f"({required_for_formatted})", dep_color)
 
+        if required_by_installed and (pkg_update.installed_as_dependency is not None):
+            message = (
+                translate("as dep")
+                if pkg_update.installed_as_dependency
+                else translate("explicit")
+            )
+            pkg_name += color_line(
+                f" ({message})",
+                (
+                    ColorsHighlight.black
+                    if (pkg_update.required_by_installed or pkg_update.optional_for_installed)
+                    else ColorsHighlight.red
+                )
+                if pkg_update.installed_as_dependency
+                else ColorsHighlight.white,
+            )
+
         if pkg_update.required_by:
             required_by_names = (
                 [p.package.name for p in pkg_update.required_by] if pkg_update.required_by else []

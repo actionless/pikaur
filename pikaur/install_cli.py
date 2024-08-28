@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 from .args import parse_args, reconstruct_args
 from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
-from .config import DiffPagerValues, PikaurConfig, UsingDynamicUsers
+from .config import DECORATION, DiffPagerValues, PikaurConfig, UsingDynamicUsers
 from .conflicts import find_aur_conflicts
 from .exceptions import (
     BuildError,
@@ -217,7 +217,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
         if self.args.sysupgrade and not self.args.repo:
             message = translate("Starting full AUR upgrade...")
             print_stderr(
-                f"{color_line('::', ColorsHighlight.blue)}"
+                f"{color_line(DECORATION, ColorsHighlight.blue)}"
                 f" {bold_line(message)}",
             )
         if self.args.aur:
@@ -327,7 +327,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
         ]
         answer = get_input(
             (
-                f"{color_line('::', ColorsHighlight.yellow)}"
+                f"{color_line(DECORATION, ColorsHighlight.yellow)}"
                 f" {question}\n"
                 f"{'\n'.join(options)}\n> "
             ),
@@ -353,7 +353,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
         ]
         answer = get_input(
             (
-                f"{color_line('::', ColorsHighlight.yellow)}"
+                f"{color_line(DECORATION, ColorsHighlight.yellow)}"
                 f" {question}\n"
                 f"{'\n'.join(options)}\n> "
             ),
@@ -483,7 +483,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 self.install_repo_packages()
             else:
                 print_stdout(" ".join((
-                    color_line("::", ColorsHighlight.green),
+                    color_line(DECORATION, ColorsHighlight.green),
                     translate("Nothing to do."),
                 )))
             raise SysExit(0)
@@ -496,7 +496,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 line = raw_line.lstrip()
                 if not line:
                     continue
-                if not line.startswith("::") and not line.startswith("#"):
+                if not line.startswith(DECORATION) and not line.startswith("#"):
                     pkg_name = line.split()[0]
                     # for provided package selection: (mb later for optional deps)
                     pkg_name = pkg_name.split("#")[0].strip()
@@ -555,11 +555,11 @@ class InstallPackagesCLI:  # noqa: PLR0904
             )
             prompt = "".join((
                 (
-                    f"{color_line('::', ColorsHighlight.blue)}"
+                    f"{color_line(DECORATION, ColorsHighlight.blue)}"
                     f" {bold_line(question)}"
                 ),
                 *(
-                    f"\n{color_line('::', ColorsHighlight.blue)}"
+                    f"\n{color_line(DECORATION, ColorsHighlight.blue)}"
                     f" {bold_line(options_line)}"
                     for options_line
                     in options_lines
@@ -572,7 +572,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             if self.news and self.news.any_news:
                 options_news = translate("[c]onfirm Arch NEWS as read")
                 prompt += (
-                    f"\n{color_line('::', ColorsHighlight.blue)}"
+                    f"\n{color_line(DECORATION, ColorsHighlight.blue)}"
                     f" {bold_line(options_news)}"
                 )
                 answers += translate("c")
@@ -742,7 +742,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     answer = translate("a")
                 else:  # pragma: no cover
                     prompt = "{} {}\n> ".format(
-                        color_line("::", ColorsHighlight.yellow),
+                        color_line(DECORATION, ColorsHighlight.yellow),
                         "\n".join((
                             translate("Try recovering?"),
                             translate("[T] try again"),
@@ -868,7 +868,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     new=new_pkg_name, installed=pkg_conflict,
                 )
                 answer = ask_to_continue(
-                    f"{color_line('::', ColorsHighlight.yellow)} {bold_line(question)}",
+                    f"{color_line(DECORATION, ColorsHighlight.yellow)} {bold_line(question)}",
                     default_yes=False,
                 )
                 if not answer:
@@ -887,7 +887,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                 name=", ".join(package_build.package_names),
                 flag=(noedit and "--noedit") or (self.args.noconfirm and "--noconfirm"),
             )
-            print_stderr(f"{color_line('::', ColorsHighlight.yellow)} {message}")
+            print_stderr(f"{color_line(DECORATION, ColorsHighlight.yellow)} {message}")
             return False
         if not ask_to_continue(
                 translate("Do you want to {edit} {file} for {name} package?").format(

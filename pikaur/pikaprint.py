@@ -8,6 +8,7 @@ from itertools import zip_longest
 from typing import TYPE_CHECKING
 
 from .args import ColorFlagValues, parse_args
+from .config import DECORATION
 from .i18n import translate
 from .lock import FancyLock
 
@@ -208,7 +209,7 @@ def print_warning(
 ) -> None:
     print_stderr(
         " ".join([
-            color_line(":: " + translate("warning:"), ColorsHighlight.yellow),
+            color_line(" ".join((DECORATION, translate("warning:"))), ColorsHighlight.yellow),
             message,
         ]),
         lock=lock,
@@ -226,7 +227,7 @@ def print_error(
 ) -> None:
     print_stderr(
         " ".join([
-            color_line(":: " + translate("error:"), ColorsHighlight.red),
+            color_line(" ".join((DECORATION, translate("error:"))), ColorsHighlight.red),
             message,
         ]),
         lock=lock,

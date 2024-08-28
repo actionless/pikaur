@@ -4,6 +4,7 @@ from typing import ClassVar
 
 import pyalpm
 
+from .config import DECORATION
 from .i18n import translate
 from .pikaprint import Colors, bold_line, color_line, print_error, print_stdout
 from .pikatypes import AURPackageInfo
@@ -33,7 +34,7 @@ class Provider:
 
         print_stdout(
             "\n"
-            + color_line(":: ", Colors.cyan)
+            + color_line(f"{DECORATION} ", Colors.cyan)
             + translate("Choose a package provider for {dependency}:").format(
                 dependency=bold_line(dependency),
             ),
@@ -55,7 +56,7 @@ class Provider:
         )
         if not verbose:
             print_stdout(
-                color_line(":: ", Colors.cyan)
+                color_line(f"{DECORATION} ", Colors.cyan)
                 + translate("[v]iew package details"),
             )
 

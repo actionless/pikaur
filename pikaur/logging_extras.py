@@ -4,6 +4,7 @@ from logging import Logger
 from typing import TYPE_CHECKING
 
 from .args import parse_args
+from .config import DECORATION
 from .i18n import translate
 from .pikaprint import Colors, ColorsHighlight, color_line, print_stderr
 
@@ -50,10 +51,10 @@ def print_debug(message: "Any", *, lock: bool = True) -> None:
     if args.debug:
         # to avoid mixing together with pacman's debug messages:
         prefix = translate("pikaur debug:")
-    print_stderr(" ".join([
-        color_line(":: " + prefix, Colors.cyan),
+    print_stderr(" ".join((
+        color_line(f"{DECORATION} {prefix}", Colors.cyan),
         str(message),
-    ]), lock=lock)
+    )), lock=lock)
 
 
 class PikaurLogger(Logger):  # we inherit `Logger` class only for pylint warnings to catch up on it

@@ -11,6 +11,7 @@ import pyalpm
 from .alpm import OFFICIAL_REPOS, PyAlpmWrapper
 from .args import parse_args
 from .config import (
+    DECORATION,
     DEFAULT_TIMEZONE,
     VERSION,
     AurSearchSortingValues,
@@ -472,7 +473,7 @@ class SysupgradePrettyFormatter:
             )
             self.result.append(
                 (
-                    f"\n{self._color_line('::', ColorsHighlight.blue)}"
+                    f"\n{self._color_line(DECORATION, ColorsHighlight.blue)}"
                     f" {self._color_line('!!', ColorsHighlight.red)}"
                     f" {self._color_line(warning_message, ColorsHighlight.red)}"
                     f" {self._color_line('!!', ColorsHighlight.red)}"
@@ -488,7 +489,7 @@ class SysupgradePrettyFormatter:
                 len(self.repo_replacements),
             )
             self.result.append(
-                f"\n{self._color_line('::', ColorsHighlight.blue)}"
+                f"\n{self._color_line(DECORATION, ColorsHighlight.blue)}"
                 f" {self._bold_line(message_repo)}",
             )
             self.result.append(self.pretty_format_upgradeable(
@@ -501,7 +502,7 @@ class SysupgradePrettyFormatter:
                 len(self.repo_packages_updates),
             )
             self.result.append(
-                f"\n{self._color_line('::', ColorsHighlight.blue)}"
+                f"\n{self._color_line(DECORATION, ColorsHighlight.blue)}"
                 f" {self._bold_line(message_third_party)}",
             )
             self.result.append(self.pretty_format_upgradeable(
@@ -516,7 +517,7 @@ class SysupgradePrettyFormatter:
                 len(self.repo_packages_updates),
             )
             self.result.append(
-                f"\n{self._color_line('::', ColorsHighlight.blue)}"
+                f"\n{self._color_line(DECORATION, ColorsHighlight.blue)}"
                 f" {self._bold_line(message_repo)}",
             )
             self.result.append(self.pretty_format_upgradeable(
@@ -529,7 +530,7 @@ class SysupgradePrettyFormatter:
                 len(self.new_repo_deps),
             )
             self.result.append(
-                f"\n{self._color_line('::', ColorsHighlight.yellow)}"
+                f"\n{self._color_line(DECORATION, ColorsHighlight.yellow)}"
                 f" {self._bold_line(message_deps)}",
             )
             self.result.append(self.pretty_format_upgradeable(
@@ -544,7 +545,7 @@ class SysupgradePrettyFormatter:
                 len(self.thirdparty_repo_packages_updates),
             )
             self.result.append(
-                f"\n{self._color_line('::', ColorsHighlight.blue)}"
+                f"\n{self._color_line(DECORATION, ColorsHighlight.blue)}"
                 f" {self._bold_line(message_repo)}",
             )
             self.result.append(self.pretty_format_upgradeable(
@@ -558,7 +559,7 @@ class SysupgradePrettyFormatter:
                 len(self.new_thirdparty_repo_deps),
             )
             self.result.append(
-                f"\n{self._color_line('::', ColorsHighlight.yellow)}"
+                f"\n{self._color_line(DECORATION, ColorsHighlight.yellow)}"
                 f" {self._bold_line(message_deps)}",
             )
             self.result.append(self.pretty_format_upgradeable(
@@ -573,7 +574,7 @@ class SysupgradePrettyFormatter:
                 len(self.aur_updates),
             )
             self.result.append(
-                f"\n{self._color_line('::', ColorsHighlight.cyan)}"
+                f"\n{self._color_line(DECORATION, ColorsHighlight.cyan)}"
                 f" {message_aur}",
             )
             self.result.append(self.pretty_format_upgradeable(
@@ -587,7 +588,7 @@ class SysupgradePrettyFormatter:
                 len(self.new_aur_deps),
             )
             self.result.append(
-                f"\n{self._color_line('::', ColorsHighlight.yellow)}"
+                f"\n{self._color_line(DECORATION, ColorsHighlight.yellow)}"
                 f" {self._bold_line(message_deps)}",
             )
             self.result.append(self.pretty_format_upgradeable(
@@ -654,7 +655,7 @@ def print_ignored_package(
         package=None,
     )
     message = " ".join((
-        color_line("::", ColorsHighlight.yellow),
+        color_line(DECORATION, ColorsHighlight.yellow),
         translate("Ignoring package update {}").format(
             pretty_format_upgradeable(
                 [install_info],

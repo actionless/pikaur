@@ -6,7 +6,7 @@ from pprint import pformat
 from typing import TYPE_CHECKING
 
 from .argparse_extras import ArgumentParserWithUnknowns
-from .config import PikaurConfig
+from .config import DECORATION, PikaurConfig
 from .i18n import translate, translate_many
 
 if TYPE_CHECKING:
@@ -61,6 +61,16 @@ def print_stderr(msg: str | None = None) -> None:
 
 def pprint_stderr(msg: "Any") -> None:
     print_stderr(pformat(msg))
+
+
+def print_error(message: str = "") -> None:
+    print_stderr(
+        " ".join((
+            DECORATION,
+            translate("error:"),
+            message,
+        )),
+    )
 
 
 FLAG_READ_STDIN: "Final" = "-"
@@ -716,15 +726,17 @@ def _parse_args(args: list[str] | None = None) -> tuple[PikaurArgs, list[HelpMes
     try:
         parsed_args.validate()
     except IncompatibleArgumentsError as exc:
-        print_stderr(translate(":: error: options {} can't be used together.").format(
-            ", ".join([f"'--{opt}'" for opt in exc.args]),
-        ))
+        print_error(
+            translate("options {} can't be used together.").format(
+                ", ".join([f"'--{opt}'" for opt in exc.args]),
+            ),
+        )
         sys.exit(1)
     except MissingArgumentError as exc:
-        print_stderr(
+        print_error(
             translate_many(
-                ":: error: option {} can't be used without {}.",
-                ":: error: options {} can't be used without {}.",
+                "option {} can't be used without {}.",
+                "options {} can't be used without {}.",
                 len(exc.args[1:]),
             ).format(
                 ", ".join([f"'--{opt}'" for opt in exc.args[1:]]),

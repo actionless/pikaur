@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, ClassVar
 from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
 from .config import (
+    DECORATION,
     AurReposCachePath,
     BuildCachePath,
     BuildDepsLockPath,
@@ -333,7 +334,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
             bold_line(", ".join(self.package_names)),
         )
         print_stdout(
-            f"{color_line('::', ColorsHighlight.white)} {message}...",
+            f"{color_line(DECORATION, ColorsHighlight.white)} {message}...",
             tty_restore=tty_restore,
         )
         pkgver_result = joined_spawn(
@@ -356,7 +357,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
                 answer = translate("a")
             else:  # pragma: no cover
                 prompt = "{} {}\n{}\n> ".format(
-                    color_line("::", ColorsHighlight.yellow),
+                    color_line(DECORATION, ColorsHighlight.yellow),
                     translate("Try recovering?"),
                     "\n".join((
                         translate("[R] retry clone"),
@@ -511,7 +512,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
         message = translate("Installing already built dependencies for {}").format(
             bold_line(", ".join(self.package_names)),
         )
-        print_stderr(f"{color_line('::', ColorsHighlight.purple)} {message}:")
+        print_stderr(f"{color_line(DECORATION, ColorsHighlight.purple)} {message}:")
 
         try:
             update_self_deps = False
@@ -598,7 +599,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
             ).format(
                 pkg=bold_line(", ".join(self.package_names)),
             )
-            print_stderr(f"{color_line('::', ColorsHighlight.green)} {message}\n")
+            print_stderr(f"{color_line(DECORATION, ColorsHighlight.green)} {message}\n")
             return True
         return False
 
@@ -670,7 +671,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
         message = translate("Installing repository dependencies for {}").format(
             bold_line(", ".join(self.package_names)),
         )
-        print_stderr(f"{color_line('::', ColorsHighlight.purple)} {message}:")
+        print_stderr(f"{color_line(DECORATION, ColorsHighlight.purple)} {message}:")
 
         # @TODO: add support for --skip-failed-build here:
         retry_interactive_command_or_exit(
@@ -746,7 +747,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
         message = translate("Removing already installed dependencies for {}").format(
             bold_line(", ".join(self.package_names)),
         )
-        print_stderr(f"{color_line('::', ColorsHighlight.purple)} {message}:")
+        print_stderr(f"{color_line(DECORATION, ColorsHighlight.purple)} {message}:")
         retry_interactive_command_or_exit(
             sudo(
                 # pacman --remove flag conflicts with some --sync options:
@@ -845,7 +846,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
 
         message = translate("Starting the build")
         print_stderr(
-            f"\n{color_line('::', ColorsHighlight.purple)} {message}:",
+            f"\n{color_line(DECORATION, ColorsHighlight.purple)} {message}:",
         )
         build_succeeded = False
         skip_pgp_check = False
@@ -879,7 +880,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
                 answer = translate("a")
             else:  # pragma: no cover
                 prompt = "{} {}\n{}\n> ".format(
-                    color_line("::", ColorsHighlight.yellow),
+                    color_line(DECORATION, ColorsHighlight.yellow),
                     translate("Try recovering?"),
                     "\n".join((
                         translate("[R] retry build"),

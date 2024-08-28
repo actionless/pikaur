@@ -1,5 +1,5 @@
 from .args import parse_args, reconstruct_args
-from .config import BuildCachePath, PackageCachePath, PikaurConfig
+from .config import DECORATION, BuildCachePath, PackageCachePath, PikaurConfig
 from .exceptions import SysExit
 from .i18n import translate
 from .logging_extras import create_logger
@@ -27,7 +27,7 @@ def clean_aur_cache() -> None:
             print_stdout(translate("Directory is empty."))
         elif ask_to_continue(
             text=(
-                f"{color_line('::', ColorsHighlight.blue)}"
+                f"{color_line(DECORATION, ColorsHighlight.blue)}"
                 f" {bold_line(question)}"
             ),
         ):

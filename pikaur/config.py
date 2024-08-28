@@ -42,6 +42,9 @@ INT: "Final" = "int"
 STR: "Final" = "str"
 
 
+DECORATION: "Final" = "::"
+
+
 class IntOrBoolSingleton(int):
 
     value: int
@@ -705,7 +708,7 @@ class PikaurConfig:
 
         if old_value_was_migrated or old_value_was_removed:
             print(" ".join([  # noqa: T201
-                "::",
+                DECORATION,
                 translate("warning:"),
                 translate(
                     'Migrating [{}]{}="{}" config option to [{}]{}="{}"...',
@@ -732,7 +735,7 @@ class PikaurConfig:
             cls._config[section_name][option_name] = new_default_value
             CONFIG_SCHEMA[section_name][option_name]["migrated"] = True
             print(" ".join([  # noqa: T201
-                "::",
+                DECORATION,
                 translate("warning:"),
                 translate(
                     'Migrating [{}]{}="{}" config option to ="{}"...',

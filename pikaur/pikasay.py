@@ -180,7 +180,7 @@ def pikasay(  # noqa: PLR0917
 
 def pikasay_cli() -> None:
     parser = argparse.ArgumentParser(
-        description="⚡️⚡️PikaSay",
+        description="⚡️PikaSay",
     )
     parser.add_argument(
         "text",

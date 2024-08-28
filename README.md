@@ -378,7 +378,7 @@ You can start from [this list of issues](https://github.com/actionless/pikaur/is
 ##### Linters (code quality check)
 
 ```sh
-make -j $(nproc) lint
+make -j lint
 ```
 
 ##### Tests
@@ -398,10 +398,10 @@ For example to run a single test inside docker:
 
 ### Translations
 
-To start working on a new language, say `hi_IN` (Indian Hindi), add it to the
-`Makefile` `LANGS` variable and run `make`. Then translate `locale/hi_IN.po` using
-your favorite PO editor (for example `gtranslator`). Run `make` every time the Python code strings change
-or the `.po` is modified.
+To start working on a new language, say `hi_IN` (Indian Hindi):
+1) add it to the `Makefile` `LANGS` variable and run `make`.
+2) Then translate `locale/hi_IN.po` using your favorite PO editor (for example `gtranslator`).
+3) Run `make` every time the Python code strings change or the `.po` is modified.
 
 
 

@@ -11,7 +11,13 @@ from typing import TYPE_CHECKING
 
 from .args import parse_args, reconstruct_args
 from .build import PackageBuild, PkgbuildChanged, clone_aur_repos
-from .config import DECORATION, DiffPagerValues, PikaurConfig, UsingDynamicUsers
+from .config import (
+    DECORATION,
+    DEFAULT_CONFIG_ENCODING,
+    DiffPagerValues,
+    PikaurConfig,
+    UsingDynamicUsers,
+)
 from .conflicts import find_aur_conflicts
 from .exceptions import (
     BuildError,
@@ -509,11 +515,11 @@ class InstallPackagesCLI:  # noqa: PLR0904
         )
         pkg_names_before = parse_pkg_names(text_before)
         with NamedTemporaryFile() as tmp_file:
-            with open_file(tmp_file.name, "w") as write_file:
+            with open_file(tmp_file.name, "w", encoding=DEFAULT_CONFIG_ENCODING) as write_file:
                 write_file.write(text_before)
             chown_to_current(Path(tmp_file.name))
             edit_file(tmp_file.name)
-            with open_file(tmp_file.name, "r") as read_file:
+            with open_file(tmp_file.name, "r", encoding=DEFAULT_CONFIG_ENCODING) as read_file:
                 selected_packages = parse_pkg_names(read_file.read())
 
         list_diff = selected_packages.difference(pkg_names_before)

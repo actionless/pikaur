@@ -214,10 +214,8 @@ def search_packages(
         pool.close()
 
         result_local = request_local.get()
-        result_repo = None
-        if request_repo:
-            result_repo = request_repo.get()
-        result_aur = None
+        result_repo = request_repo.get() if request_repo else []
+        result_aur = []
         if request_aur:
             try:
                 result_aur = request_aur.get()
@@ -230,12 +228,9 @@ def search_packages(
     if not args.quiet:
         sys.stderr.write("\n")
 
-    joined_repo_results: Iterable[pyalpm.Package] = result_repo or []
-    joined_aur_results: Iterable[AURPackageInfo] = result_aur or []
-
     return print_package_search_results(
-        repo_packages=joined_repo_results,
-        aur_packages=joined_aur_results,
+        repo_packages=result_repo,
+        aur_packages=result_aur,
         local_pkgs_versions=result_local,
         enumerated=enumerated,
         list_mode=bool(args.list),

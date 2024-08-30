@@ -29,20 +29,6 @@ if TYPE_CHECKING:
     SamePackageTypeT = TypeVar("SamePackageTypeT", AURPackageInfo, pyalpm.Package)
 
 
-def package_search_thread_repo_worker(
-        query: str, db_names: list[str] | None = None,
-) -> "list[pyalpm.Package]":
-    args = parse_args()
-    result = (
-        PackageDB.search_repo(query, names_only=args.namesonly, db_names=db_names)
-        if (query or db_names) else
-        PackageDB.get_repo_list(quiet=True)
-    )
-    if not args.quiet:
-        sys.stderr.write("#")
-    return result
-
-
 def filter_search_results(
         results: "dict[str, list[SamePackageTypeT]]",
         query: str,
@@ -60,6 +46,26 @@ def filter_search_results(
             ):
                 filtered_results.setdefault(_q, []).append(pkg)
     return filtered_results
+
+
+def join_search_results(
+        all_search_results: "list[list[SamePackageTypeT]]",
+) -> "Iterable[SamePackageTypeT]":
+    if not all_search_results:
+        return []
+    pkgnames_set: set[str] = set()
+    for search_results in all_search_results:
+        new_pkgnames_set = {get_pkg_id(result) for result in search_results}
+        pkgnames_set = (
+            pkgnames_set.intersection(new_pkgnames_set)
+            if pkgnames_set else
+            new_pkgnames_set
+        )
+    return {
+        get_pkg_id(result): result
+        for result in all_search_results[0]
+        if get_pkg_id(result) in pkgnames_set
+    }.values()
 
 
 def package_search_thread_aur(  # pylint: disable=too-many-branches
@@ -118,6 +124,20 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
     return list(join_search_results(list(result.values())))
 
 
+def package_search_thread_repo_worker(
+        query: str, db_names: list[str] | None = None,
+) -> "list[pyalpm.Package]":
+    args = parse_args()
+    result = (
+        PackageDB.search_repo(query, names_only=args.namesonly, db_names=db_names)
+        if (query or db_names) else
+        PackageDB.get_repo_list(quiet=True)
+    )
+    if not args.quiet:
+        sys.stderr.write("#")
+    return result
+
+
 def package_search_thread_repo(
         search_query: list[str], db_names: list[str] | None = None,
 ) -> "list[pyalpm.Package]":
@@ -151,26 +171,6 @@ def package_search_thread_local() -> dict[str, str]:
     if not parse_args().quiet:
         sys.stderr.write("#")
     return result
-
-
-def join_search_results(
-        all_search_results: "list[list[SamePackageTypeT]]",
-) -> "Iterable[SamePackageTypeT]":
-    if not all_search_results:
-        return []
-    pkgnames_set: set[str] = set()
-    for search_results in all_search_results:
-        new_pkgnames_set = {get_pkg_id(result) for result in search_results}
-        pkgnames_set = (
-            pkgnames_set.intersection(new_pkgnames_set)
-            if pkgnames_set else
-            new_pkgnames_set
-        )
-    return {
-        get_pkg_id(result): result
-        for result in all_search_results[0]
-        if get_pkg_id(result) in pkgnames_set
-    }.values()
 
 
 def search_packages(

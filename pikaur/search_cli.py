@@ -43,13 +43,13 @@ def package_search_thread_repo(
     return result
 
 
-def filter_aur_results(
-        results: dict[str, list[AURPackageInfo]],
+def filter_search_results(
+        results: "dict[str, list[SamePackageTypeT]]",
         query: str,
         *,
         names_only: bool = False,
-) -> dict[str, list[AURPackageInfo]]:
-    filtered_results: dict[str, list[AURPackageInfo]] = {}
+) -> "dict[str, list[SamePackageTypeT]]":
+    filtered_results: dict[str, list[SamePackageTypeT]] = {}
     for _q, pkgs in results.items():
         for pkg in pkgs:
             if (
@@ -96,7 +96,7 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
                         raise
             pool.join()
         for query in use_as_filters:
-            result = filter_aur_results(result, query, names_only=args.namesonly)
+            result = filter_search_results(result, query, names_only=args.namesonly)
         if args.namesonly:
             for subindex, subresult in result.items():
                 result[subindex] = [
@@ -178,23 +178,28 @@ def search_packages(  # noqa: PLR0914
         print_stderr(translate("Searching... [{bar}]").format(bar="-" * progressbar_length), end="")
         print_stderr("\x1b[1D" * (progressbar_length + 1), end="")
 
+    use_as_filters: list[str] = []
     with ThreadPool() as pool:
         request_local = pool.apply_async(package_search_thread_local, ())
-        requests_repo = [
-            pool.apply_async(package_search_thread_repo, (search_word, repo_query))
+        requests_repo = {
+            search_word: pool.apply_async(package_search_thread_repo, (search_word, repo_query))
             for search_word in (search_query or [""])
-        ] if not aur_only else []
+        } if not aur_only else {}
         request_aur = pool.apply_async(
             package_search_thread_aur, (search_query,),
         ) if not repo_only else None
         pool.close()
 
         result_local = request_local.get()
-        result_repo: list[list[pyalpm.Package]] = []
-        for request_repo in requests_repo:
+        result_repo: dict[str, list[pyalpm.Package]] = {}
+        for search_word, request_repo in requests_repo.items():
             pkgs_found = request_repo.get()
             if pkgs_found:
-                result_repo.append(pkgs_found)
+                result_repo[search_word] = pkgs_found
+            else:
+                use_as_filters.append(search_word)
+        for query in use_as_filters:
+            result_repo = filter_search_results(result_repo, query, names_only=args.namesonly)
         result_aur = None
         if request_aur:
             try:
@@ -210,7 +215,7 @@ def search_packages(  # noqa: PLR0914
 
     joined_repo_results: Iterable[pyalpm.Package] = []
     if result_repo:
-        joined_repo_results = join_search_results(result_repo)
+        joined_repo_results = join_search_results(list(result_repo.values()))
     joined_aur_results: Iterable[AURPackageInfo] = result_aur or []
 
     return print_package_search_results(

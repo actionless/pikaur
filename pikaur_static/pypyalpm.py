@@ -574,10 +574,10 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
     sync_dir = "/var/lib/pacman/sync/"
 
     @classmethod
-    def get_dbs(cls) -> list[str]:
+    def get_db_names(cls) -> list[str]:
         if not cls._repo_db_names:
             cls._repo_db_names = [
-                repo_name
+                repo_name.rsplit(".db", maxsplit=1)[0]
                 for repo_name in os.listdir(cls.sync_dir)
                 if repo_name and repo_name.endswith(".db")
             ]

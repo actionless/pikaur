@@ -29,7 +29,7 @@ class Handle:
     def get_syncdbs() -> list[DB]:
         return [
             DB(name=db_name)
-            for db_name in pypyalpm.PackageDB.get_dbs()  # pylint: disable=not-an-iterable
+            for db_name in pypyalpm.PackageDB.get_db_names()  # pylint: disable=not-an-iterable
         ]
 
     def __init__(self, root_dir: str, db_path: str) -> None:

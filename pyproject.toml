@@ -226,6 +226,13 @@ ignore = [
   "PTH112",
   "PTH118",
 ]
+"pacman_fallback.py" = [
+  "T201",
+  "PTH107",
+  "PTH112",
+  "PTH118",
+]
+
 
 [tool.pylint.MASTER]
 jobs = '0'

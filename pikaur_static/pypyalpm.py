@@ -3,16 +3,13 @@
 Pure-python alpm implementation backported from Pikaur v0.6
 with compatibility layer added for easier integration with pyalpm interface.
 """
-import asyncio
 import gzip
 import os
 import re
-import shutil
-import tempfile
-from collections.abc import Callable, Coroutine, Iterable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from pprint import pformat
-from typing import IO, Any, Final, cast
+from typing import IO, Final, cast
 
 NOT_FOUND_ATOM = object()
 
@@ -20,6 +17,8 @@ NOT_FOUND_ATOM = object()
 DB_NAME_LOCAL: Final = "local"
 
 
+SUPPORTED_ALPM_VERSION: Final = "9"
+# SUPPORTED_ALPM_VERSION: Final = "99999"  # used for testing only
 PACMAN_EXECUTABLE = "pacman"
 PACMAN_ROOT = "/var/lib/pacman"
 
@@ -80,6 +79,8 @@ class Package:
     conflicts: list[str]
     provides: list[str]
     replaces: list[str]
+    validation: str | None = None
+
     # /* miscellaneous information */
     # { "has_scriptlet", (getter)pyalpm_pkg_has_scriptlet, 0, "True if the package has an install script", NULL },  # noqa: E501,RUF100
     # { "download_size", (getter)pyalpm_pkg_download_size, 0, "predicted download size for this package", NULL },  # noqa: E501,RUF100
@@ -87,245 +88,19 @@ class Package:
     def compute_requiredby(self) -> list[str]:
         return [
             pkg.name
-            for pkg in PackageDB.get_local_list()  # pylint: disable=not-an-iterable
+            for pkg in PackageDB.get_local_list()
             if self.name in pkg.depends
         ]
 
     def compute_optionalfor(self) -> list[str]:
         return [
             pkg.name
-            for pkg in PackageDB.get_local_list()  # pylint: disable=not-an-iterable
+            for pkg in PackageDB.get_local_list()
             if self.name in pkg.optdepends
         ]
 
 
 ################################################################################
-
-
-# class ComparableType:
-
-#     __ignore_in_eq__: tuple[str, ...] = ()
-
-#     __hash__ = object.__hash__
-#     __compare_stack__: list["ComparableType"] | None = None
-
-#     @property
-#     def public_values(self) -> dict[str, "Any"]:
-#         return {
-#             var: val for var, val in vars(self).items()
-#             if not var.startswith("__")
-#         }
-
-#     def __eq__(self, other: "ComparableType") -> bool:  # type: ignore[override]
-#         if not isinstance(other, self.__class__):
-#             return False
-#         if not self.__compare_stack__:
-#             self.__compare_stack__ = []
-#         elif other in self.__compare_stack__:
-#             return super().__eq__(other)
-#         self.__compare_stack__.append(other)
-#         self_values = {}
-#         self_values.update(self.public_values)
-#         others_values = {}
-#         others_values.update(other.public_values)
-#         for values in (self_values, others_values):
-#             for skip_prop in self.__ignore_in_eq__:
-#                 if skip_prop in values:
-#                     del values[skip_prop]
-#         result = self_values == others_values
-#         self.__compare_stack__ = None
-#         return result
-
-
-# class DataType(ComparableType):
-
-#     ignore_extra_properties: bool
-
-#     @property
-#     def __all_annotations__(self) -> dict[str, type]:  # noqa: PLW3201,RUF100
-#         annotations: dict[str, type] = {}
-#         for parent_class in reversed(self.__class__.mro()):
-#             annotations.update(**getattr(parent_class, "__annotations__", {}))
-#         return annotations
-
-#     def _key_exists(self, key: str) -> bool:
-#         return key in dir(self)
-
-#     def __init__(self, *, ignore_extra_properties: bool = False, **kwargs: "Any") -> None:
-#         self.ignore_extra_properties = ignore_extra_properties
-#         for key, value in kwargs.items():
-#             setattr(self, key, value)
-#         for key in self.__all_annotations__:
-#             if not self._key_exists(key):
-#                 missing_required_attribute = (
-#                     "'{class_name}' does not have required attribute '{key}' set."
-#                 ).format(
-#                     class_name=self.__class__.__name__, key=key,
-#                 )
-#                 raise TypeError(missing_required_attribute)
-
-#     def __setattr__(self, key: str, value: "Any") -> None:
-#         if not (
-#             (
-#                 key in self.__all_annotations__
-#             ) or self._key_exists(key)
-#         ):
-#             unknown_attribute = (
-#                 "'{class_name}' does not have attribute '{key}' defined."
-#             ).format(
-#                 class_name=self.__class__.__name__, key=key,
-#             )
-#             if self.ignore_extra_properties:
-#                 print(unknown_attribute)
-#             else:
-#                 raise TypeError(unknown_attribute)
-#         super().__setattr__(key, value)
-
-
-# class CmdTaskResult(DataType):
-class CmdTaskResult:
-    stderrs: list[str] | None = None
-    stdouts: list[str] | None = None
-    return_code: int | None = None
-
-    _stderr = None
-    _stdout = None
-
-    @property
-    def stderr(self) -> str:
-        if not self._stderr:
-            self._stderr = "\n".join(self.stderrs or [])
-        return self._stderr
-
-    @property
-    def stdout(self) -> str:
-        if not self._stdout:
-            self._stdout = "\n".join(self.stdouts or [])
-        return self._stdout
-
-    def __repr__(self) -> str:
-        result = f"[rc: {self.return_code}]\n"
-        if self.stderr:
-            result += "\n".join([
-                "=======",
-                "errors:",
-                "=======",
-                f"{self.stderr}",
-            ])
-        result += "\n".join([
-            "-------",
-            "output:",
-            "-------",
-            f"{self.stdout}",
-        ])
-        return result
-
-
-class CmdTaskWorker:
-    cmd: list[str]
-    kwargs: dict[str, Any]
-    enable_logging = None
-    stderrs: list[str]
-    stdouts: list[str]
-
-    async def _read_stream(
-            self, stream: asyncio.StreamReader, callback: Callable[[bytes], None],
-    ) -> None:
-        while True:
-            line = await stream.readline()
-            if line:
-                if self.enable_logging:
-                    pass
-                callback(line)
-            else:
-                break
-
-    def save_err(self, line: bytes) -> None:
-        self.stderrs.append(line.rstrip(b"\n").decode("utf-8"))
-
-    def save_out(self, line: bytes) -> None:
-        self.stdouts.append(line.rstrip(b"\n").decode("utf-8"))
-
-    async def _stream_subprocess(self) -> CmdTaskResult:
-        process = await asyncio.create_subprocess_exec(
-            *self.cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            **self.kwargs,
-        )
-        if (not process.stdout) or (not process.stderr):
-            msg = "no stdout or stderr"
-            raise RuntimeError(msg)
-        await asyncio.wait([
-            asyncio.create_task(self._read_stream(process.stdout, self.save_out)),
-            asyncio.create_task(self._read_stream(process.stderr, self.save_err)),
-        ])
-        result = CmdTaskResult()
-        result.return_code = await process.wait()
-        result.stderrs = self.stderrs
-        result.stdouts = self.stdouts
-        return result
-
-    def __init__(self, cmd: list[str], **kwargs: dict[str, Any]) -> None:
-        self.cmd = cmd
-        self.stderrs = []
-        self.stdouts = []
-        self.kwargs = kwargs
-
-    def get_task(self, _loop: asyncio.AbstractEventLoop) -> Coroutine[Any, Any, CmdTaskResult]:
-        return self._stream_subprocess()
-
-
-class MultipleTasksExecutor:
-    loop: asyncio.AbstractEventLoop | None = None
-    cmds: dict[str, CmdTaskWorker]
-    results: dict[str, CmdTaskResult]
-    futures: dict[str, asyncio.Task[CmdTaskResult]]
-
-    def __init__(self, cmds: dict[str, CmdTaskWorker]) -> None:
-        self.cmds = cmds
-        self.results = {}
-        self.futures = {}
-
-    def create_process_done_callback(
-            self, cmd_id: str,
-    ) -> Callable[[asyncio.Task[CmdTaskResult]], None]:
-
-        def _process_done_callback(future: asyncio.Task[CmdTaskResult]) -> None:
-            result = future.result()
-            self.results[cmd_id] = result
-            if len(self.results) == len(self.futures):
-                if not self.loop:
-                    msg = "eventloop lost"
-                    raise RuntimeError(msg)
-                self.loop.stop()
-
-        return _process_done_callback
-
-    def execute(self) -> dict[str, CmdTaskResult]:
-        try:
-            self.loop = asyncio.get_event_loop()
-        except RuntimeError:
-            self.loop = asyncio.new_event_loop()
-        for cmd_id, task_class in self.cmds.items():
-            future = self.loop.create_task(
-                task_class.get_task(self.loop),
-            )
-            future.add_done_callback(self.create_process_done_callback(cmd_id))
-            self.futures[cmd_id] = future
-        if self.loop.is_running():
-            pass
-        self.loop.run_forever()
-        return self.results
-
-
-class PacmanTaskWorker(CmdTaskWorker):
-
-    def __init__(self, args: list[str]) -> None:
-        super().__init__(
-            [PACMAN_EXECUTABLE, *args],
-        )
-
 
 PACMAN_LIST_FIELDS = (
     "conflicts",
@@ -390,7 +165,7 @@ class PacmanPackageInfo(Package):
 
     # db = None
 
-    validation = None
+    # validation = None
     data = None
 
     def __repr__(self) -> str:
@@ -606,85 +381,6 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return cls._repo_db_names
 
     @classmethod
-    def _get_repo_dict_bsdtar(
-            cls, temp_repos: dict[str, str], temp_dirs: dict[str, str],
-    ) -> dict[str, RepoPackageInfo]:
-        result = {}
-        # uncompress databases
-        untar_results = MultipleTasksExecutor({
-            repo_name: CmdTaskWorker([
-                "bsdtar", "-x", "-f", temp_repos[repo_name], "-C", temp_dir,
-            ])
-            for repo_name, temp_dir in temp_dirs.items()
-        }).execute()
-        for untar_result in untar_results.values():
-            if untar_result.return_code != 0:
-                pass
-        for repo_name, temp_dir in temp_dirs.items():
-            for pkg_dir_name in os.listdir(temp_dir):
-                if not os.path.isdir(os.path.join(temp_dir, pkg_dir_name)):
-                    continue
-                for pkg in RepoPackageInfo.parse_pacman_db_info(
-                        os.path.join(temp_dir, pkg_dir_name, "desc"),
-                ):
-                    pkg.db = DB(name=repo_name.rsplit(".db", maxsplit=1)[0])
-                    result[pkg.name] = cast(RepoPackageInfo, pkg)
-            shutil.rmtree(temp_dir)
-        return result
-
-    @classmethod
-    def _get_repo_dict_gunzip(
-            cls, temp_repos: dict[str, str], temp_dirs: dict[str, str],
-    ) -> dict[str, RepoPackageInfo]:
-        result = {}
-        # uncompress databases
-        untar_results = MultipleTasksExecutor({
-            repo_name: CmdTaskWorker([
-                "gunzip", temp_repos[repo_name],
-            ])
-            for repo_name, temp_dir in temp_dirs.items()
-        }).execute()
-
-        for untar_result in untar_results.values():
-            if untar_result.return_code != 0:
-                print(f"error: {untar_result}")
-
-        for repo_name, temp_dir in temp_dirs.items():
-            for pkg in RepoPackageInfo.parse_pacman_db_info(os.path.join(temp_dir, repo_name)):
-                pkg.db = DB(name=repo_name.rsplit(".db", maxsplit=1)[0])
-                result[pkg.name] = cast(RepoPackageInfo, pkg)
-            shutil.rmtree(temp_dir)
-        return result
-
-    @classmethod
-    def get_repo_dict_spawn(cls) -> dict[str, RepoPackageInfo]:
-        if not cls._repo_dict_cache:
-            # print("REPO_NOT_CACHED")
-
-            # copy repos dbs to temp location
-            temp_repos = {}
-            temp_dirs = {}
-            for repo_name in os.listdir(cls.sync_dir):
-                if not repo_name.endswith(".db"):
-                    continue
-                temp_dirs[repo_name] = tempfile.mkdtemp()
-                temp_repo_path = os.path.join(temp_dirs[repo_name], repo_name + ".gz")
-                shutil.copy2(
-                    os.path.join(cls.sync_dir, repo_name),
-                    temp_repo_path,
-                )
-                temp_repos[repo_name] = temp_repo_path
-
-            # Qu repo 2.7 s, Qu 3.7 s:
-            result = cls._get_repo_dict_gunzip(temp_repos=temp_repos, temp_dirs=temp_dirs)
-            # Qu repo 4.7 s, Qu 5.1 s:
-            # result = cls._get_repo_dict_bsdtar(temp_repos=temp_repos, temp_dirs=temp_dirs)
-
-            cls._repo_dict_cache = result
-            # print("REPO_DONE")
-        return cls._repo_dict_cache
-
-    @classmethod
     def get_repo_dict_pygzip(cls) -> dict[str, RepoPackageInfo]:
         if not cls._repo_dict_cache:
             # print("REPO_NOT_CACHED")
@@ -705,9 +401,6 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
 
     @classmethod
     def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
-        # Qu repo 2.7 s, Qu 3.7 s:
-        # return cls.get_repo_dict_spawn()
-
         # Qu repo 2.6 s, Qu 3.6 s:
         return cls.get_repo_dict_pygzip()
 
@@ -733,19 +426,22 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
 
 with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as version_file:
     ALPM_DB_VER = version_file.read().strip()
-    if ALPM_DB_VER == "9":
+    PackageDB: type[PackageDBCommon]
+    if ALPM_DB_VER == SUPPORTED_ALPM_VERSION:
+        # -Qu --repo: ~ 2.6..3.1 s
         PackageDB = PackageDB_ALPM9
     else:
-        raise RuntimeError(ALPM_DB_VER)
-        # from .pacman_fallback import get_pacman_cli_package_db
-        # PackageDB = get_pacman_cli_package_db(
-        #     PackageDBCommon=PackageDBCommon,
-        #     RepoPackageInfo=RepoPackageInfo,
-        #     LocalPackageInfo=LocalPackageInfo,
-        #     PacmanTaskWorker=PacmanTaskWorker,
-        #     PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
-        #     PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS,
-        # )
+        # -Qu --repo: ~ 2.8..3.3 s
+        # raise RuntimeError(ALPM_DB_VER)
+        from pacman_fallback import get_pacman_cli_package_db
+        PackageDB = get_pacman_cli_package_db(
+            PackageDBCommon=PackageDBCommon,
+            RepoPackageInfo=RepoPackageInfo,
+            LocalPackageInfo=LocalPackageInfo,
+            PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
+            PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS,
+            PACMAN_EXECUTABLE=PACMAN_EXECUTABLE,
+        )
 
 
 ################################################################################

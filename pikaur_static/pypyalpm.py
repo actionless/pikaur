@@ -427,11 +427,14 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
 with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as version_file:
     ALPM_DB_VER = version_file.read().strip()
     PackageDB: type[PackageDBCommon]
+    # VANILLA pikaur + cpython + pyalpm: -Qu --repo: ~ 1.2..1.4 s
     if ALPM_DB_VER == SUPPORTED_ALPM_VERSION:
-        # -Qu --repo: ~ 2.6..3.1 s
+        # CPYTHON: -Qu --repo: ~ 2.6..3.1 s
+        # NUITKA: -Qu --repo: ~ 3.2..3.7 s
+        # NUITKA_static: -Qu --repo: ~ 3.1..3.9 s
         PackageDB = PackageDB_ALPM9
     else:
-        # -Qu --repo: ~ 2.8..3.3 s
+        # CPYTHON: -Qu --repo: ~ 2.8..3.3 s
         # raise RuntimeError(ALPM_DB_VER)
         from pacman_fallback import get_pacman_cli_package_db
         PackageDB = get_pacman_cli_package_db(

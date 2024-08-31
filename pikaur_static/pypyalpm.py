@@ -3,8 +3,8 @@
 Pure-python alpm implementation backported from Pikaur v0.6
 with compatibility layer added for easier integration with pyalpm interface.
 """
-# import gzip
 import asyncio
+import gzip
 import os
 import re
 import shutil
@@ -481,9 +481,9 @@ class PacmanPackageInfo(Package):
 
             yield return_pkg(pkg)
 
-    # @classmethod
-    # def parse_pacman_db_gzip_info(cls, file_name: str) -> "Iterable[PacmanPackageInfo]":
-    #     return cls._parse_pacman_db_info(file_name, gzip.open)  # type: ignore[arg-type]
+    @classmethod
+    def parse_pacman_db_gzip_info(cls, file_name: str) -> "Iterable[PacmanPackageInfo]":
+        return cls._parse_pacman_db_info(file_name, gzip.open)  # type: ignore[arg-type]
 
     @classmethod
     def parse_pacman_db_info(cls, file_name: str) -> "Iterable[PacmanPackageInfo]":
@@ -606,7 +606,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return cls._repo_db_names
 
     @classmethod
-    def get_repo_dict_bsdtar(
+    def _get_repo_dict_bsdtar(
             cls, temp_repos: dict[str, str], temp_dirs: dict[str, str],
     ) -> dict[str, RepoPackageInfo]:
         result = {}
@@ -633,7 +633,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return result
 
     @classmethod
-    def get_repo_dict_gunzip(
+    def _get_repo_dict_gunzip(
             cls, temp_repos: dict[str, str], temp_dirs: dict[str, str],
     ) -> dict[str, RepoPackageInfo]:
         result = {}
@@ -657,7 +657,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return result
 
     @classmethod
-    def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
+    def get_repo_dict_spawn(cls) -> dict[str, RepoPackageInfo]:
         if not cls._repo_dict_cache:
             # print("REPO_NOT_CACHED")
 
@@ -675,14 +675,41 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
                 )
                 temp_repos[repo_name] = temp_repo_path
 
-            # 2.4 s:
-            result = cls.get_repo_dict_gunzip(temp_repos=temp_repos, temp_dirs=temp_dirs)
-            # 4.4 s:
-            # result = cls.get_repo_dict_bsdtar(temp_repos=temp_repos, temp_dirs=temp_dirs)
+            # Qu repo 2.7 s, Qu 3.7 s:
+            result = cls._get_repo_dict_gunzip(temp_repos=temp_repos, temp_dirs=temp_dirs)
+            # Qu repo 4.7 s, Qu 5.1 s:
+            # result = cls._get_repo_dict_bsdtar(temp_repos=temp_repos, temp_dirs=temp_dirs)
 
             cls._repo_dict_cache = result
             # print("REPO_DONE")
         return cls._repo_dict_cache
+
+    @classmethod
+    def get_repo_dict_pygzip(cls) -> dict[str, RepoPackageInfo]:
+        if not cls._repo_dict_cache:
+            # print("REPO_NOT_CACHED")
+
+            result = {}
+            for repo_name in os.listdir(cls.sync_dir):
+                if not repo_name.endswith(".db"):
+                    continue
+
+                repo_path = os.path.join(cls.sync_dir, repo_name)
+                for pkg in RepoPackageInfo.parse_pacman_db_gzip_info(repo_path):
+                    pkg.db = DB(name=repo_name.rsplit(".db", maxsplit=1)[0])
+                    result[pkg.name] = cast(RepoPackageInfo, pkg)
+
+            cls._repo_dict_cache = result
+            # print("REPO_DONE")
+        return cls._repo_dict_cache
+
+    @classmethod
+    def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
+        # Qu repo 2.7 s, Qu 3.7 s:
+        # return cls.get_repo_dict_spawn()
+
+        # Qu repo 2.6 s, Qu 3.6 s:
+        return cls.get_repo_dict_pygzip()
 
     @classmethod
     def get_local_dict(cls) -> dict[str, LocalPackageInfo]:

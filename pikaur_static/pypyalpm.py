@@ -50,6 +50,7 @@ class DB:
 
 class Package:
     db: DB
+
     # description properties
     name: str
     version: str
@@ -58,6 +59,7 @@ class Package:
     arch: str
     licenses: list[str]
     groups: list[str]
+
     # package properties
     packager: str
     md5sum: str
@@ -65,25 +67,26 @@ class Package:
     base64_sig: str
     filename: str
     base: str
-    size: int
-    isize: int
     reason: int
     builddate: int
     installdate: int
     # { "files",  (getter)pyalpm_package_get_files, 0, "list of installed files", NULL } ,
     # { "backup", (getter)_get_list_attribute, 0, "list of tuples (filename, md5sum)", &get_backup } ,  # noqa: E501,RUF100
     # { "deltas", (getter)_get_list_attribute, 0, "list of available deltas", &get_deltas } ,
+    validation: str | None = None
+
     # /* dependency information */
     depends: list[str]
     optdepends: list[str]
     conflicts: list[str]
     provides: list[str]
     replaces: list[str]
-    validation: str | None = None
 
     # /* miscellaneous information */
-    # { "has_scriptlet", (getter)pyalpm_pkg_has_scriptlet, 0, "True if the package has an install script", NULL },  # noqa: E501,RUF100
+    has_scriptlet: bool
     # { "download_size", (getter)pyalpm_pkg_download_size, 0, "predicted download size for this package", NULL },  # noqa: E501,RUF100
+    size: int
+    isize: int
 
     def compute_requiredby(self) -> list[str]:
         return [
@@ -101,6 +104,7 @@ class Package:
 
 
 ################################################################################
+
 
 PACMAN_LIST_FIELDS = (
     "conflicts",
@@ -143,29 +147,7 @@ DB_INFO_TRANSLATION = {
 }
 
 
-# class PacmanPackageInfo(DataType):
-# class PacmanPackageInfo:
 class PacmanPackageInfo(Package):
-    # name: str | None = None
-    # base = None
-    # version = None
-    # desc = None
-    # arch = None
-    # url = None
-    # licenses = None
-    # groups = None
-    # provides: Iterable[str] | None = None
-    # depends = None
-    # optdepends = None
-    # conflicts = None
-    # replaces = None
-    # size = None
-    # packager = None
-    # builddate = None
-
-    # db = None
-
-    # validation = None
     data = None
 
     def __repr__(self) -> str:
@@ -273,16 +255,9 @@ def get_package_name_from_depend_line(depend_line: str) -> str:
 
 class RepoPackageInfo(PacmanPackageInfo):
     pass
-    # Repository = None
-    # Download_Size = None
 
 
 class LocalPackageInfo(PacmanPackageInfo):
-    # Required_By = None
-    # Optional_For = None
-    # installdate = None
-    # reason = None
-    # Install_Script = None
     pass
 
 
@@ -355,14 +330,6 @@ class PackageDBCommon:
         return cls._local_provided_cache
 
 
-# class DB(DataType):
-# class DB:
-#     name: str
-
-#     def __init__(self, name: str) -> None:
-#         self.name = name
-
-
 class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa: N801
 
     # ~2.7 seconds (was ~2.2 seconds with gzip)
@@ -401,7 +368,6 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
 
     @classmethod
     def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
-        # Qu repo 2.6 s, Qu 3.6 s:
         return cls.get_repo_dict_pygzip()
 
     @classmethod
@@ -416,11 +382,9 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
                 for pkg in LocalPackageInfo.parse_pacman_db_info(
                         os.path.join(local_dir, pkg_dir_name, "desc"),
                 ):
-                    # print(pkg_dir_name, dir(pkg))
                     result[pkg.name] = cast(LocalPackageInfo, pkg)
             cls._local_dict_cache = result
             # print("LOCAL_DONE")
-        # print(cls._local_dict_cache)
         return cls._local_dict_cache
 
 

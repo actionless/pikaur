@@ -81,10 +81,18 @@ class Package:
     # { "download_size", (getter)pyalpm_pkg_download_size, 0, "predicted download size for this package", NULL },  # noqa: E501,RUF100
 
     def compute_requiredby(self) -> list[str]:
-        return []
+        return [
+            pkg.name
+            for pkg in PackageDB.get_local_list()  # pylint: disable=not-an-iterable
+            if self.name in pkg.depends
+        ]
 
     def compute_optionalfor(self) -> list[str]:
-        return []
+        return [
+            pkg.name
+            for pkg in PackageDB.get_local_list()  # pylint: disable=not-an-iterable
+            if self.name in pkg.optdepends
+        ]
 
 
 ################################################################################
@@ -397,7 +405,7 @@ class PacmanPackageInfo(Package):
         return pformat(self.__dict__)
 
     @classmethod
-    def _parse_pacman_db_info(  # pylint: disable=too-many-branches
+    def _parse_pacman_db_info(  # pylint: disable=too-many-branches,too-many-statements  # noqa: C901,E501,RUF100
             cls, db_file_name: str, open_method: Callable[[str], IO[bytes]],
     ) -> "Iterable[PacmanPackageInfo]":
         # print(f"{db_file_name=}")

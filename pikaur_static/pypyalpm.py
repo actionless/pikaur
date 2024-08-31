@@ -787,22 +787,30 @@ class LooseVersion:
         components_other_len = len(components_other)
         max_len = max(components_len, components_other_len)
         for i in range(max_len):
+            error_counter = 0
+            component_parsed: int | str
+            component_other_parsed: int | str
             try:
-                component_int = int(components[i]) if i < components_len else 0
+                component_parsed = int(components[i]) if i < components_len else 0
             except ValueError:
-                component_int = 0
+                component_parsed = 0
+                error_counter += 1
             try:
-                component_other_int = int(components_other[i]) if i < components_other_len else 0
+                component_other_parsed = int(components_other[i]) if i < components_other_len else 0
             except ValueError:
-                component_other_int = 0
+                component_other_parsed = 0
+                error_counter += 1
+            if error_counter == 2:  # noqa: PLR2004
+                component_parsed = components[i]
+                component_other_parsed = components_other[i]
             if i < components_len:
-                components[i] = component_int
+                components[i] = component_parsed
             else:
-                components.append(component_int)
+                components.append(component_parsed)
             if i < components_other_len:
-                components_other[i] = component_other_int
+                components_other[i] = component_other_parsed
             else:
-                components_other.append(component_other_int)
+                components_other.append(component_other_parsed)
 
         if components == components_other:
             return 0

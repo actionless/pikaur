@@ -424,36 +424,6 @@ class LooseVersion:
         if vstring:
             self.parse(vstring)
 
-    def __eq__(self, other: "LooseVersion | str") -> bool:  # type: ignore[override]
-        c = self._cmp(other)
-        if c is NotImplemented:
-            return NotImplemented
-        return c == 0
-
-    def __lt__(self, other: "LooseVersion | str") -> bool:
-        c = self._cmp(other)
-        if c is NotImplemented:
-            return NotImplemented
-        return c < 0
-
-    def __le__(self, other: "LooseVersion | str") -> bool:
-        c = self._cmp(other)
-        if c is NotImplemented:
-            return NotImplemented
-        return c <= 0
-
-    def __gt__(self, other: "LooseVersion | str") -> bool:
-        c = self._cmp(other)
-        if c is NotImplemented:
-            return NotImplemented
-        return c > 0
-
-    def __ge__(self, other: "LooseVersion | str") -> bool:
-        c = self._cmp(other)
-        if c is NotImplemented:
-            return NotImplemented
-        return c >= 0
-
     def parse(self, vstring: str) -> None:
         self.vstring = vstring
         components = [x for x in self.component_re.split(vstring) if x and x != "."]
@@ -461,9 +431,6 @@ class LooseVersion:
 
     def __str__(self) -> str:
         return self.vstring
-
-    def __hash__(self) -> int:
-        return hash(self.vstring)
 
     def __repr__(self) -> str:
         return f"LooseVersion ('{self}')"

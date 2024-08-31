@@ -20,6 +20,7 @@ DB_NAME_LOCAL: Final = "local"
 SUPPORTED_ALPM_VERSION: Final = "9"
 # SUPPORTED_ALPM_VERSION: Final = "99999"  # used for testing only
 PACMAN_EXECUTABLE = "pacman"
+PACMAN_CONF_EXECUTABLE = "pacman-conf"
 PACMAN_ROOT = "/var/lib/pacman"
 
 
@@ -408,6 +409,7 @@ with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as vers
             PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
             PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS,
             PACMAN_EXECUTABLE=PACMAN_EXECUTABLE,
+            PACMAN_CONF_EXECUTABLE=PACMAN_CONF_EXECUTABLE,
         )
 
 

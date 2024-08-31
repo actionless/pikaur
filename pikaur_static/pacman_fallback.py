@@ -183,6 +183,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         RepoPackageInfo: "type[RepoPackageInfoType]",  # noqa: N803
         LocalPackageInfo: "type[LocalPackageInfoType]",  # noqa: N803
         PACMAN_EXECUTABLE: str,  # noqa: N803
+        PACMAN_CONF_EXECUTABLE: str,  # noqa: N803
         PACMAN_DICT_FIELDS: Sequence[str],  # noqa: N803
         PACMAN_LIST_FIELDS: Sequence[str],  # noqa: N803
 ) -> "type[PackageDBCommonType]":
@@ -335,7 +336,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         @classmethod
         def get_db_names(cls) -> list[str]:
             if not cls._repo_db_names:
-                result = SingleTaskExecutor(CmdTaskWorker(["pacman-conf", "--repo-list"])).execute()
+                result = SingleTaskExecutor(CmdTaskWorker([PACMAN_CONF_EXECUTABLE, "--repo-list"])).execute()
                 if not result.stdouts:
                     msg = "no dbs found"
                     raise RuntimeError(msg)

@@ -68,6 +68,9 @@ if TYPE_CHECKING:
 
 
 def init_readline() -> None:
+    if not getattr(readline, "read_init_file", None):
+        print_warning("Can't init readline")
+        return
     # follow GNU readline config in prompts:
     system_inputrc_path = Path("/etc/inputrc")
     if system_inputrc_path.exists():

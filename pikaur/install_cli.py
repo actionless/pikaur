@@ -85,6 +85,8 @@ if TYPE_CHECKING:
 
 logger = create_logger("install_cli")
 
+NEWLINE = "\n"
+
 
 def hash_file(filename: str | Path) -> str:  # pragma: no cover
     filename = Path(filename)
@@ -335,7 +337,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             (
                 f"{color_line(DECORATION, ColorsHighlight.yellow)}"
                 f" {question}\n"
-                f"{'\n'.join(options)}\n> "
+                f"{NEWLINE.join(options)}\n> "
             ),
             translate("e") + translate("f") + translate("s") + translate("a").upper(),
         ).lower()[0]
@@ -361,7 +363,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
             (
                 f"{color_line(DECORATION, ColorsHighlight.yellow)}"
                 f" {question}\n"
-                f"{'\n'.join(options)}\n> "
+                f"{NEWLINE.join(options)}\n> "
             ),
             translate("e") + translate("s") + translate("a").upper(),
         ).lower()[0]

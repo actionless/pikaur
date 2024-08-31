@@ -789,23 +789,25 @@ class LooseVersion:
         for i in range(max_len):
             try:
                 component_int = int(components[i]) if i < components_len else 0
+            except ValueError:
+                component_int = 0
+            try:
                 component_other_int = int(components_other[i]) if i < components_other_len else 0
             except ValueError:
-                pass
+                component_other_int = 0
+            if i < components_len:
+                components[i] = component_int
             else:
-                if i < components_len:
-                    components[i] = component_int
-                else:
-                    components.append(component_int)
-                if i < components_other_len:
-                    components_other[i] = component_other_int
-                else:
-                    components_other.append(component_other_int)
+                components.append(component_int)
+            if i < components_other_len:
+                components_other[i] = component_other_int
+            else:
+                components_other.append(component_other_int)
 
         if components == components_other:
             return 0
         if components < components_other:
-            print(f"-1 {components=} {components_other=}")
+            # print(f"-1 {components=} {components_other=}")
             return -1
         if components > components_other:
             # print(f"1 {components=} {components_other=}")
@@ -825,11 +827,11 @@ class LooseVersion:
 
 
 def compare_versions(current_version: str, new_version: str) -> int:
-    for separator in ("+",):
+    for separator in ("+", ):
         current_version = current_version.replace(separator, ".")
         new_version = new_version.replace(separator, ".")
     current_base_version = new_base_version = None
-    for separator in (":",):
+    for separator in (":", "-"):
         if separator in current_version:
             current_base_version, _current_version = \
                 current_version.split(separator)[:2]

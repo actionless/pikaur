@@ -491,16 +491,18 @@ def get_package_name_from_depend_line(depend_line: str) -> str:
 
 
 class RepoPackageInfo(PacmanPackageInfo):
-    Repository = None
-    Download_Size = None
+    pass
+    # Repository = None
+    # Download_Size = None
 
 
 class LocalPackageInfo(PacmanPackageInfo):
-    Required_By = None
-    Optional_For = None
+    # Required_By = None
+    # Optional_For = None
     # installdate = None
     # reason = None
-    Install_Script = None
+    # Install_Script = None
+    pass
 
 
 class PackageDBCommon:

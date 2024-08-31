@@ -80,12 +80,13 @@ from .version import VersionMatcher, compare_versions
 
 if TYPE_CHECKING:
     import pyalpm
+    from typing import Final
 
     from .args import PikaurArgs
 
 logger = create_logger("install_cli")
 
-NEWLINE = "\n"
+NEWLINE: "Final" = "\n"
 
 
 def hash_file(filename: str | Path) -> str:  # pragma: no cover

@@ -1,4 +1,8 @@
 # pylint: disable=invalid-name,line-too-long
+"""
+Pure-python alpm implementation backported from Pikaur v0.6
+with compatibility layer added for easier integration with pyalpm interface.
+"""
 # import gzip
 import asyncio
 import os

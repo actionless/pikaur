@@ -413,6 +413,19 @@ class PacmanPackageInfo(Package):
             pkg = cls()
             value: str | list[str] | dict[str, str] | None
             line = field = real_field = value = None
+
+            def return_pkg(pkg: PacmanPackageInfo) -> PacmanPackageInfo:
+                for field in DB_INFO_TRANSLATION.values():
+                    if getattr(pkg, field, NOT_FOUND_ATOM) is NOT_FOUND_ATOM:
+                        if field in PACMAN_LIST_FIELDS:
+                            setattr(pkg, field, [])
+                        elif field in PACMAN_DICT_FIELDS:
+                            setattr(pkg, field, {})
+                        else:
+                            setattr(pkg, field, None)
+
+                return pkg
+
             while line != "":  # noqa: PLC1901
                 line = db_file.readline().decode("utf-8")
                 # print(line)
@@ -427,7 +440,7 @@ class PacmanPackageInfo(Package):
                         continue
 
                     if real_field == "name" and getattr(pkg, "name", None):
-                        yield pkg
+                        yield return_pkg(pkg)
                         pkg = cls()
 
                     if real_field in PACMAN_LIST_FIELDS:
@@ -459,7 +472,8 @@ class PacmanPackageInfo(Package):
                 # if real_field in {"validation", "data"}:
                     # print(f"{real_field=} {value=}")
                 verbose_setattr(pkg, real_field, value)
-            yield pkg
+
+            yield return_pkg(pkg)
 
     # @classmethod
     # def parse_pacman_db_gzip_info(cls, file_name: str) -> "Iterable[PacmanPackageInfo]":

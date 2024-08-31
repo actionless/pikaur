@@ -429,6 +429,8 @@ class PacmanPackageInfo(Package):
             while line != "":  # noqa: PLC1901
                 line = db_file.readline().decode("utf-8")
                 # print(line)
+                if line.startswith("\x00\x00\x00"):
+                    continue
                 if line.startswith("%"):
 
                     if real_field and (field in DB_INFO_TRANSLATION):

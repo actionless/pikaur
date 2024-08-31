@@ -647,7 +647,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
 
         for untar_result in untar_results.values():
             if untar_result.return_code != 0:
-                print(untar_result)
+                print(f"error: {untar_result}")
 
         for repo_name, temp_dir in temp_dirs.items():
             for pkg in RepoPackageInfo.parse_pacman_db_info(os.path.join(temp_dir, repo_name)):
@@ -659,7 +659,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
     @classmethod
     def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
         if not cls._repo_dict_cache:
-            print("REPO_NOT_CACHED")
+            # print("REPO_NOT_CACHED")
 
             # copy repos dbs to temp location
             temp_repos = {}
@@ -681,13 +681,13 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
             # result = cls.get_repo_dict_bsdtar(temp_repos=temp_repos, temp_dirs=temp_dirs)
 
             cls._repo_dict_cache = result
-            print("REPO_DONE")
+            # print("REPO_DONE")
         return cls._repo_dict_cache
 
     @classmethod
     def get_local_dict(cls) -> dict[str, LocalPackageInfo]:
         if not cls._local_dict_cache:
-            print("LOCAL_NOT_CACHED_3.0")
+            # print("LOCAL_NOT_CACHED")
             result: dict[str, LocalPackageInfo] = {}
             local_dir = f"{PACMAN_ROOT}/local/"
             for pkg_dir_name in os.listdir(local_dir):
@@ -699,7 +699,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
                     # print(pkg_dir_name, dir(pkg))
                     result[pkg.name] = cast(LocalPackageInfo, pkg)
             cls._local_dict_cache = result
-            print("LOCAL_DONE_3.0")
+            # print("LOCAL_DONE")
         # print(cls._local_dict_cache)
         return cls._local_dict_cache
 

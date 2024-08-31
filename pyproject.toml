@@ -220,6 +220,12 @@ ignore = [
 "packaging/usr/bin/pikaur" = [
   "T201",
 ]
+"pypyalpm.py" = [
+  "T201",
+  "PTH107",
+  "PTH112",
+  "PTH118",
+]
 
 [tool.pylint.MASTER]
 jobs = '0'

@@ -20,6 +20,10 @@ NOT_FOUND_ATOM = object()
 DB_NAME_LOCAL: Final = "local"
 
 
+PACMAN_EXECUTABLE = "pacman"
+PACMAN_ROOT = "/var/lib/pacman"
+
+
 class DB:
     name: str
 
@@ -319,15 +323,7 @@ class PacmanTaskWorker(CmdTaskWorker):
 
     def __init__(self, args: list[str]) -> None:
         super().__init__(
-            ["pacman", *args],
-        )
-
-
-class PacmanColorTaskWorker(PacmanTaskWorker):
-
-    def __init__(self, args: list[str]) -> None:
-        super().__init__(
-            ["--color=always", *args],
+            [PACMAN_EXECUTABLE, *args],
         )
 
 
@@ -597,7 +593,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
     # ~2.7 seconds (was ~2.2 seconds with gzip)
 
     _repo_db_names: list[str] | None = None
-    sync_dir = "/var/lib/pacman/sync/"
+    sync_dir = f"{PACMAN_ROOT}/sync/"
 
     @classmethod
     def get_db_names(cls) -> list[str]:
@@ -693,7 +689,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         if not cls._local_dict_cache:
             print("LOCAL_NOT_CACHED_3.0")
             result: dict[str, LocalPackageInfo] = {}
-            local_dir = "/var/lib/pacman/local/"
+            local_dir = f"{PACMAN_ROOT}/local/"
             for pkg_dir_name in os.listdir(local_dir):
                 if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
                     continue
@@ -708,7 +704,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return cls._local_dict_cache
 
 
-with Path("/var/lib/pacman/local/ALPM_DB_VERSION").open(encoding="utf-8") as version_file:
+with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as version_file:
     ALPM_DB_VER = version_file.read().strip()
     if ALPM_DB_VER == "9":
         PackageDB = PackageDB_ALPM9

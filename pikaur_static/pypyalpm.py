@@ -4,6 +4,7 @@ Pure-python alpm implementation backported from Pikaur v0.6
 with compatibility layer added for easier integration with pyalpm interface.
 """
 import abc
+import multiprocessing
 import os
 import re
 import sys
@@ -385,19 +386,31 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return cls._repo_db_names
 
     @classmethod
+    def _get_repo_dict_for_repo(cls, repo_name: str) -> dict[str, PacmanPackageInfo]:
+        result = {}
+        debug(f" -------<<- {os.getpid()} {repo_name}")
+        repo_path = os.path.join(cls.sync_dir, f"{repo_name}.db")
+        for pkg in PacmanPackageInfo.parse_pacman_db_gzip_info(repo_path):
+            pkg.db = DB(name=repo_name)
+            result[pkg.name] = pkg
+        debug(f" ------->>- {os.getpid()} {repo_name}")
+        return result
+
+    @classmethod
     def get_repo_dict(cls) -> dict[str, PacmanPackageInfo]:
         if not cls._repo_dict_cache:
             debug(f" <<<<<<<<<< {os.getpid()} REPO_NOT_CACHED")
 
             result = {}
-            for repo_name in os.listdir(cls.sync_dir):
-                if not repo_name.endswith(".db"):
-                    continue
-
-                repo_path = os.path.join(cls.sync_dir, repo_name)
-                for pkg in PacmanPackageInfo.parse_pacman_db_gzip_info(repo_path):
-                    pkg.db = DB(name=repo_name.rsplit(".db", maxsplit=1)[0])
-                    result[pkg.name] = pkg
+            with multiprocessing.pool.Pool() as pool:
+                jobs = [
+                    pool.apply_async(cls._get_repo_dict_for_repo, (repo_name, ))
+                    for repo_name in cls.get_db_names()
+                ]
+                pool.close()
+                for job in jobs:
+                    result.update(job.get())
+                pool.join()
 
             cls._repo_dict_cache = result
             debug(f" >>>>>>>>>> {os.getpid()} REPO_DONE")

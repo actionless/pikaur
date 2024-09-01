@@ -6,10 +6,11 @@ with compatibility layer added for easier integration with pyalpm interface.
 import abc
 import os
 import re
+import sys
 import tarfile
 from pathlib import Path
 from pprint import pformat
-from typing import IO, TYPE_CHECKING, Final, cast
+from typing import IO, TYPE_CHECKING, Any, Final, cast
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -27,6 +28,18 @@ FORCE_PACMAN_CLI_DB: Final = False
 PACMAN_EXECUTABLE = "pacman"
 PACMAN_CONF_EXECUTABLE = "pacman-conf"
 PACMAN_ROOT = "/var/lib/pacman"
+
+
+VERBOSE: Final = True
+
+
+def debug(*args: Any) -> None:
+    if VERBOSE:
+        print(*args)
+
+
+def error(*args: Any) -> None:
+    print(*args, file=sys.stderr)
 
 
 class DB:
@@ -223,7 +236,7 @@ class PacmanPackageInfo(Package):
                 field = line
                 real_field = DB_INFO_TRANSLATION.get(field)
                 if not real_field:
-                    print(f"Unknown field {field}")
+                    error(f"Unknown field {field}")
                     continue
 
                 if real_field == "name" and getattr(pkg, "name", None):
@@ -238,7 +251,7 @@ class PacmanPackageInfo(Package):
                     value = ""
             else:
                 if field not in DB_INFO_TRANSLATION:
-                    print(f"{field=} {line=}")
+                    error(f"{field=} {line=}")
                     continue
 
                 _value = line.strip()
@@ -374,7 +387,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
     @classmethod
     def get_repo_dict(cls) -> dict[str, PacmanPackageInfo]:
         if not cls._repo_dict_cache:
-            print(" <<<<<<<<<< REPO_NOT_CACHED")
+            debug(f" <<<<<<<<<< {os.getpid()} REPO_NOT_CACHED")
 
             result = {}
             for repo_name in os.listdir(cls.sync_dir):
@@ -387,7 +400,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
                     result[pkg.name] = pkg
 
             cls._repo_dict_cache = result
-            print(" >>>>>>>>>> REPO_DONE")
+            debug(f" >>>>>>>>>> {os.getpid()} REPO_DONE")
         return cls._repo_dict_cache
 
     @classmethod
@@ -404,7 +417,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
     @classmethod
     def get_local_dict(cls) -> dict[str, PacmanPackageInfo]:
         if not cls._local_dict_cache:
-            print(" <<<<<<<<<< LOCAL_NOT_CACHED")
+            debug(" <<<<<<<<<< LOCAL_NOT_CACHED")
 
             result: dict[str, PacmanPackageInfo] = {}
             for pkg_dir_name in os.listdir(cls.local_dir):
@@ -417,11 +430,11 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
                     result[pkg.name] = pkg
 
             cls._local_dict_cache = result
-            print(" >>>>>>>>>> LOCAL_DONE")
+            debug(" >>>>>>>>>> LOCAL_DONE")
         return cls._local_dict_cache
 
 
-print(
+error(
     "\n"
     " !!! Pikaur-static (Python-only ALPM DB reader) activated\n"
     "     (consider using it only in recovery situations)\n",
@@ -437,14 +450,14 @@ with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as vers
         PackageDB = PackageDB_ALPM9
     else:
         if FORCE_PACMAN_CLI_DB:
-            print(" >>> User forced to use pacman output")
+            error(" >>> User forced to use pacman output")
         else:
-            print(
+            error(
                 f"\n !!! Current ALPM DB version={ALPM_DB_VER}."
                 f" Pikaur-static supports only {SUPPORTED_ALPM_VERSION}\n",
             )
         # raise RuntimeError(ALPM_DB_VER)
-        print(
+        error(
             " >>> Switching to pure pacman-only mode"
             " (pacman CLI output will be used instead of ALPM DB)...\n\n",
         )
@@ -522,10 +535,10 @@ class LooseVersion:
         if components == components_other:
             return 0
         if components < components_other:
-            # print(f"-1 {components=} {components_other=}")
+            # debug(f"-1 {components=} {components_other=}")
             return -1
         if components > components_other:
-            # print(f"1 {components=} {components_other=}")
+            # debug(f"1 {components=} {components_other=}")
             return 1
         return NotImplemented
 

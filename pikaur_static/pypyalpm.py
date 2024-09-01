@@ -396,9 +396,14 @@ with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as vers
         # NUITKA_static: -Qu --repo: ~ 3.1..3.9 s
         PackageDB = PackageDB_ALPM9
     else:
-        # CPYTHON: -Qu --repo: ~ 2.8..3.3 s
+        print(
+            f"\nCurrent ALPM DB version={ALPM_DB_VER}."
+            f" Pikaur-static supports only {SUPPORTED_ALPM_VERSION}\n",
+        )
         # raise RuntimeError(ALPM_DB_VER)
+        print("Switching to pure pacman-only mode...\n\n")
         from pacman_fallback import get_pacman_cli_package_db
+        # CPYTHON: -Qu --repo: ~ 2.8..3.3 s
         PackageDB = get_pacman_cli_package_db(
             PackageDBCommon=PackageDBCommon,
             RepoPackageInfo=RepoPackageInfo,

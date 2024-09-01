@@ -294,7 +294,7 @@ class PackageDBCommon(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def get_local_pkg_uncached(cls, name: str) -> PacmanPackageInfo | None:
-        pass
+        raise NotImplementedError
 
     @classmethod
     def get_repo_list(cls) -> list[PacmanPackageInfo]:

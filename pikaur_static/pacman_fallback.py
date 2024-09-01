@@ -344,16 +344,21 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
                 cls._repo_db_names = result.stdouts
             return cls._repo_db_names
 
-        # @classmethod
-        # def get_local_pkg_uncached(cls, name: str) -> PacmanPackageInfo | None:
-        #     for dir_name in os.listdir(cls.local_dir):
-        #         if name == dir_name.rsplit("-", maxsplit=2)[0]:
-        #             result = list(PacmanPackageInfo.parse_pacman_db_info(
-        #                 os.path.join(cls.local_dir, dir_name, "desc"),
-        #             ))
-        #             print(result)
-        #             if result:
-        #                 return result[0]
-        #     return None
+        @classmethod
+        def get_local_pkg_uncached(cls, name: str) -> "PacmanPackageInfoType | None":
+            result = SingleTaskExecutor(
+                PacmanTaskWorker(
+                    pacman_executable=PACMAN_EXECUTABLE, args=["-Qi", name],
+                ),
+            ).execute()
+            if not result.stdouts:
+                return None
+            pkgs = list(CliPackageInfo.parse_pacman_cli_info(
+                result.stdouts, db_type="local",
+            ))
+            if not pkgs:
+                print(result.stdouts)
+                raise RuntimeError(name)
+            return pkgs[0]
 
     return PackageDbCli

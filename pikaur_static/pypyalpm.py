@@ -420,7 +420,7 @@ with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as vers
     if (ALPM_DB_VER == SUPPORTED_ALPM_VERSION) and not FORCE_PACMAN_CLI_DB:
         # CPYTHON: -Qu --repo: ~ T1: 2.6..3.1s, T2: 3.9..4.8
         # NUITKA: -Qu --repo: ~ 3.2..3.7 s
-        # NUITKA_static: -Qu --repo: ~ 3.1..3.9s
+        # NUITKA_static: -Qu --repo: ~ T1, 3.1..3.9s, T2: 4.6..5.4
         PackageDB = PackageDB_ALPM9
     else:
         if FORCE_PACMAN_CLI_DB:

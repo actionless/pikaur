@@ -270,17 +270,26 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
                 else:
                     value += line  # type: ignore[operator]
 
-                if field:
+                if (
+                        field
+                        and (
+                            value
+                            or not (
+                                (field in PACMAN_DICT_FIELDS)
+                                or (field in PACMAN_LIST_FIELDS)
+                            )
+                        )
+                ):
                     try:
                         setattr(pkg, field, value)
                     except TypeError:
                         print(line)
                         raise
 
-    class CliRepoPackageInfo(RepoPackageInfo, CliPackageInfo):  # type: ignore[valid-type,misc]
+    class CliRepoPackageInfo(CliPackageInfo, RepoPackageInfo):  # type: ignore[valid-type,misc]
         db_type = "repo"
 
-    class CliLocalPackageInfo(LocalPackageInfo, CliPackageInfo):  # type: ignore[valid-type,misc]
+    class CliLocalPackageInfo(CliPackageInfo, LocalPackageInfo):  # type: ignore[valid-type,misc]
         pass
 
     class MergedDBCache(TypedDict):

@@ -103,6 +103,15 @@ class Package:
             if self.name in pkg.optdepends
         ]
 
+    def __init__(self) -> None:
+        for field in DB_INFO_TRANSLATION.values():
+            if field in PACMAN_LIST_FIELDS:
+                setattr(self, field, [])
+            elif field in PACMAN_DICT_FIELDS:
+                setattr(self, field, {})
+            else:
+                setattr(self, field, None)
+
 
 ################################################################################
 
@@ -159,7 +168,7 @@ class PacmanPackageInfo(Package):
         return pformat(self.__dict__)
 
     @classmethod
-    def _parse_pacman_db_info(  # pylint: disable=too-many-branches,too-many-statements  # noqa: C901,E501,RUF100
+    def _parse_pacman_db_info(  # pylint: disable=too-many-branches  # noqa: C901,E501,RUF100
             cls, db_file_name: str, open_method: Callable[[str], IO[bytes]],
     ) -> "Iterable[PacmanPackageInfo]":
         # print(f"{db_file_name=}")
@@ -175,18 +184,6 @@ class PacmanPackageInfo(Package):
             pkg = cls()
             value: str | list[str] | dict[str, str] | None
             line = field = real_field = value = None
-
-            def return_pkg(pkg: PacmanPackageInfo) -> PacmanPackageInfo:
-                for field in DB_INFO_TRANSLATION.values():
-                    if getattr(pkg, field, NOT_FOUND_ATOM) is NOT_FOUND_ATOM:
-                        if field in PACMAN_LIST_FIELDS:
-                            setattr(pkg, field, [])
-                        elif field in PACMAN_DICT_FIELDS:
-                            setattr(pkg, field, {})
-                        else:
-                            setattr(pkg, field, None)
-
-                return pkg
 
             while line != "":  # noqa: PLC1901
                 line = db_file.readline().decode("utf-8")
@@ -204,7 +201,7 @@ class PacmanPackageInfo(Package):
                         continue
 
                     if real_field == "name" and getattr(pkg, "name", None):
-                        yield return_pkg(pkg)
+                        yield pkg
                         pkg = cls()
 
                     if real_field in PACMAN_LIST_FIELDS:
@@ -237,7 +234,7 @@ class PacmanPackageInfo(Package):
                     # print(f"{real_field=} {value=}")
                 verbose_setattr(pkg, real_field, value)
 
-            yield return_pkg(pkg)
+            yield pkg
 
     @classmethod
     def parse_pacman_db_gzip_info(cls, file_name: str) -> "Iterable[PacmanPackageInfo]":

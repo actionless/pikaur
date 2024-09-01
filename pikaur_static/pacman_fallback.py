@@ -307,7 +307,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         @classmethod
         def _get_dbs(cls) -> MergedDBCache:
             if not cls._repo_cache:
-                print("Retrieving local pacman database...")
+                print(" >>> Retrieving local pacman database...")
                 results = MultipleTasksExecutor({
                     cls.repo: PacmanTaskWorker(
                         pacman_executable=PACMAN_EXECUTABLE, args=["-Si"],
@@ -334,10 +334,12 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
 
         @classmethod
         def get_repo_list(cls) -> list[CliRepoPackageInfo]:
+            # print(" >>> GET_REPO_LIST")
             return cls._get_dbs()["repo"]
 
         @classmethod
         def get_local_list(cls) -> list[CliLocalPackageInfo]:
+            # print(" >>> GET_LOCAL_LIST")
             return cls._get_dbs()["local"]
 
         _repo_db_names: list[str] | None = None

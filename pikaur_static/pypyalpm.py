@@ -19,6 +19,8 @@ DB_NAME_LOCAL: Final = "local"
 
 SUPPORTED_ALPM_VERSION: Final = "9"
 # SUPPORTED_ALPM_VERSION: Final = "99999"  # used for testing only
+FORCE_PACMAN_CLI_DB: Final = False
+# FORCE_PACMAN_CLI_DB: Final = True
 PACMAN_EXECUTABLE = "pacman"
 PACMAN_CONF_EXECUTABLE = "pacman-conf"
 PACMAN_ROOT = "/var/lib/pacman"
@@ -386,22 +388,33 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return cls._local_dict_cache
 
 
+print(
+    "\n"
+    " !!! Pikaur-static (Python-only ALPM DB reader) activated\n"
+    "     (consider using it only in recovery situations)\n",
+)
 with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as version_file:
     ALPM_DB_VER = version_file.read().strip()
     PackageDB: type[PackageDBCommon]
     # VANILLA pikaur + cpython + pyalpm: -Qu --repo: ~ 1.2..1.4 s
-    if ALPM_DB_VER == SUPPORTED_ALPM_VERSION:
+    if (ALPM_DB_VER == SUPPORTED_ALPM_VERSION) and not FORCE_PACMAN_CLI_DB:
         # CPYTHON: -Qu --repo: ~ 2.6..3.1 s
         # NUITKA: -Qu --repo: ~ 3.2..3.7 s
         # NUITKA_static: -Qu --repo: ~ 3.1..3.9 s
         PackageDB = PackageDB_ALPM9
     else:
-        print(
-            f"\nCurrent ALPM DB version={ALPM_DB_VER}."
-            f" Pikaur-static supports only {SUPPORTED_ALPM_VERSION}\n",
-        )
+        if FORCE_PACMAN_CLI_DB:
+            print(" >>> User forced to use pacman output")
+        else:
+            print(
+                f"\n !!! Current ALPM DB version={ALPM_DB_VER}."
+                f" Pikaur-static supports only {SUPPORTED_ALPM_VERSION}\n",
+            )
         # raise RuntimeError(ALPM_DB_VER)
-        print("Switching to pure pacman-only mode...\n\n")
+        print(
+            " >>> Switching to pure pacman-only mode"
+            " (pacman CLI output will be used instead of ALPM DB)...\n\n",
+        )
         from pacman_fallback import get_pacman_cli_package_db
         # CPYTHON: -Qu --repo: ~ 2.8..3.3 s
         PackageDB = get_pacman_cli_package_db(

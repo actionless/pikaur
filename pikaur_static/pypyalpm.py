@@ -3,13 +3,15 @@
 Pure-python alpm implementation backported from Pikaur v0.6
 with compatibility layer added for easier integration with pyalpm interface.
 """
-import gzip
 import os
 import re
-from collections.abc import Callable, Iterable
+import tarfile
 from pathlib import Path
 from pprint import pformat
-from typing import IO, Final, cast
+from typing import IO, TYPE_CHECKING, Final, cast
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 NOT_FOUND_ATOM = object()
 
@@ -70,7 +72,7 @@ class Package:
     base64_sig: str
     filename: str
     base: str
-    reason: int
+    reason: int  # 0:explicit 1:installed_as_dependency
     builddate: int
     installdate: int
     # { "files",  (getter)pyalpm_package_get_files, 0, "list of installed files", NULL } ,
@@ -95,14 +97,22 @@ class Package:
         return [
             pkg.name
             for pkg in PackageDB.get_local_list()
-            if self.name in pkg.depends
+            for name in [
+                self.name,
+                *(get_package_name_from_depend_line(line) for line in self.provides),
+            ]
+            if name in [get_package_name_from_depend_line(line) for line in pkg.depends]
         ]
 
     def compute_optionalfor(self) -> list[str]:
         return [
             pkg.name
             for pkg in PackageDB.get_local_list()
-            if self.name in pkg.optdepends
+            for name in [
+                self.name,
+                *(get_package_name_from_depend_line(line) for line in self.provides),
+            ]
+            if name in [get_package_name_from_depend_line(line) for line in pkg.optdepends]
         ]
 
     def __init__(self) -> None:
@@ -111,6 +121,8 @@ class Package:
                 setattr(self, field, [])
             elif field in PACMAN_DICT_FIELDS:
                 setattr(self, field, {})
+            elif field in PACMAN_INT_FIELDS:
+                setattr(self, field, 0)
             else:
                 setattr(self, field, None)
 
@@ -123,10 +135,19 @@ PACMAN_LIST_FIELDS = (
     "replaces",
     "depends",
     "provides",
-    "Required_By",
-    "Optional_For",
     "licenses",
     "groups",
+    "makedepends",
+    "checkdepends",
+
+    # used only in fallback parser:
+    "required_by",
+    "optional_for",
+)
+
+
+PACMAN_INT_FIELDS = (
+    "reason",
 )
 
 
@@ -142,6 +163,8 @@ DB_INFO_TRANSLATION = {
     "%DESC%": "desc",
     "%CONFLICTS%": "conflicts",
     "%DEPENDS%": "depends",
+    "%MAKEDEPENDS%": "makedepends",
+    "%CHECKDEPENDS%": "checkdepends",
     "%OPTDEPENDS%": "optdepends",
     "%REPLACES%": "replaces",
     "%LICENSE%": "licenses",
@@ -156,6 +179,12 @@ DB_INFO_TRANSLATION = {
     "%ARCH%": "arch",
     "%VALIDATION%": "validation",
     "%XDATA%": "data",
+    "%SHA256SUM%": "sha256sum",
+    "%PGPSIG%": "base64_sig",
+    "%ISIZE%": "isize",
+    "%CSIZE%": "size",
+    "%MD5SUM%": "md5sum",
+    "%FILENAME%": "filename",
 }
 
 
@@ -171,86 +200,81 @@ class PacmanPackageInfo(Package):
 
     @classmethod
     def _parse_pacman_db_info(  # pylint: disable=too-many-branches  # noqa: C901,E501,RUF100
-            cls, db_file_name: str, open_method: Callable[[str], IO[bytes]],
+        cls,
+        db_file: IO[bytes],
     ) -> "Iterable[PacmanPackageInfo]":
-        # print(f"{db_file_name=}")
 
-        def verbose_setattr(
-                pkg: "PacmanPackageInfo",
-                real_field: str,
-                value: str | list[str] | dict[str, str] | None,
-        ) -> None:
-            setattr(pkg, real_field, value)
+        pkg = cls()
+        value: str | list[str] | dict[str, str | None] | int | None
+        line = field = real_field = value = None
 
-        with open_method(db_file_name) as db_file:
-            pkg = cls()
-            value: str | list[str] | dict[str, str] | None
-            line = field = real_field = value = None
+        # while line != "":  # noqa: PLC1901,RUF100
+        for line_b in db_file.readlines():
+            # line = db_file.readline().strip().decode("utf-8")
+            line = line_b.strip().decode("utf-8")
+            if line.startswith("%"):
 
-            while line != "":  # noqa: PLC1901
-                line = db_file.readline().decode("utf-8")
-                # print(line)
-                if line.startswith("\x00\x00\x00"):
-                    continue
-                if line.startswith("%"):
+                # if field in DB_INFO_TRANSLATION:
+                if real_field:
+                    setattr(pkg, real_field, value)
 
-                    if real_field and (field in DB_INFO_TRANSLATION):
-                        verbose_setattr(pkg, real_field, value)
-
-                    field = line.strip()
-                    real_field = DB_INFO_TRANSLATION.get(field)
-                    if not real_field:
-                        continue
-
-                    if real_field == "name" and getattr(pkg, "name", None):
-                        yield pkg
-                        pkg = cls()
-
-                    if real_field in PACMAN_LIST_FIELDS:
-                        value = []
-                    elif real_field in PACMAN_DICT_FIELDS:
-                        value = {}
-                    else:
-                        value = ""
-                else:
-                    if field not in DB_INFO_TRANSLATION:
-                        continue
-
-                    _value = line.strip()
-                    if not _value:
-                        continue
-                    if real_field in PACMAN_LIST_FIELDS:
-                        cast(list[str], value).append(_value)
-                    elif real_field in PACMAN_DICT_FIELDS:
-                        subkey, *subvalue_parts = _value.split(": ")
-                        subvalue = ": ".join(subvalue_parts)
-                        # pylint: disable=unsupported-assignment-operation
-                        cast(dict[str, str], value)[subkey] = subvalue
-                    else:
-                        value = cast(str, value) + _value
-
-            if field in DB_INFO_TRANSLATION:
+                field = line
+                real_field = DB_INFO_TRANSLATION.get(field)
                 if not real_field:
-                    raise RuntimeError(field)
-                # if real_field in {"validation", "data"}:
-                    # print(f"{real_field=} {value=}")
-                verbose_setattr(pkg, real_field, value)
+                    print(f"Unknown field {field}")
+                    continue
 
-            yield pkg
+                if real_field == "name" and getattr(pkg, "name", None):
+                    yield pkg
+                    pkg = cls()
+
+                if real_field in PACMAN_LIST_FIELDS:
+                    value = []
+                elif real_field in PACMAN_DICT_FIELDS:
+                    value = {}
+                else:
+                    value = ""
+            else:
+                if field not in DB_INFO_TRANSLATION:
+                    print(f"{field=} {line=}")
+                    continue
+
+                _value = line.strip()
+                if not _value:
+                    continue
+                if real_field in PACMAN_LIST_FIELDS:
+                    cast(list[str], value).append(_value)
+                elif real_field in PACMAN_DICT_FIELDS:
+                    subkey, *subvalue_parts = _value.split(": ")
+                    subvalue = ": ".join(subvalue_parts)
+                    # pylint: disable=unsupported-assignment-operation
+                    cast(dict[str, str], value)[subkey] = subvalue
+                elif real_field in PACMAN_INT_FIELDS:
+                    value = int(_value)
+                else:
+                    value = cast(str, value) + _value
+
+        if not real_field:
+            raise RuntimeError(field)
+        setattr(pkg, real_field, value)
+
+        yield pkg
 
     @classmethod
     def parse_pacman_db_gzip_info(cls, file_name: str) -> "Iterable[PacmanPackageInfo]":
-        return cls._parse_pacman_db_info(file_name, gzip.open)  # type: ignore[arg-type]
+        with tarfile.open(file_name, mode="r|gz") as archive:
+            while file := archive.next():
+                if file.isfile() and (extracted := archive.extractfile(file)):
+                    yield from cls._parse_pacman_db_info(extracted)
 
     @classmethod
     def parse_pacman_db_info(cls, file_name: str) -> "Iterable[PacmanPackageInfo]":
-        return cls._parse_pacman_db_info(
-            file_name, lambda x: open(x, "rb"),  # pylint: disable=consider-using-with  # noqa: SIM115,E501,RUF100,PTH123
-        )
+        with open(file_name, "rb") as fobj:  # noqa: PTH123
+            yield from cls._parse_pacman_db_info(fobj)
 
 
 def get_package_name_from_depend_line(depend_line: str) -> str:
-    return depend_line.split("=")[0].split("<")[0].split(">")[0]
+    return depend_line.split("=", maxsplit=1)[0]
 
 
 class RepoPackageInfo(PacmanPackageInfo):
@@ -348,7 +372,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return cls._repo_db_names
 
     @classmethod
-    def get_repo_dict_pygzip(cls) -> dict[str, RepoPackageInfo]:
+    def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
         if not cls._repo_dict_cache:
             # print("REPO_NOT_CACHED")
 
@@ -365,10 +389,6 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
             cls._repo_dict_cache = result
             # print("REPO_DONE")
         return cls._repo_dict_cache
-
-    @classmethod
-    def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
-        return cls.get_repo_dict_pygzip()
 
     @classmethod
     def get_local_dict(cls) -> dict[str, LocalPackageInfo]:
@@ -396,11 +416,11 @@ print(
 with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as version_file:
     ALPM_DB_VER = version_file.read().strip()
     PackageDB: type[PackageDBCommon]
-    # VANILLA pikaur + cpython + pyalpm: -Qu --repo: ~ 1.2..1.4 s
+    # VANILLA pikaur + cpython + pyalpm: -Qu --repo: ~ T1: 1.2..1.4s, T2: 1.3..1.5s
     if (ALPM_DB_VER == SUPPORTED_ALPM_VERSION) and not FORCE_PACMAN_CLI_DB:
-        # CPYTHON: -Qu --repo: ~ 2.6..3.1 s
+        # CPYTHON: -Qu --repo: ~ T1: 2.6..3.1s, T2: 3.9..4.8
         # NUITKA: -Qu --repo: ~ 3.2..3.7 s
-        # NUITKA_static: -Qu --repo: ~ 3.1..3.9 s
+        # NUITKA_static: -Qu --repo: ~ 3.1..3.9s
         PackageDB = PackageDB_ALPM9
     else:
         if FORCE_PACMAN_CLI_DB:
@@ -416,13 +436,14 @@ with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as vers
             " (pacman CLI output will be used instead of ALPM DB)...\n\n",
         )
         from pacman_fallback import get_pacman_cli_package_db
-        # CPYTHON: -Qu --repo: ~ 2.8..3.3 s
+        # CPYTHON: -Qu --repo: ~ T1: 2.8..3.3s, T2: 3.5..3.7
         PackageDB = get_pacman_cli_package_db(
             PackageDBCommon=PackageDBCommon,
             RepoPackageInfo=RepoPackageInfo,
             LocalPackageInfo=LocalPackageInfo,
             PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
             PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS,
+            PACMAN_INT_FIELDS=PACMAN_INT_FIELDS,
             PACMAN_EXECUTABLE=PACMAN_EXECUTABLE,
             PACMAN_CONF_EXECUTABLE=PACMAN_CONF_EXECUTABLE,
         )

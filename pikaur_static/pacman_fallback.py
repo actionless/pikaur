@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name,too-many-branches,too-many-statements  # noqa: INP001
 import asyncio
 from collections.abc import Callable, Coroutine, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Final, TypedDict
+from typing import TYPE_CHECKING, Any, Final, TypedDict, cast
 
 if TYPE_CHECKING:
     from pypyalpm import LocalPackageInfo as LocalPackageInfoType
@@ -186,6 +186,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         PACMAN_CONF_EXECUTABLE: str,  # noqa: N803
         PACMAN_DICT_FIELDS: Sequence[str],  # noqa: N803
         PACMAN_LIST_FIELDS: Sequence[str],  # noqa: N803
+        PACMAN_INT_FIELDS: Sequence[str],  # noqa: N803
 ) -> "type[PackageDBCommonType]":
 
     class DBPlaceholder:
@@ -200,17 +201,16 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         db: DBPlaceholder
         repository: str
 
-        required_by: str
-        required_by_list: list[str] | None = None
+        required_by: list[str] | None = None
+        optional_for: list[str] | None = None
 
-        optional_for: str
-        optional_for_list: list[str] | None = None
+        reason: bool
 
         def compute_requiredby(self) -> list[str]:
-            return self.required_by_list or []
+            return self.required_by or []
 
         def compute_optionalfor(self) -> list[str]:
-            return self.optional_for_list or []
+            return self.optional_for or []
 
         @classmethod
         def parse_pacman_cli_info(cls, lines: list[str]) -> Iterable["CliPackageInfo"]:
@@ -222,15 +222,10 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
                 if line == "":  # noqa: PLC1901
                     if cls.db_type == "local":
                         pkg.db = DBPlaceholder(name="local")
-                        if pkg.required_by:
-                            pkg.required_by_list = pkg.required_by.split()
-                            del pkg.required_by
-                        if pkg.optional_for:
-                            pkg.optional_for_list = pkg.optional_for.split()
-                            del pkg.optional_for
                     else:
                         pkg.db = DBPlaceholder(name=pkg.repository)
                         del pkg.repository
+                    pkg.reason = "dependency" in (cast(str, pkg.reason) or "").lower()
                     yield pkg
                     pkg = cls()
                     continue
@@ -276,6 +271,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
                             value
                             or not (
                                 (field in PACMAN_DICT_FIELDS)
+                                or (field in PACMAN_INT_FIELDS)
                                 or (field in PACMAN_LIST_FIELDS)
                             )
                         )

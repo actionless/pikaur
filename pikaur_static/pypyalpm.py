@@ -25,8 +25,10 @@ NOT_FOUND_ATOM = object()
 
 DB_NAME_LOCAL: Final = "local"
 
+
 SUPPORTED_ALPM_VERSION: Final = "9"
 # SUPPORTED_ALPM_VERSION: Final = "99999"  # used for testing only
+
 PACMAN_EXECUTABLE = "pacman"
 PACMAN_CONF_EXECUTABLE = "pacman-conf"
 PACMAN_DB_PATH = "/var/lib/pacman"
@@ -502,6 +504,7 @@ with Path(f"{PACMAN_DB_PATH}/local/ALPM_DB_VERSION").open(encoding="utf-8") as v
             PACMAN_INT_FIELDS=PACMAN_INT_FIELDS,
             PACMAN_EXECUTABLE=PACMAN_EXECUTABLE,
             PACMAN_CONF_EXECUTABLE=PACMAN_CONF_EXECUTABLE,
+            DEFAULT_HANDLE=DEFAULT_HANDLE,
         )
 
 

@@ -4,6 +4,7 @@ from collections.abc import Callable, Coroutine, Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Final, TypedDict, cast
 
 if TYPE_CHECKING:
+    from pypyalpm import Handle
     from pypyalpm import PackageDBCommon as PackageDBCommonType
     from pypyalpm import PacmanPackageInfo as PacmanPackageInfoType
 
@@ -191,6 +192,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         PACMAN_DICT_FIELDS: Sequence[str],  # noqa: N803
         PACMAN_LIST_FIELDS: Sequence[str],  # noqa: N803
         PACMAN_INT_FIELDS: Sequence[str],  # noqa: N803
+        DEFAULT_HANDLE: "Handle",  # noqa: N803
 ) -> "type[PackageDBCommonType]":
 
     class CliPackageInfo(PacmanPackageInfo):  # type: ignore[valid-type,misc]
@@ -293,7 +295,10 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         local = "local"
 
         @classmethod
-        def _get_dbs(cls) -> MergedDBCache:
+        def _get_dbs(
+                cls,
+                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+        ) -> MergedDBCache:
             if not cls._repo_cache:
                 print(" >>> Retrieving local pacman database...")
                 results = MultipleTasksExecutor({
@@ -321,19 +326,28 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
             return {"repo": cls._repo_cache, "local": cls._local_cache}
 
         @classmethod
-        def get_repo_list(cls) -> list[CliPackageInfo]:
+        def get_repo_list(
+                cls,
+                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+        ) -> list[CliPackageInfo]:
             # print(" >>> GET_REPO_LIST")
             return cls._get_dbs()["repo"]
 
         @classmethod
-        def get_local_list(cls) -> list[CliPackageInfo]:
+        def get_local_list(
+                cls,
+                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+        ) -> list[CliPackageInfo]:
             # print(" >>> GET_LOCAL_LIST")
             return cls._get_dbs()["local"]
 
         _repo_db_names: list[str] | None = None
 
         @classmethod
-        def get_db_names(cls) -> list[str]:
+        def get_db_names(
+                cls,
+                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+        ) -> list[str]:
             if not cls._repo_db_names:
                 result = SingleTaskExecutor(
                     CmdTaskWorker([PACMAN_CONF_EXECUTABLE, "--repo-list"]),
@@ -345,7 +359,11 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
             return cls._repo_db_names
 
         @classmethod
-        def get_local_pkg_uncached(cls, name: str) -> "PacmanPackageInfoType | None":
+        def get_local_pkg_uncached(
+                cls,
+                name: str,
+                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+        ) -> "PacmanPackageInfoType | None":
             result = SingleTaskExecutor(
                 PacmanTaskWorker(
                     pacman_executable=PACMAN_EXECUTABLE, args=["-Qi", name],

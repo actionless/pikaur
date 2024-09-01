@@ -3,6 +3,7 @@
 Pure-python alpm implementation backported from Pikaur v0.6
 with compatibility layer added for easier integration with pyalpm interface.
 """
+import abc
 import os
 import re
 import tarfile
@@ -32,7 +33,7 @@ class DB:
     name: str
 
     def search(self, query: str) -> list["Package"]:
-        pkgs: dict[str, LocalPackageInfo] | dict[str, RepoPackageInfo]
+        pkgs: dict[str, PacmanPackageInfo]
         if self.name == DB_NAME_LOCAL:
             pkgs = PackageDB.get_local_dict()
         else:
@@ -44,9 +45,10 @@ class DB:
             if query in pkg_name
         ]
 
-    def get_pkg(self, name: str) -> "Package":
+    def get_pkg(self, name: str) -> "Package | None":
         if self.name == DB_NAME_LOCAL:
-            return PackageDB.get_local_dict()[name]
+            # return PackageDB.get_local_dict()[name]
+            return PackageDB.get_local_pkg_uncached(name)
         return PackageDB.get_repo_dict()[name]
 
     def __init__(self, name: str) -> None:
@@ -277,20 +279,12 @@ def get_package_name_from_depend_line(depend_line: str) -> str:
     return depend_line.split("=", maxsplit=1)[0]
 
 
-class RepoPackageInfo(PacmanPackageInfo):
-    pass
+class PackageDBCommon(abc.ABC):
 
-
-class LocalPackageInfo(PacmanPackageInfo):
-    pass
-
-
-class PackageDBCommon:
-
-    _repo_cache: list[RepoPackageInfo] | None = None
-    _local_cache: list[LocalPackageInfo] | None = None
-    _repo_dict_cache: dict[str, RepoPackageInfo] | None = None
-    _local_dict_cache: dict[str, LocalPackageInfo] | None = None
+    _repo_cache: list[PacmanPackageInfo] | None = None
+    _local_cache: list[PacmanPackageInfo] | None = None
+    _repo_dict_cache: dict[str, PacmanPackageInfo] | None = None
+    _local_dict_cache: dict[str, PacmanPackageInfo] | None = None
     _repo_provided_cache: list[str] | None = None
     _local_provided_cache: list[str] | None = None
 
@@ -298,45 +292,50 @@ class PackageDBCommon:
     local = "local"
 
     @classmethod
-    def get_repo_list(cls) -> list[RepoPackageInfo]:
+    @abc.abstractmethod
+    def get_local_pkg_uncached(cls, name: str) -> PacmanPackageInfo | None:
+        pass
+
+    @classmethod
+    def get_repo_list(cls) -> list[PacmanPackageInfo]:
         if not cls._repo_cache:
             cls._repo_cache = list(cls.get_repo_dict().values())
         return cls._repo_cache
 
     @classmethod
-    def get_local_list(cls) -> list[LocalPackageInfo]:
+    def get_local_list(cls) -> list[PacmanPackageInfo]:
         if not cls._local_cache:
             cls._local_cache = list(cls.get_local_dict().values())
         return cls._local_cache
 
     @classmethod
-    def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
+    def get_repo_dict(cls) -> dict[str, PacmanPackageInfo]:
         if not cls._repo_dict_cache:
             cls._repo_dict_cache = {
                 pkg.name: pkg
-                for pkg in cls.get_repo_list()  # pylint: disable=not-an-iterable
+                for pkg in cls.get_repo_list()
             }
         return cls._repo_dict_cache
 
     @classmethod
-    def get_local_dict(cls) -> dict[str, LocalPackageInfo]:
+    def get_local_dict(cls) -> dict[str, PacmanPackageInfo]:
         if not cls._local_dict_cache:
             cls._local_dict_cache = {
                 pkg.name: pkg
-                for pkg in cls.get_local_list()  # pylint: disable=not-an-iterable
+                for pkg in cls.get_local_list()
             }
         return cls._local_dict_cache
 
     @classmethod
     def _get_provided(cls, local: str) -> list[str]:
-        pkgs: list[LocalPackageInfo] | list[RepoPackageInfo] = (
+        pkgs: list[PacmanPackageInfo] = (
             cls.get_local_list()
             if local == cls.local
             else cls.get_repo_list()
         )
         return [
             get_package_name_from_depend_line(provided_pkg)
-            for pkg in pkgs  # pylint: disable=not-an-iterable
+            for pkg in pkgs
             for provided_pkg in pkg.provides
             if pkg.provides
         ]
@@ -360,6 +359,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
 
     _repo_db_names: list[str] | None = None
     sync_dir = f"{PACMAN_ROOT}/sync/"
+    local_dir = f"{PACMAN_ROOT}/local/"
 
     @classmethod
     def get_db_names(cls) -> list[str]:
@@ -372,9 +372,9 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return cls._repo_db_names
 
     @classmethod
-    def get_repo_dict(cls) -> dict[str, RepoPackageInfo]:
+    def get_repo_dict(cls) -> dict[str, PacmanPackageInfo]:
         if not cls._repo_dict_cache:
-            # print("REPO_NOT_CACHED")
+            print(" <<<<<<<<<< REPO_NOT_CACHED")
 
             result = {}
             for repo_name in os.listdir(cls.sync_dir):
@@ -382,29 +382,42 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
                     continue
 
                 repo_path = os.path.join(cls.sync_dir, repo_name)
-                for pkg in RepoPackageInfo.parse_pacman_db_gzip_info(repo_path):
+                for pkg in PacmanPackageInfo.parse_pacman_db_gzip_info(repo_path):
                     pkg.db = DB(name=repo_name.rsplit(".db", maxsplit=1)[0])
-                    result[pkg.name] = cast(RepoPackageInfo, pkg)
+                    result[pkg.name] = pkg
 
             cls._repo_dict_cache = result
-            # print("REPO_DONE")
+            print(" >>>>>>>>>> REPO_DONE")
         return cls._repo_dict_cache
 
     @classmethod
-    def get_local_dict(cls) -> dict[str, LocalPackageInfo]:
+    def get_local_pkg_uncached(cls, name: str) -> PacmanPackageInfo | None:
+        for dir_name in os.listdir(cls.local_dir):
+            if name == dir_name.rsplit("-", maxsplit=2)[0]:
+                result = list(PacmanPackageInfo.parse_pacman_db_info(
+                    os.path.join(cls.local_dir, dir_name, "desc"),
+                ))
+                if result:
+                    return result[0]
+        return None
+
+    @classmethod
+    def get_local_dict(cls) -> dict[str, PacmanPackageInfo]:
         if not cls._local_dict_cache:
-            # print("LOCAL_NOT_CACHED")
-            result: dict[str, LocalPackageInfo] = {}
-            local_dir = f"{PACMAN_ROOT}/local/"
-            for pkg_dir_name in os.listdir(local_dir):
-                if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
+            print(" <<<<<<<<<< LOCAL_NOT_CACHED")
+
+            result: dict[str, PacmanPackageInfo] = {}
+            for pkg_dir_name in os.listdir(cls.local_dir):
+                if not os.path.isdir(os.path.join(cls.local_dir, pkg_dir_name)):
                     continue
-                for pkg in LocalPackageInfo.parse_pacman_db_info(
-                        os.path.join(local_dir, pkg_dir_name, "desc"),
+
+                for pkg in PacmanPackageInfo.parse_pacman_db_info(
+                        os.path.join(cls.local_dir, pkg_dir_name, "desc"),
                 ):
-                    result[pkg.name] = cast(LocalPackageInfo, pkg)
+                    result[pkg.name] = pkg
+
             cls._local_dict_cache = result
-            # print("LOCAL_DONE")
+            print(" >>>>>>>>>> LOCAL_DONE")
         return cls._local_dict_cache
 
 
@@ -438,9 +451,8 @@ with Path(f"{PACMAN_ROOT}/local/ALPM_DB_VERSION").open(encoding="utf-8") as vers
         from pacman_fallback import get_pacman_cli_package_db
         # CPYTHON: -Qu --repo: ~ T1: 2.8..3.3s, T2: 3.5..3.7
         PackageDB = get_pacman_cli_package_db(
-            PackageDBCommon=PackageDBCommon,
-            RepoPackageInfo=RepoPackageInfo,
-            LocalPackageInfo=LocalPackageInfo,
+            PackageDBCommon=PackageDBCommon,  # type: ignore[type-abstract]
+            PacmanPackageInfo=PacmanPackageInfo,
             PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
             PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS,
             PACMAN_INT_FIELDS=PACMAN_INT_FIELDS,

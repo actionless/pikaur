@@ -4,9 +4,8 @@ from collections.abc import Callable, Coroutine, Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Final, TypedDict, cast
 
 if TYPE_CHECKING:
-    from pypyalpm import LocalPackageInfo as LocalPackageInfoType
     from pypyalpm import PackageDBCommon as PackageDBCommonType
-    from pypyalpm import RepoPackageInfo as RepoPackageInfoType
+    from pypyalpm import PacmanPackageInfo as PacmanPackageInfoType
 
 
 class CmdTaskResult:
@@ -178,10 +177,15 @@ CLI_TO_DB_TRANSLATION: Final[dict[str, str]] = {
 }
 
 
+class DBPlaceholder:
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+
 def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         PackageDBCommon: "type[PackageDBCommonType]",  # noqa: N803
-        RepoPackageInfo: "type[RepoPackageInfoType]",  # noqa: N803
-        LocalPackageInfo: "type[LocalPackageInfoType]",  # noqa: N803
+        PacmanPackageInfo: "type[PacmanPackageInfoType]",  # noqa: N803
         PACMAN_EXECUTABLE: str,  # noqa: N803
         PACMAN_CONF_EXECUTABLE: str,  # noqa: N803
         PACMAN_DICT_FIELDS: Sequence[str],  # noqa: N803
@@ -189,15 +193,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         PACMAN_INT_FIELDS: Sequence[str],  # noqa: N803
 ) -> "type[PackageDBCommonType]":
 
-    class DBPlaceholder:
-
-        def __init__(self, name: str) -> None:
-            self.name = name
-
-    class CliPackageInfo:
-
-        db_type = "local"
-
+    class CliPackageInfo(PacmanPackageInfo):  # type: ignore[valid-type,misc]
         db: DBPlaceholder
         repository: str
 
@@ -213,14 +209,16 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
             return self.optional_for or []
 
         @classmethod
-        def parse_pacman_cli_info(cls, lines: list[str]) -> Iterable["CliPackageInfo"]:
+        def parse_pacman_cli_info(
+                cls, lines: list[str], db_type: str,
+        ) -> Iterable["CliPackageInfo"]:
             pkg = cls()
             field: str | None
             value: str | list[str] | dict[str, str | None] | None
             field = value = None
             for line in lines:  # noqa: PLR1702
                 if line == "":  # noqa: PLC1901
-                    if cls.db_type == "local":
+                    if db_type == "local":
                         pkg.db = DBPlaceholder(name="local")
                     else:
                         pkg.db = DBPlaceholder(name=pkg.repository)
@@ -282,15 +280,9 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
                         print(line)
                         raise
 
-    class CliRepoPackageInfo(CliPackageInfo, RepoPackageInfo):  # type: ignore[valid-type,misc]
-        db_type = "repo"
-
-    class CliLocalPackageInfo(CliPackageInfo, LocalPackageInfo):  # type: ignore[valid-type,misc]
-        pass
-
     class MergedDBCache(TypedDict):
-        local: list[CliRepoPackageInfo]
-        repo: list[CliLocalPackageInfo]
+        local: list[CliPackageInfo]
+        repo: list[CliPackageInfo]
 
     class PackageDbCli(PackageDBCommon):  # type: ignore[valid-type,misc]
 
@@ -320,21 +312,21 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
                 if not local_stdouts:
                     msg = "no local stdout"
                     raise RuntimeError(msg)
-                cls._repo_cache = list(CliRepoPackageInfo.parse_pacman_cli_info(
-                    repo_stdouts,
+                cls._repo_cache = list(CliPackageInfo.parse_pacman_cli_info(
+                    repo_stdouts, db_type="repo",
                 ))
-                cls._local_cache = list(CliLocalPackageInfo.parse_pacman_cli_info(
-                    local_stdouts,
+                cls._local_cache = list(CliPackageInfo.parse_pacman_cli_info(
+                    local_stdouts, db_type="local",
                 ))
             return {"repo": cls._repo_cache, "local": cls._local_cache}
 
         @classmethod
-        def get_repo_list(cls) -> list[CliRepoPackageInfo]:
+        def get_repo_list(cls) -> list[CliPackageInfo]:
             # print(" >>> GET_REPO_LIST")
             return cls._get_dbs()["repo"]
 
         @classmethod
-        def get_local_list(cls) -> list[CliLocalPackageInfo]:
+        def get_local_list(cls) -> list[CliPackageInfo]:
             # print(" >>> GET_LOCAL_LIST")
             return cls._get_dbs()["local"]
 
@@ -351,5 +343,17 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
                     raise RuntimeError(msg)
                 cls._repo_db_names = result.stdouts
             return cls._repo_db_names
+
+        # @classmethod
+        # def get_local_pkg_uncached(cls, name: str) -> PacmanPackageInfo | None:
+        #     for dir_name in os.listdir(cls.local_dir):
+        #         if name == dir_name.rsplit("-", maxsplit=2)[0]:
+        #             result = list(PacmanPackageInfo.parse_pacman_db_info(
+        #                 os.path.join(cls.local_dir, dir_name, "desc"),
+        #             ))
+        #             print(result)
+        #             if result:
+        #                 return result[0]
+        #     return None
 
     return PackageDbCli

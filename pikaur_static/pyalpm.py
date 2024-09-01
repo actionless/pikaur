@@ -19,22 +19,23 @@ def version() -> str:
     return "-pypy-0.0.1"
 
 
-class Handle:
+class Handle(pypyalpm.Handle):
 
-    @staticmethod
-    def get_localdb() -> DB:
-        return DB(pypyalpm.DB_NAME_LOCAL)
+    # def __init__(
+    #         self, name: str, handle: Handle = DEFAULT_HANDLE, flag: int | None = None,
+    # ) -> None:
+    #     self.name = name
+    #     self.handle = handle
+    #     self.flag = flag
 
-    @staticmethod
-    def get_syncdbs() -> list[DB]:
+    def register_syncdb(self, repo: str, flag: int) -> DB:
+        return DB(name=repo, handle=self, flag=flag)
+
+    def get_localdb(self) -> DB:
+        return DB(name=pypyalpm.DB_NAME_LOCAL, handle=self)
+
+    def get_syncdbs(self) -> list[DB]:
         return [
-            DB(name=db_name)
-            for db_name in pypyalpm.PackageDB.get_db_names()  # pylint: disable=not-an-iterable
+            DB(name=db_name, handle=self)
+            for db_name in pypyalpm.PackageDB.get_db_names(handle=self)
         ]
-
-    def __init__(self, root_dir: str, db_path: str) -> None:
-        pass
-
-    @staticmethod
-    def register_syncdb(repo: str, flag: int) -> DB:  # pylint: disable=unused-argument  # noqa: ARG004,E501,RUF100
-        return DB(name=repo)

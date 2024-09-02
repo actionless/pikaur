@@ -260,6 +260,7 @@ class PacmanPackageInfo(Package):
                 if real_field == "name" and getattr(pkg, "name", None):
                     yield pkg
                     pkg = cls()
+                    pkg.db = db
 
                 if real_field in PACMAN_LIST_FIELDS:
                     value = []
@@ -405,8 +406,9 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         result = {}
         debug(f" -------<<- {os.getpid()} {repo_name}")
         repo_path = os.path.join(sync_dir, f"{repo_name}.db")
+        db = DB(name=repo_name)
         for pkg in PacmanPackageInfo.parse_pacman_db_gzip_info(repo_path):
-            pkg.db = DB(name=repo_name)
+            pkg.db = db
             result[pkg.name] = pkg
         debug(f" ------->>- {os.getpid()} {repo_name}")
         return result
@@ -443,7 +445,10 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
                     os.path.join(local_dir, dir_name, "desc"),
                 ))
                 if result:
-                    return result[0]
+                    db = DB(name=DB_NAME_LOCAL)
+                    pkg = result[0]
+                    pkg.db = db
+                    return pkg
         return None
 
     @classmethod
@@ -453,6 +458,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
 
             local_dir = f"{handle.db_path}/local/"
             result: dict[str, PacmanPackageInfo] = {}
+            db = DB(name=DB_NAME_LOCAL)
             for pkg_dir_name in os.listdir(local_dir):
                 if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
                     continue
@@ -460,6 +466,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
                 for pkg in PacmanPackageInfo.parse_pacman_db_info(
                         os.path.join(local_dir, pkg_dir_name, "desc"),
                 ):
+                    pkg.db = db
                     result[pkg.name] = pkg
 
             cls._local_dict_cache = result

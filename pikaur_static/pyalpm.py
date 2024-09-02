@@ -21,12 +21,9 @@ def version() -> str:
 
 class Handle(pypyalpm.Handle):
 
-    # def __init__(
-    #         self, name: str, handle: Handle = DEFAULT_HANDLE, flag: int | None = None,
-    # ) -> None:
-    #     self.name = name
-    #     self.handle = handle
-    #     self.flag = flag
+    # def __init__(self, root_dir: str, db_path: str) -> None:
+    #     self.root_dir = root_dir
+    #     self.db_path = db_path
 
     def register_syncdb(self, repo: str, flag: int) -> DB:
         return DB(name=repo, handle=self, flag=flag)

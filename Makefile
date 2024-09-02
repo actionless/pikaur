@@ -22,17 +22,12 @@ POFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po,$(LANGS)))
 POTEMPFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po~,$(LANGS)))
 MOFILES = $(POFILES:.po=.mo)
 
-# man:
-PIKAMAN := $(PYTHON) ./maintenance_scripts/pikaman.py
-README_FILE := README.md
-MAN_FILE := pikaur.1
-
 # lint:
 RUFF := ruff
 script_dir := $(shell readlink -e .)
 APP_DIR := $(shell readlink -e "$(script_dir)")
 TARGET_MODULE := pikaur
-TARGETS := $(APP_DIR)/pikaur/ $(APP_DIR)/pikaur_test/ $(APP_DIR)/pikaur_meta_helpers/ $(APP_DIR)/packaging/usr/bin/pikaur $(shell ls $(APP_DIR)/maintenance_scripts/*.py)
+TARGETS := $(APP_DIR)/$(TARGET_MODULE)/ $(APP_DIR)/pikaur_test/ $(APP_DIR)/pikaur_meta_helpers/ $(APP_DIR)/packaging/usr/bin/pikaur $(shell ls $(APP_DIR)/maintenance_scripts/*.py)
 GLOBALS_IGNORES := \
 			-e ': Final' \
 			-e ' \# nonfinal-ignore' \
@@ -45,6 +40,11 @@ GLOBALS_IGNORES := \
 			\
 			-e './maintenance_scripts/find_.*.py.*:.*:' \
 			-e '.SRCINFO'
+
+# man:
+PIKAMAN := $(PYTHON) ./maintenance_scripts/pikaman.py
+README_FILE := README.md
+MAN_FILE := $(TARGET_MODULE).1
 
 ################################################################################
 
@@ -66,11 +66,9 @@ checkpython:
 	$(PYTHON) -c 'import sys ; sys.exit(sys.version_info < $(MINIMAL_PYTHON_VERSION))'
 
 $(POTFILE):
-	# find pikaur -type f -name '*.py' -not -name 'argparse.py' \
-		#
-	find pikaur -type f -name '*.py' -print0 \
+	find $(TARGET_MODULE) -type f -name '*.py' -print0 \
 		| xargs --null xgettext --language=python --add-comments --sort-by-file \
-			--default-domain=pikaur --from-code=UTF-8 \
+			--default-domain=$(TARGET_MODULE) --from-code=UTF-8 \
 			--keyword='translate' --keyword='translate_many:1,2' \
 			--output=$@
 

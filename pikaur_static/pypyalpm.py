@@ -34,18 +34,6 @@ PACMAN_CONF_EXECUTABLE = "pacman-conf"
 PACMAN_DB_PATH = "/var/lib/pacman"
 
 
-class Handle:
-    root_dir: str
-    db_path: str
-
-    def __init__(self, root_dir: str, db_path: str) -> None:
-        self.root_dir = root_dir
-        self.db_path = db_path
-
-
-DEFAULT_HANDLE = Handle(root_dir="/", db_path=PACMAN_DB_PATH)
-
-
 def debug(*args: Any) -> None:
     if VERBOSE:
         print(*args)
@@ -53,6 +41,19 @@ def debug(*args: Any) -> None:
 
 def error(*args: Any) -> None:
     print(*args, file=sys.stderr)
+
+
+class Handle:
+    root_dir: str
+    db_path: str
+
+    def __init__(self, root_dir: str, db_path: str) -> None:
+        debug(f" << {root_dir=} {db_path=} >> ")
+        self.root_dir = root_dir
+        self.db_path = db_path
+
+
+DEFAULT_HANDLE = Handle(root_dir="/", db_path=PACMAN_DB_PATH)
 
 
 class DB:

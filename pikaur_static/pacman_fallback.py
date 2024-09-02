@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name,too-many-branches,too-many-statements  # noqa: INP001
 import asyncio
+import os
 from collections.abc import Callable, Coroutine, Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Final, TypedDict, cast
 
@@ -73,10 +74,13 @@ class CmdTaskWorker:
         self.stdouts.append(line.rstrip(b"\n").decode("utf-8"))
 
     async def _stream_subprocess(self) -> CmdTaskResult:
+        env = os.environ.copy()
+        env["LANGUAGE"] = "en"
         process = await asyncio.create_subprocess_exec(
             *self.cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
+            env=env,
             **self.kwargs,
         )
         if (not process.stdout) or (not process.stderr):

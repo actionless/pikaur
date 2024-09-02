@@ -1,4 +1,4 @@
-# Maintainer: Yauheni Kirylau <actionless DOT loveless PLUS aur AT gmail DOT com>
+# Maintainer: Yauheni Kirylau <actionless DOT loveless PLUS aur AT gmail MF com>
 # shellcheck disable=SC2034,SC2154
 
 pkgname=pikaur-git
@@ -7,9 +7,9 @@ pkgrel=1
 pkgdesc="AUR helper which asks all questions before installing/building. Inspired by pacaur, yaourt and yay."
 arch=('any')
 url="https://github.com/actionless/pikaur"
-license=('GPL3')
+license=('GPL-3.0-only')
 source=(
-	"$pkgname::git+https://github.com/actionless/pikaur.git#branch=master"
+	"$pkgname::git+${url}.git#branch=master"
 )
 b2sums=(
 	"SKIP"

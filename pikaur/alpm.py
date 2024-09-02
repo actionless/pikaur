@@ -27,7 +27,12 @@ OFFICIAL_REPOS: "Final" = (
 class PacmanConfig(PycmanConfig):
 
     def __init__(self) -> None:
-        super().__init__(conf=parse_args().config or "/etc/pacman.conf")
+        args = parse_args()
+        super().__init__(conf=args.config or "/etc/pacman.conf")
+        if args.root:
+            self.options["RootDir"] = args.root
+        if args.dbpath:
+            self.options["DBPath"] = args.dbpath
 
 
 class PyAlpmWrapper:

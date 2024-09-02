@@ -224,7 +224,7 @@ def get_pacman_str_opts(action: str | None = None) -> ArgSchema:
         return list(set(result))
     return [
         (None, "color", None, None),
-        ("b", "dbpath", None, None),  # @TODO: pyalpm?
+        ("b", "dbpath", None, None),
         ("r", "root", None, None),
         (None, "arch", None, None),  # @TODO
         (None, "cachedir", None, None),  # @TODO
@@ -468,6 +468,9 @@ class PikaurArgs(Namespace):
     config: str | None
     refresh: int
     clean: int
+    dbpath: str | None
+    root: str | None
+
     aur_clone_concurrency: int | None
     skip_aur_pull: bool | None
     positional: list[str]

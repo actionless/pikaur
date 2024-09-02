@@ -10,6 +10,40 @@ if TYPE_CHECKING:
     from pypyalpm import PacmanPackageInfo as PacmanPackageInfoType
 
 
+PACMAN_EXECUTABLE = "pacman"
+PACMAN_CONF_EXECUTABLE = "pacman-conf"
+
+
+class PacmanExecutablesPaths:
+
+    _pacman: str | None = None
+    _pacman_conf: str | None = None
+
+    @classmethod
+    def init(cls) -> None:
+        # pylint: disable=import-outside-toplevel
+        if not cls._pacman:
+            # @TODO: add pikaur config items and cli flags for
+            #        setting custom pacman and pacman-conf paths
+            from pprint import pprint  # noqa: PLC0415
+
+            from pikaur.args import parse_args  # noqa: PLC0415
+            pprint(parse_args().__dict__)  # noqa: T203
+
+            cls._pacman = PACMAN_EXECUTABLE
+            cls._pacman_conf = PACMAN_CONF_EXECUTABLE
+
+    @classmethod
+    def pacman(cls) -> str:
+        cls.init()
+        return cast(str, cls._pacman)
+
+    @classmethod
+    def pacman_conf(cls) -> str:
+        cls.init()
+        return cast(str, cls._pacman_conf)
+
+
 class CmdTaskResult:
     stderrs: list[str] | None = None
     stdouts: list[str] | None = None
@@ -160,7 +194,8 @@ class SingleTaskExecutor:
 
 class PacmanTaskWorker(CmdTaskWorker):
 
-    def __init__(self, pacman_executable: str, args: list[str]) -> None:
+    def __init__(self, args: list[str]) -> None:
+        pacman_executable = PacmanExecutablesPaths.pacman()
         super().__init__(
             [pacman_executable, *args],
         )
@@ -188,15 +223,12 @@ class DBPlaceholder:
         self.name = name
 
 
-def get_pacman_cli_package_db(  # noqa: PLR0917,C901
+def get_pacman_cli_package_db(  # noqa: C901
         PackageDBCommon: "type[PackageDBCommonType]",  # noqa: N803
         PacmanPackageInfo: "type[PacmanPackageInfoType]",  # noqa: N803
-        PACMAN_EXECUTABLE: str,  # noqa: N803
-        PACMAN_CONF_EXECUTABLE: str,  # noqa: N803
         PACMAN_DICT_FIELDS: Sequence[str],  # noqa: N803
         PACMAN_LIST_FIELDS: Sequence[str],  # noqa: N803
         PACMAN_INT_FIELDS: Sequence[str],  # noqa: N803
-        DEFAULT_HANDLE: "Handle",  # noqa: N803
 ) -> "type[PackageDBCommonType]":
 
     class CliPackageInfo(PacmanPackageInfo):  # type: ignore[valid-type,misc]
@@ -301,17 +333,13 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         @classmethod
         def _get_dbs(
                 cls,
-                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
         ) -> MergedDBCache:
             if not cls._repo_cache:
                 print(" >>> Retrieving local pacman database...")
                 results = MultipleTasksExecutor({
-                    cls.repo: PacmanTaskWorker(
-                        pacman_executable=PACMAN_EXECUTABLE, args=["-Si"],
-                    ),
-                    cls.local: PacmanTaskWorker(
-                        pacman_executable=PACMAN_EXECUTABLE, args=["-Qi"],
-                    ),
+                    cls.repo: PacmanTaskWorker(["-Si"]),
+                    cls.local: PacmanTaskWorker(["-Qi"]),
                 }).execute()
                 repo_stdouts = results[cls.repo].stdouts
                 if not repo_stdouts:
@@ -332,7 +360,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         @classmethod
         def get_repo_list(
                 cls,
-                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
         ) -> list[CliPackageInfo]:
             # print(" >>> GET_REPO_LIST")
             return cls._get_dbs()["repo"]
@@ -340,7 +368,7 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         @classmethod
         def get_local_list(
                 cls,
-                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
         ) -> list[CliPackageInfo]:
             # print(" >>> GET_LOCAL_LIST")
             return cls._get_dbs()["local"]
@@ -350,11 +378,11 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         @classmethod
         def get_db_names(
                 cls,
-                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
         ) -> list[str]:
             if not cls._repo_db_names:
                 result = SingleTaskExecutor(
-                    CmdTaskWorker([PACMAN_CONF_EXECUTABLE, "--repo-list"]),
+                    CmdTaskWorker([PacmanExecutablesPaths.pacman_conf(), "--repo-list"]),
                 ).execute()
                 if not result.stdouts:
                     msg = "no dbs found"
@@ -366,12 +394,10 @@ def get_pacman_cli_package_db(  # noqa: PLR0917,C901
         def get_local_pkg_uncached(
                 cls,
                 name: str,
-                handle: "Handle" = DEFAULT_HANDLE,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
         ) -> "PacmanPackageInfoType | None":
             result = SingleTaskExecutor(
-                PacmanTaskWorker(
-                    pacman_executable=PACMAN_EXECUTABLE, args=["-Qi", name],
-                ),
+                PacmanTaskWorker(["-Qi", name]),
             ).execute()
             if not result.stdouts:
                 return None

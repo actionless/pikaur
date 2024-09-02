@@ -16,21 +16,31 @@ from typing import IO, TYPE_CHECKING, Any, Final, cast
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-VERBOSE: Final = True
-FORCE_PACMAN_CLI_DB: Final = False
-# FORCE_PACMAN_CLI_DB: Final = True
+VERBOSE: bool = False
+VERBOSE_FLAGS: Final = (
+    "--verbose",
+    "--debug",
+    "--pikaur-debug",
+)
+for cli_flag in VERBOSE_FLAGS:
+    if cli_flag in sys.argv:
+        VERBOSE = True
+        break
+
+FORCE_PACMAN_CLI_DB: bool = False
+FORCE_PACMAN_CLI_DB_FLAG: Final = "--force-pacman-cli-db"
+if FORCE_PACMAN_CLI_DB_FLAG in sys.argv:
+    FORCE_PACMAN_CLI_DB = True
+    sys.argv.remove(FORCE_PACMAN_CLI_DB_FLAG)
 
 
 NOT_FOUND_ATOM = object()
 
 DB_NAME_LOCAL: Final = "local"
 
-
 SUPPORTED_ALPM_VERSION: Final = "9"
 # SUPPORTED_ALPM_VERSION: Final = "99999"  # used for testing only
 
-PACMAN_EXECUTABLE = "pacman"
-PACMAN_CONF_EXECUTABLE = "pacman-conf"
 PACMAN_DB_PATH = "/var/lib/pacman"
 
 
@@ -53,12 +63,20 @@ class Handle:
         self.db_path = db_path
 
 
-DEFAULT_HANDLE = Handle(root_dir="/", db_path=PACMAN_DB_PATH)
+class DefaultHandle:
+
+    _handle: Handle | None = None
+
+    @classmethod
+    def get(cls) -> Handle:
+        if cls._handle is None:
+            cls._handle = Handle(root_dir="/", db_path=PACMAN_DB_PATH)
+        return cls._handle
 
 
 class DB:
     name: str
-    handle: Handle
+    handle: Handle | None = None
     flag: int | None = None
 
     def search(self, query: str) -> list["Package"]:
@@ -80,7 +98,7 @@ class DB:
         return PackageDB.get_repo_dict(handle=self.handle)[name]
 
     def __init__(
-            self, name: str, handle: Handle = DEFAULT_HANDLE, flag: int | None = None,
+            self, name: str, handle: Handle | None = None, flag: int | None = None,
     ) -> None:
         self.name = name
         self.handle = handle
@@ -328,7 +346,7 @@ class PackageDBCommon(abc.ABC):
     def get_local_pkg_uncached(
             cls,
             name: str,
-            handle: Handle = DEFAULT_HANDLE,
+            handle: Handle | None = None,
     ) -> PacmanPackageInfo | None:
         raise NotImplementedError
 
@@ -336,14 +354,14 @@ class PackageDBCommon(abc.ABC):
     @abc.abstractmethod
     def get_db_names(
             cls,
-            handle: Handle = DEFAULT_HANDLE,
+            handle: Handle | None = None,
     ) -> list[str]:
         raise NotImplementedError
 
     @classmethod
     def get_repo_list(
             cls,
-            handle: Handle = DEFAULT_HANDLE,
+            handle: Handle | None = None,
     ) -> list[PacmanPackageInfo]:
         if not cls._repo_cache:
             cls._repo_cache = list(cls.get_repo_dict(handle=handle).values())
@@ -352,7 +370,7 @@ class PackageDBCommon(abc.ABC):
     @classmethod
     def get_local_list(
             cls,
-            handle: Handle = DEFAULT_HANDLE,
+            handle: Handle | None = None,
     ) -> list[PacmanPackageInfo]:
         if not cls._local_cache:
             cls._local_cache = list(cls.get_local_dict(handle=handle).values())
@@ -361,7 +379,7 @@ class PackageDBCommon(abc.ABC):
     @classmethod
     def get_repo_dict(
             cls,
-            handle: Handle = DEFAULT_HANDLE,
+            handle: Handle | None = None,
     ) -> dict[str, PacmanPackageInfo]:
         if not cls._repo_dict_cache:
             cls._repo_dict_cache = {
@@ -373,7 +391,7 @@ class PackageDBCommon(abc.ABC):
     @classmethod
     def get_local_dict(
             cls,
-            handle: Handle = DEFAULT_HANDLE,
+            handle: Handle | None = None,
     ) -> dict[str, PacmanPackageInfo]:
         if not cls._local_dict_cache:
             cls._local_dict_cache = {
@@ -391,8 +409,9 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
     _repo_db_names: list[str] | None = None
 
     @classmethod
-    def get_db_names(cls, handle: Handle = DEFAULT_HANDLE) -> list[str]:
+    def get_db_names(cls, handle: Handle | None = None) -> list[str]:
         if not cls._repo_db_names:
+            handle = handle or DefaultHandle.get()
             sync_dir = f"{handle.db_path}/sync/"
             cls._repo_db_names = [
                 repo_name.rsplit(".db", maxsplit=1)[0]
@@ -414,10 +433,11 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return result
 
     @classmethod
-    def get_repo_dict(cls, handle: Handle = DEFAULT_HANDLE) -> dict[str, PacmanPackageInfo]:
+    def get_repo_dict(cls, handle: Handle | None = None) -> dict[str, PacmanPackageInfo]:
         if not cls._repo_dict_cache:
             debug(f" <<<<<<<<<< {os.getpid()} REPO_NOT_CACHED")
 
+            handle = handle or DefaultHandle.get()
             sync_dir = f"{handle.db_path}/sync/"
             result = {}
             with multiprocessing.pool.Pool() as pool:
@@ -436,8 +456,9 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
 
     @classmethod
     def get_local_pkg_uncached(
-            cls, name: str, handle: Handle = DEFAULT_HANDLE,
+            cls, name: str, handle: Handle | None = None,
     ) -> PacmanPackageInfo | None:
+        handle = handle or DefaultHandle.get()
         local_dir = f"{handle.db_path}/local/"
         for dir_name in os.listdir(local_dir):
             if name == dir_name.rsplit("-", maxsplit=2)[0]:
@@ -452,10 +473,11 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         return None
 
     @classmethod
-    def get_local_dict(cls, handle: Handle = DEFAULT_HANDLE) -> dict[str, PacmanPackageInfo]:
+    def get_local_dict(cls, handle: Handle | None = None) -> dict[str, PacmanPackageInfo]:
         if not cls._local_dict_cache:
             debug(" <<<<<<<<<< LOCAL_NOT_CACHED")
 
+            handle = handle or DefaultHandle.get()
             local_dir = f"{handle.db_path}/local/"
             result: dict[str, PacmanPackageInfo] = {}
             db = DB(name=DB_NAME_LOCAL)
@@ -509,9 +531,6 @@ with Path(f"{PACMAN_DB_PATH}/local/ALPM_DB_VERSION").open(encoding="utf-8") as v
             PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
             PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS,
             PACMAN_INT_FIELDS=PACMAN_INT_FIELDS,
-            PACMAN_EXECUTABLE=PACMAN_EXECUTABLE,
-            PACMAN_CONF_EXECUTABLE=PACMAN_CONF_EXECUTABLE,
-            DEFAULT_HANDLE=DEFAULT_HANDLE,
         )
 
 

@@ -220,12 +220,13 @@ class TTYInputWrapper:  # pragma: no cover
 
 class NestedTerminal:
 
+    _original_signal: signal.Handlers | None = None
+
     def __init__(
             self, on_terminal_resize: Callable[[int, FrameType | None], None] | None = None,
     ) -> None:
         self.tty_wrapper = TTYInputWrapper()
-        if on_terminal_resize is not None:
-            signal.signal(signal.SIGWINCH, on_terminal_resize)
+        self.on_terminal_resize = on_terminal_resize
 
     def __enter__(self) -> os.terminal_size:
         logger.debug("Opening virtual terminal...")
@@ -238,9 +239,14 @@ class NestedTerminal:
         ):
             if stream.isatty():
                 tty.setcbreak(stream.fileno())
+        if self.on_terminal_resize is not None:
+            self.original_signal = signal.getsignal(signal.SIGWINCH)
+            signal.signal(signal.SIGWINCH, self.on_terminal_resize)
         return real_term_geometry
 
     def __exit__(self, *exc_details: object) -> None:
+        if self._original_signal:
+            signal.signal(signal.SIGWINCH, self._original_signal)
         self.tty_wrapper.__exit__(*exc_details)
         TTYRestore.restore()
 

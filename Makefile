@@ -205,6 +205,7 @@ shellcheck:
 		cd $(APP_DIR) || exit ; \
 		shellcheck $$(find . \
 			-name '*.sh' \
+			-not -wholename '*/$(TARGET_MODULE)*.*build/*' \
 		) \
 	)
 	# :: shellcheck passed ::

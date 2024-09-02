@@ -21,6 +21,7 @@ from pty import (  # type: ignore[attr-defined]
     fork,
 )
 from tty import setraw, tcgetattr, tcsetattr  # type: ignore[attr-defined]
+from types import FrameType
 from typing import TYPE_CHECKING
 
 from .args import parse_args
@@ -55,11 +56,11 @@ StdinReaderType = Callable[[int | None], bytes]
 FILE_DEBUG: "Final" = False
 
 
-def file_debug(message: "Any") -> None:
+def file_debug(*messages: "Any") -> None:
     # @TODO: move it to the logging_extras module
     if FILE_DEBUG:
         with Path("./pikspect_debug.txt").open("a", encoding=DEFAULT_INPUT_ENCODING) as fobj:
-            fobj.write(str(message) + "\n")
+            fobj.write(" ".join(str(message) for message in messages) + "\n")
 
 
 def _copy(  # pylint: disable=too-many-branches
@@ -182,6 +183,10 @@ class ReadlineKeycodes:
     BACKSPACE: "Final" = 127
 
 
+def get_terminal_geometry(rows: int = 80, columns: int = 80) -> os.terminal_size:
+    return shutil.get_terminal_size((rows, columns))
+
+
 def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
     term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
     fcntl.ioctl(
@@ -215,13 +220,17 @@ class TTYInputWrapper:  # pragma: no cover
 
 class NestedTerminal:
 
-    def __init__(self) -> None:
+    def __init__(
+            self, on_terminal_resize: Callable[[int, FrameType | None], None] | None = None,
+    ) -> None:
         self.tty_wrapper = TTYInputWrapper()
+        if on_terminal_resize is not None:
+            signal.signal(signal.SIGWINCH, on_terminal_resize)
 
     def __enter__(self) -> os.terminal_size:
         logger.debug("Opening virtual terminal...")
         self.tty_wrapper.__enter__()
-        real_term_geometry = shutil.get_terminal_size((80, 80))
+        real_term_geometry = get_terminal_geometry()
         for stream in (
                 sys.stdin,
                 sys.stderr,
@@ -282,6 +291,7 @@ class PikspectPopen:
 
     capture_output: bool
     output: bytes
+    output_file_descriptor: int | None = None
 
     def __enter__(self) -> "PikspectPopen":
         return self
@@ -319,16 +329,30 @@ class PikspectPopen:
         if self.pid:
             os.kill(self.pid, sig)
 
-    def _pty_init(self, file_descriptor: int, pid: int) -> None:
-        # @TODO: add support for sigwinch later
-        logger.debug("fd: {}, pid: {}", file_descriptor, pid)
-        if self.real_term_geometry:
+    def apply_current_size_to_sub_terminal(self, file_descriptor: int) -> None:
+        if self.real_term_geometry is not None:
             set_terminal_geometry(
                 file_descriptor,
                 columns=self.real_term_geometry.columns,
                 rows=self.real_term_geometry.lines,
             )
+
+    def resize_sub_terminal_if_needed(self, file_descriptor: int) -> None:
+        current_real_term_geometry = get_terminal_geometry()
+        if self.real_term_geometry != current_real_term_geometry:
+            self.real_term_geometry = current_real_term_geometry
+            file_debug("resizing sub-terminal: ", file_descriptor, current_real_term_geometry)
+            self.apply_current_size_to_sub_terminal(file_descriptor)
+
+    def _pty_init(self, file_descriptor: int, pid: int) -> None:
+        logger.debug("fd: {}, pid: {}", file_descriptor, pid)
+        self.output_file_descriptor = file_descriptor
         self.pid = pid
+        self.apply_current_size_to_sub_terminal(file_descriptor)
+
+    def _on_terminal_resize(self, _signum: int, _frame: FrameType | None = None) -> None:
+        if self.output_file_descriptor:
+            self.resize_sub_terminal_if_needed(self.output_file_descriptor)
 
     def run(self) -> None:
         if not isinstance(self.args, list):
@@ -340,7 +364,7 @@ class PikspectPopen:
             lambda *_whatever: self.send_signal(signal.SIGINT),
         )
         try:
-            with NestedTerminal() as real_term_geometry:
+            with NestedTerminal(on_terminal_resize=self._on_terminal_resize) as real_term_geometry:
                 self.real_term_geometry = real_term_geometry
                 result = spawn(
                     self.args,
@@ -380,12 +404,6 @@ class PikspectPopen:
             self.historic_output = [b""]
 
     def cmd_output_reader(self, file_descriptor: int) -> bytes:
-        if self.real_term_geometry:
-            set_terminal_geometry(
-                file_descriptor,
-                columns=self.real_term_geometry.columns,
-                rows=self.real_term_geometry.lines,
-            )
         output = os.read(file_descriptor, 4096)
         if self.capture_output:
             self.output += output
@@ -397,12 +415,8 @@ class PikspectPopen:
         return output
 
     def user_input_reader(self, file_descriptor: int | None = None) -> bytes:  # pragma: no cover
-        if file_descriptor and self.real_term_geometry:
-            set_terminal_geometry(
-                file_descriptor,
-                columns=self.real_term_geometry.columns,
-                rows=self.real_term_geometry.lines,
-            )
+        if file_descriptor:
+            self.resize_sub_terminal_if_needed(file_descriptor)
         file_debug(f"UserInputReader {file_descriptor}:")
         if self.next_answers:
             char = ("\n".join(self.next_answers) + "\n").encode(DEFAULT_INPUT_ENCODING)

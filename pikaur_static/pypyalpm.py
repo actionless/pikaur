@@ -260,7 +260,6 @@ class PacmanPackageInfo(Package):
                 if real_field == "name" and getattr(pkg, "name", None):
                     yield pkg
                     pkg = cls()
-                    pkg.db = db
 
                 if real_field in PACMAN_LIST_FIELDS:
                     value = []

@@ -100,8 +100,7 @@ $(DISTDIR)/usr/bin/pikaur: $(DISTDIR)/usr/bin
 	chmod +x $@
 
 standalone: checkpython locale man
-	cd pikaur_static
-	./make.fish standalone
+	cd pikaur_static && ./make.fish standalone
 
 clean:
 	$(RM) $(LANGS_MO)

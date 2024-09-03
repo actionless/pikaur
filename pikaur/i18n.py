@@ -1,12 +1,13 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import gettext
+import os
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Final
 
-PIKAUR_NAME: "Final" = "pikaur"
+PIKAUR_NAME: "Final" = os.environ.get("PIKAUR_NAME", "pikaur")
 
 
 class PikaurTranslation:

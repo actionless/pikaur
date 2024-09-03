@@ -53,7 +53,7 @@ ALL_PIKAUR_ACTIONS: "Final[list[str]]" = [
     if schema[1] is not None
 ]
 ALL_ACTIONS: "Final[list[str]]" = ALL_PACMAN_ACTIONS + ALL_PIKAUR_ACTIONS
-LIST_ALL_ACTIONS = "_ALL_"
+LIST_ALL_ACTIONS: "Final[str]" = "_ALL_"
 
 
 def print_stderr(msg: str | None = None) -> None:

@@ -16,7 +16,6 @@ md5sums=(
 	"SKIP"
 )
 depends=(
-	'python'
 	'git'
 )
 makedepends=(

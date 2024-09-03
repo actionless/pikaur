@@ -42,14 +42,12 @@ pkgver() {
 build() {
 	cd "${srcdir}/${pkgname}"
 	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
-	make  # @TODO: add `make standalone` target
-	cd pikaur_static
 	# nuitka compilation fails with default arch flags, so let it decide:
 	unset CFLAGS
 	unset CXXFLAGS
 	unset LDFLAGS
 	unset LTOFLAGS
-	./make.fish standalone
+	make standalone
 }
 
 package() {

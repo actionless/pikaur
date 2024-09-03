@@ -50,7 +50,7 @@ MAN_FILE := $(TARGET_MODULE).1
 
 all: checkpython locale man bin
 
-.PHONY: all clean $(POTFILE) man bin locale $(DISTDIR)/usr/bin/pikaur $(MAN_FILE) checkpython lint lint_fix compile_all python_import non_final_globals unreasonable_globals ruff flake8 pylint mypy vulture shellcheck shellcheck_makefile validate_pyproject
+.PHONY: all clean $(POTFILE) man bin locale $(DISTDIR)/usr/bin/pikaur $(MAN_FILE) standalone checkpython lint lint_fix compile_all python_import non_final_globals unreasonable_globals ruff flake8 pylint mypy vulture shellcheck shellcheck_makefile validate_pyproject
 .PRECIOUS: $(LOCALEDIR)/%.po
 
 ################################################################################
@@ -98,6 +98,10 @@ $(DISTDIR)/usr/bin/pikaur: $(DISTDIR)/usr/bin
 		')/g" \
 		packaging/usr/bin/pikaur > $@
 	chmod +x $@
+
+standalone: checkpython locale man
+	cd pikaur_static
+	./make.fish standalone
 
 clean:
 	$(RM) $(LANGS_MO)

@@ -53,6 +53,7 @@ ALL_PIKAUR_ACTIONS: "Final[list[str]]" = [
     if schema[1] is not None
 ]
 ALL_ACTIONS: "Final[list[str]]" = ALL_PACMAN_ACTIONS + ALL_PIKAUR_ACTIONS
+LIST_ALL_ACTIONS = "_ALL_"
 
 
 def print_stderr(msg: str | None = None) -> None:
@@ -82,7 +83,7 @@ class LiteralArgs:
 
 
 def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
-    if not action:
+    if action == LIST_ALL_ACTIONS:
         result = []
         for each_action in ALL_PACMAN_ACTIONS:
             result += get_pacman_bool_opts(each_action)
@@ -113,7 +114,7 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
 
 def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
     result = []
-    if not action:
+    if action == LIST_ALL_ACTIONS:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_bool_opts(each_action)
         return list(set(result))
@@ -217,7 +218,7 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
 
 
 def get_pacman_str_opts(action: str | None = None) -> ArgSchema:
-    if not action:
+    if action == LIST_ALL_ACTIONS:
         result = []
         for each_action in ALL_PACMAN_ACTIONS:
             result += get_pacman_str_opts(each_action)
@@ -274,7 +275,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
             translate("override path to pacman executable"),
         ),
     ]
-    if not action:
+    if action == LIST_ALL_ACTIONS:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_str_opts(each_action)
         return list(set(result))
@@ -324,7 +325,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
 
 def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
     result = []
-    if not action:
+    if action == LIST_ALL_ACTIONS:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_int_opts(each_action)
         return list(set(result))
@@ -343,7 +344,7 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
 
 
 def get_pacman_count_opts(action: str | None = None) -> ArgSchema:
-    if not action:
+    if action == LIST_ALL_ACTIONS:
         result = []
         for each_action in ALL_PACMAN_ACTIONS:
             result += get_pacman_count_opts(each_action)
@@ -373,7 +374,7 @@ def get_pacman_count_opts(action: str | None = None) -> ArgSchema:
 
 def get_pikaur_count_opts(action: str | None = None) -> ArgSchema:
     result = []
-    if not action:
+    if action == LIST_ALL_ACTIONS:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_count_opts(each_action)
         return list(set(result))
@@ -408,13 +409,13 @@ ARG_CONFLICTS: "Final[dict[str, dict[str, list[str]]]]" = {
 }
 
 
-def get_all_pikaur_options() -> ArgSchema:
+def get_all_pikaur_options(action: str | None = None) -> ArgSchema:
     return (
         PIKAUR_ACTIONS +
-        get_pikaur_bool_opts() +
-        get_pikaur_str_opts() +
-        get_pikaur_count_opts() +
-        get_pikaur_int_opts()
+        get_pikaur_bool_opts(action=action) +
+        get_pikaur_str_opts(action=action) +
+        get_pikaur_count_opts(action=action) +
+        get_pikaur_int_opts(action=action)
     )
 
 
@@ -685,8 +686,6 @@ def get_parser_for_action(
     for action_name in ALL_ACTIONS:
         if getattr(parsed_action, action_name) and action_name != "help":
             pikaur_action = action_name
-    if pikaur_action is None:
-        return parser, []
 
     help_msgs: list[HelpMessage] = []
     for action_type, opt_list, is_pikaur, arg_type in (
@@ -712,6 +711,9 @@ def get_parser_for_action(
                 help_msgs.append(
                     (letter, opt, help_msg),
                 )
+
+    if pikaur_action is None:
+        return parser, []
     return parser, help_msgs
 
 
@@ -772,13 +774,13 @@ def get_help() -> list[HelpMessage]:
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = None) -> list[str]:
     if not ignore_args:
         ignore_args = []
-    for _letter, opt, _default, _help in get_all_pikaur_options():
+    for _letter, opt, _default, _help in get_all_pikaur_options(action=LIST_ALL_ACTIONS):
         # if letter:
         #     ignore_args.append(letter)
         if opt:
             ignore_args.append(opt.replace("-", "_"))
     count_args = []
-    for letter, opt, _default, _help in get_pacman_count_opts():
+    for letter, opt, _default, _help in get_pacman_count_opts(action=LIST_ALL_ACTIONS):
         if letter:
             count_args.append(letter)
         if opt:
@@ -791,7 +793,9 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
             "raw", "unknown_args", "positional", "read_stdin",  # computed members
         ] + [
             long_arg
-            for _short_arg, long_arg, default, _help in get_pacman_str_opts() + PACMAN_APPEND_OPTS
+            for _short_arg, long_arg, default, _help in get_pacman_str_opts(
+                action=LIST_ALL_ACTIONS,
+            ) + PACMAN_APPEND_OPTS
             if long_arg
         ]
     }
@@ -800,7 +804,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
     ))
     for args_key, value in vars(parsed_args).items():
         for letter, long, _default, _help in (
-                get_pacman_count_opts()
+                get_pacman_count_opts(action=LIST_ALL_ACTIONS)
         ):
             if not long:
                 continue

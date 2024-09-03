@@ -10,10 +10,6 @@ if TYPE_CHECKING:
     from pypyalpm import PacmanPackageInfo as PacmanPackageInfoType
 
 
-PACMAN_EXECUTABLE = "pacman"
-PACMAN_CONF_EXECUTABLE = "pacman-conf"
-
-
 class PacmanExecutablesPaths:
 
     _pacman: str | None = None
@@ -24,14 +20,15 @@ class PacmanExecutablesPaths:
         # pylint: disable=import-outside-toplevel
         if not cls._pacman:
             # @TODO: add pikaur config items and cli flags for
-            #        setting custom pacman and pacman-conf paths
-            from pprint import pprint  # noqa: PLC0415
-
-            from pikaur.args import parse_args  # noqa: PLC0415
-            pprint(parse_args().__dict__)  # noqa: T203
-
-            cls._pacman = PACMAN_EXECUTABLE
-            cls._pacman_conf = PACMAN_CONF_EXECUTABLE
+            #        setting custom pacman-conf path
+            try:
+                from pikaur.args import parse_args  # noqa: PLC0415
+                cls._pacman = parse_args().pacman_path
+                cls._pacman_conf = "pacman-conf"
+            except Exception:
+                cls._pacman = "pacman"
+                cls._pacman_conf = "pacman-conf"
+            print(cls._pacman, cls._pacman_conf)
 
     @classmethod
     def pacman(cls) -> str:

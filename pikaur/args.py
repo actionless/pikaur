@@ -3,11 +3,11 @@
 import sys
 from argparse import Namespace
 from pprint import pformat
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from .argparse_extras import ArgumentParserWithUnknowns
 from .config import DECORATION, PikaurConfig
-from .i18n import translate, translate_many
+from .i18n import PIKAUR_NAME, translate, translate_many
 
 if TYPE_CHECKING:
     from argparse import FileType
@@ -279,6 +279,14 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_str_opts(each_action)
         return list(set(result))
+    if cast(str, PIKAUR_NAME) == cast(str, "pikaur-static"):
+        result += [
+            (
+                None, "pacman-conf-path",
+                "pacman-conf",
+                translate("override path to pacman-conf executable"),
+            ),
+        ]
     if action in {"sync", "pkgbuild", "interactive_package_select"}:
         result += [
             (
@@ -466,6 +474,7 @@ class PikaurArgs(Namespace):
     mflags: str | None
     makepkg_path: str | None
     pacman_path: str
+    pacman_conf_path: str
     quiet: bool
     sysupgrade: int
     devel: int

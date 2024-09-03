@@ -19,16 +19,15 @@ class PacmanExecutablesPaths:
     def init(cls) -> None:
         # pylint: disable=import-outside-toplevel
         if not cls._pacman:
-            # @TODO: add pikaur config items and cli flags for
-            #        setting custom pacman-conf path
             try:
                 from pikaur.args import parse_args  # noqa: PLC0415
                 cls._pacman = parse_args().pacman_path
-                cls._pacman_conf = "pacman-conf"
-            except Exception:
+                cls._pacman_conf = parse_args().pacman_conf_path
+            except Exception as exc:
+                print(exc)
                 cls._pacman = "pacman"
                 cls._pacman_conf = "pacman-conf"
-            print(cls._pacman, cls._pacman_conf)
+            # print(cls._pacman, cls._pacman_conf)
 
     @classmethod
     def pacman(cls) -> str:

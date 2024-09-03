@@ -223,7 +223,7 @@ class TTYInputWrapper:  # pragma: no cover
 
 class NestedTerminal:
 
-    _original_signal: signal.Handlers | None = None
+    _original_signal: "signal.Handlers | Callable[[int, FrameType | None], Any] | int | None" = None
 
     def __init__(
             self, on_terminal_resize: Callable[[int, FrameType | None], None] | None = None,
@@ -243,7 +243,7 @@ class NestedTerminal:
             if stream.isatty():
                 tty.setcbreak(stream.fileno())
         if self.on_terminal_resize is not None:
-            self.original_signal = signal.getsignal(signal.SIGWINCH)
+            self._original_signal = signal.getsignal(signal.SIGWINCH)
             signal.signal(signal.SIGWINCH, self.on_terminal_resize)
         return real_term_geometry
 

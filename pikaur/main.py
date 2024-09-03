@@ -178,7 +178,7 @@ def cli_pkgbuild() -> None:
 def cli_print_version() -> None:
     args = parse_args()
     proc = spawn([
-        PikaurConfig().misc.PacmanPath.get_str(), "--version",
+        args.pacman_path, "--version",
     ])
     pacman_version = proc.stdout_text.splitlines()[1].strip(" .-") if proc.stdout_text else "N/A"
     print_version(
@@ -345,7 +345,7 @@ def cli_entry_point() -> None:
         # Just bypass all the args to pacman
         logger.debug("Pikaur operation not found for args: {}", sys.argv)
         logger.debug(args)
-        pacman_args = [PikaurConfig().misc.PacmanPath.get_str(), *args.raw_without_pikaur_specific]
+        pacman_args = [args.pacman_path, *args.raw_without_pikaur_specific]
         if require_sudo:
             pacman_args = sudo(pacman_args)
         sys.exit(

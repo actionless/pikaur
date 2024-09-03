@@ -1,5 +1,5 @@
 from .args import parse_args, reconstruct_args
-from .config import DECORATION, BuildCachePath, PackageCachePath, PikaurConfig
+from .config import DECORATION, BuildCachePath, PackageCachePath
 from .exceptions import SysExit
 from .i18n import translate
 from .logging_extras import create_logger
@@ -41,7 +41,7 @@ def clean_repo_cache() -> None:
     if args.noconfirm:
         returncode = pikspect(
             sudo([
-                PikaurConfig().misc.PacmanPath.get_str(),
+                args.pacman_path,
                 *reconstruct_args(args, ignore_args=["noconfirm"]),
             ]),
             extra_questions={YesNo.ANSWER_Y: [
@@ -61,7 +61,7 @@ def clean_repo_cache() -> None:
             returncode = 255
     else:
         returncode = interactive_spawn(sudo([
-            PikaurConfig().misc.PacmanPath.get_str(),
+            args.pacman_path,
             *reconstruct_args(args, ignore_args=["noconfirm"]),
         ])).returncode
     raise SysExit(returncode)

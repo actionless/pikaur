@@ -9,7 +9,6 @@ import pyalpm
 
 from .alpm import PyAlpmWrapper
 from .args import PACMAN_APPEND_OPTS, get_pacman_str_opts, parse_args, reconstruct_args
-from .config import PikaurConfig
 from .exceptions import DependencyError, PackagesNotFoundInRepoError
 from .i18n import translate
 from .lock import FancyLock
@@ -59,8 +58,7 @@ def get_pacman_command(  # pylint: disable=too-many-branches
 ) -> list[str]:
     ignore_args = ignore_args or []
     args = parse_args()
-    pacman_path = PikaurConfig().misc.PacmanPath.get_str()
-    pacman_cmd = [pacman_path]
+    pacman_cmd = [args.pacman_path]
     if color_enabled():
         pacman_cmd += ["--color=always"]
     else:

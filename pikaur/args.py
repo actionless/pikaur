@@ -268,6 +268,11 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
             PikaurConfig().misc.PreserveEnv.get_str(),
             translate("preserve environment variables (comma-separated)"),
         ),
+        (
+            None, "pacman-path",
+            PikaurConfig().misc.PacmanPath.get_str(),
+            translate("override path to pacman executable"),
+        ),
     ]
     if not action:
         for each_action in ALL_ACTIONS:
@@ -459,6 +464,7 @@ class PikaurArgs(Namespace):
     makepkg_config: str | None
     mflags: str | None
     makepkg_path: str | None
+    pacman_path: str
     quiet: bool
     sysupgrade: int
     devel: int

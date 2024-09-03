@@ -9,7 +9,6 @@ from .args import (
     parse_args,
     reconstruct_args,
 )
-from .config import PikaurConfig
 from .i18n import PIKAUR_NAME, translate
 from .pikaprint import print_stdout
 from .spawn import spawn
@@ -41,7 +40,7 @@ def cli_print_help() -> None:
     args = parse_args()
 
     proc = spawn([
-        PikaurConfig().misc.PacmanPath.get_str(),
+        args.pacman_path,
         *reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
     ])
     if not proc.stdout_text:

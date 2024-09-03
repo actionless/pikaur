@@ -342,6 +342,7 @@ class PikspectPopen:
                 columns=self.real_term_geometry.columns,
                 rows=self.real_term_geometry.lines,
             )
+            self.send_signal(signal.SIGWINCH)
 
     def resize_sub_terminal_if_needed(self, file_descriptor: int) -> None:
         current_real_term_geometry = get_terminal_geometry()

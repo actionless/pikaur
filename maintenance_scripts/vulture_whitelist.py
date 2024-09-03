@@ -21,8 +21,6 @@ whitelist.TextIO
 whitelist.FrameType
 whitelist.TracebackType
 
-whitelist.pikaur.AnyPackage
-
 whitelist.argparse_extras.ArgumentParserWithUnknowns._parse_known_args
 
 whitelist.args.FileType
@@ -49,36 +47,21 @@ whitelist.config.ConfigValueType.data_type
 whitelist.config.ConfigValueType.deprecated
 whitelist.config.ConfigValueType.migrated
 
-whitelist.core.SpawnArgs
-whitelist.core.SudoLoopResultT
-
 whitelist.i18n.EXTRA_ERROR_MESSAGES
 
-whitelist.main.socket.socket
 whitelist.main.OutputEncodingWrapper.original_stdout
 whitelist.main.OutputEncodingWrapper.original_stderr
 
-whitelist.makepkg_config.FallbackValueT
-
-whitelist.news.Element
 whitelist.news.MLStripper.convert_charrefs
 whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.handle_endtag
 whitelist.news.MLStripper.handle_starttag
 whitelist.news.MLStripper.strict
 
-whitelist.print_department.InstallInfoT
-
-whitelist.pprint.DefaultNamedArg
-
-whitelist.search_cli.SamePackageTypeT
-
 whitelist.pikaur_test.helpers.DefaultArg
 whitelist.pikaur_test.setUpClass
 whitelist.pikaur_test.tearDownClass
 whitelist.pikaur_test.TestResult
-whitelist.pikaur_test.foo
-whitelist.pikaur_test.bar
 whitelist.pikaur_test.baz
 
 whitelist.pikaman.NroffRenderer.strong

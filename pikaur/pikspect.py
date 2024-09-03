@@ -1,12 +1,10 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import fcntl
 import os
 import re
 import select
 import shutil
 import signal
-import struct
 import sys
 import termios
 import tty
@@ -188,10 +186,7 @@ def get_terminal_geometry(rows: int = 80, columns: int = 80) -> os.terminal_size
 
 
 def set_terminal_geometry(file_descriptor: int, rows: int, columns: int) -> None:
-    term_geometry_struct = struct.pack("HHHH", rows, columns, 0, 0)
-    fcntl.ioctl(
-        file_descriptor, termios.TIOCSWINSZ, term_geometry_struct,
-    )
+    termios.tcsetwinsize(file_descriptor, (rows, columns))
 
 
 class TTYInputWrapper:  # pragma: no cover

@@ -55,7 +55,7 @@ package() {
 					"${pkgdir}/usr/lib/systemd/user/${_pkgname}-cache.timer"
 	for langmo in $(cd ./locale && ls ./*.mo); do
 		lang=$(sed -e 's/.mo$//' <<< "${langmo}")
-		install -Dm644 "locale/${langmo}" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/${_pkgname}.mo"  # @TODO: update i18n module
+		install -Dm644 "locale/${langmo}" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/${_pkgname}.mo"
 	done
 	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 	install -Dm644 pikaur.1 "$pkgdir/usr/share/man/man1/${_pkgname}.1"

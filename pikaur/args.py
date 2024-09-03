@@ -279,7 +279,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_str_opts(each_action)
         return list(set(result))
-    if cast(str, PIKAUR_NAME) == cast(str, "pikaur-static"):
+    if cast(str, "pikaur-static") == PIKAUR_NAME:
         result += [
             (
                 None, "pacman-conf-path",

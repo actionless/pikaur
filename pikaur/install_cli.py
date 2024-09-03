@@ -79,8 +79,9 @@ from .updates import is_devel_pkg
 from .version import VersionMatcher, compare_versions
 
 if TYPE_CHECKING:
-    import pyalpm
     from typing import Final
+
+    import pyalpm
 
     from .args import PikaurArgs
 

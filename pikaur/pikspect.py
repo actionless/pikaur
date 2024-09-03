@@ -245,7 +245,7 @@ class NestedTerminal:
         return real_term_geometry
 
     def __exit__(self, *exc_details: object) -> None:
-        if self._original_signal:
+        if self._original_signal is not None:
             signal.signal(signal.SIGWINCH, self._original_signal)
         self.tty_wrapper.__exit__(*exc_details)
         TTYRestore.restore()

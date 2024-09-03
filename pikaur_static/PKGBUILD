@@ -32,6 +32,7 @@ optdepends=(
 )
 conflicts=("$_pkgname")
 provides=("$_pkgname")
+options=('!buildflags' '!strip')
 
 pkgver() {
 	cd "${srcdir}/${pkgname}" || exit 2
@@ -41,18 +42,12 @@ pkgver() {
 
 build() {
 	cd "${srcdir}/${pkgname}"
-	sed -i -e "s/VERSION.*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
-	# nuitka compilation fails with default arch flags, so let it decide:
-	unset CFLAGS
-	unset CXXFLAGS
-	unset LDFLAGS
-	unset LTOFLAGS
+	sed -i -e "s/^VERSION[: ].*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
 	make standalone
 }
 
 package() {
 	cd "${srcdir}/${pkgname}"
-	#cp -r ${srcdir}/${pkgname}/packaging/* ${pkgdir}
 	install -Dm644 "${srcdir}/${pkgname}/packaging/usr/lib/systemd/user/pikaur-cache.service" \
 					"${pkgdir}/usr/lib/systemd/user/${_pkgname}-cache.service"
 	install -Dm644 "${srcdir}/${pkgname}/packaging/usr/lib/systemd/user/pikaur-cache.timer" \

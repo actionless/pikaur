@@ -140,18 +140,19 @@ def _copy(  # pylint: disable=too-many-branches
 
 def spawn(
         argv: list[str] | str,
+        env: dict[str, str],
         master_read: MasterReaderType = _read,
         stdin_read: StdinReaderType = _read,
         after_fork: Callable[[int, int], None] | None = None,
 ) -> int:
-    """Fork of pty.spawn to add support for `after_fork` callback."""
+    """Fork of pty.spawn to add support for `env` and `after_fork` callback."""
     if isinstance(argv, str):
         argv = [argv]
     # sys.audit('pty.spawn', argv)
 
     pid, master_fd = fork()
     if pid == CHILD:
-        os.execlp(argv[0], *argv)  # nosec B606  # noqa: S606
+        os.execlpe(argv[0], *argv, env)  # nosec B606  # noqa: S606
 
     try:
         mode = tcgetattr(STDIN_FILENO)
@@ -368,8 +369,10 @@ class PikspectPopen:
         try:
             with NestedTerminal(on_terminal_resize=self._on_terminal_resize) as real_term_geometry:
                 self.real_term_geometry = real_term_geometry
+                env = os.environ.copy()
                 result = spawn(
-                    self.args,
+                    argv=self.args,
+                    env=env,
                     master_read=self.cmd_output_reader,
                     stdin_read=self.user_input_reader,
                     after_fork=self._pty_init,

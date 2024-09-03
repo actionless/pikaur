@@ -55,9 +55,9 @@ build() {
 package() {
 	cd "${srcdir}/${pkgname}"
 	#cp -r ${srcdir}/${pkgname}/packaging/* ${pkgdir}
-	infstall -Dm644 "${srcdir}/${pkgname}/packaging/usr/lib/systemd/user/pikaur-cache.service" \
+	install -Dm644 "${srcdir}/${pkgname}/packaging/usr/lib/systemd/user/pikaur-cache.service" \
 					"${pkgdir}/usr/lib/systemd/user/${_pkgname}-cache.service"
-	infstall -Dm644 "${srcdir}/${pkgname}/packaging/usr/lib/systemd/user/pikaur-cache.timer" \
+	install -Dm644 "${srcdir}/${pkgname}/packaging/usr/lib/systemd/user/pikaur-cache.timer" \
 					"${pkgdir}/usr/lib/systemd/user/${_pkgname}-cache.timer"
 	for langmo in $(cd ./locale && ls ./*.mo); do
 		lang=$(sed -e 's/.mo$//' <<< "${langmo}")

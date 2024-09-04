@@ -182,7 +182,7 @@ sed \
 	-e 's|pkgname="${_pkgname}-git"|pkgname="${_pkgname}"|' \
 	-e 's|"$pkgname::git+${url}.git#branch=master"|"$pkgname-$pkgver.tar.gz"::${url}/archive/"$pkgver".tar.gz|' \
 	-e 's|conflicts=("$_pkgname")|conflicts=("${_pkgname}-git")|' \
-	-e 's|cd "${srcdir}/${pkgname}"|cd "${srcdir}/${pkgname}-${pkgver}"|' \
+	-e 's|${srcdir}/${pkgname}|${srcdir}/pikaur-${pkgver}|' \
 	-e '/pkgver() {/,+5 d' \
 	"$src_pkgbuild_static" > "${aur_static_repo_dir}"/PKGBUILD
 # shellcheck disable=SC2164

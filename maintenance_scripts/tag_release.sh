@@ -5,15 +5,28 @@
 
 set -euo pipefail
 IFS=$'\n\t'
+
 aur_repo_dir=~/build/pikaur
 aur_dev_repo_dir=~/build/pikaur-git
 aur_static_repo_dir=~/build/pikaur-static
 aur_static_dev_repo_dir=~/build/pikaur-static-git
+
 src_repo_dir=$(readlink -e "$(dirname "${0}")"/..)
 src_pkgbuild="${src_repo_dir}/PKGBUILD"
 src_pkgbuild_static="${src_repo_dir}/pikaur_static/PKGBUILD"
 
 new_version=$1
+
+
+for repo_dir in "$aur_repo_dir" "$aur_dev_repo_dir" "$aur_static_repo_dir" "$aur_static_dev_repo_dir" ; do
+	if [[ ! -d "$repo_dir" ]] ; then
+		echo
+		echo " !! Repository $repo_dir/ does not exists"
+		echo
+		exit 1
+	fi
+done
+
 
 if [[ $(git status --porcelain 2>/dev/null| grep -c "^ [MD]" || true) -gt 0 ]] ; then
 	echo

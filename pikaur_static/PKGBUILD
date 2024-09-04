@@ -59,6 +59,5 @@ package() {
 	done
 	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 	install -Dm644 pikaur.1 "${pkgdir}/usr/share/man/man1/${_pkgname}.1"
-	mkdir -p "${pkgdir}/usr/bin/"
-	install -D -m755 "${srcdir}/${pkgname}/pikaur_static/pikaur-standalone" "${pkgdir}/usr/bin/${_pkgname}"
+	install -Dm755 "${srcdir}/${pkgname}/pikaur_static/pikaur-standalone" "${pkgdir}/usr/bin/${_pkgname}"
 }

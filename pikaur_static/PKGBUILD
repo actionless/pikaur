@@ -1,5 +1,5 @@
 # Maintainer: Yauheni Kirylau <actionless DOT loveless PLUS aur AT gmail MF com>
-# shellcheck disable=SC2034,SC2154
+# shellcheck disable=SC2016,SC2034,SC2154 shell=bash
 
 _pkgname=pikaur-static
 pkgname="${_pkgname}-git"
@@ -12,7 +12,7 @@ license=('GPL-3.0-only')
 source=(
 	"$pkgname::git+${url}.git#branch=master"
 )
-md5sums=(
+b2sums=(
 	"SKIP"
 )
 depends=(
@@ -32,6 +32,7 @@ optdepends=(
 )
 conflicts=("$_pkgname")
 provides=("$_pkgname")
+changelog="CHANGELOG"
 options=('!buildflags' '!strip')
 
 pkgver() {
@@ -41,13 +42,13 @@ pkgver() {
 }
 
 build() {
-	cd "${srcdir}/${pkgname}"
+	cd "${srcdir}/${pkgname}" || exit 2
 	sed -i -e "s/^VERSION[: ].*=.*/VERSION = '${pkgver}'/g" pikaur/config.py
 	make standalone
 }
 
 package() {
-	cd "${srcdir}/${pkgname}"
+	cd "${srcdir}/${pkgname}" || exit 2
 	install -Dm644 "${srcdir}/${pkgname}/packaging/usr/lib/systemd/user/pikaur-cache.service" \
 					"${pkgdir}/usr/lib/systemd/user/${_pkgname}-cache.service"
 	install -Dm644 "${srcdir}/${pkgname}/packaging/usr/lib/systemd/user/pikaur-cache.timer" \
@@ -56,8 +57,8 @@ package() {
 		lang=$(sed -e 's/.mo$//' <<< "${langmo}")
 		install -Dm644 "locale/${langmo}" "$pkgdir/usr/share/locale/${lang}/LC_MESSAGES/${_pkgname}.mo"
 	done
-	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
-	install -Dm644 pikaur.1 "$pkgdir/usr/share/man/man1/${_pkgname}.1"
+	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm644 pikaur.1 "${pkgdir}/usr/share/man/man1/${_pkgname}.1"
 	mkdir -p "${pkgdir}/usr/bin/"
 	install -D -m755 "${srcdir}/${pkgname}/pikaur_static/pikaur-standalone" "${pkgdir}/usr/bin/${_pkgname}"
 }

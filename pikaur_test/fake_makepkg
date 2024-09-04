@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2016
 
 # Licensed under GPLv3, see https://www.gnu.org/licenses/
 
@@ -11,7 +12,7 @@ if [[ ! "$(grep pikaur_fake_makepkg_package PKGBUILD)" ]]  && [[ ! "$(grep pikau
 	done
 
 source ./PKGBUILD
-	echo '
+echo '
 
 prepare() {
 	echo "======= Fake prepare() ======="
@@ -28,6 +29,23 @@ check() {
 	echo "pikaur_fake_makepkg_check"
 }
 ' >> ./PKGBUILD
+
+if echo "$@" | grep -q "noprogressbar" ; then
+	true
+else
+	echo '
+
+	pkgver() {
+		echo 99999.1.2.3
+	}
+	source=(
+		"http://example.com"
+	)
+	b2sums=(
+		"SKIP"
+	)
+	' >> ./PKGBUILD
+fi
 
 # shellcheck disable=SC2154
 if [ "${#pkgname[@]}" -eq 1 ] ; then
@@ -51,4 +69,4 @@ fi
 
 fi
 # shellcheck disable=SC2068
-/usr/bin/makepkg --skippgpcheck $@
+/usr/bin/makepkg $@

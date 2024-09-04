@@ -39,22 +39,30 @@ class SysupgradeTest(PikaurDbTestCase):
 
     def downgrade_repo1_pkg(self) -> None:
         self.repo_old_version = self.downgrade_repo_pkg(
-            self.repo_pkg_name, fake_makepkg=True,
+            self.repo_pkg_name,
+            fake_makepkg=True, fake_makepkg_download=True,
         )
 
     def downgrade_repo2_pkg(self) -> None:
         self.repo2_old_version = self.downgrade_repo_pkg(
-            self.repo2_pkg_name, fake_makepkg=True, count=2,
+            self.repo2_pkg_name,
+            count=2,
+            fake_makepkg=True, fake_makepkg_download=True,
         )
 
     def downgrade_aur1_pkg(self) -> None:
         self.aur_old_version = self.downgrade_aur_pkg(
-            self.aur_pkg_name, count=2, fake_makepkg=True, skippgpcheck=True,
+            self.aur_pkg_name,
+            count=2,
+            skippgpcheck=True,
+            fake_makepkg=True, fake_makepkg_download=True,
         )
 
     def downgrade_aur2_pkg(self) -> None:
         self.aur2_old_version = self.downgrade_aur_pkg(
-            self.aur2_pkg_name, count=3, fake_makepkg=True,
+            self.aur2_pkg_name,
+            count=3,
+            fake_makepkg=True, fake_makepkg_download=True,
         )
 
     def downgrade_dev_pkg(self) -> None:
@@ -75,7 +83,7 @@ class SysupgradeTest(PikaurDbTestCase):
         ])
         pikaur(
             f"-P -i --noconfirm ./{self.dev_pkg_name}/PKGBUILD_prev --print-commands",
-            fake_makepkg=True, fake_makepkg_noextract=False,
+            fake_makepkg=True, fake_makepkg_noextract=False, fake_makepkg_download=True,
         )
         self.assertInstalled(self.dev_pkg_name)
         self.dev_old_version = PackageDB.get_local_dict()[self.dev_pkg_name].version

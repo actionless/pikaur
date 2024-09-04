@@ -259,8 +259,8 @@ def pikaur(
     return result
 
 
-def fake_pikaur(cmd_args: str, *, download: bool = False) -> CmdResult:
-    return pikaur(cmd_args, fake_makepkg=True, fake_makepkg_download=download)
+def fake_pikaur(cmd_args: str, *, download: bool = False, **kwargs: "Any") -> CmdResult:
+    return pikaur(cmd_args, fake_makepkg=True, fake_makepkg_download=download, **kwargs)
 
 
 def pacman(cmd: str) -> CmdResult:

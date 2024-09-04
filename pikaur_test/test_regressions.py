@@ -18,7 +18,7 @@ class RegressionTest(PikaurDbTestCase):
         # pikaur -Si --aur | grep -e \^name -e \^depends | grep -E "(>.*<|<.*>)" -B 1
         # with doubled repo dep
         pkg_name = "xfe"
-        fake_pikaur(f"-S {pkg_name}")
+        fake_pikaur(f"-S {pkg_name}", capture_stdout=False)
         self.assertInstalled(pkg_name)
 
     def test_double_requirements_aur(self):

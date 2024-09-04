@@ -32,13 +32,13 @@ jobs:
           ${{ matrix.worker_number }},${NUM_WORKERS}
 
     - name: Upload coverage
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.4.0
       with:
         name: coverage_${{ matrix.worker_number }}
         path: coverage_${{ matrix.worker_number }}
 
     - name: Upload test times
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.4.0
       with:
         name: pikaur_test_times_${{ matrix.worker_number }}
         path: pikaur_test_times_${{ matrix.worker_number }}

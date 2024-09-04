@@ -1,5 +1,5 @@
 # Maintainer: Yauheni Kirylau <actionless DOT loveless PLUS aur AT gmail MF com>
-# shellcheck disable=SC2034,SC2154 shell=bash
+# shellcheck disable=SC2001,SC2034,SC2154 shell=bash
 
 _pkgname=pikaur
 pkgname="${_pkgname}-git"

@@ -207,6 +207,7 @@ shellcheck:
 		shellcheck $$(find . \
 			-name '*.sh' \
 			-not -wholename '*/$(TARGET_MODULE)*.*build/*' \
+			-or -name 'PKGBUILD' \
 		) \
 	)
 	# :: shellcheck passed ::

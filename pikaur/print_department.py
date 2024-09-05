@@ -4,7 +4,7 @@ import operator
 import sys
 from datetime import datetime
 from fnmatch import fnmatch
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, cast
 
 import pyalpm
 
@@ -662,12 +662,45 @@ def pretty_format_sysupgrade(
     )()
 
 
+def pformat_ignored_package(
+        template: str, pkg_name: str,
+        current_version: str | None = None, new_version: str | None = None,
+) -> str:
+    common_version, _diff_weight = get_common_version(
+        current_version or "", new_version or "",
+    )
+    color_config = PikaurConfig().colors
+    common_version_color = color_config.Version.get_int()
+
+    current_version = (
+        color_line(common_version, common_version_color) +
+        color_line(
+            get_version_diff(current_version or "", common_version),
+            color_config.VersionDiffOld.get_int(),
+        )
+    ) if current_version else ""
+
+    new_version = (
+        color_line(common_version, common_version_color) +
+        color_line(
+            get_version_diff(new_version or "", common_version),
+            color_config.VersionDiffNew.get_int(),
+        )
+    ) if new_version else ""
+
+    pkg_name = bold_line(pkg_name)
+
+    return template.format(
+        pkg_name=pkg_name, current_version=current_version, new_version=new_version,
+    )
+
+
 def print_ignored_package(
         package_name: str | None = None,
         install_info: InstallInfo | None = None,
         ignored_from: str | None = None,
 ) -> None:
-    if not (package_name or install_info):
+    if (package_name is None) and (install_info is None):
         missing_property_error = translate(
             "Either `{prop1}` or `{prop2}` should be set",
         ).format(
@@ -675,29 +708,37 @@ def print_ignored_package(
             prop2="install_info",
         )
         raise TypeError(missing_property_error)
-    install_info = install_info or InstallInfo(
-        name=package_name,
-        current_version="",
-        new_version="",
-        package=None,
-    )
+    pkg_name = cast(str, install_info.name if install_info else package_name)
+    current_version = install_info.current_version if install_info else ""
+    new_version = install_info.new_version if install_info else ""
     message = " ".join((
         color_line(DECORATION, ColorsHighlight.yellow),
-        translate("Ignoring package update {}").format(
-            pretty_format_upgradeable(
-                [install_info],
-                template="{pkg_name} ({current_version} => {new_version})",
-            ))
-        if (install_info.current_version and install_info.new_version) else
-        translate("Ignoring package {}").format(
-            pretty_format_upgradeable(
-                [install_info],
-                template=(
-                    "{pkg_name} {current_version}"
-                    if install_info.current_version else
-                    "{pkg_name} {new_version}"
+        (
+            translate("Ignoring package update {}").format(
+                pformat_ignored_package(
+                    template="{pkg_name} ({current_version} => {new_version})",
+                    pkg_name=pkg_name,
+                    current_version=current_version,
+                    new_version=new_version,
+                ))
+            if (current_version and new_version) else
+            translate("Ignoring package {}").format(
+                pformat_ignored_package(
+                    template=(
+                        "{pkg_name} {current_version}"
+                        if current_version else
+                        (
+                            "{pkg_name} {new_version}"
+                            if new_version else
+                            "{pkg_name}"
+                        )
+                    ),
+                    pkg_name=pkg_name,
+                    current_version=current_version,
+                    new_version=new_version,
                 ),
-            )),
+            )
+        ),
     ))
     if ignored_from:
         message += f" {ignored_from}"

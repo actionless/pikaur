@@ -3,6 +3,7 @@
 import fnmatch
 import re
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
 import pyalpm
@@ -15,7 +16,7 @@ from .lock import FancyLock
 from .logging_extras import create_logger
 from .pacman_i18n import _p
 from .pikaprint import color_enabled, print_stderr
-from .pikatypes import DataType, PackageSource
+from .pikatypes import PackageSource
 from .privilege import sudo
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .provider import Provider
@@ -96,21 +97,24 @@ def get_pacman_command(  # pylint: disable=too-many-branches
     return pacman_cmd
 
 
-class RawPrintFormat(DataType):
+@dataclass
+class RawPrintFormat:
 
     returncode: int
-    stdout_text: str
-    stderr_text: str
+    stdout_text: str | None
+    stderr_text: str | None
 
 
-class PacmanPrint(DataType):
+@dataclass
+class PacmanPrint:
 
     full_name: str
     repo: str
     name: str
 
 
-class ProvidedDependency(DataType):
+@dataclass
+class ProvidedDependency:
     name: str
     package: pyalpm.Package
     version_matcher: VersionMatcher

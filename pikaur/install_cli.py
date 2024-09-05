@@ -409,7 +409,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                     translate("Dependencies missing for {}").format(", ".join(exc.wanted_by)),
                 ))
                 print_not_found_packages(exc.packages)
-                for pkg_name in exc.wanted_by:  # pylint: disable=not-an-iterable
+                for pkg_name in exc.wanted_by:
                     self.aur_pkg_not_found_prompt(pkg_name)
                 self.get_all_packages_info()
                 return
@@ -811,7 +811,7 @@ class InstallPackagesCLI:  # noqa: PLR0904
                         raise TypeError
                     pkg_base = info.package.packagebase
                     if pkg_base not in pkgbuilds_by_base:
-                        package_names = self.pkgbuilds_packagelists.get(info.pkgbuild_path)
+                        package_names = self.pkgbuilds_packagelists.get(info.pkgbuild_path, [])
                         logger.debug(
                             "Initializing build info for {} {}({}): {}",
                             info, pkg_base, package_names, info.pkgbuild_path,

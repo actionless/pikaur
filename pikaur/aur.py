@@ -63,10 +63,7 @@ def aur_rpc_search(
     if AurRPCErrors.ERROR_KEY in result_json:
         raise AURError(url=url, error=result_json[AurRPCErrors.ERROR_KEY])
     return [
-        AURPackageInfo(
-            **{key.lower(): value for key, value in aur_json.items()},
-            ignore_extra_properties=True,
-        )
+        AURPackageInfo.from_json(aur_json)
         for aur_json in result_json.get("results", [])
     ]
 
@@ -91,10 +88,7 @@ def aur_rpc_info(search_queries: list[str]) -> list[AURPackageInfo]:
     if AurRPCErrors.ERROR_KEY in result_json:
         raise AURError(url=url, error=result_json[AurRPCErrors.ERROR_KEY])
     return [
-        AURPackageInfo(
-            **{key.lower(): value for key, value in aur_json.items()},
-            ignore_extra_properties=True,
-        )
+        AURPackageInfo.from_json(aur_json)
         for aur_json in result_json.get("results", [])
     ]
 

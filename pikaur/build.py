@@ -50,7 +50,7 @@ from .pikaprint import (
     print_stderr,
     print_stdout,
 )
-from .pikatypes import DataType
+from .pikatypes import ComparableType
 from .privilege import (
     isolate_root_cmd,
     sudo,
@@ -127,10 +127,11 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
             raise RuntimeError(translate(f"Can't copy '{from_path}' to '{to_path}'."))
 
 
-class PackageBuild(DataType):  # noqa: PLR0904
+class PackageBuild(ComparableType):  # noqa: PLR0904
     # pylint: disable=too-many-instance-attributes
-    clone = False
-    pull = False
+
+    clone: bool = False
+    pull: bool = False
 
     package_base: str
     package_names: list[str]
@@ -167,7 +168,7 @@ class PackageBuild(DataType):  # noqa: PLR0904
             f"{self.package_names}>"
         )
 
-    def __init__(  # pylint: disable=super-init-not-called
+    def __init__(
             self,
             package_names: list[str] | None = None,
             pkgbuild_path: str | None = None,
@@ -1000,7 +1001,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
     for aur_pkg in aur_pkgs:
         packages_bases.setdefault(aur_pkg.packagebase, []).append(aur_pkg.name)
     package_builds_by_base = {
-        pkgbase: PackageBuild(pkg_names)
+        pkgbase: PackageBuild(package_names=pkg_names)
         for pkgbase, pkg_names in packages_bases.items()
         if not AlreadyClonedRepos.get(pkgbase)
     }
@@ -1034,7 +1035,7 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         raise exc
 
     all_package_builds_by_base = {
-        pkgbase: PackageBuild(pkg_names)
+        pkgbase: PackageBuild(package_names=pkg_names)
         for pkgbase, pkg_names in packages_bases.items()
     }
     return {

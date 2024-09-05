@@ -11,3 +11,5 @@ MANIFEST
 *.egg-info/
 pikaur.1
 aur_db.dump*
+pikaur_static/pikaur/**
+docker_ci/

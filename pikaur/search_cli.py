@@ -42,7 +42,7 @@ def filter_search_results(
                     query in pkg.name
             ) or (
                 not names_only and
-                (query in (pkg.desc or ""))
+                (query in pkg.desc)
             ):
                 filtered_results.setdefault(_q, []).append(pkg)
     return filtered_results

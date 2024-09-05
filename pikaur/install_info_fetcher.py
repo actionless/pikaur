@@ -652,7 +652,9 @@ Gonna fetch install info for:
     def mark_dependent(self) -> None:
         """Update packages' install info to show deps in prompt."""
         logger.debug(":: marking dependant pkgs...")
+        logger.debug("  :: mark_dependant :: get_repo_provided...")
         all_provided_pkgs = PackageDB.get_repo_provided_dict()
+        logger.debug("  :: mark_dependant :: get local pkgs...")
         all_local_pkgs = PackageDB.get_local_dict()
         all_local_pkgnames = PackageDB.get_local_pkgnames()
         all_deps_install_infos: Sequence[InstallInfo] = (
@@ -672,14 +674,14 @@ Gonna fetch install info for:
             )
             for ii in self.all_install_info
         ], [])
-        logger.debug("all_requested_pkg_names={}", all_requested_pkg_names)
+        logger.debug("  :: mark_dependant :: all_requested_pkg_names={}", all_requested_pkg_names)
         explicit_aur_pkg_names = [ii.name for ii in self.aur_updates_install_info]
-        logger.debug("explicit_aur_pkg_names={}", explicit_aur_pkg_names)
+        logger.debug("  :: mark_dependant :: explicit_aur_pkg_names={}", explicit_aur_pkg_names)
 
         # iterate each package metadata
         for pkg_install_info in self.all_install_info:
 
-            logger.debug(" - {}", pkg_install_info.name)
+            logger.debug("  :: mark_dependant ::  - {}", pkg_install_info.name)
 
             # process providers
             provides = pkg_install_info.package.provides
@@ -704,8 +706,8 @@ Gonna fetch install info for:
                     )
                     if pkg_name in all_requested_pkg_names
                 ]
-                logger.debug("provides={}", provides, indent=4)
-            logger.debug("providing_for={}", providing_for, indent=4)
+                logger.debug("  :: mark_dependant ::    provides={}", provides, indent=4)
+            logger.debug("  :: mark_dependant ::    providing_for={}", providing_for, indent=4)
             for provided_name in providing_for:
                 if provided_name in all_provided_pkgs:
                     pkg_install_info.name = provided_name

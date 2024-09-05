@@ -205,6 +205,7 @@ def pikaur(
         new_args += [
             "--makepkg-path=" + str(TEST_DIR / "fake_makepkg"),
         ]
+        mflags.append("--skipchecksums")
         if fake_makepkg_noextract:
             mflags.append("--noextract")
         if fake_makepkg_version:

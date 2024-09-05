@@ -1,20 +1,11 @@
 #!/bin/bash
 # shellcheck disable=SC2016
-# shellcheck disable=SC2206
 
 # Licensed under GPLv3, see https://www.gnu.org/licenses/
 
-if [[ ! "$(grep pikaur_fake_makepkg_package PKGBUILD)" ]]  && [[ ! "$(grep pikaur_fake_makepkg_prepare PKGBUILD)" ]] ; then
-	for line in $(grep "^prepare_.\+()" PKGBUILD -o) ; do
-		echo -e "$line {\n echo \"fake_$line\"\n }" >> PKGBUILD
-	done
-	for line in $(grep "^package_.\+()" PKGBUILD -o) ; do
-		echo -e "$line {\n echo \"fake_$line\"\n }" >> PKGBUILD
-	done
-
 filter_arg="--force-version"
 forced_version=
-args=($*)
+args=("$@")
 new_args=()
 
 echo "Orig args: ${args[*]}"
@@ -31,6 +22,15 @@ echo "New args: ${new_args[*]}"
 if test -n "$forced_version" ; then
 	echo "Forced version: $forced_version"
 fi
+
+
+if [[ ! "$(grep pikaur_fake_makepkg_package PKGBUILD)" ]]  && [[ ! "$(grep pikaur_fake_makepkg_prepare PKGBUILD)" ]] ; then
+	for line in $(grep "^prepare_.\+()" PKGBUILD -o) ; do
+		echo -e "$line {\n echo \"fake_$line\"\n }" >> PKGBUILD
+	done
+	for line in $(grep "^package_.\+()" PKGBUILD -o) ; do
+		echo -e "$line {\n echo \"fake_$line\"\n }" >> PKGBUILD
+	done
 
 source ./PKGBUILD
 echo '
@@ -88,8 +88,6 @@ package_${_pkg_name}() {
 fi
 
 
-/usr/bin/makepkg "${new_args[@]}"
-else
-/usr/bin/makepkg "$@"
 fi
 # shellcheck disable=SC2068
+/usr/bin/makepkg "${new_args[@]}"

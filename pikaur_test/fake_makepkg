@@ -53,12 +53,10 @@ check() {
 source=(
 	"http://example.com"
 )
-b2sums=(
-	"SKIP"
-)
 ' >> ./PKGBUILD
 
 
+# shellcheck disable=SC2154
 if grep -q "git" <<< "$pkgname" ; then
 	echo '
 
@@ -89,6 +87,9 @@ package_${_pkg_name}() {
 	done
 fi
 
+
+/usr/bin/makepkg "${new_args[@]}"
+else
+/usr/bin/makepkg "$@"
 fi
 # shellcheck disable=SC2068
-/usr/bin/makepkg "${new_args[@]}"

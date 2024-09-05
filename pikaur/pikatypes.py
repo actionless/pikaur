@@ -76,7 +76,7 @@ class InstallInfo(ComparableType):
     devel_pkg_age_days: int | None = None
 
     provided_by: list["pyalpm.Package | AURPackageInfo"] | None = None
-    required_by: list["InstallInfo"] | None = None
+    required_by: set["InstallInfo"] | None = None
     members_of: list[str] | None = None
     replaces: list[str] | None = None
     pkgbuild_path: str | None = None

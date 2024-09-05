@@ -742,8 +742,8 @@ Gonna fetch install info for:
                             for dep_line in pkg_dep_lines
                     ]:
                         if not dep_install_info.required_by:
-                            dep_install_info.required_by = []
-                        dep_install_info.required_by.append(pkg_install_info)
+                            dep_install_info.required_by = set()
+                        dep_install_info.required_by.add(pkg_install_info)
 
                         # if package marked as provider candidate
                         # is already requested as explicit dep for other package

@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2016
+# shellcheck disable=SC2206
 
 # Licensed under GPLv3, see https://www.gnu.org/licenses/
 
@@ -10,6 +11,26 @@ if [[ ! "$(grep pikaur_fake_makepkg_package PKGBUILD)" ]]  && [[ ! "$(grep pikau
 	for line in $(grep "^package_.\+()" PKGBUILD -o) ; do
 		echo -e "$line {\n echo \"fake_$line\"\n }" >> PKGBUILD
 	done
+
+filter_arg="--force-version"
+forced_version=
+args=($*)
+new_args=()
+
+echo "Orig args: ${args[*]}"
+
+for arg in "${args[@]}" ; do
+	if grep -q -- "$filter_arg" <<< "$arg" ; then
+		forced_version="$(echo "$arg" | cut -d= -f2-999)"
+	else
+		new_args+=("$arg")
+	fi
+done
+
+echo "New args: ${new_args[*]}"
+if test -n "$forced_version" ; then
+	echo "Forced version: $forced_version"
+fi
 
 source ./PKGBUILD
 echo '
@@ -28,24 +49,25 @@ check() {
 	echo "======= Fake check() ======="
 	echo "pikaur_fake_makepkg_check"
 }
+
+source=(
+	"http://example.com"
+)
+b2sums=(
+	"SKIP"
+)
 ' >> ./PKGBUILD
 
-if echo "$@" | grep -q "noprogressbar" ; then
-	true
-else
+
+if grep -q "git" <<< "$pkgname" ; then
 	echo '
 
 	pkgver() {
-		echo 99999.1.2.3
+		echo '"${forced_version:-99999.1.2.3}"'
 	}
-	source=(
-		"http://example.com"
-	)
-	b2sums=(
-		"SKIP"
-	)
 	' >> ./PKGBUILD
 fi
+
 
 # shellcheck disable=SC2154
 if [ "${#pkgname[@]}" -eq 1 ] ; then
@@ -69,4 +91,4 @@ fi
 
 fi
 # shellcheck disable=SC2068
-/usr/bin/makepkg $@
+/usr/bin/makepkg "${new_args[@]}"

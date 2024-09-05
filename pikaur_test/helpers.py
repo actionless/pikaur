@@ -185,7 +185,7 @@ def pikaur(
         print_on_fails: bool = True,
         fake_makepkg: bool = False,
         fake_makepkg_noextract: bool = True,
-        fake_makepkg_download: bool = False,
+        fake_makepkg_version: str | None = None,
 ) -> CmdResult:
 
     PackageDB.discard_local_cache()
@@ -207,8 +207,8 @@ def pikaur(
         ]
         if fake_makepkg_noextract:
             mflags.append("--noextract")
-        if fake_makepkg_download:
-            mflags.append("--noprogressbar")
+        if fake_makepkg_version:
+            mflags.append(f"--force-version={fake_makepkg_version}")
     if skippgpcheck or fake_makepkg:
         mflags.append("--skippgpcheck")
     if "--mflags" in cmd:
@@ -259,8 +259,8 @@ def pikaur(
     return result
 
 
-def fake_pikaur(cmd_args: str, *, download: bool = False, **kwargs: "Any") -> CmdResult:
-    return pikaur(cmd_args, fake_makepkg=True, fake_makepkg_download=download, **kwargs)
+def fake_pikaur(cmd_args: str, **kwargs: "Any") -> CmdResult:
+    return pikaur(cmd_args, fake_makepkg=True, **kwargs)
 
 
 def pacman(cmd: str) -> CmdResult:
@@ -389,7 +389,7 @@ class PikaurDbTestCase(PikaurTestCase):
             repo_pkg_name: str,
             *,
             fake_makepkg: bool = False,
-            fake_makepkg_download: bool = False,
+            fake_makepkg_version: str | None = None,
             skippgpcheck: bool = False,
             count: int = 10,
             build_root: str = ".",
@@ -413,7 +413,7 @@ class PikaurDbTestCase(PikaurTestCase):
             "-P -i --noconfirm "
             f"{build_dir}/PKGBUILD",
             fake_makepkg=fake_makepkg,
-            fake_makepkg_download=fake_makepkg_download,
+            fake_makepkg_version=fake_makepkg_version,
             skippgpcheck=skippgpcheck,
         )
         self.assertInstalled(repo_pkg_name)
@@ -423,7 +423,7 @@ class PikaurDbTestCase(PikaurTestCase):
             self, aur_pkg_name: str,
             *,
             fake_makepkg: bool = False,
-            fake_makepkg_download: bool = False,
+            fake_makepkg_version: str | None = None,
             skippgpcheck: bool = False,
             count: int = 1,
             build_root: str = ".",
@@ -452,7 +452,7 @@ class PikaurDbTestCase(PikaurTestCase):
             "-P -i --noconfirm "
             f"{build_dir}/PKGBUILD",
             fake_makepkg=fake_makepkg,
-            fake_makepkg_download=fake_makepkg_download,
+            fake_makepkg_version=fake_makepkg_version,
             skippgpcheck=skippgpcheck,
         )
         self.assertInstalled(aur_pkg_name)

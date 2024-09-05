@@ -51,7 +51,7 @@ class RegressionTest(PikaurDbTestCase):
 
         self.remove_if_installed(aur_pkg_name, explicitly_installed_dep_name)
         explicitly_installed_dep_old_version = self.downgrade_aur_pkg(
-            explicitly_installed_dep_name, fake_makepkg=True, fake_makepkg_download=True,
+            explicitly_installed_dep_name, fake_makepkg=True, fake_makepkg_version="888.8.8",
         )
         self.assertInstalled(explicitly_installed_dep_name)
         self.assertEqual(

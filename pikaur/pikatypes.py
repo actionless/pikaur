@@ -26,7 +26,7 @@ class ComparableType:
             if not var.startswith("__")
         }
 
-    def __eq__(self, other: "Any") -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         if not self.__compare_stack__:
@@ -63,7 +63,7 @@ class PackageSource(enum.Enum):
     LOCAL = enum.auto()
 
 
-@dataclass
+@dataclass(eq=False)
 class InstallInfo(ComparableType):
     name: str
     package: "pyalpm.Package | AURPackageInfo"
@@ -104,10 +104,12 @@ class InstallInfo(ComparableType):
         )
 
 
+@dataclass(eq=False)
 class RepoInstallInfo(InstallInfo):
     package: "pyalpm.Package"
 
 
+@dataclass(eq=False)
 class AURInstallInfo(InstallInfo):
     package: "AURPackageInfo"
 

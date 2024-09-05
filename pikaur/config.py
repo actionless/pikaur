@@ -14,7 +14,7 @@ from .i18n import PIKAUR_NAME, translate
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any, Final, NotRequired
+    from typing import Final, NotRequired
 
     from typing_extensions import TypedDict
 
@@ -643,7 +643,7 @@ class PikaurConfigItem:
     def __hash__(self) -> int:
         return hash(self.get_str())
 
-    def __eq__(self, item: "Any") -> bool:
+    def __eq__(self, item: object) -> bool:
         return hash(self) == hash(item)
 
 

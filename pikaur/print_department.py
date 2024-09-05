@@ -358,8 +358,14 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
                 "".join((
                     part
                     for template, color, items in (
-                        ("required by {pkg}", Colors.cyan, pkg_update.required_by_installed),
-                        ("optional for {pkg}", Colors.purple, pkg_update.optional_for_installed),
+                        (
+                            translate("required by {pkg}"),
+                            Colors.cyan, pkg_update.required_by_installed,
+                        ),
+                        (
+                            translate("optional for {pkg}"),
+                            Colors.purple, pkg_update.optional_for_installed,
+                        ),
                     )
                     for part in (
                         "\n",

@@ -26,154 +26,158 @@ msgstr "ett av argumenten %s krävs"
 msgid "error:"
 msgstr "fel:"
 
-#: pikaur/args.py:125
+#: pikaur/args.py:122
+msgid "use pacman-cli-based fallback alpm database reader"
+msgstr ""
+
+#: pikaur/args.py:133
 msgid "query packages from AUR only"
 msgstr "endast förfrågningar om AUR-paket"
 
-#: pikaur/args.py:132
+#: pikaur/args.py:140
 msgid "don't remove build dir after the build"
 msgstr "ta inte bort byggkatalog efter bygget"
 
-#: pikaur/args.py:136
+#: pikaur/args.py:144
 msgid "don't remove build dependencies between and after the builds"
 msgstr "ta inte bort byggberoende mellan och efter byggen"
 
-#: pikaur/args.py:139 pikaur/args.py:189
+#: pikaur/args.py:147 pikaur/args.py:197
 msgid "query packages from repository only"
 msgstr "endast förfrågningar om förrådpaket"
 
-#: pikaur/args.py:143
+#: pikaur/args.py:151
 msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "fråga inte om att redigera PKGBUILDs och andra byggfiler"
 
-#: pikaur/args.py:147
+#: pikaur/args.py:155
 msgid "prompt to edit PKGBUILDs and other build files"
 msgstr "uppmaning att redigera PKGBUILDs och andra byggfiler"
 
-#: pikaur/args.py:151
+#: pikaur/args.py:159
 msgid "always rebuild AUR packages"
 msgstr "bygg alltid om AUR-paket"
 
-#: pikaur/args.py:155
+#: pikaur/args.py:163
 msgid "skip failed builds"
 msgstr "hoppa över misslyckade byggen"
 
-#: pikaur/args.py:159
+#: pikaur/args.py:167
 msgid "always isolate with systemd dynamic users"
 msgstr "isolera alltid med systemd dynamic users"
 
-#: pikaur/args.py:163
+#: pikaur/args.py:171
 msgid "hide build log"
 msgstr "dölj byggloggen"
 
-#: pikaur/args.py:167
+#: pikaur/args.py:175
 msgid "don't pull already cloned PKGBUILD"
 msgstr "hämta inte redan klonade PKGBULD"
 
-#: pikaur/args.py:174
+#: pikaur/args.py:182
 msgid "search only in package names"
 msgstr "sök endast i paketnamn"
 
-#: pikaur/args.py:178
+#: pikaur/args.py:186
 msgid "don't prompt to show the build files diff"
 msgstr "fråga inte om att visa skillnaden mellan byggfiler"
 
-#: pikaur/args.py:182
+#: pikaur/args.py:190
 msgid "ignore AUR packages' updates which marked 'outofdate'"
 msgstr "ignorera uppdateringar av AUR-paket som markerats som 'föråldrad'"
 
-#: pikaur/args.py:195
+#: pikaur/args.py:203
 msgid "download also AUR dependencies"
 msgstr "hämta även AUR-beroende"
 
-#: pikaur/args.py:202
+#: pikaur/args.py:210
 msgid "install built package"
 msgstr "installera byggt paket"
 
-#: pikaur/args.py:208
+#: pikaur/args.py:216
 msgid "print spawned by pikaur subshell commands"
 msgstr "utskrift skapad av pikaur subshell-kommandon"
 
-#: pikaur/args.py:212
+#: pikaur/args.py:220
 msgid "show only debug messages specific to pikaur"
 msgstr "visa endast debug meddelande som är specifika för pikaur"
 
-#: pikaur/args.py:250
+#: pikaur/args.py:258
 msgid "alternative home directory location"
 msgstr ""
 
-#: pikaur/args.py:255
+#: pikaur/args.py:263
 msgid "alternative package cache directory location"
 msgstr ""
 
-#: pikaur/args.py:260
+#: pikaur/args.py:268
 msgid "alternative configuration file directory location"
 msgstr ""
 
-#: pikaur/args.py:265
+#: pikaur/args.py:273
 msgid "alternative database directory location"
 msgstr ""
 
-#: pikaur/args.py:270
+#: pikaur/args.py:278
 msgid "preserve environment variables (comma-separated)"
 msgstr ""
 
-#: pikaur/args.py:275
+#: pikaur/args.py:283
 #, fuzzy
 msgid "override path to pacman executable"
 msgstr "skriv över sökvägen till makepkg"
 
-#: pikaur/args.py:287
+#: pikaur/args.py:291
 #, fuzzy
 msgid "override path to pacman-conf executable"
 msgstr "skriv över sökvägen till makepkg"
 
-#: pikaur/args.py:295
+#: pikaur/args.py:303
 msgid "cli args to pass to makepkg"
 msgstr "cli argument för att skicka till makepkg"
 
-#: pikaur/args.py:300
+#: pikaur/args.py:308
 msgid "path to custom makepkg config"
 msgstr "sökväg till anpassad makepkg-konfiguration"
 
-#: pikaur/args.py:305
+#: pikaur/args.py:313
 msgid "override path to makepkg executable"
 msgstr "skriv över sökvägen till makepkg"
 
-#: pikaur/args.py:310
+#: pikaur/args.py:318
 msgid "path to custom pikaur config"
 msgstr "sökväg till anpassad pikaur-konfiguration"
 
-#: pikaur/args.py:315
+#: pikaur/args.py:323
 msgid "set GnuPG home directory used when validating package sources"
 msgstr "ange GnuPG-hemkatalog som används vid validering av paketkällor"
 
-#: pikaur/args.py:328
+#: pikaur/args.py:336
 msgid "path where to clone PKGBUILDs"
 msgstr "sökväg för kloning av PKGBUILDs"
 
-#: pikaur/args.py:344
+#: pikaur/args.py:352
 msgid "how many git-clones/pulls to do from AUR"
 msgstr "hur många git-clones/pulls som ska göras från AUR"
 
-#: pikaur/args.py:348
+#: pikaur/args.py:356
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr "user ID för att köra makepkg om pikaur startades från root"
 
-#: pikaur/args.py:393
+#: pikaur/args.py:401
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sysupgrade alltid '-git', '-svn' och andra dev-paket"
 
-#: pikaur/args.py:558
+#: pikaur/args.py:566
 msgid "WARNING, unknown args: {}"
 msgstr "VARNING, okända argument: {}"
 
-#: pikaur/args.py:750
+#: pikaur/args.py:758
 #, fuzzy
 msgid "options {} can't be used together."
 msgstr ":: fel: alternativen {} kan inte användas tillsammans."
 
-#: pikaur/args.py:758
+#: pikaur/args.py:766
 #, fuzzy
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
@@ -830,7 +834,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-07 16:50+0200\n"
+"POT-Creation-Date: 2024-09-07 17:02+0200\n"
 "PO-Revision-Date: 2023-08-27 17:14+0200\n"
 "Last-Translator: Fredrik Magnusson (fredrikmagnusson3@gmail.com)\n"
 "Language-Team: none\n"

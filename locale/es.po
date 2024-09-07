@@ -26,157 +26,161 @@ msgstr "uno de los argumentos %s es necesario"
 msgid "error:"
 msgstr "error:"
 
-#: pikaur/args.py:125
+#: pikaur/args.py:122
+msgid "use pacman-cli-based fallback alpm database reader"
+msgstr ""
+
+#: pikaur/args.py:133
 msgid "query packages from AUR only"
 msgstr "solicitar sólo paquetes AUR"
 
-#: pikaur/args.py:132
+#: pikaur/args.py:140
 msgid "don't remove build dir after the build"
 msgstr "no borrar el directorio de construcción después de la compilación"
 
-#: pikaur/args.py:136
+#: pikaur/args.py:144
 msgid "don't remove build dependencies between and after the builds"
 msgstr ""
 "no borrar las dependencias de compilación entre y después de las "
 "compilaciones"
 
-#: pikaur/args.py:139 pikaur/args.py:189
+#: pikaur/args.py:147 pikaur/args.py:197
 msgid "query packages from repository only"
 msgstr "solicitar sólo paquetes del repositorio"
 
-#: pikaur/args.py:143
+#: pikaur/args.py:151
 msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "no pedir modificar PKGBUILDs y otros archivos de compilación"
 
-#: pikaur/args.py:147
+#: pikaur/args.py:155
 msgid "prompt to edit PKGBUILDs and other build files"
 msgstr "pedir modificar PKGBUILDs y otros archivos de compilación"
 
-#: pikaur/args.py:151
+#: pikaur/args.py:159
 msgid "always rebuild AUR packages"
 msgstr "siempre reconstruir los paquetes AUR"
 
-#: pikaur/args.py:155
+#: pikaur/args.py:163
 msgid "skip failed builds"
 msgstr "ignorar fallas de compilación"
 
-#: pikaur/args.py:159
+#: pikaur/args.py:167
 msgid "always isolate with systemd dynamic users"
 msgstr "siempre aísle a los usuarios dinámicos con systemd"
 
-#: pikaur/args.py:163
+#: pikaur/args.py:171
 msgid "hide build log"
 msgstr "ocultar el registro de compilación"
 
-#: pikaur/args.py:167
+#: pikaur/args.py:175
 msgid "don't pull already cloned PKGBUILD"
 msgstr "no extraiga el PKGBUILD ya clonado"
 
-#: pikaur/args.py:174
+#: pikaur/args.py:182
 msgid "search only in package names"
 msgstr "buscar sólo en los nombres de paquetes"
 
-#: pikaur/args.py:178
+#: pikaur/args.py:186
 msgid "don't prompt to show the build files diff"
 msgstr "no mostrar los archivos de compilación diff"
 
-#: pikaur/args.py:182
+#: pikaur/args.py:190
 msgid "ignore AUR packages' updates which marked 'outofdate'"
 msgstr ""
 "Ignorar las actualizaciones de los paquetes AUR marcados como 'obsoleto' "
 "(outofdate)"
 
-#: pikaur/args.py:195
+#: pikaur/args.py:203
 msgid "download also AUR dependencies"
 msgstr "descargar también dependencias AUR"
 
-#: pikaur/args.py:202
+#: pikaur/args.py:210
 msgid "install built package"
 msgstr "instalar el paquete integrado"
 
-#: pikaur/args.py:208
+#: pikaur/args.py:216
 msgid "print spawned by pikaur subshell commands"
 msgstr "impresión generada por los comandos del subshell de pikaur"
 
-#: pikaur/args.py:212
+#: pikaur/args.py:220
 msgid "show only debug messages specific to pikaur"
 msgstr "mostrar sólo los mensajes de depuración específicos de pikaur"
 
-#: pikaur/args.py:250
+#: pikaur/args.py:258
 msgid "alternative home directory location"
 msgstr "ubicación alternativa del directorio home"
 
-#: pikaur/args.py:255
+#: pikaur/args.py:263
 msgid "alternative package cache directory location"
 msgstr "ubicación alternativa del directorio de caché de paquetes"
 
-#: pikaur/args.py:260
+#: pikaur/args.py:268
 msgid "alternative configuration file directory location"
 msgstr "ubicación alternativa del directorio de archivos de configuración"
 
-#: pikaur/args.py:265
+#: pikaur/args.py:273
 msgid "alternative database directory location"
 msgstr "ubicación alternativa del directorio de la base de datos"
 
-#: pikaur/args.py:270
+#: pikaur/args.py:278
 msgid "preserve environment variables (comma-separated)"
 msgstr "conservar las variables de entorno (separadas por comas)"
 
-#: pikaur/args.py:275
+#: pikaur/args.py:283
 msgid "override path to pacman executable"
 msgstr "reemplazar la ruta del ejecutable pacman"
 
-#: pikaur/args.py:287
+#: pikaur/args.py:291
 msgid "override path to pacman-conf executable"
 msgstr "reemplazar la ruta del ejecutable pacman-conf"
 
-#: pikaur/args.py:295
+#: pikaur/args.py:303
 msgid "cli args to pass to makepkg"
 msgstr "argumentos cli para pasar a makepkg"
 
-#: pikaur/args.py:300
+#: pikaur/args.py:308
 msgid "path to custom makepkg config"
 msgstr "ruta a la configuración personalizada de makepkg"
 
-#: pikaur/args.py:305
+#: pikaur/args.py:313
 msgid "override path to makepkg executable"
 msgstr "reemplazar la ruta del ejecutable makepkg"
 
-#: pikaur/args.py:310
+#: pikaur/args.py:318
 msgid "path to custom pikaur config"
 msgstr "ruta a la configuración personalizada de pikaur"
 
-#: pikaur/args.py:315
+#: pikaur/args.py:323
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 "definir el directorio personal de GnuPG utilizado al validar las fuentes de "
 "los paquetes"
 
-#: pikaur/args.py:328
+#: pikaur/args.py:336
 msgid "path where to clone PKGBUILDs"
 msgstr "ruta donde clonar PKGBUILDs"
 
-#: pikaur/args.py:344
+#: pikaur/args.py:352
 msgid "how many git-clones/pulls to do from AUR"
 msgstr "cuántos git-clones/pulls hacer desde el AUR"
 
-#: pikaur/args.py:348
+#: pikaur/args.py:356
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr "ID de usuario para ejecutar makepkg si pikaur se inicia como root"
 
-#: pikaur/args.py:393
+#: pikaur/args.py:401
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "siempre sysupgrade '-git', '-svn' y otros paquetes dev"
 
-#: pikaur/args.py:558
+#: pikaur/args.py:566
 msgid "WARNING, unknown args: {}"
 msgstr "ADVERTENCIA, args desconocidos: {}"
 
-#: pikaur/args.py:750
+#: pikaur/args.py:758
 msgid "options {} can't be used together."
 msgstr "las opciones {} no pueden utilizarse juntas."
 
-#: pikaur/args.py:758
+#: pikaur/args.py:766
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
 msgstr[0] "opción {} no puede ser utilizarse sin {}."
@@ -840,7 +844,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-07 16:50+0200\n"
+"POT-Creation-Date: 2024-09-07 17:02+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"

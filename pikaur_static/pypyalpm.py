@@ -17,21 +17,16 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 VERBOSE: bool = False
-VERBOSE_FLAGS: Final = (
+for verbose_flag in (
     "--verbose",
     "--debug",
     "--pikaur-debug",
-)
-for cli_flag in VERBOSE_FLAGS:
-    if cli_flag in sys.argv:
+):
+    if verbose_flag in sys.argv:
         VERBOSE = True
         break
 
-FORCE_PACMAN_CLI_DB: bool = False
-FORCE_PACMAN_CLI_DB_FLAG: Final = "--force-pacman-cli-db"
-if FORCE_PACMAN_CLI_DB_FLAG in sys.argv:
-    FORCE_PACMAN_CLI_DB = True
-    sys.argv.remove(FORCE_PACMAN_CLI_DB_FLAG)
+FORCE_PACMAN_CLI_DB: bool = "--force-pacman-cli-db" in sys.argv
 
 
 NOT_FOUND_ATOM = object()

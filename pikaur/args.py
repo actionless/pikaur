@@ -113,7 +113,15 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
 
 
 def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
-    result = []
+    result: ArgSchema = []
+    if cast(str, "pikaur-static") == PIKAUR_NAME:
+        result += [
+            (
+                None, "force-pacman-cli-db",
+                None,
+                translate("use pacman-cli-based fallback alpm database reader"),
+            ),
+        ]
     if action == LIST_ALL_ACTIONS:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_bool_opts(each_action)
@@ -275,10 +283,6 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
             translate("override path to pacman executable"),
         ),
     ]
-    if action == LIST_ALL_ACTIONS:
-        for each_action in ALL_ACTIONS:
-            result += get_pikaur_str_opts(each_action)
-        return list(set(result))
     if cast(str, "pikaur-static") == PIKAUR_NAME:
         result += [
             (
@@ -287,6 +291,10 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
                 translate("override path to pacman-conf executable"),
             ),
         ]
+    if action == LIST_ALL_ACTIONS:
+        for each_action in ALL_ACTIONS:
+            result += get_pikaur_str_opts(each_action)
+        return list(set(result))
     if action in {"sync", "pkgbuild", "interactive_package_select"}:
         result += [
             (

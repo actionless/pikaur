@@ -25,12 +25,14 @@ def parse_args() -> argparse.Namespace:
         "makefile",
         nargs="?",
         default="./Makefile",
+        metavar="Makefile",
         help="path to Makefile to check",
     )
     parser.add_argument(
         "-s", "--skip",
         action="append",
         default=[],
+        metavar="TARGET",
         help="make target to skip (arg could be used multiple times)",
     )
     parser.add_argument(
@@ -41,25 +43,21 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument(
         "--shell",
-        nargs="?",
-        const="sh",
         default="sh",
         help="make shell",
     )
     parser.add_argument(
         "-e", "--exclude",
-        nargs="?",
-        const="",
         default="",
+        metavar="CODE1,CODE2..",
         help=(
             "Shellcheck: Exclude types of warnings"
         ),
     )
     parser.add_argument(
         "-P", "--source-path",
-        nargs="?",
-        const="",
         default="",
+        metavar="SOURCEPATHS",
         help=(
             "Shellcheck: Specify path when looking for sourced files"
             " (\"SCRIPTDIR\" for script's dir)"
@@ -68,7 +66,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-x", "--external-sources", "--external",
         action="store_true",
-        help="allow external source-s",
+        help="Shellcheck: allow external source-s",
     )
     return parser.parse_args()
 
@@ -227,6 +225,7 @@ def shellcheck_maketarget(
 
 def main() -> None:
     args = parse_args()
+    # print(args)
     print("Starting the check...")
     makefile_metadata = MakefileMetadata.open(args)
     targets = makefile_metadata.targets

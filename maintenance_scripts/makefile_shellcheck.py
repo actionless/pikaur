@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Final
 
 DEFAULT_ENCODING: Final = "utf-8"
-SKIP_TARGETS_WITH_CHARS = ("%", )
+SKIP_TARGETS_WITH_CHARS: Final = ("%", )
 PHONY: Final = ".PHONY"
 PRECIOUS: Final = ".PRECIOUS"
 SKIP_TARGETS: Final = [PHONY, PRECIOUS]
@@ -66,7 +66,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "-x", "--external", "--external-sources",
+        "-x", "--external-sources", "--external",
         action="store_true",
         help="allow external source-s",
     )
@@ -202,11 +202,16 @@ def shellcheck_maketarget(
             f"--shell={make_shell or args.shell}",
             "--color=always",
         ]
-        if args.external:
-            shellcheck_args.append("--external-sources")
-        for arg_name in ("source_path", "exclude"):
-            if (value := getattr(args, arg_name)):
-                shellcheck_args.append(f"--{arg_name.replace('_', '-')}={value}")
+        shellcheck_args.extend([
+            f"--{arg_name.replace('_', '-')}"
+            for arg_name in ("external_sources", )
+            if getattr(args, arg_name)
+        ])
+        shellcheck_args.extend([
+            f"--{arg_name.replace('_', '-')}={value}"
+            for arg_name in ("source_path", "exclude")
+            if (value := getattr(args, arg_name))
+        ])
         try:
             subprocess.check_output(  # nosec B603
                 args=shellcheck_args,

@@ -42,7 +42,14 @@ def parse_args() -> argparse.Namespace:
         help="make shell",
     )
     parser.add_argument(
-        "-x", "--external",
+        "-P", "--source-path",
+        nargs="?",
+        const="",
+        default="",
+        help="make shell",
+    )
+    parser.add_argument(
+        "-x", "--external", "--external-sources",
         action="store_true",
         help="allow external source-s",
     )
@@ -185,6 +192,8 @@ def shellcheck_maketarget(
         ]
         if args.external:
             shellcheck_args.append("--external-sources")
+        if args.source_path:
+            shellcheck_args.append(f"--source-path={args.source_path}")
         try:
             subprocess.check_output(  # nosec B603
                 args=shellcheck_args,

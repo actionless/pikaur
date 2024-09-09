@@ -8,8 +8,7 @@ from dataclasses import dataclass
 from typing import Final
 
 DEFAULT_ENCODING: Final = "utf-8"
-# SKIP_TARGETS_WITH_CHARS = ("%", )
-SKIP_TARGETS_WITH_CHARS: Final = ("%", "/")
+SKIP_TARGETS_WITH_CHARS = ("%", )
 PHONY: Final = ".PHONY"
 PRECIOUS: Final = ".PRECIOUS"
 SKIP_TARGETS: Final = [PHONY, PRECIOUS]
@@ -35,6 +34,12 @@ def parse_args() -> argparse.Namespace:
         help="make target to skip (arg could be used multiple times)",
     )
     parser.add_argument(
+        "-l", "--list",
+        action="store_true",
+        help="list make targets",
+    )
+
+    parser.add_argument(
         "--shell",
         nargs="?",
         const="sh",
@@ -42,21 +47,28 @@ def parse_args() -> argparse.Namespace:
         help="make shell",
     )
     parser.add_argument(
+        "-e", "--exclude",
+        nargs="?",
+        const="",
+        default="",
+        help=(
+            "Shellcheck: Exclude types of warnings"
+        ),
+    )
+    parser.add_argument(
         "-P", "--source-path",
         nargs="?",
         const="",
         default="",
-        help="make shell",
+        help=(
+            "Shellcheck: Specify path when looking for sourced files"
+            " (\"SCRIPTDIR\" for script's dir)"
+        ),
     )
     parser.add_argument(
         "-x", "--external", "--external-sources",
         action="store_true",
         help="allow external source-s",
-    )
-    parser.add_argument(
-        "-l", "--list",
-        action="store_true",
-        help="list make targets",
     )
     return parser.parse_args()
 
@@ -192,8 +204,9 @@ def shellcheck_maketarget(
         ]
         if args.external:
             shellcheck_args.append("--external-sources")
-        if args.source_path:
-            shellcheck_args.append(f"--source-path={args.source_path}")
+        for arg_name in ("source_path", "exclude"):
+            if (value := getattr(args, arg_name)):
+                shellcheck_args.append(f"--{arg_name.replace('_', '-')}={value}")
         try:
             subprocess.check_output(  # nosec B603
                 args=shellcheck_args,

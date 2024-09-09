@@ -114,7 +114,7 @@ class MakefileMetadata:
                 continue
 
             targets.append(target)
-        targets = sorted(set(targets), reverse=True)
+        targets = sorted(set(targets))
 
         # check it last:
         targets.remove(_ALL)
@@ -138,7 +138,7 @@ def print_error_in_target(target: str) -> None:
 
 
 def print_targets(makefile_metadata: MakefileMetadata) -> None:
-    for target in reversed(makefile_metadata.targets):
+    for target in makefile_metadata.targets:
         print(
             f"{target}"
             f"{' (PHONY)' if target in makefile_metadata.phony else ''}"

@@ -200,15 +200,16 @@ vulture:
 	# :: vulture passed ::
 
 shellcheck:
-	# shellcheck disable=SC2046
 	# Running shellcheck:
 	( \
 		cd $(APP_DIR) || exit ; \
-		shellcheck $$(find . \
-			-name '*.sh' \
-			-not -wholename '*/$(TARGET_MODULE)*.*build/*' \
-			-or -name 'PKGBUILD' \
-		) \
+		find . \
+			\( \
+				-name '*.sh' \
+				-not -wholename '*/$(TARGET_MODULE)*.*build/*' \
+				-or -name 'PKGBUILD' \
+			\) \
+			-exec shellcheck {} \+ \
 	)
 	# :: shellcheck passed ::
 

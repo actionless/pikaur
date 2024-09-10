@@ -54,10 +54,13 @@ class NroffRenderer(
     section: int
     list_types: list[str]
 
-    def __init__(self, name: str = "test", section: int = 1) -> None:
+    def __init__(
+            self, name: str = "test", section: int = 1, *, no_header: bool = False,
+    ) -> None:
         super().__init__()
         self.name = name
         self.section = section
+        self.no_header = no_header
         self.rules = {
             k: v
             for k, v in inspect.getmembers(self, predicate=inspect.ismethod)
@@ -274,6 +277,8 @@ class NroffRenderer(
         return text.startswith(("http://", "https://"))
 
     def document_open(self) -> str:
+        if self.no_header:
+            return ""
         date = datetime.datetime.now(tz=datetime.UTC).strftime("%B %Y")
         return rf""".\" generated with Pikaman
 .
@@ -301,8 +306,7 @@ def main() -> None:
     )
     parser.add_argument(
         "path_to_markdown_files",
-        # nargs="+",
-        nargs=1,
+        nargs="+",
         help="markdown input file(s)",
     )
     parser.add_argument(
@@ -310,24 +314,36 @@ def main() -> None:
         nargs=1,
         help="path to output manpage file",
     )
+    parser.add_argument(
+        "--name",
+        default="Application",
+        help="application name",
+    )
+    parser.add_argument(
+        "--section",
+        type=int,
+        default=1,
+        help="manpage section",
+    )
     args = parser.parse_args()
-    print(args)
 
-    readme_path: Final = Path(args.path_to_markdown_files[0])
+    readme_paths: Final = [Path(path) for path in args.path_to_markdown_files]
     output_path: Final = Path(args.output_path[0])
-    with (
-            readme_path.open(encoding=ENCODING) as input_fobj,
-            output_path.open("w", encoding=ENCODING) as output_fobj,
-    ):
+    with output_path.open("w", encoding=ENCODING) as output_fobj:
         output_fobj.write(
-            NroffRenderer(name="pikaur", section=1).render(
-                markdown_it.MarkdownIt().parse(
-                    input_fobj.read(),
-                ),
-                options=OptionsDict(options=OptionsType()),  # type: ignore[typeddict-item]
-                env={},
-            ),
+            NroffRenderer(name=args.name, section=args.section).document_open(),
         )
+        for readme_path in readme_paths:
+            with readme_path.open(encoding=ENCODING) as input_fobj:
+                output_fobj.write(
+                    NroffRenderer(name=args.name, section=args.section, no_header=True).render(
+                        tokens=markdown_it.MarkdownIt().parse(
+                            input_fobj.read(),
+                        ),
+                        options=OptionsDict(options=OptionsType()),  # type: ignore[typeddict-item]
+                        env={},
+                    ),
+                )
 
 
 if __name__ == "__main__":

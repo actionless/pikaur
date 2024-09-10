@@ -80,7 +80,7 @@ $(LOCALEDIR)/%.po: $(POTFILE)
 	msgfmt -o $@ $<
 
 $(MAN_FILE): $(README_FILE)
-	$(PIKAMAN) $< $@
+	$(PIKAMAN) $< $@ --name $(TARGET_MODULE)
 	sed -i \
 		-e '/coveralls/d' \
 		-e '/Screenshot/d' \

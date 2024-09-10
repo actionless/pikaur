@@ -55,12 +55,11 @@ class NroffRenderer(
     list_types: list[str]
 
     def __init__(
-            self, name: str = "test", section: int = 1, *, no_header: bool = False,
+            self, name: str = "test", section: int = 1,
     ) -> None:
         super().__init__()
         self.name = name
         self.section = section
-        self.no_header = no_header
         self.rules = {
             k: v
             for k, v in inspect.getmembers(self, predicate=inspect.ismethod)
@@ -70,8 +69,11 @@ class NroffRenderer(
 
     def render(
         self, tokens: "Sequence[Token]", options: OptionsDict, env: "MutableMapping[str, str]",
+        *, no_header: bool = False,
     ) -> str:
-        result = self.document_open()
+        result = ""
+        if not no_header:
+            result += self.generate_header()
         for i, token in enumerate(tokens):
             if token.type == TokenType.INLINE:
                 if token.children is None:
@@ -276,9 +278,7 @@ class NroffRenderer(
     def is_url(text: str) -> bool:
         return text.startswith(("http://", "https://"))
 
-    def document_open(self) -> str:
-        if self.no_header:
-            return ""
+    def generate_header(self) -> str:
         date = datetime.datetime.now(tz=datetime.UTC).strftime("%B %Y")
         return rf""".\" generated with Pikaman
 .
@@ -329,19 +329,21 @@ def main() -> None:
 
     readme_paths: Final = [Path(path) for path in args.path_to_markdown_files]
     output_path: Final = Path(args.output_path[0])
+    renderer = NroffRenderer(name=args.name, section=args.section)
     with output_path.open("w", encoding=ENCODING) as output_fobj:
-        output_fobj.write(
-            NroffRenderer(name=args.name, section=args.section).document_open(),
+        output_fobj.write(  # write header separately
+            renderer.generate_header(),
         )
         for readme_path in readme_paths:
             with readme_path.open(encoding=ENCODING) as input_fobj:
                 output_fobj.write(
-                    NroffRenderer(name=args.name, section=args.section, no_header=True).render(
+                    renderer.render(
                         tokens=markdown_it.MarkdownIt().parse(
                             input_fobj.read(),
                         ),
                         options=OptionsDict(options=OptionsType()),  # type: ignore[typeddict-item]
                         env={},
+                        no_header=True,
                     ),
                 )
 

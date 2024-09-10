@@ -201,24 +201,18 @@ vulture:
 
 shellcheck:
 	# Running shellcheck:
-	( \
-		cd $(APP_DIR) || exit ; \
-		find . \
-			\( \
-				-name '*.sh' \
-				-not -wholename '*/$(TARGET_MODULE)*.*build/*' \
-				-or -name 'PKGBUILD' \
-			\) \
-			-exec shellcheck {} \+ \
-	)
+	find . \
+		\( \
+			-name '*.sh' \
+			-not -wholename '*/$(TARGET_MODULE)*.*build/*' \
+			-or -name 'PKGBUILD' \
+		\) \
+		-exec sh -c 'set -x ; shellcheck "$$@"' {} \+
 	# :: shellcheck passed ::
 
 shellcheck_makefile:
 	# Running shellcheck on Makefile...
-	( \
-	    cd $(APP_DIR) || exit ; \
-	    $(PYTHON) ./maintenance_scripts/makefile_shellcheck.py --exclude SC2317 ; \
-	)
+	$(PYTHON) ./maintenance_scripts/makefile_shellcheck.py --exclude SC2317
 	# :: shellcheck makefile passed ::
 
 validate_pyproject:

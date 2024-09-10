@@ -1,0 +1,3 @@
+[submodule "submodules/shellcheck_makefile"]
+	path = submodules/shellcheck_makefile
+	url = https://github.com/actionless/shellcheck_makefile.git

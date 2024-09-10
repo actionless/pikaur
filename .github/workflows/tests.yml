@@ -19,6 +19,8 @@ jobs:
     steps:
 
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
 
     - name: switch base image
       run: sed -i -e 's|FROM archlinux:base-devel|FROM actionless/pikaur|' Dockerfile

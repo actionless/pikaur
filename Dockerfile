@@ -30,6 +30,7 @@ RUN echo ">>>> Installing optional pikaur deps:" && \
 
 COPY ./maintenance_scripts/pikaman.py ./maintenance_scripts/changelog.sh /opt/app-build/maintenance_scripts/
 COPY ./packaging/. /opt/app-build/packaging
+COPY ./submodules/. /opt/app-build/submodules
 COPY ./locale/. /opt/app-build/locale
 COPY ./PKGBUILD ./Makefile ./README.md ./pyproject.toml ./.flake8 ./LICENSE /opt/app-build/
 COPY ./pikaur/. /opt/app-build/pikaur

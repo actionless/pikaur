@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 """
 NRoff renderer for markdown_it
-(C) 2020-today, Y Kirylau
+(C) 2020-today, Y. Kirylau
 
 References
 ----------
@@ -9,15 +10,14 @@ References
 
     Basic Formatting with troff/nroff
     by James C. Armstrong and David B. Horvath, CCP
-https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
-
+    https://cmd.inp.nsk.su/old/cmd2/manuals/unix/UNIX_Unleashed/ch08.htm
 
 """
 
+import argparse
 import datetime
 import inspect
 import re
-import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -41,8 +41,6 @@ class ListType:
     ORDERED: "Final" = "ordered"
 
 
-README_PATH: "Final" = Path(sys.argv[1])
-OUTPUT_PATH: "Final" = Path(sys.argv[2])
 ENCODING: "Final" = "utf-8"
 
 
@@ -297,16 +295,40 @@ class NroffRenderer(
         return r"\fR"
 
 
-with (
-        README_PATH.open(encoding=ENCODING) as input_fobj,
-        OUTPUT_PATH.open("w", encoding=ENCODING) as output_fobj,
-):
-    output_fobj.write(
-        NroffRenderer(name="pikaur", section=1).render(
-            markdown_it.MarkdownIt().parse(
-                input_fobj.read(),
-            ),
-            options=OptionsDict(options=OptionsType()),  # type: ignore[typeddict-item]
-            env={},
-        ),
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="⚡️PikaMan",
     )
+    parser.add_argument(
+        "path_to_markdown_files",
+        # nargs="+",
+        nargs=1,
+        help="markdown input file(s)",
+    )
+    parser.add_argument(
+        "output_path",
+        nargs=1,
+        help="path to output manpage file",
+    )
+    args = parser.parse_args()
+    print(args)
+
+    readme_path: Final = Path(args.path_to_markdown_files[0])
+    output_path: Final = Path(args.output_path[0])
+    with (
+            readme_path.open(encoding=ENCODING) as input_fobj,
+            output_path.open("w", encoding=ENCODING) as output_fobj,
+    ):
+        output_fobj.write(
+            NroffRenderer(name="pikaur", section=1).render(
+                markdown_it.MarkdownIt().parse(
+                    input_fobj.read(),
+                ),
+                options=OptionsDict(options=OptionsType()),  # type: ignore[typeddict-item]
+                env={},
+            ),
+        )
+
+
+if __name__ == "__main__":
+    main()

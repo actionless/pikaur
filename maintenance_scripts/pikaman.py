@@ -302,7 +302,7 @@ class NroffRenderer(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="⚡️PikaMan",
+        description="⚡️PikaMan - convert markdown into manpages",
     )
     parser.add_argument(
         "path_to_markdown_files",

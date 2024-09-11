@@ -24,6 +24,9 @@ PossibleArgValuesTypes = list[str] | str | bool | int | None
 HelpMessage = tuple[str | None, str | None, str | None]
 
 
+# @TODO: refactor to use NamedTuple instead of normal tuple
+
+
 PACMAN_ACTIONS: "Final[ArgSchema]" = [
     ("S", "sync", None, None),
     ("Q", "query", None, None),
@@ -40,6 +43,7 @@ PACMAN_ACTIONS: "Final[ArgSchema]" = [
 PIKAUR_ACTIONS: "Final[ArgSchema]" = [
     ("P", "pkgbuild", None, None),
     ("G", "getpkgbuild", None, None),
+    ("X", "extras", None, None),
     (None, "interactive_package_select", None, None),
 ]
 
@@ -210,6 +214,18 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
                 translate("install built package"),
             ),
         ]
+    if action == "extras":
+        result += [
+            (
+                "d", "dep-tree",
+                None,
+                translate("visualize package dependency tree"),
+            ),
+            # (
+            #     "q", "quiet", None,
+            #     translate("less verbose output"),
+            # ),
+        ]
     result += [
         (
             None, "print-commands", PikaurConfig().ui.PrintCommands.get_bool(),
@@ -356,6 +372,14 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
                 translate("user ID to run makepkg if pikaur started from root"),
             ),
         ]
+    if action == "extras":
+        result += [
+            (
+                "l", "level",
+                2,
+                translate("dependency tree level"),
+            ),
+        ]
     return result
 
 
@@ -469,38 +493,39 @@ class MissingArgumentError(Exception):
 class PikaurArgs(Namespace):
     unknown_args: list[str]
     raw: list[str]
+
     # typehints:
-    info: bool | None
-    keepbuild: bool | None
-    output_dir: str | None
     # @TODO: remove? :
     # nodeps: bool | None
     # owns: bool | None
     # check: bool | None
-    ignore: list[str]
-    makepkg_config: str | None
-    mflags: str | None
-    makepkg_path: str | None
-    pacman_path: str
-    pacman_conf_path: str
-    quiet: bool
-    sysupgrade: int
-    devel: int
-    namesonly: bool
-    build_gpgdir: str
-    needed: bool
-    config: str | None
-    refresh: int
-    clean: int
-    dbpath: str | None
-    root: str | None
-
     aur_clone_concurrency: int | None
-    skip_aur_pull: bool | None
-    positional: list[str]
-    read_stdin: bool = False
-    preserve_env: str = ""
+    build_gpgdir: str
+    clean: int
+    config: str | None
+    dbpath: str | None
+    devel: int
+    ignore: list[str]
+    info: bool | None
     interactive_package_select: bool = False
+    keepbuild: bool | None
+    level: int
+    makepkg_config: str | None
+    makepkg_path: str | None
+    mflags: str | None
+    namesonly: bool
+    needed: bool
+    output_dir: str | None
+    pacman_conf_path: str
+    pacman_path: str
+    positional: list[str]
+    preserve_env: str = ""
+    quiet: bool
+    read_stdin: bool = False
+    refresh: int
+    root: str | None
+    skip_aur_pull: bool | None
+    sysupgrade: int
 
     def __init__(self) -> None:
         self.positional = []

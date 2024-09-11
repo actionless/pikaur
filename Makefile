@@ -136,6 +136,8 @@ non_final_globals:
 			-e '=.*\|' \
 			-e '=.*(dict|list|Callable)\[' \
 			\
+			-e '__all__' \
+			\
 			$(GLOBALS_IGNORES) \
 		| sort \
 	) ; \
@@ -152,6 +154,8 @@ unreasonable_globals:
 			-e ' =.*\|' \
 			-e ' = [a-zA-Z_]+\[' \
 			-e ' = str[^(]' \
+			\
+			-e '__all__' \
 			\
 			$(GLOBALS_IGNORES) \
 		| sort \

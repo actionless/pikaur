@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 
 import pyalpm
 
+from . import extras
 from .args import parse_args
 from .config import (
     DEFAULT_INPUT_ENCODING,
@@ -284,7 +285,20 @@ def execute_pikaur_operation(
         pikaur_operation()
 
 
-def cli_entry_point() -> None:
+def cli_extras() -> None:
+    args = parse_args()
+    if args.dep_tree:
+        if not args.positional:
+            print_error(translate("no package(s) specified"))
+        for pkg in args.positional:
+            extras.dep_tree.cli(
+                pkgname=pkg, max_level=args.level, description=not args.quiet,
+            )
+    else:
+        cli_print_help()
+
+
+def cli_entry_point() -> None:  # pylint: disable=too-many-statements
     # pylint: disable=too-many-branches
 
     try:
@@ -320,6 +334,9 @@ def cli_entry_point() -> None:
     elif args.pkgbuild:
         require_sudo = True
         pikaur_operation = cli_pkgbuild
+
+    elif args.extras:
+        pikaur_operation = cli_extras
 
     elif args.sync:
         if args.search or args.list:

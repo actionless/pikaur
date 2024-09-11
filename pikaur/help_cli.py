@@ -39,25 +39,29 @@ def _format_options_help(options: list[HelpMessage]) -> str:
 def cli_print_help() -> None:
     args = parse_args()
 
-    proc = spawn([
-        args.pacman_path,
-        *reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
-    ])
-    if not proc.stdout_text:
-        no_response_from_pacman = translate("No response from Pacman")
-        raise RuntimeError(no_response_from_pacman)
-    pacman_help = proc.stdout_text.replace(
-        "pacman", PIKAUR_NAME,
-    ).replace(
-        "options:", "\n" + translate("Common pacman options:"),
-    )
+    if not (args.pkgbuild or args.getpkgbuild or args.extras):
+        proc = spawn([
+            args.pacman_path,
+            *reconstruct_args(args, ignore_args=get_pikaur_long_opts()),
+        ])
+        if not proc.stdout_text:
+            no_response_from_pacman = translate("No response from Pacman")
+            raise RuntimeError(no_response_from_pacman)
+        pacman_help = proc.stdout_text.replace(
+            "pacman", PIKAUR_NAME,
+        ).replace(
+            "options:", "\n" + translate("Common pacman options:"),
+        )
+    else:
+        pacman_help = ""
 
     if LiteralArgs.HELP in pacman_help:
         pacman_help += (
-            "\n" +
-            translate("pikaur-specific operations:") + "\n    " +
-            translate("pikaur {-P --pkgbuild}    [options] [file(s)]") + "\n    " +
-            translate("pikaur {-G --getpkgbuild} [options] <package(s)>")
+            "\n"
+            + translate("pikaur-specific operations:") + "\n    "
+            + translate("pikaur {-P --pkgbuild}    [options] [file(s)]") + "\n    "
+            + translate("pikaur {-G --getpkgbuild} [options] <package(s)>") + "\n    "
+            + translate("pikaur {-X --extras}      [options]")
         )
     if args.pkgbuild:
         pacman_help = (
@@ -69,6 +73,10 @@ def cli_print_help() -> None:
     if args.getpkgbuild:
         pacman_help = (
             translate("usage:  pikaur {-G --getpkgbuild} [options] <package(s)>")
+        )
+    if args.extras:
+        pacman_help = (
+            translate("usage:  pikaur {-X --extras} [options]")
         )
 
     pikaur_options_help = get_help()

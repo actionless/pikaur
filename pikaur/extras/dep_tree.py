@@ -3,8 +3,18 @@ from typing import NamedTuple
 
 import pyalpm
 
+from pikaur.exceptions import SysExit
+from pikaur.i18n import translate
 from pikaur.pacman import PackageDB
-from pikaur.pikaprint import ColorsHighlight, color_line, format_paragraph, get_term_width
+from pikaur.pikaprint import (
+    ColorsHighlight,
+    bold_line,
+    color_line,
+    format_paragraph,
+    get_term_width,
+    print_error,
+    print_stdout,
+)
 from pikaur.pikatypes import InstallInfo
 from pikaur.print_department import pretty_format_upgradeable
 
@@ -70,7 +80,7 @@ def print_package_info(
             ),
         ),
     )
-    print(output)
+    print_stdout(output)
 
 
 def add_dependencies_to_stack(
@@ -115,7 +125,7 @@ def process_stack_item(
 
         if item.content in already_processed:
             print_package_info(install_info, level_spaces, desc_spaces, description=False)
-            print(desc_spaces + "^")
+            print_stdout(desc_spaces + "^")
             return
 
         print_package_info(install_info, level_spaces, desc_spaces, description=description)
@@ -126,7 +136,7 @@ def process_stack_item(
 
     elif item.item_type == "title":
         _level_spaces, desc_spaces = compute_padding(item.level - 1, global_padding, branch_padding)
-        print(desc_spaces + item.content)
+        print_stdout(desc_spaces + item.content)
 
     else:
         raise NotImplementedError
@@ -135,6 +145,10 @@ def process_stack_item(
 def cli(pkgname: str, max_level: int = 2, *, description: bool = True) -> None:
     """Entry point for the CLI."""
     local_pkgs_dict = PackageDB.get_local_dict()
+
+    if pkgname not in local_pkgs_dict:
+        print_error(translate("{pkg} is not installed").format(pkg=bold_line(pkgname)))
+        raise SysExit(6)
 
     already_processed: set[str] = set()
     stack = [StackItem("pkg", pkgname, 0)]

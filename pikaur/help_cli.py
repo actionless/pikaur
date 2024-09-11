@@ -76,7 +76,7 @@ def cli_print_help() -> None:
         )
     if args.extras:
         pacman_help = (
-            translate("usage:  pikaur {-X --extras} [options]")
+            translate("usage:  pikaur {-X --extras} [options] [package(s)]")
         )
 
     pikaur_options_help = get_help()

@@ -22,165 +22,173 @@ msgstr "se requieren los siguientes argumentos: %s"
 msgid "one of the arguments %s is required"
 msgstr "uno de los argumentos %s es necesario"
 
-#: pikaur/args.py:71 pikaur/pikaprint.py:230
+#: pikaur/args.py:75 pikaur/pikaprint.py:230
 msgid "error:"
 msgstr "error:"
 
-#: pikaur/args.py:122
+#: pikaur/args.py:126
 msgid "use pacman-cli-based fallback alpm database reader"
 msgstr ""
 
-#: pikaur/args.py:133
+#: pikaur/args.py:137
 msgid "query packages from AUR only"
 msgstr "solicitar sólo paquetes AUR"
 
-#: pikaur/args.py:140
+#: pikaur/args.py:144
 msgid "don't remove build dir after the build"
 msgstr "no borrar el directorio de construcción después de la compilación"
 
-#: pikaur/args.py:144
+#: pikaur/args.py:148
 msgid "don't remove build dependencies between and after the builds"
 msgstr ""
 "no borrar las dependencias de compilación entre y después de las "
 "compilaciones"
 
-#: pikaur/args.py:147 pikaur/args.py:197
+#: pikaur/args.py:151 pikaur/args.py:201
 msgid "query packages from repository only"
 msgstr "solicitar sólo paquetes del repositorio"
 
-#: pikaur/args.py:151
+#: pikaur/args.py:155
 msgid "don't prompt to edit PKGBUILDs and other build files"
 msgstr "no pedir modificar PKGBUILDs y otros archivos de compilación"
 
-#: pikaur/args.py:155
+#: pikaur/args.py:159
 msgid "prompt to edit PKGBUILDs and other build files"
 msgstr "pedir modificar PKGBUILDs y otros archivos de compilación"
 
-#: pikaur/args.py:159
+#: pikaur/args.py:163
 msgid "always rebuild AUR packages"
 msgstr "siempre reconstruir los paquetes AUR"
 
-#: pikaur/args.py:163
+#: pikaur/args.py:167
 msgid "skip failed builds"
 msgstr "ignorar fallas de compilación"
 
-#: pikaur/args.py:167
+#: pikaur/args.py:171
 msgid "always isolate with systemd dynamic users"
 msgstr "siempre aísle a los usuarios dinámicos con systemd"
 
-#: pikaur/args.py:171
+#: pikaur/args.py:175
 msgid "hide build log"
 msgstr "ocultar el registro de compilación"
 
-#: pikaur/args.py:175
+#: pikaur/args.py:179
 msgid "don't pull already cloned PKGBUILD"
 msgstr "no extraiga el PKGBUILD ya clonado"
 
-#: pikaur/args.py:182
+#: pikaur/args.py:186
 msgid "search only in package names"
 msgstr "buscar sólo en los nombres de paquetes"
 
-#: pikaur/args.py:186
+#: pikaur/args.py:190
 msgid "don't prompt to show the build files diff"
 msgstr "no mostrar los archivos de compilación diff"
 
-#: pikaur/args.py:190
+#: pikaur/args.py:194
 msgid "ignore AUR packages' updates which marked 'outofdate'"
 msgstr ""
 "Ignorar las actualizaciones de los paquetes AUR marcados como 'obsoleto' "
 "(outofdate)"
 
-#: pikaur/args.py:203
+#: pikaur/args.py:207
 msgid "download also AUR dependencies"
 msgstr "descargar también dependencias AUR"
 
-#: pikaur/args.py:210
+#: pikaur/args.py:214
 msgid "install built package"
 msgstr "instalar el paquete integrado"
 
-#: pikaur/args.py:216
+#: pikaur/args.py:222
+msgid "visualize package dependency tree"
+msgstr ""
+
+#: pikaur/args.py:232
 msgid "print spawned by pikaur subshell commands"
 msgstr "impresión generada por los comandos del subshell de pikaur"
 
-#: pikaur/args.py:220
+#: pikaur/args.py:236
 msgid "show only debug messages specific to pikaur"
 msgstr "mostrar sólo los mensajes de depuración específicos de pikaur"
 
-#: pikaur/args.py:258
+#: pikaur/args.py:274
 msgid "alternative home directory location"
 msgstr "ubicación alternativa del directorio home"
 
-#: pikaur/args.py:263
+#: pikaur/args.py:279
 msgid "alternative package cache directory location"
 msgstr "ubicación alternativa del directorio de caché de paquetes"
 
-#: pikaur/args.py:268
+#: pikaur/args.py:284
 msgid "alternative configuration file directory location"
 msgstr "ubicación alternativa del directorio de archivos de configuración"
 
-#: pikaur/args.py:273
+#: pikaur/args.py:289
 msgid "alternative database directory location"
 msgstr "ubicación alternativa del directorio de la base de datos"
 
-#: pikaur/args.py:278
+#: pikaur/args.py:294
 msgid "preserve environment variables (comma-separated)"
 msgstr "conservar las variables de entorno (separadas por comas)"
 
-#: pikaur/args.py:283
+#: pikaur/args.py:299
 msgid "override path to pacman executable"
 msgstr "reemplazar la ruta del ejecutable pacman"
 
-#: pikaur/args.py:291
+#: pikaur/args.py:307
 msgid "override path to pacman-conf executable"
 msgstr "reemplazar la ruta del ejecutable pacman-conf"
 
-#: pikaur/args.py:303
+#: pikaur/args.py:319
 msgid "cli args to pass to makepkg"
 msgstr "argumentos cli para pasar a makepkg"
 
-#: pikaur/args.py:308
+#: pikaur/args.py:324
 msgid "path to custom makepkg config"
 msgstr "ruta a la configuración personalizada de makepkg"
 
-#: pikaur/args.py:313
+#: pikaur/args.py:329
 msgid "override path to makepkg executable"
 msgstr "reemplazar la ruta del ejecutable makepkg"
 
-#: pikaur/args.py:318
+#: pikaur/args.py:334
 msgid "path to custom pikaur config"
 msgstr "ruta a la configuración personalizada de pikaur"
 
-#: pikaur/args.py:323
+#: pikaur/args.py:339
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 "definir el directorio personal de GnuPG utilizado al validar las fuentes de "
 "los paquetes"
 
-#: pikaur/args.py:336
+#: pikaur/args.py:352
 msgid "path where to clone PKGBUILDs"
 msgstr "ruta donde clonar PKGBUILDs"
 
-#: pikaur/args.py:352
+#: pikaur/args.py:368
 msgid "how many git-clones/pulls to do from AUR"
 msgstr "cuántos git-clones/pulls hacer desde el AUR"
 
-#: pikaur/args.py:356
+#: pikaur/args.py:372
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr "ID de usuario para ejecutar makepkg si pikaur se inicia como root"
 
-#: pikaur/args.py:401
+#: pikaur/args.py:380
+msgid "dependency tree level"
+msgstr ""
+
+#: pikaur/args.py:425
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "siempre sysupgrade '-git', '-svn' y otros paquetes dev"
 
-#: pikaur/args.py:566
+#: pikaur/args.py:591
 msgid "WARNING, unknown args: {}"
 msgstr "ADVERTENCIA, args desconocidos: {}"
 
-#: pikaur/args.py:758
+#: pikaur/args.py:783
 msgid "options {} can't be used together."
 msgstr "las opciones {} no pueden utilizarse juntas."
 
-#: pikaur/args.py:766
+#: pikaur/args.py:791
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
 msgstr[0] "opción {} no puede ser utilizarse sin {}."
@@ -373,7 +381,7 @@ msgid "f"
 msgstr "f"
 
 #: pikaur/build.py:906 pikaur/build.py:926 pikaur/install_cli.py:579
-#: pikaur/main.py:220 pikaur/prompt.py:50
+#: pikaur/main.py:221 pikaur/prompt.py:50
 msgid "n"
 msgstr "n"
 
@@ -395,36 +403,46 @@ msgstr ""
 msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
 msgstr "Migración de la opción de configuración [{}]{}=\"{}\" a =\"{}\"..."
 
+#: pikaur/extras/dep_tree.py:150
+#, fuzzy, python-brace-format
+msgid "{pkg} is not installed"
+msgstr "Se instalará el paquete AUR:"
+
 #: pikaur/getpkgbuild_cli.py:51
 #, python-brace-format
 msgid "Package '{name}' going to be cloned into '{repo_path}'..."
 msgstr "El paquete '{name}' va a ser clonado en '{repo_path}'..."
 
-#: pikaur/help_cli.py:47
+#: pikaur/help_cli.py:48
 msgid "No response from Pacman"
 msgstr "No hay respuesta de Pacman"
 
-#: pikaur/help_cli.py:52
+#: pikaur/help_cli.py:53
 msgid "Common pacman options:"
 msgstr "Opciones pacman estándar:"
 
-#: pikaur/help_cli.py:58
+#: pikaur/help_cli.py:61
 msgid "pikaur-specific operations:"
 msgstr "operaciones específicas de pikaur:"
 
-#: pikaur/help_cli.py:59
+#: pikaur/help_cli.py:62
 msgid "pikaur {-P --pkgbuild}    [options] [file(s)]"
 msgstr "pikaur {-P --pkgbuild}    [opciones] [archivo(s)]"
 
-#: pikaur/help_cli.py:60
+#: pikaur/help_cli.py:63
 msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr "pikaur {-G --getpkgbuild} [opciones] <paquete(s)>"
 
 #: pikaur/help_cli.py:64
+#, fuzzy
+msgid "pikaur {-X --extras}      [options] [package(s)]"
+msgstr "pikaur {-P --pkgbuild}    [opciones] [archivo(s)]"
+
+#: pikaur/help_cli.py:68
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
 msgstr "uso:  pikaur {-P --pkgbuild} [opciones] <archivo(s)>"
 
-#: pikaur/help_cli.py:66
+#: pikaur/help_cli.py:70
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
@@ -432,11 +450,16 @@ msgstr ""
 "Todas las opciones comunes de pacman como cuando se ejecuta `pacman -U "
 "<pkg_file>`. Ver `pacman -Uh`."
 
-#: pikaur/help_cli.py:71
+#: pikaur/help_cli.py:75
 msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr "uso:  pikaur {-G --getpkgbuild} [opciones] <paquete(s)>"
 
-#: pikaur/help_cli.py:78
+#: pikaur/help_cli.py:79
+#, fuzzy
+msgid "usage:  pikaur {-X --extras} [options]"
+msgstr "uso:  pikaur {-P --pkgbuild} [opciones] <archivo(s)>"
+
+#: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
 msgstr "Opciones específicas pikaur:"
 
@@ -778,12 +801,12 @@ msgstr "Cancelación de la transacción {target}..."
 msgid "Failed to build following packages:"
 msgstr "No se pueden compilar los siguientes paquetes:"
 
-#: pikaur/install_info_fetcher.py:571
+#: pikaur/install_info_fetcher.py:559
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} ya está añadido a la lista"
 
-#: pikaur/install_info_fetcher.py:595
+#: pikaur/install_info_fetcher.py:584
 msgid "Resolving AUR dependencies..."
 msgstr "Resolución de dependencias AUR..."
 
@@ -796,7 +819,7 @@ msgstr "depurar:"
 msgid "pikaur debug:"
 msgstr "depuración de pikaur:"
 
-#: pikaur/main.py:202
+#: pikaur/main.py:203
 msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
@@ -804,15 +827,15 @@ msgstr ""
 "Por favor, introduzca el número del paquete(s) que desea instalar y pulse "
 "[Intro] (por defecto={}):"
 
-#: pikaur/main.py:212
+#: pikaur/main.py:213
 msgid "invalid value: {} is not between {} and {}"
 msgstr "valor no válido: {} no está entre {} y {}"
 
-#: pikaur/main.py:222
+#: pikaur/main.py:223
 msgid "invalid number: {}"
 msgstr "número inválido: {}"
 
-#: pikaur/main.py:265
+#: pikaur/main.py:266
 msgid ""
 "Either SystemD Dynamic Users must be enabled or User ID should be set if "
 "running as root."
@@ -820,16 +843,20 @@ msgstr ""
 "Los usuarios dinámicos de SystemD deben estar habilitados o el ID de usuario "
 "debe estar configurado si se ejecuta como root."
 
-#: pikaur/main.py:372
+#: pikaur/main.py:292
+msgid "no package(s) specified"
+msgstr ""
+
+#: pikaur/main.py:389
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "La dirección del repositorio AUR se ha movido de '{old}' a '{new}'."
 
-#: pikaur/main.py:441
+#: pikaur/main.py:458
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur requiere Python >= 3.7 para funcionar."
 
-#: pikaur/main.py:449
+#: pikaur/main.py:466
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur requiere que systemd ≥ 235 (usuarios dinámicos) se ejecute como root."
@@ -839,12 +866,12 @@ msgstr ""
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2018.
 #
-#: pikaur/main.py:462 pikaur/main.py:476
+#: pikaur/main.py:479 pikaur/main.py:493
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-07 17:02+0200\n"
+"POT-Creation-Date: 2024-09-12 01:37+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -854,7 +881,7 @@ msgstr ""
 "Translator: Bundy01\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: pikaur/main.py:486
+#: pikaur/main.py:503
 #, python-brace-format
 msgid ""
 "{privilege_escalation_tool} is not part of minimal Arch default setup, be "
@@ -1165,13 +1192,13 @@ msgstr "AUR ha devuelto error:"
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "no se pudo generar .SRCINFO desde {}:"
 
-#: pikaur/updates.py:131
+#: pikaur/updates.py:124
 msgid "Reading AUR package info..."
 msgid_plural "Reading AUR packages info..."
 msgstr[0] "Lectura de informaciónes sobre el paquete AUR..."
 msgstr[1] "Lectura de informaciones sobre los paquetes AUR..."
 
-#: pikaur/updates.py:203
+#: pikaur/updates.py:192
 msgid "(ignored in Pacman config)"
 msgstr "(ignorado en la configuración de Pacman)"
 

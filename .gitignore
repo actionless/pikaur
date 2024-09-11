@@ -12,4 +12,5 @@ MANIFEST
 pikaur.1
 aur_db.dump*
 pikaur_static/pikaur/**
+pikaur_rust/pikaur/**
 docker_ci/

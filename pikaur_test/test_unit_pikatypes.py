@@ -115,17 +115,15 @@ class InstallInfoTest(PikaurTestCase):
     def setUpClass(cls):
         repo_pkg = PackageDB.get_repo_list()[0]
         cls.repo_install_info = InstallInfo(
-            name=repo_pkg.name,
+            package=repo_pkg,
             current_version=repo_pkg.version,
             new_version="420",
-            package=repo_pkg,
         )
         aur_pkg = find_aur_packages(["pikaur"])[0][0]
         cls.aur_install_info = InstallInfo(
-            name=aur_pkg.name,
+            package=aur_pkg,
             current_version=aur_pkg.version,
             new_version="420",
-            package=aur_pkg,
         )
 
     def test_basic(self):

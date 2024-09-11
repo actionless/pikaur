@@ -285,12 +285,8 @@ Gonna fetch install info for:
                 pkg = all_repo_pkgs[pkg_print.full_name]
                 local_pkg = all_local_pkgs.get(pkg.name)
                 install_info = RepoInstallInfo(
-                    name=pkg.name,
-                    current_version=local_pkg.version if local_pkg else "",
-                    new_version=pkg.version,
-                    description=pkg.desc,
-                    repository=pkg.db.name,
                     package=pkg,
+                    current_version=local_pkg.version if local_pkg else "",
                 )
 
                 groups = install_info.package.groups
@@ -389,12 +385,8 @@ Gonna fetch install info for:
         ):
             local_pkg = all_local_pkgs.get(pkg.name)
             install_info = RepoInstallInfo(
-                name=pkg.name,
-                current_version=local_pkg.version if local_pkg else "",
-                new_version=pkg.version,
-                description=pkg.desc,
-                repository=pkg.db.name,
                 package=pkg,
+                current_version=local_pkg.version if local_pkg else "",
             )
             pkg_install_infos.append(install_info)
         return pkg_install_infos
@@ -525,12 +517,8 @@ Gonna fetch install info for:
                 continue
             local_pkg = local_pkgs.get(pkg_name)
             aur_updates_install_info_by_name[pkg_name] = AURInstallInfo(
-                name=pkg_name,
-                current_version=local_pkg.version if local_pkg else " ",
-                new_version=aur_pkg.version,
-                description=aur_pkg.desc,
-                maintainer=aur_pkg.maintainer,
                 package=aur_pkg,
+                current_version=local_pkg.version if local_pkg else " ",
             )
         for pkg_name in list(aur_updates_install_info_by_name.keys())[:]:
             if pkg_name not in aur_updates_install_info_by_name:
@@ -571,12 +559,13 @@ Gonna fetch install info for:
                     raise RuntimeError(translate(f"{pkg_name} already added to the list"))
                 local_pkg = local_pkgs.get(pkg_name)
                 info = AURInstallInfo(
+                    # @TODO: use data from srcinfo here?
+                    package=aur_pkg,
                     name=pkg_name,
                     current_version=local_pkg.version if local_pkg else " ",
                     new_version=aur_pkg.version,
                     description=aur_pkg.desc,
                     maintainer="local user",
-                    package=aur_pkg,
                     pkgbuild_path=path,
                 )
                 logger.debug("  3 {} {} {}", info, info.package, info.package.packagebase)
@@ -640,12 +629,8 @@ Gonna fetch install info for:
                 continue
             local_pkg = local_pkgs.get(pkg_name)
             self.aur_deps_install_info.append(AURInstallInfo(
-                name=aur_pkg.name,
-                current_version=local_pkg.version if local_pkg else " ",
-                new_version=aur_pkg.version,
-                description=aur_pkg.desc,
-                maintainer=aur_pkg.maintainer,
                 package=aur_pkg,
+                current_version=local_pkg.version if local_pkg else " ",
             ))
             added_pkg_names.append(aur_pkg.name)
 

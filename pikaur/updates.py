@@ -84,12 +84,8 @@ def find_repo_upgradeable() -> list[RepoInstallInfo]:
         local_pkg = all_local_pkgs[repo_pkg.name]
         repo_packages_updates.append(
             RepoInstallInfo(
-                name=local_pkg.name,
-                new_version=repo_pkg.version,
-                current_version=local_pkg.version,
-                description=repo_pkg.desc,
-                repository=repo_pkg.db.name,
                 package=repo_pkg,
+                current_version=local_pkg.version,
             ),
         )
     return repo_packages_updates
@@ -113,13 +109,10 @@ def find_aur_devel_updates(
         pkg_age_days = (now - pkg_install_datetime).days
         if pkg_age_days >= package_ttl_days:
             aur_updates.append(AURInstallInfo(
-                name=pkg_name,
+                package=aur_pkg,
                 current_version=local_pkg.version,
                 new_version=VERSION_DEVEL,
-                description=aur_pkg.desc,
                 devel_pkg_age_days=pkg_age_days,
-                maintainer=aur_pkg.maintainer,
-                package=aur_pkg,
             ))
     return aur_updates
 
@@ -143,12 +136,8 @@ def find_aur_updates() -> tuple[list[AURInstallInfo], list[str]]:
         compare_aur_pkg = compare_versions(current_version, aur_version)
         if compare_aur_pkg < 0:
             pkg_install_info = AURInstallInfo(
-                name=pkg_name,
-                new_version=aur_version,
-                current_version=current_version,
-                description=aur_pkg.desc,
-                maintainer=aur_pkg.maintainer,
                 package=aur_pkg,
+                current_version=current_version,
             )
             if args.ignore_outofdate and aur_pkg.outofdate:
                 print_ignoring_outofdate_upgrade(pkg_install_info)

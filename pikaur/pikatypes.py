@@ -63,12 +63,12 @@ class PackageSource(enum.Enum):
     LOCAL = enum.auto()
 
 
-@dataclass(eq=False)
+@dataclass(eq=False, kw_only=True)
 class InstallInfo(ComparableType):
-    name: str
     package: "pyalpm.Package | AURPackageInfo"
-    new_version: str
-    current_version: str
+    name: str = ""
+    new_version: str = ""
+    current_version: str = ""
 
     description: str | None = None
     maintainer: str | None = None
@@ -102,6 +102,42 @@ class InstallInfo(ComparableType):
             f'<{self.__class__.__name__} "{self.name}" '
             f"{self.current_version} -> {self.new_version}>"
         )
+
+    def __post_init__(self) -> None:
+        pkg_type = (
+            "aur"
+            if isinstance(self.package, AURPackageInfo)
+            else (
+                "local"
+                if self.package.db.name == "local"
+                else "repo"
+            )
+        )
+        if not self.name:
+            self.name = self.package.name
+        if not self.description:
+            self.description = self.package.desc
+        if pkg_type == "local":
+            if not self.current_version:
+                self.current_version = self.package.version
+            if self.repository is None:
+                self.repository = cast("pyalpm.Package", self.package).db.name
+            if self.required_by_installed is None:
+                self.required_by_installed = \
+                    cast("pyalpm.Package", self.package).compute_requiredby()
+            if self.optional_for_installed is None:
+                self.optional_for_installed = \
+                    cast("pyalpm.Package", self.package).compute_optionalfor()
+            if self.installed_as_dependency is None:
+                self.installed_as_dependency = \
+                    cast(bool, cast("pyalpm.Package", self.package).reason)
+        else:
+            if not self.new_version:
+                self.new_version = self.package.version
+            if pkg_type == "aur" and not self.maintainer:
+                self.maintainer = cast(AURPackageInfo, self.package).maintainer
+            if pkg_type == "repo" and not self.repository:
+                self.repository = cast("pyalpm.Package", self.package).db.name
 
 
 @dataclass(eq=False)

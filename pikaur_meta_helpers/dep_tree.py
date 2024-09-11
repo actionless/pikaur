@@ -1,54 +1,12 @@
 import sys
-from dataclasses import dataclass
-from typing import NamedTuple, cast
+from typing import NamedTuple
 
 import pyalpm
 
 from pikaur.pacman import PackageDB
 from pikaur.pikaprint import ColorsHighlight, color_line, format_paragraph, get_term_width
-from pikaur.pikatypes import AURPackageInfo
-from pikaur.pikatypes import InstallInfo as InstallInfoOld
+from pikaur.pikatypes import InstallInfo
 from pikaur.print_department import pretty_format_upgradeable
-
-
-@dataclass(eq=False, kw_only=True)
-class InstallInfo(InstallInfoOld):
-    # @TODO: move it to the main module?
-    name: str = ""
-    new_version: str = ""
-    current_version: str = ""
-
-    def __post_init__(self) -> None:
-        pkg_type = (
-            "aur"
-            if isinstance(self.package, AURPackageInfo)
-            else (
-                "local"
-                if self.package.db.name == "local"
-                else "repo"
-            )
-        )
-        if pkg_type == "local":
-            if not self.current_version:
-                self.current_version = self.package.version
-            if self.required_by_installed is None:
-                self.required_by_installed = \
-                    cast("pyalpm.Package", self.package).compute_requiredby()
-            if self.optional_for_installed is None:
-                self.optional_for_installed = \
-                    cast("pyalpm.Package", self.package).compute_optionalfor()
-            if self.installed_as_dependency is None:
-                self.installed_as_dependency = \
-                    cast(bool, cast("pyalpm.Package", self.package).reason)
-        if not self.name:
-            self.name = self.package.name
-        if (
-            (not self.new_version)
-            and (pkg_type in {"aur", "repo"})
-        ):
-            self.new_version = self.package.version
-        if not self.description:
-            self.description = self.package.desc
 
 
 class StackItem(NamedTuple):

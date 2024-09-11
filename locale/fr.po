@@ -461,8 +461,8 @@ msgstr "usage :  pikaur {-G --getpkgbuild} [options] <paquet(s)>"
 
 #: pikaur/help_cli.py:79
 #, fuzzy
-msgid "usage:  pikaur {-X --extras} [options]"
-msgstr "usage :  pikaur {-P --pkgbuild} [options] <fichier(s)>"
+msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
+msgstr "pikaur {-P --pkgbuild}    [options] [fichier(s)]"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -874,7 +874,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-12 01:37+0200\n"
+"POT-Creation-Date: 2024-09-12 01:39+0200\n"
 "PO-Revision-Date: 2018-03-03 16:29+0100\n"
 "Last-Translator: Bundy01\n"
 "Language-Team: none\n"
@@ -1219,3 +1219,7 @@ msgstr "pikaur nécessite python-pysocks pour utiliser un proxy socks5."
 #, python-brace-format
 #~ msgid "'{class_name}' does not have required attribute '{key}' set."
 #~ msgstr "'{class_name}' n'a pas l'attribut requis '{key}' de configuré."
+
+#, fuzzy
+#~ msgid "usage:  pikaur {-X --extras} [options]"
+#~ msgstr "usage :  pikaur {-P --pkgbuild} [options] <fichier(s)>"

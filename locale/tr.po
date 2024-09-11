@@ -452,8 +452,8 @@ msgstr "kullanım:  pikaur {-G --getpkgbuild} [seçenekler] <paket(ler)>"
 
 #: pikaur/help_cli.py:79
 #, fuzzy
-msgid "usage:  pikaur {-X --extras} [options]"
-msgstr "kullanım:  pikaur {-P --pkgbuild} [seçenekler] <dosya(lar)>"
+msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
+msgstr "pikaur {-P --pkgbuild}    [seçenekler] <dosya(lar)>"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -862,7 +862,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-12 01:37+0200\n"
+"POT-Creation-Date: 2024-09-12 01:39+0200\n"
 "PO-Revision-Date: 2024-04-28 11:16+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -1203,3 +1203,7 @@ msgstr ""
 #, fuzzy, python-brace-format
 #~ msgid "[f] skip {quote}check(){quote} function of PKGBUILD"
 #~ msgstr "[f] PKGBUILD'deki 'check()' fonksiyonunu atla"
+
+#, fuzzy
+#~ msgid "usage:  pikaur {-X --extras} [options]"
+#~ msgstr "kullanım:  pikaur {-P --pkgbuild} [seçenekler] <dosya(lar)>"

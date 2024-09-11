@@ -456,8 +456,8 @@ msgstr "användning: pikaur {-G --getpkgbuild} [alternativ] <paket(er)>"
 
 #: pikaur/help_cli.py:79
 #, fuzzy
-msgid "usage:  pikaur {-X --extras} [options]"
-msgstr "användning: pikaur {-P --pkgbuild} [alternativ] <fil(er)>"
+msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
+msgstr "pikaur {-P --pkgbuild}    [alternativ] [fil(er)]"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -861,7 +861,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-12 01:37+0200\n"
+"POT-Creation-Date: 2024-09-12 01:39+0200\n"
 "PO-Revision-Date: 2023-08-27 17:14+0200\n"
 "Last-Translator: Fredrik Magnusson (fredrikmagnusson3@gmail.com)\n"
 "Language-Team: none\n"
@@ -1204,3 +1204,7 @@ msgstr "pikaur kräver python-pysocks för att använda en socks5-proxy."
 #, fuzzy, python-brace-format
 #~ msgid "[f] skip {quote}check(){quote} function of PKGBUILD"
 #~ msgstr "[f] hoppa över 'check()'-funktionen för PKGBUILD"
+
+#, fuzzy
+#~ msgid "usage:  pikaur {-X --extras} [options]"
+#~ msgstr "användning: pikaur {-P --pkgbuild} [alternativ] <fil(er)>"

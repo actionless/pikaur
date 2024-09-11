@@ -460,8 +460,8 @@ msgstr "Benutzung: pikaur {-G --getpkgbuild} [Optionen] <Paket(e)>"
 
 #: pikaur/help_cli.py:79
 #, fuzzy
-msgid "usage:  pikaur {-X --extras} [options]"
-msgstr "Benutzung: pikaur {-P --pkgbuild} [Optionen] <Datei(en)>"
+msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
+msgstr "pikaur {-P --pkgbuild}    [Optionen] <Datei(en)>"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -870,7 +870,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-12 01:37+0200\n"
+"POT-Creation-Date: 2024-09-12 01:39+0200\n"
 "PO-Revision-Date: 2020-08-18 00:08+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: de <>\n"
@@ -1219,6 +1219,10 @@ msgstr ""
 
 #~ msgid "for"
 #~ msgstr "für"
+
+#, fuzzy
+#~ msgid "usage:  pikaur {-X --extras} [options]"
+#~ msgstr "Benutzung: pikaur {-P --pkgbuild} [Optionen] <Datei(en)>"
 
 #~ msgid "{} does not exist on the filesystem."
 #~ msgstr "{} existiert nicht im Dateisystem."

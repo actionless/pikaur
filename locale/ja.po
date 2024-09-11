@@ -456,8 +456,8 @@ msgstr "使用方法:  pikaur {-G --getpkgbuild} [オプション] <パッケー
 
 #: pikaur/help_cli.py:79
 #, fuzzy
-msgid "usage:  pikaur {-X --extras} [options]"
-msgstr "使用方法:  pikaur {-P --pkgbuild} [オプション] <ファイル>"
+msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
+msgstr "pikaur {-P --pkgbuild}    [オプション] <ファイル>"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -868,7 +868,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-12 01:37+0200\n"
+"POT-Creation-Date: 2024-09-12 01:39+0200\n"
 "PO-Revision-Date: 2020-05-31 11:23+0900\n"
 "Last-Translator: Kasmide <kasmide@zohomail.com>\n"
 "Language: ja\n"
@@ -1196,3 +1196,7 @@ msgstr "pikaur で socks5 プロキシを使用するには python-pysocks が�
 #, fuzzy
 #~ msgid "[f] check() skip"
 #~ msgstr "[c] チェックサムをスキップ"
+
+#, fuzzy
+#~ msgid "usage:  pikaur {-X --extras} [options]"
+#~ msgstr "使用方法:  pikaur {-P --pkgbuild} [オプション] <ファイル>"

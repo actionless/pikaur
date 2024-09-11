@@ -464,8 +464,8 @@ msgstr "использование:  pikaur {-G --getpkgbuild} [параметр
 
 #: pikaur/help_cli.py:79
 #, fuzzy
-msgid "usage:  pikaur {-X --extras} [options]"
-msgstr "использование:  pikaur {-P --pkgbuild} [параметры] <файл(ы)>"
+msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
+msgstr "pikaur {-P --pkgbuild} [параметры] <файл(ы)>"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -878,7 +878,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-12 01:37+0200\n"
+"POT-Creation-Date: 2024-09-12 01:39+0200\n"
 "PO-Revision-Date: 2019-09-21 19:36+0200\n"
 "Last-Translator: Drommer <drommer@github.com>\n"
 "Language-Team: Russian <email@example.com>\n"
@@ -1272,6 +1272,10 @@ msgstr "pikaur требует python-pysocks для использования �
 #, fuzzy
 #~ msgid "error"
 #~ msgstr "ошибка:"
+
+#, fuzzy
+#~ msgid "usage:  pikaur {-X --extras} [options]"
+#~ msgstr "использование:  pikaur {-P --pkgbuild} [параметры] <файл(ы)>"
 
 #~ msgid "{} does not exist on the filesystem."
 #~ msgstr "{} не найден в системе."

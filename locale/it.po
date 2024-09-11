@@ -484,8 +484,8 @@ msgstr "uso:  pikaur {-G --getpkgbuild} [opzioni] <pacchetti>"
 
 #: pikaur/help_cli.py:79
 #, fuzzy
-msgid "usage:  pikaur {-X --extras} [options]"
-msgstr "uso:  pikaur {-P --pkgbuild} [opzioni] <file>"
+msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
+msgstr "pikaur {-P --pkgbuild}    [opzioni] <file>"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -904,7 +904,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur 1.5.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-12 01:37+0200\n"
+"POT-Creation-Date: 2024-09-12 01:39+0200\n"
 "PO-Revision-Date: 2019-10-05 15:30+0200\n"
 "Last-Translator: Mattia Bertoni <mattia.b89@gmail.com>\n"
 "Language-Team: Italian <none>\n"
@@ -1262,3 +1262,7 @@ msgstr "pikaur ha bisogno di python-pysocks per usare un proxy socks5."
 #, fuzzy
 #~ msgid "[f] check() skip"
 #~ msgstr "[c] salta il controllo hash"
+
+#, fuzzy
+#~ msgid "usage:  pikaur {-X --extras} [options]"
+#~ msgstr "uso:  pikaur {-P --pkgbuild} [opzioni] <file>"

@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass
-from typing import cast
+from typing import NamedTuple, cast
 
 import pyalpm
 
@@ -51,8 +51,7 @@ class InstallInfo(InstallInfoOld):
             self.description = self.package.desc
 
 
-@dataclass
-class StackItem:
+class StackItem(NamedTuple):
     item_type: str  # 'pkg' or 'title'
     content: str  # Package name or title text
     level: int  # Current level in the dependency tree

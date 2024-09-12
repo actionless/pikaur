@@ -348,7 +348,22 @@ def make_equal_right_padding(multiline_string: str, length: int | None = None) -
     )
 
 
-def sidejoin_multiline_paragraphs(join_separator: str, multiline_strings: Sequence[str]) -> str:
+def sidejoin_multiline_paragraphs(
+    join_separator: str, multiline_strings: Sequence[str],
+    *, auto_column: bool = False,
+) -> str:
+    if auto_column:
+        biggest_height = max(len(multiline.splitlines()) for multiline in multiline_strings)
+        new_strings = []
+        for multiline_string in multiline_strings:
+            new_string = make_equal_right_padding(multiline_string)
+            new_lines = new_string.splitlines()
+            longest_length = printable_length(new_lines[0])
+            while len(new_lines) < biggest_height:
+                new_lines.append(" " * longest_length)
+            new_string = "\n".join(new_lines)
+            new_strings.append(new_string)
+        multiline_strings = new_strings
     return "\n".join(
         join_separator.join(line or "" for line in lines)
         for lines in zip_longest(

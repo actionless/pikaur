@@ -110,14 +110,12 @@ def cli_info_packages() -> None:  # noqa: PLR0914
                 value_display = format_paragraph(
                     value, width=term_width - longest_field_length - 2 - 1, padding=0,
                 )
-                value_height = len(value_display.splitlines())
                 line = sidejoin_multiline_paragraphs(
                     "", (
-                        key_display + (
-                            "\n" + " " * (longest_field_length + 2 + 1)
-                        ) * (value_height - 1),
+                        key_display,
                         value_display,
                     ),
+                    auto_column=True,
                 )
             pkg_info_lines.append(line)
         print_stdout(

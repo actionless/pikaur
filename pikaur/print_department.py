@@ -26,7 +26,6 @@ from .pikaprint import (
     color_line,
     format_paragraph,
     get_term_width,
-    make_equal_right_padding,
     print_stderr,
     print_stdout,
     print_warning,
@@ -63,7 +62,7 @@ def print_version(pacman_version: str, pyalpm_version: str, *, quiet: bool = Fal
         sys.stdout.write(
             sidejoin_multiline_paragraphs(
                 "   ", (
-                    make_equal_right_padding(PIKAPIC),
+                    PIKAPIC,
                     r"""
 
 
@@ -75,7 +74,7 @@ Licensed under GPLv3
 """ + pacman_version + r"""
 pyalpm v""" + pyalpm_version + r"""
 """,
-                ),
+                ), auto_column=True,
             ) + "\n",
         )
 

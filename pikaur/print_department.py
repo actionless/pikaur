@@ -62,9 +62,9 @@ def print_version(pacman_version: str, pyalpm_version: str, *, quiet: bool = Fal
         year = str(datetime.now(tz=DEFAULT_TIMEZONE).year)
         sys.stdout.write(
             sidejoin_multiline_paragraphs(
-                "   ",
-                make_equal_right_padding(PIKAPIC),
-                r"""
+                "   ", (
+                    make_equal_right_padding(PIKAPIC),
+                    r"""
 
 
 
@@ -75,6 +75,7 @@ Licensed under GPLv3
 """ + pacman_version + r"""
 pyalpm v""" + pyalpm_version + r"""
 """,
+                ),
             ) + "\n",
         )
 

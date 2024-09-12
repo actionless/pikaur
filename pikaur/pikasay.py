@@ -120,42 +120,42 @@ def bubble_right(
         f"{' ' * (bubble_width + margin * 2 + bubble_handle_width)}\n"
         * height_compensating_margin
     ) + sidejoin_multiline_paragraphs(
-        "",
-        "\n".join(
-            [" " * margin] * (bubble_height + vert_margin - 1 + 2),
-        ),
-        "\n".join((
-            *([" "] * (vert_margin + 1)),
-            "/",
-            *(["|"] * (bubble_height - 2)),
-            "\\",
-        )),
-        "\n".join((
-            *([" " * (bubble_width - 2)] * vert_margin),
-            "_" * (bubble_width - 2),
-            *([" " * (bubble_width - 2)] * (vert_padding + 1)),
-            formatted_paragraph,
-            *([" " * (bubble_width - 2)] * (vert_padding)),
-            "_" * (bubble_width - 2),
-            *([" " * (bubble_width - 2)] * vert_margin),
-        )),
-        "\n".join((
-            *([" "] * (vert_margin + 1)),
-            "\\",
-            *(["|"] * (bubble_handle_position)),
-            " ",
-            *(["|"] * (bubble_height - 2 - bubble_handle_position - 1)),
-            "/",
-        )),
-        "\n".join((
-            *([" "] * (vert_margin + 1)),
-            *([" "] * (bubble_handle_position)),
-            bubble_handle,
-            *([" "] * (bubble_height - 2 - bubble_handle_position)),
-        )),
-        "\n".join(
-            [" " * margin] * (bubble_height + vert_margin - 1 + 2),
-        ),
+        "", [
+            "\n".join(lines)
+            for lines in (
+                [" " * margin] * (bubble_height + vert_margin - 1 + 2),
+                (
+                    *([" "] * (vert_margin + 1)),
+                    "/",
+                    *(["|"] * (bubble_height - 2)),
+                    "\\",
+                ),
+                (
+                    *([" " * (bubble_width - 2)] * vert_margin),
+                    "_" * (bubble_width - 2),
+                    *([" " * (bubble_width - 2)] * (vert_padding + 1)),
+                    formatted_paragraph,
+                    *([" " * (bubble_width - 2)] * (vert_padding)),
+                    "_" * (bubble_width - 2),
+                    *([" " * (bubble_width - 2)] * vert_margin),
+                ),
+                (
+                    *([" "] * (vert_margin + 1)),
+                    "\\",
+                    *(["|"] * (bubble_handle_position)),
+                    " ",
+                    *(["|"] * (bubble_height - 2 - bubble_handle_position - 1)),
+                    "/",
+                ),
+                (
+                    *([" "] * (vert_margin + 1)),
+                    *([" "] * (bubble_handle_position)),
+                    bubble_handle,
+                    *([" "] * (bubble_height - 2 - bubble_handle_position)),
+                ),
+                [" " * margin] * (bubble_height + vert_margin - 1 + 2),
+            )
+        ],
     )
 
 
@@ -169,9 +169,12 @@ def pikasay(  # noqa: PLR0917
         ))
     elif orientation == "vertical":
         message = sidejoin_multiline_paragraphs(
-            "",
-            bubble_right(text=text, margin=margin, padding=padding, width=width, mascot=mascot_pic),
-            mascot_pic,
+            "", (
+                bubble_right(
+                    text=text, margin=margin, padding=padding, width=width, mascot=mascot_pic,
+                ),
+                mascot_pic,
+            ),
         )
     else:
         raise ValueError(orientation)

@@ -4,6 +4,7 @@ import math
 import shutil
 import sys
 import termios
+from collections.abc import Sequence
 from itertools import zip_longest
 from typing import TYPE_CHECKING
 
@@ -347,7 +348,7 @@ def make_equal_right_padding(multiline_string: str, length: int | None = None) -
     )
 
 
-def sidejoin_multiline_paragraphs(join_separator: str, *multiline_strings: str) -> str:
+def sidejoin_multiline_paragraphs(join_separator: str, multiline_strings: Sequence[str]) -> str:
     return "\n".join(
         join_separator.join(line or "" for line in lines)
         for lines in zip_longest(

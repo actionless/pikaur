@@ -3,7 +3,7 @@
 import sys
 from argparse import Namespace
 from pprint import pformat
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, NamedTuple, cast
 
 from .argparse_extras import ArgumentParserWithUnknowns
 from .config import DECORATION, PikaurConfig
@@ -14,37 +14,43 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Any, Final, NoReturn
 
-ArgValue = None | bool | str | int
-ArgSchema = list[
-    tuple[str, str, ArgValue, str | None]
-    | tuple[None, str, ArgValue, str | None]
-    | tuple[str, None, ArgValue, str | None]
-]
 PossibleArgValuesTypes = list[str] | str | bool | int | None
-HelpMessage = tuple[str | None, str | None, str | None]
 
 
-# @TODO: refactor to use NamedTuple instead of normal tuple
+class Arg(NamedTuple):
+    short: str | None
+    long: str | None
+    default: PossibleArgValuesTypes
+    doc: str | None
+
+
+ArgSchema = list[Arg]
+
+
+class HelpMessage(NamedTuple):
+    short: str | None
+    long: str | None
+    doc: str | None
 
 
 PACMAN_ACTIONS: "Final[ArgSchema]" = [
-    ("S", "sync", None, None),
-    ("Q", "query", None, None),
-    ("D", "database", None, None),
-    ("F", "files", None, None),
-    ("R", "remove", None, None),
-    ("T", "deptest", None, None),
-    ("U", "upgrade", None, None),
-    ("V", "version", None, None),
-    ("h", "help", None, None),
+    Arg("S", "sync", None, None),
+    Arg("Q", "query", None, None),
+    Arg("D", "database", None, None),
+    Arg("F", "files", None, None),
+    Arg("R", "remove", None, None),
+    Arg("T", "deptest", None, None),
+    Arg("U", "upgrade", None, None),
+    Arg("V", "version", None, None),
+    Arg("h", "help", None, None),
 ]
 
 
 PIKAUR_ACTIONS: "Final[ArgSchema]" = [
-    ("P", "pkgbuild", None, None),
-    ("G", "getpkgbuild", None, None),
-    ("X", "extras", None, None),
-    (None, "interactive_package_select", None, None),
+    Arg("P", "pkgbuild", None, None),
+    Arg("G", "getpkgbuild", None, None),
+    Arg("X", "extras", None, None),
+    Arg(None, "interactive_package_select", None, None),
 ]
 
 
@@ -94,24 +100,24 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
         return list(set(result))
     result = [
         # sync options
-        ("g", "groups", None, None),
-        ("w", "downloadonly", None, None),
-        ("q", "quiet", False, None),
-        ("s", "search", None, None),
+        Arg("g", "groups", None, None),
+        Arg("w", "downloadonly", None, None),
+        Arg("q", "quiet", default=False, doc=None),
+        Arg("s", "search", None, None),
         # universal options
-        ("v", "verbose", None, None),
-        (None, "debug", None, None),
-        (None, "noconfirm", None, None),
-        (None, "needed", False, None),
+        Arg("v", "verbose", None, None),
+        Arg(None, "debug", None, None),
+        Arg(None, "noconfirm", None, None),
+        Arg(None, "needed", default=False, doc=None),
     ]
     if action == "query":
         result += [
-            ("u", "upgrades", None, None),
-            ("o", "owns", None, None),
+            Arg("u", "upgrades", None, None),
+            Arg("o", "owns", None, None),
         ]
     if action in {"sync", "query", "interactive_package_select"}:
         result += [
-            ("l", "list", None, None),
+            Arg("l", "list", None, None),
         ]
     return result
 
@@ -120,7 +126,7 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
     result: ArgSchema = []
     if cast(str, "pikaur-static") == PIKAUR_NAME:
         result += [
-            (
+            Arg(
                 None, "force-pacman-cli-db",
                 None,
                 translate("use pacman-cli-based fallback alpm database reader"),
@@ -132,111 +138,112 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
         return list(set(result))
     if action in {"sync", "pkgbuild", "query", "interactive_package_select"}:
         result += [
-            (
+            Arg(
                 "a", "aur", None,
                 translate("query packages from AUR only"),
             ),
         ]
     if action in {"sync", "pkgbuild", "interactive_package_select"}:
         result += [
-            (
+            Arg(
                 "k", "keepbuild", PikaurConfig().build.KeepBuildDir.get_bool(),
                 translate("don't remove build dir after the build"),
             ),
-            (
+            Arg(
                 None, "keepbuilddeps", PikaurConfig().build.KeepBuildDeps.get_bool(),
                 translate("don't remove build dependencies between and after the builds"),
             ),
-            (
+            Arg(
                 "o", "repo", None, translate("query packages from repository only"),
             ),
-            (
+            Arg(
                 None, "noedit", PikaurConfig().review.NoEdit.get_bool(),
                 translate("don't prompt to edit PKGBUILDs and other build files"),
             ),
-            (
+            Arg(
                 None, "edit", None,
                 translate("prompt to edit PKGBUILDs and other build files"),
             ),
-            (
+            Arg(
                 None, "rebuild", None,
                 translate("always rebuild AUR packages"),
             ),
-            (
+            Arg(
                 None, "skip-failed-build", PikaurConfig().build.SkipFailedBuild.get_bool(),
                 translate("skip failed builds"),
             ),
-            (
+            Arg(
                 None, "dynamic-users", PikaurConfig().build.DynamicUsers.get_str() == "always",
                 translate("always isolate with systemd dynamic users"),
             ),
-            (
+            Arg(
                 None, "hide-build-log", None,
                 translate("hide build log"),
             ),
-            (
+            Arg(
                 None, "skip-aur-pull", None,
                 translate("don't pull already cloned PKGBUILD"),
             ),
         ]
     if action in {"sync", "interactive_package_select"}:
         result += [
-            (
-                None, "namesonly", False,
-                translate("search only in package names"),
+            Arg(
+                None, "namesonly", default=False,
+                doc=translate("search only in package names"),
             ),
-            (
+            Arg(
                 None, "nodiff", PikaurConfig().review.NoDiff.get_bool(),
                 translate("don't prompt to show the build files diff"),
             ),
-            (
+            Arg(
                 None, "ignore-outofdate", PikaurConfig().sync.IgnoreOutofdateAURUpgrades.get_bool(),
                 translate("ignore AUR packages' updates which marked 'outofdate'"),
             ),
         ]
     if action == "query":
         result += [
-            (
+            Arg(
                 None, "repo", None,
-                translate("query packages from repository only")),
+                translate("query packages from repository only"),
+            ),
         ]
     if action == "getpkgbuild":
         result += [
-            (
+            Arg(
                 "d", "deps", None,
                 translate("download also AUR dependencies"),
             ),
         ]
     if action == "pkgbuild":
         result += [
-            (
+            Arg(
                 "i", "install", None,
                 translate("install built package"),
             ),
         ]
     if action == "extras":
         result += [
-            (
+            Arg(
                 "d", "dep-tree",
                 None,
                 translate("visualize package dependency tree"),
             ),
-            # (
+            # Arg(
             #     "q", "quiet", None,
             #     translate("less verbose output"),
             # ),
         ]
     result += [
-        (
+        Arg(
             None, "print-commands", PikaurConfig().ui.PrintCommands.get_bool(),
             translate("print spawned by pikaur subshell commands"),
         ),
-        (
+        Arg(
             None, "pikaur-debug", None,
             translate("show only debug messages specific to pikaur"),
         ),
         # undocumented options:
-        (None, "print-args-and-exit", None, None),
+        Arg(None, "print-args-and-exit", None, None),
     ]
     return result
 
@@ -248,16 +255,16 @@ def get_pacman_str_opts(action: str | None = None) -> ArgSchema:
             result += get_pacman_str_opts(each_action)
         return list(set(result))
     return [
-        (None, "color", None, None),
-        ("b", "dbpath", None, None),
-        ("r", "root", None, None),
-        (None, "arch", None, None),  # @TODO
-        (None, "cachedir", None, None),  # @TODO
-        (None, "config", None, None),
-        (None, "gpgdir", None, None),
-        (None, "hookdir", None, None),
-        (None, "logfile", None, None),
-        (None, "print-format", None, None),  # @TODO
+        Arg(None, "color", None, None),
+        Arg("b", "dbpath", None, None),
+        Arg("r", "root", None, None),
+        Arg(None, "arch", None, None),  # @TODO
+        Arg(None, "cachedir", None, None),  # @TODO
+        Arg(None, "config", None, None),
+        Arg(None, "gpgdir", None, None),
+        Arg(None, "hookdir", None, None),
+        Arg(None, "logfile", None, None),
+        Arg(None, "print-format", None, None),  # @TODO
     ]
 
 
@@ -268,32 +275,32 @@ class ColorFlagValues:
 
 def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
     result: ArgSchema = [
-        (
+        Arg(
             None, "home-dir",
             None,
             translate("alternative home directory location"),
         ),
-        (
+        Arg(
             None, "xdg-cache-home",
             PikaurConfig().misc.CachePath.get_str(),
             translate("alternative package cache directory location"),
         ),
-        (
+        Arg(
             None, "xdg-config-home",
             None,
             translate("alternative configuration file directory location"),
         ),
-        (
+        Arg(
             None, "xdg-data-home",
             PikaurConfig().misc.DataPath.get_str(),
             translate("alternative database directory location"),
         ),
-        (
+        Arg(
             None, "preserve-env",
             PikaurConfig().misc.PreserveEnv.get_str(),
             translate("preserve environment variables (comma-separated)"),
         ),
-        (
+        Arg(
             None, "pacman-path",
             PikaurConfig().misc.PacmanPath.get_str(),
             translate("override path to pacman executable"),
@@ -301,7 +308,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
     ]
     if cast(str, "pikaur-static") == PIKAUR_NAME:
         result += [
-            (
+            Arg(
                 None, "pacman-conf-path",
                 "pacman-conf",
                 translate("override path to pacman-conf executable"),
@@ -313,32 +320,32 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
         return list(set(result))
     if action in {"sync", "pkgbuild", "interactive_package_select"}:
         result += [
-            (
+            Arg(
                 None, "mflags",
                 None,
                 translate("cli args to pass to makepkg"),
             ),
-            (
+            Arg(
                 None, "makepkg-config",
                 None,
                 translate("path to custom makepkg config"),
             ),
-            (
+            Arg(
                 None, "makepkg-path",
                 None,
                 translate("override path to makepkg executable"),
             ),
-            (
+            Arg(
                 None, "pikaur-config",
                 None,
                 translate("path to custom pikaur config"),
             ),
-            (
+            Arg(
                 None, "build-gpgdir",
                 PikaurConfig().build.GpgDir.get_str(),
                 translate("set GnuPG home directory used when validating package sources"),
             ),
-            (
+            Arg(
                 None, "privilege-escalation-target",
                 PikaurConfig().misc.PrivilegeEscalationTarget.get_str(),
                 None,
@@ -346,7 +353,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
         ]
     if action == "getpkgbuild":
         result += [
-            (
+            Arg(
                 "o", "output-dir",
                 None,
                 translate("path where to clone PKGBUILDs"),
@@ -363,18 +370,18 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
         return list(set(result))
     if action in {"sync", "pkgbuild", "interactive_package_select"}:
         result += [
-            (
+            Arg(
                 None, "aur-clone-concurrency", None,
                 translate("how many git-clones/pulls to do from AUR"),
             ),
-            (
+            Arg(
                 None, "user-id", PikaurConfig().misc.UserId.get_int(),
                 translate("user ID to run makepkg if pikaur started from root"),
             ),
         ]
     if action == "extras":
         result += [
-            (
+            Arg(
                 "l", "level",
                 2,
                 translate("dependency tree level"),
@@ -390,24 +397,24 @@ def get_pacman_count_opts(action: str | None = None) -> ArgSchema:
             result += get_pacman_count_opts(each_action)
         return list(set(result))
     result = [
-        ("y", "refresh", 0, None),
-        ("c", "clean", 0, None),
+        Arg("y", "refresh", 0, None),
+        Arg("c", "clean", 0, None),
     ]
     if action in {"sync", "interactive_package_select"}:
         result += [
-            ("u", "sysupgrade", 0, None),
+            Arg("u", "sysupgrade", 0, None),
         ]
     if action in {"sync", "query", "interactive_package_select"}:
         result += [
-            ("i", "info", 0, None),
+            Arg("i", "info", 0, None),
         ]
     if action in {"database", "query"}:
         result += [
-            ("k", "check", 0, None),
+            Arg("k", "check", 0, None),
         ]
     if action in ALL_PACMAN_ACTIONS:
         result += [
-            ("d", "nodeps", 0, None),
+            Arg("d", "nodeps", 0, None),
         ]
     return result
 
@@ -420,7 +427,7 @@ def get_pikaur_count_opts(action: str | None = None) -> ArgSchema:
         return list(set(result))
     if action in {"sync", "interactive_package_select"}:
         result += [
-            (
+            Arg(
                 None, "devel", 0,
                 translate("always sysupgrade '-git', '-svn' and other dev packages"),
             ),
@@ -429,10 +436,10 @@ def get_pikaur_count_opts(action: str | None = None) -> ArgSchema:
 
 
 PACMAN_APPEND_OPTS: "Final[ArgSchema]" = [
-    (None, "ignore", None, None),
-    (None, "ignoregroup", None, None),  # @TODO
-    (None, "overwrite", None, None),
-    (None, "assume-installed", None, None),  # @TODO
+    Arg(None, "ignore", None, None),
+    Arg(None, "ignoregroup", None, None),  # @TODO
+    Arg(None, "overwrite", None, None),
+    Arg(None, "assume-installed", None, None),  # @TODO
 ]
 
 
@@ -751,7 +758,7 @@ def get_parser_for_action(
                 )
             if is_pikaur:
                 help_msgs.append(
-                    (letter, opt, help_msg),
+                    HelpMessage(letter, opt, help_msg),
                 )
 
     if pikaur_action is None:

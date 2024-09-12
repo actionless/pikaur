@@ -65,7 +65,9 @@ def get_pacman_command(  # pylint: disable=too-many-branches
     else:
         pacman_cmd += ["--color=never"]
 
-    for short, long, _default, _help in get_pacman_str_opts():
+    for short, long, _default, _help, help_only in get_pacman_str_opts():
+        if help_only:
+            continue
         arg = long or short
         if not arg:
             continue
@@ -80,7 +82,9 @@ def get_pacman_command(  # pylint: disable=too-many-branches
             elif short:
                 pacman_cmd += ["-" + short, value]
 
-    for short, long, _default, _help in PACMAN_APPEND_OPTS:
+    for short, long, _default, _help, help_only in PACMAN_APPEND_OPTS:
+        if help_only:
+            continue
         arg = long or short
         if not arg:
             continue

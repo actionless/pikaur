@@ -65,10 +65,10 @@ def get_pacman_command(  # pylint: disable=too-many-branches
     else:
         pacman_cmd += ["--color=never"]
 
-    for short, long, _default, _help, help_only in get_pacman_str_opts():
-        if help_only:
+    for data in get_pacman_str_opts():
+        if data.help_only:
             continue
-        arg = long or short
+        arg = data.long or data.short
         if not arg:
             continue
         if arg == "color":  # we force it anyway
@@ -77,15 +77,15 @@ def get_pacman_command(  # pylint: disable=too-many-branches
             continue
         value = getattr(args, arg)
         if value:
-            if long:
-                pacman_cmd += ["--" + long, value]
-            elif short:
-                pacman_cmd += ["-" + short, value]
+            if data.long:
+                pacman_cmd += ["--" + data.long, value]
+            elif data.short:
+                pacman_cmd += ["-" + data.short, value]
 
-    for short, long, _default, _help, help_only in PACMAN_APPEND_OPTS:
-        if help_only:
+    for data in PACMAN_APPEND_OPTS:
+        if data.help_only:
             continue
-        arg = long or short
+        arg = data.long or data.short
         if not arg:
             continue
         if arg == "ignore":  # we reprocess it anyway
@@ -93,10 +93,10 @@ def get_pacman_command(  # pylint: disable=too-many-branches
         if arg in ignore_args:
             continue
         for value in getattr(args, arg) or []:
-            if long:
-                pacman_cmd += ["--" + long, value]
-            elif short:
-                pacman_cmd += ["-" + short, value]
+            if data.long:
+                pacman_cmd += ["--" + data.long, value]
+            elif data.short:
+                pacman_cmd += ["-" + data.short, value]
 
     return pacman_cmd
 

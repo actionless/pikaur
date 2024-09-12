@@ -470,9 +470,9 @@ def get_all_pikaur_options(action: str | None = None) -> ArgSchema:
 
 def get_pikaur_long_opts() -> list[str]:
     return [
-        long_opt.replace("-", "_")
-        for _short_opt, long_opt, _default, _help, help_only in get_all_pikaur_options()
-        if (long_opt is not None) and (not help_only)
+        arg.long.replace("-", "_")
+        for arg in get_all_pikaur_options()
+        if (arg.long is not None) and (not arg.help_only)
     ]
 
 
@@ -726,12 +726,12 @@ def get_parser_for_action(
 
     parser = PikaurArgumentParser(prog=app, add_help=False)
     parser.add_argument("positional", nargs="*")
-    for letter, opt, default, _help, help_only in (
+    for arg in (
             PACMAN_ACTIONS + PIKAUR_ACTIONS
     ):
-        if not help_only:
+        if not arg.help_only:
             parser.add_letter_andor_opt(
-                action="store_true", letter=letter, opt=opt, default=default,
+                action="store_true", letter=arg.short, opt=arg.long, default=arg.default,
             )
     parsed_action = parser.parse_pikaur_args(args)
     pikaur_action: str | None = None
@@ -750,20 +750,20 @@ def get_parser_for_action(
             (None, get_pikaur_str_opts(action=pikaur_action), True, None),
             (None, get_pikaur_int_opts(action=pikaur_action), True, int),
     ):
-        for letter, opt, default, help_msg, help_only in opt_list:
-            if not help_only:
+        for arg in opt_list:
+            if not arg.help_only:
                 if arg_type:
                     parser.add_letter_andor_opt(
-                        action=action_type, letter=letter, opt=opt, default=default,
+                        action=action_type, letter=arg.short, opt=arg.long, default=arg.default,
                         arg_type=arg_type,
                     )
                 else:
                     parser.add_letter_andor_opt(
-                        action=action_type, letter=letter, opt=opt, default=default,
+                        action=action_type, letter=arg.short, opt=arg.long, default=arg.default,
                     )
             if is_pikaur:
                 help_msgs.append(
-                    HelpMessage(letter, opt, help_msg),
+                    HelpMessage(arg.short, arg.long, arg.doc),
                 )
 
     if pikaur_action is None:
@@ -828,19 +828,19 @@ def get_help() -> list[HelpMessage]:
 def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = None) -> list[str]:
     if not ignore_args:
         ignore_args = []
-    for _letter, opt, _default, _help, help_only in get_all_pikaur_options(
+    for arg in get_all_pikaur_options(
             action=LIST_ALL_ACTIONS,
     ):
-        if opt and not help_only:
-            ignore_args.append(opt.replace("-", "_"))
+        if arg.long and not arg.help_only:
+            ignore_args.append(arg.long.replace("-", "_"))
     count_args = []
-    for letter, opt, _default, _help, help_only in get_pacman_count_opts(action=LIST_ALL_ACTIONS):
-        if help_only:
+    for arg in get_pacman_count_opts(action=LIST_ALL_ACTIONS):
+        if arg.help_only:
             continue
-        if letter:
-            count_args.append(letter)
-        if opt:
-            count_args.append(opt.replace("-", "_"))
+        if arg.short:
+            count_args.append(arg.short)
+        if arg.long:
+            count_args.append(arg.long.replace("-", "_"))
     reconstructed_args = {
         f"--{key}" if len(key) > 1 else f"-{key}": value
         for key, value in vars(parsed_args).items()
@@ -848,23 +848,23 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
         if key not in ignore_args + count_args + [
             "raw", "unknown_args", "positional", "read_stdin",  # computed members
         ] + [
-            long_arg
-            for _short_arg, long_arg, default, _help, help_only in get_pacman_str_opts(
+            arg.long
+            for arg in get_pacman_str_opts(
                 action=LIST_ALL_ACTIONS,
             ) + PACMAN_APPEND_OPTS
-            if long_arg and not help_only
+            if arg.long and not arg.help_only
         ]
     }
     result = list(set(
         list(reconstructed_args.keys()) + parsed_args.unknown_args,
     ))
     for args_key, value in vars(parsed_args).items():
-        for letter, long, _default, _help, help_only in (
+        for arg in (
                 get_pacman_count_opts(action=LIST_ALL_ACTIONS)
         ):
-            if (not long) or help_only:
+            if (not arg.long) or arg.help_only:
                 continue
-            opt = long.replace("-", "_")
+            opt = arg.long.replace("-", "_")
             if (
                     value
                     and (
@@ -872,7 +872,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
                     ) and (
                         opt not in ignore_args
                     ) and (
-                        letter not in ignore_args
+                        arg.short not in ignore_args
                     )
             ):
                 result += ["--" + opt] * value

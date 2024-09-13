@@ -332,6 +332,10 @@ def format_paragraph(
     ])
 
 
+# @TODO: see if i could reuse https://docs.python.org/3/library/textwrap.html
+#        for the below functions:
+
+
 def make_equal_right_padding(multiline_string: str, length: int | None = None) -> str:
     lines = multiline_string.splitlines()
     max_string_length = max(printable_length(line) for line in lines)

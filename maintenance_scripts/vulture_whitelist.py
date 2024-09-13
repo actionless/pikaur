@@ -25,8 +25,6 @@ whitelist.argparse_extras.ArgumentParserWithUnknowns._parse_known_args
 
 whitelist.args.FileType
 whitelist.args.PikaurArgs.pacman_conf_path
-whitelist.args.Arg.doc
-whitelist.args.HelpMessage.doc
 
 whitelist.aur.AURPackageInfo.optdepends
 whitelist.aur.AURPackageInfo.aur_id

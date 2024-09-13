@@ -27,7 +27,13 @@ RUFF := ruff
 script_dir := $(shell readlink -e .)
 APP_DIR := $(shell readlink -e "$(script_dir)")
 TARGET_MODULE := pikaur
-TARGETS := $(APP_DIR)/$(TARGET_MODULE)/ $(APP_DIR)/pikaur_test/ $(APP_DIR)/pikaur_meta_helpers/ $(APP_DIR)/packaging/usr/bin/pikaur $(shell ls $(APP_DIR)/maintenance_scripts/*.py)
+TARGETS := \
+		   $(APP_DIR)/$(TARGET_MODULE)/ \
+		   $(APP_DIR)/pikaur_test/ \
+		   $(APP_DIR)/pikaur_meta_helpers/ \
+		   $(APP_DIR)/packaging/usr/bin/pikaur \
+		   $(shell ls $(APP_DIR)/maintenance_scripts/*.py) \
+		   $(shell ls $(APP_DIR)/pikaur_static/*.py)
 GLOBALS_IGNORES := \
 			-e ': Final' \
 			-e ' \# nonfinal-ignore' \

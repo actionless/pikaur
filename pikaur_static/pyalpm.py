@@ -1,3 +1,4 @@
+# noqa: INP001
 """
 PyALPM compatibility interface for PypyALPM.
 To be used with apps depending on pyalpm with pypyalpm.
@@ -6,9 +7,9 @@ from typing import Final
 
 import pypyalpm
 
-DB = pypyalpm.DB
-Package = pypyalpm.Package
-vercmp = pypyalpm.compare_versions
+DB = pypyalpm.DB  # nonfinal-ignore
+Package = pypyalpm.Package  # nonfinal-ignore
+vercmp = pypyalpm.compare_versions  # nonfinal-ignore
 
 
 LOG_ERROR: Final = True

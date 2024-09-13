@@ -5,6 +5,12 @@
 # pylint: disable=import-error,no-name-in-module
 from vulture.whitelist_utils import Whitelist  # type: ignore[import-untyped]
 
+###############################################################################
+#
+# vulture  --make-whitelist  pikaur_static/*.py
+#
+###############################################################################
+
 whitelist: Whitelist = Whitelist()  # type: ignore[no-any-unimported]
 
 whitelist.__new__
@@ -57,6 +63,43 @@ whitelist.news.MLStripper.handle_data
 whitelist.news.MLStripper.handle_endtag
 whitelist.news.MLStripper.handle_starttag
 whitelist.news.MLStripper.strict
+
+whitelist.pikaur_static.pacman_fallback._.compute_requiredby
+whitelist.pikaur_static.pacman_fallback._.compute_optionalfor
+whitelist.pikaur_static.pacman_fallback.PacmanPackageInfoType
+whitelist.pikaur_static.pacman_fallback.PackageDBCommonType
+whitelist.pikaur_static.pyalpm._.register_syncdb
+whitelist.pikaur_static.pyalpm._.get_syncdbs
+whitelist.pikaur_static.pyalpm._.get_localdb
+whitelist.pikaur_static.pyalpm.LOG_WARNING
+whitelist.pikaur_static.pyalpm.LOG_ERROR
+whitelist.pikaur_static.pyalpm.vercmp
+whitelist.pikaur_static.pypyalpm._.get_pkg
+whitelist.pikaur_static.pypyalpm._.compute_requiredby
+whitelist.pikaur_static.pypyalpm._.compute_optionalfor
+whitelist.pikaur_static.pypyalpm._.search
+whitelist.pikaur_static.pypyalpm._.all
+whitelist.pikaur_static.pypyalpm.has_scriptlet
+whitelist.pikaur_static.pypyalpm.base64_sig
+whitelist.pikaur_static.pypyalpm.NOT_FOUND_ATOM
+whitelist.pikaur_static.pypyalpm.validation
+whitelist.pikaur_static.pypyalpm.url
+whitelist.pikaur_static.pypyalpm.size
+whitelist.pikaur_static.pypyalpm.sha256sum
+whitelist.pikaur_static.pypyalpm.replaces
+whitelist.pikaur_static.pypyalpm.packager
+whitelist.pikaur_static.pypyalpm.md5sum
+whitelist.pikaur_static.pypyalpm.licenses
+whitelist.pikaur_static.pypyalpm.isize
+whitelist.pikaur_static.pypyalpm.installdate
+whitelist.pikaur_static.pypyalpm.groups
+whitelist.pikaur_static.pypyalpm.filename
+whitelist.pikaur_static.pypyalpm.desc
+whitelist.pikaur_static.pypyalpm.data
+whitelist.pikaur_static.pypyalpm.conflicts
+whitelist.pikaur_static.pypyalpm.builddate
+whitelist.pikaur_static.pypyalpm.base
+whitelist.pikaur_static.pypyalpm.arch
 
 whitelist.pikaur_test.helpers.DefaultArg
 whitelist.pikaur_test.setUpClass

@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name,line-too-long  # noqa: INP001
 """
 Pure-python alpm implementation backported from Pikaur v0.6
 with compatibility layer added for easier integration with pyalpm interface.
@@ -16,7 +16,7 @@ from typing import IO, TYPE_CHECKING, Any, Final, cast
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-VERBOSE: bool = False
+VERBOSE: bool = False  # nonfinal-ignore
 for verbose_flag in (
     "--verbose",
     "--debug",
@@ -29,14 +29,14 @@ for verbose_flag in (
 FORCE_PACMAN_CLI_DB: bool = "--force-pacman-cli-db" in sys.argv
 
 
-NOT_FOUND_ATOM = object()
+NOT_FOUND_ATOM: Final = object()
 
 DB_NAME_LOCAL: Final = "local"
 
 SUPPORTED_ALPM_VERSION: Final = "9"
 # SUPPORTED_ALPM_VERSION: Final = "99999"  # used for testing only
 
-PACMAN_DB_PATH = "/var/lib/pacman"
+PACMAN_DB_PATH: Final = "/var/lib/pacman"
 
 
 def debug(*args: Any) -> None:
@@ -177,7 +177,7 @@ class Package:
 ################################################################################
 
 
-PACMAN_LIST_FIELDS = (
+PACMAN_LIST_FIELDS: Final = (
     "conflicts",
     "replaces",
     "depends",
@@ -193,17 +193,17 @@ PACMAN_LIST_FIELDS = (
 )
 
 
-PACMAN_INT_FIELDS = (
+PACMAN_INT_FIELDS: Final = (
     "reason",
 )
 
 
-PACMAN_DICT_FIELDS = (
+PACMAN_DICT_FIELDS: Final = (
     "optdepends",
 )
 
 
-DB_INFO_TRANSLATION = {
+DB_INFO_TRANSLATION: Final = {
     "%NAME%": "name",
     "%VERSION%": "version",
     "%PROVIDES%": "provides",

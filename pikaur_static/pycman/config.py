@@ -70,6 +70,7 @@ SINGLE_OPTIONS = (
 	'LocalFileSigLevel',
 	'RemoteFileSigLevel',
 	'ParallelDownloads',
+	'DownloadUser',
 )
 
 BOOLEAN_OPTIONS = (
@@ -81,6 +82,7 @@ BOOLEAN_OPTIONS = (
 	'Color',
 	'DisableDownloadTimeout',
 	'NoProgressBar',
+	'DisableSandbox',
 )
 
 

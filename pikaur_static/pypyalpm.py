@@ -141,7 +141,7 @@ class Package:
     isize: int
 
     def compute_requiredby(self) -> list[str]:
-        return [
+        return sorted([
             pkg.name
             for pkg in PackageDB.get_local_list(handle=self.db.handle)
             for name in [
@@ -149,10 +149,10 @@ class Package:
                 *(get_package_name_from_depend_line(line) for line in self.provides),
             ]
             if name in [get_package_name_from_depend_line(line) for line in pkg.depends]
-        ]
+        ])
 
     def compute_optionalfor(self) -> list[str]:
-        return [
+        return sorted([
             pkg.name
             for pkg in PackageDB.get_local_list(handle=self.db.handle)
             for name in [
@@ -160,7 +160,7 @@ class Package:
                 *(get_package_name_from_depend_line(line) for line in self.provides),
             ]
             if name in [get_package_name_from_depend_line(line) for line in pkg.optdepends]
-        ]
+        ])
 
     def __init__(self) -> None:
         for field in DB_INFO_TRANSLATION.values():

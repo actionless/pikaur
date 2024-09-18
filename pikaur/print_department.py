@@ -760,6 +760,30 @@ def print_ignoring_outofdate_upgrade(package_info: InstallInfo) -> None:
     )
 
 
+def print_stable_version_upgrades(stable_versions_updates: dict[str, InstallInfo]) -> None:
+    print_warning(
+        translate("Stable versions of the following devel packages have newer versions:"),
+    )
+    for og_name, stable_version_update in sorted(
+            stable_versions_updates.items(), key=operator.itemgetter(0),
+    ):
+        line = f"    {bold_line(og_name)} ({stable_version_update.name})"
+        spacing = " " * (38 - printable_length(line))
+        print_stdout(
+            pretty_format_upgradeable(
+                [stable_version_update],
+                template=(
+                    f"{line}{spacing}"
+                    " {current_version}{spacing2}"
+                    "{version_separator}{new_version}{spacing3}"
+                    "{pkg_size}{days_old}{out_of_date}"
+                    "{required_by_installed}"
+                    "{verbose}"
+                ),
+            ),
+        )
+
+
 # pylint:disable=too-many-statements,too-many-branches
 def print_package_search_results(  # noqa: PLR0914,C901
         repo_packages: "Iterable[pyalpm.Package]",

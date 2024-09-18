@@ -24,6 +24,7 @@ from .pikatypes import (
     AURInstallInfo,
     AURPackageInfo,
     ComparableType,
+    InstallInfo,
     PackageSource,
     RepoInstallInfo,
 )
@@ -31,7 +32,7 @@ from .print_department import print_ignored_package, print_not_found_packages
 from .prompt import ask_to_continue
 from .replacements import find_replacements
 from .srcinfo import SrcInfo
-from .updates import find_aur_updates, print_upgradeable
+from .updates import convert_devel_pgnames_to_stable, find_aur_updates, print_upgradeable
 from .version import VersionMatcher
 
 if TYPE_CHECKING:
@@ -39,7 +40,6 @@ if TYPE_CHECKING:
 
     from .args import PikaurArgs
     from .pacman import PacmanPrint
-    from .pikatypes import InstallInfo
 
 logger = create_logger("install_info_fetcher")
 
@@ -55,6 +55,7 @@ class InstallInfoFetcher(ComparableType):  # noqa: PLR0904
     aur_updates_install_info: list[AURInstallInfo]
     aur_deps_install_info: list[AURInstallInfo]
     _all_aur_updates_raw: list[AURInstallInfo]
+    _stable_versions_updates: dict[str, InstallInfo]
 
     args: "PikaurArgs"
     aur_deps_relations: dict[str, list[str]]
@@ -100,6 +101,7 @@ Gonna fetch install info for:
             print_upgradeable(
                 ignored_only=True,
                 aur_install_infos=self._all_aur_updates_raw,
+                stable_versions_updates=self._stable_versions_updates,
             )
 
     def package_is_ignored(self, package_name: str) -> bool:
@@ -471,16 +473,22 @@ Gonna fetch install info for:
             strip_aur_repo_name(version_matcher.pkg_name): version_matcher
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]
         }
+        local_pkgs = PackageDB.get_local_dict()
+        local_pkg_names = PackageDB.get_local_pkgnames()
+        stable_names_of_devel_pkgs = convert_devel_pgnames_to_stable(
+            local_pkg_names,
+        )
         logger.debug(
             "gonna get AUR pkgs install info for:\n"
             "    aur_packages_versionmatchers={}\n"
             "    self.aur_updates_install_info={}\n"
-            "    aur_packages_names_to_versions={}",
+            "    aur_packages_names_to_versions={}\n"
+            "    stable_names_of_devel_pkgs={}",
             aur_packages_versionmatchers,
             self.aur_updates_install_info,
             aur_packages_names_to_versions,
+            stable_names_of_devel_pkgs,
         )
-        local_pkgs = PackageDB.get_local_dict()
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(
             list(aur_packages_names_to_versions.keys()),
         )
@@ -504,7 +512,10 @@ Gonna fetch install info for:
             raise SysExit(6)
         aur_updates_install_info_by_name: dict[str, AURInstallInfo] = {}
         if self.args.sysupgrade:
-            self._all_aur_updates_raw, not_found_aur_pkgs = find_aur_updates()
+            self._all_aur_updates_raw, not_found_aur_pkgs, self._stable_versions_updates = \
+                find_aur_updates(
+                    stable_names_of_devel_pkgs=stable_names_of_devel_pkgs,
+                )
             self.exclude_ignored_packages(not_found_aur_pkgs, print_packages=False)
             if not_found_aur_pkgs:
                 logger.debug("error code: 789sdfgh789sd6")

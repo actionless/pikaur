@@ -480,10 +480,10 @@ def pikspect(
         format_pacman_question("Do you want to remove these packages?"),
     ]
     questions_conflict = format_pacman_question(
-        ".* %s-.* and %s-.* are in conflict. Remove %s?", YesNo.QUESTION_YN_NO,
+        "%s-%s%s%s and %s-%s%s%s are in conflict. Remove %s?", YesNo.QUESTION_YN_NO,
     )
     questions_conflict_via_provided = format_pacman_question(
-        ".* %s-.* and %s-.* are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO,
+        "%s-%s%s%s and %s-%s%s%s are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO,
     )
 
     def format_conflicts(conflicts: list[list[str]]) -> list[str]:
@@ -492,12 +492,12 @@ def pikspect(
             for question in
             [
                 questions_conflict % (
-                    new_pkg, old_pkg, old_pkg,
+                    f".* {new_pkg}", ".*", "", "", old_pkg, ".*", "", "", old_pkg,
                 )
                 for new_pkg, old_pkg in conflicts
             ] + [
                 questions_conflict_via_provided % (
-                    new_pkg, old_pkg, ".*", old_pkg,
+                    f".* {new_pkg}", ".*", "", "", old_pkg, ".*", "", "", ".*", old_pkg,
                 )
                 for new_pkg, old_pkg in conflicts
             ]

@@ -63,7 +63,7 @@ class PackageSource(enum.Enum):
     LOCAL = enum.auto()
 
 
-@dataclass(eq=False, kw_only=True)
+@dataclass(eq=False, kw_only=True, repr=False)
 class InstallInfo(ComparableType):
     package: "pyalpm.Package | AURPackageInfo"
     name: str = ""
@@ -140,12 +140,12 @@ class InstallInfo(ComparableType):
                 self.repository = cast("pyalpm.Package", self.package).db.name
 
 
-@dataclass(eq=False)
+@dataclass(eq=False, repr=False)
 class RepoInstallInfo(InstallInfo):
     package: "pyalpm.Package"
 
 
-@dataclass(eq=False)
+@dataclass(eq=False, repr=False)
 class AURInstallInfo(InstallInfo):
     package: "AURPackageInfo"
 

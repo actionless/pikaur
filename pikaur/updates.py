@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from datetime import datetime
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from .alpm import PacmanConfig
 from .args import parse_args
@@ -55,6 +55,14 @@ def devel_pkgname_to_stable(pkg_name: str) -> str | None:
 
 def is_devel_pkg(pkg_name: str) -> bool:
     return bool(devel_pkgname_to_stable(pkg_name))
+
+
+def convert_devel_pgnames_to_stable(pkgs: list[str]) -> dict[str, str]:
+    return {
+        stable_name: pkg
+        for pkg in pkgs
+        if (stable_name := devel_pkgname_to_stable(pkg))
+    }
 
 
 def get_remote_package(
@@ -123,37 +131,47 @@ def find_aur_devel_updates(
 
 
 def find_aur_updates(  # pylint: disable=too-many-branches  # noqa: PLR0914
-        stable_names_of_devel_pkgs: dict[str, str] | None = None,
+        *, check_stable_versions_of_devel_pkgs: bool = False,
 ) -> tuple[list[AURInstallInfo], list[str], dict[str, InstallInfo]]:
     args = parse_args()
+    local_packages = PackageDB.get_local_dict()
     package_names = find_packages_not_from_repo()
     print_stderr(translate_many(
         "Reading AUR package info...",
         "Reading AUR packages info...",
         len(package_names),
     ))
-    stable_names_of_devel_pkgs_stable = list((stable_names_of_devel_pkgs or {}).keys())
+
+    stable_to_devel_names = {}
+    if check_stable_versions_of_devel_pkgs:
+        local_pkg_names = PackageDB.get_local_pkgnames()
+        stable_to_devel_names = convert_devel_pgnames_to_stable(
+            local_pkg_names,
+        )
+    stable_names_of_devel_pkgs = list(stable_to_devel_names.keys())
+
     aur_pkgs_info, not_found_aur_pkgs = find_aur_packages(
-        package_names + stable_names_of_devel_pkgs_stable,
+        package_names + stable_names_of_devel_pkgs,
     )
+
     stable_versions_pkgs: dict[str, pyalpm.Package | AURPackageInfo] = {}
     repo_pkg_names = PackageDB.get_repo_pkgnames()
-    for pkg_name in stable_names_of_devel_pkgs_stable:
+    for pkg_name in stable_names_of_devel_pkgs:
         if pkg_name in not_found_aur_pkgs:
             not_found_aur_pkgs.remove(pkg_name)
             if pkg_name in repo_pkg_names:
-                og_name = cast(dict[str, str], stable_names_of_devel_pkgs)[pkg_name]
+                og_name = stable_to_devel_names[pkg_name]
                 # @TODO: replace to get_repo_package():
                 stable_versions_pkgs[og_name] = PackageDB.find_repo_package(pkg_name)
-    local_packages = PackageDB.get_local_dict()
+
     aur_updates = []
     stable_versions_updates = {}
     aur_pkgs_up_to_date = []
     for aur_pkg in aur_pkgs_info:
         pkg_name = aur_pkg.name
         aur_version = aur_pkg.version
-        if pkg_name in stable_names_of_devel_pkgs_stable:
-            og_name = cast(dict[str, str], stable_names_of_devel_pkgs)[pkg_name]
+        if pkg_name in stable_names_of_devel_pkgs:
+            og_name = stable_to_devel_names[pkg_name]
             stable_versions_pkgs[og_name] = aur_pkg
         else:
             current_version = local_packages[pkg_name].version
@@ -169,6 +187,7 @@ def find_aur_updates(  # pylint: disable=too-many-branches  # noqa: PLR0914
                 aur_updates.append(pkg_install_info)
             else:
                 aur_pkgs_up_to_date.append(aur_pkg)
+
     for og_name, pkg in stable_versions_pkgs.items():
         current_version = local_packages[og_name].version
         compare_pkg = compare_versions(current_version, pkg.version)
@@ -177,6 +196,7 @@ def find_aur_updates(  # pylint: disable=too-many-branches  # noqa: PLR0914
                 package=pkg,
                 current_version=current_version,
             )
+
     if aur_pkgs_up_to_date:
         sync_config = PikaurConfig().sync
         devel_packages_expiration = sync_config.DevelPkgsExpiration.get_int()
@@ -188,14 +208,6 @@ def find_aur_updates(  # pylint: disable=too-many-branches  # noqa: PLR0914
                 package_ttl_days=devel_packages_expiration,
             )
     return aur_updates, not_found_aur_pkgs, stable_versions_updates
-
-
-def convert_devel_pgnames_to_stable(pkgs: list[str]) -> dict[str, str]:
-    return {
-        stable_name: pkg
-        for pkg in pkgs
-        if (stable_name := devel_pkgname_to_stable(pkg))
-    }
 
 
 def print_upgradeable(

@@ -32,7 +32,7 @@ from .print_department import print_ignored_package, print_not_found_packages
 from .prompt import ask_to_continue
 from .replacements import find_replacements
 from .srcinfo import SrcInfo
-from .updates import convert_devel_pgnames_to_stable, find_aur_updates, print_upgradeable
+from .updates import find_aur_updates, print_upgradeable
 from .version import VersionMatcher
 
 if TYPE_CHECKING:
@@ -475,20 +475,14 @@ Gonna fetch install info for:
             for version_matcher in [VersionMatcher(name) for name in aur_packages_versionmatchers]
         }
         local_pkgs = PackageDB.get_local_dict()
-        local_pkg_names = PackageDB.get_local_pkgnames()
-        stable_names_of_devel_pkgs = convert_devel_pgnames_to_stable(
-            local_pkg_names,
-        )
         logger.debug(
             "gonna get AUR pkgs install info for:\n"
             "    aur_packages_versionmatchers={}\n"
             "    self.aur_updates_install_info={}\n"
-            "    aur_packages_names_to_versions={}\n"
-            "    stable_names_of_devel_pkgs={}",
+            "    aur_packages_names_to_versions={}",
             aur_packages_versionmatchers,
             self.aur_updates_install_info,
             aur_packages_names_to_versions,
-            stable_names_of_devel_pkgs,
         )
         aur_pkg_list, not_found_aur_pkgs = find_aur_packages(
             list(aur_packages_names_to_versions.keys()),
@@ -515,7 +509,7 @@ Gonna fetch install info for:
         if self.args.sysupgrade:
             self._all_aur_updates_raw, not_found_aur_pkgs, self._stable_versions_updates = \
                 find_aur_updates(
-                    stable_names_of_devel_pkgs=stable_names_of_devel_pkgs,
+                    check_stable_versions_of_devel_pkgs=True,
                 )
             self.exclude_ignored_packages(not_found_aur_pkgs, print_packages=False)
             if not_found_aur_pkgs:

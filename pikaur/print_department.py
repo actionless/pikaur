@@ -154,7 +154,14 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
         required_by_installed: bool = False,
         print_repo: bool = False,
         color: bool = True,
-        template: str | None = None,
+        template: str = (
+            " {pkg_name}{spacing}"
+            " {current_version}{spacing2}"
+            "{version_separator}{new_version}{spacing3}"
+            "{pkg_size}{days_old}{out_of_date}"
+            "{required_by_installed}"
+            "{verbose}"
+        ),
 ) -> str:
     parent_color = color
 
@@ -316,16 +323,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
 
         pkg_len = printable_length(pkg_name)
 
-        return (
-            template or (
-                " {pkg_name}{spacing}"
-                " {current_version}{spacing2}"
-                "{version_separator}{new_version}{spacing3}"
-                "{pkg_size}{days_old}{out_of_date}"
-                "{required_by_installed}"
-                "{verbose}"
-            )
-        ).format(
+        return template.format(
             pkg_name=pkg_name,
             current_version=(
                 _color_line(common_version, version_color) +

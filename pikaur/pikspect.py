@@ -398,9 +398,11 @@ class PikspectPopen:
 
         for answer, questions in self.default_questions.items():
             for question in questions:
+                file_debug("question", question)
                 if not _match(question, historic_output):
                     continue
                 logger.debug("Found right answer to `{}`: `{}`", question, answer)
+                file_debug("Found right answer to `{}`: `{}`", question, answer)
                 self.next_answers.append(answer)
                 clear_buffer = True
                 break
@@ -478,23 +480,27 @@ def pikspect(
         format_pacman_question("Do you want to remove these packages?"),
     ]
     questions_conflict = format_pacman_question(
-        "%s and %s are in conflict. Remove %s?", YesNo.QUESTION_YN_NO,
+        ".* %s-.* and %s-.* are in conflict. Remove %s?", YesNo.QUESTION_YN_NO,
     )
     questions_conflict_via_provided = format_pacman_question(
-        "%s and %s are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO,
+        ".* %s-.* and %s-.* are in conflict (%s). Remove %s?", YesNo.QUESTION_YN_NO,
     )
 
     def format_conflicts(conflicts: list[list[str]]) -> list[str]:
         return [
-            questions_conflict % (new_pkg, old_pkg, old_pkg)
-            for new_pkg, old_pkg in conflicts
-        ] + [
-            (
-                re.escape(questions_conflict_via_provided % (
+            re.escape(question).replace(r"\.\*", ".*")
+            for question in
+            [
+                questions_conflict % (
+                    new_pkg, old_pkg, old_pkg,
+                )
+                for new_pkg, old_pkg in conflicts
+            ] + [
+                questions_conflict_via_provided % (
                     new_pkg, old_pkg, ".*", old_pkg,
-                ))
-            ).replace(r"\.\*", ".*")
-            for new_pkg, old_pkg in conflicts
+                )
+                for new_pkg, old_pkg in conflicts
+            ]
         ]
 
     default_questions: dict[str, list[str]] = {}

@@ -558,7 +558,7 @@ class PackageDB(PackageDBCommon, PyAlpmWrapper):
         )
 
     @classmethod
-    def get_local_pkg_uncached(cls, name: str) -> pyalpm.Package:
+    def get_local_pkg_uncached(cls, name: str) -> pyalpm.Package | None:
         return cls.get_alpm_handle().get_localdb().get_pkg(name)
 
 

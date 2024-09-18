@@ -20,7 +20,9 @@ class PacmanExecutablesPaths:
         # pylint: disable=import-outside-toplevel
         if not cls._pacman:
             try:
-                from pikaur.args import parse_args  # noqa: PLC0415
+                from pikaur.args import (  # pylint: disable=no-name-in-module,useless-suppression  # noqa: PLC0415,E501,RUF100
+                    parse_args,
+                )
                 cls._pacman = parse_args().pacman_path
                 cls._pacman_conf = parse_args().pacman_conf_path
             except Exception as exc:

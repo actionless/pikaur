@@ -226,6 +226,7 @@ Gonna fetch install info for:
         self.aur_updates_install_info = []
         self.aur_deps_install_info = []
         self._all_aur_updates_raw = []
+        self._stable_versions_updates = {}
 
         # retrieve InstallInfo objects for repo packages to be installed
         # and their upgrades if --sysupgrade was passed

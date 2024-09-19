@@ -3,7 +3,7 @@
 
 _pkgname=pikaur
 pkgname="${_pkgname}-git"
-pkgver=1.28
+pkgver=1.29
 pkgrel=1
 pkgdesc="AUR helper which asks all questions before installing/building. Inspired by pacaur, yaourt and yay."
 arch=('any')

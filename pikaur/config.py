@@ -31,7 +31,7 @@ if TYPE_CHECKING:
         migrated: NotRequired[bool]
 
 
-VERSION: "Final" = "1.28-dev"
+VERSION: "Final" = "1.29-dev"
 
 DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
 DEFAULT_INPUT_ENCODING: "Final" = "utf-8"

@@ -49,7 +49,7 @@ RUN echo ">>>> Preparing build directory:" && \
 COPY ./pikaur_meta_helpers /opt/app-build/pikaur_meta_helpers
 #RUN sudo -u user python -um pikaur_meta_helpers.pidowngrade python-coverage '7.4.1-1'  # up to 7.4.4
 RUN echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -Syu --noconfirm --needed --color=always iputils python-virtualenv python-tqdm \
+	sudo -u user pikaur -Syu --noconfirm --needed --color=always \
 		ruff flake8 python-pylint mypy vulture bandit shellcheck python-coveralls
 
 COPY ./pikaur_test /opt/app-build/pikaur_test

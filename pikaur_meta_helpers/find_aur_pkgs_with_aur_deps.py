@@ -3,8 +3,6 @@ import os
 from multiprocessing.pool import ThreadPool
 from typing import Final, TypedDict
 
-import tqdm  # type: ignore[import-untyped]
-
 from pikaur.pikatypes import AURPackageInfo
 from pikaur.version import VersionMatcher
 from pikaur_meta_helpers.util import load_aur_dump
@@ -19,10 +17,10 @@ class Item(TypedDict):
 
 
 def filter_thread(
-        idx: int, aur_pkgs: list[AURPackageInfo], all_aur_pkgnames: dict[str, bool],
+        _idx: int, aur_pkgs: list[AURPackageInfo], all_aur_pkgnames: dict[str, bool],
 ) -> dict[str, Item]:
     matching_packages: dict[str, Item] = {}
-    for pkg in tqdm.tqdm(aur_pkgs, position=idx):
+    for pkg in aur_pkgs:
         if QUERY not in pkg.name:
             continue
         if UNQUERY in pkg.name:

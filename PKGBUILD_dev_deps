@@ -1,0 +1,36 @@
+# Maintainer: Yauheni Kirylau <actionless DOT loveless PLUS aur AT gmail MF com>
+# shellcheck disable=SC2001,SC2034,SC2154 shell=bash
+
+_pkgname=pikaur_dev_deps
+#pkgname="${_pkgname}-git"
+pkgname="${_pkgname}"
+pkgver=1.29
+pkgrel=2
+pkgdesc="Development deps for Pikaur"
+arch=('any')
+url="https://github.com/actionless/pikaur"
+license=('GPL-3.0-only')
+source=(
+	#"$pkgname::git+${url}.git#branch=master"
+)
+b2sums=(
+	#"SKIP"
+)
+depends=(
+	'python-hatchling'  # tag-release
+	# linting:
+	ruff flake8 python-pylint mypy vulture bandit shellcheck
+	# pikaur opt deps:
+	'devtools'
+	'python-pysocks'
+	'python-defusedxml'
+)
+makedepends=(
+	#'python-wheel'
+	#'python-build'
+	#'python-installer'
+	#'python-setuptools'  # i think it normally should be required by python-pep517 which required by python-build/installer
+	#'python-markdown-it-py'
+)
+optdepends=(
+)

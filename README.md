@@ -374,6 +374,12 @@ gpg --batch --passphrase '' --quick-gen-key "pikaur@localhost" rsa sign 0
 
 You can start from [this list of issues](https://github.com/actionless/pikaur/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22 ""). Grep-ing `@TODO` comments also useful if you're itching to write something.
 
+To install development deps, run:
+
+```sh
+pikaur -Pi ./PKGBUILD_dev_deps
+```
+
 #### Running CI locally
 
 ##### Linters (code quality check)

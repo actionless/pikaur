@@ -41,8 +41,9 @@ def filter_search_results(
             if (
                     query in pkg.name
             ) or (
-                not names_only and
-                (query in pkg.desc)
+                not names_only
+                and pkg.desc
+                and (query in pkg.desc)
             ):
                 filtered_results.setdefault(_q, []).append(pkg)
     return filtered_results

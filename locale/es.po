@@ -28,7 +28,7 @@ msgstr "error:"
 
 #: pikaur/args.py:133
 msgid "use pacman-cli-based fallback alpm database reader"
-msgstr ""
+msgstr "utilizar pacman-cli como unidad de seguridad de la base de datos alpm"
 
 #: pikaur/args.py:144
 msgid "query packages from AUR only"
@@ -100,11 +100,11 @@ msgstr "instalar el paquete integrado"
 
 #: pikaur/args.py:230
 msgid "visualize package dependency tree"
-msgstr ""
+msgstr "ver árbol de dependencia del paquete"
 
 #: pikaur/args.py:234
 msgid "less verbose output"
-msgstr ""
+msgstr "salida menos verbosa"
 
 #: pikaur/args.py:241
 msgid "print spawned by pikaur subshell commands"
@@ -178,7 +178,7 @@ msgstr "ID de usuario para ejecutar makepkg si pikaur se inicia como root"
 
 #: pikaur/args.py:389
 msgid "dependency tree level"
-msgstr ""
+msgstr "nivel del árbol de dependencia"
 
 #: pikaur/args.py:434
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
@@ -408,9 +408,9 @@ msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
 msgstr "Migración de la opción de configuración [{}]{}=\"{}\" a =\"{}\"..."
 
 #: pikaur/extras/dep_tree.py:150
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{pkg} is not installed"
-msgstr "Se instalará el paquete AUR:"
+msgstr "{pkg} no está instalado"
 
 #: pikaur/getpkgbuild_cli.py:51
 #, python-brace-format
@@ -438,9 +438,8 @@ msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr "pikaur {-G --getpkgbuild} [opciones] <paquete(s)>"
 
 #: pikaur/help_cli.py:64
-#, fuzzy
 msgid "pikaur {-X --extras}      [options] [package(s)]"
-msgstr "pikaur {-P --pkgbuild}    [opciones] [archivo(s)]"
+msgstr "pikaur {-X --extras}    [opciones] [paquete(s)]"
 
 #: pikaur/help_cli.py:68
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
@@ -456,12 +455,11 @@ msgstr ""
 
 #: pikaur/help_cli.py:75
 msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
-msgstr "uso:  pikaur {-G --getpkgbuild} [opciones] <paquete(s)>"
+msgstr "uso: pikaur {-G --getpkgbuild} [opciones] <paquete(s)>"
 
 #: pikaur/help_cli.py:79
-#, fuzzy
 msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
-msgstr "pikaur {-P --pkgbuild}    [opciones] [archivo(s)]"
+msgstr "uso: pikaur {-X --extras} [opciones] [paquete(s)]"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -805,12 +803,12 @@ msgstr "Cancelación de la transacción {target}..."
 msgid "Failed to build following packages:"
 msgstr "No se pueden compilar los siguientes paquetes:"
 
-#: pikaur/install_info_fetcher.py:570
+#: pikaur/install_info_fetcher.py:565
 #, python-brace-format
 msgid "{pkg_name} already added to the list"
 msgstr "{pkg_name} ya está añadido a la lista"
 
-#: pikaur/install_info_fetcher.py:595
+#: pikaur/install_info_fetcher.py:590
 msgid "Resolving AUR dependencies..."
 msgstr "Resolución de dependencias AUR..."
 
@@ -849,7 +847,7 @@ msgstr ""
 
 #: pikaur/main.py:292
 msgid "no package(s) specified"
-msgstr ""
+msgstr "ningún paquete(s) especificado(s)"
 
 #: pikaur/main.py:389
 #, python-brace-format
@@ -875,7 +873,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-18 08:48+0200\n"
+"POT-Creation-Date: 2024-09-21 09:31+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -993,9 +991,8 @@ msgid "as dep"
 msgstr "como dep"
 
 #: pikaur/print_department.py:241
-#, fuzzy
 msgid "as opt dep"
-msgstr "como dep"
+msgstr "como dep opcional"
 
 #: pikaur/print_department.py:244
 msgid "explicit"
@@ -1110,7 +1107,7 @@ msgstr ""
 
 #: pikaur/print_department.py:765
 msgid "Stable versions of the following devel packages have newer versions:"
-msgstr ""
+msgstr "Las versiones estables de los siguientes paquetes devel tienen versiones más nuevas:"
 
 #: pikaur/print_department.py:871
 #, python-brace-format
@@ -1177,22 +1174,22 @@ msgstr[1] ""
 "Los paquetes '{packages}' están disponibles en el repositorio pero no se "
 "pueden instalar"
 
-#: pikaur/search_cli.py:89
+#: pikaur/search_cli.py:90
 #, python-brace-format
 msgid "AUR: Too many package results for '{query}'"
 msgstr "AUR: Demasiados resultados de paquetes para '{query}'"
 
-#: pikaur/search_cli.py:96
+#: pikaur/search_cli.py:97
 #, python-brace-format
 msgid "AUR: Query arg too small '{query}'"
 msgstr "AUR: Argumento de búsqueda demasiado pequeño '{query}'"
 
-#: pikaur/search_cli.py:203
+#: pikaur/search_cli.py:204
 #, python-brace-format
 msgid "Searching... [{bar}]"
 msgstr "Búsqueda... [{bar}]"
 
-#: pikaur/search_cli.py:223
+#: pikaur/search_cli.py:224
 msgid "AUR returned error:"
 msgstr "AUR ha devuelto error:"
 
@@ -1200,13 +1197,13 @@ msgstr "AUR ha devuelto error:"
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "no se pudo generar .SRCINFO desde {}:"
 
-#: pikaur/updates.py:131
+#: pikaur/updates.py:140
 msgid "Reading AUR package info..."
 msgid_plural "Reading AUR packages info..."
 msgstr[0] "Lectura de informaciónes sobre el paquete AUR..."
 msgstr[1] "Lectura de informaciones sobre los paquetes AUR..."
 
-#: pikaur/updates.py:235
+#: pikaur/updates.py:247
 msgid "(ignored in Pacman config)"
 msgstr "(ignorado en la configuración de Pacman)"
 
@@ -1218,14 +1215,3 @@ msgstr "En espera durante {} segundos..."
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur requiere python-pysocks para usar un proxy socks5."
 
-#, python-brace-format
-#~ msgid "'{class_name}' does not have attribute '{key}' defined."
-#~ msgstr "'{class_name}' no tiene definido el atributo '{key}'."
-
-#, python-brace-format
-#~ msgid "'{class_name}' does not have required attribute '{key}' set."
-#~ msgstr "'{class_name}' no tiene configurado el atributo '{key}' necesario."
-
-#, fuzzy
-#~ msgid "usage:  pikaur {-X --extras} [options]"
-#~ msgstr "uso:  pikaur {-P --pkgbuild} [opciones] <archivo(s)>"

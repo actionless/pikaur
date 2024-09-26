@@ -159,9 +159,12 @@ def bubble_right(
     )
 
 
-def pikasay(  # noqa: PLR0917
-        text: str, margin: int = 1, padding: int = 1, width: int | None = None,
-        orientation: str = "horizontal", mascot_pic: str = PIKAPIC,
+def pikasay(
+        text: str,
+        *,
+        margin: int = 1, padding: int = 1, width: int | None = None,
+        orientation: str = "horizontal",
+        mascot_pic: str = PIKAPIC,
 ) -> None:
     if orientation == "horizontal":
         message = "".join((

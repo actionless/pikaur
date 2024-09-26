@@ -634,6 +634,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
 
     def add_letter_andor_opt(
             self,
+            *,
             action: str | None = None,
             letter: str | None = None,
             opt: str | None = None,

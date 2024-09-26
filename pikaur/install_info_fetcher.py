@@ -66,6 +66,7 @@ class InstallInfoFetcher(ComparableType):  # noqa: PLR0904
 
     def __init__(
             self,
+            *,
             install_package_names: list[str],
             not_found_repo_pkgs_names: list[str],
             manually_excluded_packages_names: list[str],

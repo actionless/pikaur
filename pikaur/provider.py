@@ -20,7 +20,7 @@ class Provider:
     saved_providers: ClassVar[dict[str, str]] = {}
 
     @classmethod
-    def choose(  # pylint: disable=too-many-return-statements  # noqa: PLR0911
+    def choose(  # pylint: disable=too-many-return-statements
             cls,
             dependency: str,
             options: list[Package],

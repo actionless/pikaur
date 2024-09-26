@@ -62,7 +62,7 @@ def find_conflicting_with_new_pkgs(
     """
     local_provided = PackageDB.get_local_provided_dict()
     new_pkgs_conflicts: dict[str, list[str]] = {}
-    for conflict_line in new_pkg_conflicts_list:  # noqa: PLR1702:
+    for conflict_line in new_pkg_conflicts_list:
         conflict_version_matcher = VersionMatcher(conflict_line, is_pkg_deps=True)
         conflict_pkg_name = conflict_version_matcher.pkg_name
         if new_pkg_name != conflict_pkg_name:

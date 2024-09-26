@@ -164,7 +164,7 @@ def print_package_downgrading(package_name: str, downgrade_version: str) -> None
     )
 
 
-class InstallPackagesCLI:  # noqa: PLR0904
+class InstallPackagesCLI:
 
     # User input
     args: "PikaurArgs"

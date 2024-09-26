@@ -252,7 +252,7 @@ def get_pacman_cli_package_db(  # noqa: C901
             field: str | None
             value: str | list[str] | dict[str, str | None] | None
             field = value = None
-            for line in lines:  # noqa: PLR1702
+            for line in lines:
                 if line == "":  # noqa: PLC1901
                     if db_type == "local":
                         pkg.db = DBPlaceholder(name="local")

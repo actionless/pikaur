@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 logger = create_logger("install_info_fetcher")
 
 
-class InstallInfoFetcher(ComparableType):  # noqa: PLR0904
+class InstallInfoFetcher(ComparableType):
 
     repo_packages_install_info: list[RepoInstallInfo]
     new_repo_deps_install_info: list[RepoInstallInfo]

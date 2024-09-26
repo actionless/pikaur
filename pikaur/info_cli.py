@@ -73,7 +73,7 @@ def _decorate_aur_info_output(output: str) -> str:
     )
 
 
-def cli_info_packages() -> None:  # noqa: PLR0914
+def cli_info_packages() -> None:
     refresh_pkg_db_if_needed()
 
     args = parse_args()

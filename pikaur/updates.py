@@ -130,7 +130,7 @@ def find_aur_devel_updates(
     return aur_updates
 
 
-def find_aur_updates(  # pylint: disable=too-many-branches  # noqa: PLR0914
+def find_aur_updates(  # pylint: disable=too-many-branches
         *, check_stable_versions_of_devel_pkgs: bool = False,
 ) -> tuple[list[AURInstallInfo], list[str], dict[str, InstallInfo]]:
     args = parse_args()

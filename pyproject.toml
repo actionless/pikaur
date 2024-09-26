@@ -141,10 +141,16 @@ select = [
 ignore = [
   # enable back later:
   "ERA001", # commented out code
+
   # already managed by pylint, mb replace completely to ruff later:
-  "PLR0912",  # too many branches
-  "PLR0913",  # too many arguments
-  "PLR0915",  # too many statements
+  "PLR0904",  # too-many-public-methods
+  "PLR0911",  # too-many-return-statements
+  "PLR0912",  # too-many-branches
+  "PLR0913",  # too-many-arguments
+  "PLR0914",  # too-many-locals
+  "PLR0915",  # too-many-statements
+  "PLR0917",  # too-many-positional-arguments
+  "PLR1702",  # too-many-nested-blocks
 
   "PLE1205",  # pikaur is using non-default `logging`
 

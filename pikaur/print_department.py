@@ -187,7 +187,7 @@ def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C
         tuple[int, str] | str
     )
 
-    def pretty_format(  # pylint:disable=R0912  # noqa: PLR0914
+    def pretty_format(  # pylint:disable=R0912
             pkg_update: "InstallInfo",
     ) -> tuple[str, type_sort_key]:
         common_version, diff_weight = get_common_version(
@@ -785,7 +785,7 @@ def print_stable_version_upgrades(stable_versions_updates: dict[str, InstallInfo
 
 
 # pylint:disable=too-many-statements,too-many-branches
-def print_package_search_results(  # noqa: PLR0914,C901
+def print_package_search_results(  # noqa: C901
         repo_packages: "Iterable[pyalpm.Package]",
         aur_packages: "Iterable[AURPackageInfo]",
         local_pkgs_versions: dict[str, str],

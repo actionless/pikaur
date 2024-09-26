@@ -127,7 +127,7 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
             raise RuntimeError(translate(f"Can't copy '{from_path}' to '{to_path}'."))
 
 
-class PackageBuild(ComparableType):  # noqa: PLR0904
+class PackageBuild(ComparableType):
     # pylint: disable=too-many-instance-attributes
 
     clone: bool = False

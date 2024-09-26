@@ -570,14 +570,14 @@ class PikaurArgs(Namespace):
             self.interactive_package_select = True
 
     def validate(self) -> None:
-        for operation, operation_depends in ARG_DEPENDS.items():  # noqa: PLR1702
+        for operation, operation_depends in ARG_DEPENDS.items():
             if getattr(self, operation):
                 for arg_depend_on, dependant_args in operation_depends.items():
                     if not getattr(self, arg_depend_on):
                         for arg_name in dependant_args:
                             if getattr(self, arg_name):
                                 raise MissingArgumentError(arg_depend_on, arg_name)
-        for operation, operation_conflicts in ARG_CONFLICTS.items():  # noqa: PLR1702
+        for operation, operation_conflicts in ARG_CONFLICTS.items():
             if getattr(self, operation):
                 for args_conflicts, conflicting_args in operation_conflicts.items():
                     if getattr(self, args_conflicts):

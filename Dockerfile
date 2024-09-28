@@ -33,7 +33,7 @@ COPY ./packaging/. /opt/app-build/packaging
 COPY ./submodules/. /opt/app-build/submodules
 COPY ./locale/. /opt/app-build/locale
 COPY ./PKGBUILD ./Makefile ./README.md ./pyproject.toml ./.flake8 ./LICENSE /opt/app-build/
-COPY ./pikaur-static/. /opt/app-build/pikaur-static
+COPY ./pikaur_static/. /opt/app-build/pikaur_static
 COPY ./pikaur/. /opt/app-build/pikaur
 RUN echo ">>>> Preparing build directory:" && \
 	chown -R user /opt/app-build/ && \

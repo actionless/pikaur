@@ -533,7 +533,7 @@ class PackageBuild(ComparableType):
         finally:
             PackageDB.discard_local_cache()
 
-    def set_built_package_path(self) -> None:
+    def set_built_package_path(self) -> None:  # pylint: disable=too-many-branches
         pkg_paths_spawn = spawn(
             isolate_root_cmd(
                 [*MakePkgCommand.get(), "--packagelist"],
@@ -546,7 +546,14 @@ class PackageBuild(ComparableType):
         if not pkg_paths_spawn.stdout_text:
             return
         logger.debug("Package names: {}", pkg_paths_spawn)
-        pkg_paths = [Path(line) for line in pkg_paths_spawn.stdout_text.splitlines()]
+        pkg_paths: list[Path] = []
+        debug_pkg_paths: list[Path] = []
+        for line in pkg_paths_spawn.stdout_text.splitlines():
+            for pkg_name in self.package_names:
+                if f"{pkg_name}-debug-" in line:
+                    debug_pkg_paths.append(Path(line))
+                elif pkg_name in line:
+                    pkg_paths.append(Path(line))
         if not pkg_paths:
             return
         pkg_dest = get_pkgdest()
@@ -580,8 +587,19 @@ class PackageBuild(ComparableType):
                     new_package_path.name + ".sig"
                 )
                 mkdir(PackageCachePath())
-                replace_file(pkg_path, new_package_path)
-                replace_file(pkg_sig_path, new_package_sig_path)
+                for path_from, path_to in (
+                    (pkg_path, new_package_path),
+                    (pkg_sig_path, new_package_sig_path),
+                ):
+                    if path_from.exists():
+                        logger.debug("Copying {} to {}", path_from, path_to)
+                        replace_file(path_from, path_to)
+                logger.debug("Found debug packages: {}", debug_pkg_paths)
+                for debug_pkg_path in debug_pkg_paths:
+                    new_debug_pkg_path = new_package_path.parent / debug_pkg_path.name
+                    if debug_pkg_path.exists():
+                        logger.debug("Copying {} to {}", debug_pkg_path, new_debug_pkg_path)
+                        replace_file(debug_pkg_path, new_debug_pkg_path)
             pkg_path = new_package_path
             if pkg_path and pkg_path.exists():
                 self.built_packages_paths[pkg_name] = pkg_path

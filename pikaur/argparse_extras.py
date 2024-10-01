@@ -2,7 +2,15 @@
 # Original author: Steven J. Bethard <steven.bethard@gmail.com>.
 # pylint: disable=too-many-statements,too-many-locals,too-many-branches,protected-access
 
-from argparse import SUPPRESS, ArgumentError, ArgumentParser, _get_action_name  # noqa: PLC2701
+import sys
+from argparse import (
+    PARSER,
+    REMAINDER,
+    SUPPRESS,
+    ArgumentError,
+    ArgumentParser,
+    _get_action_name,  # noqa: PLC2701
+)
 from typing import TYPE_CHECKING
 
 from .i18n import translate as _
@@ -37,7 +45,9 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         # find all option indices, and determine the arg_string_pattern
         # which has an 'O' if there is an option at an index,
         # an 'A' if there is an argument, or a '-' if there is a '--'
-        option_string_indices = {}
+        option_string_indices: dict[int, tuple[
+            tuple[Action | None, str, str, str | None]
+        ]] = {}
         arg_string_pattern_parts = []
         arg_strings_iter = iter(arg_strings)
         for i, arg_string in enumerate(arg_strings_iter):
@@ -50,11 +60,11 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             # otherwise, add the arg to the arg strings
             # and note the index if it was an option
             else:
-                option_tuple = self._parse_optional(arg_string)
-                if option_tuple is None:
+                option_tuples = self._parse_optional(arg_string)
+                if option_tuples is None:
                     pattern = "A"
                 else:
-                    option_string_indices[i] = option_tuple
+                    option_string_indices[i] = option_tuples  # type: ignore[assignment]
                     pattern = "O"
                 arg_string_pattern_parts.append(pattern)
 
@@ -72,9 +82,8 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             argument_values = self._get_values(action, argument_strings)
 
             # error if this argument is not allowed with other previously
-            # seen arguments, assuming that actions that use the default
-            # value don't really count as "present"
-            if argument_values is not action.default:
+            # seen arguments
+            if action.option_strings or argument_strings:
                 seen_non_default_actions.add(action)
                 for conflict_action in action_conflicts.get(action, []):
                     if conflict_action in seen_non_default_actions:
@@ -91,18 +100,37 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         def consume_optional(start_index: int) -> int:
 
             # get the optional identified at this index
-            option_tuple = option_string_indices[start_index]
+            option_tuples: tuple[
+                tuple[Action | None, str, str, str | None]
+            ] = option_string_indices[start_index]
+
+            # if multiple actions match, the option string was ambiguous
+            if (sys.version_info >= (3, 12, 7)) and (len(option_tuples) > 1):
+                options = ", ".join([
+                    option_string
+                    for action, option_string, sep, explicit_arg
+                    in option_tuples
+                ])
+                args = {"option": arg_string, "matches": options}
+                msg = _("ambiguous option: %(option)s could match %(matches)s")
+                raise ArgumentError(None, msg % args)
+
+            option_tuple_length_before_3_12_3 = 3
+            option_tuple_length_3_12_3_onwards = 4
+            option_tuple_length_3_12_7_onwards = 1
+
             action: Action | None
             option_string: str
             explicit_arg: str | None
-            # action, option_string, sep, explicit_arg = option_tuple  # type: ignore[misc]
-            option_tuple_length_before_3_12_3 = 3
-            option_tuple_length_3_12_3_onwards = 4
-            if len(option_tuple) == option_tuple_length_before_3_12_3:
-                action, option_string, explicit_arg = option_tuple
+            sep: str | None
+
+            if len(option_tuples) == option_tuple_length_before_3_12_3:
+                action, option_string, explicit_arg = option_tuples  # type: ignore[misc]
                 sep = None
-            elif len(option_tuple) == option_tuple_length_3_12_3_onwards:
-                action, option_string, sep, explicit_arg = option_tuple  # type: ignore[misc]
+            elif len(option_tuples) == option_tuple_length_3_12_3_onwards:
+                action, option_string, sep, explicit_arg = option_tuples  # type: ignore[misc]
+            elif len(option_tuples) == option_tuple_length_3_12_7_onwards:
+                action, option_string, sep, explicit_arg = option_tuples[0]
             else:
                 raise NotImplementedError
 
@@ -153,6 +181,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                             # if we encountered unknown arg
                             # return it and add later to other
                             # unknown args
+                            # 2024.10.01: this is still needed with python 3.12.7
                             extras.append(option_string)
                             explicit_arg = "".join(explicit_arg[1:])
                             if explicit_arg == "":  # noqa: PLC1901
@@ -207,7 +236,17 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
             # slice off the appropriate arg strings for each Positional
             # and add the Positional and its args to the list
+            args: list[str] = []
             for action, arg_count in zip(positionals, arg_counts, strict=False):
+                # Strip out the first '--' if it is not in REMAINDER arg.
+                if (action.nargs == PARSER) and arg_strings_pattern[start_index] == "-":
+                    if args[0] != LONG_ARG_PREFIX:
+                        raise RuntimeError
+                    args.remove(LONG_ARG_PREFIX)
+                elif (action.nargs != REMAINDER) and (
+                    arg_strings_pattern.find("-", start_index, start_index + arg_count) >= 0
+                ):
+                    args.remove(LONG_ARG_PREFIX)
                 args = arg_strings[start_index: start_index + arg_count]
                 start_index += arg_count
                 take_action(action, args)
@@ -272,12 +311,18 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                     and hasattr(namespace, action.dest)
                     and action.default is getattr(namespace, action.dest)
                 ):
+                    # Convert action default now instead of doing it before
+                    # parsing arguments to avoid calling convert functions
+                    # twice (which may fail) if the argument was given, but
+                    # only if it was defined already in the namespace
                     setattr(namespace, action.dest,
                             self._get_value(action, action.default))
 
         if required_actions:
-            self.error(_("the following arguments are required: %s") %
-                       ", ".join(required_actions))
+            raise ArgumentError(
+                None,
+                _("the following arguments are required: %s") % ", ".join(required_actions),
+            )
 
         # make sure all required groups had one option present
         for group in self._mutually_exclusive_groups:
@@ -292,7 +337,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                              for action in group._group_actions
                              if action.help is not SUPPRESS]
                     msg = _("one of the arguments %s is required")
-                    self.error(msg % " ".join(names))
+                    raise ArgumentError(None, msg % " ".join(names))
 
         # return the updated namespace and the extra arguments
         return namespace, extras

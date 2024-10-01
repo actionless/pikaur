@@ -68,7 +68,7 @@ makepkg -fsri
 
 ### Pikaur-Static
 
-To avoid such situations during upgrading the system it's recommended to have [pikaur-static ⚡️](https://aur.archlinux.org/packages?O=0&SeB=nd&K=pikaur-static&outdated=&SB=p&SO=d&PP=50&submit=Go) installed, which doesn't depend on Python (or Pyalpm) and doesn't conflict with the regular pikaur installation.
+To avoid situations during upgrading the system when you can't run Pikaur anymore (for example due breaking changes in Python, Pyalpm or other system dep) it's recommended to have [pikaur-static ⚡️](https://aur.archlinux.org/packages?O=0&SeB=nd&K=pikaur-static&outdated=&SB=p&SO=d&PP=50&submit=Go) installed, which doesn't depend on Python (or Pyalpm) and doesn't conflict with the regular pikaur installation.
 
 You can download it from the [Releases Page](https://github.com/actionless/pikaur/releases)
 (or downgrade Python/[other pkg which broke the update] to the previous version if it broke due to update, build+install `pikaur-static` from aur, upgrade python/[that pkg] again).

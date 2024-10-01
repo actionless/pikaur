@@ -38,6 +38,7 @@ Pikaur wraps all the pacman options accurately except for `-Syu` which is being 
 
 * [Installation](#installation "")
 * [Run without installation](#run-without-installation "")
+* - [Pikaur-Static](#pikaur-static "")
 * [File locations](#file-locations "")
 * [Config file](#configuration "")
 * [FAQ](#faq "")
@@ -62,7 +63,17 @@ makepkg -fsri
 ![Screenshot](https://raw.githubusercontent.com/actionless/pikaur/master/screenshots/package_update.png "Screenshot")
 
 
+
 ## Run without installation
+
+### Pikaur-Static
+
+To avoid such situations during upgrading the system it's recommended to have [pikaur-static ⚡️](https://aur.archlinux.org/packages?O=0&SeB=nd&K=pikaur-static&outdated=&SB=p&SO=d&PP=50&submit=Go) installed, which doesn't depend on Python (or Pyalpm) and doesn't conflict with the regular pikaur installation.
+
+You can download it from the [Releases Page](https://github.com/actionless/pikaur/releases)
+(or downgrade Python/[other pkg which broke the update] to the previous version if it broke due to update, build+install `pikaur-static` from aur, upgrade python/[that pkg] again).
+
+### Running directly from git repo for development purposes/etc
 
 ```sh
 git clone https://github.com/actionless/pikaur.git

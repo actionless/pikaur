@@ -126,7 +126,8 @@ Gonna fetch install info for:
         for pkg_name in package_names.copy():
             if self.package_is_ignored(pkg_name):
                 package_names.remove(pkg_name)
-                ignored_packages.append(pkg_name)
+                if pkg_name not in ignored_packages:
+                    ignored_packages.append(pkg_name)
         if print_packages:
             for package_name in ignored_packages:
                 print_ignored_package(package_name=package_name)

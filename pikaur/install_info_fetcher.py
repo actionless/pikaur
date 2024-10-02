@@ -109,7 +109,7 @@ Gonna fetch install info for:
         return bool(
             package_name in get_ignored_pkgnames_from_patterns(
                 [package_name],
-                self.args.ignore + PacmanConfig().options.get("IgnorePkg", []),
+                self.manually_excluded_packages_names + PacmanConfig().options.get("IgnorePkg", []),
             )
             and not (
                 package_name in self.install_package_names
@@ -448,7 +448,7 @@ Gonna fetch install info for:
         all_aur_pkgs: list[AURPackageInfo] = [
             pkg_info.package
             for pkg_info in self.aur_updates_install_info + self.aur_deps_install_info
-            if pkg_info.name not in self.args.ignore
+            if pkg_info.name not in self.manually_excluded_packages_names
         ]
         new_dep_version_matchers = find_repo_deps_of_aur_pkgs(
             all_aur_pkgs, skip_checkdeps_for_pkgnames=self.skip_checkdeps_for_pkgnames,
@@ -620,7 +620,7 @@ Gonna fetch install info for:
         discarded_pkgs = []
         for pkg_name, dep_names in list(self.aur_deps_relations.items()):
             for dep_name in dep_names:
-                if dep_name in self.args.ignore:
+                if dep_name in self.manually_excluded_packages_names:
                     for name in (pkg_name, dep_name):
                         self.discard_package(name)
                         discarded_pkgs.append(name)

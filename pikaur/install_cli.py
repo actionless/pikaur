@@ -169,7 +169,6 @@ class InstallPackagesCLI:
     # User input
     args: "PikaurArgs"
     install_package_names: list[str]
-    # @TODO: define @property for manually_excluded_packages_names+args.ignore:
     manually_excluded_packages_names: list[str]
     resolved_conflicts: list[list[str]]
     reviewed_package_bases: list[str]
@@ -237,6 +236,10 @@ class InstallPackagesCLI:
             self.get_info_from_pkgbuilds()
 
         self.main_sequence()
+
+    @property
+    def ignored_pkgnames(self) -> list[str]:
+        return self.manually_excluded_packages_names + self.args.ignore
 
     def _handle_refresh(self) -> None:
         if not self.args.aur and (self.args.sysupgrade or self.args.refresh):
@@ -385,7 +388,7 @@ class InstallPackagesCLI:
         # deal with package names which user explicitly wants to install
         self.repo_packages_by_name = {}
 
-        for pkg_name in self.manually_excluded_packages_names:
+        for pkg_name in self.ignored_pkgnames:
             if pkg_name in self.install_package_names:
                 self.install_package_names.remove(pkg_name)
 
@@ -395,7 +398,7 @@ class InstallPackagesCLI:
                 not_found_repo_pkgs_names=self.not_found_repo_pkgs_names,
                 pkgbuilds_packagelists=self.pkgbuilds_packagelists,
                 manually_excluded_packages_names=(
-                    self.manually_excluded_packages_names + self.args.ignore
+                    self.ignored_pkgnames
                 ),
                 skip_checkdeps_for_pkgnames=self.skip_checkfunc_for_pkgnames,
             )
@@ -418,7 +421,9 @@ class InstallPackagesCLI:
         except DependencyVersionMismatchError as exc:
             print_stderr(color_line(translate("Version mismatch:"), ColorsHighlight.yellow))
             print_stderr(
-                translate("{what} depends on: '{dep}'\n found in '{location}': '{version}'").format(
+                translate(
+                    "{what} depends on: '{dep}'\n found in '{location}': '{version}'",
+                ).format(
                     what=bold_line(exc.who_depends),
                     dep=exc.dependency_line,
                     location=exc.location,
@@ -659,7 +664,7 @@ class InstallPackagesCLI:
             pkgbuild.get_deps(
                 all_package_builds=all_package_builds,
                 filter_built=False,
-                exclude_pkg_names=self.manually_excluded_packages_names,
+                exclude_pkg_names=self.ignored_pkgnames,
             )
 
             aur_pkgs: list[AURPackageInfo] = [
@@ -680,7 +685,7 @@ class InstallPackagesCLI:
 
             srcinfo_deps: set[str] = set()
             for package_name in pkgbuild.package_names:
-                if package_name in self.manually_excluded_packages_names:
+                if package_name in self.ignored_pkgnames:
                     continue
                 src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
                 srcinfo_deps.update({
@@ -1203,7 +1208,7 @@ class InstallPackagesCLI:
                 self.built_package_bases.append(pkg_base)
                 for _pkg_name in pkg_build.package_names + pkg_build.provides:
                     if (
-                            (_pkg_name not in self.manually_excluded_packages_names)
+                            (_pkg_name not in self.ignored_pkgnames)
                             and (_pkg_name in packages_to_be_built)
                     ):
                         packages_to_be_built.remove(_pkg_name)
@@ -1247,7 +1252,7 @@ class InstallPackagesCLI:
         extra_args: list[str] = []
         if not (self.install_package_names or self.args.sysupgrade):
             return
-        for excluded_pkg_name in self.manually_excluded_packages_names + self.args.ignore:
+        for excluded_pkg_name in self.ignored_pkgnames:
             # pacman's --ignore doesn't work with repo name:
             extra_args.extend(("--ignore", strip_repo_name(excluded_pkg_name)))
         if not retry_interactive_command(

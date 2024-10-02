@@ -3,6 +3,7 @@
 from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING
 
+from .args import parse_args
 from .aur import find_aur_packages, find_aur_provided_deps
 from .exceptions import (
     DependencyVersionMismatchError,
@@ -355,6 +356,9 @@ def find_aur_deps(  # pylint: disable=too-many-branches
             for aur_pkg_name, request in all_requests.items():
                 try:
                     results = request.get()
+                except DependencyVersionMismatchError as exc:
+                    if exc.who_depends not in parse_args().ignore:
+                        raise
                 except Exception as exc:
                     logger.debug(
                         "exception during aur search: {}: {}",

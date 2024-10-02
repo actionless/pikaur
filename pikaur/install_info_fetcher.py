@@ -469,6 +469,7 @@ Gonna fetch install info for:
                 self.new_repo_deps_install_info.append(dep_install_info)
             else:
                 self.new_thirdparty_repo_deps_install_info.append(dep_install_info)
+        logger.debug("get_repo_deps_info: [done]")
 
     def get_aur_pkgs_info(  # pylint: disable=too-many-branches
             self, aur_packages_versionmatchers: list[str],
@@ -521,6 +522,10 @@ Gonna fetch install info for:
             aur_updates_install_info_by_name = {
                 upd.name: upd for upd in self._all_aur_updates_raw
             }
+            logger.debug(
+                "get_aur_pkgs_info: aur_updates_install_info_by_name={}",
+                aur_updates_install_info_by_name,
+            )
         for pkg_name, aur_pkg in aur_pkgs.items():
             if pkg_name in aur_updates_install_info_by_name:
                 continue
@@ -610,6 +615,7 @@ Gonna fetch install info for:
             self.install_package_names.append(pkg_name)
             self.get_all_packages_info()
             return
+        logger.debug("get_aur_deps_info: self.aur_deps_relations={}", self.aur_deps_relations)
 
         discarded_pkgs = []
         for pkg_name, dep_names in list(self.aur_deps_relations.items()):
@@ -651,6 +657,7 @@ Gonna fetch install info for:
                 current_version=local_pkg.version if local_pkg else " ",
             ))
             added_pkg_names.append(aur_pkg.name)
+        logger.debug("get_aur_deps_info: [done]")
 
     def mark_dependent(self) -> None:
         """Update packages' install info to show deps in prompt."""

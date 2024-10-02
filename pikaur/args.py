@@ -620,12 +620,14 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
         super().error(message)
 
     def parse_pikaur_args(self, raw_args: list[str]) -> PikaurArgs:
-        parsed_args, unknown_args = self.parse_known_args(raw_args)
-        for arg in unknown_args[:]:
-            if arg.startswith("-"):
-                continue
-            unknown_args.remove(arg)
-            parsed_args.positional.append(arg)
+        extra_positionals = []
+        args_to_parse = raw_args.copy()
+        if "--" in raw_args:
+            separator_index = args_to_parse.index("--")
+            extra_positionals = args_to_parse[separator_index + 1:]
+            args_to_parse = args_to_parse[:separator_index]
+        parsed_args, unknown_args = self.parse_known_args(args_to_parse)
+        parsed_args.positional += extra_positionals
         return PikaurArgs.from_namespace(
             namespace=parsed_args,
             unknown_args=unknown_args,

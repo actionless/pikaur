@@ -109,7 +109,7 @@ class NroffRenderer(
     ) -> str:
         return self.escape(" ")
 
-    _html_tag_regex = re.compile("<.*>")
+    _html_tag_regex = re.compile(r"<.*>")
 
     def html_inline(
             self, tokens: "Sequence[Token]", idx: int,

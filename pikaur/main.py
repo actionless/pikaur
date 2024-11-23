@@ -241,7 +241,7 @@ def execute_pikaur_operation(
         pikaur_operation: "Callable[[], None]",
         *,
         require_sudo: bool,
-        replace_args: None | list[str] = None,
+        replace_args: list[str] | None = None,
 ) -> None:
     args = parse_args()
     cli_args = replace_args or sys.argv

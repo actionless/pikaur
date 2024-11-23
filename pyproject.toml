@@ -119,7 +119,7 @@ select = [
   "SLOT",
   "SIM",
   "TID",
-  "TCH",
+  "TC",
   "INT",
   "ARG",
   "PTH",
@@ -154,8 +154,6 @@ ignore = [
 
   "PLE1205",  # pikaur is using non-default `logging`
 
-  "ANN101",  # annotate self
-  "ANN102",  # annotate cls
   "ANN401",  # disable Any
 
   "BLE001",  # disallow catching Exception

@@ -25,7 +25,7 @@ ENV LANG=en_US.utf8 \
 RUN echo ">>>> Installing opt and test deps:" && \
 	pacman -Sy --noconfirm --needed --color=always \
 		devtools python-pysocks python-defusedxml \
-		ruff flake8 python-pylint mypy vulture bandit shellcheck && \
+		ruff flake8 python-pylint mypy vulture bandit shellcheck python-validate-pyproject && \
 	echo ">>>> Preparing build directory:" && \
 	chown -R user /opt/app-build/
 

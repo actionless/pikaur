@@ -217,7 +217,7 @@ shellcheck:
 			-not -wholename '*/$(TARGET_MODULE)*.*build/*' \
 			-or -name 'PKGBUILD' \
 		\) \
-		-exec sh -c 'set -x ; shellcheck "$$@"' {} \+
+		-exec sh -c 'set -x ; shellcheck "$$@"' shellcheck {} \+
 	# :: shellcheck passed ::
 
 shellcheck_makefile:

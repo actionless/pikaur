@@ -997,14 +997,14 @@ class InstallPackagesCLI:
         if self.args.needed or self.args.devel:
             self._get_installed_status()
         for pkg_build in set(self.package_builds_by_name.values()):
-            _pkg_label = bold_line(", ".join(pkg_build.package_names))
-            _skip_diff_label = translate("Not showing diff for {pkg} package ({reason})")
+            pkg_label = bold_line(", ".join(pkg_build.package_names))
+            skip_diff_label = translate("Not showing diff for {pkg} package ({reason})")
 
             if (
                     pkg_build.package_base in self.reviewed_package_bases
             ):
-                print_warning(_skip_diff_label.format(
-                    pkg=_pkg_label,
+                print_warning(skip_diff_label.format(
+                    pkg=pkg_label,
                     reason=translate("already reviewed"),
                 ))
                 continue
@@ -1027,7 +1027,7 @@ class InstallPackagesCLI:
                         "Do you want to see build files {diff} for {name} package?",
                     ).format(
                         diff=bold_line(translate("diff")),
-                        name=_pkg_label,
+                        name=pkg_label,
                     ),
             ):
                 git_args: list[str] = []
@@ -1052,23 +1052,23 @@ class InstallPackagesCLI:
                         ]
                 interactive_spawn(isolate_root_cmd(git_args))
             elif self.args.noconfirm:
-                print_stdout(_skip_diff_label.format(
-                    pkg=_pkg_label,
+                print_stdout(skip_diff_label.format(
+                    pkg=pkg_label,
                     reason="--noconfirm",
                 ))
             elif self.args.nodiff:
-                print_stdout(_skip_diff_label.format(
-                    pkg=_pkg_label,
+                print_stdout(skip_diff_label.format(
+                    pkg=pkg_label,
                     reason="--nodiff",
                 ))
             elif not pkg_build.last_installed_hash:
-                print_warning(_skip_diff_label.format(
-                    pkg=_pkg_label,
+                print_warning(skip_diff_label.format(
+                    pkg=pkg_label,
                     reason=translate("installing for the first time"),
                 ))
             else:
-                print_warning(_skip_diff_label.format(
-                    pkg=_pkg_label,
+                print_warning(skip_diff_label.format(
+                    pkg=pkg_label,
                     reason=translate("already reviewed"),
                 ))
 

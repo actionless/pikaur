@@ -286,20 +286,20 @@ class PacmanPackageInfo(Package):
                     error(f"{field=} {line=}")
                     continue
 
-                _value = line.strip()
-                if not _value:
+                parsed_value = line.strip()
+                if not parsed_value:
                     continue
                 if real_field in PACMAN_LIST_FIELDS:
-                    cast(list[str], value).append(_value)
+                    cast("list[str]", value).append(parsed_value)
                 elif real_field in PACMAN_DICT_FIELDS:
-                    subkey, *subvalue_parts = _value.split(": ")
+                    subkey, *subvalue_parts = parsed_value.split(": ")
                     subvalue = ": ".join(subvalue_parts)
                     # pylint: disable=unsupported-assignment-operation
-                    cast(dict[str, str], value)[subkey] = subvalue
+                    cast("dict[str, str]", value)[subkey] = subvalue
                 elif real_field in PACMAN_INT_FIELDS:
-                    value = int(_value)
+                    value = int(parsed_value)
                 else:
-                    value = cast(str, value) + _value
+                    value = cast("str", value) + parsed_value
 
         if not real_field:
             raise RuntimeError(field)
@@ -407,11 +407,10 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
     def get_db_names(cls, handle: Handle | None = None) -> list[str]:
         if not cls._repo_db_names:
             handle = handle or DefaultHandle.get()
-            sync_dir = f"{handle.db_path}/sync/"
             cls._repo_db_names = [
-                repo_name.rsplit(".db", maxsplit=1)[0]
-                for repo_name in os.listdir(sync_dir)
-                if repo_name and repo_name.endswith(".db")
+                repo_path.stem
+                for repo_path in Path(f"{handle.db_path}/sync/").iterdir()
+                if repo_path.suffix == ".db"
             ]
         return cls._repo_db_names
 
@@ -454,11 +453,11 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
             cls, name: str, handle: Handle | None = None,
     ) -> PacmanPackageInfo | None:
         handle = handle or DefaultHandle.get()
-        local_dir = f"{handle.db_path}/local/"
-        for dir_name in os.listdir(local_dir):
-            if name == dir_name.rsplit("-", maxsplit=2)[0]:
+        local_path = Path(f"{handle.db_path}/local/")
+        for dir_path in local_path.iterdir():
+            if name == dir_path.name.rsplit("-", maxsplit=2)[0]:
                 result = list(PacmanPackageInfo.parse_pacman_db_info(
-                    os.path.join(local_dir, dir_name, "desc"),
+                    (dir_path / "desc").as_posix(),
                 ))
                 if result:
                     db = DB(name=DB_NAME_LOCAL)
@@ -473,15 +472,15 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
             debug(" <<<<<<<<<< LOCAL_NOT_CACHED")
 
             handle = handle or DefaultHandle.get()
-            local_dir = f"{handle.db_path}/local/"
             result: dict[str, PacmanPackageInfo] = {}
             db = DB(name=DB_NAME_LOCAL)
-            for pkg_dir_name in os.listdir(local_dir):
-                if not os.path.isdir(os.path.join(local_dir, pkg_dir_name)):
+            local_path = Path(f"{handle.db_path}/local/")
+            for pkg_dir_path in local_path.iterdir():
+                if not pkg_dir_path.is_dir():
                     continue
 
                 for pkg in PacmanPackageInfo.parse_pacman_db_info(
-                        os.path.join(local_dir, pkg_dir_name, "desc"),
+                        (pkg_dir_path / "desc").as_posix(),
                 ):
                     pkg.db = db
                     result[pkg.name] = pkg

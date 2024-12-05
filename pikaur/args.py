@@ -125,7 +125,7 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
 
 def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
     result: ArgSchema = []
-    if cast(str, "pikaur-static") == PIKAUR_NAME:
+    if cast("str", "pikaur-static") == PIKAUR_NAME:
         result += [
             Arg(
                 None, "force-pacman-cli-db",
@@ -308,7 +308,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
             translate("override path to pacman executable"),
         ),
     ]
-    if cast(str, "pikaur-static") == PIKAUR_NAME:
+    if cast("str", "pikaur-static") == PIKAUR_NAME:
         result += [
             Arg(
                 None, "pacman-conf-path",

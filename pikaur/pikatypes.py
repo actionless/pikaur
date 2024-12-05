@@ -130,12 +130,12 @@ class InstallInfo(ComparableType):
                     cast("pyalpm.Package", self.package).compute_optionalfor()
             if self.installed_as_dependency is None:
                 self.installed_as_dependency = \
-                    cast(bool, cast("pyalpm.Package", self.package).reason)
+                    cast("bool", cast("pyalpm.Package", self.package).reason)
         else:
             if not self.new_version:
                 self.new_version = self.package.version
             if pkg_type == "aur" and not self.maintainer:
-                self.maintainer = cast(AURPackageInfo, self.package).maintainer
+                self.maintainer = cast("AURPackageInfo", self.package).maintainer
             if pkg_type == "repo" and not self.repository:
                 self.repository = cast("pyalpm.Package", self.package).db.name
 
@@ -205,10 +205,10 @@ class AURPackageInfo:  # pylint: disable=too-many-instance-attributes
     @classmethod
     def from_srcinfo(cls, srcinfo: "SrcInfo") -> "AURPackageInfo":
         return cls(
-            name=cast(str, srcinfo.package_name),
+            name=cast("str", srcinfo.package_name),
             version=(srcinfo.get_value("pkgver") or "") + "-" + (srcinfo.get_value("pkgrel") or ""),
             desc=srcinfo.get_value("pkgdesc") or "",
-            packagebase=cast(str, srcinfo.get_value("pkgbase")),
+            packagebase=cast("str", srcinfo.get_value("pkgbase")),
             depends=[dep.line for dep in srcinfo.get_build_depends().values()],
             makedepends=[dep.line for dep in srcinfo.get_build_makedepends().values()],
             checkdepends=[dep.line for dep in srcinfo.get_build_checkdepends().values()],

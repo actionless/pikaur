@@ -120,10 +120,10 @@ class RepoColorGenerator:
             cls.get_next("repo", repo.name)
 
     @classmethod
-    def get_next(cls, color_type: str, _id: str) -> int:
+    def get_next(cls, color_type: str, id_: str) -> int:
         cls.do_init()
-        if cls._cache.get(color_type, {}).get(_id):
-            return cls._cache[color_type][_id]
+        if cls._cache.get(color_type, {}).get(id_):
+            return cls._cache[color_type][id_]
 
         if (
                 not cls._type_storage.get(color_type) or
@@ -134,8 +134,8 @@ class RepoColorGenerator:
             cls._type_storage[color_type] += 1
 
         cls._cache.setdefault(color_type, {})
-        cls._cache[color_type][_id] = cls._type_storage[color_type]
-        return cls._cache[color_type][_id]
+        cls._cache[color_type][id_] = cls._type_storage[color_type]
+        return cls._cache[color_type][id_]
 
 
 def pretty_format_repo_name(
@@ -714,7 +714,7 @@ def print_ignored_package(
             prop2="install_info",
         )
         raise TypeError(missing_property_error)
-    pkg_name = cast(str, install_info.name if install_info else package_name)
+    pkg_name = cast("str", install_info.name if install_info else package_name)
     current_version = install_info.current_version if install_info else ""
     new_version = install_info.new_version if install_info else ""
     message = " ".join((

@@ -34,12 +34,12 @@ class PacmanExecutablesPaths:
     @classmethod
     def pacman(cls) -> str:
         cls.init()
-        return cast(str, cls._pacman)
+        return cast("str", cls._pacman)
 
     @classmethod
     def pacman_conf(cls) -> str:
         cls.init()
-        return cast(str, cls._pacman_conf)
+        return cast("str", cls._pacman_conf)
 
 
 class CmdTaskResult:
@@ -259,41 +259,45 @@ def get_pacman_cli_package_db(  # noqa: C901
                     else:
                         pkg.db = DBPlaceholder(name=pkg.repository)
                         del pkg.repository
-                    pkg.reason = "dependency" in (cast(str, pkg.reason) or "").lower()
+                    pkg.reason = "dependency" in (cast("str", pkg.reason) or "").lower()
                     yield pkg
                     pkg = cls()
                     continue
                 if not line.startswith(" "):
                     try:
-                        _field, _value, *_args = line.split(": ")
+                        parsed_field, parsed_value, *parsed_args = line.split(": ")
                     except ValueError:
                         print(line)
                         print(field, value)
                         raise
-                    _value = _value.lstrip(" \t")
-                    field = _field.rstrip().replace(" ", "_").lower()
+                    parsed_value = parsed_value.lstrip(" \t")
+                    field = parsed_field.rstrip().replace(" ", "_").lower()
                     field = CLI_TO_DB_TRANSLATION.get(field, field)
-                    if _value == "None":
+                    if parsed_value == "None":
                         value = None
                     else:
                         if field in PACMAN_DICT_FIELDS:
-                            value = {_value: None}
+                            value = {parsed_value: None}
                         elif field in PACMAN_LIST_FIELDS:
-                            value = _value.split()
+                            value = parsed_value.split()
                         else:
-                            value = _value
-                        if _args:
+                            value = parsed_value
+                        if parsed_args:
                             if field in PACMAN_DICT_FIELDS:
-                                value = {_value: _args[0].lstrip()}
+                                value = {parsed_value: parsed_args[0].lstrip()}
                             else:
-                                value = ": ".join([_value, *_args])
+                                value = ": ".join([parsed_value, *parsed_args])
                                 if field in PACMAN_LIST_FIELDS:
                                     value = value.split()
                 elif field in PACMAN_DICT_FIELDS:
-                    _value, *_args = line.split(": ")
-                    _value = _value.lstrip(" \t")
+                    parsed_value, *parsed_args = line.split(": ")
+                    parsed_value = parsed_value.lstrip(" \t")
                     # pylint: disable=unsupported-assignment-operation
-                    value[_value] = _args[0] if _args else None  # type: ignore[index,call-overload]
+                    value[parsed_value] = (  # type: ignore[index,call-overload]
+                        parsed_args[0]
+                        if parsed_args
+                        else None
+                    )
                 elif field in PACMAN_LIST_FIELDS:
                     value += line.split()  # type: ignore[operator]
                 else:

@@ -1,8 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 # mypy: disable-error-code=no-untyped-def
 
-import os
-
 from pikaur_test.helpers import PikaurDbTestCase, pikaur
 
 
@@ -14,10 +12,10 @@ class CacheCliTestcase(PikaurDbTestCase):
 
         pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
-            len(os.listdir(BuildCachePath())), 1,
+            len(list(BuildCachePath().iterdir())), 1,
         )
         self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath())), 1,
+            len(list(PackageCachePath().iterdir())), 1,
         )
 
         pikaur("-Sc --noconfirm")
@@ -25,7 +23,7 @@ class CacheCliTestcase(PikaurDbTestCase):
             BuildCachePath().exists(),
         )
         self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath())), 1,
+            len(list(PackageCachePath().iterdir())), 1,
         )
 
     def test_cache_full_clean(self):
@@ -34,10 +32,10 @@ class CacheCliTestcase(PikaurDbTestCase):
 
         pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
         self.assertGreaterEqual(
-            len(os.listdir(BuildCachePath())), 1,
+            len(list(BuildCachePath().iterdir())), 1,
         )
         self.assertGreaterEqual(
-            len(os.listdir(PackageCachePath())), 1,
+            len(list(PackageCachePath().iterdir())), 1,
         )
 
         pikaur("-Scc --noconfirm")

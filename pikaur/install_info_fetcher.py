@@ -140,10 +140,10 @@ Gonna fetch install info for:
 
     @property
     def aur_deps_names(self) -> list[str]:
-        _aur_deps_names: list[str] = []
+        dep_list: list[str] = []
         for deps in self.aur_deps_relations.values():
-            _aur_deps_names += deps
-        return list(set(_aur_deps_names))
+            dep_list += deps
+        return list(set(dep_list))
 
     @property
     def aur_install_info_containers(self) -> "Sequence[list[AURInstallInfo]]":
@@ -775,7 +775,7 @@ Gonna fetch install info for:
                 opt = local_pkg.compute_optionalfor()
                 pkg_install_info.required_by_installed = req or []
                 pkg_install_info.optional_for_installed = opt or []
-                pkg_install_info.installed_as_dependency = cast(bool, local_pkg.reason)
+                pkg_install_info.installed_as_dependency = cast("bool", local_pkg.reason)
 
         logger.debug("== marked dependant pkgs.")
 

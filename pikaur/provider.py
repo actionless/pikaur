@@ -52,7 +52,7 @@ class Provider:
             aur_packages = []
             repo_packages = options
         sorted_packages = cast(
-            list[Package],
+            "list[Package]",
             print_package_search_results(
                 aur_packages=aur_packages,
                 repo_packages=repo_packages,

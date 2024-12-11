@@ -676,9 +676,18 @@ class InstallPackagesCLI:
                 dep_line
                 for pkg in aur_pkgs
                 for matcher in (
-                    pkg.depends +
-                    pkg.makedepends +
-                    (pkg.checkdepends if (pkg.name not in self.skip_checkfunc_for_pkgnames) else [])
+                    pkg.depends
+                    + pkg.makedepends
+                    + (
+                        pkg.checkdepends
+                        if (pkg.name not in self.skip_checkfunc_for_pkgnames)
+                        else []
+                    )
+                    + (
+                        pkg.runtimedepends
+                        if (not (self.args.pkgbuild and (not self.args.install)))
+                        else []
+                    )
                 )
                 for dep_line in matcher.split(",")
             }

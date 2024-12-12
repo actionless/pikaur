@@ -3,7 +3,7 @@ name = "pikaur"
 version = '1.30.3'
 description = 'AUR helper with minimal dependencies'
 authors = [
-  {name = 'Yauhen Kirylau', email = 'actionless DOT loveless PLUS aur AT gmail MF com'},
+  {name = 'Yauhen Kirylau', email = 'actionless-DOT-loveless-PLUS-aur-AT-gmail-MF-com@anti.spam'},
 ]
 requires-python = ">=3.12"
 classifiers = [

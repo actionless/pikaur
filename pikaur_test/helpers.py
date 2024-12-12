@@ -354,7 +354,7 @@ class PikaurDbTestCase(PikaurTestCase):
         srcinfo = SrcInfo(build_dir, pkg_name)
         srcinfo.regenerate()
         from_version = srcinfo.get_version()
-        if not to_version:
+        if (to_version is None) and (version_count is None):
             proc = spawn(
                 f"git -C {repo_dir} log --format=%h",
             )

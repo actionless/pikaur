@@ -26,6 +26,15 @@ PIKAPIC: Final = r"""
 """
 
 
+CATPIC: Final = r"""
+    /\     /\
+   {  `---'  }
+    \ 0   0 /
+ ~~~>(__V__)<~~~
+      `---'
+"""  # (C) 2024 Actionless/Loveless
+
+
 def bubble_top(
         text: str, margin: int = 1, padding: int = 1, width: int | None = None,
 ) -> str:
@@ -222,6 +231,11 @@ def pikasay_cli() -> None:
         default="horizontal",
         help="horizontal or vertical",
     )
+    parser.add_argument(
+        "--mascot",
+        default="default",
+        help="default or cat",
+    )
     args = parser.parse_args()
 
     text = " ".join(args.text)
@@ -233,7 +247,7 @@ def pikasay_cli() -> None:
         text = parser.format_help()
     pikasay(
         text, margin=args.margin, padding=args.padding, width=args.width,
-        orientation=args.orientation,
+        orientation=args.orientation, mascot_pic=CATPIC if args.mascot == "cat" else PIKAPIC,
     )
 
 

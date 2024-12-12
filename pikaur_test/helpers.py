@@ -340,11 +340,13 @@ class PikaurDbTestCase(PikaurTestCase):
 
     @staticmethod
     def _checkout_older_version(
+            *,
             repo_dir: str,
             build_dir: str,
             pkg_name: str,
             count: int,
             to_version: str | None,
+            version_count: int | None = None,
     ) -> None:
         if count < 1:
             wrong_count_msg = "Count of commits to downgrade should be a positive number."
@@ -365,6 +367,8 @@ class PikaurDbTestCase(PikaurTestCase):
         else:
             current_version = srcinfo.get_version()
             count = 1
+            prev_version = current_version
+            versions_changed = 0
             while current_version != to_version:
                 proc = spawn(
                     f"git -C {repo_dir} log --format=%h",
@@ -377,6 +381,12 @@ class PikaurDbTestCase(PikaurTestCase):
                 current_version = srcinfo.get_version()
                 log_stderr(current_version)
                 count += 1
+                if prev_version != current_version:
+                    versions_changed += 1
+                    if (version_count is not None) and (versions_changed >= version_count):
+                        to_version = current_version
+                        break
+                prev_version = current_version
         log_stderr(f"Downgrading from {from_version} to {to_version}...")
 
     def downgrade_repo_pkg(
@@ -389,6 +399,7 @@ class PikaurDbTestCase(PikaurTestCase):
             build_root: str = ".",
             remove_before_upgrade: bool = True,
             to_version: str | None = None,
+            version_count: int | None = None,
     ) -> str:
         if remove_before_upgrade:
             self.remove_if_installed(repo_pkg_name)
@@ -402,6 +413,7 @@ class PikaurDbTestCase(PikaurTestCase):
             pkg_name=repo_pkg_name,
             count=count,
             to_version=to_version,
+            version_count=version_count,
         )
         pikaur(
             "-P -i --noconfirm "
@@ -421,6 +433,7 @@ class PikaurDbTestCase(PikaurTestCase):
             build_root: str = ".",
             remove_before_upgrade: bool = True,
             to_version: str | None = None,
+            version_count: int | None = None,
     ) -> str:
         # and test -P and -G during downgrading :-)
         old_version = (
@@ -439,6 +452,7 @@ class PikaurDbTestCase(PikaurTestCase):
             pkg_name=aur_pkg_name,
             count=count,
             to_version=to_version,
+            version_count=version_count,
         )
         pikaur(
             "-P -i --noconfirm "

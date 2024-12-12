@@ -376,11 +376,11 @@ class PikaurDbTestCase(PikaurTestCase):
                 if not proc.stdout_text:
                     raise RuntimeError
                 some_older_commit = proc.stdout_text.splitlines()[count]
+                log_stderr(some_older_commit)
                 spawn(f"git -C {repo_dir} checkout {some_older_commit}")
                 srcinfo.regenerate()
                 current_version = srcinfo.get_version()
                 log_stderr(current_version)
-                count += 1
                 if prev_version != current_version:
                     versions_changed += 1
                     if (version_count is not None) and (versions_changed >= version_count):

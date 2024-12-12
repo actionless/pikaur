@@ -1,5 +1,5 @@
 # Completions for pikaur
-# Author: Yauheni Kirylau <actionless.loveless@gmail.com>
+# Author: Yauhen Kirylau <actionless DOT loveless PLUS aur AT gmail MF com>
 
 # Based on completions for pacman
 # Author: Giorgio Lando <patroclo7@gmail.com>

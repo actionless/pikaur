@@ -195,6 +195,8 @@ PACMAN_LIST_FIELDS: Final = (
 
 PACMAN_INT_FIELDS: Final = (
     "reason",
+    "size",
+    "isize",
 )
 
 

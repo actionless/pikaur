@@ -26,7 +26,10 @@ LONG_ARG_PREFIX: "Final" = "--"
 class ArgumentParserWithUnknowns(ArgumentParser):
 
     def _parse_known_args(  # noqa: C901
-            self, arg_strings: list[str], namespace: "Namespace",
+            self,
+            arg_strings: list[str],
+            namespace: "Namespace",
+            intermixed: bool = False,  # noqa: FBT001,FBT002
     ) -> "tuple[Namespace, list[str]]":
         # replace arg strings that are file references
         if self.fromfile_prefix_chars is not None:
@@ -74,6 +77,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
         # converts arg strings to the appropriate and then takes the action
         seen_actions = set()
         seen_non_default_actions = set()
+        warned = set()
 
         def take_action(
                 action: "Action", argument_strings: list[str], option_string: str | None = None,
@@ -143,6 +147,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 # if we found no optional action, skip it
                 if action is None:
                     extras.append(arg_strings[start_index])
+                    extras_pattern.append("O")
                     return start_index + 1
 
                 # if there is an explicit argument, try to match the
@@ -157,7 +162,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                     if (
                         arg_count == 0
                         and option_string[1] not in chars
-                        and explicit_arg
+                        and explicit_arg != ""   # noqa: PLC1901
                     ):
                         if sep or explicit_arg[0] in chars:
                             msg = _("ignored explicit argument %r")
@@ -182,6 +187,11 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                             # return it and add later to other
                             # unknown args
                             # 2024.10.01: this is still needed with python 3.12.7
+                            # 2024.12.17: this is still needed with python 3.13.1
+                            # - extras.append(char + explicit_arg)
+                            # - extras_pattern.append('O')
+                            # - stop = start_index + 1
+                            # - break
                             extras.append(option_string)
                             explicit_arg = "".join(explicit_arg[1:])
                             if explicit_arg == "":  # noqa: PLC1901
@@ -220,6 +230,20 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             if not action_tuples:
                 raise RuntimeError
             for action, args, option_string in action_tuples:
+                if (  # noqa: SIM102
+                    getattr(action, "deprecated", None)
+                    and getattr(self, "_warning", None)
+                ):
+                    # @TODO: recheck with 3.13.1
+                    if (
+                        action.deprecated  # type: ignore[attr-defined]
+                        and option_string not in warned
+                    ):
+                        self._warning(  # type: ignore[attr-defined]  # pylint: disable=no-member
+                            _("option '%(option)s' is deprecated") %
+                            {"option": option_string},
+                        )
+                        warned.add(option_string)
                 take_action(action, args, option_string)
             return stop
 
@@ -238,17 +262,34 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             # and add the Positional and its args to the list
             args: list[str] = []
             for action, arg_count in zip(positionals, arg_counts, strict=False):
+                args = arg_strings[start_index: start_index + arg_count]
                 # Strip out the first '--' if it is not in REMAINDER arg.
-                if (action.nargs == PARSER) and arg_strings_pattern[start_index] == "-":
-                    if args[0] != LONG_ARG_PREFIX:
-                        raise RuntimeError
-                    args.remove(LONG_ARG_PREFIX)
-                elif (action.nargs != REMAINDER) and (
-                    arg_strings_pattern.find("-", start_index, start_index + arg_count) >= 0
+                if action.nargs == PARSER:
+                    if arg_strings_pattern[start_index] == "-":
+                        if args[0] != LONG_ARG_PREFIX:
+                            raise RuntimeError
+                        args.remove(LONG_ARG_PREFIX)
+                elif action.nargs != REMAINDER and (
+                    arg_strings_pattern.find("-", start_index, start_index +
+                                             arg_count) >= 0
                 ):
                     args.remove(LONG_ARG_PREFIX)
-                args = arg_strings[start_index: start_index + arg_count]
                 start_index += arg_count
+                if (  # noqa: SIM102
+                    getattr(action, "deprecated", None)
+                    and getattr(self, "_warning", None)
+                ):
+                    # @TODO: recheck with 3.13.1
+                    if (
+                        args
+                        and action.deprecated  # type: ignore[attr-defined]
+                        and action.dest not in warned
+                    ):
+                        self._warning(  # type: ignore[attr-defined]  # pylint: disable=no-member
+                            _("argument '%(argument_name)s' is deprecated") %
+                            {"argument_name": action.dest},
+                        )
+                        warned.add(action.dest)
                 take_action(action, args)
 
             # slice off the Positionals that we just parsed and return the
@@ -258,18 +299,19 @@ class ArgumentParserWithUnknowns(ArgumentParser):
 
         # consume Positionals and Optionals alternately, until we have
         # passed the last option string
-        extras = []
+        extras: list[str] = []
+        extras_pattern: list[str] = []
         start_index = 0
         max_option_string_index = max(option_string_indices) if option_string_indices else -1
         while start_index <= max_option_string_index:
 
             # consume any Positionals preceding the next option
-            next_option_string_index = min(
-                index
-                for index in option_string_indices
-                if index >= start_index
-            )
-            if start_index != next_option_string_index:
+            next_option_string_index = start_index
+            while next_option_string_index <= max_option_string_index:
+                if next_option_string_index in option_string_indices:
+                    break
+                next_option_string_index += 1
+            if not intermixed and start_index != next_option_string_index:
                 positionals_end_index = consume_positionals(start_index)
 
                 # only try to parse the next optional if we didn't consume
@@ -284,32 +326,51 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             if start_index not in option_string_indices:
                 strings = arg_strings[start_index:next_option_string_index]
                 extras.extend(strings)
+                extras_pattern.extend(arg_strings_pattern[start_index:next_option_string_index])
                 start_index = next_option_string_index
 
             # consume the next optional and any arguments for it
             start_index = consume_optional(start_index)
 
-        # consume any positionals following the last Optional
-        stop_index = consume_positionals(start_index)
+        if not intermixed:
+            # consume any positionals following the last Optional
+            stop_index = consume_positionals(start_index)
 
-        # if we didn't consume all the argument strings, there were extras
-        extras.extend(arg_strings[stop_index:])
+            # if we didn't consume all the argument strings, there were extras
+            extras.extend(arg_strings[stop_index:])
+        else:
+            extras.extend(arg_strings[start_index:])
+            extras_pattern.extend(arg_strings_pattern[start_index:])
+            joined_extras_pattern = "".join(extras_pattern)
+            if len(joined_extras_pattern) != len(extras):
+                raise RuntimeError
+            # consume all positionals
+            arg_strings = [
+                s for s, c in zip(extras, joined_extras_pattern, strict=False) if c != "O"
+            ]
+            arg_strings_pattern = joined_extras_pattern.replace("O", "")
+            stop_index = consume_positionals(0)
+            # leave unknown optionals and non-consumed positionals in extras
+            for i, char in enumerate(joined_extras_pattern):
+                if not stop_index:
+                    break
+                if char != "O":
+                    stop_index -= 1
+                    extras[i] = None  # type: ignore[call-overload]
+            extras = [s for s in extras if s is not None]
 
         # make sure all required actions were present and also convert
         # action defaults which were not given as arguments
         required_actions: list[str] = []
         for action in self._actions:
             if action not in seen_actions:
-                if action.required:
-                    action_name = _get_action_name(action)
-                    if not action_name:
-                        raise ArgumentError(action, f"Unknown action name for {action}")
-                    required_actions.append(action_name)
+                if action.required and (required_action_name := _get_action_name(action)):
+                    required_actions.append(required_action_name)
                 elif (
-                    action.default is not None
-                    and isinstance(action.default, str)
-                    and hasattr(namespace, action.dest)
-                    and action.default is getattr(namespace, action.dest)
+                    action.default is not None and
+                    isinstance(action.default, str) and
+                    hasattr(namespace, action.dest) and
+                    action.default is getattr(namespace, action.dest)
                 ):
                     # Convert action default now instead of doing it before
                     # parsing arguments to avoid calling convert functions

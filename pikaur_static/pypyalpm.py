@@ -426,7 +426,7 @@ class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa:
         db = DB(name=repo_name)
         for pkg in PacmanPackageInfo.parse_pacman_db_gzip_info(repo_path):
             pkg.db = db
-            result[pkg.name] = pkg
+            result[get_pkg_id(pkg)] = pkg
         debug(f" ------->>- {os.getpid()} {repo_name}")
         return result
 

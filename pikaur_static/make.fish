@@ -7,6 +7,7 @@
 function _nuitka_common
 	_debug \
 		nuitka --jobs=(nproc) \
+			--python-flag=-u \
 			--plugin-enable=pylint-warnings \
 			\
 			--include-module=pikaur \

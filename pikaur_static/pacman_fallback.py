@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name,too-many-branches,too-many-statements  # noqa: INP001
 import asyncio
 import os
+import sys
 from collections.abc import Callable, Coroutine, Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Final, TypedDict, cast
 
@@ -8,6 +9,16 @@ if TYPE_CHECKING:
     from pypyalpm import Handle
     from pypyalpm import PackageDBCommon as PackageDBCommonType
     from pypyalpm import PacmanPackageInfo as PacmanPackageInfoType
+
+VERBOSE: bool = False  # nonfinal-ignore
+for verbose_flag in (
+    "--verbose",
+    "--debug",
+    "--pikaur-debug",
+):
+    if verbose_flag in sys.argv:
+        VERBOSE = True
+        break
 
 
 class PacmanExecutablesPaths:
@@ -108,6 +119,8 @@ class CmdTaskWorker:
     async def _stream_subprocess(self) -> CmdTaskResult:
         env = os.environ.copy()
         env["LANGUAGE"] = "en"
+        if VERBOSE:
+            print(f" >> {self.cmd}")
         process = await asyncio.create_subprocess_exec(
             *self.cmd,
             stdout=asyncio.subprocess.PIPE,

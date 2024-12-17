@@ -10,7 +10,7 @@ msgstr "prohibido con el argumento %s"
 #: pikaur/argparse_extras.py:119
 #, python-format
 msgid "ambiguous option: %(option)s could match %(matches)s"
-msgstr ""
+msgstr "opción ambigua: %(option)s podría concordar con %(matches)s"
 
 #: pikaur/argparse_extras.py:168 pikaur/argparse_extras.py:213
 #, python-format
@@ -21,13 +21,13 @@ msgstr "argumento explícito ignorado %r"
 #: pikaur/argparse_extras.py:243
 #, python-format
 msgid "option '%(option)s' is deprecated"
-msgstr ""
+msgstr "la opción '%(option)s' está obsoleta"
 
 #. type: ignore[attr-defined]  # pylint: disable=no-member
 #: pikaur/argparse_extras.py:289
 #, python-format
 msgid "argument '%(argument_name)s' is deprecated"
-msgstr ""
+msgstr "el argumento '%(argument_name)s' está obsoleto"
 
 #: pikaur/argparse_extras.py:385
 #, python-format

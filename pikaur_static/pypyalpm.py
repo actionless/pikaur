@@ -324,6 +324,10 @@ def get_package_name_from_depend_line(depend_line: str) -> str:
     return depend_line.split("=", maxsplit=1)[0]
 
 
+def get_pkg_id(pkg: Package) -> str:
+    return f"{pkg.db.name}/{pkg.name}"
+
+
 class PackageDBCommon(abc.ABC):
 
     _repo_cache: list[PacmanPackageInfo] | None = None
@@ -378,7 +382,7 @@ class PackageDBCommon(abc.ABC):
     ) -> dict[str, PacmanPackageInfo]:
         if not cls._repo_dict_cache:
             cls._repo_dict_cache = {
-                pkg.name: pkg
+                get_pkg_id(pkg): pkg
                 for pkg in cls.get_repo_list(handle=handle)
             }
         return cls._repo_dict_cache

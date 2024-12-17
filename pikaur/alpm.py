@@ -21,6 +21,10 @@ OFFICIAL_REPOS: "Final" = (
     "multilib-testing",
     "core-staging",
     "extra-staging",
+    "multilib-staging",
+    "core-debug",
+    "extra-debug",
+    "multilib-debug",
 )
 
 

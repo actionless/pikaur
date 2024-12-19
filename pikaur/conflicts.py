@@ -57,7 +57,7 @@ def find_conflicting_with_new_pkgs(
         new_pkg_conflicts_list: list[str],
 ) -> dict[str, list[str]]:
     """
-    find if any of new packages have Conflicts with
+    Find if any of new packages have Conflicts with
     already installed ones or with each other
     """
     local_provided = PackageDB.get_local_provided_dict()

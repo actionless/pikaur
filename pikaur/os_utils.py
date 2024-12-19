@@ -27,7 +27,7 @@ class CodepageSequences:
 
 def detect_bom_type(file_path: str | Path) -> str:
     """
-    returns file encoding string for open() function
+    Returns file encoding string for open() function
     https://stackoverflow.com/a/44295590/1850190
     """
     if isinstance(file_path, str):

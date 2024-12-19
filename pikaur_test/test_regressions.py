@@ -83,7 +83,7 @@ class RegressionTest(PikaurDbTestCase):
 
     def test_splitted_pkg_with_base_deps(self):
         """
-        when split packages have base depends section
+        When split packages have base depends section
         those deps should be installed during the build
 
         see #320

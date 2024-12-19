@@ -790,12 +790,12 @@ class PikaurConfig:
     def migrate_config(cls) -> None:
         for section_name, section in ConfigSchema().items():
             for option_name, option_schema in section.items():
+                if option_schema.get("warning"):
+                    cls._handle_warning(option_schema, section_name, option_name)
                 if option_schema.get("old_default"):
                     cls._migrate_deprecated_config_value(option_schema, section_name, option_name)
                 elif option_schema.get("deprecated"):
                     cls._migrate_deprecated_config_key(option_schema, section_name, option_name)
-                if option_schema.get("warning"):
-                    cls._handle_warning(option_schema, section_name, option_name)
 
     @classmethod
     def validate_config(cls) -> None:

@@ -49,6 +49,10 @@ DECORATION: "Final" = "🛴"
 # @TODO: make it configurable later on
 
 
+def _err_write(message: str) -> None:
+    sys.stderr.write(f"{message}\n")
+
+
 class IntOrBoolSingleton(int):
 
     value: int
@@ -723,7 +727,7 @@ class PikaurConfig:
             old_value_was_removed = True
 
         if old_value_was_migrated or old_value_was_removed:
-            print(" ".join([  # noqa: T201
+            _err_write(" ".join([
                 DECORATION,
                 translate("warning:"),
                 translate(
@@ -750,7 +754,7 @@ class PikaurConfig:
             new_default_value = option_schema["default"]
             cls._config[section_name][option_name] = new_default_value
             ConfigSchema()[section_name][option_name]["migrated"] = True
-            print(" ".join([  # noqa: T201
+            _err_write(" ".join([
                 DECORATION,
                 translate("warning:"),
                 translate(
@@ -775,7 +779,7 @@ class PikaurConfig:
     def validate_config(cls) -> None:
         pacman_path = cls._config["misc"]["PacmanPath"]
         if pacman_path in {PIKAUR_NAME, sys.argv[0]} or pacman_path.endswith(f"/{PIKAUR_NAME}"):
-            print("BAM! I am a shell bomb.")  # noqa: T201
+            _err_write("BAM! I am a shell bomb.")
             sys.exit(1)
 
     def __getattr__(self, attr: str) -> PikaurConfigSection:

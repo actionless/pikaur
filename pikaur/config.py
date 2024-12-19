@@ -43,7 +43,8 @@ STR: "Final" = "str"
 
 
 # DECORATION: "Final" = "::"
-DECORATION: "Final" = "△ "
+# DECORATION: "Final" = "△ "
+DECORATION: "Final" = "🛴"
 # DECORATION: "Final" = "⚡️"
 # @TODO: make it configurable later on
 

@@ -402,20 +402,29 @@ msgstr "f"
 msgid "n"
 msgstr "h"
 
-#: pikaur/config.py:618
+#: pikaur/config.py:379
+msgid ""
+"Dynamic Users feature will be disabled in the upcoming releases.\n"
+"Consider either calling Pikaur from your actual user account without `sudo`, "
+"or creating `pikaur` user and specifying its UserId in Pikaur config\n"
+"and set DynamicUsers to `never`."
+msgstr ""
+
+#: pikaur/config.py:640
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr "{key} '{typeof}' türünde değil"
 
-#: pikaur/config.py:727 pikaur/config.py:754 pikaur/pikaprint.py:213
+#: pikaur/config.py:752 pikaur/config.py:779 pikaur/config.py:818
+#: pikaur/pikaprint.py:213
 msgid "warning:"
 msgstr "uyarı:"
 
-#: pikaur/config.py:729
+#: pikaur/config.py:754
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr "[{}]{}=\"{}\" yapılandırması [{}]{}=\"{}\" olarak taşınıyor..."
 
-#: pikaur/config.py:756
+#: pikaur/config.py:781
 #, fuzzy
 msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
 msgstr "[{}]{}=\"{}\" yapılandırması [{}]{}=\"{}\" olarak taşınıyor..."
@@ -883,7 +892,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-17 16:45+0100\n"
+"POT-Creation-Date: 2024-12-19 21:32+0100\n"
 "PO-Revision-Date: 2024-04-28 11:16+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"

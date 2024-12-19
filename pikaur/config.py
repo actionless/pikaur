@@ -23,12 +23,17 @@ if TYPE_CHECKING:
         option: str
         transform: NotRequired[Callable[[str, configparser.ConfigParser], str]]
 
+    class WarningValue(TypedDict):
+        message: str
+        when_value: list[str]
+
     class ConfigValueType(TypedDict):
         data_type: str
         default: NotRequired[str]
         old_default: NotRequired[str]
         deprecated: NotRequired[DeprecatedConfigValue]
         migrated: NotRequired[bool]
+        warning: NotRequired[WarningValue]
 
 
 VERSION: "Final" = "1.31-dev"
@@ -684,6 +689,9 @@ class PikaurConfig:
             CustomUserId.update_fallback(int(cls._config["misc"]["UserId"]))
         return cls._config
 
+    def __getattr__(self, attr: str) -> PikaurConfigSection:
+        return PikaurConfigSection(self.get_config()[attr])
+
     @classmethod
     def _migrate_deprecated_config_key(
             cls,
@@ -774,6 +782,8 @@ class PikaurConfig:
                     cls._migrate_deprecated_config_value(option_schema, section_name, option_name)
                 elif option_schema.get("deprecated"):
                     cls._migrate_deprecated_config_key(option_schema, section_name, option_name)
+                if option_schema.get("warning"):
+                    cls._handle_warning(option_schema, section_name, option_name)
 
     @classmethod
     def validate_config(cls) -> None:
@@ -782,5 +792,19 @@ class PikaurConfig:
             _err_write("BAM! I am a shell bomb.")
             sys.exit(1)
 
-    def __getattr__(self, attr: str) -> PikaurConfigSection:
-        return PikaurConfigSection(self.get_config()[attr])
+    @classmethod
+    def _handle_warning(
+            cls,
+            option_schema: "ConfigValueType",
+            section_name: str,
+            option_name: str,
+    ) -> None:
+        current_value = cls._config[section_name][option_name]
+        if current_value in option_schema["warning"]["when_value"]:
+            _err_write("\n".join([
+                "",
+                translate("warning:"),
+                f"  [{section_name}]{option_name} = {current_value}",
+                option_schema["warning"]["message"],
+                "\n",
+            ]))

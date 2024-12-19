@@ -52,6 +52,8 @@ whitelist.config.DeprecatedConfigValue.option
 whitelist.config.ConfigValueType.data_type
 whitelist.config.ConfigValueType.deprecated
 whitelist.config.ConfigValueType.migrated
+whitelist.config.WarningValue.when_value
+whitelist.config.WarningValue.warning
 
 whitelist.i18n.EXTRA_ERROR_MESSAGES
 

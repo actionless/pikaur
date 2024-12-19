@@ -36,7 +36,7 @@ if TYPE_CHECKING:
         warning: NotRequired[WarningValue]
 
 
-VERSION: "Final" = "1.31-dev"
+VERSION: "Final" = "1.32-dev"
 
 DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
 DEFAULT_INPUT_ENCODING: "Final" = "utf-8"

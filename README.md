@@ -13,7 +13,6 @@ Notable features:
 * build local PKGBUILDs with AUR deps (`-P`/`--pkgbuild`)
 * retrieve PKGBUILDs from AUR and ABS (`-G`/`--getpkgbuild`)
 * interactively handle common build problems (like untrusted GPG key or checksum mismatch, wrong architecture)
-* using [systemd dynamic users](http://0pointer.net/blog/dynamic-users-with-systemd.html "") if building packages as root user
 * show unread [Arch news](https://www.archlinux.org/news/ "") before sysupgrade
 * [m]anual package selection in [install prompt](#screenshot "") using text editor (ignore unwanted updates or select package provider)
 * show AUR package diff and review PKGBUILD and .install files
@@ -146,7 +145,7 @@ Will be overridden by `--keepbuilddeps` flag.
 ##### SkipFailedBuild (default: no)
 Always skip the build if it fails and don't show recovery prompt.
 
-##### DynamicUsers (default: root) [root|never|always]
+##### DynamicUsers (default: never) [root|never|always]
 When to isolate the build using systemd dynamic users.
 (`root` - only when running as root)
 Will be overridden by `--dynamic-users` flag.

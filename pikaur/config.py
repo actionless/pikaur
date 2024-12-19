@@ -372,7 +372,19 @@ class ConfigSchema(ConfigSchemaT):
                     },
                     "DynamicUsers": {
                         "data_type": STR,
-                        "default": "root",
+                        "default": "never",
+                        # "old_default": "root",
+                        "warning": {
+                            "message": (
+                                "Dynamic Users feature will be disabled in the upcoming releases.\n"
+                                "Consider either calling Pikaur from your actual"
+                                " user account without `sudo`,"
+                                " or creating `pikaur` user"
+                                " and specifying its UserId in Pikaur config\n"
+                                "and set DynamicUsers to `never`"
+                            ),
+                            "when_value": ["root", "always"],
+                        },
                     },
                     "AlwaysUseDynamicUsers": {
                         "data_type": BOOL,

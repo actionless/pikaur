@@ -23,7 +23,7 @@ ENV LANG=en_US.utf8 \
 	LC_ALL=en_US.UTF-8
 
 RUN echo ">>>> Installing opt and test deps:" && \
-	pacman -Sy --noconfirm --needed --color=always \
+	pacman -Sy --noconfirm --needed --color=always --asdeps \
 		devtools python-pysocks python-defusedxml \
 		ruff flake8 python-pylint mypy vulture bandit shellcheck python-validate-pyproject && \
 	echo ">>>> Preparing build directory:" && \
@@ -44,6 +44,7 @@ RUN	echo ">>>> Starting the build:" && \
 #ADD ./maintenance_scripts/coveralls_PKGBUILD ./coveralls_PKGBUILD
 #RUN sudo -u user pikaur -Pi --noconfirm --color=always coveralls_PKGBUILD
 RUN echo ">>>> Installing test deps using Pikaur itself:" && \
-	sudo -u user pikaur -S --noconfirm --mflags=--skippgpcheck --color=always python-coveralls
+	sudo -u user pikaur --noconfirm --mflags=--skippgpcheck --color=always \
+		-Pi ./PKGBUILD_dev_deps
 
 # vim: set ft=dockerfile :

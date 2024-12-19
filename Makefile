@@ -222,7 +222,7 @@ shellcheck:
 
 shellcheck_makefile:
 	# Running shellcheck on Makefile...
-	$(PYTHON) ./maintenance_scripts/makefile_shellcheck.py --exclude SC2317
+	shellcheck_makefile --exclude SC2317
 	# :: shellcheck makefile passed ::
 
 validate_pyproject:

@@ -4,7 +4,7 @@
 _pkgname=pikaur_dev_deps
 #pkgname="${_pkgname}-git"
 pkgname="${_pkgname}"
-pkgver=1.30.2
+pkgver=1.32
 pkgrel=1
 pkgdesc="Development deps for Pikaur"
 arch=('any')
@@ -20,6 +20,7 @@ depends=(
 	'python-hatchling'  # tag-release
 	# linting:
 	ruff flake8 python-pylint mypy vulture bandit shellcheck python-validate-pyproject shellcheck_makefile-git
+	'python-coveralls'
 	# pikaur opt deps:
 	'devtools'
 	'python-pysocks'

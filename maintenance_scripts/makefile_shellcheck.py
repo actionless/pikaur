@@ -1,1 +1,0 @@
-../submodules/shellcheck_makefile/shellcheck_makefile.py

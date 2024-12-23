@@ -559,7 +559,7 @@ class LooseVersion:
     def _cmp(self, other: "str | LooseVersion") -> int:
         other = self._coerce(other)
         if other is NotImplemented:
-            return NotImplemented
+            raise NotImplementedError
 
         components = self.version
         components_other = other.version
@@ -600,7 +600,7 @@ class LooseVersion:
         if components > components_other:
             # debug(f"1 {components=} {components_other=}")
             return 1
-        return NotImplemented
+        raise NotImplementedError
 
     def cmp(self, other: "str | LooseVersion") -> int:
         return self._cmp(other)
@@ -611,7 +611,7 @@ class LooseVersion:
             return other
         if isinstance(other, str):
             return cls(other)
-        return NotImplemented
+        raise NotImplementedError
 
 
 def compare_versions(current_version: str, new_version: str) -> int:

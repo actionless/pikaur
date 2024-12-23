@@ -644,12 +644,16 @@ class PikaurConfigItem:
         if get_key_type(self.section.name, self.key) != BOOL:
             not_bool_error = self._type_error_template.format(key=self.key, typeof=BOOL)
             raise TypeError(not_bool_error)
+        if self.value is None:
+            return False
         return str_to_bool(self.value)
 
     def get_int(self) -> int:
         if get_key_type(self.section.name, self.key) != INT:
             not_int_error = self._type_error_template.format(key=self.key, typeof=INT)
             raise TypeError(not_int_error)
+        if self.value is None:
+            return 0
         return int(self.value)
 
     def get_str(self) -> str:

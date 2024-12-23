@@ -141,12 +141,12 @@ class InstallInfo(ComparableType):
 
 
 @dataclass(eq=False, repr=False)
-class RepoInstallInfo(InstallInfo):
+class RepoInstallInfo(InstallInfo):  # type: ignore[override]
     package: "pyalpm.Package"
 
 
 @dataclass(eq=False, repr=False)
-class AURInstallInfo(InstallInfo):
+class AURInstallInfo(InstallInfo):  # type: ignore[override]
     package: "AURPackageInfo"
 
 

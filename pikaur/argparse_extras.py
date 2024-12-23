@@ -239,7 +239,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                         action.deprecated  # type: ignore[attr-defined]
                         and option_string not in warned
                     ):
-                        self._warning(  # type: ignore[attr-defined]  # pylint: disable=no-member
+                        self._warning(  # type: ignore[attr-defined]
                             _("option '%(option)s' is deprecated") %
                             {"option": option_string},
                         )
@@ -285,7 +285,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                         and action.deprecated  # type: ignore[attr-defined]
                         and action.dest not in warned
                     ):
-                        self._warning(  # type: ignore[attr-defined]  # pylint: disable=no-member
+                        self._warning(  # type: ignore[attr-defined]
                             _("argument '%(argument_name)s' is deprecated") %
                             {"argument_name": action.dest},
                         )

@@ -15,7 +15,7 @@ from .i18n import translate
 from .lock import FancyLock
 from .logging_extras import create_logger
 from .pacman_i18n import _p
-from .pikaprint import color_enabled, print_stderr
+from .pikaprint import color_enabled, print_error, print_stderr
 from .pikatypes import PackageSource
 from .privilege import sudo
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
@@ -431,10 +431,18 @@ class PackageDB(PackageDBCommon, PyAlpmWrapper):
 
     @classmethod
     def get_sync_print_format_output(
-            cls, pkg_names: list[str], *, check_deps: bool = True, package_only: bool = False,
+            cls, pkg_names: list[str],
+            *,
+            check_deps: bool = True, package_only: bool = False, skip_dep_test: bool = False,
     ) -> list[PacmanPrint]:
         return cls.get_print_format_output(
-            [*get_pacman_command(), "--sync", *pkg_names],
+            [
+                *get_pacman_command(),
+                "--sync",
+                *pkg_names,
+            ] + (
+                ["--nodeps"] if skip_dep_test else []
+            ),
             check_deps=check_deps,
             package_only=package_only,
         )
@@ -571,10 +579,12 @@ def get_upgradeable_package_names() -> list[str]:
     return upgradeable_packages_output.splitlines()
 
 
-def find_upgradeable_packages() -> list[pyalpm.Package]:
+def find_upgradeable_packages(*, skip_dep_test: bool = False) -> list[pyalpm.Package]:
+    logger.debug("< FIND_UPGRADEABLE_PACKAGES")
     all_repo_pkgs = PackageDB.get_repo_dict()
 
     pkg_names = get_upgradeable_package_names()
+    logger.debug("upgradeable_package_names={}", pkg_names)
     if not pkg_names:
         return []
 
@@ -583,15 +593,19 @@ def find_upgradeable_packages() -> list[pyalpm.Package]:
     try:
         results = PackageDB.get_sync_print_format_output(pkg_names=pkg_names)
     except DependencyError as exc:
-        logger.debug(translate("Dependencies can't be satisfied for the following packages:"))
-        logger.debug("{}{}", " " * 12, " ".join(pkg_names))
-        logger.debug(str(exc))
+        print_error(translate("Dependencies can't be satisfied for the following packages:"))
+        print_stderr(" " * 12 + " ".join(pkg_names))
+        print_stderr(str(exc))
         for pkg_name in pkg_names:
             try:
                 results += PackageDB.get_sync_print_format_output([pkg_name])
             except DependencyError as exc2:
-                logger.debug(translate("Because of:"))
-                logger.debug(str(exc2))
+                print_stderr(translate("Because of:") + f" {pkg_name}")
+                print_stderr(str(exc2))
+    if skip_dep_test and (len(results) < len(pkg_names)):
+        results = PackageDB.get_sync_print_format_output(
+            pkg_names=pkg_names, skip_dep_test=skip_dep_test,
+        )
     return [
         all_repo_pkgs[result.full_name] for result in results
         if result.name in all_local_pkgs

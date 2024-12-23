@@ -9,6 +9,7 @@ from .aur import find_aur_packages
 from .config import DEFAULT_TIMEZONE, PikaurConfig
 from .exceptions import PackagesNotFoundInRepoError
 from .i18n import translate, translate_many
+from .logging_extras import create_logger
 from .pacman import (
     PackageDB,
     find_packages_not_from_repo,
@@ -32,6 +33,8 @@ if TYPE_CHECKING:
     import pyalpm
 
     from .pikatypes import AURPackageInfo
+
+logger = create_logger("updates")
 
 
 DEVEL_PKGS_POSTFIXES: "Final" = (
@@ -91,16 +94,19 @@ def find_repo_upgradeable() -> list[RepoInstallInfo]:
     it find all upgradeable repo packages, even ignored ones or conflicting
     (like `pacman -Qu`).
     """
+    logger.debug("<< FIND_REPO_UPGRADEABLE")
     all_local_pkgs = PackageDB.get_local_dict()
     repo_packages_updates = []
-    for repo_pkg in find_upgradeable_packages():
+    for repo_pkg in find_upgradeable_packages(skip_dep_test=True):
         local_pkg = all_local_pkgs[repo_pkg.name]
+        logger.debug("  - {} -> {}", local_pkg, repo_pkg)
         repo_packages_updates.append(
             RepoInstallInfo(
                 package=repo_pkg,
                 current_version=local_pkg.version,
             ),
         )
+    logger.debug(">> FIND_REPO_UPGRADEABLE: {}", repo_packages_updates)
     return repo_packages_updates
 
 
@@ -133,6 +139,10 @@ def find_aur_devel_updates(
 def find_aur_updates(  # pylint: disable=too-many-branches
         *, check_stable_versions_of_devel_pkgs: bool = False,
 ) -> tuple[list[AURInstallInfo], list[str], dict[str, InstallInfo]]:
+    logger.debug(
+        "<< FIND_AUR_UPDATES: check_stable_versions_of_devel_pkgs={}",
+        check_stable_versions_of_devel_pkgs,
+    )
     args = parse_args()
     local_packages = PackageDB.get_local_dict()
     package_names = find_packages_not_from_repo()
@@ -218,6 +228,10 @@ def print_upgradeable(
 ) -> None:
     args = parse_args()
     updates: list[InstallInfo] = []
+    logger.debug(
+        "<<< PRINT_UPGRADEABLE: aur_install_infos={}, stable_versions_updates={}, ignored_only={}",
+        aur_install_infos, stable_versions_updates, ignored_only,
+    )
     if aur_install_infos is not None:
         updates += aur_install_infos
     elif not args.repo:
@@ -228,7 +242,9 @@ def print_upgradeable(
     if stable_versions_updates:
         print_stable_version_upgrades(stable_versions_updates)
     if not updates:
+        logger.debug(">>> PRINT_UPGRADEABLE: no updates")
         return
+    logger.debug("updates={}", updates)
     pkg_names = [pkg.name for pkg in updates]
     manually_ignored_pkg_names = get_ignored_pkgnames_from_patterns(
         pkg_names,

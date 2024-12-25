@@ -50,7 +50,7 @@ from .pikaprint import (
     print_stderr,
     print_stdout,
 )
-from .pikatypes import ComparableType
+from .pikatypes import AURInstallInfo, ComparableType
 from .privilege import (
     isolate_root_cmd,
     sudo,
@@ -150,6 +150,7 @@ class PackageBuild(ComparableType):
     _build_files_copied = False
 
     failed: bool | None = None
+    is_dep: bool | None = None
 
     new_deps_to_install: list[str]
     new_make_deps_to_install: list[str]
@@ -172,8 +173,11 @@ class PackageBuild(ComparableType):
             self,
             package_names: list[str] | None = None,
             pkgbuild_path: str | None = None,
+            *,
+            is_dep: bool | None = None,
     ) -> None:
         self.args = parse_args()
+        self.is_dep = is_dep
 
         if pkgbuild_path:
             self.repo_path = dirname(pkgbuild_path)
@@ -608,7 +612,7 @@ class PackageBuild(ComparableType):
         self.get_latest_dev_sources()
         self.set_built_package_path()
         if (
-                not self.args.rebuild and
+                not (self.args.rebuild and not self.is_dep) and
                 len(self.built_packages_paths) == len(self.package_names)
         ):
             message = translate_many(
@@ -1013,7 +1017,8 @@ class AlreadyClonedRepos:
         return repo in cls.repos
 
 
-def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
+def clone_aur_repos(package_infos: list[AURInstallInfo]) -> dict[str, PackageBuild]:
+    package_names = [info.name for info in package_infos]
     aur_pkgs, _ = find_aur_packages(package_names)
     packages_bases: dict[str, list[str]] = {}
     for aur_pkg in aur_pkgs:
@@ -1022,6 +1027,10 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         pkgbase: PackageBuild(package_names=pkg_names)
         for pkgbase, pkg_names in packages_bases.items()
         if not AlreadyClonedRepos.get(pkgbase)
+    }
+    install_infos_by_base = {
+        info.package.packagebase: info
+        for info in package_infos
     }
 
     pool_size: int | None = None
@@ -1053,7 +1062,10 @@ def clone_aur_repos(package_names: list[str]) -> dict[str, PackageBuild]:
         raise exc
 
     all_package_builds_by_base = {
-        pkgbase: PackageBuild(package_names=pkg_names)
+        pkgbase: PackageBuild(
+            package_names=pkg_names,
+            is_dep=bool(install_infos_by_base[pkgbase].required_by),
+        )
         for pkgbase, pkg_names in packages_bases.items()
     }
     return {

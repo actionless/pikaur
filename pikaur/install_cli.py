@@ -55,7 +55,7 @@ from .pikaprint import (
     print_stdout,
     print_warning,
 )
-from .pikatypes import AURPackageInfo, PackageSource
+from .pikatypes import AURInstallInfo, AURPackageInfo, PackageSource
 from .print_department import (
     pretty_format_sysupgrade,
     print_not_found_packages,
@@ -316,7 +316,13 @@ class InstallPackagesCLI:
         )
 
     def edit_pkgbuild_during_the_build(self, pkg_name: str) -> None:
-        updated_pkgbuilds = self._clone_aur_repos([pkg_name])
+        updated_pkgbuilds = self._clone_aur_repos([
+            install_info
+            for install_info in (
+                self.install_info._all_aur_updates_raw   # pylint: disable=protected-access  # noqa: SLF001,E501,RUF100
+            )
+            if install_info.name == pkg_name
+        ])
         if not updated_pkgbuilds:
             return
         self.package_builds_by_name.update(updated_pkgbuilds)
@@ -741,12 +747,12 @@ class InstallPackagesCLI:
             raise self.ExitMainSequence
 
     def _clone_aur_repos(  # pylint: disable=too-many-branches
-            self, package_names: list[str],
+            self, package_infos: list[AURInstallInfo],
     ) -> dict[str, PackageBuild] | None:
         stash_pop_list: list[str] = []
         while True:
             try:
-                pkgbuild_by_name = clone_aur_repos(package_names=package_names)
+                pkgbuild_by_name = clone_aur_repos(package_infos=package_infos)
             except CloneError as err:
                 package_build = err.build
                 print_stderr(color_line(
@@ -801,8 +807,9 @@ class InstallPackagesCLI:
                 elif answer == translate("s"):  # pragma: no cover
                     for skip_pkg_name in package_build.package_names:
                         self.discard_install_info(skip_pkg_name)
-                        if skip_pkg_name in package_names:
-                            package_names.remove(skip_pkg_name)
+                        for info in package_infos.copy():
+                            if skip_pkg_name == info.name:
+                                package_infos.remove(info)
                 elif answer == translate("a"):  # pragma: no cover
                     raise SysExit(125) from err
             else:
@@ -833,6 +840,7 @@ class InstallPackagesCLI:
                         pkgbuilds_by_base[pkg_base] = PackageBuild(
                             pkgbuild_path=info.pkgbuild_path,
                             package_names=package_names,
+                            is_dep=bool(info.required_by),
                         )
                     pkgbuilds_by_name[info.name] = pkgbuilds_by_base[pkg_base]
                     for provided_str in info.package.provides:
@@ -840,7 +848,7 @@ class InstallPackagesCLI:
                         pkgbuilds_by_provides[provided_name] = pkgbuilds_by_base[pkg_base]
                 else:
                     clone_infos.append(info)
-            cloned_pkgbuilds = self._clone_aur_repos([info.name for info in clone_infos])
+            cloned_pkgbuilds = self._clone_aur_repos(clone_infos)
             if cloned_pkgbuilds:
                 logger.debug("cloned_pkgbuilds={}", cloned_pkgbuilds)
                 pkgbuilds_by_name.update(cloned_pkgbuilds)

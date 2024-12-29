@@ -316,16 +316,17 @@ class InstallPackagesCLI:
         )
 
     def edit_pkgbuild_during_the_build(self, pkg_name: str) -> None:
-        updated_pkgbuilds = self._clone_aur_repos([
-            install_info
-            for install_info in (
-                self.install_info._all_aur_updates_raw   # pylint: disable=protected-access  # noqa: SLF001,E501,RUF100
-            )
-            if install_info.name == pkg_name
-        ])
-        if not updated_pkgbuilds:
-            return
-        self.package_builds_by_name.update(updated_pkgbuilds)
+        if getattr(self, "install_info", None):
+            updated_pkgbuilds = self._clone_aur_repos([
+                install_info
+                for install_info in (
+                    self.install_info._all_aur_updates_raw   # pylint: disable=protected-access  # noqa: SLF001,E501,RUF100
+                )
+                if install_info.name == pkg_name
+            ])
+            if not updated_pkgbuilds:
+                return
+            self.package_builds_by_name.update(updated_pkgbuilds)
         pkg_build = self._get_pkgbuild_for_name_or_provided(pkg_name)
         if not edit_file(
                 pkg_build.pkgbuild_path,

@@ -84,8 +84,8 @@ class CliTest(PikaurTestCase):
 
     def test_search_multiword_too_small_query_filter_namesonly(self):
         common_query = "mailman"
-        specific_query = "w"
-        specific_result = "mailman3-public-inbox"
+        specific_query = "d"
+        specific_result = "listadmin"
         specific_query_names_only = "u"
         specific_result_names_only = "mailman3-public-inbox"
 

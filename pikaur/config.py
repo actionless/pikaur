@@ -773,7 +773,10 @@ class PikaurConfig:
             option_name: str,
     ) -> None:
         old_default = option_schema["old_default"]
-        current_value = cls._config[section_name][option_name]
+        try:
+            current_value = cls._config[section_name][option_name]
+        except (KeyError, configparser.NoSectionError):
+            return
         if current_value == old_default:
             new_default_value = option_schema["default"]
             cls._config[section_name][option_name] = new_default_value
@@ -815,7 +818,10 @@ class PikaurConfig:
             section_name: str,
             option_name: str,
     ) -> None:
-        current_value = cls._config[section_name][option_name]
+        try:
+            current_value = cls._config[section_name][option_name]
+        except (KeyError, configparser.NoSectionError):
+            return
         if current_value in option_schema["warning"]["when_value"]:
             _err_write("\n".join([
                 "",

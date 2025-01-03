@@ -59,7 +59,7 @@ class CliTest(PikaurTestCase):
         self.assertIn("python-opencv-git", result_all)
         self.assertNotIn("opencv-git", result_all)
 
-    def test_search_multiword_too_small_error(self):
+    def test_search_multiword_too_small_query_error(self):
         proc_aur_too_small = pikaur("-Ssq --aur w", capture_stderr=True)
         self.assertIn(
             "Query arg too small 'w'",
@@ -68,11 +68,11 @@ class CliTest(PikaurTestCase):
         result_aur_too_many = proc_aur_too_small.stdout.splitlines()
         self.assertEqual(len(result_aur_too_many), 0)
 
-    def test_search_multiword_too_filter(self):
+    def test_search_multiword_too_small_query_filter(self):
         common_query = "mailman"
-        specific_query = "w"
+        specific_query = "u"
         common_result = "listadmin"
-        specific_result = "mailman-rss"
+        specific_result = "mailman3-public-inbox"
 
         result_for_one_query = pikaur(f"-Ssq --aur {common_query}").stdout.splitlines()
         self.assertIn(specific_result, result_for_one_query)
@@ -82,11 +82,11 @@ class CliTest(PikaurTestCase):
         self.assertIn(specific_result, result_all)
         self.assertNotIn(common_result, result_all)
 
-    def test_search_multiword_too_filter_namesonly(self):
+    def test_search_multiword_too_small_query_filter_namesonly(self):
         common_query = "mailman"
         specific_query = "w"
-        specific_query_names_only = "x"
-        specific_result = "mailman-rss"
+        specific_result = "mailman3-public-inbox"
+        specific_query_names_only = "u"
         specific_result_names_only = "mailman3-public-inbox"
 
         result_all = pikaur(

@@ -228,7 +228,7 @@ CLI_TO_DB_TRANSLATION: Final[dict[str, str]] = {
 }
 
 
-class DBPlaceholder:
+class DBPlaceholder:  # noqa: B903
 
     def __init__(self, name: str) -> None:
         self.name = name

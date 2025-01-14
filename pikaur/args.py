@@ -370,19 +370,21 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
         for each_action in ALL_ACTIONS:
             result += get_pikaur_int_opts(each_action)
         return list(set(result))
+    result += [
+        Arg(
+            None, "user-id", PikaurConfig().misc.UserId.get_int(),
+            translate("user ID to run makepkg if pikaur started from root"),
+        ),
+        Arg(
+            None, "group-id", PikaurConfig().misc.GroupId.get_int(),
+            translate("group ID to run makepkg if pikaur started from root"),
+        ),
+    ]
     if action in {"sync", "pkgbuild", "interactive_package_select"}:
         result += [
             Arg(
                 None, "aur-clone-concurrency", None,
                 translate("how many git-clones/pulls to do from AUR"),
-            ),
-            Arg(
-                None, "user-id", PikaurConfig().misc.UserId.get_int(),
-                translate("user ID to run makepkg if pikaur started from root"),
-            ),
-            Arg(
-                None, "group-id", PikaurConfig().misc.GroupId.get_int(),
-                translate("group ID to run makepkg if pikaur started from root"),
             ),
         ]
     if action == "extras":
@@ -449,9 +451,15 @@ PACMAN_APPEND_OPTS: "Final[ArgSchema]" = [
 ]
 
 
+ANY_OPERATION: "Final" = "*"
+
 ARG_DEPENDS: "Final[dict[str, dict[str, list[str]]]]" = {
     "query": {
         "upgrades": ["aur", "repo"],
+    },
+    ANY_OPERATION: {
+        "user_id": ["group_id"],
+        "group_id": ["user_id"],
     },
 }
 
@@ -575,14 +583,14 @@ class PikaurArgs(Namespace):
 
     def validate(self) -> None:
         for operation, operation_depends in ARG_DEPENDS.items():
-            if getattr(self, operation):
+            if getattr(self, operation) or operation == ANY_OPERATION:
                 for arg_depend_on, dependant_args in operation_depends.items():
                     if not getattr(self, arg_depend_on):
                         for arg_name in dependant_args:
                             if getattr(self, arg_name):
                                 raise MissingArgumentError(arg_depend_on, arg_name)
         for operation, operation_conflicts in ARG_CONFLICTS.items():
-            if getattr(self, operation):
+            if getattr(self, operation) or operation == ANY_OPERATION:
                 for args_conflicts, conflicting_args in operation_conflicts.items():
                     if getattr(self, args_conflicts):
                         for arg_name in conflicting_args:

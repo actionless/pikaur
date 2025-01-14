@@ -55,7 +55,21 @@ DECORATION: "Final" = "🛴"
 
 
 def _err_write(message: str) -> None:
-    sys.stderr.write(f"{message}\n")
+    sys.stderr.write(" ".join([
+        DECORATION,
+        translate("error:"),
+        message,
+        "\n",
+    ]))
+
+
+def _warn_write(message: str) -> None:
+    sys.stderr.write(" ".join([
+        DECORATION,
+        translate("warning:"),
+        message,
+        "\n",
+    ]))
 
 
 class IntOrBoolSingleton(int):
@@ -771,9 +785,7 @@ class PikaurConfig:
             old_value_was_removed = True
 
         if old_value_was_migrated or old_value_was_removed:
-            _err_write(" ".join([
-                DECORATION,
-                translate("warning:"),
+            _warn_write(" ".join([
                 translate(
                     'Migrating [{}]{}="{}" config option to [{}]{}="{}"...',
                 ).format(
@@ -801,9 +813,7 @@ class PikaurConfig:
             new_default_value = option_schema["default"]
             cls._config[section_name][option_name] = new_default_value
             ConfigSchema()[section_name][option_name]["migrated"] = True
-            _err_write(" ".join([
-                DECORATION,
-                translate("warning:"),
+            _warn_write(" ".join([
                 translate(
                     'Migrating [{}]{}="{}" config option to ="{}"...',
                 ).format(
@@ -843,9 +853,7 @@ class PikaurConfig:
         except (KeyError, configparser.NoSectionError):
             return
         if current_value in option_schema["warning"]["when_value"]:
-            _err_write("\n".join([
-                "",
-                translate("warning:"),
+            _warn_write("\n".join([
                 f"  [{section_name}]{option_name} = {current_value}",
                 option_schema["warning"]["message"],
                 "\n",

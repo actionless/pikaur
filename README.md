@@ -235,7 +235,12 @@ In case of elevating privilege for pacman - pikaur would ask for password every 
 User ID to run makepkg if pikaur started from root.
 0 - means disabled, not that it will use uid=0.
 Setting this option would override DynamicUsers settings and force changing to this UID instead of a dynamic one.
+The config value would be overriden by `--user-id` flag.
 
+##### GroupId (default: 0)
+Group ID to run makepkg if pikaur started from root.
+0 - means disabled, not that it will use gid=0.
+The config value would be overriden by `--group-id` flag.
 
 ##### CachePath (default: ~/.cache)
 Path to package cache location.

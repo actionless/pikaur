@@ -102,6 +102,7 @@ def get_args_to_elevate_pikaur(original_args: list[str]) -> list[str]:
     if not need_dynamic_users():
         extra_args += [
             ("--user-id", str(args.user_id or os.getuid())),
+            ("--group-id", str(args.group_id or os.getgid())),
             ("--home-dir", str(args.home_dir or "") or Path.home().as_posix()),
         ]
         for flag, arg_key, env_key in (

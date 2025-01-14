@@ -380,6 +380,10 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
                 None, "user-id", PikaurConfig().misc.UserId.get_int(),
                 translate("user ID to run makepkg if pikaur started from root"),
             ),
+            Arg(
+                None, "group-id", PikaurConfig().misc.GroupId.get_int(),
+                translate("group ID to run makepkg if pikaur started from root"),
+            ),
         ]
     if action == "extras":
         result += [

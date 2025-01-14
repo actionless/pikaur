@@ -129,14 +129,23 @@ def pre_arg_parser(key: str, fallback: str) -> str:
     return fallback
 
 
-class CustomUserId(IntOrBoolSingleton):
-    @classmethod
-    def init_value(cls) -> int:
-        return int(pre_arg_parser("--user-id", "0"))
+class IntOrBoolSingletonUpdateableFallback(IntOrBoolSingleton):
 
     @classmethod
     def update_fallback(cls, new_id: int) -> None:
         cls.set_value(cls() or new_id)
+
+
+class CustomUserId(IntOrBoolSingletonUpdateableFallback):
+    @classmethod
+    def init_value(cls) -> int:
+        return int(pre_arg_parser("--user-id", "0"))
+
+
+class CustomGroupId(IntOrBoolSingletonUpdateableFallback):
+    @classmethod
+    def init_value(cls) -> int:
+        return int(pre_arg_parser("--group-id", "0"))
 
 
 class RunningAsRoot(IntOrBoolSingleton):
@@ -380,7 +389,7 @@ class ConfigSchema(ConfigSchemaT):
                                 "Consider either calling Pikaur from your actual"
                                 " user account without `sudo`,"
                                 " or creating `pikaur` user"
-                                " and specifying its UserId in Pikaur config\n"
+                                " and specifying its UserId and GroupId in Pikaur config\n"
                                 "and set DynamicUsers to `never`.",
                             ),
                             "when_value": ["root", "always"],
@@ -552,6 +561,10 @@ class ConfigSchema(ConfigSchemaT):
                         "data_type": INT,
                         "default": "0",
                     },
+                    "GroupId": {
+                        "data_type": INT,
+                        "default": "0",
+                    },
                     "PreserveEnv": {
                         "data_type": STR,
                         "default": (
@@ -612,6 +625,7 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
                 need_write = True
     if need_write:
         CustomUserId.update_fallback(int(config["misc"]["UserId"]))
+        CustomGroupId.update_fallback(int(config["misc"]["GroupId"]))
         config_root = ConfigRoot()
         config_path = ConfigPath()
         if not config_root.exists():
@@ -619,11 +633,16 @@ def write_config(config: configparser.ConfigParser | None = None) -> None:
         with config_path.open("w", encoding=DEFAULT_CONFIG_ENCODING) as configfile:
             config.write(configfile)
         if custom_user_id := CustomUserId():
+            custom_group_id = CustomGroupId()
+            if not custom_group_id:
+                _err_write(translate(
+                    "Either both UserId and GroupId or neither of them should be set",
+                ))
             for path in (
                 config_root,
                 config_path,
             ):
-                os.chown(path, custom_user_id, custom_user_id)
+                os.chown(path, custom_user_id, custom_group_id)
 
 
 def str_to_bool(value: str) -> bool:
@@ -703,6 +722,7 @@ class PikaurConfig:
             write_config(config=cls._config)
             cls.validate_config()
             CustomUserId.update_fallback(int(cls._config["misc"]["UserId"]))
+            CustomGroupId.update_fallback(int(cls._config["misc"]["GroupId"]))
         return cls._config
 
     def __getattr__(self, attr: str) -> PikaurConfigSection:

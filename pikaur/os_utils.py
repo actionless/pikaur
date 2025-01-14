@@ -107,16 +107,19 @@ def check_executables(dep_names: list[str]) -> None:
 def chown_to_current(path: Path) -> None:
     args = parse_args()
     user_id = args.user_id
-    if user_id:
+    group_id = args.group_id
+    if user_id and group_id:
         if not isinstance(user_id, int):
             raise TypeError
+        if not isinstance(group_id, int):
+            raise TypeError
         try:
-            os.chown(path, user_id, user_id)
+            os.chown(path, user_id, group_id)
         except PermissionError as exc:
             print_error()
             print_error(
-                translate("Can't change owner to {user_id}: {exc}").format(
-                    user_id=user_id, exc=exc,
+                translate("Can't change owner to {user_id}:{group_id}: {exc}").format(
+                    user_id=user_id, group_id=group_id, exc=exc,
                 ),
             )
             print_error()

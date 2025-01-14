@@ -84,7 +84,7 @@ def init_readline() -> None:
 init_readline()
 
 SYSTEMD_MIN_VERSION: "Final" = 235
-logger = create_logger(f"main_{os.getuid()}")
+logger = create_logger(f"main_{os.getuid()}_{os.getgid()}")
 
 
 # @TODO: use arg to enable it

@@ -99,7 +99,11 @@ def isolated_mkdir(to_path: Path) -> None:
     if mkdir_result.returncode != 0:
         print_stdout(mkdir_result.stdout_text)
         print_stderr(mkdir_result.stderr_text)
-        raise RuntimeError(translate(f"Can't create destination directory '{to_path}'."))
+        raise RuntimeError(
+            translate("Can't create destination directory '{to_path}'.").format(
+                to_path=to_path,
+            ),
+        )
 
 
 def copy_aur_repo(from_path: Path, to_path: Path) -> None:
@@ -124,7 +128,11 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
             isolated_mkdir(to_path)
         result = interactive_spawn(cmd_args)
         if result.returncode != 0:
-            raise RuntimeError(translate(f"Can't copy '{from_path}' to '{to_path}'."))
+            raise RuntimeError(
+                translate("Can't copy '{from_path}' to '{to_path}'.").format(
+                    from_path=from_path, to_path=to_path,
+                ),
+            )
 
 
 class PackageBuild(ComparableType):

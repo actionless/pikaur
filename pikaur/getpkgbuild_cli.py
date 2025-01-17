@@ -48,7 +48,11 @@ def clone_repo_pkgs(repo_pkgs: list["pyalpm.Package"], pwd: Path) -> None:
         name = repo_pkg.base
         repo_path = pwd / name
         print_stdout()
-        print_stdout(translate(f"Package '{name}' going to be cloned into '{repo_path}'..."))
+        print_stdout(
+            translate("Package '{name}' going to be cloned into '{repo_path}'...").format(
+                name=name, repo_path=repo_path,
+            ),
+        )
         if repo_path.exists():
             interactive_spawn([
                 "git",

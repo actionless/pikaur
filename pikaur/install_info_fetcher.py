@@ -570,7 +570,11 @@ Gonna fetch install info for:
                 aur_pkg = AURPackageInfo.from_srcinfo(srcinfo)
                 logger.debug("  2 {} {} {}", pkg_name, aur_pkg, aur_pkg.packagebase)
                 if pkg_name in aur_updates_install_info_by_name:
-                    raise RuntimeError(translate(f"{pkg_name} already added to the list"))
+                    raise RuntimeError(
+                        translate("{pkg_name} already added to the list").format(
+                            pkg_name=pkg_name,
+                        ),
+                    )
                 local_pkg = local_pkgs.get(pkg_name)
                 info = AURInstallInfo(
                     # @TODO: use data from srcinfo here?

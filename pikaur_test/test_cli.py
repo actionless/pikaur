@@ -105,10 +105,6 @@ class CliTest(PikaurTestCase):
         self.assertIn(specific_result_names_only, result_namesonly_2)
 
     def test_search_arg_order(self):
-        """
-        See:
-        https://github.com/actionless/pikaur/commit/0cd3e4eb4a5e4c36e7436745ac2b5a039c3401ec
-        """
         common_query = "fool"
         specific_query = "python"
         result_1 = pikaur(

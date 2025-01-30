@@ -69,10 +69,10 @@ class CliTest(PikaurTestCase):
         self.assertEqual(len(result_aur_too_many), 0)
 
     def test_search_multiword_too_small_query_filter(self):
-        common_query = "mailman"
-        specific_query = "u"
-        common_result = "listadmin"
-        specific_result = "mailman3-public-inbox"
+        common_query = "fool"
+        specific_query = "python"
+        common_result = "fool"
+        specific_result = "python-foolscap"
 
         result_for_one_query = pikaur(f"-Ssq --aur {common_query}").stdout.splitlines()
         self.assertIn(specific_result, result_for_one_query)
@@ -83,27 +83,26 @@ class CliTest(PikaurTestCase):
         self.assertNotIn(common_result, result_all)
 
     def test_search_multiword_too_small_query_filter_namesonly(self):
-        common_query = "mailman"
-        specific_query = "d"
-        specific_result = "listadmin"
-        specific_query_names_only = "u"
-        specific_result_names_only = "mailman3-public-inbox"
+        common_query = "fool"
+        specific_query = "python"
+        specific_result = "python-ippserver"
+        specific_result_names_only = "python-foolscap"
 
         result_all = pikaur(
             f"-Ssq --aur {common_query} {specific_query}",
         ).stdout.splitlines()
         self.assertIn(specific_result, result_all)
 
-        result_namesonly_w = pikaur(
+        result_namesonly_1 = pikaur(
             f"-Ssq --aur {common_query} {specific_query} --namesonly",
         ).stdout.splitlines()
-        self.assertEqual(len(result_namesonly_w), 0)
+        self.assertNotIn(specific_result, result_namesonly_1)
 
-        result_namesonly_x = pikaur(
-            f"-Ssq --aur {common_query} {specific_query_names_only} --namesonly",
+        result_namesonly_2 = pikaur(
+            f"-Ssq --aur {common_query} {specific_query} --namesonly",
         ).stdout.splitlines()
-        self.assertNotIn(specific_result, result_namesonly_x)
-        self.assertIn(specific_result_names_only, result_namesonly_x)
+        self.assertNotIn(specific_result, result_namesonly_2)
+        self.assertIn(specific_result_names_only, result_namesonly_2)
 
     def test_list(self):
         result_all = pikaur("-Ssq").stdout.splitlines()

@@ -13,6 +13,7 @@ from .aur import (
 )
 from .exceptions import AURError, SysExit
 from .i18n import translate
+from .logging_extras import create_logger
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
 from .pikaprint import print_error, print_stderr
 from .pikatypes import AURPackageInfo
@@ -27,6 +28,9 @@ if TYPE_CHECKING:
     from .print_department import AnyPackage
 
     SamePackageTypeT = TypeVar("SamePackageTypeT", AURPackageInfo, pyalpm.Package)
+
+
+logger = create_logger("search")
 
 
 def filter_search_results(
@@ -73,6 +77,7 @@ def package_search_thread_aur(  # pylint: disable=too-many-branches
         queries: list[str],
 ) -> list[AURPackageInfo]:
     args = parse_args()
+    logger.debug("queries: {}", queries)
     result = {}
     if queries:
         use_as_filters: list[str] = []

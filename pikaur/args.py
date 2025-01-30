@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
+import argparse
 import sys
-from argparse import Namespace
 from pprint import pformat
 from typing import TYPE_CHECKING, NamedTuple, cast
 
@@ -511,7 +511,7 @@ class MissingArgumentError(Exception):
     pass
 
 
-class PikaurArgs(Namespace):
+class PikaurArgs(argparse.Namespace):
     unknown_args: list[str]
     raw: list[str]
 
@@ -600,7 +600,7 @@ class PikaurArgs(Namespace):
     @classmethod
     def from_namespace(
             cls,
-            namespace: Namespace,
+            namespace: argparse.Namespace,
             unknown_args: list[str],
             raw_args: list[str],
     ) -> "PikaurArgs":
@@ -638,7 +638,8 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             separator_index = args_to_parse.index("--")
             extra_positionals = args_to_parse[separator_index + 1:]
             args_to_parse = args_to_parse[:separator_index]
-        parsed_args, unknown_args = self.parse_known_args(args_to_parse)
+        # parsed_args, unknown_args = self.parse_known_args(args_to_parse)
+        parsed_args, unknown_args = self.parse_known_intermixed_args(args_to_parse)
         parsed_args.positional += extra_positionals
         return PikaurArgs.from_namespace(
             namespace=parsed_args,

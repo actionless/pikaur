@@ -342,8 +342,8 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             extras.extend(arg_strings[start_index:])
             extras_pattern.extend(arg_strings_pattern[start_index:])
             joined_extras_pattern = "".join(extras_pattern)
-            if len(joined_extras_pattern) != len(extras):
-                raise RuntimeError
+            # if len(joined_extras_pattern) != len(extras):
+            #     raise RuntimeError(joined_extras_pattern, extras)
             # consume all positionals
             arg_strings = [
                 s for s, c in zip(extras, joined_extras_pattern, strict=False) if c != "O"

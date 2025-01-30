@@ -157,3 +157,18 @@ class RegressionTest(PikaurDbTestCase):
         self.assertNotInstalled(aur_pkg_name)
         fake_pikaur(f"-S {aur_pkg_name}>=1.0")
         self.assertInstalled(aur_pkg_name)
+
+    def test_intermixed_args(self):
+        """
+        See:
+        https://github.com/actionless/pikaur/commit/0cd3e4eb4a5e4c36e7436745ac2b5a039c3401ec
+        """
+        common_query = "fool"
+        specific_query = "python"
+        result_1 = pikaur(
+            f"-Ssq --aur {common_query} {specific_query} --namesonly",
+        ).stdout.splitlines()
+        result_2 = pikaur(
+            f"-Ssq --aur {common_query} --namesonly {specific_query}",
+        ).stdout.splitlines()
+        self.assertEqual(result_1, result_2)

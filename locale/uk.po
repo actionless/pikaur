@@ -72,7 +72,7 @@ msgstr "не пропонувати редагування PKGBUILD та інш�
 
 #: pikaur/args.py:166
 msgid "prompt to edit PKGBUILDs and other build files"
-msgstr "запит на редагування PKGBUILD та інших файлів збірки"
+msgstr "пропонувати редагування PKGBUILD та інших файлів збірки"
 
 #: pikaur/args.py:170
 msgid "always rebuild AUR packages"
@@ -96,11 +96,11 @@ msgstr "не оновлювати вже завантажений PKGBUILD"
 
 #: pikaur/args.py:193
 msgid "search only in package names"
-msgstr "шукати тільки в іменах пакунків"
+msgstr "шукати тільки в назвах пакунків"
 
 #: pikaur/args.py:197
 msgid "don't prompt to show the build files diff"
-msgstr "не пропонувати відображення відмінностей файлів збірки"
+msgstr "не пропонувати показувати відмінності файлів збірки"
 
 #: pikaur/args.py:201
 msgid "ignore AUR packages' updates which marked 'outofdate'"
@@ -108,19 +108,19 @@ msgstr "ігнорувати оновлення пакунків з AUR, які 
 
 #: pikaur/args.py:215
 msgid "download also AUR dependencies"
-msgstr "завантажити також залежності AUR"
+msgstr "завантажувати також залежності з AUR"
 
 #: pikaur/args.py:222
 msgid "install built package"
-msgstr "встановити зібраний пакунок"
+msgstr "встановлювати зібраний пакунок"
 
 #: pikaur/args.py:230
 msgid "visualize package dependency tree"
-msgstr "відобразити дерево залежностей пакунка"
+msgstr "відображати дерево залежностей пакунка"
 
 #: pikaur/args.py:234
 msgid "less verbose output"
-msgstr "менш розлогий вивід"
+msgstr "менш детальний вивід"
 
 #: pikaur/args.py:241
 msgid "print spawned by pikaur subshell commands"
@@ -227,7 +227,7 @@ msgstr "Неможливо вирішити залежності для паку
 #: pikaur/build.py:102
 #, python-brace-format
 msgid "Can't create destination directory '{to_path}'."
-msgstr "Неможливо створити каталог призначення у '{to_path}'."
+msgstr "Неможливо створити каталог призначення '{to_path}'."
 
 #: pikaur/build.py:127
 #, python-brace-format
@@ -451,7 +451,7 @@ msgstr "{pkg} не встановлено"
 #: pikaur/getpkgbuild_cli.py:51
 #, python-brace-format
 msgid "Package '{name}' going to be cloned into '{repo_path}'..."
-msgstr "Пакунок '{name}' буде клоновано у '{repo_path}' ..."
+msgstr "Пакунок '{name}' буде клоновано до '{repo_path}' ..."
 
 #: pikaur/help_cli.py:48
 msgid "No response from Pacman"
@@ -511,8 +511,7 @@ msgstr "Прочитайте кляту arch-wiki перед тим, як лам
 #: pikaur/i18n.py:34
 msgid "(Also, don't report any issues to pikaur, if ure seeing this message)"
 msgstr ""
-"(Також не повідомляйте про будь-які проблеми pikaur, якщо ви бачите це повідом"
-"лення)"
+"(Також не повідомляйте про будь-які проблеми pikaur, якщо ви бачите це повідомлення)"
 
 #: pikaur/info_cli.py:34
 msgid "AUR Git URL"
@@ -641,7 +640,7 @@ msgstr ""
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
 msgstr ""
-"Зниження версії пакунка {name} із AUR з {version} до {downgrade_version}"
+"Пониження версії пакунка {name} із AUR з {version} до {downgrade_version}"
 
 #: pikaur/install_cli.py:227
 msgid "Starting full AUR upgrade..."
@@ -730,12 +729,12 @@ msgstr "Вилучено деякі залежності для збірки п�
 #: pikaur/install_cli.py:754
 #, python-brace-format
 msgid "Can't clone '{name}' in '{path}' from AUR:"
-msgstr "Неможливо клонувати пакунок '{name}' за посиланням '{path}' з AUR:"
+msgstr "Неможливо клонувати '{name}' до '{path}' з AUR:"
 
 #: pikaur/install_cli.py:756
 #, python-brace-format
 msgid "Can't pull '{name}' in '{path}' from AUR:"
-msgstr "Неможливо отримати '{name}' за посиланням '{path}' з AUR:"
+msgstr "Неможливо отримати '{name}' до '{path}' з AUR:"
 
 #: pikaur/install_cli.py:772
 msgid "[T] try again"
@@ -797,7 +796,7 @@ msgstr "відредагувати"
 #: pikaur/install_cli.py:1010
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
-msgstr "Розходження для пакунка {pkg} не відображені ({reason})"
+msgstr "Відмінності для пакунка {pkg} не відображаються ({reason})"
 
 #: pikaur/install_cli.py:1017 pikaur/install_cli.py:1081
 msgid "already reviewed"
@@ -869,11 +868,11 @@ msgstr ""
 
 #: pikaur/main.py:213
 msgid "invalid value: {} is not between {} and {}"
-msgstr "невірне значення: {} має бути між {} і {}"
+msgstr "неправильне значення: {} має бути між {} і {}"
 
 #: pikaur/main.py:223
 msgid "invalid number: {}"
-msgstr "невірний номер: {}"
+msgstr "неправильний номер: {}"
 
 #: pikaur/main.py:266
 msgid ""
@@ -930,8 +929,7 @@ msgid ""
 "{privilege_escalation_tool} is not part of minimal Arch default setup, be "
 "aware that you could run into potential problems."
 msgstr ""
-"{privilege_escalation_tool} не є частиною мінімальних налаштувань Arch за замо"
-"вчуванням, "
+"{privilege_escalation_tool} не є частиною мінімальних налаштувань Arch за замовчуванням, "
 "  ви можете зіткнутися з потенційними проблемами."
 
 #: pikaur/news.py:68 pikaur/news.py:106

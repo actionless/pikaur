@@ -1,3 +1,24 @@
+# Ukrainian translations for pikaur package.
+# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the pikaur package.
+# Drommer <drommer@github.com>, 2025.
+#
+#: pikaur/main.py:479 pikaur/main.py:493
+msgid ""
+msgstr ""
+"Project-Id-Version: pikaur\n"
+"Report-Msgid-Bugs-To: https://github.com/actionless/pikaur\n"
+"POT-Creation-Date: 2024-12-19 21:32+0100\n"
+"PO-Revision-Date: 2025-04-15 02:00+0300\n"
+"Last-Translator: Serhii Starovoitov <drommer.94@gmail.com>\n"
+"Language-Team: Ukrainian <uk@li.org>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Gtranslator 3.32.1\n"
+
 #: pikaur/alpm.py:50
 #, fuzzy
 msgid "Cannot initialize ALPM"
@@ -46,8 +67,7 @@ msgstr "помилка:"
 
 #: pikaur/args.py:133
 msgid "use pacman-cli-based fallback alpm database reader"
-msgstr ""
-"використовувати резервний засіб читання баз даних alpm на основі pacman-cli"
+msgstr "використовувати резервний засіб читання баз даних alpm на основі pacman-cli"
 
 #: pikaur/args.py:144
 msgid "query packages from AUR only"
@@ -104,7 +124,7 @@ msgstr "не пропонувати показувати відмінності 
 
 #: pikaur/args.py:201
 msgid "ignore AUR packages' updates which marked 'outofdate'"
-msgstr "ігнорувати оновлення пакунків з AUR, які позначені як застарілі"
+msgstr "ігнорувати оновлення пакунків з AUR, що позначені як застарілі"
 
 #: pikaur/args.py:215
 msgid "download also AUR dependencies"
@@ -128,7 +148,7 @@ msgstr "відображати команди, що викликані підо�
 
 #: pikaur/args.py:245
 msgid "show only debug messages specific to pikaur"
-msgstr "показувати відлагоджувальні повідомлення, що стосуються тільки pikaur"
+msgstr "показувати лише специфічні для pikaur відлагоджувальні повідомлення"
 
 #: pikaur/args.py:283
 msgid "alternative home directory location"
@@ -178,9 +198,8 @@ msgstr "шлях до власних налаштувань pikaur"
 
 #: pikaur/args.py:348
 msgid "set GnuPG home directory used when validating package sources"
-msgstr ""
-"встановити домашній каталог GnuPG для використання під час перевірки вихідного"
-" коду"
+msgstr "встановити домашній каталог GnuPG для використання під час перевірки"
+" вихідного коду"
 
 #: pikaur/args.py:361
 msgid "path where to clone PKGBUILDs"
@@ -192,8 +211,7 @@ msgstr "скільки git-clones/pulls робити з AUR"
 
 #: pikaur/args.py:381
 msgid "user ID to run makepkg if pikaur started from root"
-msgstr ""
-"ID користувача для запуску makepkg, якщо pikaur запущено від імені root"
+msgstr "ID користувача для запуску makepkg, якщо pikaur запущено від імені root"
 
 #: pikaur/args.py:389
 msgid "dependency tree level"
@@ -332,7 +350,8 @@ msgid ""
 "Package {pkg} is already built. Pass '--rebuild' flag to force the build."
 msgid_plural ""
 "Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
-msgstr[0] "Пакунок {pkg} вже зібрано. Вкажіть '--rebuild' для примусової збірки."
+msgstr[0] ""
+"Пакунок {pkg} вже зібрано. Вкажіть '--rebuild' для примусової збірки."
 msgstr[1] ""
 "Пакунки {pkg} вже зібрані. Вкажіть '--rebuild' для примусової збірки."
 
@@ -418,10 +437,8 @@ msgid ""
 msgstr ""
 "Функцію динамічних користувачів буде вимкнено у наступних випусках.\n"
 "Подумайте про те, щоб запускати Pikaur з вашого облікового запису користувача "
-"без `sudo`, "
-"або створіть користувача `pikaur` і вкажіть його UserId у налаштуваннях Pikaur"
-"\n"
-"і встановіть DynamicUsers значення `never`."
+"без `sudo`, або створіть користувача `pikaur` і вкажіть його UserId у налаштуваннях "
+"Pikaur\n і встановіть DynamicUsers значення `never`."
 
 #: pikaur/config.py:640
 #, python-brace-format
@@ -436,12 +453,12 @@ msgstr "попередження:"
 #: pikaur/config.py:754
 #, fuzzy
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
-msgstr "Перенесення параметра налаштувань [{}]{}=\"{}\" до [{}]{} = \"{}\"..."
+msgstr "Перенесення опції налаштувань [{}]{}=\"{}\" до [{}]{} = \"{}\"..."
 
 #: pikaur/config.py:781
 #, fuzzy
 msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
-msgstr "Перенесення параметра налаштувань [{}]{}=\"{}\" до =\"{}\"..."
+msgstr "Перенесення опції налаштувань [{}]{}=\"{}\" до =\"{}\"..."
 
 #: pikaur/extras/dep_tree.py:150
 #, python-brace-format
@@ -459,7 +476,7 @@ msgstr "Немає відповіді від Pacman"
 
 #: pikaur/help_cli.py:53
 msgid "Common pacman options:"
-msgstr "Стандартні параметри pacman:"
+msgstr "Стандартні опції pacman:"
 
 #: pikaur/help_cli.py:61
 msgid "pikaur-specific operations:"
@@ -468,37 +485,37 @@ msgstr "власні операції pikaur:"
 #: pikaur/help_cli.py:62
 #, fuzzy
 msgid "pikaur {-P --pkgbuild}    [options] [file(s)]"
-msgstr "pikaur {-P --pkgbuild}    [параметри] [файл(и)]"
+msgstr "pikaur {-P --pkgbuild}    [опції] [файл(и)]"
 
 #: pikaur/help_cli.py:63
 msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
-msgstr "pikaur {-G --getpkgbuild} [параметри] <пакунок(и)>"
+msgstr "pikaur {-G --getpkgbuild} [опції] <пакунок(и)>"
 
 #: pikaur/help_cli.py:64
 #, fuzzy
 msgid "pikaur {-X --extras}      [options] [package(s)]"
-msgstr "pikaur {-X --extras}      [параметри] [пакунок(и)]"
+msgstr "pikaur {-X --extras}      [опції] [пакунок(и)]"
 
 #: pikaur/help_cli.py:68
 msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
-msgstr "використання: pikaur {-P --pkgbuild} [параметри] <файл(и)>"
+msgstr "використання: pikaur {-P --pkgbuild} [опції] <файл(и)>"
 
 #: pikaur/help_cli.py:70
 msgid ""
 "All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -"
 "Uh`."
 msgstr ""
-"Всі стандартні параметри pacman відповідають виконанню `pacman -U "
+"Всі стандартні опції pacman відповідають виконанню `pacman -U "
 "<pkg_file>`.Дивіться `pacman -Uh`."
 
 #: pikaur/help_cli.py:75
 msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
-msgstr "використання: pikaur {-G --getpkgbuild} [параметри] <пакунок(и)>"
+msgstr "використання: pikaur {-G --getpkgbuild} [опції] <пакунок(и)>"
 
 #: pikaur/help_cli.py:79
 #, fuzzy
 msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
-msgstr "використання: pikaur {-X --extras} [параметри]  [пакунок(и)]"
+msgstr "використання: pikaur {-X --extras} [опції]  [пакунок(и)]"
 
 #: pikaur/help_cli.py:86
 msgid "Pikaur-specific options:"
@@ -510,8 +527,7 @@ msgstr "Прочитайте кляту arch-wiki перед тим, як лам
 
 #: pikaur/i18n.py:34
 msgid "(Also, don't report any issues to pikaur, if ure seeing this message)"
-msgstr ""
-"(Також не повідомляйте про будь-які проблеми pikaur, якщо ви бачите це повідомлення)"
+msgstr "(Також не повідомляйте про будь-які проблеми pikaur, якщо ви бачите це повідомлення)"
 
 #: pikaur/info_cli.py:34
 msgid "AUR Git URL"
@@ -530,7 +546,7 @@ msgstr "Назва"
 #. packagebaseid=translate(""),
 #: pikaur/info_cli.py:39
 msgid "Package Base"
-msgstr "Група пакунків"
+msgstr "Група пакунка"
 
 #: pikaur/info_cli.py:40
 msgid "Version"
@@ -542,7 +558,7 @@ msgstr "Опис"
 
 #: pikaur/info_cli.py:42
 msgid "URL"
-msgstr "Адреса"
+msgstr "URL-адреса"
 
 #: pikaur/info_cli.py:43
 msgid "Keywords"
@@ -558,7 +574,7 @@ msgstr "Групи"
 
 #: pikaur/info_cli.py:46
 msgid "Provides"
-msgstr "Надає"
+msgstr "Забезпечує"
 
 #: pikaur/info_cli.py:47
 msgid "Depends On"
@@ -566,7 +582,7 @@ msgstr "Залежить від"
 
 #: pikaur/info_cli.py:48
 msgid "Optional Deps"
-msgstr "Додаткові залежності"
+msgstr "Необов'язкові залежності"
 
 #: pikaur/info_cli.py:49
 msgid "Make Deps"
@@ -612,7 +628,7 @@ msgstr "Вперше надіслано"
 
 #: pikaur/info_cli.py:59
 msgid "Last Updated"
-msgstr "Останній раз оновлено"
+msgstr "Востаннє оновлено"
 
 #: pikaur/info_cli.py:60
 msgid "Out-of-date"
@@ -625,7 +641,7 @@ msgstr "Не задано"
 #: pikaur/install_cli.py:137
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
-msgstr "Пакунок {name} {version} {package_source} не застарів - пропускається"
+msgstr "Пакунок {name} {version} {package_source} в актуальному стані - пропускається"
 
 #: pikaur/install_cli.py:148
 #, python-brace-format
@@ -639,8 +655,7 @@ msgstr ""
 #: pikaur/install_cli.py:159
 #, python-brace-format
 msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
-msgstr ""
-"Пониження версії пакунка {name} із AUR з {version} до {downgrade_version}"
+msgstr "Пониження версії пакунка {name} із AUR з {version} до {downgrade_version}"
 
 #: pikaur/install_cli.py:227
 msgid "Starting full AUR upgrade..."
@@ -689,7 +704,7 @@ msgstr "Нема чого робити."
 
 #: pikaur/install_cli.py:566
 msgid "Proceed with installation? [Y/n] "
-msgstr "Почати встановлення? [Y/n]"
+msgstr "Розпочати встановлення? [Y/n]"
 
 #: pikaur/install_cli.py:568
 msgid "[v]iew package details   [m]anually select packages"
@@ -714,7 +729,7 @@ msgstr ""
 
 #: pikaur/install_cli.py:588
 msgid "[c]onfirm Arch NEWS as read"
-msgstr "[c] підтвердити ознайомлення з новинами Arch NEWS"
+msgstr "[c] підтвердити ознайомлення з новинами Arch"
 
 #: pikaur/install_cli.py:723
 #, python-brace-format
@@ -818,8 +833,7 @@ msgstr "встановлюється вперше"
 #: pikaur/install_cli.py:1119 pikaur/install_cli.py:1135
 #, python-brace-format
 msgid "Installation info changed (or new deps found) for {pkg} package"
-msgstr ""
-"Файл встановлення змінено (або знайдено нові залежності) для пакунка {pkg}"
+msgstr "Файл встановлення змінено (або знайдено нові залежності) для пакунка {pkg}"
 
 #: pikaur/install_cli.py:1184
 #, python-brace-format
@@ -897,31 +911,7 @@ msgstr "pikaur потребує Python >= 3.7 для запуску."
 
 #: pikaur/main.py:466
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
-msgstr ""
-"pikaur потребує systemd >= 235 (підтримка динамічних користувачів) для "
-"запуску від root."
-
-# Ukrainian translations for PACKAGE package.
-# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# Automatically generated, 2018.
-# Drommer <drommer@github.com>, 2025.
-#
-#: pikaur/main.py:479 pikaur/main.py:493
-msgid ""
-msgstr ""
-"Project-Id-Version: pikaur\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-19 21:32+0100\n"
-"PO-Revision-Date: 2019-09-21 19:36+0200\n"
-"Last-Translator: Drommer <drommer@github.com>\n"
-"Language-Team: Ukrainian <email@example.com>\n"
-"Language: uk\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Gtranslator 3.32.1\n"
+msgstr "pikaur потребує systemd >= 235 (підтримка динамічних користувачів) для запуску від root."
 
 #: pikaur/main.py:503
 #, python-brace-format
@@ -930,7 +920,7 @@ msgid ""
 "aware that you could run into potential problems."
 msgstr ""
 "{privilege_escalation_tool} не є частиною мінімальних налаштувань Arch за замовчуванням, "
-"  ви можете зіткнутися з потенційними проблемами."
+"ви можете зіткнутися з потенційними проблемами."
 
 #: pikaur/news.py:68 pikaur/news.py:106
 msgid "Could not fetch archlinux.org news"
@@ -1168,9 +1158,7 @@ msgstr "Спробувати знову?"
 
 #: pikaur/prompt.py:290
 msgid "no editor found. Try setting $VISUAL or $EDITOR."
-msgstr ""
-"Редактор не знайдено. Спробуйте налаштувати змінну оточення $VISUAL або "
-"$EDITOR."
+msgstr "Редактор не знайдено. Спробуйте налаштувати змінну оточення $VISUAL або $EDITOR."
 
 #: pikaur/prompt.py:292
 msgid "Do you want to proceed without editing?"
@@ -1193,7 +1181,7 @@ msgstr "Допускаються тільки цифри, замість них 
 
 #: pikaur/provider.py:82
 msgid "Only one answer allowed"
-msgstr "Дозволяється лише одна відповідь"
+msgstr "Допускається лише одна відповідь"
 
 #: pikaur/provider.py:88
 #, python-brace-format
@@ -1250,71 +1238,3 @@ msgstr "Очікування впродовж {} секунд..."
 #: pikaur/urllib_helper.py:106
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur вимагає python-pysocks для використання проксі socks5."
-
-#, python-brace-format
-#~ msgid "'{class_name}' does not have attribute '{key}' defined."
-#~ msgstr "'{class_name}' не має встановленого атрибуту '{key}'."
-
-#, python-brace-format
-#~ msgid "'{class_name}' does not have required attribute '{key}' set."
-#~ msgstr "'{class_name}' не має необхідного атрибуту '{key}'."
-
-#~ msgid "Already up-to-date."
-#~ msgstr "Вже оновлено."
-
-#, python-brace-format
-#~ msgid "Can't lock {lock_file}: {reason}"
-#~ msgstr "Неможливо заблокувати {lock_file}: {reason}"
-
-#~ msgid "Do you want to remove '{installed}'?"
-#~ msgstr "Ви дійсно хочете видалити '{installed}'?"
-
-#~ msgid "Getting ALL AUR info"
-#~ msgstr "Отримання усіх даних з AUR"
-
-#~ msgid "New package '{new}' conflicts with installed '{installed}'."
-#~ msgstr "Новий пакунок '{new}' конфліктує зі встановленим '{installed}'."
-
-#~ msgid "New package '{new}' replaces installed '{installed}' Proceed?"
-#~ msgstr "Новий пакунок '{new}' замінює встановлений '{installed}' Продовжити?"
-
-#, fuzzy
-#~ msgid "Removing installed repository dependencies for {}"
-#~ msgstr "Видалення залежностей з репозиторіїв для {}"
-
-#~ msgid "Removing make dependencies for {}"
-#~ msgstr "Видалення залежностей для збірки {}"
-
-#~ msgid "Starting full system upgrade..."
-#~ msgstr "Запуск повного оновлення системи..."
-
-#~ msgid "[N]o (--noconfirm)"
-#~ msgstr "[N]o --noconfirm (без підтвердження)"
-
-#~ msgid "[Y/n]"
-#~ msgstr "[Y/n]"
-
-#~ msgid "[Y]es (--noconfirm)"
-#~ msgstr "[Y]es --noconfirm (без підтвердження)"
-
-#, fuzzy
-#~ msgid "[f] check() skip"
-#~ msgstr "[c] пропустити перевірку цілісності (контрольних сум)"
-
-#, fuzzy, python-brace-format
-#~ msgid "[f] skip {quote}check(){quote} function of PKGBUILD"
-#~ msgstr "[f] пропустити функцію 'check()' у PKGBUILD"
-
-#~ msgid "[y/N]"
-#~ msgstr "[y/N]"
-
-#, fuzzy
-#~ msgid "error"
-#~ msgstr "помилка:"
-
-#, fuzzy
-#~ msgid "usage:  pikaur {-X --extras} [options]"
-#~ msgstr "використання: pikaur {-P --pkgbuild} [параметри] <файл(и)>"
-
-#~ msgid "{} does not exist on the filesystem."
-#~ msgstr "{} не знайдено в системі."

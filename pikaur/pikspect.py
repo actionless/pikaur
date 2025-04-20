@@ -415,9 +415,9 @@ class PikspectPopen:
         if self.capture_output:
             self.output += output
 
-        self.historic_output = (
-            self.historic_output[-self.max_question_length:] + [output]
-        )
+        self.historic_output = [
+            *self.historic_output[-self.max_question_length:], output,
+        ]
         self.check_questions()
         return output
 

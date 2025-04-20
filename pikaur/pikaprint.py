@@ -290,7 +290,7 @@ def format_paragraph(
     line_length = 0
 
     def create_linebreak() -> None:
-        nonlocal result, current_line, line_length
+        nonlocal current_line, line_length
         while current_line and (current_line[-1] in {" ", "\t"}):
             del current_line[-1]
         result.append(current_line)

@@ -5,6 +5,7 @@ import shutil
 import sys
 import termios
 from collections.abc import Sequence
+from functools import lru_cache
 from itertools import zip_longest
 from typing import TYPE_CHECKING
 
@@ -87,6 +88,7 @@ class TTYRestoreContext:
             TTYRestore.restore()
 
 
+@lru_cache
 def color_enabled() -> bool:
     args = parse_args()
     if args.color == ColorFlagValues.NEVER:
@@ -174,6 +176,7 @@ class ColorsHighlight:
     white = 15
 
 
+@lru_cache
 def color_start(
         color_number: int,
 ) -> str:

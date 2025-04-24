@@ -86,7 +86,7 @@ class CliTest(PikaurTestCase):
         common_query = "fool"
         specific_query = "python"
         specific_result = "python-ippserver"
-        specific_result_names_only = "python-foolscap"
+        specific_result_names_only = "python-foolbox"
 
         result_all = pikaur(
             f"-Ssq --aur {common_query} {specific_query}",

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: https://github.com/actionless/pikaur\n"
 "POT-Creation-Date: 2024-12-19 21:32+0100\n"
-"PO-Revision-Date: 2025-04-15 02:00+0300\n"
+"PO-Revision-Date: 2025-04-15 20:20+0200\n"
 "Last-Translator: Serhii Starovoitov <drommer.94@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "Language: uk\n"
@@ -20,7 +20,6 @@ msgstr ""
 "X-Generator: Gtranslator 3.32.1\n"
 
 #: pikaur/alpm.py:50
-#, fuzzy
 msgid "Cannot initialize ALPM"
 msgstr "Не вдалося ініціалізувати ALPM"
 
@@ -75,12 +74,11 @@ msgstr "шукати пакунки лише в AUR"
 
 #: pikaur/args.py:151
 msgid "don't remove build dir after the build"
-msgstr "не видаляти каталог збірки після завершення"
+msgstr "не видаляти каталог збирання після завершення"
 
 #: pikaur/args.py:155
-#, fuzzy
 msgid "don't remove build dependencies between and after the builds"
-msgstr "не видаляти залежності збірки між збірками та після них"
+msgstr "не видаляти залежності збирання між збираннями та після них"
 
 #: pikaur/args.py:158 pikaur/args.py:208
 msgid "query packages from repository only"
@@ -88,11 +86,11 @@ msgstr "шукати пакунки лише в репозиторіях"
 
 #: pikaur/args.py:162
 msgid "don't prompt to edit PKGBUILDs and other build files"
-msgstr "не пропонувати редагування PKGBUILD та інших файлів збірки"
+msgstr "не пропонувати редагування PKGBUILD та інших файлів збирання"
 
 #: pikaur/args.py:166
 msgid "prompt to edit PKGBUILDs and other build files"
-msgstr "пропонувати редагування PKGBUILD та інших файлів збірки"
+msgstr "пропонувати редагування PKGBUILD та інших файлів збирання"
 
 #: pikaur/args.py:170
 msgid "always rebuild AUR packages"
@@ -100,7 +98,7 @@ msgstr "завжди перезбирати пакунки з AUR"
 
 #: pikaur/args.py:174
 msgid "skip failed builds"
-msgstr "пропускати невдалі збірки"
+msgstr "пропускати невдалі збирання"
 
 #: pikaur/args.py:178
 msgid "always isolate with systemd dynamic users"
@@ -108,7 +106,7 @@ msgstr "завжди ізолювати за допомогою динамічн
 
 #: pikaur/args.py:182
 msgid "hide build log"
-msgstr "приховати журнал збірки"
+msgstr "приховати журнал збирання"
 
 #: pikaur/args.py:186
 msgid "don't pull already cloned PKGBUILD"
@@ -120,7 +118,7 @@ msgstr "шукати тільки в назвах пакунків"
 
 #: pikaur/args.py:197
 msgid "don't prompt to show the build files diff"
-msgstr "не пропонувати показувати відмінності файлів збірки"
+msgstr "не пропонувати показувати відмінності файлів збирання"
 
 #: pikaur/args.py:201
 msgid "ignore AUR packages' updates which marked 'outofdate'"
@@ -171,12 +169,10 @@ msgid "preserve environment variables (comma-separated)"
 msgstr "зберігати змінні середовища (через кому)"
 
 #: pikaur/args.py:308
-#, fuzzy
 msgid "override path to pacman executable"
 msgstr "перевизначити шлях до виконуваного файлу pacman"
 
 #: pikaur/args.py:316
-#, fuzzy
 msgid "override path to pacman-conf executable"
 msgstr "перевизначити шлях до виконуваного файлу pacman-conf"
 
@@ -226,12 +222,10 @@ msgid "WARNING, unknown args: {}"
 msgstr "УВАГА! Невідомі аргументи: {}"
 
 #: pikaur/args.py:798
-#, fuzzy
 msgid "options {} can't be used together."
 msgstr "опції {} не можна використовувати разом."
 
 #: pikaur/args.py:806
-#, fuzzy
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
 msgstr[0] "опцію {} не можна використовувати без {}."
@@ -291,13 +285,12 @@ msgid "Try recovering?"
 msgstr "Спробувати відновити?"
 
 #: pikaur/build.py:364
-#, fuzzy
 msgid "[R] retry clone"
 msgstr "[R] повторити клонування"
 
 #: pikaur/build.py:365 pikaur/build.py:911
 msgid "[d] delete build dir and try again"
-msgstr "[d] видалити каталог збірки та спробувати знову"
+msgstr "[d] видалити каталог збирання та спробувати знову"
 
 #: pikaur/build.py:366 pikaur/build.py:912 pikaur/install_cli.py:336
 #: pikaur/install_cli.py:363
@@ -305,17 +298,16 @@ msgid "[e] edit PKGBUILD"
 msgstr "[e] редагувати PKGBUILD"
 
 #: pikaur/build.py:367
-#, fuzzy
 msgid "[i] ignore the error"
 msgstr "[i] ігнорувати помилку"
 
 #: pikaur/build.py:369 pikaur/build.py:914
 msgid "[s] skip building this package"
-msgstr "[s] пропустити збірку цього пакунка"
+msgstr "[s] пропустити збирання цього пакунка"
 
 #: pikaur/build.py:370 pikaur/build.py:915
 msgid "[a] abort building all the packages"
-msgstr "[a] перервати збірку всіх пакунків"
+msgstr "[a] перервати збирання всіх пакунків"
 
 #: pikaur/build.py:375 pikaur/build.py:384 pikaur/build.py:920
 #: pikaur/build.py:933 pikaur/install_cli.py:585 pikaur/install_cli.py:610
@@ -351,9 +343,9 @@ msgid ""
 msgid_plural ""
 "Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
 msgstr[0] ""
-"Пакунок {pkg} вже зібрано. Вкажіть '--rebuild' для примусової збірки."
+"Пакунок {pkg} вже зібрано. Вкажіть '--rebuild' для примусової збирання."
 msgstr[1] ""
-"Пакунки {pkg} вже зібрані. Вкажіть '--rebuild' для примусової збірки."
+"Пакунки {pkg} вже зібрані. Вкажіть '--rebuild' для примусової збирання."
 
 #: pikaur/build.py:690
 msgid "Installing repository dependencies for {}"
@@ -377,7 +369,7 @@ msgstr ""
 
 #: pikaur/build.py:866
 msgid "Starting the build"
-msgstr "Початок збірки"
+msgstr "Початок збирання"
 
 #: pikaur/build.py:888 pikaur/prompt.py:243
 msgid "Command '{}' failed to execute."
@@ -385,7 +377,7 @@ msgstr "Не вдалося виконати команду '{}'."
 
 #: pikaur/build.py:905
 msgid "[R] retry build"
-msgstr "[R] повторити збірку"
+msgstr "[R] повторити збирання"
 
 #: pikaur/build.py:906
 msgid "[p] PGP check skip"
@@ -400,7 +392,6 @@ msgid "[f] skip 'check()' function of PKGBUILD"
 msgstr "[f] пропустити функцію 'check()' у PKGBUILD"
 
 #: pikaur/build.py:909
-#, fuzzy
 msgid "[n] skip 'prepare()' function of PKGBUILD"
 msgstr "[n] пропустити функцію 'prepare()' у PKGBUILD"
 
@@ -451,12 +442,10 @@ msgid "warning:"
 msgstr "попередження:"
 
 #: pikaur/config.py:754
-#, fuzzy
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr "Перенесення опції налаштувань [{}]{}=\"{}\" до [{}]{} = \"{}\"..."
 
 #: pikaur/config.py:781
-#, fuzzy
 msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
 msgstr "Перенесення опції налаштувань [{}]{}=\"{}\" до =\"{}\"..."
 
@@ -483,7 +472,6 @@ msgid "pikaur-specific operations:"
 msgstr "власні операції pikaur:"
 
 #: pikaur/help_cli.py:62
-#, fuzzy
 msgid "pikaur {-P --pkgbuild}    [options] [file(s)]"
 msgstr "pikaur {-P --pkgbuild}    [опції] [файл(и)]"
 
@@ -492,7 +480,6 @@ msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr "pikaur {-G --getpkgbuild} [опції] <пакунок(и)>"
 
 #: pikaur/help_cli.py:64
-#, fuzzy
 msgid "pikaur {-X --extras}      [options] [package(s)]"
 msgstr "pikaur {-X --extras}      [опції] [пакунок(и)]"
 
@@ -513,7 +500,6 @@ msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
 msgstr "використання: pikaur {-G --getpkgbuild} [опції] <пакунок(и)>"
 
 #: pikaur/help_cli.py:79
-#, fuzzy
 msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
 msgstr "використання: pikaur {-X --extras} [опції]  [пакунок(и)]"
 
@@ -534,7 +520,6 @@ msgid "AUR Git URL"
 msgstr "Адреса AUR Git"
 
 #: pikaur/info_cli.py:35
-#, fuzzy
 msgid "AUR Web URL"
 msgstr "Адреса AUR Web"
 
@@ -586,7 +571,7 @@ msgstr "Необов'язкові залежності"
 
 #: pikaur/info_cli.py:49
 msgid "Make Deps"
-msgstr "Залежності для збірки"
+msgstr "Залежності для збирання"
 
 #: pikaur/info_cli.py:50
 msgid "Check Deps"
@@ -601,7 +586,6 @@ msgid "Replaces"
 msgstr "Замінює"
 
 #: pikaur/info_cli.py:53
-#, fuzzy
 msgid "Submitter"
 msgstr "Подавач"
 
@@ -610,7 +594,6 @@ msgid "Maintainer"
 msgstr "Супровідник"
 
 #: pikaur/info_cli.py:55
-#, fuzzy
 msgid "Co-maintainers"
 msgstr "Супровідники"
 
@@ -677,7 +660,6 @@ msgid "[s] skip this package"
 msgstr "[s] пропустити цей пакунок"
 
 #: pikaur/install_cli.py:339 pikaur/install_cli.py:365
-#, fuzzy
 msgid "[A] abort"
 msgstr "[A] скасувати"
 
@@ -734,12 +716,12 @@ msgstr "[c] підтвердити ознайомлення з новинами 
 #: pikaur/install_cli.py:723
 #, python-brace-format
 msgid "New build deps found for {pkg} package: {deps}"
-msgstr "Знайдено нові залежності для збірки пакунка {pkg}: {deps}"
+msgstr "Знайдено нові залежності для збирання пакунка {pkg}: {deps}"
 
 #: pikaur/install_cli.py:730
 #, python-brace-format
 msgid "Some build deps removed for {pkg} package: {deps}"
-msgstr "Вилучено деякі залежності для збірки пакунка {pkg}: {deps}"
+msgstr "Вилучено деякі залежності для збирання пакунка {pkg}: {deps}"
 
 #: pikaur/install_cli.py:754
 #, python-brace-format
@@ -820,7 +802,7 @@ msgstr "вже перевірено"
 #: pikaur/install_cli.py:1036
 #, python-brace-format
 msgid "Do you want to see build files {diff} for {name} package?"
-msgstr "Хочете переглянути {diff} файлів збірки для пакунка {name}?"
+msgstr "Хочете переглянути {diff} файлів збирання для пакунка {name}?"
 
 #: pikaur/install_cli.py:1038
 msgid "diff"
@@ -872,7 +854,6 @@ msgid "pikaur debug:"
 msgstr "відлагодження pikaur"
 
 #: pikaur/main.py:203
-#, fuzzy
 msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
@@ -979,7 +960,7 @@ msgstr "`{var_name}` повинно бути вказано"
 
 #: pikaur/pkg_cache_cli.py:19
 msgid "Build directory"
-msgstr "Каталог для збірки"
+msgstr "Каталог для збирання"
 
 #: pikaur/pkg_cache_cli.py:20
 msgid "Packages directory"
@@ -1170,7 +1151,6 @@ msgid "Choose a package provider for {dependency}:"
 msgstr "Виберіть постачальника пакунка для {dependency}:"
 
 #: pikaur/provider.py:67
-#, fuzzy
 msgid "[v]iew package details"
 msgstr "[v] переглянути інформацію про пакунок"
 
@@ -1196,7 +1176,7 @@ msgid_plural ""
 msgstr[0] ""
 "Пакунок '{packages}' доступний у репозиторії, але не може бути встановлений"
 msgstr[1] ""
-"'Пакунки '{packages}' доступні в репозиторіях, але не можуть бути встановлені"
+"'Пакунки {packages} доступні в репозиторіях, але не можуть бути встановлені"
 
 #: pikaur/search_cli.py:90
 #, python-brace-format

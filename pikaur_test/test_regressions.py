@@ -137,14 +137,16 @@ class RegressionTest(PikaurDbTestCase):
         self.assertInstalled(pkg_name)
         self.assertNotInstalled(wrong_arch_dep_name)
 
-    def test_aur_rpc_didnt_fully_parsed_srcinfo_2(self):
-        """Similar situation as with `mongodb-bin` above but the opposite."""
-        pkg_name = "guitar-pro"
-        correct_arch_dep_name = "lib32-portaudio"
-        self.remove_if_installed(pkg_name, correct_arch_dep_name)
-        fake_pikaur(f"-S {pkg_name}")
-        self.assertInstalled(pkg_name)
-        self.assertInstalled(correct_arch_dep_name)
+    # # @TODO: commented-out since idk with which other AUR pkg to reproduce
+    # #        it after `guitar-pro` pkg got removed from the AUR.
+    # def test_aur_rpc_didnt_fully_parsed_srcinfo_2(self):
+    #     """Similar situation as with `mongodb-bin` above but the opposite."""
+    #     pkg_name = "guitar-pro"
+    #     correct_arch_dep_name = "lib32-portaudio"
+    #     self.remove_if_installed(pkg_name, correct_arch_dep_name)
+    #     fake_pikaur(f"-S {pkg_name}")
+    #     self.assertInstalled(pkg_name)
+    #     self.assertInstalled(correct_arch_dep_name)
 
     def test_version_matcher_on_pkg_install(self):
         """

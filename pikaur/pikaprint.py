@@ -119,13 +119,15 @@ def _print(
         message = str(message)
     if lock:
         PrintLock().__enter__()  # noqa: PLC2801
-    if tty_restore:
-        TTYRestore.restore()
-    destination.write(f"{message}{end}")
-    if flush:
-        destination.flush()
-    if lock:
-        PrintLock().__exit__()
+    try:
+        if tty_restore:
+            TTYRestore.restore()
+        destination.write(f"{message}{end}")
+        if flush:
+            destination.flush()
+    finally:
+        if lock:
+            PrintLock().__exit__()
 
 
 def print_stdout(

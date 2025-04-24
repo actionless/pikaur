@@ -72,7 +72,7 @@ class CliTest(PikaurTestCase):
         common_query = "fool"
         specific_query = "python"
         common_result = "fool"
-        specific_result = "python-foolscap"
+        specific_result = "python-foolbox-git"
 
         result_for_one_query = pikaur(f"-Ssq --aur {common_query}").stdout.splitlines()
         self.assertIn(specific_result, result_for_one_query)

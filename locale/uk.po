@@ -343,9 +343,9 @@ msgid ""
 msgid_plural ""
 "Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
 msgstr[0] ""
-"Пакунок {pkg} вже зібрано. Вкажіть '--rebuild' для примусової збирання."
+"Пакунок {pkg} вже зібрано. Вкажіть '--rebuild' для примусового збирання."
 msgstr[1] ""
-"Пакунки {pkg} вже зібрані. Вкажіть '--rebuild' для примусової збирання."
+"Пакунки {pkg} вже зібрані. Вкажіть '--rebuild' для примусового збирання."
 
 #: pikaur/build.py:690
 msgid "Installing repository dependencies for {}"
@@ -690,7 +690,7 @@ msgstr "Розпочати встановлення? [Y/n]"
 
 #: pikaur/install_cli.py:568
 msgid "[v]iew package details   [m]anually select packages"
-msgstr "[v] переглянути опис пакунків   [m] вибрати пакунки вручну"
+msgstr "[v] переглянути інформацію про пакунки   [m] вибрати пакунки вручну"
 
 #: pikaur/install_cli.py:569
 msgid "[r] show if packages are required by already installed packages"
@@ -711,7 +711,7 @@ msgstr ""
 
 #: pikaur/install_cli.py:588
 msgid "[c]onfirm Arch NEWS as read"
-msgstr "[c] підтвердити ознайомлення з новинами Arch"
+msgstr "[c] підтвердити ознайомлення з НОВИНАМИ Arch"
 
 #: pikaur/install_cli.py:723
 #, python-brace-format
@@ -1152,7 +1152,7 @@ msgstr "Виберіть постачальника пакунка для {depen
 
 #: pikaur/provider.py:67
 msgid "[v]iew package details"
-msgstr "[v] переглянути інформацію про пакунок"
+msgstr "[v] переглянути інформацію про пакунки"
 
 #: pikaur/provider.py:76
 #, python-brace-format

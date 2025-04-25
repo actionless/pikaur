@@ -396,7 +396,7 @@ class ConfigSchema(ConfigSchemaT):
                     "DynamicUsers": {
                         "data_type": STR,
                         "default": "never",
-                        # "old_default": "root",
+                        "old_default": "root",
                         "warning": {
                             "message": translate(
                                 "Dynamic Users feature will be disabled in the upcoming releases.\n"

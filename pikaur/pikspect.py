@@ -282,7 +282,7 @@ class PikspectSignalHandler:
 
 class PikspectPopen:
 
-    historic_output: list[bytes]
+    historic_output: bytes
     default_questions: dict[str, list[str]]
     # max_question_length = 0  # preserve enough information to analyze questions
     max_question_length = get_term_width() * 2  # preserve also at least last line
@@ -314,7 +314,7 @@ class PikspectPopen:
         self.next_answers = []
         self.args = args
         self.default_questions = {}
-        self.historic_output = []
+        self.historic_output = b""
         if default_questions:
             self.add_answers(default_questions)
 
@@ -387,7 +387,7 @@ class PikspectPopen:
         file_debug("check_question1:")
 
         try:
-            historic_output = b"".join(self.historic_output).decode(DEFAULT_INPUT_ENCODING)
+            historic_output = self.historic_output.decode(DEFAULT_INPUT_ENCODING)
         except UnicodeDecodeError:  # pragma: no cover
             return
 
@@ -408,16 +408,14 @@ class PikspectPopen:
                 break
 
         if clear_buffer:
-            self.historic_output = [b""]
+            self.historic_output = b""
 
     def cmd_output_reader(self, file_descriptor: int) -> bytes:
         output = os.read(file_descriptor, 4096)
         if self.capture_output:
             self.output += output
 
-        self.historic_output = [
-            *self.historic_output[-self.max_question_length:], output,
-        ]
+        self.historic_output = self.historic_output[-self.max_question_length:] + output
         self.check_questions()
         return output
 
@@ -443,9 +441,7 @@ class PikspectPopen:
                     elif ord(char) == ReadlineKeycodes.CTRL_W:
                         sys.stdout.write(
                             "\r" + " " * get_term_width() + "\r" +
-                            b"".join(
-                                self.historic_output,
-                            ).decode(DEFAULT_INPUT_ENCODING).splitlines()[-1],
+                            self.historic_output.decode(DEFAULT_INPUT_ENCODING).splitlines()[-1],
                         )
         except ValueError as exc:
             print(exc)  # noqa: T201

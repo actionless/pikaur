@@ -3,7 +3,7 @@
 import argparse
 import sys
 from pprint import pformat
-from typing import TYPE_CHECKING, NamedTuple, cast
+from typing import TYPE_CHECKING, NamedTuple
 
 from .argparse_extras import ArgumentParserWithUnknowns
 from .config import DECORATION, PikaurConfig
@@ -34,6 +34,32 @@ class HelpMessage(NamedTuple):
     doc: str | None
 
 
+class IncompatibleArgumentsError(Exception):
+    pass
+
+
+class MissingArgumentError(Exception):
+    pass
+
+
+FLAG_READ_STDIN: "Final" = "-"
+
+ANY_OPERATION: "Final" = "*"
+
+
+PIKAUR_STATIC_EXECUTABLE_NAME: "Final" = "pikaur-static"
+
+
+class LiteralArgs:
+    NOCONFIRM: "Final" = "--noconfirm"
+    HELP: "Final" = "--help"
+
+
+class ColorFlagValues:
+    ALWAYS: "Final" = "always"
+    NEVER: "Final" = "never"
+
+
 PACMAN_ACTIONS: "Final[ArgSchema]" = [
     Arg("S", "sync", None, None),
     Arg("Q", "query", None, None),
@@ -46,14 +72,12 @@ PACMAN_ACTIONS: "Final[ArgSchema]" = [
     Arg("h", "help", None, None),
 ]
 
-
 PIKAUR_ACTIONS: "Final[ArgSchema]" = [
     Arg("P", "pkgbuild", None, None),
     Arg("G", "getpkgbuild", None, None),
     Arg("X", "extras", None, None),
     Arg(None, "interactive_package_select", None, None),
 ]
-
 
 ALL_PACMAN_ACTIONS: "Final[list[str]]" = [
     schema[1] for schema in PACMAN_ACTIONS
@@ -65,6 +89,31 @@ ALL_PIKAUR_ACTIONS: "Final[list[str]]" = [
 ]
 ALL_ACTIONS: "Final[list[str]]" = ALL_PACMAN_ACTIONS + ALL_PIKAUR_ACTIONS
 LIST_ALL_ACTIONS: "Final[str]" = "_ALL_"
+
+
+PACMAN_APPEND_OPTS: "Final[ArgSchema]" = [
+    Arg(None, "ignore", None, None),
+    Arg(None, "ignoregroup", None, None),  # @TODO
+    Arg(None, "overwrite", None, None),
+    Arg(None, "assume-installed", None, None),  # @TODO
+]
+
+
+ARG_DEPENDS: "Final[dict[str, dict[str, list[str]]]]" = {
+    "query": {
+        "upgrades": ["aur", "repo"],
+    },
+    ANY_OPERATION: {
+        "user_id": ["group_id"],
+        "group_id": ["user_id"],
+    },
+}
+
+ARG_CONFLICTS: "Final[dict[str, dict[str, list[str]]]]" = {
+    "sync": {
+        "search": ["list", "l"],
+    },
+}
 
 
 def print_stderr(msg: str | None = None) -> None:
@@ -83,14 +132,6 @@ def print_error(message: str = "") -> None:
             message,
         )),
     )
-
-
-FLAG_READ_STDIN: "Final" = "-"
-
-
-class LiteralArgs:
-    NOCONFIRM: "Final" = "--noconfirm"
-    HELP: "Final" = "--help"
 
 
 def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
@@ -125,7 +166,7 @@ def get_pacman_bool_opts(action: str | None = None) -> ArgSchema:
 
 def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
     result: ArgSchema = []
-    if cast("str", "pikaur-static") == PIKAUR_NAME:
+    if PIKAUR_NAME == PIKAUR_STATIC_EXECUTABLE_NAME:
         result += [
             Arg(
                 None, "force-pacman-cli-db",
@@ -270,11 +311,6 @@ def get_pacman_str_opts(action: str | None = None) -> ArgSchema:
     ]
 
 
-class ColorFlagValues:
-    ALWAYS: "Final" = "always"
-    NEVER: "Final" = "never"
-
-
 def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
     result: ArgSchema = [
         Arg(
@@ -308,7 +344,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
             translate("override path to pacman executable"),
         ),
     ]
-    if cast("str", "pikaur-static") == PIKAUR_NAME:
+    if PIKAUR_NAME == PIKAUR_STATIC_EXECUTABLE_NAME:
         result += [
             Arg(
                 None, "pacman-conf-path",
@@ -443,33 +479,6 @@ def get_pikaur_count_opts(action: str | None = None) -> ArgSchema:
     return result
 
 
-PACMAN_APPEND_OPTS: "Final[ArgSchema]" = [
-    Arg(None, "ignore", None, None),
-    Arg(None, "ignoregroup", None, None),  # @TODO
-    Arg(None, "overwrite", None, None),
-    Arg(None, "assume-installed", None, None),  # @TODO
-]
-
-
-ANY_OPERATION: "Final" = "*"
-
-ARG_DEPENDS: "Final[dict[str, dict[str, list[str]]]]" = {
-    "query": {
-        "upgrades": ["aur", "repo"],
-    },
-    ANY_OPERATION: {
-        "user_id": ["group_id"],
-        "group_id": ["user_id"],
-    },
-}
-
-ARG_CONFLICTS: "Final[dict[str, dict[str, list[str]]]]" = {
-    "sync": {
-        "search": ["list", "l"],
-    },
-}
-
-
 def get_all_pikaur_options(action: str | None = None) -> ArgSchema:
     return (
         PIKAUR_ACTIONS +
@@ -501,14 +510,6 @@ def get_pacman_long_opts() -> list[str]:  # pragma: no cover
         )
         if (long_opt is not None) and (not help_only)
     ]
-
-
-class IncompatibleArgumentsError(Exception):
-    pass
-
-
-class MissingArgumentError(Exception):
-    pass
 
 
 class PikaurArgs(argparse.Namespace):

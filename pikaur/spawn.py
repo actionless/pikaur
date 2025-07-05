@@ -34,7 +34,9 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
     _terminated: bool = False
 
     def communicate(
-            self, com_input: bytes | None = None, timeout: float | None = None,
+            self,
+            input: bytes | None = None,  # pylint: disable=redefined-builtin  # noqa: A002
+            timeout: float | None = None,
     ) -> tuple[bytes, bytes]:
         if (
                 parse_args().print_commands
@@ -50,7 +52,7 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
                 lock=False,
             )
 
-        stdout, stderr = super().communicate(com_input, timeout)
+        stdout, stderr = super().communicate(input=input, timeout=timeout)
         self.stdout_text = stdout.decode(DEFAULT_INPUT_ENCODING) if stdout else None
         self.stderr_text = stderr.decode(DEFAULT_INPUT_ENCODING) if stderr else None
         return stdout, stderr

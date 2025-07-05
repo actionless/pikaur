@@ -73,6 +73,9 @@ unsafe-fixes = true
 [tool.ruff.lint.mccabe]
 max-complexity = 19
 
+[tool.pyrefly]
+search-path = ["./maintenance_scripts/mypy_stubs"]
+
 [tool.ruff.format]
 preview = true
 

@@ -214,10 +214,10 @@ def find_aur_packages(
             results = [request.get() for request in requests]
             pool.join()
             for result in results:
-                for aur_pkg in result:
-                    AurPackageSearchCache.put(aur_pkg)
-                    if aur_pkg.name in package_names:
-                        json_results.append(aur_pkg)
+                for aur_pkg_result in result:
+                    AurPackageSearchCache.put(aur_pkg_result)
+                    if aur_pkg_result.name in package_names:
+                        json_results.append(aur_pkg_result)
 
     found_aur_packages = [
         result.name for result in json_results

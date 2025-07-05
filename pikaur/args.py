@@ -627,7 +627,7 @@ class PikaurArgs(argparse.Namespace):
 
 class PikaurArgumentParser(ArgumentParserWithUnknowns):
 
-    def error(self, message: str) -> "NoReturn":
+    def error(self, message: str) -> NoReturn:  # pyrefly: ignore
         exc = sys.exc_info()[1]
         if exc:
             raise exc
@@ -703,7 +703,7 @@ class CachedArgs:
     args: PikaurArgs | None = None
 
 
-def debug_args(args: list[str], parsed_args: PikaurArgs) -> "NoReturn":  # pragma: no cover
+def debug_args(args: list[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
     print_stderr("Input:")
     pprint_stderr(args)
     print_stderr()

@@ -42,9 +42,8 @@ if TYPE_CHECKING:
     from typing import Final, TypeVar
 
     from .install_info_fetcher import InstallInfoFetcher
-    from .pikatypes import AURInstallInfo, RepoInstallInfo
+    from .pikatypes import AnyPackage, AURInstallInfo, RepoInstallInfo
 
-    AnyPackage = AURPackageInfo | pyalpm.Package
     InstallInfoT = TypeVar("InstallInfoT", bound=InstallInfo)
 
 

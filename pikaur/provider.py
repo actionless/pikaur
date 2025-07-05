@@ -1,18 +1,17 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-from typing import ClassVar, TypeVar, cast
-
-import pyalpm
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from .config import DECORATION
 from .i18n import translate
 from .pikaprint import Colors, bold_line, color_line, print_error, print_stdout
-from .pikatypes import AURPackageInfo
+from .pikatypes import AURPackageInfo, SamePackageT
 from .print_department import print_package_search_results
 from .prompt import NotANumberInputError, get_multiple_numbers_input
 from .version import VersionMatcher
 
-Package = TypeVar("Package", pyalpm.Package, AURPackageInfo)
+if TYPE_CHECKING:
+    import pyalpm
 
 
 class Provider:
@@ -23,17 +22,17 @@ class Provider:
     def choose(  # pylint: disable=too-many-return-statements
             cls,
             dependency: str,
-            options: list[Package],
+            options: list[SamePackageT],
             *,
             verbose: bool = False,
-    ) -> Package:
+    ) -> SamePackageT:
         dependency_name = VersionMatcher(dependency).pkg_name
         if result := cls.saved_providers.get(dependency_name):
             for pkg in options:
                 if pkg.name == result:
                     return pkg
 
-        def rerun(*, verbose: bool = verbose) -> Package:
+        def rerun(*, verbose: bool = verbose) -> SamePackageT:
             return cls.choose(dependency=dependency, options=options, verbose=verbose)
 
         print_stdout(
@@ -52,7 +51,7 @@ class Provider:
             aur_packages = []
             repo_packages = options
         sorted_packages = cast(
-            "list[Package]",
+            "list[SamePackageT]",
             print_package_search_results(
                 aur_packages=aur_packages,
                 repo_packages=repo_packages,

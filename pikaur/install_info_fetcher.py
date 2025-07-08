@@ -622,9 +622,10 @@ Gonna fetch install info for:
                 provided_aur_deps_info, not_found_aur_pkgs = find_aur_provided_deps(
                     not_found_aur_pkgs,
                 )
-                if (not not_found_aur_pkgs) and (pkg_name in self.install_package_names):
-                    self.install_package_names.remove(pkg_name)
-                pkg_name = provided_aur_deps_info[0].name
+                if provided_aur_deps_info:
+                    pkg_name = provided_aur_deps_info[0].name
+                    if pkg_name in self.install_package_names:
+                        self.install_package_names.remove(pkg_name)
 
             if not_found_aur_pkgs:
                 raise

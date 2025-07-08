@@ -98,7 +98,7 @@ class FailureTest(PikaurDbTestCase):
             "-Pi ./pikaur_test/PKGBUILD_version_mismatch_repo",
             capture_stderr=True,
         )
-        self.assertEqual(result.returncode, 131)
+        self.assertEqual(result.returncode, 125)
         self.assertIn(MSG_VERSION_MISMATCH, result.stderr)
         self.assertIn(pkg_name, result.stderr)
         self.assertNotInstalled(pkg_name)

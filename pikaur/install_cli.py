@@ -432,12 +432,13 @@ class InstallPackagesCLI:
             print_stderr(color_line(translate("Version mismatch:"), ColorsHighlight.yellow))
             print_stderr(
                 translate(
-                    "{what} depends on: '{dep}'\n found in '{location}': '{version}'",
+                    "{what} depends on: '{dep}'\n found in '{location}': '{pkg_name}=={version}'",
                 ).format(
                     what=bold_line(exc.who_depends),
                     dep=exc.dependency_line,
                     location=exc.location,
                     version=exc.version_found,
+                    pkg_name=exc.depends_on,
                 ),
             )
             raise SysExit(131) from exc

@@ -607,12 +607,25 @@ Gonna fetch install info for:
                 skip_runtime_deps=bool(self.args.pkgbuild and (not self.args.install)),
             )
         except DependencyVersionMismatchError as exc:
-            if exc.location is not PackageSource.LOCAL:
+            if exc.location is PackageSource.AUR:
+                logger.debug("get_aur_deps_info: location={}", exc.location)
                 raise
+
             # if local package is too old
             # let's see if a newer one can be found in AUR:
             pkg_name = exc.depends_on
+            logger.debug("get_aur_deps_info: {} -> retrying for {}", exc, pkg_name)
             _aur_pkg_list, not_found_aur_pkgs = find_aur_packages([pkg_name])
+
+            if not_found_aur_pkgs:
+                # ...or if other AUR package could satisfy that dep:
+                provided_aur_deps_info, not_found_aur_pkgs = find_aur_provided_deps(
+                    not_found_aur_pkgs,
+                )
+                if (not not_found_aur_pkgs) and (pkg_name in self.install_package_names):
+                    self.install_package_names.remove(pkg_name)
+                pkg_name = provided_aur_deps_info[0].name
+
             if not_found_aur_pkgs:
                 raise
             # start over computing deps and include just found AUR package:

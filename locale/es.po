@@ -622,7 +622,7 @@ msgstr "Ninguno"
 #, python-brace-format
 msgid "{name} {version} {package_source} package is up to date - skipping"
 msgstr ""
-"El paquete {name} {version} {package_source} está actualizado - ignorado"
+"El paquete {name} {version} {package_source} está actualizado - pasando al siguiente"
 
 # python-brace-format
 #: pikaur/install_cli.py:149
@@ -631,8 +631,8 @@ msgid ""
 "{name} {version} local package is newer than in AUR ({aur_version}) - "
 "skipping"
 msgstr ""
-"El paquete local {name} {version} es más nuevo que en AUR ({aur_version}) - "
-"ignorado"
+"El paquete local {name} {version} es más nuevo que el de AUR ({aur_version}) - "
+"pasando al siguiente"
 
 #: pikaur/install_cli.py:160
 #, python-brace-format
@@ -784,7 +784,7 @@ msgstr "{new} y {installed} están en conflicto. ¿Borrar {installed}?"
 #: pikaur/install_cli.py:921
 #, python-brace-format
 msgid "Skipping review of {file} for {name} package ({flag})"
-msgstr "Omisión de la revisión de {file} para el paquete {name} ({flag})"
+msgstr "Omitiendo la revisión de {file} para el paquete {name} ({flag})"
 
 #: pikaur/install_cli.py:929
 #, python-brace-format
@@ -1142,7 +1142,8 @@ msgstr "Ignorando el paquete {}"
 #, python-brace-format
 msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
 msgstr ""
-"El paquete AUR {name} {version} está marcado como 'obsoleto' - ignorado"
+"El paquete AUR {name} {version} está marcado como obsoleto ('outofdate') - "
+"pasando al siguiente"
 
 #: pikaur/print_department.py:765
 msgid "Stable versions of the following devel packages have newer versions:"

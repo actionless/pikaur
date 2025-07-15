@@ -1,14 +1,12 @@
 import enum
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Final, TypeVar, cast
+
+import pyalpm
 
 from .config import PikaurConfig
 
 if TYPE_CHECKING:
-    from typing import Any, Final
-
-    import pyalpm
-
     from .srcinfo import SrcInfo
 
 
@@ -237,3 +235,7 @@ class AURPackageInfo:  # pylint: disable=too-many-instance-attributes
     @classmethod
     def _get_fields(cls) -> set[str]:
         return set(cls.__dataclass_fields__.keys())  # pylint: disable=no-member
+
+
+type AnyPackage = AURPackageInfo | pyalpm.Package
+SamePackageT = TypeVar("SamePackageT", AURPackageInfo, pyalpm.Package)

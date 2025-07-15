@@ -1,6 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import sys
+from collections.abc import Iterable
 from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING
 
@@ -16,30 +17,22 @@ from .i18n import translate
 from .logging_extras import create_logger
 from .pacman import PackageDB, get_pkg_id, refresh_pkg_db_if_needed
 from .pikaprint import print_error, print_stderr
-from .pikatypes import AURPackageInfo
+from .pikatypes import AnyPackage, AURPackageInfo, SamePackageT
 from .print_department import print_package_search_results
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
-    from typing import TypeVar
-
     import pyalpm
-
-    from .print_department import AnyPackage
-
-    SamePackageTypeT = TypeVar("SamePackageTypeT", AURPackageInfo, pyalpm.Package)
-
 
 logger = create_logger("search")
 
 
 def filter_search_results(
-        results: "dict[str, list[SamePackageTypeT]]",
+        results: dict[str, list[SamePackageT]],
         query: str,
         *,
         names_only: bool = False,
-) -> "dict[str, list[SamePackageTypeT]]":
-    filtered_results: dict[str, list[SamePackageTypeT]] = {}
+) -> dict[str, list[SamePackageT]]:
+    filtered_results: dict[str, list[SamePackageT]] = {}
     for _q, pkgs in results.items():
         for pkg in pkgs:
             if (
@@ -54,8 +47,8 @@ def filter_search_results(
 
 
 def join_search_results(
-        all_search_results: "list[list[SamePackageTypeT]]",
-) -> "Iterable[SamePackageTypeT]":
+        all_search_results: list[list[SamePackageT]],
+) -> Iterable[SamePackageT]:
     if not all_search_results:
         return []
     pkgnames_set: set[str] = set()

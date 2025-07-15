@@ -5,7 +5,7 @@ pkgdesc="Full featured CLI system information tool"
 arch=('any')
 url="https://example.com/test_app"
 license=('GPL')
-depends=('coreutils' 'pciutils' 'perl' 'procps-ng' 'pacman=9998765')
+depends=('coreutils' 'pciutils' 'perl' 'procps-ng' 'archlinux-keyring=9998765')
 optdepends=(
   "bind-tools: -i wlan IP"
 )
@@ -15,3 +15,5 @@ sha256sums=()
 package() {
 	echo hi there
 }
+
+# vim: set ft=PKGBUILD :

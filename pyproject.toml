@@ -1,6 +1,6 @@
 [project]
 name = "pikaur"
-version = '1.32'
+version = '1.33'
 description = 'AUR helper with minimal dependencies'
 authors = [
   {name = 'Yauhen Kirylau', email = 'actionless-DOT-loveless-PLUS-aur-AT-gmail-MF-com@anti.spam'},
@@ -64,6 +64,7 @@ warn_return_any = true
 warn_unused_configs = true
 warn_unused_ignores = true
 mypy_path = './maintenance_scripts/mypy_stubs'
+exclude_gitignore = true
 
 [tool.ruff]
 line-length = 100
@@ -71,6 +72,9 @@ unsafe-fixes = true
 
 [tool.ruff.lint.mccabe]
 max-complexity = 19
+
+[tool.pyrefly]
+search-path = ["./maintenance_scripts/mypy_stubs"]
 
 [tool.ruff.format]
 preview = true

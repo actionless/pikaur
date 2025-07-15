@@ -16,7 +16,7 @@ from .lock import FancyLock
 from .logging_extras import create_logger
 from .pacman_i18n import _p
 from .pikaprint import color_enabled, print_error, print_stderr
-from .pikatypes import PackageSource
+from .pikatypes import AnyPackage, PackageSource
 from .privilege import sudo
 from .prompt import retry_interactive_command, retry_interactive_command_or_exit
 from .provider import Provider
@@ -28,8 +28,6 @@ if TYPE_CHECKING:
     from pathlib import Path
     from re import Pattern
     from typing import Final
-
-    from .pikatypes import AURPackageInfo
 
 
 REPO_NAME_DELIMITER: "Final" = "/"
@@ -130,7 +128,7 @@ class ProvidedDependency:
         )
 
 
-def get_pkg_id(pkg: "AURPackageInfo | pyalpm.Package") -> str:
+def get_pkg_id(pkg: AnyPackage) -> str:
     if isinstance(pkg, pyalpm.Package):
         return f"{pkg.db.name}/{pkg.name}"
     return f"aur/{pkg.name}"

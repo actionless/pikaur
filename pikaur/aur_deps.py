@@ -110,6 +110,7 @@ def handle_not_found_aur_pkgs(
 ) -> None:
     if not not_found_aur_deps:
         return
+    logger.debug("handle_not_found_aur_pkgs")
     all_repo_provided_packages = PackageDB.get_repo_provided_dict()
     all_local_provided_packages = PackageDB.get_local_provided_dict()
 
@@ -178,6 +179,7 @@ def check_requested_pkgs(
     # check versions of explicitly chosen AUR packages which could be deps:
     # @TODO: also check against user-requested repo packages
     not_found_in_requested_pkgs: list[str] = list(version_matchers.keys())
+    logger.debug("check_requested_pkgs: {}", aur_pkg_name)
     for dep_name, version_matcher in version_matchers.items():
         for aur_pkg in aur_pkgs_info:
             if dep_name not in not_found_in_requested_pkgs:
@@ -204,7 +206,7 @@ def check_requested_pkgs(
                     version_found=aur_pkg.version,
                     dependency_line=version_matcher.line,
                     who_depends=aur_pkg_name,
-                    depends_on=dep_name,
+                    depends_on=aur_pkg.name,
                     location=PackageSource.AUR,
                 )
             not_found_in_requested_pkgs.remove(dep_name)

@@ -27,7 +27,7 @@ _arch_incomp() {
   local r="\s-(-${1#* }\s|\w*${1% *})"; [[ $COMP_LINE =~ $r ]]
 }
 
-_pacman_keyids() {
+_pikaur_pacman_keyids() {
   \pacman-key --list-keys 2>/dev/null | awk '
     $1 == "pub" {
       # key id
@@ -40,7 +40,7 @@ _pacman_keyids() {
     }'
 }
 
-_pacman_pkg() {
+_pikaur_pacman_pkg() {
   _arch_compgen "$(
     if [[ $2 ]]; then
       \pikaur -$1 2>/dev/null | \cut -d' ' -f1 | \sort -u
@@ -90,7 +90,7 @@ _pikaur_cached_search() {
   _arch_compgen "${repoPackageNames} ${aurPackageNames}"
 }
 
-_pacman() {
+_pikaur_pacman() {
   local common core cur database files prev query remove sync upgrade o
   COMPREPLY=()
   _get_comp_words_by_ref cur prev
@@ -119,30 +119,30 @@ _pacman() {
     [[ $cur = -* ]] && _arch_ptr2comp ${o#* } common ||
       case ${o% *} in
       D|R)
-          _pacman_pkg Qq;;
+          _pikaur_pacman_pkg Qq;;
       F)
           _arch_incomp 'l list'   && _pikaur_cached_search
           ;;
       Q)
-        { _arch_incomp 'g groups' && _pacman_pkg Qg sort; }    ||
-        { _arch_incomp 'p file'   && _pacman_file; }           ||
+        { _arch_incomp 'g groups' && _pikaur_pacman_pkg Qg sort; }    ||
+        { _arch_incomp 'p file'   && _pikaur_pacman_file; }           ||
           _arch_incomp 'o owns'   || _arch_incomp 'u upgrades' ||
-          _pacman_pkg Qq;;
+          _pikaur_pacman_pkg Qq;;
       S)
-        { _arch_incomp 'g groups' && _pacman_pkg Sg; }      ||
-        { _arch_incomp 'l list'   && _pacman_pkg Sl sort; } ||
+        { _arch_incomp 'g groups' && _pikaur_pacman_pkg Sg; }      ||
+        { _arch_incomp 'l list'   && _pikaur_pacman_pkg Sl sort; } ||
           _pikaur_cached_search;;
       U)
-          _pacman_file;;
+          _pikaur_pacman_file;;
       esac
   fi
   true
 }
 
-_pacman_file() {
+_pikaur_pacman_file() {
   compopt -o filenames; _filedir 'pkg.tar*'
 }
 
-complete -F _pacman -o default pikaur
+complete -F _pikaur_pacman -o default pikaur
 
 # ex:et ts=2 sw=2 ft=sh

@@ -3,7 +3,7 @@
 import argparse
 import sys
 from pprint import pformat
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Any, Final, NamedTuple, NoReturn
 
 from .argparse_extras import ArgumentParserWithUnknowns
 from .config import DECORATION, PikaurConfig
@@ -12,7 +12,6 @@ from .i18n import PIKAUR_NAME, translate, translate_many
 if TYPE_CHECKING:
     from argparse import FileType
     from collections.abc import Callable
-    from typing import Any, Final, NoReturn
 
 PossibleArgValuesTypes = list[str] | str | bool | int | None
 
@@ -60,7 +59,7 @@ class ColorFlagValues:
     NEVER: "Final" = "never"
 
 
-PACMAN_ACTIONS: "Final[ArgSchema]" = [
+PACMAN_ACTIONS: Final[ArgSchema] = [
     Arg("S", "sync", None, None),
     Arg("Q", "query", None, None),
     Arg("D", "database", None, None),
@@ -72,18 +71,18 @@ PACMAN_ACTIONS: "Final[ArgSchema]" = [
     Arg("h", "help", None, None),
 ]
 
-PIKAUR_ACTIONS: "Final[ArgSchema]" = [
+PIKAUR_ACTIONS: Final[ArgSchema] = [
     Arg("P", "pkgbuild", None, None),
     Arg("G", "getpkgbuild", None, None),
     Arg("X", "extras", None, None),
     Arg(None, "interactive_package_select", None, None),
 ]
 
-ALL_PACMAN_ACTIONS: "Final[list[str]]" = [
+ALL_PACMAN_ACTIONS: Final[list[str]] = [
     schema[1] for schema in PACMAN_ACTIONS
     if schema[1] is not None
 ]
-ALL_PIKAUR_ACTIONS: "Final[list[str]]" = [
+ALL_PIKAUR_ACTIONS: Final[list[str]] = [
     schema[1] for schema in PIKAUR_ACTIONS
     if schema[1] is not None
 ]
@@ -515,39 +514,42 @@ def get_pacman_long_opts() -> list[str]:  # pragma: no cover
 class PikaurArgs(argparse.Namespace):
     unknown_args: list[str]
     raw: list[str]
+    positional: list[str]
+    read_stdin: bool = False
 
     # typehints:
     # @TODO: remove? :
     # nodeps: bool | None
     # owns: bool | None
     # check: bool | None
-    aur_clone_concurrency: int | None
-    build_gpgdir: str
     clean: int
     config: str | None
     dbpath: str | None
     devel: int
     ignore: list[str]
     info: bool | None
-    interactive_package_select: bool = False
     keepbuild: bool | None
     level: int
-    makepkg_config: str | None
-    makepkg_path: str | None
-    mflags: str | None
     namesonly: bool
     needed: bool
     output_dir: str | None
-    pacman_conf_path: str
-    pacman_path: str
-    positional: list[str]
-    preserve_env: str = ""
     quiet: bool
-    read_stdin: bool = False
     refresh: int
     root: str | None
-    skip_aur_pull: bool | None
     sysupgrade: int
+
+    aur_clone_concurrency: int | None
+    build_gpgdir: str
+    interactive_package_select: bool = False
+    makepkg_config: str | None
+    makepkg_path: str | None
+    mflags: str | None
+    pacman_conf_path: str
+    pacman_path: str
+    preserve_env: str = ""
+    skip_aur_pull: bool | None
+    print_commands: bool = False
+    pikaur_debug: bool = False
 
     def __init__(self) -> None:
         self.positional = []
@@ -563,7 +565,6 @@ class PikaurArgs(argparse.Namespace):
         return result
 
     def post_process_args(self) -> None:
-        # pylint: disable=attribute-defined-outside-init
         new_ignore: list[str] = []
         for ignored in self.ignore or []:
             new_ignore += ignored.split(",")
@@ -626,7 +627,7 @@ class PikaurArgs(argparse.Namespace):
 
 class PikaurArgumentParser(ArgumentParserWithUnknowns):
 
-    def error(self, message: str) -> "NoReturn":
+    def error(self, message: str) -> NoReturn:  # pyrefly: ignore
         exc = sys.exc_info()[1]
         if exc:
             raise exc
@@ -641,7 +642,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             args_to_parse = args_to_parse[:separator_index]
         # parsed_args, unknown_args = self.parse_known_args(args_to_parse)
         parsed_args, unknown_args = self.parse_known_intermixed_args(args_to_parse)
-        parsed_args.positional += extra_positionals
+        parsed_args.positional += extra_positionals  # pyrefly: ignore
         return PikaurArgs.from_namespace(
             namespace=parsed_args,
             unknown_args=unknown_args,
@@ -702,7 +703,7 @@ class CachedArgs:
     args: PikaurArgs | None = None
 
 
-def debug_args(args: list[str], parsed_args: PikaurArgs) -> "NoReturn":  # pragma: no cover
+def debug_args(args: list[str], parsed_args: PikaurArgs) -> NoReturn:  # pragma: no cover
     print_stderr("Input:")
     pprint_stderr(args)
     print_stderr()

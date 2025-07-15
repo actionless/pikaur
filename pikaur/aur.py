@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar, Final
 from urllib import parse
 from urllib.parse import quote
 
@@ -13,11 +13,7 @@ from .provider import Provider
 from .urllib_helper import get_gzip_from_url, get_json_from_url
 from .version import VersionMatcher
 
-if TYPE_CHECKING:
-    from typing import Final
-
-
-MAX_URL_LENGTH: "Final" = 8177  # default value in many web servers
+MAX_URL_LENGTH: Final = 8177  # default value in many web servers
 
 
 logger = create_logger("aur_module")
@@ -27,7 +23,7 @@ class NotFound:
     pass
 
 
-NOT_FOUND: "Final[NotFound]" = NotFound()
+NOT_FOUND: Final[NotFound] = NotFound()
 
 
 class AurRPCErrors:
@@ -218,10 +214,10 @@ def find_aur_packages(
             results = [request.get() for request in requests]
             pool.join()
             for result in results:
-                for aur_pkg in result:
-                    AurPackageSearchCache.put(aur_pkg)
-                    if aur_pkg.name in package_names:
-                        json_results.append(aur_pkg)
+                for aur_pkg_result in result:
+                    AurPackageSearchCache.put(aur_pkg_result)
+                    if aur_pkg_result.name in package_names:
+                        json_results.append(aur_pkg_result)
 
     found_aur_packages = [
         result.name for result in json_results

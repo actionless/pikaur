@@ -10,9 +10,7 @@ from collections import UserDict
 from collections.abc import Callable
 from pathlib import Path
 from tempfile import gettempdir
-from typing import ClassVar, Final, NotRequired
-
-from typing_extensions import TypedDict
+from typing import ClassVar, Final, NotRequired, TypedDict
 
 from .i18n import PIKAUR_NAME, translate
 

@@ -89,18 +89,22 @@ class TTYRestoreContext:
 
 
 @lru_cache
-def color_enabled() -> bool:
-    args = parse_args()
-    if args.color == ColorFlagValues.NEVER:
-        return False
-    if args.color == ColorFlagValues.ALWAYS:
-        return True
+def auto_detect_color_enabled() -> bool:
     try:
         if (sys.stderr.isatty() and sys.stdout.isatty()):
             return True
     except Exception:
         return False
     return False
+
+
+def color_enabled() -> bool:
+    args = parse_args()
+    if args.color == ColorFlagValues.NEVER:
+        return False
+    if args.color == ColorFlagValues.ALWAYS:
+        return True
+    return auto_detect_color_enabled()
 
 
 class PrintLock(FancyLock):

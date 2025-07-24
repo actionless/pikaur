@@ -31,9 +31,8 @@ def do_stuff(num_workers: int, worker_idx: int) -> None:
     tests = [
         test.id()
         for suite in TestLoader().discover(".", "test*.py", ".")._tests  # noqa: SLF001
-        for testcase in suite._tests  # type: ignore[attr-defined]  # noqa: SLF001
-        for test in testcase._tests  # noqa: SLF001
-        if testcase._tests  # noqa: SLF001
+        for testcase in getattr(suite, "_tests", [])
+        for test in getattr(testcase, "_tests", [])
     ]
     random.seed(RANDOM_SEED)
     random.shuffle(tests)

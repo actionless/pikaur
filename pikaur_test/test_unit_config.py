@@ -2,17 +2,12 @@
 # mypy: disable-error-code=no-untyped-def
 
 import configparser
-from typing import TYPE_CHECKING
 from unittest import mock
 
-from pikaur.config import PikaurConfigItem
+from pikaur.config import ConfigSchemaType, PikaurConfigItem
 from pikaur_test.helpers import PikaurTestCase
 
-if TYPE_CHECKING:
-    from pikaur.config import ConfigSchemaT
-
-
-EXAMPLE_CONFIG_SCHEMA: "ConfigSchemaT" = {
+EXAMPLE_CONFIG_SCHEMA: ConfigSchemaType = {
     "test_section": {
         "SomeBoolProperty": {
             "data_type": "bool",
@@ -32,7 +27,7 @@ class PikaurConfigItemTestCase(PikaurTestCase):
     config_item_bool: PikaurConfigItem
     config_item_int: PikaurConfigItem
     config_item_str: PikaurConfigItem
-    config_patcher: "mock._patch[ConfigSchemaT]"
+    config_patcher: mock._patch[ConfigSchemaType]  # pylint: disable=unsubscriptable-object
 
     @classmethod
     def setUpClass(cls):

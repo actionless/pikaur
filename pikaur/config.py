@@ -6,35 +6,15 @@ import os
 import random
 import sys
 from abc import ABC, abstractmethod
+from collections import UserDict
+from collections.abc import Callable
 from pathlib import Path
 from tempfile import gettempdir
-from typing import TYPE_CHECKING
+from typing import ClassVar, Final, NotRequired
+
+from typing_extensions import TypedDict
 
 from .i18n import PIKAUR_NAME, translate
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import Final, NotRequired
-
-    from typing_extensions import TypedDict
-
-    class DeprecatedConfigValue(TypedDict):
-        section: str
-        option: str
-        transform: NotRequired[Callable[[str, configparser.ConfigParser], str]]
-
-    class WarningValue(TypedDict):
-        message: str
-        when_value: list[str]
-
-    class ConfigValueType(TypedDict):
-        data_type: str
-        default: NotRequired[str]
-        old_default: NotRequired[str]
-        deprecated: NotRequired[DeprecatedConfigValue]
-        migrated: NotRequired[bool]
-        warning: NotRequired[WarningValue]
-
 
 VERSION: "Final" = "1.33-dev"
 
@@ -53,6 +33,26 @@ STR: "Final" = "str"
 DECORATION: "Final" = "🚛"
 # DECORATION: "Final" = "⚡️"
 # @TODO: make it configurable later on
+
+
+class DeprecatedConfigValue(TypedDict):
+    section: str
+    option: str
+    transform: NotRequired[Callable[[str, configparser.ConfigParser], str]]
+
+
+class WarningValue(TypedDict):
+    message: str
+    when_value: list[str]
+
+
+class ConfigValueType(TypedDict):
+    data_type: str
+    default: NotRequired[str]
+    old_default: NotRequired[str]
+    deprecated: NotRequired[DeprecatedConfigValue]
+    migrated: NotRequired[bool]
+    warning: NotRequired[WarningValue]
 
 
 def _err_write(message: str) -> None:
@@ -75,7 +75,7 @@ def _warn_write(message: str) -> None:
 
 class IntOrBoolSingleton(int):
 
-    value: int
+    value: ClassVar[int]
 
     @classmethod
     def set_value(cls, value: int) -> None:
@@ -97,7 +97,7 @@ class IntOrBoolSingleton(int):
 
 class PathConfig(Path, ABC):
 
-    value: Path
+    value: ClassVar[Path]
 
     @classmethod
     def set_value(cls, value: Path) -> None:
@@ -341,14 +341,15 @@ class DiffPagerValues:
 CONFIG_YES_VALUES: "Final" = ("yes", "y", "true", "1")
 
 
-ConfigSchemaT = dict[str, dict[str, "ConfigValueType"]]
+type ConfigSection = dict[str, ConfigValueType]
+type ConfigSchemaType = dict[str, ConfigSection]
 
 
-class ConfigSchema(ConfigSchemaT):
+class ConfigSchema(UserDict[str, ConfigSection]):
 
-    config_schema: ConfigSchemaT | None = None
+    config_schema: ConfigSchemaType | None = None
 
-    def __new__(cls) -> "ConfigSchemaT":  # type: ignore[misc]
+    def __new__(cls) -> ConfigSchemaType:  # type: ignore[misc]
         if not cls.config_schema:
             cls.config_schema = {
                 "sync": {
@@ -746,7 +747,7 @@ class PikaurConfig:
     @classmethod
     def _migrate_deprecated_config_key(
             cls,
-            option_schema: "ConfigValueType",
+            option_schema: ConfigValueType,
             section_name: str,
             option_name: str,
     ) -> None:
@@ -801,7 +802,7 @@ class PikaurConfig:
     @classmethod
     def _migrate_deprecated_config_value(
             cls,
-            option_schema: "ConfigValueType",
+            option_schema: ConfigValueType,
             section_name: str,
             option_name: str,
     ) -> None:
@@ -845,7 +846,7 @@ class PikaurConfig:
     @classmethod
     def _handle_warning(
             cls,
-            option_schema: "ConfigValueType",
+            option_schema: ConfigValueType,
             section_name: str,
             option_name: str,
     ) -> None:

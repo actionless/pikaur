@@ -39,7 +39,7 @@ msgstr "takip eden argümanlar gerekli: %s"
 msgid "one of the arguments %s is required"
 msgstr "argümanlardan biri %s gerekli"
 
-#: pikaur/args.py:130 pikaur/config.py:61 pikaur/pikaprint.py:236
+#: pikaur/args.py:130 pikaur/config.py:59 pikaur/pikaprint.py:240
 msgid "error:"
 msgstr "hata:"
 
@@ -205,16 +205,17 @@ msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "her zaman sysupgrade '-git' ve diğer geliştirici paketleri"
 
 #: pikaur/args.py:614
+#, python-brace-format
 msgid "WARNING, unknown args: {}"
 msgstr "UYARI: bilinmeyen argümanlar: {}"
 
 #: pikaur/args.py:813
-#, fuzzy
+#, fuzzy, python-brace-format
 msgid "options {} can't be used together."
 msgstr ":: hata: {} seçenekleri birlikte kullanılamaz."
 
 #: pikaur/args.py:821
-#, fuzzy
+#, fuzzy, python-brace-format
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
 msgstr[0] ":: hata: {} seçeneği {} olmadan kullanılamaz."
@@ -245,6 +246,7 @@ msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr "`{prop1}` veya `{prop2}` tanımlanmalı"
 
 #: pikaur/build.py:343
+#, python-brace-format
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Geliştirici paketi için güncel kaynaklar indiriliyor {}"
@@ -322,6 +324,7 @@ msgid "i"
 msgstr "m"
 
 #: pikaur/build.py:525
+#, python-brace-format
 msgid "Installing already built dependencies for {}"
 msgstr "{} için inşa edilmiş paketler kuruluyor"
 
@@ -339,14 +342,17 @@ msgstr[1] ""
 "argünamını kullanın."
 
 #: pikaur/build.py:702
+#, python-brace-format
 msgid "Installing repository dependencies for {}"
 msgstr "{} için depo bağımlılıkları kuruluyor"
 
 #: pikaur/build.py:768
+#, python-brace-format
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr "Kurulan bağımlılıklar silinemedi, paketler tutarsız: {}"
 
 #: pikaur/build.py:778
+#, python-brace-format
 msgid "Removing already installed dependencies for {}"
 msgstr "{} için şimdi kurulan depo bağımlılıkları siliniyor"
 
@@ -361,6 +367,7 @@ msgid "Starting the build"
 msgstr "İnşa başlatılıyor"
 
 #: pikaur/build.py:900 pikaur/prompt.py:243
+#, python-brace-format
 msgid "Command '{}' failed to execute."
 msgstr "'{}' komutu çalıştırılamadı."
 
@@ -408,11 +415,11 @@ msgstr "f"
 msgid "n"
 msgstr "h"
 
-#: pikaur/config.py:70 pikaur/pikaprint.py:218
+#: pikaur/config.py:68 pikaur/pikaprint.py:222
 msgid "warning:"
 msgstr "uyarı:"
 
-#: pikaur/config.py:404
+#: pikaur/config.py:402
 msgid ""
 "Dynamic Users feature will be disabled in the upcoming releases.\n"
 "Consider either calling Pikaur from your actual user account without `sudo`, "
@@ -421,21 +428,22 @@ msgid ""
 "and set DynamicUsers to `never`."
 msgstr ""
 
-#: pikaur/config.py:655
+#: pikaur/config.py:653
 msgid "Either both UserId and GroupId or neither of them should be set"
 msgstr ""
 
-#: pikaur/config.py:675
+#: pikaur/config.py:673
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr "{key} '{typeof}' türünde değil"
 
-#: pikaur/config.py:792
+#: pikaur/config.py:790
+#, python-brace-format
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr "[{}]{}=\"{}\" yapılandırması [{}]{}=\"{}\" olarak taşınıyor..."
 
-#: pikaur/config.py:820
-#, fuzzy
+#: pikaur/config.py:818
+#, fuzzy, python-brace-format
 msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
 msgstr "[{}]{}=\"{}\" yapılandırması [{}]{}=\"{}\" olarak taşınıyor..."
 
@@ -658,6 +666,7 @@ msgid "[A] abort"
 msgstr "[V] vazgeç"
 
 #: pikaur/install_cli.py:422
+#, python-brace-format
 msgid "Dependencies missing for {}"
 msgstr "{} için bağımlılıklar eksik"
 
@@ -819,6 +828,7 @@ msgid "Can't build '{name}'."
 msgstr "'{name}' inşa edilemedi."
 
 #: pikaur/install_cli.py:1220
+#, python-brace-format
 msgid "Dependency cycle detected between {}"
 msgstr "{} ile bağımlılık döngüsü tespit edildi"
 
@@ -850,6 +860,7 @@ msgid "pikaur debug:"
 msgstr "pikaur hata ayıklama:"
 
 #: pikaur/main.py:203
+#, python-brace-format
 msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
@@ -858,10 +869,12 @@ msgstr ""
 "(öntanımlı={}):"
 
 #: pikaur/main.py:213
+#, python-brace-format
 msgid "invalid value: {} is not between {} and {}"
 msgstr "geçersiz değer: {} değeri {} ile {} arasında değil"
 
 #: pikaur/main.py:223
+#, python-brace-format
 msgid "invalid number: {}"
 msgstr "geçersiz numara: {}"
 
@@ -902,7 +915,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-15 13:54+0200\n"
+"POT-Creation-Date: 2025-07-25 01:54+0200\n"
 "PO-Revision-Date: 2024-04-28 11:16+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -929,6 +942,7 @@ msgid "There is news from archlinux.org!"
 msgstr "Archlinux.org'dan haber var!"
 
 #: pikaur/news.py:134
+#, python-brace-format
 msgid "Could not initialize {}"
 msgstr "{} başlatılamadı"
 
@@ -937,6 +951,7 @@ msgid "The news feed could not be received or parsed."
 msgstr "Haber beslemeleri alınamadı veya ayrıştırılamadı."
 
 #: pikaur/news.py:181
+#, python-brace-format
 msgid "Could not update {}"
 msgstr "{} güncellemedi"
 
@@ -1032,6 +1047,7 @@ msgstr[0] "{grp} grup"
 msgstr[1] "{grp} gruplar"
 
 #: pikaur/print_department.py:298
+#, python-brace-format
 msgid "({} days old)"
 msgstr "({} gün eski)"
 
@@ -1116,10 +1132,12 @@ msgid "Total Installed Size:"
 msgstr "Toplam Kurulum Boyutu:"
 
 #: pikaur/print_department.py:722
+#, python-brace-format
 msgid "Ignoring package update {}"
 msgstr "Paket güncellemesi gözardı ediliyor {}"
 
 #: pikaur/print_department.py:730
+#, python-brace-format
 msgid "Ignoring package {}"
 msgstr "Paket gözardı ediliyor {}"
 
@@ -1214,6 +1232,7 @@ msgid "AUR returned error:"
 msgstr "AUR hata döndü:"
 
 #: pikaur/srcinfo.py:151
+#, python-brace-format
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "{}'dan .SRCINFO oluşturulamadı:"
 
@@ -1228,6 +1247,7 @@ msgid "(ignored in Pacman config)"
 msgstr "(Pacman yapılandırmasında dışlandı)"
 
 #: pikaur/urllib_helper.py:46 pikaur/urllib_helper.py:77
+#, python-brace-format
 msgid "Sleeping for {} seconds..."
 msgstr "{} saniye boyunca bekleme..."
 

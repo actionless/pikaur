@@ -40,7 +40,7 @@ msgstr "требуются следующие аргументы: %s"
 msgid "one of the arguments %s is required"
 msgstr "требуется один из аргументов %s"
 
-#: pikaur/args.py:130 pikaur/config.py:61 pikaur/pikaprint.py:236
+#: pikaur/args.py:130 pikaur/config.py:59 pikaur/pikaprint.py:240
 msgid "error:"
 msgstr "ошибка:"
 
@@ -209,16 +209,17 @@ msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "всегда обновлять пакеты из '-git', '-svn' и другие нестабильные пакеты"
 
 #: pikaur/args.py:614
+#, python-brace-format
 msgid "WARNING, unknown args: {}"
 msgstr "ВНИМАНИЕ! Неизвестные аргументы: {}"
 
 #: pikaur/args.py:813
-#, fuzzy
+#, fuzzy, python-brace-format
 msgid "options {} can't be used together."
 msgstr ":: ошибка: опции {} не могут быть использованы вместе."
 
 #: pikaur/args.py:821
-#, fuzzy
+#, fuzzy, python-brace-format
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
 msgstr[0] ":: ошибка: опцию {} нельзя использовать без {}."
@@ -249,6 +250,7 @@ msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr "Необходимо задать либо `{prop1}`, либо `{prop2}`"
 
 #: pikaur/build.py:343
+#, python-brace-format
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Загрузка исходного кода для пакета {}"
@@ -328,6 +330,7 @@ msgid "i"
 msgstr ""
 
 #: pikaur/build.py:525
+#, python-brace-format
 msgid "Installing already built dependencies for {}"
 msgstr "Установка уже собранных зависимостей для {}"
 
@@ -345,15 +348,18 @@ msgstr[1] ""
 "пересборки."
 
 #: pikaur/build.py:702
+#, python-brace-format
 msgid "Installing repository dependencies for {}"
 msgstr "Установка зависимостей из репозиториев для {}"
 
 #: pikaur/build.py:768
+#, python-brace-format
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr ""
 "Не удалось удалить установленные зависимости, несоответствие пакетов: {}"
 
 #: pikaur/build.py:778
+#, python-brace-format
 msgid "Removing already installed dependencies for {}"
 msgstr "Удаление уже установленных зависимостей для {}"
 
@@ -370,6 +376,7 @@ msgid "Starting the build"
 msgstr "Начало сборки"
 
 #: pikaur/build.py:900 pikaur/prompt.py:243
+#, python-brace-format
 msgid "Command '{}' failed to execute."
 msgstr "Не удалось выполнить команду '{}'."
 
@@ -418,11 +425,11 @@ msgstr ""
 msgid "n"
 msgstr ""
 
-#: pikaur/config.py:70 pikaur/pikaprint.py:218
+#: pikaur/config.py:68 pikaur/pikaprint.py:222
 msgid "warning:"
 msgstr "предупреждение:"
 
-#: pikaur/config.py:404
+#: pikaur/config.py:402
 msgid ""
 "Dynamic Users feature will be disabled in the upcoming releases.\n"
 "Consider either calling Pikaur from your actual user account without `sudo`, "
@@ -431,22 +438,22 @@ msgid ""
 "and set DynamicUsers to `never`."
 msgstr ""
 
-#: pikaur/config.py:655
+#: pikaur/config.py:653
 msgid "Either both UserId and GroupId or neither of them should be set"
 msgstr ""
 
-#: pikaur/config.py:675
+#: pikaur/config.py:673
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr "{key} не соответствует '{typeof}'"
 
-#: pikaur/config.py:792
-#, fuzzy
+#: pikaur/config.py:790
+#, fuzzy, python-brace-format
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr "Перенос конфигурации [{}]{}=\"{}\" в [{}]{}=\"{}\"..."
 
-#: pikaur/config.py:820
-#, fuzzy
+#: pikaur/config.py:818
+#, fuzzy, python-brace-format
 msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
 msgstr "Перенос конфигурации [{}]{}=\"{}\" в [{}]{}=\"{}\"..."
 
@@ -673,6 +680,7 @@ msgid "[A] abort"
 msgstr "[A] отмена"
 
 #: pikaur/install_cli.py:422
+#, python-brace-format
 msgid "Dependencies missing for {}"
 msgstr "Отсутствуют зависимости для {}"
 
@@ -833,6 +841,7 @@ msgid "Can't build '{name}'."
 msgstr "Невозможно собрать '{name}'."
 
 #: pikaur/install_cli.py:1220
+#, python-brace-format
 msgid "Dependency cycle detected between {}"
 msgstr "Обнаружена циклическая зависимость между {}"
 
@@ -864,7 +873,7 @@ msgid "pikaur debug:"
 msgstr "отладка pikaur"
 
 #: pikaur/main.py:203
-#, fuzzy
+#, fuzzy, python-brace-format
 msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
@@ -873,10 +882,12 @@ msgstr ""
 "нажмите [Enter]:"
 
 #: pikaur/main.py:213
+#, python-brace-format
 msgid "invalid value: {} is not between {} and {}"
 msgstr "неверное значение: {} должно быть между {} и {}"
 
 #: pikaur/main.py:223
+#, python-brace-format
 msgid "invalid number: {}"
 msgstr "неверное число: {}"
 
@@ -918,7 +929,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-15 13:54+0200\n"
+"POT-Creation-Date: 2025-07-25 01:54+0200\n"
 "PO-Revision-Date: 2019-09-21 19:36+0200\n"
 "Last-Translator: Drommer <drommer@github.com>\n"
 "Language-Team: Russian <email@example.com>\n"
@@ -945,6 +956,7 @@ msgid "There is news from archlinux.org!"
 msgstr "Есть новости с archlinux.org!"
 
 #: pikaur/news.py:134
+#, python-brace-format
 msgid "Could not initialize {}"
 msgstr "Не удалось инициализировать {}"
 
@@ -953,6 +965,7 @@ msgid "The news feed could not be received or parsed."
 msgstr "Новостная лента не может быть получена или обработана."
 
 #: pikaur/news.py:181
+#, python-brace-format
 msgid "Could not update {}"
 msgstr "Не удалось обновить {}"
 
@@ -1048,6 +1061,7 @@ msgstr[0] "Группа {grp}"
 msgstr[1] "Группы {grp}"
 
 #: pikaur/print_department.py:298
+#, python-brace-format
 msgid "({} days old)"
 msgstr "({} дней назад)"
 
@@ -1132,10 +1146,12 @@ msgid "Total Installed Size:"
 msgstr "Общий размер после установки:"
 
 #: pikaur/print_department.py:722
+#, python-brace-format
 msgid "Ignoring package update {}"
 msgstr "Пропуск обновления пакета {}"
 
 #: pikaur/print_department.py:730
+#, python-brace-format
 msgid "Ignoring package {}"
 msgstr "Пропуск пакета {}"
 
@@ -1234,6 +1250,7 @@ msgid "AUR returned error:"
 msgstr ""
 
 #: pikaur/srcinfo.py:151
+#, python-brace-format
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "не удалось сгенерировать .SRCINFO из {}:"
 
@@ -1248,6 +1265,7 @@ msgid "(ignored in Pacman config)"
 msgstr "(игнорируется в настройках Pacman)"
 
 #: pikaur/urllib_helper.py:46 pikaur/urllib_helper.py:77
+#, python-brace-format
 msgid "Sleeping for {} seconds..."
 msgstr "Ожидание в течение {} секунд..."
 

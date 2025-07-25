@@ -39,7 +39,7 @@ msgstr "se requieren los siguientes argumentos: %s"
 msgid "one of the arguments %s is required"
 msgstr "uno de los argumentos %s es necesario"
 
-#: pikaur/args.py:130 pikaur/config.py:61 pikaur/pikaprint.py:236
+#: pikaur/args.py:130 pikaur/config.py:59 pikaur/pikaprint.py:240
 msgid "error:"
 msgstr "error:"
 
@@ -206,14 +206,17 @@ msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "siempre sysupgrade '-git', '-svn' y otros paquetes dev"
 
 #: pikaur/args.py:614
+#, python-brace-format
 msgid "WARNING, unknown args: {}"
 msgstr "ADVERTENCIA, args desconocidos: {}"
 
 #: pikaur/args.py:813
+#, python-brace-format
 msgid "options {} can't be used together."
 msgstr "las opciones {} no pueden utilizarse juntas."
 
 #: pikaur/args.py:821
+#, python-brace-format
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
 msgstr[0] "opción {} no puede ser utilizarse sin {}."
@@ -244,6 +247,7 @@ msgid "Either `{prop1}` or `{prop2}` should be set"
 msgstr "Debe definirse `{prop1}` o `{prop2}`"
 
 #: pikaur/build.py:343
+#, python-brace-format
 msgid "Downloading the latest sources for a devel package {}"
 msgid_plural "Downloading the latest sources for devel packages {}"
 msgstr[0] "Descargando las últimas fuentes del paquete devel {}"
@@ -321,6 +325,7 @@ msgid "i"
 msgstr "i"
 
 #: pikaur/build.py:525
+#, python-brace-format
 msgid "Installing already built dependencies for {}"
 msgstr "Instalación de dependencias ya construidas para {}"
 
@@ -338,15 +343,18 @@ msgstr[1] ""
 "forzar la compilación."
 
 #: pikaur/build.py:702
+#, python-brace-format
 msgid "Installing repository dependencies for {}"
 msgstr "Instalando dependencias en el repositorio para {}"
 
 #: pikaur/build.py:768
+#, python-brace-format
 msgid "Failed to remove installed dependencies, packages inconsistency: {}"
 msgstr ""
 "Error al eliminar dependencias instaladas, incoherencia de los paquets: {}"
 
 #: pikaur/build.py:778
+#, python-brace-format
 msgid "Removing already installed dependencies for {}"
 msgstr "Desinstalando dependencias ya instaladas para {}"
 
@@ -363,6 +371,7 @@ msgid "Starting the build"
 msgstr "Iniciando la compilación"
 
 #: pikaur/build.py:900 pikaur/prompt.py:243
+#, python-brace-format
 msgid "Command '{}' failed to execute."
 msgstr "El comando '{}' falló."
 
@@ -410,11 +419,11 @@ msgstr "f"
 msgid "n"
 msgstr "n"
 
-#: pikaur/config.py:70 pikaur/pikaprint.py:218
+#: pikaur/config.py:68 pikaur/pikaprint.py:222
 msgid "warning:"
 msgstr "advertencia:"
 
-#: pikaur/config.py:404
+#: pikaur/config.py:402
 msgid ""
 "Dynamic Users feature will be disabled in the upcoming releases.\n"
 "Consider either calling Pikaur from your actual user account without `sudo`, "
@@ -428,20 +437,22 @@ msgstr ""
 "configuración de Pikaur\n"
 "y establecer DynamicUsers a `never`."
 
-#: pikaur/config.py:655
+#: pikaur/config.py:653
 msgid "Either both UserId and GroupId or neither of them should be set"
 msgstr "UserId y GroupId se deben definir ambos o ninguno"
 
-#: pikaur/config.py:675
+#: pikaur/config.py:673
 #, python-brace-format
 msgid "{key} is not '{typeof}'"
 msgstr "{key} no es '{typeof}'"
 
-#: pikaur/config.py:792
+#: pikaur/config.py:790
+#, python-brace-format
 msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
 msgstr "Migrando la opción de configuración [{}]{}=\"{}\" a [{}]{}=\"{}\"..."
 
-#: pikaur/config.py:820
+#: pikaur/config.py:818
+#, python-brace-format
 msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
 msgstr "Migrando la opción de configuración [{}]{}=\"{}\" a =\"{}\"..."
 
@@ -663,6 +674,7 @@ msgid "[A] abort"
 msgstr "[A] abortar"
 
 #: pikaur/install_cli.py:422
+#, python-brace-format
 msgid "Dependencies missing for {}"
 msgstr "Faltan dependencias para {}"
 
@@ -830,6 +842,7 @@ msgid "Can't build '{name}'."
 msgstr "No se puede compilar '{name}'."
 
 #: pikaur/install_cli.py:1220
+#, python-brace-format
 msgid "Dependency cycle detected between {}"
 msgstr "Ciclo de dependencias detectado entre {}"
 
@@ -861,6 +874,7 @@ msgid "pikaur debug:"
 msgstr "depuración de pikaur:"
 
 #: pikaur/main.py:203
+#, python-brace-format
 msgid ""
 "Please enter the number of the package(s) you want to install and press "
 "[Enter] (default={}):"
@@ -869,10 +883,12 @@ msgstr ""
 "[Intro] (por defecto={}):"
 
 #: pikaur/main.py:213
+#, python-brace-format
 msgid "invalid value: {} is not between {} and {}"
 msgstr "valor no válido: {} no está entre {} y {}"
 
 #: pikaur/main.py:223
+#, python-brace-format
 msgid "invalid number: {}"
 msgstr "número inválido: {}"
 
@@ -912,7 +928,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-15 13:54+0200\n"
+"POT-Creation-Date: 2025-07-25 01:54+0200\n"
 "PO-Revision-Date: 2018-06-05 22:38+0200\n"
 "Language-Team: none\n"
 "Language: es\n"
@@ -941,6 +957,7 @@ msgid "There is news from archlinux.org!"
 msgstr "Hay noticias de archlinux.org!"
 
 #: pikaur/news.py:134
+#, python-brace-format
 msgid "Could not initialize {}"
 msgstr "No se ha podido inicializar {}"
 
@@ -949,6 +966,7 @@ msgid "The news feed could not be received or parsed."
 msgstr "No se pudo recibir ni analizar la información de las noticias."
 
 #: pikaur/news.py:181
+#, python-brace-format
 msgid "Could not update {}"
 msgstr "No se pudo actualizar {}"
 
@@ -1044,6 +1062,7 @@ msgstr[0] "groupo {grp}"
 msgstr[1] "groupos {grp}"
 
 #: pikaur/print_department.py:298
+#, python-brace-format
 msgid "({} days old)"
 msgstr "(hace {} días)"
 
@@ -1129,10 +1148,12 @@ msgid "Total Installed Size:"
 msgstr "Tamaño Total Instalado:"
 
 #: pikaur/print_department.py:722
+#, python-brace-format
 msgid "Ignoring package update {}"
 msgstr "Ignorando la actualización del paquete {}"
 
 #: pikaur/print_department.py:730
+#, python-brace-format
 msgid "Ignoring package {}"
 msgstr "Ignorando el paquete {}"
 
@@ -1235,6 +1256,7 @@ msgid "AUR returned error:"
 msgstr "AUR ha devuelto error:"
 
 #: pikaur/srcinfo.py:151
+#, python-brace-format
 msgid "failed to generate .SRCINFO from {}:"
 msgstr "no se pudo generar .SRCINFO desde {}:"
 
@@ -1249,6 +1271,7 @@ msgid "(ignored in Pacman config)"
 msgstr "(ignorado en la configuración de Pacman)"
 
 #: pikaur/urllib_helper.py:46 pikaur/urllib_helper.py:77
+#, python-brace-format
 msgid "Sleeping for {} seconds..."
 msgstr "En espera durante {} segundos..."
 

@@ -14,7 +14,7 @@ from typing import ClassVar, Final, NotRequired, TypedDict
 
 from .i18n import PIKAUR_NAME, translate
 
-VERSION: "Final" = "1.33-dev"
+VERSION: "Final" = "1.33.1-dev"
 
 DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
 DEFAULT_INPUT_ENCODING: "Final" = "utf-8"

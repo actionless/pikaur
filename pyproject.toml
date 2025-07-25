@@ -1,6 +1,6 @@
 [project]
 name = "pikaur"
-version = '1.33'
+version = '1.33.1'
 description = 'AUR helper with minimal dependencies'
 authors = [
   {name = 'Yauhen Kirylau', email = 'actionless-DOT-loveless-PLUS-aur-AT-gmail-MF-com@anti.spam'},

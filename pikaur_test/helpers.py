@@ -177,6 +177,16 @@ class InterceptSysOutput:
         self.__exit__()
 
 
+def reset_cached_pikaur_args(new_args: list[str]) -> None:
+    # re-parse args:
+    CachedArgs.args = None
+    MakePkgCommand._cmd = None  # pylint: disable=protected-access
+    with mock.patch("sys.argv", new=new_args):
+        parse_args()
+    # monkey-patch to force always uncolored output:
+    CachedArgs.args.color = "never"  # type: ignore[attr-defined]
+
+
 def pikaur(
         cmd: str,
         *,
@@ -228,13 +238,7 @@ def pikaur(
                 ) as intercepted,
                 contextlib.suppress(FakeExit),
         ):
-            # re-parse args:
-            CachedArgs.args = None
-            MakePkgCommand._cmd = None  # pylint: disable=protected-access
-            with mock.patch("sys.argv", new=new_args):
-                parse_args()
-            # monkey-patch to force always uncolored output:
-            CachedArgs.args.color = "never"  # type: ignore[attr-defined]
+            reset_cached_pikaur_args(new_args)
             # finally run pikaur's main loop
             main(embed=True)
     except Exception as exc:
@@ -295,6 +299,7 @@ class PikaurTestCase(TestCase):
     def setUp(self) -> None:
         super().setUp()
         log_stderr(self.separator)
+        reset_cached_pikaur_args([])
 
     def assertInstalled(self, pkg_name: str) -> None:  # noqa: N802
         if not pkg_is_installed(pkg_name):

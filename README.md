@@ -144,11 +144,6 @@ Will be overridden by `--keepbuilddeps` flag.
 ##### SkipFailedBuild (default: no)
 Always skip the build if it fails and don't show recovery prompt.
 
-##### DynamicUsers (default: never) [root|never|always]
-When to isolate the build using systemd dynamic users.
-(`root` - only when running as root)
-Will be overridden by `--dynamic-users` flag.
-
 ##### IgnoreArch (default: no)
 Ignore specified architectures (`arch`-array) in PKGBUILDs.
 
@@ -233,7 +228,6 @@ In case of elevating privilege for pacman - pikaur would ask for password every 
 ##### UserId (default: 0)
 User ID to run makepkg if pikaur started from root.
 0 - means disabled, not that it will use uid=0.
-Setting this option would override DynamicUsers settings and force changing to this UID instead of a dynamic one.
 The config value would be overriden by `--user-id` flag.
 
 ##### GroupId (default: 0)
@@ -340,10 +334,6 @@ Actually use `checkupdates` tool to check the repo updates and use pikaur only f
 checkupdates ; pikaur -Qua 2>/dev/null
 ```
 
-##### Pikaur slow when running it as root user (or via sudo)
-
-If you find the command takes a long time to initialize, make sure to periodically clear your cache: `pikaur -Scc`. Root pikaur is using SystemD Dynamic Users to isolate build process from the root, and it takes some time to change the owner of build cache to dynamic temporary user.
-
 ##### How to migrate from Yay?
 
 This will migrate the cache of what AUR packages have been installed, so you can still see a Git diff for the next update of each package:
@@ -363,22 +353,6 @@ cd <package>
 git log  # choose <commit> from the list
 git checkout <commit>
 pikaur -Pi  # build and install older version
-```
-
-##### How to add additional trusted keys when building with systemd dynamic users?
-When using systemd dynamic users, by default, there is not a persistent user or gpg home directory. You can set the path to a persistent gpg home directory using the cli argument `--build_gpgdir`. Alternatively, you can set a permanent default with the configuration option `[build] gpgdir` in the root pikaur configuration file `/root/.config/pikaur.conf` The below example configures makepkg to use a hypothetical gpg home directory at `/etc/pikaur.d/gnupg` when validating source files.
-
-```ini
-[build]
-gpgdir=/etc/pikaur.d/gnupg
-```
-
-You can initialize a minimal gnupghome at the example path by executing the below commands as root.
-
-```sh
-export GNUPGHOME="/etc/pikaur.d/gnupg"
-mkdir -p "${GNUPGHOME}"
-gpg --batch --passphrase '' --quick-gen-key "pikaur@localhost" rsa sign 0
 ```
 
 ## Contributing

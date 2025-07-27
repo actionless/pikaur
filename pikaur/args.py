@@ -20,7 +20,7 @@ class Arg(NamedTuple):
     short: str | None
     long: str | None
     default: PossibleArgValuesTypes
-    doc: str | None
+    doc: str | None = None
     help_only: bool = False
 
 
@@ -215,7 +215,6 @@ def get_pikaur_bool_opts(action: str | None = None) -> ArgSchema:
             ),
             Arg(
                 None, "dynamic-users", PikaurConfig().build.DynamicUsers.get_str() == "always",
-                translate("always isolate with systemd dynamic users"),
             ),
             Arg(
                 None, "hide-build-log", None,

@@ -263,8 +263,7 @@ def execute_pikaur_operation(
     ):
         print_error(
             translate(
-                "Either SystemD Dynamic Users must be enabled"
-                " or User ID should be set if running as root.",
+                "User ID should be set if running Pikaur as root.",
             ),
         )
         sys.exit(1)

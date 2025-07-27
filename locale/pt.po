@@ -61,7 +61,7 @@ msgstr "não remova o diretório build após a compilação"
 msgid "don't remove build dependencies between and after the builds"
 msgstr "não remova o diretório build após a compilação"
 
-#: pikaur/args.py:198 pikaur/args.py:248
+#: pikaur/args.py:198 pikaur/args.py:247
 msgid "query packages from repository only"
 msgstr "pacotes de consulta apenas do repositório"
 
@@ -81,140 +81,136 @@ msgstr "sempre reconstruir pacotes AUR"
 msgid "skip failed builds"
 msgstr ""
 
-#: pikaur/args.py:218
-msgid "always isolate with systemd dynamic users"
-msgstr "sempre isolar com usuários dinâmicos do systemd"
-
-#: pikaur/args.py:222
+#: pikaur/args.py:221
 msgid "hide build log"
 msgstr ""
 
-#: pikaur/args.py:226
+#: pikaur/args.py:225
 msgid "don't pull already cloned PKGBUILD"
 msgstr ""
 
-#: pikaur/args.py:233
+#: pikaur/args.py:232
 msgid "search only in package names"
 msgstr "pesquisar apenas em nomes de pacotes"
 
-#: pikaur/args.py:237
+#: pikaur/args.py:236
 msgid "don't prompt to show the build files diff"
 msgstr "não avisar para mostrar os arquivos de construção"
 
-#: pikaur/args.py:241
+#: pikaur/args.py:240
 msgid "ignore AUR packages' updates which marked 'outofdate'"
 msgstr ""
 
-#: pikaur/args.py:255
+#: pikaur/args.py:254
 msgid "download also AUR dependencies"
 msgstr "baixar também dependências do AUR"
 
-#: pikaur/args.py:262
+#: pikaur/args.py:261
 msgid "install built package"
 msgstr "Instalar pacote construído"
 
-#: pikaur/args.py:270
+#: pikaur/args.py:269
 msgid "visualize package dependency tree"
 msgstr ""
 
-#: pikaur/args.py:274
+#: pikaur/args.py:273
 msgid "less verbose output"
 msgstr ""
 
-#: pikaur/args.py:281
+#: pikaur/args.py:280
 msgid "print spawned by pikaur subshell commands"
 msgstr ""
 
-#: pikaur/args.py:285
+#: pikaur/args.py:284
 msgid "show only debug messages specific to pikaur"
 msgstr ""
 
-#: pikaur/args.py:318
+#: pikaur/args.py:317
 msgid "alternative home directory location"
 msgstr ""
 
-#: pikaur/args.py:323
+#: pikaur/args.py:322
 msgid "alternative package cache directory location"
 msgstr ""
 
-#: pikaur/args.py:328
+#: pikaur/args.py:327
 msgid "alternative configuration file directory location"
 msgstr ""
 
-#: pikaur/args.py:333
+#: pikaur/args.py:332
 msgid "alternative database directory location"
 msgstr ""
 
-#: pikaur/args.py:338
+#: pikaur/args.py:337
 msgid "preserve environment variables (comma-separated)"
 msgstr ""
 
-#: pikaur/args.py:343
+#: pikaur/args.py:342
 #, fuzzy
 msgid "override path to pacman executable"
 msgstr "substituir caminho para o executável do makepkg"
 
-#: pikaur/args.py:351
+#: pikaur/args.py:350
 #, fuzzy
 msgid "override path to pacman-conf executable"
 msgstr "substituir caminho para o executável do makepkg"
 
-#: pikaur/args.py:363
+#: pikaur/args.py:362
 msgid "cli args to pass to makepkg"
 msgstr "cli args para passar ao makepkg"
 
-#: pikaur/args.py:368
+#: pikaur/args.py:367
 msgid "path to custom makepkg config"
 msgstr "caminho para a configuração customizada do makepkg"
 
-#: pikaur/args.py:373
+#: pikaur/args.py:372
 msgid "override path to makepkg executable"
 msgstr "substituir caminho para o executável do makepkg"
 
-#: pikaur/args.py:378
+#: pikaur/args.py:377
 #, fuzzy
 msgid "path to custom pikaur config"
 msgstr "caminho para a configuração customizada do makepkg"
 
-#: pikaur/args.py:383
+#: pikaur/args.py:382
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 
-#: pikaur/args.py:396
+#: pikaur/args.py:395
 msgid "path where to clone PKGBUILDs"
 msgstr ""
 
-#: pikaur/args.py:411
+#: pikaur/args.py:410
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr ""
 
-#: pikaur/args.py:415
+#: pikaur/args.py:414
 msgid "group ID to run makepkg if pikaur started from root"
 msgstr ""
 
-#: pikaur/args.py:422
+#: pikaur/args.py:421
 msgid "how many git-clones/pulls to do from AUR"
 msgstr ""
 
-#: pikaur/args.py:430
+#: pikaur/args.py:429
 msgid "dependency tree level"
 msgstr ""
 
-#: pikaur/args.py:475
+#: pikaur/args.py:474
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "sempre sysupgrade '-git', '-svn' e outros pacotes dev"
 
-#: pikaur/args.py:614
+#: pikaur/args.py:613
 #, python-brace-format
 msgid "WARNING, unknown args: {}"
 msgstr ""
 
-#: pikaur/args.py:813
+#: pikaur/args.py:812
 #, fuzzy, python-brace-format
 msgid "options {} can't be used together."
 msgstr ":: erro: opções {} não podem ser usadas juntas."
 
-#: pikaur/args.py:821
+#: pikaur/args.py:820
 #, fuzzy, python-brace-format
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
@@ -879,25 +875,23 @@ msgid "invalid number: {}"
 msgstr ""
 
 #: pikaur/main.py:266
-msgid ""
-"Either SystemD Dynamic Users must be enabled or User ID should be set if "
-"running as root."
+msgid "User ID should be set if running Pikaur as root."
 msgstr ""
 
-#: pikaur/main.py:292
+#: pikaur/main.py:291
 msgid "no package(s) specified"
 msgstr ""
 
-#: pikaur/main.py:389
+#: pikaur/main.py:388
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr ""
 
-#: pikaur/main.py:458
+#: pikaur/main.py:457
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "O pikaur requer o Python> = 3.7 para ser executado."
 
-#: pikaur/main.py:466
+#: pikaur/main.py:465
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur requer systemd >= 235 (usuários dinâmicos) para ser executado como "
@@ -908,12 +902,12 @@ msgstr ""
 # This file is distributed under the same license as the PACKAGE package.
 # Alexandre Lopes <lopes.tamt@gmail.com>, 2018.
 #
-#: pikaur/main.py:479 pikaur/main.py:493
+#: pikaur/main.py:478 pikaur/main.py:492
 msgid ""
 msgstr ""
 "Project-Id-Version: Pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-25 01:54+0200\n"
+"POT-Creation-Date: 2025-07-27 20:20+0200\n"
 "PO-Revision-Date: 2018-08-19 19:16-0300\n"
 "Last-Translator: Alexandre Lopes <lopes.tamt@gmail.com>\n"
 "Language-Team: pt\n"
@@ -924,7 +918,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.1.1\n"
 
-#: pikaur/main.py:503
+#: pikaur/main.py:502
 #, python-brace-format
 msgid ""
 "{privilege_escalation_tool} is not part of minimal Arch default setup, be "
@@ -1291,6 +1285,9 @@ msgstr "O pikaur requer o Python> = 3.7 para ser executado."
 
 #~ msgid "[v] skip all source verification checks"
 #~ msgstr "[v] ignorar todas as verificações de verificação de origem"
+
+#~ msgid "always isolate with systemd dynamic users"
+#~ msgstr "sempre isolar com usuários dinâmicos do systemd"
 
 #~ msgid "error"
 #~ msgstr "erro"

@@ -60,7 +60,7 @@ msgstr "не видаляти каталог збирання після зав�
 msgid "don't remove build dependencies between and after the builds"
 msgstr "не видаляти залежності збирання між збираннями та після них"
 
-#: pikaur/args.py:198 pikaur/args.py:248
+#: pikaur/args.py:198 pikaur/args.py:247
 msgid "query packages from repository only"
 msgstr "шукати пакунки лише в репозиторіях"
 
@@ -80,142 +80,138 @@ msgstr "завжди перезбирати пакунки з AUR"
 msgid "skip failed builds"
 msgstr "пропускати невдалі збирання"
 
-#: pikaur/args.py:218
-msgid "always isolate with systemd dynamic users"
-msgstr "завжди ізолювати за допомогою динамічних користувачів systemd"
-
-#: pikaur/args.py:222
+#: pikaur/args.py:221
 msgid "hide build log"
 msgstr "приховати журнал збирання"
 
-#: pikaur/args.py:226
+#: pikaur/args.py:225
 msgid "don't pull already cloned PKGBUILD"
 msgstr "не оновлювати вже завантажений PKGBUILD"
 
-#: pikaur/args.py:233
+#: pikaur/args.py:232
 msgid "search only in package names"
 msgstr "шукати тільки в назвах пакунків"
 
-#: pikaur/args.py:237
+#: pikaur/args.py:236
 msgid "don't prompt to show the build files diff"
 msgstr "не пропонувати показувати відмінності файлів збирання"
 
-#: pikaur/args.py:241
+#: pikaur/args.py:240
 msgid "ignore AUR packages' updates which marked 'outofdate'"
 msgstr "ігнорувати оновлення пакунків з AUR, що позначені як застарілі"
 
-#: pikaur/args.py:255
+#: pikaur/args.py:254
 msgid "download also AUR dependencies"
 msgstr "завантажувати також залежності з AUR"
 
-#: pikaur/args.py:262
+#: pikaur/args.py:261
 msgid "install built package"
 msgstr "встановлювати зібраний пакунок"
 
-#: pikaur/args.py:270
+#: pikaur/args.py:269
 msgid "visualize package dependency tree"
 msgstr "відображати дерево залежностей пакунка"
 
-#: pikaur/args.py:274
+#: pikaur/args.py:273
 msgid "less verbose output"
 msgstr "менш детальний вивід"
 
-#: pikaur/args.py:281
+#: pikaur/args.py:280
 msgid "print spawned by pikaur subshell commands"
 msgstr "відображати команди, що викликані підоболонкою pikaur"
 
-#: pikaur/args.py:285
+#: pikaur/args.py:284
 msgid "show only debug messages specific to pikaur"
 msgstr "показувати лише специфічні для pikaur відлагоджувальні повідомлення"
 
-#: pikaur/args.py:318
+#: pikaur/args.py:317
 msgid "alternative home directory location"
 msgstr "альтернативне розташування домашнього каталогу"
 
-#: pikaur/args.py:323
+#: pikaur/args.py:322
 msgid "alternative package cache directory location"
 msgstr "альтернативне розташування каталогу кешу пакунків"
 
-#: pikaur/args.py:328
+#: pikaur/args.py:327
 msgid "alternative configuration file directory location"
 msgstr "альтернативне розташування каталогу файлу налаштувань"
 
-#: pikaur/args.py:333
+#: pikaur/args.py:332
 msgid "alternative database directory location"
 msgstr "альтернативне розташування каталогу бази даних"
 
-#: pikaur/args.py:338
+#: pikaur/args.py:337
 msgid "preserve environment variables (comma-separated)"
 msgstr "зберігати змінні середовища (через кому)"
 
-#: pikaur/args.py:343
+#: pikaur/args.py:342
 msgid "override path to pacman executable"
 msgstr "перевизначити шлях до виконуваного файлу pacman"
 
-#: pikaur/args.py:351
+#: pikaur/args.py:350
 msgid "override path to pacman-conf executable"
 msgstr "перевизначити шлях до виконуваного файлу pacman-conf"
 
-#: pikaur/args.py:363
+#: pikaur/args.py:362
 msgid "cli args to pass to makepkg"
 msgstr "аргументи командного рядка для передачі makepkg"
 
-#: pikaur/args.py:368
+#: pikaur/args.py:367
 msgid "path to custom makepkg config"
 msgstr "шлях до власних налаштувань makepkg"
 
-#: pikaur/args.py:373
+#: pikaur/args.py:372
 msgid "override path to makepkg executable"
 msgstr "перевизначити шлях до виконуваного файлу makepkg"
 
-#: pikaur/args.py:378
+#: pikaur/args.py:377
 msgid "path to custom pikaur config"
 msgstr "шлях до власних налаштувань pikaur"
 
-#: pikaur/args.py:383
+#: pikaur/args.py:382
 msgid "set GnuPG home directory used when validating package sources"
 msgstr ""
 "встановити домашній каталог GnuPG для використання під час перевірки "
 "вихідного коду"
 
-#: pikaur/args.py:396
+#: pikaur/args.py:395
 msgid "path where to clone PKGBUILDs"
 msgstr "шлях для завантаження файлів PKGBUILD"
 
-#: pikaur/args.py:411
+#: pikaur/args.py:410
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr ""
 "ID користувача для запуску makepkg, якщо pikaur запущено від імені root"
 
-#: pikaur/args.py:415
+#: pikaur/args.py:414
 #, fuzzy
 msgid "group ID to run makepkg if pikaur started from root"
 msgstr ""
 "ID користувача для запуску makepkg, якщо pikaur запущено від імені root"
 
-#: pikaur/args.py:422
+#: pikaur/args.py:421
 msgid "how many git-clones/pulls to do from AUR"
 msgstr "скільки git-clones/pulls робити з AUR"
 
-#: pikaur/args.py:430
+#: pikaur/args.py:429
 msgid "dependency tree level"
 msgstr "рівень дерева залежностей"
 
-#: pikaur/args.py:475
+#: pikaur/args.py:474
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "завжди оновлювати пакунки з '-git', '-svn' та інші нестабільні пакунки"
 
-#: pikaur/args.py:614
+#: pikaur/args.py:613
 #, python-brace-format
 msgid "WARNING, unknown args: {}"
 msgstr "УВАГА! Невідомі аргументи: {}"
 
-#: pikaur/args.py:813
+#: pikaur/args.py:812
 #, python-brace-format
 msgid "options {} can't be used together."
 msgstr "опції {} не можна використовувати разом."
 
-#: pikaur/args.py:821
+#: pikaur/args.py:820
 #, python-brace-format
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
@@ -886,27 +882,23 @@ msgid "invalid number: {}"
 msgstr "неправильний номер: {}"
 
 #: pikaur/main.py:266
-msgid ""
-"Either SystemD Dynamic Users must be enabled or User ID should be set if "
-"running as root."
+msgid "User ID should be set if running Pikaur as root."
 msgstr ""
-"Необхідно увімкнути Systemd Dynamic Users або встановити ідентифікатор "
-"користувача, якщо ви працюєте від root."
 
-#: pikaur/main.py:292
+#: pikaur/main.py:291
 msgid "no package(s) specified"
 msgstr "не вказано пакунок(и)"
 
-#: pikaur/main.py:389
+#: pikaur/main.py:388
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "Каталог репозиторію AUR було переміщено з '{old}' до '{new}'."
 
-#: pikaur/main.py:458
+#: pikaur/main.py:457
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur потребує Python >= 3.7 для запуску."
 
-#: pikaur/main.py:466
+#: pikaur/main.py:465
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur потребує systemd >= 235 (підтримка динамічних користувачів) для "
@@ -917,12 +909,12 @@ msgstr ""
 # This file is distributed under the same license as the pikaur package.
 # Drommer <drommer@github.com>, 2025.
 #
-#: pikaur/main.py:479 pikaur/main.py:493
+#: pikaur/main.py:478 pikaur/main.py:492
 msgid ""
 msgstr ""
 "Project-Id-Version: pikaur\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-25 01:54+0200\n"
+"POT-Creation-Date: 2025-07-27 20:20+0200\n"
 "PO-Revision-Date: 2025-04-15 20:20+0200\n"
 "Last-Translator: Serhii Starovoitov <drommer.94@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -933,7 +925,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Gtranslator 3.32.1\n"
 
-#: pikaur/main.py:503
+#: pikaur/main.py:502
 #, python-brace-format
 msgid ""
 "{privilege_escalation_tool} is not part of minimal Arch default setup, be "
@@ -1266,3 +1258,13 @@ msgstr "Очікування впродовж {} секунд..."
 #: pikaur/urllib_helper.py:106
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur вимагає python-pysocks для використання проксі socks5."
+
+#~ msgid ""
+#~ "Either SystemD Dynamic Users must be enabled or User ID should be set if "
+#~ "running as root."
+#~ msgstr ""
+#~ "Необхідно увімкнути Systemd Dynamic Users або встановити ідентифікатор "
+#~ "користувача, якщо ви працюєте від root."
+
+#~ msgid "always isolate with systemd dynamic users"
+#~ msgstr "завжди ізолювати за допомогою динамічних користувачів systemd"

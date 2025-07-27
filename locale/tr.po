@@ -59,7 +59,7 @@ msgstr "inşa ettikten sonra inşa dizinini silme"
 msgid "don't remove build dependencies between and after the builds"
 msgstr "inşa ederken ve ettikten sonra bağımlılık inşalarını silme"
 
-#: pikaur/args.py:198 pikaur/args.py:248
+#: pikaur/args.py:198 pikaur/args.py:247
 msgid "query packages from repository only"
 msgstr "paketler için sadece depoda sorgula"
 
@@ -79,142 +79,138 @@ msgstr "daima AUR paketlerini tekrar inşa et"
 msgid "skip failed builds"
 msgstr "başarısız inşaları atla"
 
-#: pikaur/args.py:218
-msgid "always isolate with systemd dynamic users"
-msgstr "daima systemd dinamik kullanıcı ile yalıt"
-
-#: pikaur/args.py:222
+#: pikaur/args.py:221
 msgid "hide build log"
 msgstr "inşa kayıtlarını gizle"
 
-#: pikaur/args.py:226
+#: pikaur/args.py:225
 msgid "don't pull already cloned PKGBUILD"
 msgstr "klonlanmış PKGBUILD varsa çekme"
 
-#: pikaur/args.py:233
+#: pikaur/args.py:232
 msgid "search only in package names"
 msgstr "sadece paket adlarında ara"
 
-#: pikaur/args.py:237
+#: pikaur/args.py:236
 msgid "don't prompt to show the build files diff"
 msgstr "inşa dosyalarının farklarını göstermeyi sorma"
 
-#: pikaur/args.py:241
+#: pikaur/args.py:240
 msgid "ignore AUR packages' updates which marked 'outofdate'"
 msgstr "'eski' olarak işaretlenmiş AUR paketlerini güncelleme"
 
-#: pikaur/args.py:255
+#: pikaur/args.py:254
 msgid "download also AUR dependencies"
 msgstr "ayrıca AUR bağımlılıklarını indir"
 
-#: pikaur/args.py:262
+#: pikaur/args.py:261
 msgid "install built package"
 msgstr "inşa edilen paketi kur"
 
-#: pikaur/args.py:270
+#: pikaur/args.py:269
 msgid "visualize package dependency tree"
 msgstr ""
 
-#: pikaur/args.py:274
+#: pikaur/args.py:273
 msgid "less verbose output"
 msgstr ""
 
-#: pikaur/args.py:281
+#: pikaur/args.py:280
 msgid "print spawned by pikaur subshell commands"
 msgstr "pikaur altkabuk komutlarının çıktılarını yaz"
 
-#: pikaur/args.py:285
+#: pikaur/args.py:284
 msgid "show only debug messages specific to pikaur"
 msgstr "sadece pikaur'a özel hata mesajlarını göster"
 
-#: pikaur/args.py:318
+#: pikaur/args.py:317
 msgid "alternative home directory location"
 msgstr ""
 
-#: pikaur/args.py:323
+#: pikaur/args.py:322
 msgid "alternative package cache directory location"
 msgstr ""
 
-#: pikaur/args.py:328
+#: pikaur/args.py:327
 msgid "alternative configuration file directory location"
 msgstr ""
 
-#: pikaur/args.py:333
+#: pikaur/args.py:332
 msgid "alternative database directory location"
 msgstr ""
 
-#: pikaur/args.py:338
+#: pikaur/args.py:337
 msgid "preserve environment variables (comma-separated)"
 msgstr "ortam değişkenlerini koru (virgülle-ayrılmış)"
 
-#: pikaur/args.py:343
+#: pikaur/args.py:342
 #, fuzzy
 msgid "override path to pacman executable"
 msgstr "makepkg yolunu değiştir"
 
-#: pikaur/args.py:351
+#: pikaur/args.py:350
 #, fuzzy
 msgid "override path to pacman-conf executable"
 msgstr "makepkg yolunu değiştir"
 
-#: pikaur/args.py:363
+#: pikaur/args.py:362
 msgid "cli args to pass to makepkg"
 msgstr "makepkg için komut satırı argümanları"
 
-#: pikaur/args.py:368
+#: pikaur/args.py:367
 msgid "path to custom makepkg config"
 msgstr "özel makepkg yapılandırması yolu"
 
-#: pikaur/args.py:373
+#: pikaur/args.py:372
 msgid "override path to makepkg executable"
 msgstr "makepkg yolunu değiştir"
 
-#: pikaur/args.py:378
+#: pikaur/args.py:377
 msgid "path to custom pikaur config"
 msgstr "özel pikaur yapılandırması yolu"
 
-#: pikaur/args.py:383
+#: pikaur/args.py:382
 msgid "set GnuPG home directory used when validating package sources"
 msgstr "paket kaynakları doğrulanırken kullanılacak GnuPG ev dizinini ayarla"
 
-#: pikaur/args.py:396
+#: pikaur/args.py:395
 msgid "path where to clone PKGBUILDs"
 msgstr "PKGBUILD dosyalarının klonlanacağı konum"
 
-#: pikaur/args.py:411
+#: pikaur/args.py:410
 msgid "user ID to run makepkg if pikaur started from root"
 msgstr ""
 "pikaur root olarak başlatılmışsa makepkg'i çalıştırmak için kullanıcı kimliği"
 
-#: pikaur/args.py:415
+#: pikaur/args.py:414
 #, fuzzy
 msgid "group ID to run makepkg if pikaur started from root"
 msgstr ""
 "pikaur root olarak başlatılmışsa makepkg'i çalıştırmak için kullanıcı kimliği"
 
-#: pikaur/args.py:422
+#: pikaur/args.py:421
 msgid "how many git-clones/pulls to do from AUR"
 msgstr "AUR'dan kaç tane git-klon/çekme işlemi yapılacak"
 
-#: pikaur/args.py:430
+#: pikaur/args.py:429
 msgid "dependency tree level"
 msgstr ""
 
-#: pikaur/args.py:475
+#: pikaur/args.py:474
 msgid "always sysupgrade '-git', '-svn' and other dev packages"
 msgstr "her zaman sysupgrade '-git' ve diğer geliştirici paketleri"
 
-#: pikaur/args.py:614
+#: pikaur/args.py:613
 #, python-brace-format
 msgid "WARNING, unknown args: {}"
 msgstr "UYARI: bilinmeyen argümanlar: {}"
 
-#: pikaur/args.py:813
+#: pikaur/args.py:812
 #, fuzzy, python-brace-format
 msgid "options {} can't be used together."
 msgstr ":: hata: {} seçenekleri birlikte kullanılamaz."
 
-#: pikaur/args.py:821
+#: pikaur/args.py:820
 #, fuzzy, python-brace-format
 msgid "option {} can't be used without {}."
 msgid_plural "options {} can't be used without {}."
@@ -879,27 +875,23 @@ msgid "invalid number: {}"
 msgstr "geçersiz numara: {}"
 
 #: pikaur/main.py:266
-msgid ""
-"Either SystemD Dynamic Users must be enabled or User ID should be set if "
-"running as root."
+msgid "User ID should be set if running Pikaur as root."
 msgstr ""
-"Root olarak çalıştırılıyorsa SystemD Dinamik Kullanıcılar etkinleştirilmeli "
-"veya Kullanıcı Kimliği tanımlanmalı."
 
-#: pikaur/main.py:292
+#: pikaur/main.py:291
 msgid "no package(s) specified"
 msgstr ""
 
-#: pikaur/main.py:389
+#: pikaur/main.py:388
 #, python-brace-format
 msgid "AUR repos dir has been moved from '{old}' to '{new}'."
 msgstr "AUR depo dizini '{old}'dan '{new}'a taşındı."
 
-#: pikaur/main.py:458
+#: pikaur/main.py:457
 msgid "pikaur requires Python >= 3.7 to run."
 msgstr "pikaur çalışabilmek için Python >= 3.7 gerektirir."
 
-#: pikaur/main.py:466
+#: pikaur/main.py:465
 msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
 msgstr ""
 "pikaur root olabilmek için systemd >= 235 (dinamik kullanıcılar) gerektirir."
@@ -910,12 +902,12 @@ msgstr ""
 # Automatically generated, 2018.
 # Osman Karagöz <osmank3@gmail.com>, 2022.
 #
-#: pikaur/main.py:479 pikaur/main.py:493
+#: pikaur/main.py:478 pikaur/main.py:492
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-25 01:54+0200\n"
+"POT-Creation-Date: 2025-07-27 20:20+0200\n"
 "PO-Revision-Date: 2024-04-28 11:16+0300\n"
 "Last-Translator: Osman Karagöz <osmank3@gmail.com>\n"
 "Language-Team: none\n"
@@ -926,7 +918,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: pikaur/main.py:503
+#: pikaur/main.py:502
 #, python-brace-format
 msgid ""
 "{privilege_escalation_tool} is not part of minimal Arch default setup, be "
@@ -1264,9 +1256,19 @@ msgstr ""
 #~ msgid "'{class_name}' does not have required attribute '{key}' set."
 #~ msgstr "'{class_name}' gerekli olan '{key}' özelliğine sahip değil."
 
+#~ msgid ""
+#~ "Either SystemD Dynamic Users must be enabled or User ID should be set if "
+#~ "running as root."
+#~ msgstr ""
+#~ "Root olarak çalıştırılıyorsa SystemD Dinamik Kullanıcılar "
+#~ "etkinleştirilmeli veya Kullanıcı Kimliği tanımlanmalı."
+
 #, fuzzy, python-brace-format
 #~ msgid "[f] skip {quote}check(){quote} function of PKGBUILD"
 #~ msgstr "[f] PKGBUILD'deki 'check()' fonksiyonunu atla"
+
+#~ msgid "always isolate with systemd dynamic users"
+#~ msgstr "daima systemd dinamik kullanıcı ile yalıt"
 
 #, fuzzy
 #~ msgid "usage:  pikaur {-X --extras} [options]"

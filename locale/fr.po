@@ -688,13 +688,13 @@ msgid "Version mismatch:"
 msgstr "Décalage de version :"
 
 #: pikaur/install_cli.py:435
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid ""
 "{what} depends on: '{dep}'\n"
 " found in '{location}': '{pkg_name}=={version}'"
 msgstr ""
-"{what} dépend de '{dep}'\n"
-" trouvé dans '{location}' : '{version}'"
+"{what} dépend de : '{dep}'\n"
+" trouvé dans '{location}' : '{pkg_name}=={version}'"
 
 #: pikaur/install_cli.py:513
 msgid "Nothing to do."
@@ -897,6 +897,7 @@ msgstr "numéro incorrect : {}"
 #: pikaur/main.py:266
 msgid "User ID should be set if running Pikaur as root."
 msgstr ""
+"L'ID utilisateur doit être défini si Pikaur est exécuté en tant que root."
 
 #: pikaur/main.py:291
 msgid "no package(s) specified"
@@ -1277,13 +1278,3 @@ msgstr "En veille pendant {} secondes…"
 #: pikaur/urllib_helper.py:106
 msgid "pikaur requires python-pysocks to use a socks5 proxy."
 msgstr "pikaur nécessite python-pysocks pour utiliser un proxy socks5."
-
-#~ msgid ""
-#~ "Either SystemD Dynamic Users must be enabled or User ID should be set if "
-#~ "running as root."
-#~ msgstr ""
-#~ "Soit les utilisateurs dynamiques de SystemD doivent être activés ou l'ID "
-#~ "de l'utilisateur doit être défini si exécuté en tant que root."
-
-#~ msgid "always isolate with systemd dynamic users"
-#~ msgstr "toujours isoler avec systemd les utilisateurs dynamiques"

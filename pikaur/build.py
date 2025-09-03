@@ -7,6 +7,7 @@ from glob import glob
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
+from gnupg import GPG
 
 from .args import parse_args
 from .aur import find_aur_packages, get_repo_url
@@ -15,6 +16,7 @@ from .config import (
     AurReposCachePath,
     BuildCachePath,
     BuildDepsLockPath,
+    Home,
     PackageCachePath,
     PikaurConfig,
     UsingDynamicUsers,
@@ -219,7 +221,7 @@ class PackageBuild(ComparableType):
 
         self.build_dir = BuildCachePath() / self.package_base
         logger.debug("Build dir: {}", self.build_dir)
-        self.build_gpgdir = self.args.build_gpgdir
+        self.build_gpgdir = self.args.build_gpgdir    
         self.built_packages_paths = {}
         self.keep_build_dir = self.args.keepbuild or (
             is_devel_pkg(self.package_base) and PikaurConfig().build.KeepDevBuildDir.get_bool()
@@ -375,6 +377,7 @@ class PackageBuild(ComparableType):
                     "\n".join((
                         translate("[R] retry clone"),
                         translate("[d] delete build dir and try again"),
+                        translate("[g] import GnuPG key"),
                         translate("[e] edit PKGBUILD"),
                         translate("[i] ignore the error"),
                         "-" * 24,
@@ -386,6 +389,7 @@ class PackageBuild(ComparableType):
                     prompt,
                     translate("r").upper() +
                     translate("d") +
+                    translate("g") +
                     translate("e") +
                     translate("i") +
                     translate("s") +
@@ -399,6 +403,20 @@ class PackageBuild(ComparableType):
             if answer == translate("d"):  # pragma: no cover
                 self.prepare_build_destination(flush=True)
                 self.get_latest_dev_sources(check_dev_pkgs=check_dev_pkgs)
+                return
+            if answer == translate("g"):  # pragma: no cover
+                prompt2 = translate("Enter a valid GnuPG key: ")
+                answer2 = get_input(prompt2).upper()
+                if self.build_gpgdir == "":
+                    #gnupghome = os.path.expanduser('~') # gives root directory
+                    gnupghome = str(Home()) + '/.gnupg/'
+                    logger.debug("Using gnupg directory: {}", gnupghome)
+                    gpg = GPG(gnupghome=gnupghome, verbose=True)
+                else:
+                    gnupghome = self.build_gpgdir
+                    logger.debug("Using gnupg directory: {}", gnupghome)
+                    gpg = GPG(gnupghome=gnupghome, verbose=True)
+                gpg.recv_keys("keyserver.ubuntu.com", answer2)
                 return
             if answer == translate("e"):  # pragma: no cover
                 editor_cmd = get_editor_or_exit()

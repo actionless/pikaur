@@ -18,6 +18,7 @@ b2sums=(
 depends=(
 	'pyalpm'
 	'git'
+	'python-gnupg'
 )
 makedepends=(
 	'python-wheel'

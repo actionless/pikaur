@@ -19,7 +19,13 @@ from .pacman import (
     get_pacman_command,
     strip_repo_name,
 )
-from .pikaprint import print_error, print_stderr, print_stdout
+from .pikaprint import (
+    bold_line,
+    print_error,
+    print_stderr,
+    print_stdout,
+    print_warning,
+)
 from .pikatypes import (
     AURInstallInfo,
     AURPackageInfo,
@@ -42,6 +48,18 @@ if TYPE_CHECKING:
     from .pacman import PacmanPrint
 
 logger = create_logger("install_info_fetcher")
+
+
+def format_version_mismatch_message(exc: DependencyVersionMismatchError) -> str:
+    return translate(
+        "{what} depends on: '{dep}'\n found in '{location}': '{pkg_name}=={version}'",
+    ).format(
+        what=bold_line(exc.who_depends),
+        dep=exc.dependency_line,
+        location=exc.location,
+        version=exc.version_found,
+        pkg_name=exc.depends_on,
+    )
 
 
 class InstallInfoFetcher(ComparableType):
@@ -614,7 +632,9 @@ Gonna fetch install info for:
             # if local package is too old
             # let's see if a newer one can be found in AUR:
             pkg_name = exc.depends_on
-            logger.debug("get_aur_deps_info: {} -> retrying for {}", exc, pkg_name)
+            print_warning(translate("Version mismatch:"))
+            print_warning(format_version_mismatch_message(exc))
+            print_warning(translate("Retrying dependency resolution..."))
             _aur_pkg_list, not_found_aur_pkgs = find_aur_packages([pkg_name])
 
             if not_found_aur_pkgs:

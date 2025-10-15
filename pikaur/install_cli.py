@@ -31,7 +31,7 @@ from .exceptions import (
     SysExit,
 )
 from .i18n import translate
-from .install_info_fetcher import InstallInfoFetcher
+from .install_info_fetcher import InstallInfoFetcher, format_version_mismatch_message
 from .logging_extras import create_logger
 from .news import News
 from .os_utils import (
@@ -429,18 +429,8 @@ class InstallPackagesCLI:
             print_not_found_packages(exc.packages)
             raise SysExit(131) from exc
         except DependencyVersionMismatchError as exc:
-            print_stderr(color_line(translate("Version mismatch:"), ColorsHighlight.yellow))
-            print_stderr(
-                translate(
-                    "{what} depends on: '{dep}'\n found in '{location}': '{pkg_name}=={version}'",
-                ).format(
-                    what=bold_line(exc.who_depends),
-                    dep=exc.dependency_line,
-                    location=exc.location,
-                    version=exc.version_found,
-                    pkg_name=exc.depends_on,
-                ),
-            )
+            print_error(color_line(translate("Version mismatch:"), ColorsHighlight.yellow))
+            print_error(format_version_mismatch_message(exc))
             raise SysExit(131) from exc
         except DependencyError as exc:
             print_stderr(str(exc))

@@ -803,7 +803,7 @@ msgstr "éditer"
 #: pikaur/install_cli.py:1013
 #, python-brace-format
 msgid "Not showing diff for {pkg} package ({reason})"
-msgstr "Ne pas afficher les différences pour le paquet {pkg} ({reason})"
+msgstr "Différence non affichée pour le paquet {pkg} ({reason})"
 
 #: pikaur/install_cli.py:1020 pikaur/install_cli.py:1084
 msgid "already reviewed"
@@ -867,9 +867,8 @@ msgid "Resolving AUR dependencies..."
 msgstr "Résolution des dépendances de l'AUR…"
 
 #: pikaur/install_info_fetcher.py:637
-#, fuzzy
 msgid "Retrying dependency resolution..."
-msgstr "Résolution des dépendances de l'AUR…"
+msgstr "Nouvelle tentative de résolution des dépendances…"
 
 #: pikaur/logging_extras.py:50
 msgid "debug:"

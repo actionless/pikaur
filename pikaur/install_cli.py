@@ -1190,27 +1190,27 @@ class InstallPackagesCLI:
                 )
                 # if not ask_to_continue():
                 #     raise SysExit(125)
-                for _pkg_name in pkg_build.package_names:
-                    failed_to_build_package_names.append(_pkg_name)
-                    if _pkg_name in packages_to_be_built:
-                        packages_to_be_built.remove(_pkg_name)
-                    self.discard_install_info(_pkg_name)
+                for pkg_name_aff_by_error in pkg_build.package_names:
+                    failed_to_build_package_names.append(pkg_name_aff_by_error)
+                    if pkg_name_aff_by_error in packages_to_be_built:
+                        packages_to_be_built.remove(pkg_name_aff_by_error)
+                    self.discard_install_info(pkg_name_aff_by_error)
                     for remaining_aur_pkg_name in packages_to_be_built[:]:
                         if remaining_aur_pkg_name not in self.all_aur_packages_names:
                             packages_to_be_built.remove(remaining_aur_pkg_name)
             except DependencyNotBuiltYetError as exc:
                 logger.debug("  {} Dep not built yet: {}", index, exc)
                 index += 1
-                for _pkg_name in pkg_build.package_names:
-                    deps_fails_counter.setdefault(_pkg_name, 0)
-                    deps_fails_counter[_pkg_name] += 1
-                    if deps_fails_counter[_pkg_name] > len(self.all_aur_packages_names):
+                for pkg_name_without_dep in pkg_build.package_names:
+                    deps_fails_counter.setdefault(pkg_name_without_dep, 0)
+                    deps_fails_counter[pkg_name_without_dep] += 1
+                    if deps_fails_counter[pkg_name_without_dep] > len(self.all_aur_packages_names):
                         print_error(
                             translate(
                                 "Dependency cycle detected between {}",
                             ).format(deps_fails_counter),
                         )
-                        self.prompt_dependency_cycle(_pkg_name)
+                        self.prompt_dependency_cycle(pkg_name_without_dep)
             else:
                 logger.debug(
                     "  Build done for packages {}, removing from queue {}",
@@ -1218,12 +1218,12 @@ class InstallPackagesCLI:
                     packages_to_be_built,
                 )
                 self.built_package_bases.append(pkg_base)
-                for _pkg_name in pkg_build.package_names + pkg_build.provides:
+                for built_pkg_name in pkg_build.package_names + pkg_build.provides:
                     if (
-                            (_pkg_name not in self.ignored_pkgnames)
-                            and (_pkg_name in packages_to_be_built)
+                            (built_pkg_name not in self.ignored_pkgnames)
+                            and (built_pkg_name in packages_to_be_built)
                     ):
-                        packages_to_be_built.remove(_pkg_name)
+                        packages_to_be_built.remove(built_pkg_name)
             logger.debug("")
 
         self.failed_to_build_package_names = failed_to_build_package_names

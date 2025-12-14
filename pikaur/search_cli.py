@@ -33,7 +33,7 @@ def filter_search_results(
         names_only: bool = False,
 ) -> dict[str, list[SamePackageT]]:
     filtered_results: dict[str, list[SamePackageT]] = {}
-    for _q, pkgs in results.items():
+    for query_part, pkgs in results.items():
         for pkg in pkgs:
             if (
                     query in pkg.name
@@ -42,7 +42,7 @@ def filter_search_results(
                 and pkg.desc
                 and (query in pkg.desc)
             ):
-                filtered_results.setdefault(_q, []).append(pkg)
+                filtered_results.setdefault(query_part, []).append(pkg)
     return filtered_results
 
 

@@ -66,12 +66,14 @@ class SysupgradeTest(PikaurDbTestCase):
         spawn([
             "bash",
             "-c",
-            f"cd ./{self.dev_pkg_name}/ && "
-            "sed -e 's/"
-            "^source=.*"
-            "/"
-            f'source=("git+{dev_pkg_url}#branch=master~{self.dev_downgrade_amount}")'
-            "/' PKGBUILD > PKGBUILD_prev",
+            (
+                f"cd ./{self.dev_pkg_name}/ && "
+                "sed -e 's/"
+                "^source=.*"
+                "/"
+                f'source=("git+{dev_pkg_url}#branch=master~{self.dev_downgrade_amount}")'
+                "/' PKGBUILD > PKGBUILD_prev"
+            ),
         ])
         pikaur(
             f"-P -i --noconfirm ./{self.dev_pkg_name}/PKGBUILD_prev --print-commands",

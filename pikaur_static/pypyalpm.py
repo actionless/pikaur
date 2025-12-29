@@ -501,37 +501,38 @@ error(
     " !!! Pikaur-static (Python-only ALPM DB reader) activated\n"
     "     (consider using it only in recovery situations)\n",
 )
-with Path(f"{PACMAN_DB_PATH}/local/ALPM_DB_VERSION").open(encoding="utf-8") as version_file:
-    ALPM_DB_VER = version_file.read().strip()
-    PackageDB: type[PackageDBCommon]
-    # VANILLA pikaur + cpython + pyalpm: -Qu --repo: ~ T1: 1.2..1.4s, T2: 1.3..1.5s
-    if (ALPM_DB_VER == SUPPORTED_ALPM_VERSION) and not FORCE_PACMAN_CLI_DB:
-        # CPYTHON: -Qu --repo: ~ T1: 2.6..3.1s, T2: 3.9..4.8
-        # NUITKA: -Qu --repo: ~ 3.2..3.7 s
-        # NUITKA_static: -Qu --repo: ~ T1, 3.1..3.9s, T2: 4.6..5.4
-        PackageDB = PackageDB_ALPM9
+ALPM_DB_VER: Final = Path(
+    f"{PACMAN_DB_PATH}/local/ALPM_DB_VERSION",
+).read_text(encoding="utf-8").strip()
+PackageDB: type[PackageDBCommon]
+# VANILLA pikaur + cpython + pyalpm: -Qu --repo: ~ T1: 1.2..1.4s, T2: 1.3..1.5s
+if (ALPM_DB_VER == SUPPORTED_ALPM_VERSION) and not FORCE_PACMAN_CLI_DB:
+    # CPYTHON: -Qu --repo: ~ T1: 2.6..3.1s, T2: 3.9..4.8
+    # NUITKA: -Qu --repo: ~ 3.2..3.7 s
+    # NUITKA_static: -Qu --repo: ~ T1, 3.1..3.9s, T2: 4.6..5.4
+    PackageDB = PackageDB_ALPM9
+else:
+    if FORCE_PACMAN_CLI_DB:
+        error(" >>> User forced to use pacman output")
     else:
-        if FORCE_PACMAN_CLI_DB:
-            error(" >>> User forced to use pacman output")
-        else:
-            error(
-                f"\n !!! Current ALPM DB version={ALPM_DB_VER}."
-                f" Pikaur-static supports only {SUPPORTED_ALPM_VERSION}\n",
-            )
-        # raise RuntimeError(ALPM_DB_VER)
         error(
-            " >>> Switching to pure pacman-only mode"
-            " (pacman CLI output will be used instead of ALPM DB)...\n\n",
+            f"\n !!! Current ALPM DB version={ALPM_DB_VER}."
+            f" Pikaur-static supports only {SUPPORTED_ALPM_VERSION}\n",
         )
-        from pacman_fallback import get_pacman_cli_package_db
-        # CPYTHON: -Qu --repo: ~ T1: 2.8..3.3s, T2: 3.5..3.7
-        PackageDB = get_pacman_cli_package_db(
-            PackageDBCommon=PackageDBCommon,  # type: ignore[type-abstract]
-            PacmanPackageInfo=PacmanPackageInfo,
-            PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
-            PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS,
-            PACMAN_INT_FIELDS=PACMAN_INT_FIELDS,
-        )
+        # raise RuntimeError(ALPM_DB_VER)
+    error(
+        " >>> Switching to pure pacman-only mode"
+        " (pacman CLI output will be used instead of ALPM DB)...\n\n",
+    )
+    from pacman_fallback import get_pacman_cli_package_db
+    # CPYTHON: -Qu --repo: ~ T1: 2.8..3.3s, T2: 3.5..3.7
+    PackageDB = get_pacman_cli_package_db(
+        PackageDBCommon=PackageDBCommon,  # type: ignore[type-abstract]
+        PacmanPackageInfo=PacmanPackageInfo,
+        PACMAN_DICT_FIELDS=PACMAN_DICT_FIELDS,
+        PACMAN_LIST_FIELDS=PACMAN_LIST_FIELDS,
+        PACMAN_INT_FIELDS=PACMAN_INT_FIELDS,
+    )
 
 
 ################################################################################

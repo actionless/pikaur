@@ -19,6 +19,11 @@ EXAMPLE_CONFIG_SCHEMA: ConfigSchemaType = {
             "data_type": "str",
         },
     },
+    "ui": {
+        "PrintCommands": {
+            "data_type": "bool",
+        },
+    },
 }
 
 

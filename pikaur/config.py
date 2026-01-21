@@ -670,29 +670,35 @@ class PikaurConfigItem:
         self.key = key
         self.value = self.section.get(key)
         self._type_error_template = translate(
-            "{key} is not '{typeof}'",
+            "'{key}' is '{actual}' instead of '{expected}', value='{value}'",
         )
 
     def get_bool(self) -> bool:
-        if get_key_type(self.section.name, self.key) != BOOL:
-            not_bool_error = self._type_error_template.format(key=self.key, typeof=BOOL)
+        if (actual := get_key_type(self.section.name, self.key)) != BOOL:
+            not_bool_error = self._type_error_template.format(
+                key=self.key, expected=BOOL, actual=actual, value=self.value,
+            )
             raise TypeError(not_bool_error)
         if self.value is None:
             return False
         return str_to_bool(self.value)
 
     def get_int(self) -> int:
-        if get_key_type(self.section.name, self.key) != INT:
-            not_int_error = self._type_error_template.format(key=self.key, typeof=INT)
+        if (actual := get_key_type(self.section.name, self.key)) != INT:
+            not_int_error = self._type_error_template.format(
+                key=self.key, expected=INT, actual=actual, value=self.value,
+            )
             raise TypeError(not_int_error)
         if self.value is None:
             return 0
         return int(self.value)
 
     def get_str(self) -> str:
-        # note: it"s basically needed for mypy
-        if get_key_type(self.section.name, self.key) != STR:
-            not_str_error = self._type_error_template.format(key=self.key, typeof=STR)
+        # note: it's basically needed only for mypy
+        if (actual := get_key_type(self.section.name, self.key)) != STR:
+            not_str_error = self._type_error_template.format(
+                key=self.key, expected=STR, actual=actual, value=self.value,
+            )
             raise TypeError(not_str_error)
         return str(self.value)
 

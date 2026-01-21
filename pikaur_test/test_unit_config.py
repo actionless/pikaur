@@ -33,7 +33,7 @@ class PikaurConfigItemTestCase(PikaurTestCase):
     @classmethod
     def setUpClass(cls):
         example_config_schema: ConfigSchemaType = cast(
-            "ConfigSchemaType", ConfigSchema().config_schema,
+            "ConfigSchemaType", ConfigSchema(),
         ).copy()
         example_config_schema.update(EXAMPLE_CONFIG_SCHEMA)
         cls.config_patcher = mock.patch(

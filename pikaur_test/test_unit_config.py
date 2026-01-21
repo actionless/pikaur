@@ -2,9 +2,10 @@
 # mypy: disable-error-code=no-untyped-def
 
 import configparser
+from typing import cast
 from unittest import mock
 
-from pikaur.config import ConfigSchemaType, PikaurConfigItem
+from pikaur.config import ConfigSchema, ConfigSchemaType, PikaurConfigItem
 from pikaur_test.helpers import PikaurTestCase
 
 EXAMPLE_CONFIG_SCHEMA: ConfigSchemaType = {
@@ -19,11 +20,6 @@ EXAMPLE_CONFIG_SCHEMA: ConfigSchemaType = {
             "data_type": "str",
         },
     },
-    "ui": {
-        "PrintCommands": {
-            "data_type": "bool",
-        },
-    },
 }
 
 
@@ -36,8 +32,12 @@ class PikaurConfigItemTestCase(PikaurTestCase):
 
     @classmethod
     def setUpClass(cls):
+        example_config_schema: ConfigSchemaType = cast(
+            "ConfigSchemaType", ConfigSchema().config_schema,
+        ).copy()
+        example_config_schema.update(EXAMPLE_CONFIG_SCHEMA)
         cls.config_patcher = mock.patch(
-            "pikaur.config.ConfigSchema.config_schema", new=EXAMPLE_CONFIG_SCHEMA,
+            "pikaur.config.ConfigSchema.config_schema", new=example_config_schema,
         )
         cls.config_patcher.start()
         parser = configparser.RawConfigParser()

@@ -10,7 +10,6 @@ from .config import DECORATION, PikaurConfig
 from .i18n import PIKAUR_NAME, translate, translate_many
 
 if TYPE_CHECKING:
-    from argparse import FileType
     from collections.abc import Callable
 
 PossibleArgValuesTypes = list[str] | str | bool | int | None
@@ -655,7 +654,7 @@ class PikaurArgumentParser(ArgumentParserWithUnknowns):
             letter: str | None = None,
             opt: str | None = None,
             default: PossibleArgValuesTypes | None = None,
-            arg_type: "Callable[[str], Any] | FileType | None" = None,
+            arg_type: "Callable[[str], Any] | None" = None,
     ) -> None:
         if action:
             if letter and opt:

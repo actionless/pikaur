@@ -1,11 +1,11 @@
-import codecs
 import os
 import shutil
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import IO, TYPE_CHECKING, Any
 
 from .args import parse_args
+from .config import DEFAULT_CONFIG_ENCODING
 from .i18n import translate
 from .pikaprint import bold_line, print_error
 from .privilege import sudo
@@ -53,18 +53,16 @@ def detect_bom_type(file_path: str | Path) -> str:
 
 
 def open_file(
-        file_path: str | Path, mode: str = READ_MODE, encoding: str | None = None,
-) -> codecs.StreamReaderWriter:
-    if encoding is None and (mode and READ_MODE in mode):
-        encoding = detect_bom_type(file_path)
+        file_path_or_name: str | Path, mode: str = READ_MODE, encoding: str | None = None,
+) -> IO[Any]:
+    file_path = Path(file_path_or_name)
+    if encoding is None:
+        if mode and (READ_MODE in mode):
+            encoding = detect_bom_type(file_path)
+        else:
+            encoding = DEFAULT_CONFIG_ENCODING
     try:
-        if encoding:
-            return codecs.open(
-                str(file_path), mode, errors="ignore", encoding=encoding,
-            )
-        return codecs.open(
-            str(file_path), mode, errors="ignore",
-        )
+        return file_path.open(mode, errors="ignore", encoding=encoding)
     except PermissionError:
         print_error()
         print_error(translate("Error opening file: {file_path}").format(file_path=file_path))

@@ -2,7 +2,7 @@ import os
 import shutil
 import sys
 from pathlib import Path
-from typing import IO, TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, cast
 
 from .args import parse_args
 from .config import DEFAULT_CONFIG_ENCODING
@@ -13,7 +13,7 @@ from .spawn import interactive_spawn
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from typing import Final
+    from typing import Final, TextIO
 
 
 READ_MODE: "Final" = "r"
@@ -54,7 +54,7 @@ def detect_bom_type(file_path: str | Path) -> str:
 
 def open_file(
         file_path_or_name: str | Path, mode: str = READ_MODE, encoding: str | None = None,
-) -> IO[Any]:
+) -> "TextIO":
     file_path = Path(file_path_or_name)
     if encoding is None:
         if mode and (READ_MODE in mode):
@@ -62,7 +62,10 @@ def open_file(
         else:
             encoding = DEFAULT_CONFIG_ENCODING
     try:
-        return file_path.open(mode, errors="ignore", encoding=encoding)
+        return cast(
+            "TextIO",
+            file_path.open(mode, errors="ignore", encoding=encoding),
+        )
     except PermissionError:
         print_error()
         print_error(translate("Error opening file: {file_path}").format(file_path=file_path))

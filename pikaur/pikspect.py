@@ -20,7 +20,7 @@ from pty import (  # type: ignore[attr-defined]
 )
 from tty import setraw, tcgetattr, tcsetattr  # type: ignore[attr-defined]
 from types import FrameType
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from .args import parse_args
 from .config import DEFAULT_INPUT_ENCODING
@@ -37,7 +37,7 @@ from .pikaprint import (
 )
 
 if TYPE_CHECKING:
-    from typing import Any, Final, Self
+    from typing import Any, Final
 
 
 TcAttrsType = list[int | list[bytes | int]]
@@ -295,7 +295,7 @@ class PikspectPopen:
     output: bytes
     output_file_descriptor: int | None = None
 
-    def __enter__(self) -> "Self":
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *exc_details: object) -> None:

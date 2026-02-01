@@ -37,7 +37,7 @@ from .pikaprint import (
 )
 
 if TYPE_CHECKING:
-    from typing import Any, Final
+    from typing import Any, Final, Self
 
 
 TcAttrsType = list[int | list[bytes | int]]
@@ -295,7 +295,7 @@ class PikspectPopen:
     output: bytes
     output_file_descriptor: int | None = None
 
-    def __enter__(self) -> "PikspectPopen":
+    def __enter__(self) -> "Self":
         return self
 
     def __exit__(self, *exc_details: object) -> None:

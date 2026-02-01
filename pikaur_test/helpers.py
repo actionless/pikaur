@@ -26,7 +26,7 @@ from pikaur.srcinfo import SrcInfo
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
     from subprocess import Popen  # nosec B404
-    from typing import Any, NoReturn
+    from typing import Any, NoReturn, Self
     from unittest import TestResult
 
 
@@ -149,7 +149,7 @@ class InterceptSysOutput:
             self._patcher_spawn,
         ]
 
-    def __enter__(self) -> "InterceptSysOutput":
+    def __enter__(self) -> "Self":
         for patcher in self.patchers or []:
             if patcher:
                 patcher.start()

@@ -350,10 +350,10 @@ msgid ""
 msgid_plural ""
 "Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
 msgstr[0] ""
-"A(z) {pkg} csomag már össze van állítva. Az összeállítás kényszerítéséhez hasz"
+"A(z) {pkg} csomag már össze van állítva. Az újra-összeállítás kikényszerítéséhez hasz"
 "nálja a „--rebuild” kapcsolót."
 msgstr[1] ""
-"A(z) {pkg} csomagok már össze vannak állítva. Az összeállítás kényszerítéséhez"
+"A(z) {pkg} csomagok már össze vannak állítva. Az újra-összeállítás kikényszerítéséhez"
 " használja a „--rebuild” kapcsolót."
 
 #: pikaur/build.py:702

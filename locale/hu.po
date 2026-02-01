@@ -1,0 +1,1316 @@
+# Hungarian translations for PACKAGE package.
+# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2018.
+#
+#: pikaur/main.py:478 pikaur/main.py:492
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-15 08:09+0200\n"
+"PO-Revision-Date: 2026-02-01 16:25+0100\n"
+"Last-Translator: summoner <summoner@disroot.org>\n"
+"Language-Team: none>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 25.12.1\n"
+
+#: pikaur/alpm.py:50
+msgid "Cannot initialize ALPM"
+msgstr "Nem sikerült előkészíteni a következőt: ALPM"
+
+#: pikaur/argparse_extras.py:94
+#, python-format
+msgid "not allowed with argument %s"
+msgstr "nem engedélyezett a következő argumentummal: %s"
+
+#: pikaur/argparse_extras.py:119
+#, python-format
+msgid "ambiguous option: %(option)s could match %(matches)s"
+msgstr ""
+"nem egyértelmű kapcsoló: %(option)s a következőkre illeszkedhet: %(matches)s"
+
+#: pikaur/argparse_extras.py:168 pikaur/argparse_extras.py:213
+#, python-format
+msgid "ignored explicit argument %r"
+msgstr "figyelmen kívül hagyott kifejezett argumentum: %r"
+
+#. type: ignore[attr-defined]
+#: pikaur/argparse_extras.py:243
+#, python-format
+msgid "option '%(option)s' is deprecated"
+msgstr "a(z) „%(option)s” kapcsoló elavult"
+
+#. type: ignore[attr-defined]
+#: pikaur/argparse_extras.py:289
+#, python-format
+msgid "argument '%(argument_name)s' is deprecated"
+msgstr "a(z) „%(argument_name)s” argumentum elavult"
+
+#: pikaur/argparse_extras.py:385
+#, python-format
+msgid "the following arguments are required: %s"
+msgstr "a következő argumentumok megadása szükséges: %s"
+
+#: pikaur/argparse_extras.py:400
+#, python-format
+msgid "one of the arguments %s is required"
+msgstr "a következő argumentumok egyikének megadása szükséges: %s"
+
+#: pikaur/args.py:130 pikaur/config.py:59 pikaur/pikaprint.py:240
+msgid "error:"
+msgstr "hiba:"
+
+#: pikaur/args.py:173
+msgid "use pacman-cli-based fallback alpm database reader"
+msgstr "pacman-cli alapú tartalék ALPM-adatbázis-olvasó használata"
+
+#: pikaur/args.py:184
+msgid "query packages from AUR only"
+msgstr "csomagok lekérdezése csak az AUR-tárolóból"
+
+#: pikaur/args.py:191
+msgid "don't remove build dir after the build"
+msgstr "összeállítási könyvtár megőrzése az összeállítás után"
+
+#: pikaur/args.py:195
+msgid "don't remove build dependencies between and after the builds"
+msgstr "összeállítási függőségek megőrzése az összeállítások közben és után"
+
+#: pikaur/args.py:198 pikaur/args.py:247
+msgid "query packages from repository only"
+msgstr "csomagok lekérdezése csak a tárolóból"
+
+#: pikaur/args.py:202
+msgid "don't prompt to edit PKGBUILDs and other build files"
+msgstr ""
+"rákérdezés kihagyása a PKGBUILD-fájlok és egyéb összeállítási fájlok szerkeszt"
+"ésére"
+
+#: pikaur/args.py:206
+msgid "prompt to edit PKGBUILDs and other build files"
+msgstr ""
+"rákérdezés a PKGBUILD-fájlok és egyéb összeállítási fájlok szerkesztésére"
+
+#: pikaur/args.py:210
+msgid "always rebuild AUR packages"
+msgstr "AUR-csomagok újra-összeállítása minden esetben"
+
+#: pikaur/args.py:214
+msgid "skip failed builds"
+msgstr "sikertelen összeállítások kihagyása"
+
+#: pikaur/args.py:221
+msgid "hide build log"
+msgstr "összeállítási napló elrejtése"
+
+#: pikaur/args.py:225
+msgid "don't pull already cloned PKGBUILD"
+msgstr "a már klónozott PKGBUILD-fájlok lekérdezésének kihagyása"
+
+#: pikaur/args.py:232
+msgid "search only in package names"
+msgstr "keresés csak a csomagnevekben"
+
+#: pikaur/args.py:236
+msgid "don't prompt to show the build files diff"
+msgstr ""
+"rákérdezés kihagyása az összeállítási fájlok összehasonlításainak megjelenítés"
+"ére"
+
+#: pikaur/args.py:240
+msgid "ignore AUR packages' updates which marked 'outofdate'"
+msgstr ""
+"a(z) „elavult” jelölésű AUR-csomagok frissítéseinek figyelmen kívül hagyása"
+
+#: pikaur/args.py:254
+msgid "download also AUR dependencies"
+msgstr "letöltés az AUR-függőségekkel együtt"
+
+#: pikaur/args.py:261
+msgid "install built package"
+msgstr "összeállított csomag telepítése"
+
+#: pikaur/args.py:269
+msgid "visualize package dependency tree"
+msgstr "csomag függőségi fájának megjelenítése"
+
+#: pikaur/args.py:273
+msgid "less verbose output"
+msgstr "kevésbé részletes kimenet"
+
+#: pikaur/args.py:280
+msgid "print spawned by pikaur subshell commands"
+msgstr "a pikaur által indított al-parancsértelmező parancsok kiírása"
+
+#: pikaur/args.py:284
+msgid "show only debug messages specific to pikaur"
+msgstr "csak a pikaur saját hibakeresési üzeneteinek megjelenítése"
+
+#: pikaur/args.py:317
+msgid "alternative home directory location"
+msgstr "alternatív home könyvtár helye"
+
+#: pikaur/args.py:322
+msgid "alternative package cache directory location"
+msgstr "alternatív könyvtár helye a csomag-gyorsítótárhoz"
+
+#: pikaur/args.py:327
+msgid "alternative configuration file directory location"
+msgstr "alternatív könyvtár helye a konfigurációs fájlokhoz"
+
+#: pikaur/args.py:332
+msgid "alternative database directory location"
+msgstr "alternatív adatbázis-könyvtár helye"
+
+#: pikaur/args.py:337
+msgid "preserve environment variables (comma-separated)"
+msgstr "környezeti változók megőrzése (vesszővel elválasztva)"
+
+#: pikaur/args.py:342
+msgid "override path to pacman executable"
+msgstr "pacman futtatható fájl elérési útjának felülbírálása"
+
+#: pikaur/args.py:350
+msgid "override path to pacman-conf executable"
+msgstr "pacman-conf futtatható fájl elérési útjának felülbírálása"
+
+#: pikaur/args.py:362
+msgid "cli args to pass to makepkg"
+msgstr "a makepkg részére átadandó parancssori argumentumok"
+
+#: pikaur/args.py:367
+msgid "path to custom makepkg config"
+msgstr "egyedi makepkg konfigurációs fájl útvonala"
+
+#: pikaur/args.py:372
+msgid "override path to makepkg executable"
+msgstr "makepkg futtatható fájl elérési útjának felülbírálása"
+
+#: pikaur/args.py:377
+msgid "path to custom pikaur config"
+msgstr "egyéni pikaur konfigurációs fájl elérési útvonala"
+
+#: pikaur/args.py:382
+msgid "set GnuPG home directory used when validating package sources"
+msgstr ""
+"a csomagforrások ellenőrzésekor használt GnuPG home könyvtár beállítása"
+
+#: pikaur/args.py:395
+msgid "path where to clone PKGBUILDs"
+msgstr "elérési útvonal, ahová a PKGBUILD-fájlok lesznek klónozva"
+
+#: pikaur/args.py:410
+msgid "user ID to run makepkg if pikaur started from root"
+msgstr ""
+"felhasználói azonosító (UID) a makepkg futtatásához, ha a pikaur rendszergazda"
+"ként indult"
+
+#: pikaur/args.py:414
+msgid "group ID to run makepkg if pikaur started from root"
+msgstr ""
+"csoportazonosító (GID) a makepkg futtatásához, ha a pikaur rendszergazdaként i"
+"ndult"
+
+#: pikaur/args.py:421
+msgid "how many git-clones/pulls to do from AUR"
+msgstr "az AUR-tárolóból végzett git-klónozások/-lekérdezések száma"
+
+#: pikaur/args.py:429
+msgid "dependency tree level"
+msgstr "függőségi fa szintje"
+
+#: pikaur/args.py:474
+msgid "always sysupgrade '-git', '-svn' and other dev packages"
+msgstr "a „-git”, „-svn” és egyéb fejlesztői csomagok mindig frissüljenek"
+
+#: pikaur/args.py:613
+#, python-brace-format
+msgid "WARNING, unknown args: {}"
+msgstr "FIGYELEM! Ismeretlen argumentumok: {}"
+
+#: pikaur/args.py:812
+#, python-brace-format
+msgid "options {} can't be used together."
+msgstr "a következő kapcsolók nem használhatók együtt: {}"
+
+#: pikaur/args.py:820
+#, python-brace-format
+msgid "option {} can't be used without {}."
+msgid_plural "options {} can't be used without {}."
+msgstr[0] "a(z) {} kapcsoló nem használható a következő nélkül: {}"
+msgstr[1] "a(z) {} kapcsolók nem használhatók a következő nélkül: {}"
+
+#: pikaur/aur_deps.py:370
+#, python-brace-format
+msgid "Can't resolve dependencies for AUR package '{pkg}':"
+msgstr "Nem sikerült feloldani a függőségeket a(z) „{pkg}” AUR-csomaghoz:"
+
+#: pikaur/build.py:103
+#, python-brace-format
+msgid "Can't create destination directory '{to_path}'."
+msgstr "Nem sikerült létrehozni a(z) „{to_path}” célkönyvtárat."
+
+#: pikaur/build.py:132
+#, python-brace-format
+msgid "Can't copy '{from_path}' to '{to_path}'."
+msgstr "Nem sikerült a másolás innen: „{from_path}” ide: „{to_path}”."
+
+#: pikaur/build.py:202
+msgid "Can't get package name from PKGBUILD"
+msgstr "Nem sikerült lekérni a csomag nevét a PKGBUILD-fájlból"
+
+#: pikaur/build.py:213 pikaur/print_department.py:710 pikaur/srcinfo.py:57
+#, python-brace-format
+msgid "Either `{prop1}` or `{prop2}` should be set"
+msgstr "Vagy a(z) „{prop1}”, vagy a(z) „{prop2}” beállítása szükséges"
+
+#: pikaur/build.py:343
+#, python-brace-format
+msgid "Downloading the latest sources for a devel package {}"
+msgid_plural "Downloading the latest sources for devel packages {}"
+msgstr[0] ""
+"A legfrissebb források letöltése a következő fejlesztői csomaghoz: {}"
+msgstr[1] ""
+"A legfrissebb források letöltése a következő fejlesztői csomagokhoz: {}"
+
+#: pikaur/build.py:361
+msgid "failed to retrieve latest dev sources:"
+msgstr "nem sikerült lekérni a legfrissebb fejlesztői forrásokat:"
+
+#: pikaur/build.py:368 pikaur/build.py:391 pikaur/build.py:909 pikaur/build.py:940 pikaur/install_cli.py:357 pikaur/install_cli.py:365
+#: pikaur/install_cli.py:383 pikaur/install_cli.py:388 pikaur/install_cli.py:787 pikaur/install_cli.py:802
+msgid "s"
+msgstr "s"
+
+#: pikaur/build.py:370 pikaur/build.py:392 pikaur/build.py:419 pikaur/build.py:911 pikaur/build.py:941 pikaur/build.py:978 pikaur/install_cli.py:357
+#: pikaur/install_cli.py:383 pikaur/install_cli.py:767 pikaur/install_cli.py:787 pikaur/install_cli.py:808
+msgid "a"
+msgstr "a"
+
+#: pikaur/build.py:374 pikaur/build.py:915 pikaur/install_cli.py:772
+msgid "Try recovering?"
+msgstr "Megpróbálja a helyreállítást?"
+
+#: pikaur/build.py:376
+msgid "[R] retry clone"
+msgstr "[R] klónozás megismétlése"
+
+#: pikaur/build.py:377 pikaur/build.py:923
+msgid "[d] delete build dir and try again"
+msgstr "[d] összeállítási könyvtár törlése és újrapróbálás"
+
+#: pikaur/build.py:378 pikaur/build.py:924 pikaur/install_cli.py:346 pikaur/install_cli.py:373
+msgid "[e] edit PKGBUILD"
+msgstr "[e] PKGBUILD szerkesztése"
+
+#: pikaur/build.py:379
+msgid "[i] ignore the error"
+msgstr "[i] hiba figyelmen kívül hagyása"
+
+#: pikaur/build.py:381 pikaur/build.py:926
+msgid "[s] skip building this package"
+msgstr "[s] csomag összeállításának kihagyása"
+
+#: pikaur/build.py:382 pikaur/build.py:927
+msgid "[a] abort building all the packages"
+msgstr "[a] összes csomag összeállításának megszakítása"
+
+#: pikaur/build.py:387 pikaur/build.py:396 pikaur/build.py:932 pikaur/build.py:945 pikaur/install_cli.py:586 pikaur/install_cli.py:611
+#: pikaur/install_cli.py:625 pikaur/install_cli.py:786 pikaur/install_cli.py:800
+msgid "r"
+msgstr "r"
+
+#: pikaur/build.py:388 pikaur/build.py:399 pikaur/build.py:938 pikaur/build.py:962 pikaur/install_cli.py:785 pikaur/install_cli.py:791
+msgid "d"
+msgstr "d"
+
+#: pikaur/build.py:389 pikaur/build.py:403 pikaur/build.py:939 pikaur/build.py:965 pikaur/install_cli.py:357 pikaur/install_cli.py:359
+#: pikaur/install_cli.py:383 pikaur/install_cli.py:385
+msgid "e"
+msgstr "e"
+
+#: pikaur/build.py:390 pikaur/build.py:417 pikaur/build.py:937 pikaur/build.py:959
+msgid "i"
+msgstr "i"
+
+#: pikaur/build.py:525
+#, python-brace-format
+msgid "Installing already built dependencies for {}"
+msgstr "A már összeállított függőségek telepítése a következőhöz: {}"
+
+#: pikaur/build.py:627
+#, python-brace-format
+msgid ""
+"Package {pkg} is already built. Pass '--rebuild' flag to force the build."
+msgid_plural ""
+"Packages {pkg} are already built. Pass '--rebuild' flag to force the build."
+msgstr[0] ""
+"A(z) {pkg} csomag már össze van állítva. Az összeállítás kényszerítéséhez hasz"
+"nálja a „--rebuild” kapcsolót."
+msgstr[1] ""
+"A(z) {pkg} csomagok már össze vannak állítva. A kényszerítéshez használja a „-"
+"-rebuild” kapcsolót."
+
+#: pikaur/build.py:702
+#, python-brace-format
+msgid "Installing repository dependencies for {}"
+msgstr "Tárolóbeli függőségek telepítése a következőhöz: {}"
+
+#: pikaur/build.py:768
+#, python-brace-format
+msgid "Failed to remove installed dependencies, packages inconsistency: {}"
+msgstr ""
+"Nem sikerült eltávolítani a telepített függőségeket, csomaginkonzisztencia: {}"
+
+#: pikaur/build.py:778
+#, python-brace-format
+msgid "Removing already installed dependencies for {}"
+msgstr "A már telepített függőségek eltávolítása a következőhöz: {}"
+
+#: pikaur/build.py:808
+#, python-brace-format
+msgid ""
+"{name} can't be built on the current arch ({arch}). Supported: {suparch}"
+msgstr ""
+"a(z) {name} nem állítható össze a jelenlegi architektúrán ({arch}). Támogatott"
+": {suparch}"
+
+#: pikaur/build.py:878
+msgid "Starting the build"
+msgstr "Összeállítás indítása"
+
+#: pikaur/build.py:900 pikaur/prompt.py:243
+#, python-brace-format
+msgid "Command '{}' failed to execute."
+msgstr "Nem sikerült végrehajtani a(z) „{}” parancsot."
+
+#: pikaur/build.py:917
+msgid "[R] retry build"
+msgstr "[R] összeállítás megismétlése"
+
+#: pikaur/build.py:918
+msgid "[p] PGP check skip"
+msgstr "[p] PGP-ellenőrzés kihagyása"
+
+#: pikaur/build.py:919
+msgid "[c] checksums skip"
+msgstr "[c] ellenőrzőösszegek kihagyása"
+
+#: pikaur/build.py:920 pikaur/install_cli.py:347
+msgid "[f] skip 'check()' function of PKGBUILD"
+msgstr "[f] a PKGBUILD „check()” függvényének kihagyása"
+
+#: pikaur/build.py:921
+msgid "[n] skip 'prepare()' function of PKGBUILD"
+msgstr "[n] a PKGBUILD „prepare()” függvényének kihagyása"
+
+#: pikaur/build.py:922
+msgid "[i] ignore architecture"
+msgstr "[i] architektúra figyelmen kívül hagyása"
+
+#: pikaur/build.py:933 pikaur/build.py:947 pikaur/install_cli.py:797
+msgid "p"
+msgstr "p"
+
+#: pikaur/build.py:934 pikaur/build.py:950 pikaur/install_cli.py:594 pikaur/install_cli.py:637 pikaur/install_cli.py:786 pikaur/install_cli.py:795
+msgid "c"
+msgstr "c"
+
+#: pikaur/build.py:935 pikaur/build.py:953 pikaur/install_cli.py:357 pikaur/install_cli.py:362
+msgid "f"
+msgstr "f"
+
+#: pikaur/build.py:936 pikaur/build.py:956 pikaur/install_cli.py:585 pikaur/main.py:221 pikaur/prompt.py:50
+msgid "n"
+msgstr "n"
+
+#: pikaur/config.py:68 pikaur/pikaprint.py:222
+msgid "warning:"
+msgstr "figyelmeztetés:"
+
+#: pikaur/config.py:402
+msgid ""
+"Dynamic Users feature will be disabled in the upcoming releases.\n"
+"Consider either calling Pikaur from your actual user account without `sudo`, o"
+"r creating `pikaur` user and specifying its UserId and GroupId in Pikaur "
+"config\n"
+"and set DynamicUsers to `never`."
+msgstr ""
+"A Dynamic Users funkció el lesz távolítva a közelgő kiadásokból.\n"
+"Fontolja meg a pikaur hívását a tényleges felhasználói fiókjából a „sudo” hasz"
+"nálata nélkül,\n"
+"vagy hozzon létre egy „pikaur” felhasználót, adja meg az UserId és GroupId ért"
+"ékeket a pikaur konfigurációjában,\n"
+"és állítsa a DynamicUsers értékét a következőre: „never”."
+
+#: pikaur/config.py:653
+msgid "Either both UserId and GroupId or neither of them should be set"
+msgstr "Vagy mind a UserId, mind a GroupId megadása szükséges, vagy egyiké sem"
+
+#: pikaur/config.py:673
+#, python-brace-format
+msgid "{key} is not '{typeof}'"
+msgstr "a(z) {key} nem „{typeof}” típusú"
+
+#: pikaur/config.py:790
+#, python-brace-format
+msgid "Migrating [{}]{}=\"{}\" config option to [{}]{}=\"{}\"..."
+msgstr ""
+"A(z) [{}]{}=„{}” konfigurációs kapcsoló átköltöztetése a következőre: [{}]{}=„"
+"{}”…"
+
+#: pikaur/config.py:818
+#, python-brace-format
+msgid "Migrating [{}]{}=\"{}\" config option to =\"{}\"..."
+msgstr ""
+"A(z) [{}]{}=„{}” konfigurációs kapcsoló átköltöztetése a következőre: =„{}”…"
+
+#: pikaur/extras/dep_tree.py:150
+#, python-brace-format
+msgid "{pkg} is not installed"
+msgstr "nincs telepítve a(z) {pkg}"
+
+#: pikaur/getpkgbuild_cli.py:52
+#, python-brace-format
+msgid "Package '{name}' going to be cloned into '{repo_path}'..."
+msgstr ""
+"A(z) „{name}” csomag klónozásra kerül a következő könyvtárba: „{repo_path}”…"
+
+#: pikaur/help_cli.py:48
+msgid "No response from Pacman"
+msgstr "A pacman nem válaszol"
+
+#: pikaur/help_cli.py:53
+msgid "Common pacman options:"
+msgstr "Általános pacman kapcsolók:"
+
+#: pikaur/help_cli.py:61
+msgid "pikaur-specific operations:"
+msgstr "A pikaur saját műveletei:"
+
+#: pikaur/help_cli.py:62
+msgid "pikaur {-P --pkgbuild}    [options] [file(s)]"
+msgstr "pikaur {-P --pkgbuild}    [kapcsolók] [fájl(ok)]"
+
+#: pikaur/help_cli.py:63
+msgid "pikaur {-G --getpkgbuild} [options] <package(s)>"
+msgstr "pikaur {-G --getpkgbuild} [kapcsolók] <csomag(ok)>"
+
+#: pikaur/help_cli.py:64
+msgid "pikaur {-X --extras}      [options] [package(s)]"
+msgstr "pikaur {-X --extras}      [kapcsolók] [csomag(ok)]"
+
+#: pikaur/help_cli.py:68
+msgid "usage:  pikaur {-P --pkgbuild} [options] <file(s)>"
+msgstr "használat:  pikaur {-P --pkgbuild} [kapcsolók] <fájl(ok)>"
+
+#: pikaur/help_cli.py:70
+msgid ""
+"All common pacman options as when doing `pacman -U <pkg_file>`. See `pacman -U"
+"h`."
+msgstr ""
+"Minden általános pacman kapcsoló, mint a „pacman -U <pkg_file>” esetén. Tekint"
+"se meg: „pacman -Uh”."
+
+#: pikaur/help_cli.py:75
+msgid "usage:  pikaur {-G --getpkgbuild} [options] <package(s)>"
+msgstr "használat:  pikaur {-G --getpkgbuild} [kapcsolók] <csomag(ok)>"
+
+#: pikaur/help_cli.py:79
+msgid "usage:  pikaur {-X --extras} [options] [package(s)]"
+msgstr "használat:  pikaur {-X --extras} [kapcsolók] [csomag(ok)]"
+
+#: pikaur/help_cli.py:86
+msgid "Pikaur-specific options:"
+msgstr "A pikaur saját kapcsolói:"
+
+#: pikaur/i18n.py:33
+msgid "Read damn arch-wiki before borking your computer:"
+msgstr "Olvassa el az arch-wikit, mielőtt tönkretenné a számítógépét:"
+
+#: pikaur/i18n.py:34
+msgid "(Also, don't report any issues to pikaur, if ure seeing this message)"
+msgstr ""
+"(Továbbá ne jelentsen semmilyen hibát a pikaur fejlesztőinek, ha ezt az üzenet"
+"et látja)"
+
+#: pikaur/info_cli.py:34
+msgid "AUR Git URL"
+msgstr "AUR Git webcíme"
+
+#: pikaur/info_cli.py:35
+msgid "AUR Web URL"
+msgstr "AUR Web webcíme"
+
+#. "aur_id": translate("id"),
+#: pikaur/info_cli.py:37
+msgid "Name"
+msgstr "Név"
+
+#. packagebaseid=translate(""),
+#: pikaur/info_cli.py:39
+msgid "Package Base"
+msgstr "Csomagalap"
+
+#: pikaur/info_cli.py:40
+msgid "Version"
+msgstr "Verzió"
+
+#: pikaur/info_cli.py:41
+msgid "Description"
+msgstr "Leírás"
+
+#: pikaur/info_cli.py:42
+msgid "URL"
+msgstr "Webcím"
+
+#: pikaur/info_cli.py:43
+msgid "Keywords"
+msgstr "Kulcsszavak"
+
+#: pikaur/info_cli.py:44
+msgid "Licenses"
+msgstr "Licencek"
+
+#: pikaur/info_cli.py:45
+msgid "Groups"
+msgstr "Csoportok"
+
+#: pikaur/info_cli.py:46
+msgid "Provides"
+msgstr "Szolgáltatja"
+
+#: pikaur/info_cli.py:47
+msgid "Depends On"
+msgstr "Függőségek"
+
+#: pikaur/info_cli.py:48
+msgid "Optional Deps"
+msgstr "Nem kötelező függőségek"
+
+#: pikaur/info_cli.py:49
+msgid "Make Deps"
+msgstr "Fordítási függőségek"
+
+#: pikaur/info_cli.py:50
+msgid "Check Deps"
+msgstr "Ellenőrzési függőségek"
+
+#: pikaur/info_cli.py:51
+msgid "Conflicts With"
+msgstr "Ütközik a következőkkel:"
+
+#: pikaur/info_cli.py:52
+msgid "Replaces"
+msgstr "Lecseréli a következőket:"
+
+#: pikaur/info_cli.py:53
+msgid "Submitter"
+msgstr "Beküldő"
+
+#: pikaur/info_cli.py:54
+msgid "Maintainer"
+msgstr "Karbantartó"
+
+#: pikaur/info_cli.py:55
+msgid "Co-maintainers"
+msgstr "Társkarbantartó(k)"
+
+#: pikaur/info_cli.py:56
+msgid "Votes"
+msgstr "Szavazatok"
+
+#: pikaur/info_cli.py:57
+msgid "Popularity"
+msgstr "Népszerűség"
+
+#: pikaur/info_cli.py:58
+msgid "First Submitted"
+msgstr "Először beküldve"
+
+#: pikaur/info_cli.py:59
+msgid "Last Updated"
+msgstr "Utoljára frissítve"
+
+#: pikaur/info_cli.py:60
+msgid "Out-of-date"
+msgstr "Elavult"
+
+#: pikaur/info_cli.py:72 pikaur/info_cli.py:104
+msgid "None"
+msgstr "Nincs"
+
+#: pikaur/install_cli.py:138
+#, python-brace-format
+msgid "{name} {version} {package_source} package is up to date - skipping"
+msgstr "a(z) {name} {version} {package_source} csomag naprakész - kihagyás"
+
+#: pikaur/install_cli.py:149
+#, python-brace-format
+msgid ""
+"{name} {version} local package is newer than in AUR ({aur_version}) - skipping"
+msgstr ""
+"a(z) {name} {version} helyi csomag újabb, mint az AUR-tárolóban lévő ({aur_ver"
+"sion}) - kihagyás"
+
+#: pikaur/install_cli.py:160
+#, python-brace-format
+msgid "Downgrading AUR package {name} {version} to {downgrade_version}"
+msgstr ""
+"A(z) {name} {version} AUR-csomag visszaállítása a következő verzióra: {downgra"
+"de_version}"
+
+#: pikaur/install_cli.py:228
+msgid "Starting full AUR upgrade..."
+msgstr "Teljes AUR-frissítés indítása…"
+
+#: pikaur/install_cli.py:337
+msgid "PKGBUILD appears unchanged after editing"
+msgstr "A PKGBUILD változatlannak tűnik a szerkesztés után"
+
+#. pragma: no cover
+#: pikaur/install_cli.py:344 pikaur/install_cli.py:371
+#, python-brace-format
+msgid "Try recovering {pkg_name}?"
+msgstr "Megpróbálja a(z) {pkg_name} helyreállítását?"
+
+#: pikaur/install_cli.py:348 pikaur/install_cli.py:374 pikaur/install_cli.py:779
+msgid "[s] skip this package"
+msgstr "[s] csomag kihagyása"
+
+#: pikaur/install_cli.py:349 pikaur/install_cli.py:375
+msgid "[A] abort"
+msgstr "[A] megszakítás"
+
+#: pikaur/install_cli.py:422
+#, python-brace-format
+msgid "Dependencies missing for {}"
+msgstr "Hiányzó függőségek a következőhöz: {}"
+
+#: pikaur/install_cli.py:432 pikaur/install_info_fetcher.py:635
+msgid "Version mismatch:"
+msgstr "Verzióeltérés:"
+
+#: pikaur/install_cli.py:503
+msgid "Nothing to do."
+msgstr "Nincs teendő."
+
+#: pikaur/install_cli.py:567
+msgid "Proceed with installation? [Y/n] "
+msgstr "Folytatja a telepítést? [Y/n] "
+
+#: pikaur/install_cli.py:569
+msgid "[v]iew package details   [m]anually select packages"
+msgstr "[v] csomag részleteinek megjelenítése   [m] csomagok kézi kiválasztása"
+
+#: pikaur/install_cli.py:570
+msgid "[r] show if packages are required by already installed packages"
+msgstr ""
+"[r] annak megjelenítése, ha a csomagokat már telepített csomagok igénylik"
+
+#: pikaur/install_cli.py:585 pikaur/install_cli.py:631
+msgid "m"
+msgstr "m"
+
+#: pikaur/install_cli.py:585 pikaur/install_cli.py:611 pikaur/install_cli.py:619
+msgid "v"
+msgstr "v"
+
+#: pikaur/install_cli.py:585 pikaur/install_cli.py:607 pikaur/prompt.py:49
+msgid "y"
+msgstr "i"
+
+#: pikaur/install_cli.py:589
+msgid "[c]onfirm Arch NEWS as read"
+msgstr "[c] Arch NEWS megerősítése olvasottként"
+
+#: pikaur/install_cli.py:724
+#, python-brace-format
+msgid "New build deps found for {pkg} package: {deps}"
+msgstr "Új összeállítási függőségek találhatók a(z) {pkg} csomaghoz: {deps}"
+
+#: pikaur/install_cli.py:731
+#, python-brace-format
+msgid "Some build deps removed for {pkg} package: {deps}"
+msgstr ""
+"A(z) {pkg} csomag néhány összeállítási függősége el lett távolítva: {deps}"
+
+#: pikaur/install_cli.py:755
+#, python-brace-format
+msgid "Can't clone '{name}' in '{path}' from AUR:"
+msgstr ""
+"Nem sikerült a(z) „{name}” klónozása az AUR-tárolóból a következőbe: „{path}”:"
+
+#: pikaur/install_cli.py:757
+#, python-brace-format
+msgid "Can't pull '{name}' in '{path}' from AUR:"
+msgstr ""
+"Nem sikerült lekérdezni a következőt: „{name}” az AUR-tárolóból, a következő e"
+"lérési útvonalon: „{path}"
+"”:"
+
+#: pikaur/install_cli.py:773
+msgid "[T] try again"
+msgstr "[T] próbálja újra"
+
+#: pikaur/install_cli.py:774
+msgid "[d] git diff"
+msgstr "[d] git összehasonlítás"
+
+#: pikaur/install_cli.py:775
+msgid "[c] git checkout -- '*'"
+msgstr "[c] git checkout -- '*’"
+
+#. translate("[c] git checkout -- '*' ; git clean -f -d -x"),
+#: pikaur/install_cli.py:777
+msgid "[r] remove dir and clone again"
+msgstr "[r] könyvtár törlése és klónozás újra"
+
+#: pikaur/install_cli.py:778
+msgid "[p] git stash && ... && git stash pop"
+msgstr "[p] git stash && … && git stash pop"
+
+#: pikaur/install_cli.py:780
+msgid "[a] abort"
+msgstr "[a] megszakítás"
+
+#: pikaur/install_cli.py:785
+msgid "t"
+msgstr "t"
+
+#: pikaur/install_cli.py:871
+msgid "looking for conflicting AUR packages..."
+msgstr "ütköző AUR-csomagok keresése…"
+
+#: pikaur/install_cli.py:886
+#, python-brace-format
+msgid "New packages '{new}' and '{other}' are in conflict."
+msgstr "A(z) „{new}” és a(z) „{other}” csomagok ütköznek egymással."
+
+#: pikaur/install_cli.py:893
+#, python-brace-format
+msgid "{new} and {installed} are in conflict. Remove {installed}?"
+msgstr ""
+"A(z) {new} és a(z) {installed} ütköznek egymással. Eltávolítja a következőt: {"
+"installed}?"
+
+#: pikaur/install_cli.py:912
+#, python-brace-format
+msgid "Skipping review of {file} for {name} package ({flag})"
+msgstr "A(z) {file} áttekintésének kihagyása a(z) {name} csomaghoz ({flag})"
+
+#: pikaur/install_cli.py:920
+#, python-brace-format
+msgid "Do you want to {edit} {file} for {name} package?"
+msgstr ""
+"Szeretné a(z) {edit} műveletet végrehajtani a(z) {file} fájlon a(z) {name} cso"
+"maghoz?"
+
+#: pikaur/install_cli.py:921
+msgid "edit"
+msgstr "szerkesztés"
+
+#: pikaur/install_cli.py:1013
+#, python-brace-format
+msgid "Not showing diff for {pkg} package ({reason})"
+msgstr ""
+"Összehasonlítások megjelenítésének mellőzése a(z) {pkg} csomaghoz ({reason})"
+
+#: pikaur/install_cli.py:1020 pikaur/install_cli.py:1084
+msgid "already reviewed"
+msgstr "már áttekintve"
+
+#: pikaur/install_cli.py:1039
+#, python-brace-format
+msgid "Do you want to see build files {diff} for {name} package?"
+msgstr ""
+"Szeretné megtekinteni az összeállítási fájlok {diff} listáját a(z) {name} csom"
+"aghoz?"
+
+#: pikaur/install_cli.py:1041
+msgid "diff"
+msgstr "összehasonlítás"
+
+#: pikaur/install_cli.py:1079
+msgid "installing for the first time"
+msgstr "telepítés első alkalommal"
+
+#: pikaur/install_cli.py:1122 pikaur/install_cli.py:1138
+#, python-brace-format
+msgid "Installation info changed (or new deps found) for {pkg} package"
+msgstr ""
+"A telepítési információk megváltoztak (vagy új függőségek találhatók) a(z) {pk"
+"g} csomaghoz"
+
+#: pikaur/install_cli.py:1187
+#, python-brace-format
+msgid "Can't build '{name}'."
+msgstr "Nem sikerült összeállítani a következőt: „{name}”."
+
+#: pikaur/install_cli.py:1210
+#, python-brace-format
+msgid "Dependency cycle detected between {}"
+msgstr "Körkörös függőség lett észlelve a következők között: {}"
+
+#: pikaur/install_cli.py:1253
+#, python-brace-format
+msgid "Reverting {target} transaction..."
+msgstr "A(z) {target} tranzakció visszavonása…"
+
+#: pikaur/install_cli.py:1366
+msgid "Failed to build following packages:"
+msgstr "Nem sikerült összeállítani a következő csomagokat:"
+
+#: pikaur/install_info_fetcher.py:55
+#, python-brace-format
+msgid ""
+"{what} depends on: '{dep}'\n"
+" found in '{location}': '{pkg_name}=={version}'"
+msgstr ""
+"{what} függősége: „{dep}”\n"
+"a következő helyen található: „{location}”: „{pkg_name}=={version}”"
+
+#: pikaur/install_info_fetcher.py:592
+#, python-brace-format
+msgid "{pkg_name} already added to the list"
+msgstr "a(z) {pkg_name} már hozzá van adva a listához"
+
+#: pikaur/install_info_fetcher.py:620
+msgid "Resolving AUR dependencies..."
+msgstr "AUR-függőségek feloldása…"
+
+#: pikaur/install_info_fetcher.py:637
+msgid "Retrying dependency resolution..."
+msgstr "Függőségek feloldásának megismétlése…"
+
+#: pikaur/logging_extras.py:50
+msgid "debug:"
+msgstr "hibakeresés:"
+
+#. to avoid mixing together with pacman's debug messages:
+#: pikaur/logging_extras.py:53
+msgid "pikaur debug:"
+msgstr "pikaur hibakeresés:"
+
+#: pikaur/main.py:203
+#, python-brace-format
+msgid ""
+"Please enter the number of the package(s) you want to install and press [Enter"
+"] (default={}):"
+msgstr ""
+"Adja meg a telepítendő csomag(ok) sorszámát, majd nyomja meg az [Enter] billen"
+"tyűt (alapértelmezett={}):"
+
+#: pikaur/main.py:213
+#, python-brace-format
+msgid "invalid value: {} is not between {} and {}"
+msgstr "érvénytelen érték: {} nincs {} és {} között"
+
+#: pikaur/main.py:223
+#, python-brace-format
+msgid "invalid number: {}"
+msgstr "érvénytelen szám: {}"
+
+#: pikaur/main.py:266
+msgid "User ID should be set if running Pikaur as root."
+msgstr ""
+"A felhasználói azonosító (UID) megadása szükséges, ha a pikaurt rendszergazdak"
+"ént futtatja."
+
+#: pikaur/main.py:291
+msgid "no package(s) specified"
+msgstr "nincs csomag megadva"
+
+#: pikaur/main.py:388
+#, python-brace-format
+msgid "AUR repos dir has been moved from '{old}' to '{new}'."
+msgstr ""
+"Az AUR-tárolók könyvtára át lett helyezve a(z) „{old}” helyről a következőre: "
+"„{new}”."
+
+#: pikaur/main.py:457
+msgid "pikaur requires Python >= 3.7 to run."
+msgstr "a pikaur futtatásához Python >= 3.7 verzió szükséges."
+
+#: pikaur/main.py:465
+msgid "pikaur requires systemd >= 235 (dynamic users) to be run as root."
+msgstr ""
+"a pikaur rendszergazdaként történő futtatásához systemd >= 235 (dynamic users)"
+" szükséges."
+
+#: pikaur/main.py:502
+#, python-brace-format
+msgid ""
+"{privilege_escalation_tool} is not part of minimal Arch default setup, be awar"
+"e that you could run into potential problems."
+msgstr ""
+"a(z) {privilege_escalation_tool} nem része a minimális Arch alapértelmezett te"
+"lepítésnek, vegye figyelembe, hogy potenciális problémákba ütközhet."
+
+#: pikaur/news.py:68 pikaur/news.py:106
+msgid "Could not fetch archlinux.org news"
+msgstr "Nem sikerült lekérni az archlinux.org híreit"
+
+#: pikaur/news.py:80
+msgid "There is news from archlinux.org!"
+msgstr "Friss hírek érkeztek az archlinux.org oldalról!"
+
+#: pikaur/news.py:134
+#, python-brace-format
+msgid "Could not initialize {}"
+msgstr "Nem sikerült előkészíteni a következőt: {}"
+
+#: pikaur/news.py:139
+msgid "The news feed could not be received or parsed."
+msgstr "A hírfolyam nem fogadható vagy nem dolgozható fel."
+
+#: pikaur/news.py:181
+#, python-brace-format
+msgid "Could not update {}"
+msgstr "Nem sikerült frissíteni a következőt: {}"
+
+#: pikaur/os_utils.py:70
+#, python-brace-format
+msgid "Error opening file: {file_path}"
+msgstr "Hiba a fájl megnyitásakor: {file_path}"
+
+#: pikaur/os_utils.py:100
+msgid "executable not found"
+msgstr "nem található futtatható fájl"
+
+#: pikaur/os_utils.py:121
+#, python-brace-format
+msgid "Can't change owner to {user_id}:{group_id}: {exc}"
+msgstr ""
+"Nem sikerült módosítani a tulajdonost a következőre: {user_id}:{group_id}: {ex"
+"c}"
+
+#: pikaur/pacman.py:302
+msgid "Reading local package database..."
+msgstr "Helyi csomagadatbázis olvasása…"
+
+#: pikaur/pacman.py:361
+msgid "Reading repository package databases..."
+msgstr "Tárolói csomagadatbázisok olvasása…"
+
+#: pikaur/pacman.py:594
+msgid "Dependencies can't be satisfied for the following packages:"
+msgstr "A következő csomagok függőségei nem teljesíthetők:"
+
+#: pikaur/pacman.py:601
+msgid "Because of:"
+msgstr "A következő okból:"
+
+#: pikaur/pikspect.py:363
+#, python-brace-format
+msgid "`{var_name}` should be list."
+msgstr "a(z) „{var_name}” értékének listának kell lennie."
+
+#: pikaur/pkg_cache_cli.py:19
+msgid "Build directory"
+msgstr "Összeállítási könyvtár"
+
+#: pikaur/pkg_cache_cli.py:20
+msgid "Packages directory"
+msgstr "Csomagok könyvtára"
+
+#: pikaur/pkg_cache_cli.py:23
+msgid "Do you want to remove all files?"
+msgstr "El szeretné távolítani az összes fájlt?"
+
+#: pikaur/pkg_cache_cli.py:27
+msgid "Directory is empty."
+msgstr "A könyvtár üres."
+
+#: pikaur/pkg_cache_cli.py:34
+msgid "removing all files from cache..."
+msgstr "összes fájl eltávolítása a gyorsítótárból…"
+
+#: pikaur/print_department.py:86
+msgid "Following package cannot be found in repositories:"
+msgid_plural "Following packages cannot be found in repositories:"
+msgstr[0] "A következő csomag nem található a tárolókban:"
+msgstr[1] "A következő csomagok nem találhatók a tárolókban:"
+
+#: pikaur/print_department.py:92
+msgid "Following package cannot be found in AUR:"
+msgid_plural "Following packages cannot be found in AUR:"
+msgstr[0] "A következő csomag nem található az AUR-tárolóban:"
+msgstr[1] "A következő csomagok nem találhatók az AUR-tárolóban:"
+
+#: pikaur/print_department.py:224
+#, python-brace-format
+msgid "for {pkg}"
+msgstr "a következőhöz: {pkg}"
+
+#: pikaur/print_department.py:238
+msgid "as dep"
+msgstr "függőségként"
+
+#: pikaur/print_department.py:240
+msgid "as opt dep"
+msgstr "nem kötelező függőségként"
+
+#: pikaur/print_department.py:243
+msgid "explicit"
+msgstr "kifejezetten"
+
+#: pikaur/print_department.py:274
+#, python-brace-format
+msgid "{grp} group"
+msgid_plural "{grp} groups"
+msgstr[0] "{grp} csoport"
+msgstr[1] "{grp} csoport"
+
+#: pikaur/print_department.py:298
+#, python-brace-format
+msgid "({} days old)"
+msgstr "({} napos)"
+
+#: pikaur/print_department.py:304
+msgid "orphaned"
+msgstr "árva"
+
+#: pikaur/print_department.py:317 pikaur/print_department.py:901
+msgid "outofdate"
+msgstr "elavult"
+
+#: pikaur/print_department.py:367
+#, python-brace-format
+msgid "required by {pkg}"
+msgstr "szükséges a következőhöz: {pkg}"
+
+#: pikaur/print_department.py:371
+#, python-brace-format
+msgid "optional for {pkg}"
+msgstr "nem kötelező a következőhöz: {pkg}"
+
+#: pikaur/print_department.py:502
+msgid "WARNING about package installation:"
+msgid_plural "WARNING about packages installation:"
+msgstr[0] "FIGYELMEZTETÉS a csomag telepítésével kapcsolatban:"
+msgstr[1] "FIGYELMEZTETÉS a csomagok telepítésével kapcsolatban:"
+
+#: pikaur/print_department.py:519
+msgid "Repository package suggested as a replacement:"
+msgid_plural "Repository packages suggested as a replacement:"
+msgstr[0] "Tárolóbeli csomag használata javasolt helyettesítésképpen:"
+msgstr[1] "Tárolóbeli csomagok használata javasolt helyettesítésképpen:"
+
+#: pikaur/print_department.py:532
+msgid "Third-party repository package suggested as a replacement:"
+msgid_plural "Third-party repository packages suggested as a replacement:"
+msgstr[0] ""
+"Harmadik féltől származó tárolóbeli csomag használata javasolt helyettesítéské"
+"ppen:"
+msgstr[1] ""
+"Harmadik féltől származó tárolóbeli csomagok használata javasolt helyettesítés"
+"képpen:"
+
+#: pikaur/print_department.py:547
+msgid "Repository package will be installed:"
+msgid_plural "Repository packages will be installed:"
+msgstr[0] "Tárolóbeli csomag lesz telepítve:"
+msgstr[1] "Tárolóbeli csomagok lesznek telepítve:"
+
+#: pikaur/print_department.py:560
+msgid "New dependency will be installed from repository:"
+msgid_plural "New dependencies will be installed from repository:"
+msgstr[0] "Új függőség lesz telepítve a tárolóból:"
+msgstr[1] "Új függőségek lesznek telepítve a tárolóból:"
+
+#: pikaur/print_department.py:575
+msgid "Third-party repository package will be installed:"
+msgid_plural "Third-party repository packages will be installed:"
+msgstr[0] "Harmadik féltől származó tárolóbeli csomag lesz telepítve:"
+msgstr[1] "Harmadik féltől származó tárolóbeli csomagok lesznek telepítve:"
+
+#: pikaur/print_department.py:589
+msgid "New dependency will be installed from third-party repository:"
+msgid_plural "New dependencies will be installed from third-party repository:"
+msgstr[0] "Új függőség lesz telepítve harmadik féltől származó tárolóból:"
+msgstr[1] "Új függőségek lesznek telepítve harmadik féltől származó tárolóból:"
+
+#: pikaur/print_department.py:604
+msgid "AUR package will be installed:"
+msgid_plural "AUR packages will be installed:"
+msgstr[0] "AUR-csomag lesz telepítve:"
+msgstr[1] "AUR-csomagok lesznek telepítve:"
+
+#: pikaur/print_department.py:618
+msgid "New dependency will be installed from AUR:"
+msgid_plural "New dependencies will be installed from AUR:"
+msgstr[0] "Új függőség lesz telepítve az AUR-tárolóból:"
+msgstr[1] "Új függőségek lesznek telepítve az AUR-tárolóból:"
+
+#: pikaur/print_department.py:635
+msgid "Total Download Size:"
+msgstr "Teljes letöltési méret:"
+
+#: pikaur/print_department.py:638
+msgid "Total Installed Size:"
+msgstr "Teljes telepített méret:"
+
+#: pikaur/print_department.py:722
+#, python-brace-format
+msgid "Ignoring package update {}"
+msgstr "A(z) {} csomagfrissítés figyelmen kívül hagyása"
+
+#: pikaur/print_department.py:730
+#, python-brace-format
+msgid "Ignoring package {}"
+msgstr "A(z) {} csomag figyelmen kívül hagyása"
+
+#: pikaur/print_department.py:755
+#, python-brace-format
+msgid "{name} {version} AUR package marked as 'outofdate' - skipping"
+msgstr "a(z) {name} {version} AUR-csomag „elavult” jelölésű - kihagyás"
+
+#: pikaur/print_department.py:764
+msgid "Stable versions of the following devel packages have newer versions:"
+msgstr ""
+"A következő fejlesztői csomagok stabil verzióiból újabb változat érhető el:"
+
+#: pikaur/print_department.py:870
+#, python-brace-format
+msgid "[installed: {version}]"
+msgstr "[telepítve: {version}]"
+
+#: pikaur/print_department.py:874
+msgid "[installed]"
+msgstr "[telepítve]"
+
+#: pikaur/prompt.py:196
+msgid "Do you want to proceed?"
+msgstr "Szeretné folytatni?"
+
+#: pikaur/prompt.py:200
+#, python-brace-format
+msgid "[Y]es ({reason})"
+msgstr "[Y]igen ({reason})"
+
+#: pikaur/prompt.py:249 pikaur/urllib_helper.py:43 pikaur/urllib_helper.py:73
+msgid "Do you want to retry?"
+msgstr "Szeretné megismételni?"
+
+#: pikaur/prompt.py:290
+msgid "no editor found. Try setting $VISUAL or $EDITOR."
+msgstr ""
+"nem található szerkesztő. Próbálja meg beállítani a $VISUAL vagy $EDITOR válto"
+"zót."
+
+#: pikaur/prompt.py:292
+msgid "Do you want to proceed without editing?"
+msgstr "Szeretné folytatni szerkesztés nélkül?"
+
+#: pikaur/provider.py:41
+#, python-brace-format
+msgid "Choose a package provider for {dependency}:"
+msgstr "Válasszon csomagszolgáltatót a következőhöz: {dependency}:"
+
+#: pikaur/provider.py:66
+msgid "[v]iew package details"
+msgstr "[v] csomag részleteinek megjelenítése"
+
+#: pikaur/provider.py:75
+#, python-brace-format
+msgid "Only numbers allowed, got '{character}' instead"
+msgstr "Csak számok engedélyezettek, a kapott karakter: „{character}”"
+
+#: pikaur/provider.py:81
+msgid "Only one answer allowed"
+msgstr "Csak egy válasz engedélyezett"
+
+#: pikaur/provider.py:87
+#, python-brace-format
+msgid "There are only {num} options"
+msgstr "Csak {num} lehetőség van"
+
+#: pikaur/replacements.py:41
+#, python-brace-format
+msgid "'{packages}' package is available in the repo but can't be installed"
+msgid_plural ""
+"'{packages}' packages are available in the repo but can't be installed"
+msgstr[0] "a(z) „{packages}” csomag elérhető a tárolóban, de nem telepíthető"
+msgstr[1] ""
+"a(z) „{packages}” csomagok elérhetők a tárolóban, de nem telepíthetők"
+
+#: pikaur/search_cli.py:88
+#, python-brace-format
+msgid "AUR: Too many package results for '{query}'"
+msgstr "AUR: Túl sok találat a következő lekérdezésre: „{query}”"
+
+#: pikaur/search_cli.py:95
+#, python-brace-format
+msgid "AUR: Query arg too small '{query}'"
+msgstr "AUR: A lekérdezési argumentum túl rövid: „{query}”"
+
+#: pikaur/search_cli.py:202
+#, python-brace-format
+msgid "Searching... [{bar}]"
+msgstr "Keresés… [{bar}]"
+
+#: pikaur/search_cli.py:222
+msgid "AUR returned error:"
+msgstr "Az AUR-tároló hibával tért vissza:"
+
+#: pikaur/srcinfo.py:151
+#, python-brace-format
+msgid "failed to generate .SRCINFO from {}:"
+msgstr "nem sikerült az .SRCINFO előállítása a következőből: {}:"
+
+#: pikaur/updates.py:150
+msgid "Reading AUR package info..."
+msgid_plural "Reading AUR packages info..."
+msgstr[0] "AUR-csomaginformációk olvasása…"
+msgstr[1] "AUR-csomaginformációk olvasása…"
+
+#: pikaur/updates.py:263
+msgid "(ignored in Pacman config)"
+msgstr "(a pacman konfigurációjában figyelmen kívül hagyva)"
+
+#: pikaur/urllib_helper.py:46 pikaur/urllib_helper.py:77
+#, python-brace-format
+msgid "Sleeping for {} seconds..."
+msgstr "Várakozás {} másodpercig…"
+
+#: pikaur/urllib_helper.py:106
+msgid "pikaur requires python-pysocks to use a socks5 proxy."
+msgstr ""
+"a pikaur AUR-segédnek szüksége van a python-pysocks csomagra a socks5 proxy ha"
+"sználatához."
+
+#~ msgid "Do you want to remove '{installed}'?"
+#~ msgstr "Biztosan törölni szeretné a következőt: „{installed}”?"
+
+#~ msgid "New package '{new}' conflicts with installed '{installed}'."
+#~ msgstr "Az új „{new}” csomag ütközik a telepített „{installed}” csomaggal."
+
+#~ msgid "New package '{new}' replaces installed '{installed}' Proceed?"
+#~ msgstr "Az új „{new}” csomag lecseréli a telepített „{installed}” csomagot. Folytatja?"
+
+#~ msgid "Starting full system upgrade..."
+#~ msgstr "Teljes rendszerfrissítés indítása…"
+
+#~ msgid "[N]o (--noconfirm)"
+#~ msgstr "[N] nem (--noconfirm)"
+
+#~ msgid "[Y]es (--noconfirm)"
+#~ msgstr "[Y] igen (--noconfirm)"
+
+#~ msgid "don't run me as root."
+#~ msgstr "Ne futtassa a pikaurt rendszergazdaként!"
+
+#~ msgid "error"
+#~ msgstr "hiba"
+
+#~ msgid "{} does not exist on the filesystem."
+#~ msgstr "A(z) {} nem létezik a fájlrendszeren."
+
+#~ msgid "{}: {}"
+#~ msgstr "{}: {}"

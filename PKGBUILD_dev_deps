@@ -21,6 +21,7 @@ depends=(
 	# linting:
 	ruff flake8 python-pylint mypy vulture bandit shellcheck python-validate-pyproject shellcheck_makefile-git
 	'python-coveralls'
+	'python-gnupg'
 	# pikaur opt deps:
 	'devtools'
 	'python-pysocks'

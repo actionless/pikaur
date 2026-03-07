@@ -8,7 +8,7 @@ pkgrel=1
 pkgdesc="AUR helper which asks all questions before installing/building. Inspired by pacaur, yaourt and yay."
 arch=('any')
 url="https://github.com/actionless/pikaur"
-license=('GPL-3.0-only')
+license=('GPL-3.0-or-later')
 source=(
 	"$pkgname::git+${url}.git#branch=master"
 )

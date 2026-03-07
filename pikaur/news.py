@@ -33,7 +33,7 @@ from .urllib_helper import get_unicode_from_url
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import Final, TextIO
-    from xml.etree.ElementTree import Element  # nosec B405  # noqa: S405
+    from xml.etree.ElementTree import Element  # nosec B405
 
 
 DT_FORMAT: "Final" = "%a, %d %b %Y %H:%M:%S %z"

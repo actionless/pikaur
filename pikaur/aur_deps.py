@@ -389,7 +389,7 @@ def get_aur_deps_list(aur_pkgs_infos: "list[AURPackageInfo]") -> "list[AURPackag
     aur_deps_relations = find_aur_deps(aur_pkgs_infos)
     all_aur_deps = list({
         dep
-        for _pkg, deps in aur_deps_relations.items()
+        for deps in aur_deps_relations.values()
         for dep in deps
     })
     return find_aur_packages(all_aur_deps)[0]

@@ -352,7 +352,7 @@ class PackageBuild(ComparableType):
         )
         pkgver_result = joined_spawn(
             isolate_root_cmd(
-                [*MakePkgCommand.get(), "--nobuild", "--nocheck", "--nodeps"],
+                [*MakePkgCommand.get(), "--noprepare", "--nobuild", "--nocheck", "--nodeps"],
                 cwd=self.build_dir,
             ),
             cwd=self.build_dir,

@@ -1048,15 +1048,17 @@ class InstallPackagesCLI:
                     git_args = ["env", "GIT_PAGER=less -+F"]
                 elif diff_pager == DiffPagerValues.NEVER:
                     git_args = ["env", "GIT_PAGER=cat"]
-                git_args += [
-                    "git",
-                    "-C", str(pkg_build.repo_path),
-                    "diff",
-                    *PikaurConfig().review.GitDiffArgs.get_str().split(","),
-                    pkg_build.last_installed_hash,
-                    pkg_build.current_hash,
-                    "--", ".",
-                ]
+                git_cmd = PikaurConfig().review.GitCmd.get_str()
+                test = ( 
+                        git_cmd.replace("{{repo_path}}", str(pkg_build.repo_path))
+                        .replace("{{last_install_hash}}", pkg_build.last_installed_hash)
+                        .replace("{{current_hash}}", pkg_build.current_hash)
+                    ).split('\"')
+                for i, item in enumerate(test):
+                    if i % 2 == 0:
+                        git_args += item.split()
+                    else:
+                        git_args += [item]
                 for file_path in PikaurConfig().review.HideDiffFiles.get_str().split(","):
                     if file_path:
                         git_args += [

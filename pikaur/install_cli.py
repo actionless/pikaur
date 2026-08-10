@@ -1054,7 +1054,6 @@ class InstallPackagesCLI:
                         git_cmd.replace("{{repo_path}}", str(pkg_build.repo_path))
                         .replace("{{last_install_hash}}", pkg_build.last_installed_hash)
                         .replace("{{current_hash}}", pkg_build.current_hash)
-                        .replace("{{git_diff_args}}", PikaurConfig().review.GitDiffArgs.get_str().replace(",", " "))
                     )
 
                 for file_path in PikaurConfig().review.HideDiffFiles.get_str().split(","):

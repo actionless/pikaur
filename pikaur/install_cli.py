@@ -847,10 +847,22 @@ class InstallPackagesCLI:
             if cloned_pkgbuilds:
                 logger.debug("cloned_pkgbuilds={}", cloned_pkgbuilds)
                 pkgbuilds_by_name.update(cloned_pkgbuilds)
+                # Build reverse mapping from package base to PackageBuild
+                # for the provided-name lookup (info.package.name may not
+                # match a key in cloned_pkgbuilds when a virtual/provided
+                # name is requested, e.g. systemd-libs-selinux vs
+                # systemd-selinux).
+                builds_by_base = {
+                    pb.package_base: pb
+                    for pb in cloned_pkgbuilds.values()
+                }
                 for info in clone_infos:
+                    pkgbuild = builds_by_base.get(info.package.packagebase)
+                    if pkgbuild is None:
+                        continue
                     for provided_str in info.package.provides:
                         provided_name = VersionMatcher(provided_str).pkg_name
-                        pkgbuilds_by_provides[provided_name] = cloned_pkgbuilds[info.package.name]
+                        pkgbuilds_by_provides[provided_name] = pkgbuild
             for pkg_list in (self.aur_packages_names, self.aur_deps_names):
                 self._find_extra_aur_build_deps(
                     all_package_builds={

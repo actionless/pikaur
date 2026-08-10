@@ -4,6 +4,7 @@
 import contextlib
 import hashlib
 import itertools
+import shlex
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -1049,16 +1050,13 @@ class InstallPackagesCLI:
                 elif diff_pager == DiffPagerValues.NEVER:
                     git_args = ["env", "GIT_PAGER=cat"]
                 git_cmd = PikaurConfig().review.GitCmd.get_str()
-                test = ( 
+                git_args += shlex.split(
                         git_cmd.replace("{{repo_path}}", str(pkg_build.repo_path))
                         .replace("{{last_install_hash}}", pkg_build.last_installed_hash)
                         .replace("{{current_hash}}", pkg_build.current_hash)
-                    ).split('\"')
-                for i, item in enumerate(test):
-                    if i % 2 == 0:
-                        git_args += item.split()
-                    else:
-                        git_args += [item]
+                        .replace("{{git_diff_args}}", PikaurConfig().review.GitDiffArgs.get_str().replace(",", " "))
+                    )
+
                 for file_path in PikaurConfig().review.HideDiffFiles.get_str().split(","):
                     if file_path:
                         git_args += [

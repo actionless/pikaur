@@ -470,6 +470,14 @@ class ConfigSchema(UserDict[str, ConfigSection]):
                     "GitDiffArgs": {
                         "data_type": STR,
                         "default": "--ignore-space-change,--ignore-all-space",
+                        "deprecated": {
+                            "section": "review",
+                            "option": "GitCmd",
+                            "transform": (
+                                lambda old_value, _config:
+                                "git -C {{repo_path}} diff " + old_value.replace(",", " ") + " {{last_install_hash}} {{current_hash}} -- ."
+                            ),
+                        }
                     },
                     "GitCmd": {
                         "data_type": STR,

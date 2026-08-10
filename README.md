@@ -161,9 +161,13 @@ Will be overridden by `--noedit` and `--edit` flags.
 Don't prompt to show the build files diff.
 Will be overridden by `--nodiff` flag.
 
-##### GitDiffArgs (default: --ignore-space-change,--ignore-all-space)
-Flags to be passed to `git diff` command when reviewing build files.
-Should be separated by commas (`,`).
+
+##### GitCmd (default: git -C {{repo_path}} diff --ignore-space-change --ignore-all-space {{last_installed_hash}} {{current_hash}} -- .)
+Command to execute to get the PKGBUILD diff.
+Allow some variables:
+ - `{{repo_path}}`: Path where git repo is.
+ - `{{last_installed_hash}}`: Hash of the currently installed commit.
+ - `{{current_hash}}`: Hash of the new version.
 
 ##### DiffPager (default: auto)
 Wherever to use `less` pager when viewing AUR packages diff. Choices are `always`, `auto` or `never`.

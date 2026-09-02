@@ -7,10 +7,11 @@ from pikaur_test.helpers import PikaurDbTestCase, fake_pikaur, pikaur
 class ArchWikiTest(PikaurDbTestCase):
     """Criteria from arch wiki."""
 
-    def test_reliable_parser(self):
-        # Arch Wiki: Reliable parser #
-        pikaur("-S aws-cli-git")
-        self.assertInstalled("aws-cli-git")
+    # def test_reliable_parser(self):
+    #     # Arch Wiki: Reliable parser #
+    #     # @TODO: enable it back when the package itself builds again
+    #     pikaur("-S aws-cli-git")
+    #     self.assertInstalled("aws-cli-git")
 
     # def test_reliable_solver(self):
     #     # Arch Wiki: Reliable solver

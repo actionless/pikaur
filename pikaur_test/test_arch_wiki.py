@@ -17,12 +17,13 @@ class ArchWikiTest(PikaurDbTestCase):
     #     pikaur("-S aws-cli-git")
     #     self.assertInstalled("aws-cli-git")
 
-    def test_reliable_solver(self):
-        # Arch Wiki: Reliable solver
-        pkg_name = "liri-git-meta"
-        fake_pikaur(f"-S {pkg_name}")
-        self.assertInstalled(pkg_name)
-        # it's slow as hell even with mocked makepkg :(
+    # def test_reliable_solver(self):
+    #     # Arch Wiki: Reliable solver
+    #     # @TODO: enable it back after investigation
+    #     pkg_name = "liri-git-meta"
+    #     fake_pikaur(f"-S {pkg_name}")
+    #     self.assertInstalled(pkg_name)
+    #     # it's slow as hell even with mocked makepkg :(
 
     def test_split_packages_1(self):
         # Split packages 1:

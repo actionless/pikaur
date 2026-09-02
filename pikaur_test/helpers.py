@@ -365,7 +365,11 @@ class PikaurDbTestCase(PikaurTestCase):
             )
             if not proc.stdout_text:
                 raise RuntimeError
-            some_older_commit = proc.stdout_text.splitlines()[count]
+            commits = proc.stdout_text.splitlines()
+            if count > len(commits):
+                msg = f"{pkg_name} requested {count} commits back, but have only {commits}."
+                raise RuntimeError(msg)
+            some_older_commit = commits[count]
             spawn(f"git -C {repo_dir} checkout {some_older_commit}")
             srcinfo.regenerate()
             to_version = srcinfo.get_version()

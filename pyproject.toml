@@ -282,9 +282,10 @@ expected-line-ending-format = 'LF'
 ignore-long-lines = '^\s*(# )?<?https?://\S+>?$'
 indent-after-paren = '4'
 indent-string = '    '
-max-line-length = '100'
 max-module-lines = '1000'
 single-line-if-stmt = 'no'
+#max-line-length = '100'
+max-line-length = '999'  # moved to ruff
 
 [tool.pylint.TYPECHECK]
 contextmanager-decorators = 'contextlib.contextmanager'

@@ -32,9 +32,9 @@ def read_bytes_from_url(
         print_stderr(
             color_line("=> ", ColorsHighlight.cyan) + f"GET {url}",
         )
-    req = request.Request(url, headers={"User-Agent": "Mozilla/5.0"})  # pylint: disable=line-too-long  # ruff: ignore[suspicious-url-open-usage]
+    req = request.Request(url, headers={"User-Agent": "Mozilla/5.0"})  # ruff: ignore[suspicious-url-open-usage]
     try:
-        with request.urlopen(req) as response:  # nosec B310  # pylint: disable=line-too-long,useless-suppression  # ruff: ignore[suspicious-url-open-usage]
+        with request.urlopen(req) as response:  # nosec B310  # ruff: ignore[suspicious-url-open-usage]
             result_bytes: bytes = response.read()
             return result_bytes
     except URLError as exc:

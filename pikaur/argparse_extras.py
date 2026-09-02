@@ -29,7 +29,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             self,
             arg_strings: list[str],
             namespace: "Namespace",
-            intermixed: bool = False,  # pylint: disable=line-too-long  # ruff: ignore[boolean-type-hint-positional-argument, boolean-default-value-positional-argument]
+            intermixed: bool = False,  # ruff: ignore[boolean-type-hint-positional-argument, boolean-default-value-positional-argument]
     ) -> "tuple[Namespace, list[str]]":
         # replace arg strings that are file references
         if self.fromfile_prefix_chars is not None:

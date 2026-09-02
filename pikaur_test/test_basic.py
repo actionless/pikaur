@@ -13,8 +13,9 @@ class InstallTest(PikaurDbTestCase):
 
     def test_aur_package_with_repo_deps(self):
         # aur package with repo deps
-        pikaur("-S python-pygobject-stubs")
-        self.assertInstalled("python-pygobject-stubs")
+        aur_pkg_name = "python-glfw"
+        pikaur(f"-S {aur_pkg_name}")
+        self.assertInstalled(aur_pkg_name)
 
     def test_repo_package_wo_deps(self):
         # repo package w/o deps
@@ -172,12 +173,16 @@ class InstallTest(PikaurDbTestCase):
 
     def test_print_commands_and_needed(self):
         """Test that `--print--commands` option not fails."""
+        repo_pkg_name = "nano"
+        aur_pkg_name = "python-glfw"
         self.assertEqual(
-            fake_pikaur("-S python-pygobject-stubs nano --print-commands").returncode, 0,
+            fake_pikaur(f"-S {aur_pkg_name} {repo_pkg_name} --print-commands").returncode, 0,
         )
 
     def test_needed(self):
         """Test that `--needed` option not fails."""
+        repo_pkg_name = "nano"
+        aur_pkg_name = "python-glfw"
         self.assertEqual(
-            pikaur("-S python-pygobject-stubs nano --needed").returncode, 0,
+            pikaur(f"-S {aur_pkg_name} {repo_pkg_name} --needed").returncode, 0,
         )

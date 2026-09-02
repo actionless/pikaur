@@ -24,7 +24,7 @@ class SysupgradeTest(PikaurDbTestCase):
     aur_pkg_name = "fbcat"
     aur_old_version: str
 
-    aur2_pkg_name = "python-pygobject-stubs"
+    aur2_pkg_name = "python-glfw"
     aur2_old_version: str
 
     dev_pkg_name = "xst-git"

@@ -10,7 +10,8 @@ class CacheCliTestcase(PikaurDbTestCase):
         # pylint:disable=import-outside-toplevel
         from pikaur.config import BuildCachePath, PackageCachePath
 
-        pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
+        aur_pkg_name = "python-glfw"
+        pikaur(f"-S {aur_pkg_name} --rebuild --keepbuild")
         self.assertGreaterEqual(
             len(list(BuildCachePath().iterdir())), 1,
         )
@@ -30,7 +31,8 @@ class CacheCliTestcase(PikaurDbTestCase):
         # pylint:disable=import-outside-toplevel
         from pikaur.config import BuildCachePath, PackageCachePath
 
-        pikaur("-S python-pygobject-stubs --rebuild --keepbuild")
+        aur_pkg_name = "python-glfw"
+        pikaur(f"-S {aur_pkg_name} --rebuild --keepbuild")
         self.assertGreaterEqual(
             len(list(BuildCachePath().iterdir())), 1,
         )

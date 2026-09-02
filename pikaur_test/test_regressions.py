@@ -153,7 +153,7 @@ class RegressionTest(PikaurDbTestCase):
         See:
         https://github.com/actionless/pikaur/issues/474
         """
-        aur_pkg_name = "python-pygobject-stubs"
+        aur_pkg_name = "python-glfw"
         self.remove_if_installed(aur_pkg_name)
         fake_pikaur(f"-S {aur_pkg_name}>=99.9.9.9")
         self.assertNotInstalled(aur_pkg_name)

@@ -366,7 +366,7 @@ class PikaurDbTestCase(PikaurTestCase):
             if not proc.stdout_text:
                 raise RuntimeError
             commits = proc.stdout_text.splitlines()
-            if count > len(commits):
+            if count >= len(commits):
                 msg = f"{pkg_name} requested {count} commits back, but have only {commits}."
                 raise RuntimeError(msg)
             some_older_commit = commits[count]

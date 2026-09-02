@@ -124,7 +124,7 @@ def _print(
     if not isinstance(message, str):
         message = str(message)
     if lock:
-        PrintLock().__enter__()  # noqa: PLC2801
+        PrintLock().__enter__()  # ruff: ignore[unnecessary-dunder-call]
     try:
         if tty_restore:
             TTYRestore.restore()

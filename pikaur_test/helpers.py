@@ -98,7 +98,7 @@ class CmdResult:
         return hash(self) == hash(other)
 
 
-class FakeExit(Exception):  # noqa: N818
+class FakeExit(Exception):  # ruff: ignore[error-suffix-on-exception-name]
     pass
 
 
@@ -112,7 +112,7 @@ class InterceptSysOutput:
 
     _patcher_stdout: "mock._patch[IO[str]] | None" = None
     _patcher_stderr: "mock._patch[IO[str]] | None" = None
-    _patcher_exit: "mock._patch[Callable[[DefaultArg(int, 'code')], NoReturn]]"  # noqa: F821,RUF100
+    _patcher_exit: "mock._patch[Callable[[DefaultArg(int, 'code')], NoReturn]]"  # noqa: F821  # pylint: disable=line-too-long  # ruff: ignore[noqa-comments]
     _patcher_spawn: "mock._patch[Callable[[list[str]], Popen[bytes]]]"
     patchers: "Sequence[mock._patch[Any] | None] | None" = None
 
@@ -124,8 +124,8 @@ class InterceptSysOutput:
         self.capture_stdout = capture_stdout
         self.capture_stderr = capture_stderr
 
-        self.out_file = out_file = tempfile.TemporaryFile("w+", encoding="UTF-8")  # noqa: SIM115
-        self.err_file = err_file = tempfile.TemporaryFile("w+", encoding="UTF-8")  # noqa: SIM115
+        self.out_file = out_file = tempfile.TemporaryFile("w+", encoding="UTF-8")  # pylint: disable=line-too-long  # ruff: ignore[open-file-with-context-handler]
+        self.err_file = err_file = tempfile.TemporaryFile("w+", encoding="UTF-8")  # pylint: disable=line-too-long  # ruff: ignore[open-file-with-context-handler]
         self.out_file.isatty = lambda: False  # type: ignore[method-assign]
         self.err_file.isatty = lambda: False  # type: ignore[method-assign]
 
@@ -301,15 +301,15 @@ class PikaurTestCase(TestCase):
         log_stderr(self.separator)
         reset_cached_pikaur_args([])
 
-    def assertInstalled(self, pkg_name: str) -> None:  # noqa: N802
+    def assertInstalled(self, pkg_name: str) -> None:  # ruff: ignore[invalid-function-name]
         if not pkg_is_installed(pkg_name):
             self.fail(f'Package "{pkg_name}" is not installed.')
 
-    def assertNotInstalled(self, pkg_name: str) -> None:  # noqa: N802
+    def assertNotInstalled(self, pkg_name: str) -> None:  # ruff: ignore[invalid-function-name]
         if pkg_is_installed(pkg_name):
             self.fail(f'Package "{pkg_name}" is still installed.')
 
-    def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:  # noqa: N802
+    def assertProvidedBy(self, dep_name: str, provider_name: str) -> None:  # pylint: disable=line-too-long  # ruff: ignore[invalid-function-name]
         cmd_result: str = pacman(f"-Qiq {dep_name}").stdout
         self.assertTrue(
             cmd_result,

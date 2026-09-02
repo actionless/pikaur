@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name,line-too-long  # noqa: INP001
+# pylint: disable=invalid-name,line-too-long  # ruff: ignore[implicit-namespace-package]
 """
 Pure-python alpm implementation backported from Pikaur v0.6
 with compatibility layer added for easier integration with pyalpm interface.
@@ -123,7 +123,7 @@ class Package:
     builddate: int
     installdate: int
     # { "files",  (getter)pyalpm_package_get_files, 0, "list of installed files", NULL } ,
-    # { "backup", (getter)_get_list_attribute, 0, "list of tuples (filename, md5sum)", &get_backup } ,  # noqa: E501,RUF100
+    # { "backup", (getter)_get_list_attribute, 0, "list of tuples (filename, md5sum)", &get_backup } ,  # ruff: ignore[line-too-long]
     # { "deltas", (getter)_get_list_attribute, 0, "list of available deltas", &get_deltas } ,
     validation: str | None = None
 
@@ -136,7 +136,7 @@ class Package:
 
     # /* miscellaneous information */
     has_scriptlet: bool
-    # { "download_size", (getter)pyalpm_pkg_download_size, 0, "predicted download size for this package", NULL },  # noqa: E501,RUF100
+    # { "download_size", (getter)pyalpm_pkg_download_size, 0, "predicted download size for this package", NULL },  # ruff: ignore[line-too-long]
     size: int
     isize: int
 
@@ -248,7 +248,7 @@ class PacmanPackageInfo(Package):
         return pformat(self.__dict__)
 
     @classmethod
-    def _parse_pacman_db_info(  # pylint: disable=too-many-branches  # noqa: C901,E501,RUF100
+    def _parse_pacman_db_info(  # pylint: disable=too-many-branches  # noqa: C901  # ruff: ignore[noqa-comments]
         cls,
         db_file: IO[bytes],
     ) -> "Iterable[PacmanPackageInfo]":
@@ -257,7 +257,7 @@ class PacmanPackageInfo(Package):
         value: str | list[str] | dict[str, str | None] | int | None
         line = field = real_field = value = None
 
-        # while line != "":  # noqa: PLC1901,RUF100
+        # while line != "":
         for line_b in db_file.readlines():
             # line = db_file.readline().strip().decode("utf-8")
             line = line_b.strip().decode("utf-8")
@@ -318,7 +318,7 @@ class PacmanPackageInfo(Package):
 
     @classmethod
     def parse_pacman_db_info(cls, file_name: str) -> "Iterable[PacmanPackageInfo]":
-        with open(file_name, "rb") as fobj:  # noqa: PTH123
+        with open(file_name, "rb") as fobj:  # ruff: ignore[builtin-open]
             yield from cls._parse_pacman_db_info(fobj)
 
 
@@ -402,7 +402,7 @@ class PackageDBCommon(abc.ABC):
         return cls._local_dict_cache
 
 
-class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # noqa: N801
+class PackageDB_ALPM9(PackageDBCommon):  # pylint: disable=invalid-name  # ruff: ignore[invalid-class-name]
 
     # ~2.7 seconds (was ~2.2 seconds with gzip)
 
@@ -581,7 +581,7 @@ class LooseVersion:
             except ValueError:
                 component_other_parsed = 0
                 error_counter += 1
-            if error_counter == 2:  # noqa: PLR2004
+            if error_counter == 2:  # ruff: ignore[magic-value-comparison]
                 component_parsed = components[i]
                 component_other_parsed = components_other[i]
             if i < components_len:

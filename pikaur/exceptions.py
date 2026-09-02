@@ -82,7 +82,7 @@ class AURError(Exception):
         super().__init__(f"URL: {self.url}\nError: {self.error}")
 
 
-class SysExit(Exception):  # noqa: N818
+class SysExit(Exception):  # ruff: ignore[error-suffix-on-exception-name]
     code: int
 
     def __init__(self, code: int) -> None:

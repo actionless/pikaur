@@ -1,6 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import subprocess  # nosec B404  # noqa: S404
+import subprocess  # nosec B404  # ruff: ignore[suspicious-subprocess-import]
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -35,7 +35,7 @@ class InteractiveSpawn(subprocess.Popen[bytes]):
 
     def communicate(
             self,
-            input: bytes | None = None,  # pylint: disable=redefined-builtin  # noqa: A002
+            input: bytes | None = None,  # pylint: disable=redefined-builtin  # ruff: ignore[builtin-argument-shadowing]
             timeout: float | None = None,
     ) -> tuple[bytes, bytes]:
         if (

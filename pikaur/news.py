@@ -7,7 +7,9 @@ from typing import TYPE_CHECKING
 try:
     from defusedxml.ElementTree import fromstring  # type: ignore[import-untyped]
 except ModuleNotFoundError:
-    from xml.etree.ElementTree import fromstring  # nosec B405  # noqa: S405
+    from xml.etree.ElementTree import (  # ruff: ignore[suspicious-xml-etree-import]
+        fromstring,  # nosec B405
+    )
 
 from .config import DEFAULT_TIMEZONE, CacheRoot, PikaurConfig
 from .i18n import translate
@@ -105,7 +107,7 @@ class News:
         if not str_response:
             print_error(translate("Could not fetch archlinux.org news"))
             return
-        self._news_feed = fromstring(str_response)  # nosec B314  # noqa: S314
+        self._news_feed = fromstring(str_response)  # nosec B314  # pylint: disable=line-too-long,useless-suppression  # ruff: ignore[suspicious-xml-element-tree-usage]
 
     def _get_last_seen_news_date(self) -> datetime.datetime:
         last_seen_fd: TextIO
@@ -113,7 +115,7 @@ class News:
             logger.debug("loading date from {}", self.cache_file)
             with open_file(self.cache_file) as last_seen_fd:
                 file_data = last_seen_fd.readline().strip()
-                parsed_date = datetime.datetime.strptime(  # noqa: DTZ007
+                parsed_date = datetime.datetime.strptime(  # pylint: disable=line-too-long  # ruff: ignore[call-datetime-strptime-without-zone]
                     file_data, DT_FORMAT,
                 )
                 logger.debug("data: {}, parsed: {}", file_data, parsed_date)
@@ -138,7 +140,7 @@ class News:
         if not last_online_news:
             print_error(translate("The news feed could not be received or parsed."))
             return False
-        last_online_news_date: datetime.datetime = datetime.datetime.strptime(  # noqa: DTZ007
+        last_online_news_date: datetime.datetime = datetime.datetime.strptime(  # pylint: disable=line-too-long  # ruff: ignore[call-datetime-strptime-without-zone]
             last_online_news, DT_FORMAT,
         )
         last_seen_news_date = self._get_last_seen_news_date()

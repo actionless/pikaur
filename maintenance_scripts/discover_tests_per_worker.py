@@ -30,7 +30,7 @@ def do_stuff(num_workers: int, worker_idx: int) -> None:
         raise RuntimeError
     tests = [
         test.id()
-        for suite in TestLoader().discover(".", "test*.py", ".")._tests  # noqa: SLF001
+        for suite in TestLoader().discover(".", "test*.py", ".")._tests  # pylint: disable=line-too-long  # ruff: ignore[private-member-access]
         for testcase in getattr(suite, "_tests", [])
         for test in getattr(testcase, "_tests", [])
     ]

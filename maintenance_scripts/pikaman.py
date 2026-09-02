@@ -289,12 +289,12 @@ class NroffRenderer(
 
     # ########################### TBD: ############################### #
 
-    def strong(self, _node: "Any", entering: bool) -> str:  # noqa: FBT001
+    def strong(self, _node: "Any", entering: bool) -> str:  # pylint: disable=line-too-long  # ruff: ignore[boolean-type-hint-positional-argument]
         if entering:
             return r"\fB"
         return r"\fR"
 
-    def emph(self, _node: "Any", entering: bool) -> str:  # noqa: FBT001
+    def emph(self, _node: "Any", entering: bool) -> str:  # pylint: disable=line-too-long  # ruff: ignore[boolean-type-hint-positional-argument]
         if entering:
             return r"\fI"
         return r"\fR"

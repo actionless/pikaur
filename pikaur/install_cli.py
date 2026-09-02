@@ -271,7 +271,7 @@ class InstallPackagesCLI:
                 PackageDB.discard_repo_cache()
                 print_stdout()
 
-    class ExitMainSequence(Exception):  # noqa: N818
+    class ExitMainSequence(Exception):  # ruff: ignore[error-suffix-on-exception-name]
         """Raise when need to finish Install CLI"""
 
     def main_sequence(self) -> None:
@@ -320,7 +320,7 @@ class InstallPackagesCLI:
         install_infos = [
             install_info
             for install_info in (
-                self.install_info._all_aur_updates_raw   # pylint: disable=protected-access  # noqa: SLF001,E501,RUF100
+                self.install_info._all_aur_updates_raw   # pylint: disable=protected-access,line-too-long,useless-suppression  # ruff: ignore[private-member-access]
             )
             if install_info.name == pkg_name
         ] if getattr(self, "install_info", None) else [

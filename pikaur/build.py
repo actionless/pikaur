@@ -86,7 +86,7 @@ ARCH_ANY: "Final" = "any"
 IGNORE_PATHS_WHEN_COPYING: "Final[tuple[str]]" = (".git", )
 
 
-class PkgbuildChanged(Exception):  # noqa: N818
+class PkgbuildChanged(Exception):  # ruff: ignore[error-suffix-on-exception-name]
     pass
 
 
@@ -113,7 +113,7 @@ def copy_aur_repo(from_path: Path, to_path: Path) -> None:
         isolated_mkdir(to_path)
 
     from_paths = []
-    for src_path_str in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):  # noqa: PTH207
+    for src_path_str in glob(f"{from_path}/*") + glob(f"{from_path}/.*"):  # ruff: ignore[glob]
         src_path = Path(src_path_str)
         if src_path.name not in IGNORE_PATHS_WHEN_COPYING:
             from_paths.append(src_path)
@@ -527,7 +527,7 @@ class PackageBuild(ComparableType):
         )
         print_stderr(f"{color_line(DECORATION, ColorsHighlight.purple)} {message}:")
 
-        try:
+        try:  # ruff: ignore[too-many-statements-in-try-clause]
             update_self_deps = False
             for pkg_name, pkg_build in all_package_builds.items():
                 if pkg_name in self.built_deps_to_install:
@@ -688,7 +688,7 @@ class PackageBuild(ComparableType):
                     ]
                     for dep_line in dep_lines
                 ]
-                deps_destination += new_deps_to_install  # noqa: PLW2901
+                deps_destination += new_deps_to_install  # ruff: ignore[redefined-loop-name]
         self.new_make_deps_to_install = list(set(
             new_make_deps_to_install + new_check_deps_to_install,
         ))

@@ -102,7 +102,7 @@ class VersionMatcher:
         def cmp_ge(v: str) -> int:
             return cmp_eq(v) or cmp_gt(v)
 
-        def cmp_default(v: str) -> int:  # noqa: ARG001  # pylint: disable=unused-argument
+        def cmp_default(v: str) -> int:  # ruff: ignore[unused-function-argument]  # pylint: disable=unused-argument
             return 1
 
         cond: str | None = None

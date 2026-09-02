@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name,too-many-branches,too-many-statements  # noqa: INP001
+# pylint: disable=invalid-name,too-many-branches,too-many-statements  # ruff: ignore[implicit-namespace-package]
 import asyncio
 import os
 import sys
@@ -31,7 +31,7 @@ class PacmanExecutablesPaths:
         # pylint: disable=import-outside-toplevel
         if not cls._pacman:
             try:
-                from pikaur.args import (  # pylint: disable=no-name-in-module,useless-suppression  # noqa: PLC0415,E501,RUF100
+                from pikaur.args import (  # pylint: disable=no-name-in-module,useless-suppression  # ruff: ignore[import-outside-top-level]
                     parse_args,
                 )
                 cls._pacman = parse_args().pacman_path
@@ -104,7 +104,7 @@ class CmdTaskWorker:
         while True:
             line = await stream.readline()
             if line:
-                if self.enable_logging:
+                if self.enable_logging:  # ruff: ignore[unnecessary-if]
                     pass
                 callback(line)
             else:
@@ -188,7 +188,7 @@ class MultipleTasksExecutor:
             )
             future.add_done_callback(self.create_process_done_callback(cmd_id))
             self.futures[cmd_id] = future
-        if self.loop.is_running():
+        if self.loop.is_running():  # ruff: ignore[unnecessary-if]
             pass
         self.loop.run_forever()
         return self.results
@@ -228,18 +228,18 @@ CLI_TO_DB_TRANSLATION: Final[dict[str, str]] = {
 }
 
 
-class DBPlaceholder:  # noqa: B903
+class DBPlaceholder:  # ruff: ignore[class-as-data-structure]
 
     def __init__(self, name: str) -> None:
         self.name = name
 
 
-def get_pacman_cli_package_db(  # noqa: C901
-        PackageDBCommon: "type[PackageDBCommonType]",  # noqa: N803
-        PacmanPackageInfo: "type[PacmanPackageInfoType]",  # noqa: N803
-        PACMAN_DICT_FIELDS: Sequence[str],  # noqa: N803
-        PACMAN_LIST_FIELDS: Sequence[str],  # noqa: N803
-        PACMAN_INT_FIELDS: Sequence[str],  # noqa: N803
+def get_pacman_cli_package_db(  # ruff: ignore[complex-structure]
+        PackageDBCommon: "type[PackageDBCommonType]",  # ruff: ignore[invalid-argument-name]
+        PacmanPackageInfo: "type[PacmanPackageInfoType]",  # ruff: ignore[invalid-argument-name]
+        PACMAN_DICT_FIELDS: Sequence[str],  # ruff: ignore[invalid-argument-name]
+        PACMAN_LIST_FIELDS: Sequence[str],  # ruff: ignore[invalid-argument-name]
+        PACMAN_INT_FIELDS: Sequence[str],  # ruff: ignore[invalid-argument-name]
 ) -> "type[PackageDBCommonType]":
 
     class CliPackageInfo(PacmanPackageInfo):  # type: ignore[valid-type,misc]
@@ -266,7 +266,7 @@ def get_pacman_cli_package_db(  # noqa: C901
             value: str | list[str] | dict[str, str | None] | None
             field = value = None
             for line in lines:
-                if line == "":  # noqa: PLC1901
+                if line == "":  # ruff: ignore[compare-to-empty-string]
                     if db_type == "local":
                         pkg.db = DBPlaceholder(name="local")
                     else:
@@ -348,7 +348,7 @@ def get_pacman_cli_package_db(  # noqa: C901
         @classmethod
         def _get_dbs(
                 cls,
-                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # ruff: ignore[unused-class-method-argument]
         ) -> MergedDBCache:
             if not cls._repo_cache:
                 print(" >>> Retrieving local pacman database...")
@@ -375,7 +375,7 @@ def get_pacman_cli_package_db(  # noqa: C901
         @classmethod
         def get_repo_list(
                 cls,
-                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # ruff: ignore[unused-class-method-argument]
         ) -> list[CliPackageInfo]:
             # print(" >>> GET_REPO_LIST")
             return cls._get_dbs()["repo"]
@@ -383,7 +383,7 @@ def get_pacman_cli_package_db(  # noqa: C901
         @classmethod
         def get_local_list(
                 cls,
-                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # ruff: ignore[unused-class-method-argument]
         ) -> list[CliPackageInfo]:
             # print(" >>> GET_LOCAL_LIST")
             return cls._get_dbs()["local"]
@@ -393,7 +393,7 @@ def get_pacman_cli_package_db(  # noqa: C901
         @classmethod
         def get_db_names(
                 cls,
-                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # ruff: ignore[unused-class-method-argument]
         ) -> list[str]:
             if not cls._repo_db_names:
                 result = SingleTaskExecutor(
@@ -409,7 +409,7 @@ def get_pacman_cli_package_db(  # noqa: C901
         def get_local_pkg_uncached(
                 cls,
                 name: str,
-                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # noqa: ARG003,E501,RUF100
+                handle: "Handle | None" = None,  # pylint: disable=unused-argument  # ruff: ignore[unused-class-method-argument]
         ) -> "PacmanPackageInfoType | None":
             result = SingleTaskExecutor(
                 PacmanTaskWorker(["-Qi", name]),

@@ -180,6 +180,12 @@ ignore = [
   "D415",
 
   #"Q000",  # force double-quotes
+
+  "unused-noqa",
+]
+external = [
+  # vulture:
+  "V201",
 ]
 
 [tool.ruff.lint.per-file-ignores]

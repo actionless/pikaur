@@ -146,7 +146,7 @@ def pretty_format_repo_name(
     return color_line(result, RepoColorGenerator.get_next("repo", repo_name))
 
 
-def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # noqa: C901
+def pretty_format_upgradeable(  # pylint: disable=too-many-statements  # ruff: ignore[complex-structure]
         packages_updates: "Sequence[InstallInfo]",
         *,
         verbose: bool = False,
@@ -784,7 +784,7 @@ def print_stable_version_upgrades(stable_versions_updates: dict[str, InstallInfo
 
 
 # pylint:disable=too-many-statements,too-many-branches
-def print_package_search_results(  # noqa: C901
+def print_package_search_results(  # ruff: ignore[complex-structure]
         repo_packages: "Iterable[pyalpm.Package]",
         aur_packages: "Iterable[AURPackageInfo]",
         local_pkgs_versions: dict[str, str],

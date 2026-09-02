@@ -146,7 +146,7 @@ class MakePkgCommand:
         pkgdest = str(get_pkgdest())
         if pkgdest and (
                 pkgdest.startswith(
-                    (str(_UserTempRoot()), "/tmp", "/var/tmp"),  # nosec B108  # noqa: S108
+                    (str(_UserTempRoot()), "/tmp", "/var/tmp"),  # nosec B108  # pylint: disable=line-too-long,useless-suppression  # ruff: ignore[hardcoded-temp-file]
                 )
         ):
             if not cls._cmd:

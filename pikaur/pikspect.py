@@ -15,7 +15,7 @@ from pty import (  # type: ignore[attr-defined]
     CHILD,
     STDIN_FILENO,
     STDOUT_FILENO,
-    _read,  # noqa: PLC2701
+    _read,  # ruff: ignore[import-private-name]
     fork,
 )
 from tty import setraw, tcgetattr, tcsetattr  # type: ignore[attr-defined]
@@ -87,7 +87,7 @@ def _copy(  # pylint: disable=too-many-branches
     stdout_avail = master_fd != STDOUT_FILENO
     i_buf = b""
     o_buf = b""
-    while 1:
+    while True:
         rfds: list[int] = []
         wfds: list[int] = []
         if stdin_avail and len(i_buf) < high_waterlevel:
@@ -135,7 +135,7 @@ def _copy(  # pylint: disable=too-many-branches
             if data:
                 i_buf += data
 
-    file_debug("FDS finished")
+    file_debug("FDS finished")  # noqa: V201
 
 
 def spawn(
@@ -152,7 +152,7 @@ def spawn(
 
     pid, master_fd = fork()
     if pid == CHILD:
-        os.execlpe(argv[0], *argv, env)  # nosec B606  # noqa: S606
+        os.execlpe(argv[0], *argv, env)  # nosec B606  # ruff: ignore[start-process-with-no-shell]
 
     try:
         mode = tcgetattr(STDIN_FILENO)
@@ -433,7 +433,7 @@ class PikspectPopen:
 
         file_debug(char)
 
-        try:
+        try:  # ruff: ignore[too-many-statements-in-try-clause]
             with PrintLock():
                 if len(char) == 1:
                     if ord(char) == ReadlineKeycodes.BACKSPACE:
@@ -444,7 +444,7 @@ class PikspectPopen:
                             self.historic_output.decode(DEFAULT_INPUT_ENCODING).splitlines()[-1],
                         )
         except ValueError as exc:
-            print(exc)  # noqa: T201
+            print(exc)  # ruff: ignore[print]
         return char
 
 

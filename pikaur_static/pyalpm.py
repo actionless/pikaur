@@ -1,4 +1,4 @@
-# noqa: INP001
+# ruff: ignore[implicit-namespace-package]
 """
 PyALPM compatibility interface for PypyALPM.
 To be used with apps depending on pyalpm with pypyalpm.

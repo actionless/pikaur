@@ -32,9 +32,9 @@ def read_bytes_from_url(
         print_stderr(
             color_line("=> ", ColorsHighlight.cyan) + f"GET {url}",
         )
-    req = request.Request(url, headers={"User-Agent": "Mozilla/5.0"})  # noqa: S310
+    req = request.Request(url, headers={"User-Agent": "Mozilla/5.0"})  # pylint: disable=line-too-long  # ruff: ignore[suspicious-url-open-usage]
     try:
-        with request.urlopen(req) as response:  # nosec B310  # noqa: S310
+        with request.urlopen(req) as response:  # nosec B310  # pylint: disable=line-too-long,useless-suppression  # ruff: ignore[suspicious-url-open-usage]
             result_bytes: bytes = response.read()
             return result_bytes
     except URLError as exc:
@@ -100,7 +100,7 @@ def init_proxy() -> None:
             socks_proxy_addr = socks_proxy_addr[:idx]
 
         try:
-            import socks  # type: ignore[import-untyped]  # pylint: disable=import-outside-toplevel  # noqa: PLC0415,E501,RUF100
+            import socks  # type: ignore[import-untyped]  # pylint: disable=import-outside-toplevel  # ruff: ignore[import-outside-top-level]
         except ImportError as exc:
             raise ProxyInitSocks5Error(
                 translate("pikaur requires python-pysocks to use a socks5 proxy."),

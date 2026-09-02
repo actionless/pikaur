@@ -9,7 +9,7 @@ from argparse import (
     SUPPRESS,
     ArgumentError,
     ArgumentParser,
-    _get_action_name,  # noqa: PLC2701
+    _get_action_name,  # ruff: ignore[import-private-name]
 )
 from typing import TYPE_CHECKING
 
@@ -25,11 +25,11 @@ LONG_ARG_PREFIX: "Final" = "--"
 
 class ArgumentParserWithUnknowns(ArgumentParser):
 
-    def _parse_known_args(  # noqa: C901
+    def _parse_known_args(  # ruff: ignore[complex-structure]
             self,
             arg_strings: list[str],
             namespace: "Namespace",
-            intermixed: bool = False,  # noqa: FBT001,FBT002
+            intermixed: bool = False,  # pylint: disable=line-too-long  # ruff: ignore[boolean-type-hint-positional-argument, boolean-default-value-positional-argument]
     ) -> "tuple[Namespace, list[str]]":
         # replace arg strings that are file references
         if self.fromfile_prefix_chars is not None:
@@ -162,7 +162,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                     if (
                         arg_count == 0
                         and option_string[1] not in chars
-                        and explicit_arg != ""   # noqa: PLC1901
+                        and explicit_arg != ""   # ruff: ignore[compare-to-empty-string]
                     ):
                         if sep or explicit_arg[0] in chars:
                             msg = _("ignored explicit argument %r")
@@ -194,7 +194,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                             # - break
                             extras.append(option_string)
                             explicit_arg = "".join(explicit_arg[1:])
-                            if explicit_arg == "":  # noqa: PLC1901
+                            if explicit_arg == "":  # ruff: ignore[compare-to-empty-string]
                                 stop = start_index + 1
                                 break
                             # >--! CLIP-END ! -----------------------<
@@ -230,7 +230,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
             if not action_tuples:
                 raise RuntimeError
             for action, args, option_string in action_tuples:
-                if (  # noqa: SIM102
+                if (  # ruff: ignore[collapsible-if]
                     getattr(action, "deprecated", None)
                     and getattr(self, "_warning", None)
                 ):
@@ -275,7 +275,7 @@ class ArgumentParserWithUnknowns(ArgumentParser):
                 ):
                     args.remove(LONG_ARG_PREFIX)
                 start_index += arg_count
-                if (  # noqa: SIM102
+                if (  # ruff: ignore[collapsible-if]
                     getattr(action, "deprecated", None)
                     and getattr(self, "_warning", None)
                 ):

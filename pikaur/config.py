@@ -303,7 +303,7 @@ class PromptLockPath(PathConfig):
         return (
             (
                 _UserCacheRoot() if UsingDynamicUsers() else _UserTempRoot()
-            ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311   # noqa: S311
+            ) / f"pikaur_prompt_{random.randint(0, 999999)}.lock"  # nosec: B311  # pylint: disable=line-too-long  # ruff: ignore[suspicious-non-cryptographic-random-usage]
         )
 
 

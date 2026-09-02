@@ -8,8 +8,8 @@ except ModuleNotFoundError:
     import sys
 
     try:
-        import pyalpm  # noqa: F401
-    except:   # noqa: E722
+        import pyalpm  # ruff: ignore[unused-import,noqa-comments]  # noqa: F401
+    except:   # ruff: ignore[bare-except,noqa-comments]  # noqa: E722
         print("Can't import Pyalpm. "
               "Probably it's not installed or system Python had breaking version update.")
         sys.exit(1)
@@ -19,7 +19,7 @@ except ModuleNotFoundError:
         from pikaur.i18n import translate
         from pikaur.main import main
         from pikaur.pikaprint import print_warning
-    except:   # noqa: E722
+    except:   # ruff: ignore[bare-except,noqa-comments]  # noqa: E722
         print("System Python had breaking version update. You need to rebuild Pikaur manually.")
         print()
         print("    https://github.com/actionless/pikaur#installation")

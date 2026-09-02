@@ -197,7 +197,7 @@ def cli_dynamic_select() -> None:  # pragma: no cover
         raise SysExit(1)
 
     while True:
-        try:
+        try:  # ruff: ignore[too-many-statements-in-try-clause]
             print_stderr(
                 "\n" + translate(
                     "Please enter the number of the package(s) you want to install "

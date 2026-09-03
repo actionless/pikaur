@@ -21,19 +21,28 @@ FIRST_COLUMN_WIDTH: "Final" = 16
 
 
 def _format_options_help(options: list[HelpMessage]) -> str:
-    return "\n".join([
-        "{:>{first_column_margin}} {:<{first_column_width}} {}".format(
-            (help_msg.short and ("-" + help_msg.short + ",")) or "",
-            (help_msg.long and ("--" + help_msg.long)) or "",
-            help_msg.doc if (
-                (len(help_msg.short or "") + 1 + len(help_msg.long or "") + 2) < FIRST_COLUMN_WIDTH
-            ) else f"\n{(FIRST_COLUMN_MARGIN + FIRST_COLUMN_WIDTH + 2) * ' '}{help_msg.doc}",
-            first_column_margin=FIRST_COLUMN_MARGIN,
-            first_column_width=FIRST_COLUMN_WIDTH,
+    lines = []
+    for help_msg in options:
+        if not help_msg.doc:
+            continue
+        short_opt = (help_msg.short and ("-" + help_msg.short + ",")) or ""
+        long_opt = (
+            (help_msg.long and ("--" + help_msg.long)) or ""
+        ) + (
+            f" <{help_msg.placeholder}>" if help_msg.placeholder else ""
         )
-        for help_msg in options
-        if help_msg.doc
-    ])
+        lines.append(
+            "{:>{first_column_margin}} {:<{first_column_width}} {}".format(
+                short_opt,
+                long_opt,
+                help_msg.doc if (
+                    (len(short_opt) + 1 + len(long_opt) + 2) < FIRST_COLUMN_WIDTH
+                ) else f"\n{(FIRST_COLUMN_MARGIN + FIRST_COLUMN_WIDTH + 2) * ' '}{help_msg.doc}",
+                first_column_margin=FIRST_COLUMN_MARGIN,
+                first_column_width=FIRST_COLUMN_WIDTH,
+            ),
+        )
+    return "\n".join(lines)
 
 
 def cli_print_help() -> None:

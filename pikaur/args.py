@@ -30,6 +30,7 @@ class HelpMessage(NamedTuple):
     short: str | None
     long: str | None
     doc: str | None
+    placeholder: str | None
 
 
 class IncompatibleArgumentsError(Exception):
@@ -779,7 +780,9 @@ def get_parser_for_action(
                     )
             if is_pikaur:
                 help_msgs.append(
-                    HelpMessage(arg.short, arg.long, arg.doc),
+                    HelpMessage(
+                        arg.short, arg.long, arg.doc, arg.long if (action_type is None) else None,
+                    ),
                 )
 
     if pikaur_action is None:

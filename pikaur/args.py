@@ -20,6 +20,7 @@ class Arg(NamedTuple):
     long: str | None
     default: PossibleArgValuesTypes
     doc: str | None = None
+    placeholder: str | None = None
     help_only: bool = False
 
 
@@ -30,7 +31,7 @@ class HelpMessage(NamedTuple):
     short: str | None
     long: str | None
     doc: str | None
-    placeholder: str | None
+    placeholder: str | None = None
 
 
 class IncompatibleArgumentsError(Exception):
@@ -315,31 +316,37 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
             None, "home-dir",
             None,
             translate("alternative home directory location"),
+            "path",
         ),
         Arg(
             None, "xdg-cache-home",
             PikaurConfig().misc.CachePath.get_str(),
             translate("alternative package cache directory location"),
+            "path",
         ),
         Arg(
             None, "xdg-config-home",
             None,
             translate("alternative configuration file directory location"),
+            "path",
         ),
         Arg(
             None, "xdg-data-home",
             PikaurConfig().misc.DataPath.get_str(),
             translate("alternative database directory location"),
+            "path",
         ),
         Arg(
             None, "preserve-env",
             PikaurConfig().misc.PreserveEnv.get_str(),
             translate("preserve environment variables (comma-separated) or '*' to preserve all"),
+            "env1,env2",
         ),
         Arg(
             None, "pacman-path",
             PikaurConfig().misc.PacmanPath.get_str(),
             translate("override path to pacman executable"),
+            "path",
         ),
     ]
     if PIKAUR_NAME == PIKAUR_STATIC_EXECUTABLE_NAME:
@@ -348,6 +355,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
                 None, "pacman-conf-path",
                 "pacman-conf",
                 translate("override path to pacman-conf executable"),
+                "path",
             ),
         ]
     if action == LIST_ALL_ACTIONS:
@@ -360,31 +368,37 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
                 None, "mflags",
                 None,
                 translate("cli args to pass to makepkg"),
+                "--flag1,--flag2",
             ),
             Arg(
                 None, "makepkg-config",
                 None,
                 translate("path to custom makepkg config"),
+                "path",
             ),
             Arg(
                 None, "makepkg-path",
                 None,
                 translate("override path to makepkg executable"),
+                "path",
             ),
             Arg(
                 None, "pikaur-config",
                 None,
                 translate("path to custom pikaur config"),
+                "path",
             ),
             Arg(
                 None, "build-gpgdir",
                 PikaurConfig().build.GpgDir.get_str(),
                 translate("set GnuPG home directory used when validating package sources"),
+                "path",
             ),
             Arg(
                 None, "privilege-escalation-target",
                 PikaurConfig().misc.PrivilegeEscalationTarget.get_str(),
-                None,
+                "choices: pikaur, pacman",
+                "name",
             ),
         ]
     if action == "getpkgbuild":
@@ -393,6 +407,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
                 "o", "output-dir",
                 None,
                 translate("path where to clone PKGBUILDs"),
+                "path",
             ),
         ]
     return result
@@ -419,6 +434,7 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
             Arg(
                 None, "aur-clone-concurrency", None,
                 translate("how many git-clones/pulls to do from AUR"),
+                "number",
             ),
         ]
     if action == "extras":
@@ -427,6 +443,7 @@ def get_pikaur_int_opts(action: str | None = None) -> ArgSchema:
                 "l", "level",
                 2,
                 translate("dependency tree level"),
+                "number",
             ),
         ]
     return result
@@ -498,7 +515,7 @@ def get_pikaur_long_opts() -> list[str]:
 def get_pacman_long_opts() -> list[str]:  # pragma: no cover
     return [
         long_opt.replace("-", "_")
-        for _short_opt, long_opt, _default, _help, help_only
+        for _short_opt, long_opt, _default, _help, help_only, _placeholder
         in (
             PACMAN_ACTIONS +
             get_pacman_bool_opts() +
@@ -781,7 +798,8 @@ def get_parser_for_action(
             if is_pikaur:
                 help_msgs.append(
                     HelpMessage(
-                        arg.short, arg.long, arg.doc, arg.long if (action_type is None) else None,
+                        arg.short, arg.long, arg.doc,
+                        arg.placeholder or (arg.long if (action_type is None) else None),
                     ),
                 )
 

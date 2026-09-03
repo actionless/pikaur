@@ -216,6 +216,7 @@ Will be overriden by `--pacman-path` flag.
 
 ##### PreserveEnv (default: `PKGDEST,VISUAL,EDITOR,http_proxy,https_proxy,ftp_proxy,HTTP_PROXY,HTTPS_PROXY,FTP_PROXY,ALL_PROXY`)
 Preserve environment variables of current user when running pikaur as root (comma-separated).
+You could use `*` to preserve all of them.
 Will be overriden by `--preserve-env` flag.
 
 ##### PrivilegeEscalationTool (default: sudo)

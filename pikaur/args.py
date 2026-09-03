@@ -333,7 +333,7 @@ def get_pikaur_str_opts(action: str | None = None) -> ArgSchema:
         Arg(
             None, "preserve-env",
             PikaurConfig().misc.PreserveEnv.get_str(),
-            translate("preserve environment variables (comma-separated)"),
+            translate("preserve environment variables (comma-separated) or '*' to preserve all"),
         ),
         Arg(
             None, "pacman-path",

@@ -11,9 +11,12 @@ from .config import (
 
 
 def get_envs_to_preserve() -> list[str]:
+    preserve_env_config = parse_args().preserve_env
+    if preserve_env_config == "*":
+        return list(os.environ.keys())
     return [
         env_var_name
-        for env_var_name in parse_args().preserve_env.split(",")
+        for env_var_name in preserve_env_config.split(",")
         if os.environ.get(env_var_name) is not None
     ]
 

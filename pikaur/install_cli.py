@@ -845,12 +845,18 @@ class InstallPackagesCLI:
                     clone_infos.append(info)
             cloned_pkgbuilds = self._clone_aur_repos(clone_infos)
             if cloned_pkgbuilds:
+                builds_by_base = {
+                    pkgbuild.package_base: pkgbuild
+                    for pkgbuild in cloned_pkgbuilds.values()
+                }
                 logger.debug("cloned_pkgbuilds={}", cloned_pkgbuilds)
                 pkgbuilds_by_name.update(cloned_pkgbuilds)
                 for info in clone_infos:
                     for provided_str in info.package.provides:
                         provided_name = VersionMatcher(provided_str).pkg_name
-                        pkgbuilds_by_provides[provided_name] = cloned_pkgbuilds[info.package.name]
+                        pkgbuilds_by_provides[provided_name] = builds_by_base[
+                            info.package.packagebase
+                        ]
             for pkg_list in (self.aur_packages_names, self.aur_deps_names):
                 self._find_extra_aur_build_deps(
                     all_package_builds={

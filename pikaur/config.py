@@ -475,13 +475,17 @@ class ConfigSchema(UserDict[str, ConfigSection]):
                             "option": "GitCmd",
                             "transform": (
                                 lambda old_value, _config:
-                                "git -C {{repo_path}} diff " + old_value.replace(",", " ") + " {{last_install_hash}} {{current_hash}} -- ."
+                                "git -C {{repo_path}} diff " + old_value.replace(",", " ")
+                                + " {{last_install_hash}} {{current_hash}} -- ."
                             ),
-                        }
+                        },
                     },
                     "GitCmd": {
                         "data_type": STR,
-                        "default": "git -C {{repo_path}} diff --ignore-space-change --ignore-all-space {{last_install_hash}} {{current_hash}} -- .",
+                        "default": (
+                            "git -C {{repo_path}} diff --ignore-space-change "
+                            "--ignore-all-space {{last_install_hash}} {{current_hash}} -- ."
+                            ),
                     },
                     "DiffPager": {
                         "data_type": STR,

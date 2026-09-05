@@ -288,6 +288,8 @@ class InstallPackagesCLI:
                 self.ask_about_package_conflicts()
             self.review_build_files()
 
+            self.find_all_extra_aur_build_deps()
+
             self.install_packages()
 
     @property
@@ -662,6 +664,7 @@ class InstallPackagesCLI:
     def _find_extra_aur_build_deps(self, all_package_builds: dict[str, PackageBuild]) -> None:
         need_to_show_install_prompt = False
         for pkgbuild in all_package_builds.values():
+            logger.debug("_find_extra_aur_build_deps: {}", pkgbuild.package_base)
             pkgbuild.get_deps(
                 all_package_builds=all_package_builds,
                 filter_built=False,
@@ -741,6 +744,16 @@ class InstallPackagesCLI:
         if need_to_show_install_prompt:
             self.main_sequence()
             raise self.ExitMainSequence
+
+    def find_all_extra_aur_build_deps(self) -> None:
+        for pkg_list in (self.aur_packages_names, self.aur_deps_names):
+            self._find_extra_aur_build_deps(
+                all_package_builds={
+                    pkg_name: pkgbuild for pkg_name, pkgbuild
+                    in self.package_builds_by_name.items()
+                    if pkg_name in pkg_list
+                },
+            )
 
     def _clone_aur_repos(  # pylint: disable=too-many-branches
             self, package_infos: list[AURInstallInfo],
@@ -858,14 +871,6 @@ class InstallPackagesCLI:
                         pkgbuilds_by_provides[provided_name] = builds_by_base[
                             info.package.packagebase
                         ]
-            for pkg_list in (self.aur_packages_names, self.aur_deps_names):
-                self._find_extra_aur_build_deps(
-                    all_package_builds={
-                        pkg_name: pkgbuild for pkg_name, pkgbuild
-                        in pkgbuilds_by_name.items()
-                        if pkg_name in pkg_list
-                    },
-                )
             self.package_builds_by_name = pkgbuilds_by_name
             self.package_builds_by_provides = pkgbuilds_by_provides
             break

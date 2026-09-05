@@ -698,6 +698,7 @@ class InstallPackagesCLI:
                 if package_name in self.ignored_pkgnames:
                     continue
                 src_info = SrcInfo(pkgbuild_path=pkgbuild.pkgbuild_path, package_name=package_name)
+                src_info.regenerate()
                 srcinfo_deps.update({
                     dep_line
                     for matcher in

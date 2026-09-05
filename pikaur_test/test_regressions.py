@@ -9,7 +9,7 @@ class RegressionTest(PikaurDbTestCase):
 
     def test_split_pkgs_aur_deps(self):
         # split aur package with deps from aur (too long to build so use fake makepkg)
-        fake_pikaur("-S zfs-dkms")
+        fake_pikaur("-S zfs-dkms --mflags=--skippgpcheck")
         self.assertInstalled("zfs-dkms")
         self.assertInstalled("zfs-utils")
 

@@ -2,6 +2,11 @@
 
 # Licensed under GPLv3, see https://www.gnu.org/licenses/
 
+if grep printsrcinfo <<< "$@" ; then
+	/usr/bin/makepkg "$@"
+	exit
+fi
+
 if [[ ! "$(grep pikaur_fake_makepkg_package PKGBUILD)" ]]  && [[ ! "$(grep pikaur_fake_makepkg_prepare PKGBUILD)" ]] ; then
 	for line in $(grep "^prepare_.\+()" PKGBUILD -o) ; do
 		echo -e "$line {\n echo \"fake_$line\"\n }" >> PKGBUILD

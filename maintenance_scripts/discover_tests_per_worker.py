@@ -1,5 +1,4 @@
 # pylint: disable=protected-access
-import math
 import random
 import sys
 from typing import Final
@@ -9,9 +8,10 @@ RANDOM_SEED: Final = 123
 
 
 def get_chunks(total: int, num_workers: int) -> list[int]:
-    base_amount = int(total / num_workers)
+    base_amount = total // num_workers
     remaining = total - base_amount * num_workers
-    remaining_per_worker = math.ceil(remaining / num_workers)
+    remaining_per_worker = round(remaining / num_workers)
+    # print(f"{total=} {num_workers=} {base_amount=} {remaining=} {remaining_per_worker=}")
 
     num_workers_to_add_remaning = leftover = 0
     if remaining_per_worker:
@@ -22,6 +22,7 @@ def get_chunks(total: int, num_workers: int) -> list[int]:
     for i in range(num_workers_to_add_remaning):
         result[i] += remaining_per_worker
     result[num_workers_to_add_remaning] += leftover
+    # print(f"{result=}")
     return result
 
 
@@ -36,9 +37,11 @@ def do_stuff(num_workers: int, worker_idx: int) -> None:
     ]
     random.seed(RANDOM_SEED)
     random.shuffle(tests)
-    per_worker = get_chunks(len(tests), num_workers)[worker_idx]
-    tests_start_idx = worker_idx * per_worker
+    chunks = get_chunks(len(tests), num_workers)
+    per_worker = chunks[worker_idx]
+    tests_start_idx = sum(chunks[:worker_idx])
     tests_end_idx = min(len(tests), tests_start_idx + per_worker)
+    # print(f"{tests_start_idx=}..{tests_end_idx=}")
 
     # print()
     # print(f"{worker_idx=} from {num_workers=}")

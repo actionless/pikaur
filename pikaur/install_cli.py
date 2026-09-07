@@ -1052,9 +1052,9 @@ class InstallPackagesCLI:
                 git_cmd = PikaurConfig().review.GitCmd.get_str()
                 for s in shlex.split(git_cmd):
                     git_args += [s.replace("{{repo_path}}", str(pkg_build.repo_path))
-                        .replace("{{last_install_hash}}", pkg_build.last_installed_hash)
-                        .replace("{{current_hash}}", pkg_build.current_hash),
-                        ]
+                                 .replace("{{last_install_hash}}", pkg_build.last_installed_hash)
+                                 .replace("{{current_hash}}", pkg_build.current_hash),
+                                 ]
 
                 for file_path in PikaurConfig().review.HideDiffFiles.get_str().split(","):
                     if file_path:

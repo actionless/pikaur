@@ -485,7 +485,7 @@ class ConfigSchema(UserDict[str, ConfigSection]):
                         "default": (
                             "git -C {{repo_path}} diff --ignore-space-change "
                             "--ignore-all-space {{last_install_hash}} {{current_hash}} -- ."
-                            ),
+                        ),
                     },
                     "DiffPager": {
                         "data_type": STR,

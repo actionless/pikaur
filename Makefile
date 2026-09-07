@@ -15,7 +15,7 @@ endif
 MINIMAL_PYTHON_VERSION := (3, 12, 3)
 
 # locales:
-LANGS := fr ru pt pt_BR de is tr da nl es zh_CN it ja uk sv
+LANGS := da de es fr hu is it ja nl pt pt_BR ru sv tr uk zh_CN
 LOCALEDIR := locale
 POTFILE := $(LOCALEDIR)/pikaur.pot
 POFILES := $(addprefix $(LOCALEDIR)/,$(addsuffix .po,$(LANGS)))

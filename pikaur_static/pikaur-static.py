@@ -5,7 +5,7 @@ import os  # ruff: ignore[unsorted-imports]
 from typing import Final
 PIKAUR_NAME_ENV_NAME: Final = "PIKAUR_NAME"
 os.environ[PIKAUR_NAME_ENV_NAME] = os.environ.get(PIKAUR_NAME_ENV_NAME, "pikaur-static")
-from pikaur.main import (  # pylint: disable=wrong-import-position,line-too-long  # ruff: ignore[module-import-not-at-top-of-file,noqa-comments]  # noqa: E402
+from pikaur.main import (  # pylint: disable=wrong-import-position  # ruff: ignore[module-import-not-at-top-of-file,noqa-comments]  # noqa: E402
     main,
 )
 

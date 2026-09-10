@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -u
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
-# pylint: disable=bare-except,ungrouped-imports,unused-import
+# pylint: disable=bare-except,unused-import
 
 try:
     from pikaur.main import main
@@ -16,7 +16,7 @@ except ModuleNotFoundError:
 
     sys.path.append("/usr/lib/python%PYTHON_BUILD_VERSION%/site-packages/")
     try:
-        from pikaur.i18n import translate
+        from pikaur.i18n import translate  # pylint: disable=ungrouped-imports
         from pikaur.main import main
         from pikaur.pikaprint import print_warning
     except:   # ruff: ignore[bare-except,noqa-comments]  # noqa: E722

@@ -248,7 +248,7 @@ class PacmanPackageInfo(Package):
         return pformat(self.__dict__)
 
     @classmethod
-    def _parse_pacman_db_info(  # pylint: disable=too-many-branches  # noqa: C901  # ruff: ignore[noqa-comments]
+    def _parse_pacman_db_info(  # pylint: disable=too-many-branches
         cls,
         db_file: IO[bytes],
     ) -> "Iterable[PacmanPackageInfo]":

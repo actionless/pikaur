@@ -1049,7 +1049,7 @@ class InstallPackagesCLI:
                     git_args = ["env", "GIT_PAGER=less -+F"]
                 elif diff_pager == DiffPagerValues.NEVER:
                     git_args = ["env", "GIT_PAGER=cat"]
-                git_cmd = PikaurConfig().review.GitCmd.get_str()
+                git_cmd = PikaurConfig().review.GitDiffCmd.get_str()
                 for arg in shlex.split(git_cmd):
                     git_args += [arg.replace("{{repo_path}}", str(pkg_build.repo_path))
                                  .replace("{{last_install_hash}}", pkg_build.last_installed_hash)

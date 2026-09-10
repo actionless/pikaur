@@ -162,7 +162,7 @@ Don't prompt to show the build files diff.
 Will be overridden by `--nodiff` flag.
 
 
-##### GitCmd (default: git -C {{repo_path}} diff --ignore-space-change --ignore-all-space {{last_installed_hash}} {{current_hash}} -- .)
+##### GitDiffCmd (default: git -C {{repo_path}} diff --ignore-space-change --ignore-all-space {{last_installed_hash}} {{current_hash}} -- .)
 Command to execute to get the PKGBUILD diff.
 Allow some variables:
  - `{{repo_path}}`: Path where git repo is.

@@ -472,7 +472,7 @@ class ConfigSchema(UserDict[str, ConfigSection]):
                         "default": "--ignore-space-change,--ignore-all-space",
                         "deprecated": {
                             "section": "review",
-                            "option": "GitCmd",
+                            "option": "GitDiffCmd",
                             "transform": (
                                 lambda old_value, _config:
                                 "git -C {{repo_path}} diff " + old_value.replace(",", " ")
@@ -480,7 +480,7 @@ class ConfigSchema(UserDict[str, ConfigSection]):
                             ),
                         },
                     },
-                    "GitCmd": {
+                    "GitDiffCmd": {
                         "data_type": STR,
                         "default": (
                             "git -C {{repo_path}} diff --ignore-space-change "

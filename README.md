@@ -141,6 +141,9 @@ don't remove `~/.cache/pikaur/build/${PACKAGE_NAME}` directory between the build
 Don't remove build dependencies between and after the builds.
 Will be overridden by `--keepbuilddeps` flag.
 
+##### DynamicUsers (default: never)
+Controls systemd dynamic-user isolation when Pikaur is run as root. This option is deprecated and will be disabled in a future release; leave it at `never` unless you still rely on the legacy behavior.
+
 ##### SkipFailedBuild (default: no)
 Always skip the build if it fails and don't show recovery prompt.
 

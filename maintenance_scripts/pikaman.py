@@ -15,7 +15,7 @@ References
 """
 
 import argparse
-import datetime
+import datetime as dt
 import inspect
 import re
 from pathlib import Path
@@ -279,7 +279,7 @@ class NroffRenderer(
         return text.startswith(("http://", "https://"))
 
     def generate_header(self) -> str:
-        date = datetime.datetime.now(tz=datetime.UTC).strftime("%B %Y")
+        date = dt.datetime.now(tz=dt.UTC).strftime("%B %Y")
         return rf""".\" generated with Pikaman
 .
 .TH "{self.name.upper()}" "{self.section}" "{date}" "" "{self.name.capitalize()} manual"

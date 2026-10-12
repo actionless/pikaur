@@ -1,7 +1,7 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
 import configparser
-import datetime
+import datetime as dt
 import os
 import random
 import sys
@@ -18,7 +18,7 @@ VERSION: "Final" = "1.34-dev"
 
 DEFAULT_CONFIG_ENCODING: "Final" = "utf-8"
 DEFAULT_INPUT_ENCODING: "Final" = "utf-8"
-DEFAULT_TIMEZONE: "Final" = datetime.datetime.now().astimezone().tzinfo
+DEFAULT_TIMEZONE: "Final" = dt.datetime.now().astimezone().tzinfo
 
 BOOL: "Final" = "bool"
 INT: "Final" = "int"

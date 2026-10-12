@@ -1,6 +1,6 @@
 """Licensed under GPLv3, see https://www.gnu.org/licenses/"""
 
-import datetime
+import datetime as dt
 from html.parser import HTMLParser
 from typing import TYPE_CHECKING
 
@@ -109,13 +109,13 @@ class News:
             return
         self._news_feed = fromstring(str_response)  # nosec B314  # ruff: ignore[suspicious-xml-element-tree-usage]
 
-    def _get_last_seen_news_date(self) -> datetime.datetime:
+    def _get_last_seen_news_date(self) -> dt.datetime:
         last_seen_fd: TextIO
         try:
             logger.debug("loading date from {}", self.cache_file)
             with open_file(self.cache_file) as last_seen_fd:
                 file_data = last_seen_fd.readline().strip()
-                parsed_date = datetime.datetime.strptime(  # ruff: ignore[call-datetime-strptime-without-zone]
+                parsed_date = dt.datetime.strptime(  # ruff: ignore[call-datetime-strptime-without-zone]
                     file_data, DT_FORMAT,
                 )
                 logger.debug("data: {}, parsed: {}", file_data, parsed_date)
@@ -124,7 +124,7 @@ class News:
             # if file doesn't exist or corrupted,
             # this feature was run the first time
             # then we get take the date from the last installed package:
-            last_pkg_date: datetime.datetime = datetime.datetime.fromtimestamp(
+            last_pkg_date: dt.datetime = dt.datetime.fromtimestamp(
                 PackageDB.get_last_installed_package_date(),
                 tz=DEFAULT_TIMEZONE,
             )
@@ -140,7 +140,7 @@ class News:
         if not last_online_news:
             print_error(translate("The news feed could not be received or parsed."))
             return False
-        last_online_news_date: datetime.datetime = datetime.datetime.strptime(  # ruff: ignore[call-datetime-strptime-without-zone]
+        last_online_news_date: dt.datetime = dt.datetime.strptime(  # ruff: ignore[call-datetime-strptime-without-zone]
             last_online_news, DT_FORMAT,
         )
         last_seen_news_date = self._get_last_seen_news_date()

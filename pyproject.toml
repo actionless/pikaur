@@ -180,8 +180,6 @@ ignore = [
   "missing-terminal-punctuation",
 
   #"Q000",  # force double-quotes
-
-  "unused-noqa",
 ]
 external = [
   # flake8:
@@ -247,6 +245,7 @@ external = [
   "os-remove",
   "os-path-isdir",
   "os-path-join",
+  "unused-noqa",  # @TODO: remove it when it's fixed upstream: https://github.com/astral-sh/ruff/issues/26282
 ]
 
 

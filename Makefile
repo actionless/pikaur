@@ -117,7 +117,7 @@ clean:
 ################################################################################
 
 lint_fix:
-	$(RUFF) check --fix $(TARGETS)
+	$(RUFF) check --fix $(TARGETS) pyproject.toml
 
 compile_all:
 	export PYTHONWARNINGS='ignore,error:::$(TARGET_MODULE)[.*],error:::pikaur_test[.*]'
@@ -184,7 +184,7 @@ ruff:
 			| awk '{print $$1;}' \
 			| sort)
 	# Running ruff...
-	$(RUFF) check $(TARGETS)
+	$(RUFF) check $(TARGETS) pyproject.toml
 	# :: ruff passed ::
 
 flake8:

@@ -144,40 +144,40 @@ select = [
 ]
 ignore = [
   # enable back later:
-  "ERA001", # commented out code
+  "commented-out-code", # commented out code
 
   # already managed by pylint, mb replace completely to ruff later:
-  "PLR0904",  # too-many-public-methods
-  "PLR0911",  # too-many-return-statements
-  "PLR0912",  # too-many-branches
-  "PLR0913",  # too-many-arguments
-  "PLR0914",  # too-many-locals
-  "PLR0915",  # too-many-statements
-  "PLR0917",  # too-many-positional-arguments
-  "PLR1702",  # too-many-nested-blocks
+  "too-many-public-methods",  # too-many-public-methods
+  "too-many-return-statements",  # too-many-return-statements
+  "too-many-branches",  # too-many-branches
+  "too-many-arguments",  # too-many-arguments
+  "too-many-locals",  # too-many-locals
+  "too-many-statements",  # too-many-statements
+  "too-many-positional-arguments",  # too-many-positional-arguments
+  "too-many-nested-blocks",  # too-many-nested-blocks
 
-  "PLE1205",  # pikaur is using non-default `logging`
+  "logging-too-many-args",  # pikaur is using non-default `logging`
 
-  "ANN401",  # disable Any
+  "any-type",  # disable Any
 
-  "BLE001",  # disallow catching Exception
+  "blind-except",  # disallow catching Exception
 
-  "UP036", # remove code with py version checks
+  "outdated-version-block", # remove code with py version checks
 
   # docstrings
-  "D100",
-  "D101",
-  "D102",
-  "D103",
+  "undocumented-public-module",
+  "undocumented-public-class",
+  "undocumented-public-method",
+  "undocumented-public-function",
   #
-  "D105",
-  "D107",
-  "D203", # conflicts with D211
-  "D205",
-  "D212", # conflicts with D213
-  "D400",
-  "D401", # idk, it seems broken? pydocstyle.org is down so i can't check how it's supposed to work
-  "D415",
+  "undocumented-magic-method",
+  "undocumented-public-init",
+  "incorrect-blank-line-before-class", # conflicts with D211
+  "missing-blank-line-after-summary",
+  "multi-line-summary-first-line", # conflicts with D213
+  "missing-trailing-period",
+  "non-imperative-mood", # idk, it seems broken? pydocstyle.org is down so i can't check how it's supposed to work
+  "missing-terminal-punctuation",
 
   #"Q000",  # force double-quotes
 
@@ -190,61 +190,61 @@ external = [
 
 [tool.ruff.lint.per-file-ignores]
 "pikaur/argparse_extras.py" = [
-  "PLR0912",
-  "PLR0915",
-  "SLF001",
+  "too-many-branches",
+  "too-many-statements",
+  "private-member-access",
 ]
 "pikaur_test/*.py" = [
-  "SLF001",
-  "S404",
+  "private-member-access",
+  "suspicious-subprocess-import",
 ]
 "pikaur_test/test_*.py" = [
-  "ANN201",
-  "ANN206",
-  "PLR2004",
-  "PLR6301",
-  "PLC0415",
-  "T201",
+  "missing-return-type-undocumented-public-function",
+  "missing-return-type-class-method",
+  "magic-value-comparison",
+  "no-self-use",
+  "import-outside-top-level",
+  "print",
 ]
 "maintenance_scripts/*.py" = [
-  "INP001",
-  "S301",
-  "S403",
-  "S404",
-  "T201",
-  "T203",
+  "implicit-namespace-package",
+  "suspicious-pickle-usage",
+  "suspicious-pickle-import",
+  "suspicious-subprocess-import",
+  "print",
+  "p-print",
 ]
 "pikaur_meta_helpers/*.py" = [
-  "INP001",
-  "S301",
-  "S403",
-  "S404",
-  "T201",
-  "T203",
+  "implicit-namespace-package",
+  "suspicious-pickle-usage",
+  "suspicious-pickle-import",
+  "suspicious-subprocess-import",
+  "print",
+  "p-print",
 ]
 "maintenance_scripts/pikaman.py" = [
-  "ARG002",
-  "PLR6301",
-  "PLR0904",
+  "unused-method-argument",
+  "no-self-use",
+  "too-many-public-methods",
 ]
 "maintenance_scripts/vulture_whitelist.py" = [
-  "B018",
-  "SLF001",
+  "useless-expression",
+  "private-member-access",
 ]
 "packaging/usr/bin/pikaur" = [
-  "T201",
+  "print",
 ]
 "pypyalpm.py" = [
-  "T201",
-  "PTH107",
-  "PTH112",
-  "PTH118",
+  "print",
+  "os-remove",
+  "os-path-isdir",
+  "os-path-join",
 ]
 "pacman_fallback.py" = [
-  "T201",
-  "PTH107",
-  "PTH112",
-  "PTH118",
+  "print",
+  "os-remove",
+  "os-path-isdir",
+  "os-path-join",
 ]
 
 

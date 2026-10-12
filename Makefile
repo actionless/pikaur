@@ -227,14 +227,12 @@ shellcheck_makefile:
 
 validate_pyproject:
 	# Validate pyproject file...
-	( \
-		exit_code=0 ; \
+	exit_code=0 ; \
 		result=$$(validate-pyproject pyproject.toml 2>&1) || exit_code=$$? ; \
 		if [[ $$exit_code -gt 0 ]] ; then \
 			echo "$$result" ; \
 			exit "$$exit_code" ; \
-		fi \
-	)
+		fi
 	# :: pyproject validation passed ::
 
 lint: compile_all python_import non_final_globals unreasonable_globals ruff flake8 pylint mypy vulture shellcheck shellcheck_makefile validate_pyproject

@@ -120,12 +120,12 @@ lint_fix:
 	$(RUFF) check --fix $(TARGETS) pyproject.toml
 
 compile_all:
-	export PYTHONWARNINGS='ignore,error:::$(TARGET_MODULE)[.*],error:::pikaur_test[.*]'
 	# Running python compile:
-	$(PYTHON) -O -m compileall $(TARGETS) \
-	| (\
-		grep -v -e '^Listing' -e '^Compiling' || true \
-	)
+	PYTHONWARNINGS='ignore,error:::$(TARGET_MODULE)[.*],error:::pikaur_test[.*]' \
+		$(PYTHON) -O -m compileall $(TARGETS) \
+		| (\
+			grep -v -e '^Listing' -e '^Compiling' || true \
+		)
 	# :: python compile passed ::
 
 python_import:

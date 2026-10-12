@@ -136,38 +136,38 @@ python_import:
 non_final_globals:
 	# Checking for non-Final globals:
 	result=$$( \
-		grep -REn "^[a-zA-Z_]+ = " $(TARGETS) --color=always \
-		| grep -Ev \
-			\
-			-e '=.*\|' \
-			-e '=.*(dict|list|Callable)\[' \
-			\
-			-e '__all__' \
-			\
-			$(GLOBALS_IGNORES) \
-		| sort \
-	) ; \
-	echo -n "$$result" ; \
-	exit "$$(test "$$result" = "" && echo 0 || echo 1)"
+			grep -REn "^[a-zA-Z_]+ = " $(TARGETS) --color=always \
+			| grep -Ev \
+				\
+				-e '=.*\|' \
+				-e '=.*(dict|list|Callable)\[' \
+				\
+				-e '__all__' \
+				\
+				$(GLOBALS_IGNORES) \
+			| sort \
+		) ; \
+		echo -n "$$result" ; \
+		exit "$$(test "$$result" = "" && echo 0 || echo 1)"
 	# :: non-final globals check passed ::
 
 unreasonable_globals:
 	# Checking for unreasonable global vars:
 	result=$$( \
-		grep -REn "^[a-zA-Z_]+ = [^'\"].*" $(TARGETS) --color=always \
-		| grep -Ev \
-			\
-			-e ' =.*\|' \
-			-e ' = [a-zA-Z_]+\[' \
-			-e ' = str[^(]' \
-			\
-			-e '__all__' \
-			\
-			$(GLOBALS_IGNORES) \
-		| sort \
-	) ; \
-	echo -n "$$result" ; \
-	exit "$$(test "$$result" = "" && echo 0 || echo 1)"
+			grep -REn "^[a-zA-Z_]+ = [^'\"].*" $(TARGETS) --color=always \
+			| grep -Ev \
+				\
+				-e ' =.*\|' \
+				-e ' = [a-zA-Z_]+\[' \
+				-e ' = str[^(]' \
+				\
+				-e '__all__' \
+				\
+				$(GLOBALS_IGNORES) \
+			| sort \
+		) ; \
+		echo -n "$$result" ; \
+		exit "$$(test "$$result" = "" && echo 0 || echo 1)"
 	# :: global vars check passed ::
 
 ruff:

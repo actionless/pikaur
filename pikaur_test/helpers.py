@@ -112,7 +112,7 @@ class InterceptSysOutput:
 
     _patcher_stdout: "mock._patch[IO[str]] | None" = None
     _patcher_stderr: "mock._patch[IO[str]] | None" = None
-    _patcher_exit: "mock._patch[Callable[[DefaultArg(int, 'code')], NoReturn]]"  # noqa: F821  # ruff: ignore[noqa-comments]
+    _patcher_exit: "mock._patch[Callable[[DefaultArg(int, 'code')], NoReturn]]"  # noqa: F821
     _patcher_spawn: "mock._patch[Callable[[list[str]], Popen[bytes]]]"
     patchers: "Sequence[mock._patch[Any] | None] | None" = None
 

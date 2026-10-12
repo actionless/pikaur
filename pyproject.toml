@@ -184,6 +184,8 @@ ignore = [
   "unused-noqa",
 ]
 external = [
+  # flake8:
+  "F821",
   # vulture:
   "V201",
 ]

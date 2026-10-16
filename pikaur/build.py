@@ -285,6 +285,7 @@ class PackageBuild(ComparableType):
         if self.clone:
             cmd_args = [
                 "git",
+                "-C", str(self.repo_path.parent),
                 "clone",
                 get_repo_url(self.package_base),
                 str(self.repo_path),

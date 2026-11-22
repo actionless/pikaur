@@ -885,7 +885,7 @@ def reconstruct_args(parsed_args: PikaurArgs, ignore_args: list[str] | None = No
         if key not in ignore_args + count_args + [
             "raw", "unknown_args", "positional", "read_stdin",  # computed members
         ] + [
-            arg.long
+            arg.long.replace("-", "_")
             for arg in get_pacman_str_opts(
                 action=LIST_ALL_ACTIONS,
             ) + PACMAN_APPEND_OPTS
